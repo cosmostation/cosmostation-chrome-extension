@@ -12,6 +12,10 @@ import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 const bip32 = BIP32Factory(TinySecp256k1);
 const ECPair = ECPairFactory(TinySecp256k1);
 
+export function ecpairFromPrivateKey(privateKey: Buffer) {
+  return ECPair.fromPrivateKey(privateKey);
+}
+
 export function sha512(message: string) {
   return baseSha512(message).toString(encHex);
 }

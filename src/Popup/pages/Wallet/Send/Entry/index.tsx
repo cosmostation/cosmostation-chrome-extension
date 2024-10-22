@@ -1,6 +1,7 @@
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
 import Aptos from './Aptos';
+import Bitcoin from './Bitcoin';
 import Cosmos from './Cosmos';
 import Ethereum from './Ethereum';
 import Sui from './Sui';
@@ -22,6 +23,10 @@ export default function Entry() {
 
   if (currentChain.line === 'SUI') {
     return <Sui chain={currentChain} />;
+  }
+
+  if (currentChain.line === 'BITCOIN') {
+    return <Bitcoin chain={currentChain} />;
   }
 
   return null;

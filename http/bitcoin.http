@@ -1,0 +1,88 @@
+POST https://rpc-office.cosmostation.io/bitcoin/
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "estimatesmartfee",
+  "params": [2]
+}
+
+### 
+
+POST https://rpc-office.cosmostation.io/bitcoin-testnet
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "estimatesmartfee",
+  "params": [2]
+}
+
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "sendrawtransaction",
+  "params": ["020000000001014217fc3da0fcbfbb40bc0dbe18adf7bc4f67ce53fa8cfbd0cd3f792eab20aa010100000000ffffffff02e8030000000000001976a914bc7c53df1f3fd1195a5c5e9f640c5aa5b9f2b49b88acb151000000000000160014bc7c53df1f3fd1195a5c5e9f640c5aa5b9f2b49b0247304402202aec89bb4ea837d39e0589367f2dd1936c9b2b464108661c1d5d37fa28ea903a02205becff3cd0ef529aa8dabbccb0d910019757e6d17805b17a41ab634ff5306047012103a9390597b4667b5added9831c6dd33f4df2a1e1129109a4c05f4ffbc85f1d53600000000"]
+}
+
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getrawtransaction",
+  "params": ["20e38f147a0f120d738ce7524d7a13194c211ce2d3c8552b2f2aea844c788e41", 1]
+}
+
+### 
+
+GET https://mempool.space/testnet4/api/address/tb1qc0p5h8s9z8ved0u37aam5zskpe764rs9yqv85d/txs
+
+### 
+
+GET https://mempool.space/api/address/bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k
+
+###
+
+GET https://mempool.space/api/address/bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k/utxo
+
+###
+
+POST https://rpc-office.cosmostation.io/bitcoin/
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getaddressinfo",
+  "params": ["18Tpn3xpza66b2rs3uNDxb7xvDAbJQ5zwZ"]
+}
+
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getaddressinfo",
+  "params": ["tb1qc0p5h8s9z8ved0u37aam5zskpe764rs9yqv85d"]
+}
+
+###
+
+POST https://mempool.space/testnet4/api/tx
+Content-Type: text/plain
+
+0200000000010604afc85dd0dff98503cf5bd60c17e4241eb1bc59116fa08435171c3cd482128a0100000000ffffffff68afb76764741dadf0e60e64263e256e34535514ade6c70e779cf46843ea39a40100000000ffffffff4f919a731cfe07d7f4108dc55c7e7a799020b84ceb01200f63458442de6f8d8b0100000000ffffffff08f5b8d18670606f0a9a1fc04f977beead0f7fa210e65fd56a0148e96a5aaee20100000000ffffffff7e89f7f2a155d0b0292c94a408aae46bdd2f5f5187942718775d2a2df9a7e71b0100000000ffffffffe85e3406262a7001a9dec8593d449c3a00aba3546249c1910cd082b471dcb99d0100000000ffffffff02a02526000000000016001462f5fcab18cc7089d8cb39869a71224afe90b1551b55250000000000160014c3c34b9e0511d996bf91f77bba0a160e7daa8e0502483045022100c0ba6da9fb81284f72f4362cee90abc2b4113277dbe22792f9916141c61fb43a022045cbcb2bcbff0569d3908cf4af6bb5280abcd00f766be2aea3c570e5ed85b93a01210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902473044022047b202422a491602700f32977c75644ea936ac261f35afb2dc3f753dcd7a3157022050205ba7915828b8c5b01cd49ddcdb755d4c7e4d20a6a861106e061f21046e4d01210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902483045022100a8477ae5e0e9bbb32b252eaa1565b861a4c965becc1ab76af82ff5b213485da302201031f1369731b92178b68501057878bbf7cb82da3128ee669ce1f1aa54c6c1b901210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a290247304402200ae6ebfec1f000003ba8ddbc472955bce46d4f7e092acc42c10bf38974ee8e1c02204ee23bdcd196b614bd8518bbfe6f63d1baa796a5526481737cc3453a06f4070901210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902483045022100b5b0a63cc8b2644b6df4ef2069181189dad7b944324dc47ad2e98f305435c665022070d9bf9d50c9cdd59cf7e793018d8796780347b9ed0f711349415d9609bec96901210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902483045022100c3efb2b0b74c4e60a75aaa6a9b363a5204905c870e1bd95f85a6fcbca3afff7502200a9777846a2102107504b8fde999ac80b8906e1db0a82c85f21969e0dfe1f87601210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2900000000

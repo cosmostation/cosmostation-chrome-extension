@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,17 +19,23 @@ export function useCurrentAccount() {
 
   const { selectedAccountId, accounts, accountName, allowedOrigins, suiPermissions } = extensionStorage;
 
-  const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
+  const selectedAccount = useMemo(() => accounts.find((account) => account.id === selectedAccountId), [selectedAccountId, accounts]);
 
-  const currentAccount = selectedAccount || accounts[0];
+  const currentAccount = useMemo(() => selectedAccount || accounts[0], [selectedAccount, accounts]);
 
-  const currentAccountName = accountName[currentAccount.id] ?? '';
+  const currentAccountName = useMemo(() => accountName[currentAccount.id] ?? '', [accountName, currentAccount.id]);
 
-  const currentAccountSuiPermissions = suiPermissions.filter((permission) => permission.accountId === currentAccount.id);
+  const currentAccountWithName = useMemo(() => ({ ...currentAccount, name: currentAccountName }), [currentAccount, currentAccountName]);
 
-  const currentAccountAllowedOrigins = allowedOrigins
-    .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
-    .map((allowedOrigin) => allowedOrigin.origin);
+  const currentAccountSuiPermissions = useMemo(
+    () => suiPermissions.filter((permission) => permission.accountId === currentAccount.id),
+    [currentAccount.id, suiPermissions],
+  );
+
+  const currentAccountAllowedOrigins = useMemo(
+    () => allowedOrigins.filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId).map((allowedOrigin) => allowedOrigin.origin),
+    [allowedOrigins, selectedAccountId],
+  );
 
   const addAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = [...allowedOrigins, { origin, accountId: currentAccount.id }];
@@ -129,7 +136,7 @@ export function useCurrentAccount() {
     await setExtensionStorage('suiPermissions', newSuiPermissions);
   };
   return {
-    currentAccount: { ...currentAccount, name: currentAccountName },
+    currentAccount: currentAccountWithName,
     currentAccountAllowedOrigins,
     currentAccountSuiPermissions,
     setCurrentAccount,

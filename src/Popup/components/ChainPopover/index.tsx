@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, SUI_CHAINS } from '~/constants/chain';
+import { APTOS_CHAINS, BITCOIN_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, SUI_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
@@ -59,6 +59,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedAptosChain = useMemo(() => APTOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedSuiChain = useMemo(() => SUI_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
+  const allowedBitcoinChain = useMemo(() => BITCOIN_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
 
   return (
     <Popover {...remainder} onClose={onClose}>
@@ -138,9 +139,33 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
             </>
           )}
 
-          {allowedCosmosChain.length > 0 && (
+          {allowedBitcoinChain.length > 0 && (
             <>
               {allowedEthereumChain.length > 0 && <StyledDivider />}
+              <ChainTitleContainer>
+                <Typography variant="h6">Bitcoin</Typography>
+              </ChainTitleContainer>
+              <ChainListContainer>
+                {allowedBitcoinChain.map((chain) => (
+                  <ChainItemButton
+                    key={chain.id}
+                    isActive={currentChain.id === chain.id}
+                    imgSrc={chain.imageURL}
+                    onClick={() => {
+                      onClickChain?.(chain);
+                      onClose?.({}, 'backdropClick');
+                    }}
+                  >
+                    {chain.chainName}
+                  </ChainItemButton>
+                ))}
+              </ChainListContainer>
+            </>
+          )}
+
+          {allowedCosmosChain.length > 0 && (
+            <>
+              {[...allowedEthereumChain, ...allowedBitcoinChain].length > 0 && <StyledDivider />}
               <ChainTitleContainer>
                 <Typography variant="h6">Cosmos chains</Typography>
               </ChainTitleContainer>

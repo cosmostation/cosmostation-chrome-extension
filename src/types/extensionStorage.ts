@@ -19,6 +19,7 @@ export type HomeTabPath = {
   cosmos: number;
   sui: number;
   aptos: number;
+  bitcoin: number;
 };
 
 export type AccountCommon = {
@@ -53,6 +54,7 @@ export type LedgerAccount = {
   mediblocPublicKey?: string;
   cryptoOrgPublicKey?: string;
   suiPublicKey?: string;
+  bitcoinPublicKey?: string;
 };
 
 export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount | LedgerAccount);

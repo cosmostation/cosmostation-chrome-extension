@@ -3,8 +3,9 @@ import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, BITCOIN_CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -45,12 +46,14 @@ export default function Entry() {
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
   const { addShownSuiNetwork, removeShownSuiNetwork } = useCurrentShownSuiNetworks();
+
   const [isExpandedEthereum, setIsExpandedEthereum] = useState<boolean>(false);
   const [isExpandedCosmos, setIsExpandedCosmos] = useState<boolean>(false);
   const [isExpandedAptos, setIsExpandedAptos] = useState<boolean>(false);
   const [isExpandedSui, setIsExpandedSui] = useState<boolean>(false);
+  const [isExpandedBitcoin, setIsExpandedBitcoin] = useState<boolean>(false);
 
-  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos' | 'sui') => (_: React.SyntheticEvent, newExpanded: boolean) => {
+  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos' | 'sui' | 'bitcoin') => (_: React.SyntheticEvent, newExpanded: boolean) => {
     if (panel === 'ethereum') {
       setIsExpandedEthereum(newExpanded);
     } else if (panel === 'cosmos') {
@@ -59,6 +62,8 @@ export default function Entry() {
       setIsExpandedAptos(newExpanded);
     } else if (panel === 'sui') {
       setIsExpandedSui(newExpanded);
+    } else if (panel === 'bitcoin') {
+      setIsExpandedBitcoin(newExpanded);
     }
   };
 
@@ -92,6 +97,16 @@ export default function Entry() {
     }
 
     return debouncedCloseSearch ? (SUI.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []) : SUI_NETWORKS;
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
+
+  const filteredBitcoinChains = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return BITCOIN_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+    }
+
+    return debouncedCloseSearch
+      ? BITCOIN_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
+      : BITCOIN_CHAINS;
   }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredCosmosChains = useMemo(() => {
@@ -168,6 +183,16 @@ export default function Entry() {
     }
   };
 
+  const handleOnChangeBitcoinChain = async (checked: boolean, chain: Chain) => {
+    if (checked) {
+      await addAllowedChainId(chain);
+    } else if (allowedChainIds.length < 2) {
+      enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+    } else {
+      await removeAllowedChainId(chain);
+    }
+  };
+
   return (
     <Container>
       <StyledInput
@@ -222,6 +247,47 @@ export default function Entry() {
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
 
+        <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedBitcoin} onChange={handleChange('bitcoin')}>
+          <StyledChainAccordionSummary
+            data-is-expanded={!!debouncedOpenSearch || isExpandedBitcoin}
+            data-is-exists={!!filteredBitcoinChains.length}
+            aria-controls="bitcoin-content"
+            id="bitcoin-header"
+          >
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={BITCOIN.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Bitcoin</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails data-is-exists={!!filteredBitcoinChains.length}>
+            {filteredBitcoinChains.length ? (
+              filteredBitcoinChains.map((chain) => (
+                <SubItem
+                  key={chain.id}
+                  imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+                  switchProps={{
+                    checked: allowedChainIds.includes(chain.id),
+                    onChange: (_, checked) => {
+                      void handleOnChangeBitcoinChain(checked, chain);
+                    },
+                  }}
+                >
+                  {chain.chainName}
+                </SubItem>
+              ))
+            ) : (
+              <NoResultsContainer>
+                <NoResults16Icon />
+                <Typography variant="h6">No Results</Typography>
+              </NoResultsContainer>
+            )}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+
         <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedCosmos} onChange={handleChange('cosmos')}>
           <StyledChainAccordionSummary
             data-is-expanded={!!debouncedOpenSearch || isExpandedCosmos}
@@ -262,6 +328,7 @@ export default function Entry() {
             )}
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
+
         <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedAptos} onChange={handleChange('aptos')}>
           <StyledChainAccordionSummary
             data-is-expanded={!!debouncedOpenSearch || isExpandedAptos}

@@ -11,6 +11,7 @@ import type {
   AptosSignMessage,
   AptosSignTransaction,
 } from './aptos';
+import type { BitSignAndSendTransaction } from './bitcoin';
 import type { ComProviders } from './common';
 import type {
   CosAccount,
@@ -138,9 +139,17 @@ export type SuiRequestMessage =
   | SuiDisconnect
   | SuiGetChain;
 
+export type BitcoinRequestMessage = BitSignAndSendTransaction;
+
 export type CommonRequestMessage = ComProviders;
 
-export type RequestMessage = CommonRequestMessage | EthereumRequestMessage | CosmosRequestMessage | AptosRequestMessage | SuiRequestMessage;
+export type RequestMessage =
+  | CommonRequestMessage
+  | EthereumRequestMessage
+  | CosmosRequestMessage
+  | AptosRequestMessage
+  | SuiRequestMessage
+  | BitcoinRequestMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

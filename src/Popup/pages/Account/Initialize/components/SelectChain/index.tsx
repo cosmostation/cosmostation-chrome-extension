@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS, SUI_CHAINS, SUI_NETWORKS } from '~/constants/chain';
+import { APTOS_CHAINS, APTOS_NETWORKS, BITCOIN_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS, SUI_CHAINS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -50,6 +50,7 @@ export default function SelectChain() {
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;
   const filteredAptosChains = search ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : APTOS_CHAINS;
   const filteredSuiChains = search ? SUI_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : SUI_CHAINS;
+  const filteredBitcoinChains = search ? BITCOIN_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : BITCOIN_CHAINS;
 
   const handleOnChange = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -100,6 +101,21 @@ export default function SelectChain() {
       <ChainContainer>
         <ListContainer>
           {filteredEthereumChains.map((chain) => (
+            <Item
+              key={chain.id}
+              imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+              switchProps={{
+                checked: allowedChainIds.includes(chain.id),
+                onChange: (_, checked) => {
+                  void handleOnChange(checked, chain);
+                },
+              }}
+            >
+              {chain.chainName}
+            </Item>
+          ))}
+
+          {filteredBitcoinChains.map((chain) => (
             <Item
               key={chain.id}
               imageProps={{ alt: chain.chainName, src: chain.imageURL }}

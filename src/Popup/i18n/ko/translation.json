@@ -1386,6 +1386,11 @@
             "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
           },
+          "Bitcoin": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
           "Cosmos": {
             "address": "주소",
             "copied": "복사 되었습니다.",
@@ -1424,6 +1429,32 @@
               "invalidAmount": "수량을 입력하세요.",
               "recipientAddressPlaceholder": "입금 주소",
               "sendButton": "보내기"
+            }
+          },
+          "Bitcoin": {
+            "components": {
+              "ConfirmDialog": {
+                "index": {
+                  "cancel": "취소",
+                  "confirm": "확인",
+                  "confirmText": "트랜잭션을 전송하시겠습니까?"
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "수량",
+              "failedCreateTxHex": "트랜잭션 생성 실패",
+              "failedLoadFee": "네트워크 에러",
+              "failureSend": "알 수 없는 에러",
+              "fee": "수수료",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "memoMaxLength": "OP_RETURN은 80바이트 이하로 입력하세요.",
+              "memoPlaceholder": "OP_RETURN (선택)",
+              "noAmount": "수량을 입력하세요.",
+              "noAvailableAmount": "잔액이 충분하지 않습니다.",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기",
+              "successSend": "트랜잭션이 성공적으로 전송되었습니다."
             }
           },
           "Cosmos": {
@@ -1481,7 +1512,7 @@
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
                   "invalidAmount": "수량을 입력하세요.",
-                  "memoPlaceholder": "메모 (선택)",
+                  "memoPlaceholder": "OP_RETURN (선택)",
                   "recipientAddressPlaceholder": "입금 주소",
                   "sendButton": "보내기"
                 }
@@ -1708,6 +1739,18 @@
             "index": {
               "copied": "복사 되었습니다.",
               "depositButton": "입금",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
+            }
+          }
+        },
+        "bitcoin": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "mempoolFunded": "수신 대기 중",
+              "mempoolSpent": "전송 대기 중",
               "networkError": "네트워크 오류",
               "sendButton": "보내기"
             }
