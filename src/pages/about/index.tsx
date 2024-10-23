@@ -1,8 +1,8 @@
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useColorScheme } from '@mui/material/styles';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Container } from './-styled';
+import { ContainerA, ContainerB, ContainerC, StyledBox } from './-styled';
 
 export const Route = createFileRoute('/about/')({
   component: About,
@@ -13,26 +13,23 @@ function About() {
 
   console.log(mode);
   return (
-    <>
-      <Button
-        onClick={() => {
-          setMode('dark');
-          console.log(mode);
-        }}
-      >
-        {'set dark'}
-      </Button>
-      <Button
-        onClick={() => {
-          setMode('light');
-          console.log(mode);
-        }}
-      >
-        {'set light'}
-      </Button>
-      <Container>
-        <Typography variant="h1">{mode}</Typography>
-      </Container>
-    </>
+    <StyledBox
+      onClick={() => {
+        setMode(mode === 'light' ? 'dark' : 'light');
+      }}
+    >
+      <ContainerA>
+        <Typography variant="h2_M">About</Typography>
+      </ContainerA>
+      <ContainerA>
+        <Typography variant="h1_B">About</Typography>
+      </ContainerA>
+      <ContainerB>
+        <Typography variant="h2_B">About</Typography>
+      </ContainerB>
+      <ContainerC>
+        <Typography variant="h2_M">About</Typography>
+      </ContainerC>
+    </StyledBox>
   );
 }
