@@ -19,13 +19,16 @@ function About() {
       }}
     >
       <ContainerA>
-        <Typography variant="h10">About</Typography>
+        <Typography variant="h2_M">About</Typography>
+      </ContainerA>
+      <ContainerA>
+        <Typography variant="h1_B">About</Typography>
       </ContainerA>
       <ContainerB>
-        <Typography variant="h20">About</Typography>
+        <Typography variant="h2_B">About</Typography>
       </ContainerB>
       <ContainerC>
-        <Typography variant="h20">About</Typography>
+        <Typography variant="h2_M">About</Typography>
       </ContainerC>
     </StyledBox>
   );
