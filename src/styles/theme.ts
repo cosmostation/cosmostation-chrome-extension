@@ -34,7 +34,7 @@ const darkThemeColor: Color = {
   base1300: '#F7F7F8',
 };
 
-const h1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal', color: 'primary.main' };
+const h1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal' };
 const h2_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.6rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const h2_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.6rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const h3_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.4rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
