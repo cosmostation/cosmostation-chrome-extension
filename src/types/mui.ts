@@ -5,10 +5,14 @@ import type { Color } from '@/styles/theme';
 declare module '@mui/material/styles' {
   interface Palette {
     color: Color;
+    // TODO: Add accentColor
+    // accentColor: Color;
   }
 
   interface PaletteOptions {
     color?: Color;
+    // TODO: Add accentColor
+    // accentColor?: Color;
   }
 }
 
