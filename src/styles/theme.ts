@@ -1,23 +1,8 @@
 import { createTheme } from '@mui/material/styles';
 
-export type Color = {
-  base50: string;
-  base100: string;
-  base200: string;
-  base300: string;
-  base400: string;
-  base500: string;
-  base600: string;
-  base700: string;
-  base800: string;
-  base900: string;
-  base1000: string;
-  base1100: string;
-  base1200: string;
-  base1300: string;
-};
+export type Color = typeof darkThemeColor;
 
-const darkThemeColor: Color = {
+const darkThemeColor = {
   base50: '#23272F',
   base100: '#292E38',
   base200: '#303541',
@@ -95,6 +80,12 @@ export const numberTypoVariants = {
   h8n_M,
   h8n_R,
 };
+
+type TypoVariantKeys = keyof typeof typoVariants;
+type NumberTypoVariants = keyof typeof numberTypoVariants;
+
+export type TypoVariants = Record<TypoVariantKeys | NumberTypoVariants, React.CSSProperties>;
+export type TypeVariantsTrue = Record<TypoVariantKeys | NumberTypoVariants, true>;
 
 export const theme = createTheme({
   colorSchemes: {

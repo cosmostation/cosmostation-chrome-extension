@@ -1,4 +1,6 @@
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 import { useColorScheme } from '@mui/material/styles';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -10,6 +12,7 @@ export const Route = createFileRoute('/about/')({
 
 function About() {
   const { mode, setMode } = useColorScheme();
+  const { t } = useTranslation();
 
   console.log(mode);
   return (
@@ -18,6 +21,8 @@ function About() {
         setMode(mode === 'light' ? 'dark' : 'light');
       }}
     >
+      {t('test.testA')}
+      {t('test.testB')}
       <ContainerA>
         <Typography variant="h2_M">About</Typography>
       </ContainerA>
