@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useColorScheme } from '@mui/material/styles';
