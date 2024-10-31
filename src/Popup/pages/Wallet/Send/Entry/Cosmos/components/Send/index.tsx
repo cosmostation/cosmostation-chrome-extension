@@ -5,7 +5,6 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
-import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
@@ -268,7 +267,7 @@ export default function Send({ chain }: CosmosProps) {
           memo: currentMemo,
           msgs: [
             {
-              type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+              type: 'cosmos-sdk/MsgSend',
               value: {
                 from_address: address,
                 to_address: currentDepositAddress,
@@ -321,10 +320,9 @@ export default function Send({ chain }: CosmosProps) {
     address,
     addressRegex,
     chain.chainId,
-    chain.chainName,
     chain.type,
-    currentDepositAddress,
     currentCoinOrToken,
+    currentDepositAddress,
     currentDisplayAmount,
     currentFeeCoin.baseDenom,
     currentFeeGasRate,
