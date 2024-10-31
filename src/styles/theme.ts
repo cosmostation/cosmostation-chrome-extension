@@ -38,6 +38,7 @@ const c1_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1rem', li
 const h1n_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal' };
 const h2n_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '2rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const h3n_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
+const h3n_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const h4n_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.4rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const h5n_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const h5n_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
@@ -70,6 +71,7 @@ export const numberTypoVariants = {
   h1n_B,
   h2n_M,
   h3n_B,
+  h3n_M,
   h4n_M,
   h5n_M,
   h5n_R,
