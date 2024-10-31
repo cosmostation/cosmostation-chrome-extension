@@ -25,7 +25,6 @@ import { COMDEX } from './cosmos/comdex';
 import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
 import { CRONOS_POS } from './cosmos/cronosPos';
-import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
@@ -143,7 +142,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   COMDEX,
   COREUM,
   CRONOS_POS,
-  CUDOS,
   DESMOS,
   DYDX,
   DYMENSION,
