@@ -62,16 +62,6 @@ export const TokenLeftTitleContainer = styled('div')(({ theme }) => ({
 
 export const TokenLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
-
-  whiteSpace: 'nowrap',
-  wordBreak: 'keep-all',
-
-  maxWidth: '15rem',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
 }));
 
 export const TokenRightInfoContainer = styled('div')({

@@ -17,7 +17,6 @@ import { useIncentiveSWR } from './useIncentiveSWR';
 export type CoinInfo = {
   coinType?: string;
   decimals: number;
-  originBaseDenom?: string;
   baseDenom: string;
   displayDenom: string;
   imageURL?: string;
@@ -39,17 +38,16 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
   const nativeAssets: Coin[] = useMemo(
     () =>
       assets?.data
-        ?.filter((item) => item.type === 'native' || item.type === 'bridge')
+        ?.filter((item) => (item.type === 'native' || item.type === 'bridge') && item.denom !== chain.baseDenom)
         ?.map((item) => ({
           type: item.type,
-          originBaseDenom: item.origin_denom || '',
           baseDenom: item.denom,
           displayDenom: item.symbol,
           decimals: item.decimals,
           imageURL: item.image,
           coinGeckoId: item.coinGeckoId,
         })) || [],
-    [assets.data],
+    [assets?.data, chain.baseDenom],
   );
 
   const ibcAssets = useMemo(() => assets?.data?.filter((item) => item.type === 'ibc') || [], [assets?.data]);
@@ -91,7 +89,6 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
             coinType: coinInfo.type,
             decimals: coinInfo.decimals,
             baseDenom: coin.denom,
-            originBaseDenom: coinInfo.originBaseDenom,
             displayDenom: coinInfo.displayDenom,
             imageURL: coinInfo.imageURL,
             coinGeckoId: coinInfo.coinGeckoId,
@@ -119,15 +116,14 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           return {
             coinType: coinInfo.type,
             decimals: coinInfo?.decimals,
-            originBaseDenom: coinInfo?.origin_denom,
             baseDenom: coin.denom,
             displayDenom: coinInfo?.symbol,
             imageURL: coinInfo?.image,
             coinGeckoId: coinInfo.coinGeckoId,
-            channelId: coinInfo?.channel,
+            channelId: coinInfo.ibc_info?.client?.channel,
             availableAmount: coin.amount,
             totalAmount: coin.amount,
-            baseChainName: coinInfo.path?.split('>').at(-2),
+            baseChainName: coinInfo.prevChain,
           };
         }) || [],
     [balance.data?.balance, ibcAssets],

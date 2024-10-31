@@ -3,7 +3,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { MINTSCAN_FRONT_API_URL } from '~/constants/common';
+import { MINTSCAN_FRONT_API_V10_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
 import type { CoinGeckoPriceResponse, SimplePrice } from '~/types/coinGecko';
 
@@ -12,7 +12,7 @@ import { useExtensionStorage } from '../useExtensionStorage';
 export function useCoinGeckoPriceSWR(config?: SWRConfiguration) {
   const { extensionStorage } = useExtensionStorage();
 
-  const requestURL = `${MINTSCAN_FRONT_API_URL}/utils/market/prices?currency=${extensionStorage.currency}`;
+  const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/prices?currency=${extensionStorage.currency}`;
 
   const fetcher = (fetchUrl: string) => get<CoinGeckoPriceResponse>(fetchUrl);
 

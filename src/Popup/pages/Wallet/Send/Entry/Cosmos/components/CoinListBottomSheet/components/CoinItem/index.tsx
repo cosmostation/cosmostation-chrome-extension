@@ -7,6 +7,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
 
 import {
   CoinButton,
@@ -56,9 +57,11 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
           <LeftTitleContainer>
             <Typography variant="h5">{coinInfo.displayDenom}</Typography>
           </LeftTitleContainer>
-          <LeftSubTitleContainer>
-            <Typography variant="h6">{coinInfo.name}</Typography>
-          </LeftSubTitleContainer>
+          {coinInfo.type === 'token' && (
+            <LeftSubTitleContainer>
+              <Typography variant="h6">{shorterAddress(coinInfo.address, 17)}</Typography>
+            </LeftSubTitleContainer>
+          )}
         </LeftInfoContainer>
       </LeftContainer>
       <RightContainer>
