@@ -1,9 +1,7 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
-import { ATOM_ONE } from '~/constants/chain/cosmos/atomOne';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { MANTRA } from '~/constants/chain/cosmos/mantra';
-import { PRYZM } from '~/constants/chain/cosmos/pryzm';
+import { SELFCHAIN } from '~/constants/chain/cosmos/selfchain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -96,9 +94,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.18') {
+        if (extensionManifest.version === '0.8.19') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), PRYZM.id, ATOM_ONE.id, MANTRA.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), SELFCHAIN.id]);
           })();
         }
       }
