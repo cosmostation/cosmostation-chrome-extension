@@ -559,7 +559,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
-    if (!chainParams.data?.params?.chainlist_params?.is_send_enabled) {
+    if (chainParams.data?.params?.chainlist_params?.is_send_enabled === false) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.bankLocked');
     }
 

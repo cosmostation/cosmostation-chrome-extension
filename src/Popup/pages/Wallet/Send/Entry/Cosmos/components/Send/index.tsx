@@ -371,7 +371,7 @@ export default function Send({ chain }: CosmosProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
-    if (!chainParams.data?.params?.chainlist_params?.is_send_enabled) {
+    if (chainParams.data?.params?.chainlist_params?.is_send_enabled === false) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.bankLocked');
     }
 

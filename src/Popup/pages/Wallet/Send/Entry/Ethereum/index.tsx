@@ -149,7 +149,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const baseTokenBalance = useMemo(() => BigInt(tokenBalance.data || '0').toString(10), [tokenBalance.data]);
 
   const errorMessage = useMemo(() => {
-    if (!chainParams.data?.params?.chainlist_params?.is_send_enabled) {
+    if (chainParams.data?.params?.chainlist_params?.is_send_enabled === false) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.bankLocked');
     }
 
