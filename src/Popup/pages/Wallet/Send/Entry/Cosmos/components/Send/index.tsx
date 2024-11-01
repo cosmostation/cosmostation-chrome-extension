@@ -471,7 +471,7 @@ export default function Send({ chain }: CosmosProps) {
                 </TitleContainer>
                 <LeftHeaderTitleContainer>
                   <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.available')}</Typography>
-                  {currentDisplayMaxDecimals && currentCoinOrTokenDisplayAvailableAmount && (
+                  {currentCoinOrTokenDisplayAvailableAmount && (
                     <>
                       <Typography variant="h6n"> :</Typography>{' '}
                       <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
