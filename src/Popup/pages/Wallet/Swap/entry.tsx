@@ -462,7 +462,7 @@ export default function Entry() {
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
-        tokenType: !isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS) ? 'ERC20' : undefined,
+        tokenType: !isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS) ? ETHEREUM_TOKEN_TYPE.ERC20 : undefined,
       }));
     }
 

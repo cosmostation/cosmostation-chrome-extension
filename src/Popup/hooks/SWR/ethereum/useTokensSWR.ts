@@ -8,7 +8,7 @@ import { get } from '~/Popup/utils/axios';
 import { convertEVMToAssetName } from '~/Popup/utils/ethereum';
 import { toHex } from '~/Popup/utils/string';
 import type { EthereumNetwork } from '~/types/chain';
-import type { ERC20V11AssetResponse, ModifiedAsset } from '~/types/ethereum/asset';
+import type { ERC20AssetV11Response, ModifiedAsset } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
 import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
@@ -25,13 +25,13 @@ export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration)
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<ERC20V11AssetResponse>(fetchUrl);
+      return await get<ERC20AssetV11Response>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<ERC20V11AssetResponse | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<ERC20AssetV11Response | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

@@ -2,6 +2,7 @@ import { forwardRef, useMemo } from 'react';
 import { isHexString } from 'ethereumjs-util';
 import { Typography } from '@mui/material';
 
+import { TOKEN_TYPE } from '~/constants/ethereum';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
@@ -76,7 +77,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
           <TokenLeftTitleContainer>
             <Typography variant="h5">{tokenInfo.displayDenom}</Typography>
           </TokenLeftTitleContainer>
-          {tokenInfo.tokenType === 'ERC20' && (
+          {tokenInfo.tokenType === TOKEN_TYPE.ERC20 && (
             <TokenLeftSubTitleContainer>
               <Typography variant="h6">{shorterAddress(tokenInfo.tokenAddressOrDenom, 15)}</Typography>
             </TokenLeftSubTitleContainer>

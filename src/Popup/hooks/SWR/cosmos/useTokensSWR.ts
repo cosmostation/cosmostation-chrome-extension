@@ -7,7 +7,7 @@ import { MINTSCAN_FRONT_API_V11_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
 import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
-import type { CW20AssetResponse, CW20V11AssetResponse } from '~/types/cosmos/asset';
+import type { CW20AssetResponse, CW20AssetV11Response } from '~/types/cosmos/asset';
 
 import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
 
@@ -20,13 +20,13 @@ export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<CW20V11AssetResponse>(fetchUrl);
+      return await get<CW20AssetV11Response>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<CW20V11AssetResponse | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<CW20AssetV11Response | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

@@ -82,7 +82,7 @@ export type CW20AssetResponse = {
   assets: CW20Asset[];
 };
 
-export type CW20V11Asset = {
+export type CW20AssetV11 = {
   chain: string;
   type: string;
   contract: string;
@@ -96,7 +96,7 @@ export type CW20V11Asset = {
   wallet_preload?: boolean;
 };
 
-export type CW20V11AssetResponse = CW20V11Asset[];
+export type CW20AssetV11Response = CW20AssetV11[];
 
 export type ChainIdToAssetNameMapsKey = {
   chainId: string;
