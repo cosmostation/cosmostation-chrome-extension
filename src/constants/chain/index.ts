@@ -10,7 +10,6 @@ import { AGORIC } from './cosmos/agoric';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
-import { ARTELA_TESTNET } from './cosmos/artelaTestnet';
 import { ASI_ALLIANCE } from './cosmos/asiAlliance';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { ATOM_ONE } from './cosmos/atomOne';
@@ -78,7 +77,6 @@ import { ZETA } from './cosmos/zeta';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
-import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from './ethereum/network/artelaTestnet';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { BASE as ETHEREUM_NETWORK__BASE } from './ethereum/network/base';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
@@ -128,7 +126,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   AKASH,
   ALTHEA,
   ARCHWAY,
-  ARTELA_TESTNET,
   ASI_ALLIANCE,
   ASSET_MANTLE,
   ATOM_ONE,
@@ -202,7 +199,6 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ETHEREUM,
   ETHEREUM_NETWORK__ALTHEA,
   ETHEREUM_NETWORK__ARBITRUM,
-  ETHEREUM_NETWORK__ARTELA_TESTNET,
   ETHEREUM_NETWORK__AVALANCHE,
   ETHEREUM_NETWORK__BASE,
   ETHEREUM_NETWORK__CANTO,
