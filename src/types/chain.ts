@@ -83,7 +83,6 @@ export type CosmosGasRate = {
 
 export type Coin = {
   type: string;
-  originBaseDenom: string;
   baseDenom: string;
   decimals: number;
   displayDenom: string;
@@ -92,7 +91,6 @@ export type Coin = {
 };
 
 export type FeeCoin = {
-  originBaseDenom?: string;
   baseDenom: string;
   displayDenom: string;
   decimals: number;

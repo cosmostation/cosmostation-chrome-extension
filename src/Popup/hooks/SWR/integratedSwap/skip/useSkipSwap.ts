@@ -176,9 +176,9 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const assets = useAssetsSWR(chainInfo.chain || COSMOS_CHAINS[0]);
 
   const channelChain = useMemo(() => {
-    const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
-    if (asset?.origin_chain) {
-      return convertAssetNameToCosmos(asset.origin_chain, chainIdToAssetNameMaps);
+    const asset = assets.data?.find((item) => item.ibc_info?.client?.channel === chainInfo.channelId && item.ibc_info?.client?.port === chainInfo.port);
+    if (asset?.ibc_info?.counterparty?.chain) {
+      return convertAssetNameToCosmos(asset.ibc_info.counterparty.chain, chainIdToAssetNameMaps);
     }
     const transferMsg = skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer');
 

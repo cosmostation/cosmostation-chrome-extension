@@ -51,7 +51,6 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
       .filter((item) => feeCoinBaseDenoms.includes(item.denom))
       .map((item) => ({
         ...item,
-        originBaseDenom: item.origin_denom,
         baseDenom: item.denom,
         displayDenom: item.symbol,
         imageURL: item.image,

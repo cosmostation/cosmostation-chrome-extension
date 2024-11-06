@@ -3,7 +3,7 @@ import type { SWRConfiguration } from 'swr';
 
 import { convertEVMToAssetName } from '~/Popup/utils/ethereum';
 import type { EthereumNetwork } from '~/types/chain';
-import type { ChainParams } from '~/types/cosmos/params';
+import type { ChainParamsV11 } from '~/types/cosmos/params';
 
 import { useAllParamsSWR } from '../useAllParamsSWR';
 import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
@@ -14,7 +14,7 @@ export function useParamsSWR(network: EthereumNetwork, config?: SWRConfiguration
 
   const mappingName = useMemo(() => convertEVMToAssetName(network, chainIdToAssetNameMaps), [chainIdToAssetNameMaps, network]);
 
-  const returnData = useMemo<ChainParams | null>(() => {
+  const returnData = useMemo<ChainParamsV11 | null>(() => {
     if (!data) {
       return null;
     }

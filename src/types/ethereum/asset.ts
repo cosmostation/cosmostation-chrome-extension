@@ -12,6 +12,22 @@ export type Asset = {
 
 export type AssetPayload = Asset[];
 
+export type ERC20AssetV11 = {
+  chain: string;
+  type: string;
+  contract: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  description?: string;
+  image?: string;
+  coinGeckoId?: string;
+  color?: string;
+  wallet_preload?: boolean;
+};
+
+export type ERC20AssetV11Response = ERC20AssetV11[];
+
 export type ModifiedAsset = {
   chainId: string;
   address: string;

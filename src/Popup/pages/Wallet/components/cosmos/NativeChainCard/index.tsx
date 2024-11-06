@@ -200,8 +200,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const explorerAccountURL = useMemo(() => getExplorerAccountURL(currentAddress), [currentAddress, getExplorerAccountURL]);
 
   const validatorAddressPrefix = useMemo(
-    () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
-    [params.data?.params?.chainlist_params?.bechValidatorPrefix],
+    () => params.data?.params?.chainlist_params?.bech_validator_prefix || '',
+    [params.data?.params?.chainlist_params?.bech_validator_prefix],
   );
 
   const validatorAddress = useMemo(() => convertToValidatorAddress(currentAddress, validatorAddressPrefix), [currentAddress, validatorAddressPrefix]);
@@ -695,8 +695,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const explorerAccountURL = useMemo(() => getExplorerAccountURL(address), [address, getExplorerAccountURL]);
 
   const validatorAddressPrefix = useMemo(
-    () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
-    [params.data?.params?.chainlist_params?.bechValidatorPrefix],
+    () => params.data?.params?.chainlist_params?.bech_validator_prefix || '',
+    [params.data?.params?.chainlist_params?.bech_validator_prefix],
   );
 
   const operatorAddress = useMemo(() => convertToValidatorAddress(address, validatorAddressPrefix), [address, validatorAddressPrefix]);

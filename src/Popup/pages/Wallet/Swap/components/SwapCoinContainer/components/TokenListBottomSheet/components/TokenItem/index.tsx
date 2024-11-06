@@ -2,6 +2,7 @@ import { forwardRef, useMemo } from 'react';
 import { isHexString } from 'ethereumjs-util';
 import { Typography } from '@mui/material';
 
+import { TOKEN_TYPE } from '~/constants/ethereum';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
@@ -11,6 +12,7 @@ import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEt
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
 import type { IntegratedSwapToken } from '~/types/swap/asset';
 
 import {
@@ -75,9 +77,11 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
           <TokenLeftTitleContainer>
             <Typography variant="h5">{tokenInfo.displayDenom}</Typography>
           </TokenLeftTitleContainer>
-          <TokenLeftSubTitleContainer>
-            <Typography variant="h6">{tokenInfo.name}</Typography>
-          </TokenLeftSubTitleContainer>
+          {tokenInfo.tokenType === TOKEN_TYPE.ERC20 && (
+            <TokenLeftSubTitleContainer>
+              <Typography variant="h6">{shorterAddress(tokenInfo.tokenAddressOrDenom, 15)}</Typography>
+            </TokenLeftSubTitleContainer>
+          )}
         </TokenLeftInfoContainer>
       </TokenLeftContainer>
       <TokenRightContainer>

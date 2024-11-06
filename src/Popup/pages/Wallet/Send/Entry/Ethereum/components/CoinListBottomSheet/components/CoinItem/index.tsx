@@ -12,6 +12,7 @@ import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEt
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
 import type { Token } from '~/types/ethereum/common';
 
 import {
@@ -73,11 +74,6 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
 
   const coinAmountPrice = useMemo(() => times(displayAmount, coinPrice), [displayAmount, coinPrice]);
 
-  const displayName = useMemo(
-    () => (isNative ? currentEthereumNetwork.networkName : token.name?.toUpperCase()),
-    [currentEthereumNetwork.networkName, isNative, token?.name],
-  );
-
   return (
     <CoinButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <CoinLeftContainer>
@@ -88,9 +84,11 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
           <CoinLeftDisplayDenomContainer>
             <Typography variant="h5">{displayDenom}</Typography>
           </CoinLeftDisplayDenomContainer>
-          <CoinLefNameContainer>
-            <Typography variant="h6">{displayName}</Typography>
-          </CoinLefNameContainer>
+          {!isNative && (
+            <CoinLefNameContainer>
+              <Typography variant="h6">{shorterAddress(token.address, 15)}</Typography>
+            </CoinLefNameContainer>
+          )}
         </CoinLeftInfoContainer>
       </CoinLeftContainer>
       <CoinRightContainer>
