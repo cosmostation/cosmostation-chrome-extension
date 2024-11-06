@@ -1,4 +1,3 @@
-import { ARTELA_TESTNET } from './chain/cosmos/artelaTestnet';
 import { ASI_ALLIANCE } from './chain/cosmos/asiAlliance';
 import { ASSET_MANTLE } from './chain/cosmos/assetMantle';
 import { CRONOS_POS } from './chain/cosmos/cronosPos';
@@ -12,7 +11,6 @@ import { UX } from './chain/cosmos/ux';
 import { ZETA } from './chain/cosmos/zeta';
 import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './chain/ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './chain/ethereum/network/arbitrum';
-import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from './chain/ethereum/network/artelaTestnet';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './chain/ethereum/network/avalanche';
 import { BASE as ETHEREUM_NETWORK__BASE } from './chain/ethereum/network/base';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './chain/ethereum/network/canto';
@@ -41,13 +39,11 @@ export const CHAIN_ID_TO_ASSET_NAME_MAPS = {
   [HUMANS_AI.chainId]: 'humans',
   [ONOMY.chainId]: 'onomy-protocol',
   [UX.chainId]: 'umee',
-  [ARTELA_TESTNET.chainId]: 'artela-testnet',
   [ZETA.chainId]: 'zeta',
 
   [ETHEREUM_NETWORK__ETHEREUM.chainId]: 'ethereum',
   [ETHEREUM_NETWORK__ALTHEA.chainId]: 'althea',
   [ETHEREUM_NETWORK__ARBITRUM.chainId]: 'arbitrum',
-  [ETHEREUM_NETWORK__ARTELA_TESTNET.chainId]: 'artela-testnet',
   [ETHEREUM_NETWORK__AVALANCHE.chainId]: 'avalanche',
   [ETHEREUM_NETWORK__BASE.chainId]: 'base',
   [ETHEREUM_NETWORK__CANTO.chainId]: 'canto',
