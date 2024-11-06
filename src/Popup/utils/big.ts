@@ -86,10 +86,18 @@ export function fix(number: string, decimal?: number, optional: RoundingMode = 0
 }
 
 export function toDisplayDenomAmount(number: string | number, decimal: number) {
+  if (decimal === 0) {
+    return String(number);
+  }
+
   return times(number, pow(10, -decimal), decimal);
 }
 
 export function toBaseDenomAmount(number: string | number, decimal: number) {
+  if (decimal === 0) {
+    return String(number);
+  }
+
   return times(number, pow(10, decimal), 0);
 }
 

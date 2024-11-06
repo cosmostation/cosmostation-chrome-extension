@@ -9,6 +9,7 @@ import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { ETHEREUM as ETHEREUM_NETWORK } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
+import { TOKEN_TYPE as ETHEREUM_TOKEN_TYPE } from '~/constants/ethereum';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -406,7 +407,10 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
+            name:
+              item.type === 'native'
+                ? currentFromChain.networkName
+                : convertAssetNameToCosmos(item.prevChain || '', chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -415,7 +419,12 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
+      ].sort((a) => {
+        if (currentFromChain.line === COSMOS.line && currentFromChain.baseDenom === a.tokenAddressOrDenom) {
+          return -1;
+        }
+        return 1;
+      });
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -453,6 +462,7 @@ export default function Entry() {
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
+        tokenType: !isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS) ? ETHEREUM_TOKEN_TYPE.ERC20 : undefined,
       }));
     }
 
@@ -471,7 +481,10 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
+            name:
+              item.type === 'native'
+                ? currentFromChain.networkName
+                : convertAssetNameToCosmos(item.prevChain || '', chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -480,7 +493,12 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
+      ].sort((a) => {
+        if (currentFromChain.line === COSMOS.line && currentFromChain.baseDenom === a.tokenAddressOrDenom) {
+          return -1;
+        }
+        return 1;
+      });
     }
 
     if (currentSwapAPI === 'squid_evm' && currentFromChain.line === ETHEREUM.line) {
@@ -506,6 +524,7 @@ export default function Entry() {
           : currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))?.imageURL || item.logoURI,
         coinGeckoId: item.coingeckoId,
         coingeckoId: undefined,
+        tokenType: !isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS) ? ETHEREUM_TOKEN_TYPE.ERC20 : undefined,
       }));
     }
 
@@ -516,10 +535,7 @@ export default function Entry() {
     cosmosFromChainBalance.data?.balance,
     cosmosFromTokenAssets.data,
     currentEthereumNetwork.coinGeckoId,
-    currentFromChain.chainId,
-    currentFromChain?.displayDenom,
-    currentFromChain.line,
-    currentFromChain.tokenImageURL,
+    currentFromChain,
     currentFromEVMNativeBalance.data?.result,
     currentFromEthereumTokens,
     currentSwapAPI,
@@ -580,7 +596,10 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
+            name:
+              item.type === 'native'
+                ? currentToChain?.networkName || ''
+                : convertAssetNameToCosmos(item.prevChain || '', chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -589,7 +608,12 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
+      ].sort((a) => {
+        if (currentToChain?.line === COSMOS.line && currentToChain.baseDenom === a.tokenAddressOrDenom) {
+          return -1;
+        }
+        return 1;
+      });
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -627,6 +651,7 @@ export default function Entry() {
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
+        tokenType: !isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS) ? 'ERC20' : undefined,
       }));
     }
 
@@ -653,6 +678,7 @@ export default function Entry() {
           : currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))?.imageURL || item.logoURI,
         coinGeckoId: item.coingeckoId,
         coingeckoId: undefined,
+        tokenType: !isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS) ? ETHEREUM_TOKEN_TYPE.ERC20 : undefined,
       }));
     }
 
@@ -671,7 +697,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
+            name: convertAssetNameToCosmos(item.prevChain || '', chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -680,7 +706,12 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
+      ].sort((a) => {
+        if (currentToChain?.line === COSMOS.line && currentToChain.baseDenom === a.tokenAddressOrDenom) {
+          return -1;
+        }
+        return 1;
+      });
     }
 
     return [];
@@ -691,10 +722,7 @@ export default function Entry() {
     cosmosToTokenAssets.data,
     currentEthereumNetwork.coinGeckoId,
     currentSwapAPI,
-    currentToChain?.chainId,
-    currentToChain?.displayDenom,
-    currentToChain?.line,
-    currentToChain?.tokenImageURL,
+    currentToChain,
     currentToEVMNativeBalance.data?.result,
     currentToEthereumTokens,
     extensionStorage.currency,

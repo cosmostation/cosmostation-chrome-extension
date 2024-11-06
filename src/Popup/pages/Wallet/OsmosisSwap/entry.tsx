@@ -29,7 +29,7 @@ import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osm
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
-import type { AssetV3 } from '~/types/cosmos/asset';
+import type { AssetV11 } from '~/types/cosmos/asset';
 
 import CoinListBottomSheet from './components/CoinListBottomSheet';
 import SlippageSettingDialog from './components/SlippageSettingDialog';
@@ -71,7 +71,7 @@ import LeftArrow16Icon from '~/images/icons/LeftArrow16.svg';
 import Management24Icon from '~/images/icons/Mangement24.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
-export type ChainAssetInfo = AssetV3 & { chainName: string; availableAmount?: string };
+export type ChainAssetInfo = AssetV11 & { chainName: string; availableAmount?: string };
 
 type EntryProps = {
   chain: CosmosChain;
@@ -127,7 +127,7 @@ export default function Entry({ chain }: EntryProps) {
         .filter((item) => uniquePoolDenomList.includes(item.denom))
         .map((item) => ({
           ...item,
-          chainName: getCapitalize(item.prevChain || item.origin_chain),
+          chainName: getCapitalize(item.prevChain || ''),
           availableAmount: balance.data?.balance ? balance.data?.balance.find((coin) => isEqualsIgnoringCase(coin.denom, item.denom))?.amount : '0',
         })) || [];
 

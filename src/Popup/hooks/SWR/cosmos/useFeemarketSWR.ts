@@ -24,8 +24,8 @@ export function useFeemarketSWR({ chain, denom }: UseFeemarketSWRProps, config?:
   const chainListParams = useParamsSWR(chain, config);
 
   const isEnabledFeemarket = useMemo(
-    () => chainListParams.data?.params?.chainlist_params?.fee?.feemarket,
-    [chainListParams.data?.params?.chainlist_params?.fee?.feemarket],
+    () => chainListParams.data?.params?.chainlist_params?.cosmos_fee_info?.is_feemarket,
+    [chainListParams.data?.params?.chainlist_params?.cosmos_fee_info?.is_feemarket],
   );
 
   const { getFeemarket } = cosmosURL(chain);

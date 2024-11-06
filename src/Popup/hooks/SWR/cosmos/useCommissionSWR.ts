@@ -19,8 +19,8 @@ export function useCommissionSWR(chain: CosmosChain, validatorAddress?: string, 
   const params = useParamsSWR(chain, config);
 
   const validatorAddressPrefix = useMemo(
-    () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
-    [params.data?.params?.chainlist_params?.bechValidatorPrefix],
+    () => params.data?.params?.chainlist_params?.bech_validator_prefix || '',
+    [params.data?.params?.chainlist_params?.bech_validator_prefix],
   );
 
   const address = useMemo(

@@ -62,16 +62,6 @@ export const LeftTitleContainer = styled('div')(({ theme }) => ({
 
 export const LeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
-
-  whiteSpace: 'nowrap',
-  wordBreak: 'keep-all',
-
-  maxWidth: '23rem',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
 }));
 
 export const RightInfoContainer = styled('div')({

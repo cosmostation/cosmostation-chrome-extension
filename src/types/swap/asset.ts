@@ -1,7 +1,9 @@
+import type { TOKEN_TYPE as COSMOS_TOKEN_TYPE } from '~/constants/cosmos';
+import type { TOKEN_TYPE as ETHEREUM_TOKEN_TYPE } from '~/constants/ethereum';
 import type { SKIP_SUPPORTED_CHAIN_TYPE } from '~/constants/skip';
 
 import type { CosmosChain, EthereumNetwork, EthereumToken } from '../chain';
-import type { AssetV3 } from '../cosmos/asset';
+import type { AssetV11 } from '../cosmos/asset';
 
 export type IntegratedSwapEVMChain = EthereumNetwork & { line: 'ETHEREUM'; baseChainUUID: string };
 
@@ -9,18 +11,22 @@ export type IntegratedSwapCosmosChain = CosmosChain & { baseChainUUID: string; n
 
 export type IntegratedSwapChain = (IntegratedSwapEVMChain | IntegratedSwapCosmosChain) & { isUnavailable?: boolean };
 
-export type IntegratedSwapCosmosToken = Omit<AssetV3, 'symbol'> & {
+export type IntegratedSwapTokenType = typeof ETHEREUM_TOKEN_TYPE.ERC20 | typeof COSMOS_TOKEN_TYPE.CW20;
+
+export type IntegratedSwapCosmosToken = Omit<AssetV11, 'symbol'> & {
   tokenAddressOrDenom: string;
   balance?: string;
   displayDenom: string;
   imageURL?: string;
   name: string;
+  tokenType?: IntegratedSwapTokenType;
 };
 
 export type IntegratedSwapEVMToken = Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'> & {
   tokenAddressOrDenom: string;
   balance?: string;
   name: string;
+  tokenType?: IntegratedSwapTokenType;
 };
 
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;

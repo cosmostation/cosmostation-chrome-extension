@@ -18,8 +18,46 @@ export type AssetV3 = {
   path?: string;
 };
 
+export type AssetV11 = {
+  chain: string;
+  type: string;
+  denom: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  description?: string;
+  image?: string;
+  coinGeckoId?: string;
+  color?: string;
+  ibc_info?: {
+    path?: string;
+    client?: {
+      channel: string;
+      port: string;
+    };
+    counterparty?: {
+      channel: string;
+      port: string;
+      chain: string;
+      denom: string;
+    };
+    enable?: boolean;
+  };
+  bridge_info?: {
+    path?: string;
+    counterparty?: {
+      chain?: string;
+      contract?: string;
+    };
+  };
+};
+
 export type AssetV3Response = {
   assets: AssetV3[];
+};
+
+export type AssetV11Response = {
+  assets: AssetV11[];
 };
 
 export type CounterParty = {
@@ -43,6 +81,22 @@ export type CW20Asset = {
 export type CW20AssetResponse = {
   assets: CW20Asset[];
 };
+
+export type CW20AssetV11 = {
+  chain: string;
+  type: string;
+  contract: string;
+  name: string;
+  symbol: string;
+  description?: string;
+  decimals: number;
+  image?: string;
+  coinGeckoId?: string;
+  color?: string;
+  wallet_preload?: boolean;
+};
+
+export type CW20AssetV11Response = CW20AssetV11[];
 
 export type ChainIdToAssetNameMapsKey = {
   chainId: string;

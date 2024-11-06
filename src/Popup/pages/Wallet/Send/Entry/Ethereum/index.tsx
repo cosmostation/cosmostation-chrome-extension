@@ -149,7 +149,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const baseTokenBalance = useMemo(() => BigInt(tokenBalance.data || '0').toString(10), [tokenBalance.data]);
 
   const errorMessage = useMemo(() => {
-    if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
+    if (chainParams.data?.params?.chainlist_params?.is_send_enabled === false) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.bankLocked');
     }
 
@@ -182,7 +182,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, chainParams.data?.params?.chainlist_params?.isBankLocked, currentToken, t, toAddress]);
+  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, chainParams.data?.params?.chainlist_params?.is_send_enabled, currentToken, t, toAddress]);
 
   const handleOnClickMax = () => {
     if (currentToken === null) {

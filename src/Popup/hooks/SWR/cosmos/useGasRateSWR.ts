@@ -23,7 +23,10 @@ const PARAM_BASE_GAS_RATE_KEY: Record<string, GasRateKey> = {
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useParamsSWR(chain, config);
 
-  const isEnabledFeemarket = useMemo(() => data?.params?.chainlist_params?.fee?.feemarket, [data?.params?.chainlist_params?.fee?.feemarket]);
+  const isEnabledFeemarket = useMemo(
+    () => data?.params?.chainlist_params?.cosmos_fee_info?.is_feemarket,
+    [data?.params?.chainlist_params?.cosmos_fee_info?.is_feemarket],
+  );
 
   const feemarketData = useFeemarketSWR({ chain }, config);
 
@@ -37,14 +40,14 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
       return PARAM_BASE_GAS_RATE_KEY[PARAM_BASE_GAS_RATE_OPTIONS.LOW];
     }
 
-    const baseGasRateKey = data?.params?.chainlist_params?.fee?.base;
+    const baseGasRateKey = data?.params?.chainlist_params?.cosmos_fee_info?.base;
 
     if (baseGasRateKey && baseGasRateKey in PARAM_BASE_GAS_RATE_KEY) {
       return PARAM_BASE_GAS_RATE_KEY[baseGasRateKey];
     }
 
     return PARAM_BASE_GAS_RATE_KEY[PARAM_BASE_GAS_RATE_OPTIONS.LOW];
-  }, [data?.params?.chainlist_params?.fee?.base, isFeemarketActive]);
+  }, [data?.params?.chainlist_params?.cosmos_fee_info?.base, isFeemarketActive]);
 
   const gasRate: Record<string, GasRate> = useMemo(() => {
     const result: Record<string, GasRate> = {};
@@ -71,7 +74,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
       return result;
     }
 
-    const chainlistFeeRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
+    const chainlistFeeRates = data ? data.params?.chainlist_params?.cosmos_fee_info?.rate ?? [] : [];
 
     if (chainlistFeeRates.length === 0) {
       const nonNativeGasRates = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);

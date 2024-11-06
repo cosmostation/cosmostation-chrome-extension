@@ -72,7 +72,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const availableFeeCoins = useMemo(() => {
     const availableCoins: FeeCoin[] = assets.data.map((asset) => ({
-      originBaseDenom: asset.origin_denom,
       baseDenom: asset.denom,
       decimals: asset.decimals,
       displayDenom: asset.symbol,
@@ -132,7 +131,6 @@ export default function Entry({ queue, chain }: EntryProps) {
         availableAmount: balance.data?.balance?.find((item) => item.denom === inputFee.denom)?.amount || '0',
         decimals: 0,
         baseDenom: inputFee.denom,
-        originBaseDenom: inputFee.denom,
         displayDenom: 'UNKNOWN',
         gasRate: undefined,
       },
