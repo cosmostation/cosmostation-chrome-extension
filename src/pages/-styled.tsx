@@ -1,6 +1,7 @@
 import { Typography as BaseTypography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import Image from '@/components/common/Image';
 import IconButton from '@/components/IconButton';
 import { TabPanel } from '@/components/Tab';
 
@@ -48,4 +49,12 @@ export const SpacedTypography = styled(BaseTypography)(({ theme }) => ({
   marginTop: '0.4rem',
 
   color: theme.palette.color.base1300,
+}));
+
+export const CarouselImg = styled(Image)(({ theme }) => ({
+  width: '100%',
+  height: '100%',
+
+  border: `0.1rem solid ${theme.palette.color.base100}`,
+  borderRadius: '0.4rem',
 }));

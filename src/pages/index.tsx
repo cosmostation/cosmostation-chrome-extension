@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
+import Carousel from '@/components/common/Carousel';
 import Header from '@/components/Header';
 import IconButton from '@/components/IconButton';
 import IconTextButton from '@/components/IconTextButton';
 import SettingPopover from '@/components/SettingPopover';
 import { Tab, Tabs } from '@/components/Tab';
 
-import { BodyContainer, Container, FilterIconButton, HeaderRightContainer, SpacedTypography, StyledTabPanel } from './-styled';
+import { BodyContainer, CarouselImg, Container, FilterIconButton, HeaderRightContainer, SpacedTypography, StyledTabPanel } from './-styled';
 
 import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
 import SettingIcon from '@/assets/images/icons/Setting14.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
+
+import testAdImg from '@/assets/images/test-ad.png';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -88,9 +91,16 @@ function Index() {
           ))}
         </Tabs>
         <StyledTabPanel value={tabValue} index={0}>
-          <FilterIconButton>
-            <FilterSettingIcon />
-          </FilterIconButton>
+          <>
+            <Carousel>
+              <CarouselImg src={testAdImg} />
+              <CarouselImg src={testAdImg} />
+            </Carousel>
+
+            <FilterIconButton>
+              <FilterSettingIcon />
+            </FilterIconButton>
+          </>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
           <IconTextButton Icon={<StakeIcon />} direction="vertical">
