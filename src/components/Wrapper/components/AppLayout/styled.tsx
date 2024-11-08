@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles';
 
 export const PopupLayout = styled('div')(({ theme }) => ({
   width: '100%',
-  maxWidth: '55rem',
+  maxWidth: '54rem',
   minWidth: '36rem',
   height: '100vh',
   minHeight: '60rem',
@@ -10,6 +10,5 @@ export const PopupLayout = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'flex-start',
   alignItems: 'flex-start',
-
-  backgroundColor: theme.palette.color.base300,
+  backgroundColor: theme.palette.color.base50,
 }));
