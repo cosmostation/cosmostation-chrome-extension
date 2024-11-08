@@ -1,6 +1,7 @@
 import { Typography as BaseTypography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import OutlinedInput from '@/components/common/OutlinedInput';
 import Image from '@/components/common/Image';
 import IconButton from '@/components/IconButton';
 import { TabPanel } from '@/components/Tab';
@@ -50,6 +51,19 @@ export const SpacedTypography = styled(BaseTypography)(({ theme }) => ({
 
   color: theme.palette.color.base1300,
 }));
+
+export const FilterContaienr = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  columnGap: '0.6rem',
+});
+
+export const StyledInput = styled(OutlinedInput)({
+  height: '3.2rem',
+  margin: '1.6rem 0',
+});
 
 export const CarouselImg = styled(Image)(({ theme }) => ({
   width: '100%',

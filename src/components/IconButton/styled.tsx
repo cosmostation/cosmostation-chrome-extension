@@ -8,6 +8,8 @@ export const StyledIconButton = styled(IconButton)({
     opacity: 0.8,
   },
 
+  cursor: 'pointer',
+
   //   '& svg': {
   //     fill: theme.colors.base06,
   //     '& > path': {
