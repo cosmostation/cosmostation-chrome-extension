@@ -63,6 +63,7 @@ import { RIZON } from './cosmos/rizon';
 import { SAGA } from './cosmos/saga';
 import { SECRET } from './cosmos/secret';
 import { SEI } from './cosmos/sei';
+import { SELFCHAIN } from './cosmos/selfchain';
 import { SENTINEL } from './cosmos/sentinel';
 import { SHENTU } from './cosmos/shentu';
 import { SOMMELIER } from './cosmos/sommelier';
@@ -178,6 +179,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SAGA,
   SECRET,
   SEI,
+  SELFCHAIN,
   SENTINEL,
   SHENTU,
   SOMMELIER,
