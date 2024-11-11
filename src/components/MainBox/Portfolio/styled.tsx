@@ -1,3 +1,4 @@
+import IconButton from '@/components/IconButton';
 import IconTextButton from '@/components/IconTextButton';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -22,6 +23,12 @@ export const TopRightContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
+export const HistoryButtonTypo = styled(Typography)(({ theme }) => ({
+  marginLeft: '0.2rem',
+
+  color: theme.palette.color.base1300,
+}));
+
 export const TopRightText = styled(Typography)(({ theme }) => ({
   margin: '0 0.2rem',
 
@@ -29,11 +36,39 @@ export const TopRightText = styled(Typography)(({ theme }) => ({
 }));
 
 export const BodyContainer = styled('div')({});
-export const BodyTopContainer = styled('div')({});
+
+export const BodyTopContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  margin: '1rem 0 0.2rem',
+
+  columnGap: '0.4rem',
+
+  color: theme.palette.color.base1300,
+}));
+
+export const TotalBalanceContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'baseline',
+});
+
+export const StyledIconButton = styled(IconButton)({
+  width: '1.2rem',
+  height: '1.2rem',
+
+  '& > svg': {
+    width: '1.2rem',
+    height: '1.2rem',
+  },
+});
 
 export const BodyBottomContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
+  alignItems: 'center',
+
+  marginBottom: '1.4rem',
 });
 
 export const BodyBottomChipButtonContainer = styled('div')({

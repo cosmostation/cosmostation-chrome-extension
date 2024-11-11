@@ -12,7 +12,8 @@
           "setting": "Setting",
           "allNetworks": "All Networks",
           "send": "Send",
-          "receive": "Receive"
+          "receive": "Receive",
+          "history": "History"
         }
       }
     }

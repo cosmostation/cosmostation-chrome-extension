@@ -11,9 +11,17 @@ type NumberTypoProps = {
   typoOfDecimals?: NumberTypoVariants;
   fixed?: number;
   currency?: CurrencyType;
+  isDisableLeadingCurreny?: boolean;
 };
 
-export default function NumberTypo({ children, typoOfIntegers = 'h3n_B', typoOfDecimals = 'h4n_M', fixed, currency }: NumberTypoProps) {
+export default function NumberTypo({
+  children,
+  typoOfIntegers = 'h3n_B',
+  typoOfDecimals = 'h4n_M',
+  fixed,
+  currency,
+  isDisableLeadingCurreny = false,
+}: NumberTypoProps) {
   const number = children ? (fixed !== undefined ? fix(children, fixed) : currency ? fix(children, CURRENCY_DECIMALS[currency]) : children) : '';
 
   const splitedNumber = number.split('.');
@@ -22,7 +30,7 @@ export default function NumberTypo({ children, typoOfIntegers = 'h3n_B', typoOfD
     <span>
       {splitedNumber?.[0] && (
         <Typography variant={typoOfIntegers}>
-          {currency && `${CURRENCY_SYMBOL[currency]} `}
+          {currency && !isDisableLeadingCurreny && `${CURRENCY_SYMBOL[currency]} `}
           {splitedNumber[0].replace(/(.)(?=(\d{3})+$)/g, '$1,')}
         </Typography>
       )}
