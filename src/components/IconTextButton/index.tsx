@@ -1,16 +1,18 @@
 import { SideTextButton } from './styled';
 
 type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
-  Icon: JSX.Element;
+  LeadingIcon: JSX.Element;
+  TrailingIcon?: JSX.Element;
   children?: JSX.Element;
   direction?: 'horizontal' | 'vertical';
 };
 
-export default function IconTextButton({ Icon, children, direction = 'horizontal', ...remainder }: IconTextButtonProps) {
+export default function IconTextButton({ LeadingIcon, TrailingIcon, children, direction = 'horizontal', ...remainder }: IconTextButtonProps) {
   return (
     <SideTextButton {...remainder} type="button" direction={direction}>
-      {Icon}
+      {LeadingIcon}
       {children}
+      {TrailingIcon}
     </SideTextButton>
   );
 }

@@ -3,5 +3,16 @@
     "testA": "__STRING_NOT_TRANSLATED__",
     "testB": "__STRING_NOT_TRANSLATED__"
   },
-  "forTest": "__STRING_NOT_TRANSLATED__"
+  "forTest": "__STRING_NOT_TRANSLATED__",
+  "components": {
+    "MainBox": {
+      "Portfolio": {
+        "index": {
+          "totalValue": "My Total Value",
+          "setting": "Setting",
+          "allNetworks": "All Networks"
+        }
+      }
+    }
+  }
 }

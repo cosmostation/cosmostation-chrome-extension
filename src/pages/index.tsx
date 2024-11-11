@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 import Carousel from '@/components/common/Carousel';
 import StandardInput from '@/components/common/StandardInput';
@@ -31,6 +31,7 @@ import StakeIcon from '@/assets/images/icons/Stake22.svg';
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 
 import testAdImg from '@/assets/images/test-ad.png';
+import PortFolio from '@/components/MainBox/Portfolio';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -88,18 +89,7 @@ function Index() {
           </HeaderRightContainer>
         }
       />
-      <h3>Welcome Home!</h3>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>{' '}
-        <Link to="/about" className="[&.active]:font-bold">
-          about
-        </Link>{' '}
-        <Link to="/dashboard" className="[&.active]:font-bold">
-          dashboard
-        </Link>
-      </div>
+      <PortFolio />
 
       <BodyContainer>
         <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
@@ -116,7 +106,6 @@ function Index() {
           </>
           <StandardInput
             label="Recipient Address"
-            type="password"
             slotProps={{
               input: {
                 endAdornment: (
@@ -168,7 +157,7 @@ function Index() {
           <ChainSelectBox label="Recipient Chain" rightAdornmentComponent={<Typography variant="b3_R">Commission</Typography>} />
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          <IconTextButton Icon={<StakeIcon />} direction="vertical">
+          <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
             {/* TODO i18n 적용 필요 */}
             <SpacedTypography variant="b3_M">Setting</SpacedTypography>
           </IconTextButton>

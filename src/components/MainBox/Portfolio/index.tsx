@@ -1,0 +1,77 @@
+import { useTranslation } from 'react-i18next';
+
+import {
+  BodyContainer,
+  BottomButtonContainer,
+  SpacedTypography,
+  ChevronIconContainer,
+  StyledIconTextButton,
+  TopContainer,
+  TopLeftContainer,
+  TopRightContainer,
+  TopRightText,
+} from './styled';
+
+import StakeIcon from '@/assets/images/icons/Stake22.svg';
+import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
+
+import MainBox from '..';
+import { Typography } from '@mui/material';
+import IconButton from '@/components/IconButton';
+
+import ViewIcon from '@/assets/images/icons/View12.svg';
+import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
+import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
+import IconTextButton from '@/components/IconTextButton';
+
+export default function PortFolio() {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <MainBox
+        top={
+          <TopContainer>
+            <TopLeftContainer>
+              <Typography variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</Typography>
+              <IconButton>
+                <ViewIcon />
+              </IconButton>
+            </TopLeftContainer>
+            <TopRightContainer>
+              <IconTextButton
+                LeadingIcon={<GridMenuIcon />}
+                TrailingIcon={
+                  <ChevronIconContainer>
+                    <BottomChevronIcon />
+                  </ChevronIconContainer>
+                }
+              >
+                <TopRightText variant="b4_M">{t('components.MainBox.Portfolio.index.allNetworks')}</TopRightText>
+              </IconTextButton>
+            </TopRightContainer>
+          </TopContainer>
+        }
+        body={<BodyContainer>Body</BodyContainer>}
+        bottom={
+          <BottomButtonContainer>
+            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+            </StyledIconTextButton>
+          </BottomButtonContainer>
+        }
+        className="portfoiloBackground"
+        backgroundImage={CosmostationLogoImg}
+      />
+    </>
+  );
+}
