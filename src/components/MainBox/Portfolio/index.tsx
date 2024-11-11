@@ -10,6 +10,8 @@ import {
   TopLeftContainer,
   TopRightContainer,
   TopRightText,
+  BodyBottomChipButtonContainer,
+  BodyBottomContainer,
 } from './styled';
 
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
@@ -23,6 +25,7 @@ import ViewIcon from '@/assets/images/icons/View12.svg';
 import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
 import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
 import IconTextButton from '@/components/IconTextButton';
+import ChipButton from '@/components/common/ChipButton';
 
 export default function PortFolio() {
   const { t } = useTranslation();
@@ -52,7 +55,20 @@ export default function PortFolio() {
             </TopRightContainer>
           </TopContainer>
         }
-        body={<BodyContainer>Body</BodyContainer>}
+        body={
+          <BodyContainer>
+            <BodyBottomContainer>
+              <BodyBottomChipButtonContainer>
+                <ChipButton variant="light">
+                  <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
+                </ChipButton>
+                <ChipButton variant="dark">
+                  <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.receive')}</Typography>
+                </ChipButton>
+              </BodyBottomChipButtonContainer>
+            </BodyBottomContainer>
+          </BodyContainer>
+        }
         bottom={
           <BottomButtonContainer>
             <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">

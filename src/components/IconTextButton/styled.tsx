@@ -1,10 +1,10 @@
 import { styled } from '@mui/material/styles';
 
-type SideTextButtonProps = {
+type StyledIconButtonProps = {
   direction?: 'horizontal' | 'vertical';
 };
 
-export const SideTextButton = styled('button')<SideTextButtonProps>(({ ...props }) => ({
+export const StyledIconButton = styled('button')<StyledIconButtonProps>(({ ...props }) => ({
   border: 0,
 
   width: 'fit-content',

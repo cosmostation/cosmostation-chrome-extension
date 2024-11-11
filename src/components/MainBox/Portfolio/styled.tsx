@@ -29,6 +29,18 @@ export const TopRightText = styled(Typography)(({ theme }) => ({
 }));
 
 export const BodyContainer = styled('div')({});
+export const BodyTopContainer = styled('div')({});
+
+export const BodyBottomContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+});
+
+export const BodyBottomChipButtonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  columnGap: '0.6rem',
+});
 
 export const BottomButtonContainer = styled('div')({
   display: 'flex',
