@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 
 import ChainSelectBox from '@/components/ChainSelectBox';
 import Carousel from '@/components/common/Carousel';
+import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import StandardInput from '@/components/common/StandardInput';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton';
 import Header from '@/components/Header';
@@ -15,18 +17,22 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { Tab, Tabs } from '@/components/Tab';
 
 import {
+  AdCarouselContainer,
   BodyContainer,
   CarouselImg,
   Container,
   FilterContaienr,
   FilterIconButton,
   HeaderRightContainer,
-  SpacedTypography,
+  ManageCryptoContainer,
+  MarginLeftTypography,
+  MarginTopTypography,
   StyledInput,
   StyledTabPanel,
 } from './-styled';
 
 import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
+import PlusIcon from '@/assets/images/icons/Plus12.svg';
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 import SettingIcon from '@/assets/images/icons/Setting14.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
@@ -39,6 +45,8 @@ export const Route = createFileRoute('/')({
 });
 
 function Index() {
+  const { t } = useTranslation();
+
   Buffer.from('Hello from Index!').toString('base64');
 
   const [isOpenDialog, setisOpenDialog] = useState(false);
@@ -98,12 +106,43 @@ function Index() {
           ))}
         </Tabs>
         <StyledTabPanel value={tabValue} index={0}>
-          <>
+          <FilterContaienr>
+            <StyledInput
+              startAdornment={
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              }
+              placeholder={'Search'}
+              // value={search}
+              // onChange={(event) => {
+              //   setSearch(event.currentTarget.value);
+              // }}
+            />
+            <FilterIconButton
+              onClick={() => {
+                setIsOpenSortBottomSheet(true);
+              }}
+            >
+              <FilterSettingIcon />
+            </FilterIconButton>
+          </FilterContaienr>
+          <AdCarouselContainer>
             <Carousel>
               <CarouselImg src={testAdImg} />
               <CarouselImg src={testAdImg} />
             </Carousel>
-          </>
+          </AdCarouselContainer>
+
+          <ManageCryptoContainer>
+            <CheckBoxTextButton>
+              <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
+            </CheckBoxTextButton>
+            <IconTextButton LeadingIcon={<PlusIcon />}>
+              <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
+            </IconTextButton>
+          </ManageCryptoContainer>
+
           <StandardInput
             label="Recipient Address"
             slotProps={{
@@ -133,33 +172,12 @@ function Index() {
             rightBottomAdornment={<BalanceButton />}
           />
 
-          <FilterContaienr>
-            <StyledInput
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-              placeholder={'Search'}
-              // value={search}
-              // onChange={(event) => {
-              //   setSearch(event.currentTarget.value);
-              // }}
-            />
-            <FilterIconButton
-              onClick={() => {
-                setIsOpenSortBottomSheet(true);
-              }}
-            >
-              <FilterSettingIcon />
-            </FilterIconButton>
-          </FilterContaienr>
           <ChainSelectBox label="Recipient Chain" rightAdornmentComponent={<Typography variant="b3_R">Commission</Typography>} />
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
           <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
             {/* TODO i18n 적용 필요 */}
-            <SpacedTypography variant="b3_M">Setting</SpacedTypography>
+            <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
           </IconTextButton>
         </StyledTabPanel>
       </BodyContainer>

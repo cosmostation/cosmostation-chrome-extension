@@ -46,8 +46,14 @@ export const FilterIconButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: theme.palette.color.base100,
 }));
 
-export const SpacedTypography = styled(BaseTypography)(({ theme }) => ({
+export const MarginTopTypography = styled(BaseTypography)(({ theme }) => ({
   marginTop: '0.4rem',
+
+  color: theme.palette.color.base1300,
+}));
+
+export const MarginLeftTypography = styled(BaseTypography)(({ theme }) => ({
+  marginLeft: '0.4rem',
 
   color: theme.palette.color.base1300,
 }));
@@ -62,7 +68,10 @@ export const FilterContaienr = styled('div')({
 
 export const StyledInput = styled(OutlinedInput)({
   height: '3.2rem',
-  margin: '1.6rem 0',
+});
+
+export const AdCarouselContainer = styled('div')({
+  margin: '0.8rem 0 1.1rem',
 });
 
 export const CarouselImg = styled(Image)(({ theme }) => ({
@@ -71,4 +80,16 @@ export const CarouselImg = styled(Image)(({ theme }) => ({
 
   border: `0.1rem solid ${theme.palette.color.base100}`,
   borderRadius: '0.4rem',
+
+  '&:hover': {
+    opacity: '0.8',
+  },
 }));
+
+export const ManageCryptoContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+
+  marginBottom: '1.1rem',
+});

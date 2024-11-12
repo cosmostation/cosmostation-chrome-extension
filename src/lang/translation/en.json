@@ -17,5 +17,11 @@
         }
       }
     }
+  },
+  "pages": {
+    "index": {
+      "hideSmallBalance": "Hide Small Balance",
+      "manageCrypto": "Manage Crypto"
+    }
   }
 }
