@@ -8,7 +8,12 @@ Content-Type: application/json
   "params": [2]
 }
 
-### 
+###
+
+GET https://front.api.mintscan.io/v11/utils/params/aptos
+Content-Type: text/xml
+
+###
 
 POST https://rpc-office.cosmostation.io/bitcoin-testnet
 Content-Type: application/json
