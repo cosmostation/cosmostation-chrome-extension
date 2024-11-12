@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import IconTextButton from '../IconTextButton';
+import IconTextButton from '../common/IconTextButton';
 import Popover from '../Popover';
 
 export const StyledPopover = styled(Popover)({

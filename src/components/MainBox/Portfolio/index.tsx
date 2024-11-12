@@ -20,7 +20,7 @@ import {
 
 import MainBox from '..';
 import { Typography } from '@mui/material';
-import IconButton from '@/components/IconButton';
+import IconButton from '@/components/common/IconButton';
 
 import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
 
@@ -30,7 +30,7 @@ import ViewIcon from '@/assets/images/icons/View12.svg';
 import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
 import HistoryIcon from '@/assets/images/icons/History14.svg';
 import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
-import IconTextButton from '@/components/IconTextButton';
+import IconTextButton from '@/components/common/IconTextButton';
 import ChipButton from '@/components/common/ChipButton';
 import NumberTypo from '@/components/common/NumberTypo';
 

@@ -1,5 +1,5 @@
-import IconButton from '@/components/IconButton';
-import IconTextButton from '@/components/IconTextButton';
+import IconButton from '@/components/common/IconButton';
+import IconTextButton from '@/components/common/IconTextButton';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 

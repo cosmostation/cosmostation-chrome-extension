@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 
-import IconButton from '../IconButton';
+import IconButton from '../common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
   height: '3rem',

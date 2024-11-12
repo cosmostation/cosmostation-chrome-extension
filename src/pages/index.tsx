@@ -9,12 +9,12 @@ import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import StandardInput from '@/components/common/StandardInput';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton';
 import Header from '@/components/Header';
-import IconButton from '@/components/IconButton';
-import IconTextButton from '@/components/IconTextButton';
+import IconButton from '@/components/common/IconButton';
+import IconTextButton from '@/components/common/IconTextButton';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SettingPopover from '@/components/SettingPopover';
 import SortBottomSheet from '@/components/SortBottomSheet';
-import { Tab, Tabs } from '@/components/Tab';
+import { Tab, Tabs } from '@/components/common/Tab';
 
 import {
   AdCarouselContainer,
