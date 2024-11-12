@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 
+import ChainSelectBox from '@/components/ChainSelectBox';
 import Carousel from '@/components/common/Carousel';
 import StandardInput from '@/components/common/StandardInput';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton';
 import Header from '@/components/Header';
 import IconButton from '@/components/IconButton';
 import IconTextButton from '@/components/IconTextButton';
+import PortFolio from '@/components/MainBox/Portfolio';
 import SettingPopover from '@/components/SettingPopover';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { Tab, Tabs } from '@/components/Tab';
-import ChainSelectBox from '@/components/ChainSelectBox';
 
 import {
   BodyContainer,
@@ -26,12 +27,11 @@ import {
 } from './-styled';
 
 import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
+import SearchIcon from '@/assets/images/icons/Search18.svg';
 import SettingIcon from '@/assets/images/icons/Setting14.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
-import SearchIcon from '@/assets/images/icons/Search18.svg';
 
 import testAdImg from '@/assets/images/test-ad.png';
-import PortFolio from '@/components/MainBox/Portfolio';
 
 export const Route = createFileRoute('/')({
   component: Index,

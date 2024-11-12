@@ -18,7 +18,8 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-i18next": "^15.0.3"
+    "react-i18next": "^15.0.3",
+    "recharts": "^2.13.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",

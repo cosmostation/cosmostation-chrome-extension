@@ -4,7 +4,7 @@ type ContainerProps = {
   backgroundImage?: string;
 };
 
-export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
+export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
@@ -28,7 +28,7 @@ type ContentContainerProps = {
   'data-is-bottom'?: boolean;
 };
 
-export const ContentsContainer = styled('div')<ContentContainerProps>(({ theme, ...props }) => ({
+export const ContentsContainer = styled('div')<ContentContainerProps>(({ ...props }) => ({
   margin: props['data-is-bottom'] ? '2rem 2rem 0' : '2rem',
 }));
 
