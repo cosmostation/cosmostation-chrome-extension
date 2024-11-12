@@ -25,6 +25,7 @@ import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
 import { CRONOS_POS } from './cosmos/cronosPos';
 import { DESMOS } from './cosmos/desmos';
+import { DUNGEON } from './cosmos/dungeon';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
 import { EVMOS } from './cosmos/evmos';
@@ -35,6 +36,7 @@ import { HUMANS_AI } from './cosmos/humansAi';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
 import { IXO } from './cosmos/ixo';
+import { JACKAL } from './cosmos/jackal';
 import { JUNO } from './cosmos/juno';
 import { KAVA } from './cosmos/kava';
 import { KI } from './cosmos/ki';
@@ -45,6 +47,7 @@ import { LUM } from './cosmos/lum';
 import { MANTRA } from './cosmos/mantra';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
+import { MIGALOO } from './cosmos/migaloo';
 import { NEUTRON } from './cosmos/neutron';
 import { NIBIRU } from './cosmos/nibiru';
 import { NOBLE, NOBLE_GAS_RATES } from './cosmos/noble';
@@ -54,6 +57,7 @@ import { ONOMY } from './cosmos/onomy';
 import { OSMOSIS } from './cosmos/osmosis';
 import { PASSAGE } from './cosmos/passage';
 import { PERSISTENCE } from './cosmos/persistence';
+import { PLANQ } from './cosmos/planq';
 import { PROVENANCE } from './cosmos/provenance';
 import { PRYZM, PRYZM_GAS_RATES } from './cosmos/pryzm';
 import { QUASAR } from './cosmos/quasar';
@@ -67,11 +71,13 @@ import { SELFCHAIN } from './cosmos/selfchain';
 import { SENTINEL } from './cosmos/sentinel';
 import { SHENTU } from './cosmos/shentu';
 import { SOMMELIER } from './cosmos/sommelier';
+import { SOURCE } from './cosmos/source';
 import { STAFIHUB } from './cosmos/stafihub';
 import { STARGAZE } from './cosmos/stargaze';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
+import { UNIFICATION } from './cosmos/unification';
 import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ZETA } from './cosmos/zeta';
@@ -87,9 +93,11 @@ import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ether
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
 import { HARMONY as ETHEREUM_NETWORK__HARMONY } from './ethereum/network/harmony';
+import { KAIA as ETHEREUM_NETWORK__KAIA } from './ethereum/network/kaia';
 import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKT as ETHEREUM_NETWORK__OKT } from './ethereum/network/okt';
 import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
+import { PLANQ as ETHEREUM_NETWORK__PLANQ} from './ethereum/network/planq';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
@@ -141,6 +149,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   COREUM,
   CRONOS_POS,
   DESMOS,
+  DUNGEON,
   DYDX,
   DYMENSION,
   EVMOS,
@@ -151,6 +160,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   INJECTIVE,
   IRIS,
   IXO,
+  JACKAL,
   JUNO,
   KAVA,
   KI,
@@ -161,6 +171,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MANTRA,
   MARS,
   MEDIBLOC,
+  MIGALOO,
   NEUTRON,
   NIBIRU,
   NOBLE,
@@ -170,6 +181,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   OSMOSIS,
   PASSAGE,
   PERSISTENCE,
+  PLANQ,
   PROVENANCE,
   PRYZM,
   QUASAR,
@@ -183,11 +195,13 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SENTINEL,
   SHENTU,
   SOMMELIER,
+  SOURCE,
   STAFIHUB,
   STARGAZE,
   STRIDE,
   TERITORI,
   TERRA,
+  UNIFICATION,
   UX,
   XPLA,
   ZETA,
@@ -209,9 +223,11 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
+  ETHEREUM_NETWORK__KAIA,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKT,
   ETHEREUM_NETWORK__OPTIMISM,
+  ETHEREUM_NETWORK__PLANQ,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
   ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
