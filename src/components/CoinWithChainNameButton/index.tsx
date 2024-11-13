@@ -4,12 +4,12 @@ import BaseCoinButton from '../BaseCoinButton';
 import type { BaseCoinImageProps } from '../BaseCoinButton/components/BaseCoinImage';
 import BaseCoinImage from '../BaseCoinButton/components/BaseCoinImage';
 
-type CoinOverviewButtonProps = BaseCoinButtonProps & {
+type CoinWithChainNameButtonProps = BaseCoinButtonProps & {
   chainName?: string;
   coinImageProps: BaseCoinImageProps;
 };
 
-export default function CoinOverviewButton({ symbol, chainName, coinImageProps, ...remainder }: CoinOverviewButtonProps) {
+export default function CoinWithChainNameButton({ symbol, chainName, coinImageProps, ...remainder }: CoinWithChainNameButtonProps) {
   const resolvedSymbol = symbol || 'UNKNOWN';
   const resolvedChainName = chainName || 'UNKNOWN';
 

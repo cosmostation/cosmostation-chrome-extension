@@ -10,11 +10,11 @@ import BaseCoinImage from '../BaseCoinButton/components/BaseCoinImage';
 
 import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
 
-type CoinTrendIndicatorButtonProps = BaseCoinButtonProps & {
+type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
   coinImageProps: BaseCoinImageProps;
 };
 
-export default function CoinTrendIndicatorButton({ symbol, coinImageProps, ...remainder }: CoinTrendIndicatorButtonProps) {
+export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
   const { baseAmount } = remainder;
 
   const cap = 99999;
