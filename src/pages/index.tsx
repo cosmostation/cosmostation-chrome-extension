@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 
-import CoinTrendIndicatorButton from '@/components/CoinDetailButton';
 import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconButton from '@/components/common/IconButton';
@@ -25,6 +24,8 @@ import {
   ManageCryptoContainer,
   MarginLeftTypography,
   MarginTopTypography,
+  StickyTabContainer,
+  StickyTabPanelContentsContainer,
   StyledInput,
   StyledTabPanel,
 } from './-styled';
@@ -98,88 +99,56 @@ function Index() {
       <PortFolio />
 
       <BodyContainer>
-        <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-          {tabLabels.map((item) => (
-            <Tab key={item} label={item} />
-          ))}
-        </Tabs>
+        <StickyTabContainer>
+          <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+            {tabLabels.map((item) => (
+              <Tab key={item} label={item} />
+            ))}
+          </Tabs>
+        </StickyTabContainer>
         <StyledTabPanel value={tabValue} index={0}>
-          <FilterContaienr>
-            <StyledInput
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-              placeholder={'Search'}
-              // value={search}
-              // onChange={(event) => {
-              //   setSearch(event.currentTarget.value);
-              // }}
-            />
-            <FilterIconButton
-              onClick={() => {
-                setIsOpenSortBottomSheet(true);
-              }}
-            >
-              <FilterSettingIcon />
-            </FilterIconButton>
-          </FilterContaienr>
-          <AdCarouselContainer>
-            <Carousel>
-              <CarouselImg src={testAdImg} />
-              <CarouselImg src={testAdImg} />
-            </Carousel>
-          </AdCarouselContainer>
-
-          <ManageCryptoContainer>
-            <CheckBoxTextButton>
-              <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
-            </CheckBoxTextButton>
-            <IconTextButton LeadingIcon={<PlusIcon />}>
-              <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
-            </IconTextButton>
-          </ManageCryptoContainer>
-
-          {/* <StandardInput
-            label="Recipient Address"
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <FilterIconButton
-                      onClick={() => {
-                        setIsOpenSortBottomSheet(true);
-                      }}
-                      sx={{
-                        width: '2rem',
-                        height: '2rem',
-                      }}
-                    >
-                      <FilterSettingIcon />
-                    </FilterIconButton>
+          <StickyTabPanelContentsContainer>
+            <FilterContaienr>
+              <StyledInput
+                startAdornment={
+                  <InputAdornment position="start">
+                    <SearchIcon />
                   </InputAdornment>
-                ),
-              },
-            }}
-            error
-            // helperText={
-            //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-            // }
-            // helperText={'helperTExt'}
-            rightBottomAdornment={<BalanceButton />}
-          />
+                }
+                placeholder={'Search'}
+                // value={search}
+                // onChange={(event) => {
+                //   setSearch(event.currentTarget.value);
+                // }}
+              />
+              <FilterIconButton
+                onClick={() => {
+                  setIsOpenSortBottomSheet(true);
+                }}
+              >
+                <FilterSettingIcon />
+              </FilterIconButton>
+            </FilterContaienr>
+            <AdCarouselContainer>
+              <Carousel>
+                <CarouselImg src={testAdImg} />
+                <CarouselImg src={testAdImg} />
+              </Carousel>
+            </AdCarouselContainer>
+            <ManageCryptoContainer>
+              <CheckBoxTextButton>
+                <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
+              </CheckBoxTextButton>
+              <IconTextButton LeadingIcon={<PlusIcon />}>
+                <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
+              </IconTextButton>
+            </ManageCryptoContainer>
+          </StickyTabPanelContentsContainer>
 
-          <ChainSelectBox label="Recipient Chain" rightAdornmentComponent={<Typography variant="b3_R">Commission</Typography>} /> */}
-
-          <CoinTrendIndicatorButton
-            baseAmount="100"
-            symbol="BTC"
-            decimals={9}
-            coinImageProps={{
-              imageURL: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/stride/asset/stumee.png',
-            }}
-          />
+          {/* NOTE 토큰 리스팅을 위한 컴포넌트 */}
+          {/* <CoinButtonContainer >
+              <CoinTrendIndicatorButton baseAmount="100" symbol={item.symbol} coinImageProps={item.coinImageProps} />
+            </CoinButtonContainer> */}
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
           <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">

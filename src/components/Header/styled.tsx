@@ -13,7 +13,11 @@ export const Container = styled('div')(({ theme }) => ({
 
   backgroundColor: theme.palette.color.base100,
 
-  position: 'relative',
+  boxSizing: 'border-box',
+
+  position: 'sticky',
+  top: 0,
+  zIndex: 1000,
 }));
 
 export const LeftContentContainer = styled('div')({

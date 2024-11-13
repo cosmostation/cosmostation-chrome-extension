@@ -47,5 +47,5 @@ export const TabsContainer = styled('div')(({ theme }) => ({
 }));
 
 export const TabPanelContainer = styled('div')({
-  padding: '0.8rem 0',
+  padding: '0',
 });

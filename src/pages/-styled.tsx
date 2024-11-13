@@ -8,9 +8,6 @@ import { TabPanel } from '@/components/common/Tab';
 
 export const Container = styled('div')({
   width: '100%',
-
-  display: 'flex',
-  flexDirection: 'column',
 });
 
 export const HeaderRightContainer = styled('div')({
@@ -30,8 +27,6 @@ export const StyledTabPanel = styled(TabPanel)({
   marginTop: '0',
   display: 'flex',
   flexDirection: 'column',
-
-  overflow: 'hidden',
 });
 
 export const FilterIconButton = styled(IconButton)(({ theme }) => ({
@@ -64,6 +59,8 @@ export const FilterContaienr = styled('div')({
   justifyContent: 'center',
 
   columnGap: '0.6rem',
+
+  marginTop: '0.8rem',
 });
 
 export const StyledInput = styled(OutlinedInput)({
@@ -72,6 +69,8 @@ export const StyledInput = styled(OutlinedInput)({
 
 export const AdCarouselContainer = styled('div')({
   margin: '0.8rem 0 1.1rem',
+
+  overflow: 'hidden',
 });
 
 export const CarouselImg = styled(Image)(({ theme }) => ({
@@ -93,3 +92,27 @@ export const ManageCryptoContainer = styled('div')({
 
   marginBottom: '1.1rem',
 });
+
+export const CoinButtonContainer = styled('div')({
+  width: '100%',
+});
+
+export const StickyTabContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+  height: 'fit-content',
+  position: 'sticky',
+  top: '3rem',
+
+  zIndex: 1,
+  backgroundColor: theme.palette.color.base50,
+}));
+
+export const StickyTabPanelContentsContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+  height: 'fit-content',
+  position: 'sticky',
+  top: '7.8rem',
+
+  zIndex: 1,
+  backgroundColor: theme.palette.color.base50,
+}));

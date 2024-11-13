@@ -1,6 +1,8 @@
 import { styled } from '@mui/material/styles';
 
 export const StyledButton = styled('button')(({ theme }) => ({
+  width: '100%',
+
   border: 'none',
 
   backgroundColor: 'transparent',
