@@ -1,38 +1,37 @@
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
+
+import ChipButton from '@/components/common/ChipButton';
+import IconButton from '@/components/common/IconButton';
+import IconTextButton from '@/components/common/IconTextButton';
+import NumberTypo from '@/components/common/NumberTypo';
 
 import {
+  BodyBottomChipButtonContainer,
+  BodyBottomContainer,
   BodyContainer,
+  BodyTopContainer,
   BottomButtonContainer,
-  SpacedTypography,
   ChevronIconContainer,
+  HistoryButtonTypo,
+  SpacedTypography,
+  StyledIconButton,
   StyledIconTextButton,
   TopContainer,
   TopLeftContainer,
   TopRightContainer,
   TopRightText,
-  BodyBottomChipButtonContainer,
-  BodyBottomContainer,
-  BodyTopContainer,
-  HistoryButtonTypo,
   TotalBalanceContainer,
-  StyledIconButton,
 } from './styled';
-
 import MainBox from '..';
-import { Typography } from '@mui/material';
-import IconButton from '@/components/common/IconButton';
 
-import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
-
-import StakeIcon from '@/assets/images/icons/Stake22.svg';
-
-import ViewIcon from '@/assets/images/icons/View12.svg';
+import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
 import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
 import HistoryIcon from '@/assets/images/icons/History14.svg';
-import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
-import IconTextButton from '@/components/common/IconTextButton';
-import ChipButton from '@/components/common/ChipButton';
-import NumberTypo from '@/components/common/NumberTypo';
+import StakeIcon from '@/assets/images/icons/Stake22.svg';
+import ViewIcon from '@/assets/images/icons/View12.svg';
+
+import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
 
 export default function PortFolio() {
   const { t } = useTranslation();
@@ -72,7 +71,7 @@ export default function PortFolio() {
                 &nbsp;
                 <Typography variant="h2_M">USD</Typography>
               </TotalBalanceContainer>
-              <StyledIconButton onClick={() => {}}>
+              <StyledIconButton>
                 <BottomChevronIcon />
               </StyledIconButton>
             </BodyTopContainer>

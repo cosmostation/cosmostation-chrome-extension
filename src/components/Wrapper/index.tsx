@@ -1,5 +1,5 @@
-import BackgroundLayer from './components/BackgroundLayer';
 import AppLayout from './components/AppLayout';
+import BackgroundLayer from './components/BackgroundLayer';
 
 type WrapperProps = {
   children: JSX.Element;

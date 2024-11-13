@@ -1,4 +1,4 @@
-import { PurpleRadialGradientLayer, BackgroundContainer, Ellipse, BlackRadialGradientLayer, SubtleGradientLayer, Star, ellipseStyles } from './styled';
+import { BackgroundContainer, BlackRadialGradientLayer, Ellipse, ellipseStyles, PurpleRadialGradientLayer, Star, SubtleGradientLayer } from './styled';
 
 type BackgroundLayer = {
   children: JSX.Element;
