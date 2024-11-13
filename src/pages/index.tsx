@@ -3,18 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 
-import ChainSelectBox from '@/components/ChainSelectBox';
+import CoinTrendIndicatorButton from '@/components/CoinDetailButton';
 import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
-import StandardInput from '@/components/common/StandardInput';
-import BalanceButton from '@/components/common/StandardInput/components/BalanceButton';
-import Header from '@/components/Header';
 import IconButton from '@/components/common/IconButton';
 import IconTextButton from '@/components/common/IconTextButton';
+import { Tab, Tabs } from '@/components/common/Tab';
+import Header from '@/components/Header';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SettingPopover from '@/components/SettingPopover';
 import SortBottomSheet from '@/components/SortBottomSheet';
-import { Tab, Tabs } from '@/components/common/Tab';
 
 import {
   AdCarouselContainer,
@@ -143,7 +141,7 @@ function Index() {
             </IconTextButton>
           </ManageCryptoContainer>
 
-          <StandardInput
+          {/* <StandardInput
             label="Recipient Address"
             slotProps={{
               input: {
@@ -172,7 +170,16 @@ function Index() {
             rightBottomAdornment={<BalanceButton />}
           />
 
-          <ChainSelectBox label="Recipient Chain" rightAdornmentComponent={<Typography variant="b3_R">Commission</Typography>} />
+          <ChainSelectBox label="Recipient Chain" rightAdornmentComponent={<Typography variant="b3_R">Commission</Typography>} /> */}
+
+          <CoinTrendIndicatorButton
+            baseAmount="100"
+            symbol="BTC"
+            decimals={9}
+            coinImageProps={{
+              imageURL: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/stride/asset/stumee.png',
+            }}
+          />
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
           <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
