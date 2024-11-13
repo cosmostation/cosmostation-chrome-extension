@@ -1,8 +1,15 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { SELFCHAIN } from '~/constants/chain/cosmos/selfchain';
+import { DUNGEON } from '~/constants/chain/cosmos/dungeon';
+import { JACKAL } from '~/constants/chain/cosmos/jackal';
+import { MIGALOO } from '~/constants/chain/cosmos/migaloo';
+import { PLANQ as COSMOS_PLANQ } from '~/constants/chain/cosmos/planq';
+import { SOURCE } from '~/constants/chain/cosmos/source';
+import { UNIFICATION } from '~/constants/chain/cosmos/unification';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { KAIA } from '~/constants/chain/ethereum/network/kaia';
+import { PLANQ as ETHEREUM_NETWORK__PLANQ } from '~/constants/chain/ethereum/network/planq';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -94,9 +101,19 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.20') {
+        if (extensionManifest.version === '0.8.22') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), SELFCHAIN.id]);
+            await setStorage('allowedChainIds', [
+              ...(await getStorage('allowedChainIds')),
+              DUNGEON.id,
+              JACKAL.id,
+              MIGALOO.id,
+              SOURCE.id,
+              UNIFICATION.id,
+              KAIA.id,
+              ETHEREUM_NETWORK__PLANQ.id,
+              COSMOS_PLANQ.id,
+            ]);
           })();
         }
       }
