@@ -26,6 +26,7 @@
     "@tanstack/router-devtools": "^1.64.0",
     "@tanstack/router-plugin": "^1.64.0",
     "@types/chrome": "^0.0.277",
+    "@types/firefox-webext-browser": "^120.0.4",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",

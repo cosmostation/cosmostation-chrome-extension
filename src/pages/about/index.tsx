@@ -13,7 +13,6 @@ function About() {
   const { mode, setMode } = useColorScheme();
   const { t } = useTranslation();
 
-  console.log(mode);
   return (
     <StyledBox
       onClick={() => {

@@ -8,6 +8,7 @@ import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconButton from '@/components/common/IconButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import { Tab, Tabs } from '@/components/common/Tab';
+import HandleExtensionViewButton from '@/components/HandleExtensionViewButton';
 import Header from '@/components/Header';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SettingPopover from '@/components/SettingPopover';
@@ -81,18 +82,7 @@ function Index() {
             >
               <SettingIcon />
             </IconButton>
-            <IconButton
-              onClick={async () => {
-                const queryOptions = { active: true, currentWindow: true };
-                const [tab] = await chrome.tabs.query(queryOptions);
-
-                const origin = tab?.url ? new URL(tab.url).origin : undefined;
-
-                console.log({ ...tab, origin });
-              }}
-            >
-              <SettingIcon />
-            </IconButton>
+            <HandleExtensionViewButton />
           </HeaderRightContainer>
         }
       />
