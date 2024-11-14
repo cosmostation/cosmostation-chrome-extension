@@ -2,8 +2,6 @@ import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
-import { NEUTRON } from '~/constants/chain/cosmos/neutron';
-import { NOBLE } from '~/constants/chain/cosmos/noble';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get, isAxiosError } from '~/Popup/utils/axios';
@@ -23,14 +21,14 @@ export function useRewardSWR(chain: CosmosChain, suspense?: boolean) {
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      if (chain.id === NEUTRON.id) {
+      if (chain.custom === 'no-stake') {
         return null;
       }
 
       return await get<RewardPayload>(fetchUrl);
     } catch (e: unknown) {
       if (isAxiosError(e)) {
-        if (e.response?.status === 404 || (chain.id === NOBLE.id && e.response?.status === 500)) {
+        if (e.response?.status === 404) {
           return null;
         }
       }
