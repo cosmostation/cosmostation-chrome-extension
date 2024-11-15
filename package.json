@@ -1,7 +1,7 @@
 {
   "name": "vite-test",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev:chrome": "tsc -b && vite build --config vite.config.chrome.ts --mode development",
