@@ -13,6 +13,7 @@ import Header from '@/components/Header';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SettingPopover from '@/components/SettingPopover';
 import SortBottomSheet from '@/components/SortBottomSheet';
+import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 
 import {
   AdCarouselContainer,
@@ -160,7 +161,24 @@ function Index() {
           horizontal: 'right',
         }}
       />
-      <SortBottomSheet open={isOpenSortBottomSheet} onClose={() => setIsOpenSortBottomSheet(false)} />
+      <SortBottomSheet
+        optionButtonProps={[
+          {
+            sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
+            children: <Typography variant="b2_M">{t('pages.index.valueHighOrder')}</Typography>,
+          },
+          {
+            sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
+            children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
+          },
+        ]}
+        currentSortOption={DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER}
+        open={isOpenSortBottomSheet}
+        onClose={() => setIsOpenSortBottomSheet(false)}
+        onSelectSortOption={(val) => {
+          console.log(val);
+        }}
+      />
     </Container>
   );
 }

@@ -16,12 +16,19 @@
           "history": "History"
         }
       }
+    },
+    "SortBottomSheet": {
+      "index": {
+        "title": "Select Sort Option"
+      }
     }
   },
   "pages": {
     "index": {
       "hideSmallBalance": "Hide Small Balance",
-      "manageCrypto": "Manage Crypto"
+      "manageCrypto": "Manage Crypto",
+      "valueHighOrder": "Value High Order",
+      "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
     }
   }
 }

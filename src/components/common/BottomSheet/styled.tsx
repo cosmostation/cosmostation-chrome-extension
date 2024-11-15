@@ -17,8 +17,12 @@ export const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiPaper-root': {
     maxWidth: '55rem',
 
-    backgroundColor: theme.palette.color.base200,
-
+    backgroundColor: theme.palette.color.base50,
     margin: '0 auto',
+    '--Paper-overlay': 'none !important',
+  },
+
+  '& .MuiBackdrop-root': {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
 }));
