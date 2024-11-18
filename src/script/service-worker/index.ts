@@ -1,11 +1,7 @@
-import { extension } from '@/utils/browser';
+import { initExtensionView } from './initialize';
 
-extension.runtime.onInstalled.addListener((detail) => {
-  if (detail.reason === 'install') {
-    if (__APP_BROWSER__ === 'chrome') {
-      chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-    } else {
-      browser.sidebarAction.open();
-    }
-  }
-});
+function main() {
+  initExtensionView();
+}
+
+main();
