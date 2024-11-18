@@ -24,6 +24,7 @@ export function chromeManifestPlugin(manifestPath: string): PluginOption {
         version: process.env.npm_package_version,
         background: {
           service_worker: serviceWorker,
+          type: 'module',
         },
         web_accessible_resources: [
           {
