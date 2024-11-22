@@ -8,7 +8,7 @@ export const SOURCE: CosmosChain = {
   type: '',
   chainId: 'source-1',
   chainName: 'SOURCE',
-  restURL: 'https://source.lcd.bccnodes.com',
+  restURL: 'https://api.source.nodestake.top',
   tokenImageURL: sourceChainImg,
   imageURL: sourceTokenImg,
   baseDenom: 'usource',
