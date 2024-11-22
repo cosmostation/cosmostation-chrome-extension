@@ -10,6 +10,8 @@ import { v11 } from './update/v11';
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 
+// const response = await chrome.runtime.sendMessage({ })
+
 chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
   (async () => {
     console.log('message', message);
@@ -19,17 +21,21 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
       if (message.method === 'updateBalance') {
         const [id] = message.params;
         await balance(id);
-        sendResponse(true);
+        sendResponse(null);
       }
 
       if (message.method === 'updateAddress') {
         const [id] = message.params;
         await address(id);
-        sendResponse(true);
+        sendResponse(null);
       }
     }
   })();
   return true;
+});
+
+chrome.runtime.onInstalled.addListener(async () => {
+  await v11();
 });
 
 // chrome.alarms.create('my5MinuteAlarm', { periodInMinutes: 1 });
@@ -52,7 +58,3 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
 //     chrome.storage.local.set({ accountAssets });
 //   }
 // });
-
-chrome.runtime.onInstalled.addListener(async () => {
-  await v11();
-});

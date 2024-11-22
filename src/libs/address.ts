@@ -117,7 +117,7 @@ export function getAddress(chain: Chain, publicKey: string) {
 
   if (chainType === 'aptos') {
     const sha3 = new SHA3(256);
-    return Buffer.from(sha3.update(Buffer.from(publicKey, 'hex')).update('\x00').digest()).toString('hex');
+    return `0x${Buffer.from(sha3.update(Buffer.from(publicKey, 'hex')).update('\x00').digest()).toString('hex')}`;
   }
 
   if (chainType === 'sui') {
