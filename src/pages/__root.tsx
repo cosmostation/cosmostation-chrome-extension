@@ -1,25 +1,16 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import { addAccount } from '@/libs/account';
 import { getAccountAssets } from '@/libs/asset';
 import { sendMessage } from '@/libs/extension';
 
+import Wrapper from '@/components/Wrapper';
+
 export const Route = createRootRoute({
   component: () => (
-    <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>{' '}
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>{' '}
-        <Link to="/test" className="[&.active]:font-bold">
-          test
-        </Link>
-      </div>
-      <hr />
+    <Wrapper>
+      <>
       <button
         type="button"
         onClick={async () => {
@@ -76,8 +67,9 @@ export const Route = createRootRoute({
         getAccountAssets
       </button>
 
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
+        <Outlet />
+        <TanStackRouterDevtools />
+      </>
+    </Wrapper>
   ),
 });

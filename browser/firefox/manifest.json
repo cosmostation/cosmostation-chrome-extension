@@ -15,6 +15,15 @@
     "default_title": "Cosmostation Wallet",
     "default_popup": "popup.html"
   },
+  "sidebar_action": {
+    "default_icon": {
+      "16": "extension-assets/icon16-dark.png",
+      "32": "extension-assets/icon32-dark.png"
+    },
+    "default_title": "Cosmostation Wallet",
+    "default_panel": "sidepanel.html",
+    "open_at_install": true
+  },
   "author": "Cosmostation",
   "icons": {
     "16": "extension-assets/icon16-dark.png",

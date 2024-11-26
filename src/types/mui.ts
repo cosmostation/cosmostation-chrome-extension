@@ -5,6 +5,8 @@ import type { Color, TypeVariantsTrue, TypoVariants } from '@/styles/theme';
 declare module '@mui/material/styles' {
   interface Palette {
     color: Color;
+    // TODO: Add accentColor
+    // accentColor: Color;
   }
 
   interface PaletteOptions {

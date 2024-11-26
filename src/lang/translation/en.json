@@ -3,5 +3,32 @@
     "testA": "__STRING_NOT_TRANSLATED__",
     "testB": "__STRING_NOT_TRANSLATED__"
   },
-  "forTest": "__STRING_NOT_TRANSLATED__"
+  "forTest": "__STRING_NOT_TRANSLATED__",
+  "components": {
+    "MainBox": {
+      "Portfolio": {
+        "index": {
+          "totalValue": "My Total Value",
+          "setting": "Setting",
+          "allNetworks": "All Networks",
+          "send": "Send",
+          "receive": "Receive",
+          "history": "History"
+        }
+      }
+    },
+    "SortBottomSheet": {
+      "index": {
+        "title": "Select Sort Option"
+      }
+    }
+  },
+  "pages": {
+    "index": {
+      "hideSmallBalance": "Hide Small Balance",
+      "manageCrypto": "Manage Crypto",
+      "valueHighOrder": "Value High Order",
+      "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+    }
+  }
 }

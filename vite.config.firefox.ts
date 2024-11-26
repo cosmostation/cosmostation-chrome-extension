@@ -1,7 +1,10 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 
 import extensionReloadPlugin from './vite.plugin/extensionReload';
@@ -32,12 +35,18 @@ export default defineConfig(({ mode }) => {
       __APP_DEV_WEBSOCKET_PORT__: JSON.stringify(webSocketPort),
     },
     plugins: [
+      TanStackRouterVite({ routesDirectory: 'src/pages' }),
       react(),
       viteStaticCopy({
         targets: [{ src: 'browser/common/*', dest: 'extension-assets' }],
       }),
       firefoxManifestPlugin(manifestPath),
       tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
+      nodePolyfills(),
+      svgr({
+        svgrOptions: { exportType: 'default', ref: true, svgo: false, titleProp: true },
+        include: '**/*.svg',
+      }),
       ...modePlugins,
     ],
     build: {
@@ -47,6 +56,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           popup: resolve(__dirname, 'popup.html'),
+          sidepanel: resolve(__dirname, 'sidepanel.html'),
           service_worker: resolve(__dirname, 'src/script/service-worker/index.ts'),
           inject: resolve(__dirname, 'src/script/inject/index.ts'),
           content: resolve(__dirname, 'src/script/content/index.ts'),

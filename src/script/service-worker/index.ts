@@ -58,3 +58,12 @@ chrome.runtime.onInstalled.addListener(async () => {
 //     chrome.storage.local.set({ accountAssets });
 //   }
 // });
+
+
+// import { initExtensionView } from './initialize';
+
+// function main() {
+//   initExtensionView();
+// }
+
+// main();

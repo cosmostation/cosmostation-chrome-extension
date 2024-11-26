@@ -83,8 +83,8 @@ export const numberTypoVariants = {
   h8n_R,
 };
 
-type TypoVariantKeys = keyof typeof typoVariants;
-type NumberTypoVariants = keyof typeof numberTypoVariants;
+export type TypoVariantKeys = keyof typeof typoVariants;
+export type NumberTypoVariants = keyof typeof numberTypoVariants;
 
 export type TypoVariants = Record<TypoVariantKeys | NumberTypoVariants, React.CSSProperties>;
 export type TypeVariantsTrue = Record<TypoVariantKeys | NumberTypoVariants, true>;

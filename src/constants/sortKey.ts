@@ -1,0 +1,9 @@
+export const DASHBOARD_COIN_SORT_KEY = {
+  VALUE_HIGH_ORDER: 'value_high_order',
+  ALPHABETICAL_ASC: 'alphabetical_asc',
+} as const;
+
+export const DAPP_LIST_SORT_KEY = {
+  VALUE_HIGH_ORDER: 'value_high_order',
+  IS_MULTICHAIN_SUPPORT: 'is_multichain_support',
+} as const;

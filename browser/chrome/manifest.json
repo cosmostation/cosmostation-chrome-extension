@@ -12,7 +12,7 @@
     "default_popup": "popup.html"
   },
   "side_panel": {
-    "default_path": "popup.html"
+    "default_path": "sidepanel.html"
   },
   "icons": {
     "16": "extension-assets/icon16-dark.png",
