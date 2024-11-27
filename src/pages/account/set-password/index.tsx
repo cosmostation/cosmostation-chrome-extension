@@ -1,19 +1,48 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import BaseLayout from '@/components/BaseLayout';
 import Button from '@/components/common/Button';
-import TextButton from '@/components/common/TextButton';
+import StandardInput from '@/components/common/StandardInput';
 import Header from '@/components/Header';
 import Navigator from '@/components/Header/components/Navigator';
+import InformationPanel from '@/components/InformationPanel';
+import { Route as AddWallet } from '@/pages/account/add';
 
-import { CautionContainer, Container, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } from './-styled';
+import { Body, CautionContainer, DescriptionContainer, DescriptionSubTitle, DescriptionTitle, PasswordInputContainer } from './-styled';
 
+// TODO 훅폼, 조이 라이브러리 설정 필요.
 export const Route = createFileRoute('/account/set-password/')({
   component: SetPassword,
 });
 function SetPassword() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const [inputPassword, setinputPassword] = useState('');
+  const [inputVerifyPassword, setinputVerifyPassword] = useState('');
+
+  const passwordErrorMsg = (() => {
+    if (inputPassword.length < 8) {
+      return t('pages.account.set-password.index.passwordLength');
+    }
+  })();
+
+  const verifyPasswordErrorMsg = (() => {
+    if (inputPassword !== inputVerifyPassword) {
+      return t('pages.account.set-password.index.passwordNotMatch');
+    }
+  })();
+
+  const handleOnSubmit = () => {
+    if (passwordErrorMsg || verifyPasswordErrorMsg) {
+      return;
+    }
+    navigate({
+      to: AddWallet.to,
+    });
+  };
 
   return (
     <BaseLayout
@@ -21,19 +50,42 @@ function SetPassword() {
       footer={
         <>
           <CautionContainer>
-            {/* Notice 컴포넌트 컴포넌트화 필요 */}
-            <TextButton variant="hyperlink">{t('account.initial.button')}</TextButton>
+            <InformationPanel
+              varitant="info"
+              titleText={t('pages.account.set-password.index.caution')}
+              bodyText={t('pages.account.set-password.index.cautionDescription')}
+            />
           </CautionContainer>
-          <Button type="button">{t('account.initial.button')}</Button>
+          <Button type="button" disabled={!!passwordErrorMsg || !!verifyPasswordErrorMsg} onClick={handleOnSubmit}>
+            {t('pages.account.set-password.index.termsOfUse')}
+          </Button>
         </>
       }
     >
-      <Container>
+      <Body>
         <DescriptionContainer>
-          <DescriptionTitle variant="h2_B">{t('account.setPassword.title')}</DescriptionTitle>
-          <DescriptionSubTitle variant="b3_R">{t('account.setPassword.description')}</DescriptionSubTitle>
+          <DescriptionTitle variant="h2_B">{t('pages.account.set-password.index.title')}</DescriptionTitle>
+          <DescriptionSubTitle variant="b3_R">{t('pages.account.set-password.index.subTitle')}</DescriptionSubTitle>
         </DescriptionContainer>
-      </Container>
+        <PasswordInputContainer>
+          <StandardInput
+            label={t('pages.account.set-password.index.password')}
+            type="password"
+            onChange={(e) => setinputPassword(e.currentTarget.value)}
+            value={inputPassword}
+            error={!!passwordErrorMsg}
+            helperText={passwordErrorMsg}
+          />
+          <StandardInput
+            label={t('pages.account.set-password.index.verifyPassword')}
+            type="password"
+            onChange={(e) => setinputVerifyPassword(e.currentTarget.value)}
+            value={inputVerifyPassword}
+            error={!!verifyPasswordErrorMsg}
+            helperText={verifyPasswordErrorMsg}
+          />
+        </PasswordInputContainer>
+      </Body>
     </BaseLayout>
   );
 }

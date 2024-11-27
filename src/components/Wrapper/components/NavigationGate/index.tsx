@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
+import { Route as Initial } from '@/pages/account/initial';
 import type { ExtensionStorage } from '@/types/extension';
 
 type NavigationGateProps = {
@@ -16,7 +17,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
 
       if (!accounts) {
         navigate({
-          to: '/account/initial',
+          to: Initial.to,
         });
         return;
       }

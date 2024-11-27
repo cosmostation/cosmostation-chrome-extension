@@ -1,4 +1,6 @@
-import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate, useRouter } from '@tanstack/react-router';
+
+import { Route as Home } from '@/pages/index';
 
 import { LeftNavigatorContainer, StyledIconButton } from './styled';
 
@@ -12,9 +14,11 @@ type NavigatorProps = {
 
 export default function Navigator({ isHideBackButton, isHideHomeButton }: NavigatorProps) {
   const navigate = useNavigate();
+  const { history } = useRouter();
   const { pathname } = useLocation();
 
-  const isDisableBackButton = pathname === '/';
+  const isDisableBackButton = history.length <= 1;
+  const isDisableHomeButton = pathname === '/';
 
   return (
     <LeftNavigatorContainer>
@@ -22,9 +26,8 @@ export default function Navigator({ isHideBackButton, isHideHomeButton }: Naviga
         <StyledIconButton
           disabled={isDisableBackButton}
           onClick={() => {
-            navigate({
-              to: '/',
-            });
+            // history.go(-1);
+            history.back();
           }}
         >
           <ArrowBackIcon />
@@ -32,10 +35,10 @@ export default function Navigator({ isHideBackButton, isHideHomeButton }: Naviga
       )}
       {!isHideHomeButton && (
         <StyledIconButton
-          disabled={isDisableBackButton}
+          disabled={isDisableHomeButton}
           onClick={() => {
             navigate({
-              to: '/',
+              to: Home.to,
             });
           }}
         >

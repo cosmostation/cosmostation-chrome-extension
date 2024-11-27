@@ -8,8 +8,9 @@ import Button from '@/components/common/Button';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import TextButton from '@/components/common/TextButton';
 import Header from '@/components/Header';
+import { Route as SetPassword } from '@/pages/account/set-password';
 
-import { TermsContainer } from './-styled';
+import { Body, TermsContainer } from './-styled';
 
 export const Route = createFileRoute('/account/initial/')({
   component: Initial,
@@ -40,7 +41,7 @@ function Initial() {
             type="button"
             disabled={!isCheckTerms}
             onClick={() => {
-              navigate({ to: '/account/set-password' });
+              navigate({ to: SetPassword.to });
             }}
           >
             {t('pages.account.initial.index.start')}
@@ -48,7 +49,7 @@ function Initial() {
         </>
       }
     >
-      <>sdfsdfsdf</>
+      <Body>sdfsdfsdf</Body>
     </BaseLayout>
   );
 }

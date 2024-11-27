@@ -29,6 +29,23 @@
       "manageCrypto": "Manage Crypto",
       "valueHighOrder": "Value High Order",
       "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+    },
+    "account": {
+      "initial": {
+        "index": {
+          "termsNotice": "I have read and agress to the",
+          "termsOfUse": "Terms of Use",
+          "start": "Start"
+        }
+      },
+      "set-password": {
+        "index": {
+          "title": "Set Wallet Password",
+          "subTitle": "Protects important information within the wallet and is required each time you access the wallet",
+          "password": "Password",
+          "verifyPassword": "Verify Password"
+        }
+      }
     }
   }
 }
