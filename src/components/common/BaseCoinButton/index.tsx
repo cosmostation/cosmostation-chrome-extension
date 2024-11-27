@@ -1,5 +1,5 @@
 import { LeftContainer, RightContainer, RightDisplayAmountContainer, RightTextContainer, RightValueContainer, StyledButton } from './styled';
-import NumberTypo from '../common/NumberTypo';
+import NumberTypo from '../NumberTypo';
 
 export type BaseCoinButtonProps = {
   baseAmount: string;

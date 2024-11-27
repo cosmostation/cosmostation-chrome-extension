@@ -1,8 +1,8 @@
 import { ChainNameTypography, ContentsContainer, SymbolTypography } from './styled';
-import type { BaseCoinButtonProps } from '../BaseCoinButton';
-import BaseCoinButton from '../BaseCoinButton';
-import type { BaseCoinImageProps } from '../BaseCoinButton/components/BaseCoinImage';
-import BaseCoinImage from '../BaseCoinButton/components/BaseCoinImage';
+import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
+import BaseCoinButton from '../common/BaseCoinButton';
+import type { BaseCoinImageProps } from '../common/BaseCoinImage';
+import BaseCoinImage from '../common/BaseCoinImage';
 
 type CoinWithChainNameButtonProps = BaseCoinButtonProps & {
   chainName?: string;

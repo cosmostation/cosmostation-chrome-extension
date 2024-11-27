@@ -3,10 +3,10 @@ import { Typography } from '@mui/material';
 import NumberTypo from '@/components/common/NumberTypo';
 
 import { ChangeRateContainer, ChevronIconContainer, CoinValueContainer, ContentsContainer, SymbolTypograpy, ValueContainer } from './styled';
-import type { BaseCoinButtonProps } from '../BaseCoinButton';
-import BaseCoinButton from '../BaseCoinButton';
-import type { BaseCoinImageProps } from '../BaseCoinButton/components/BaseCoinImage';
-import BaseCoinImage from '../BaseCoinButton/components/BaseCoinImage';
+import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
+import BaseCoinButton from '../common/BaseCoinButton';
+import type { BaseCoinImageProps } from '../common/BaseCoinImage';
+import BaseCoinImage from '../common/BaseCoinImage';
 
 import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
 
