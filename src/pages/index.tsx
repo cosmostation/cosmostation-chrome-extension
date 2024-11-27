@@ -10,6 +10,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 import { Tab, Tabs } from '@/components/common/Tab';
 import HandleExtensionViewButton from '@/components/HandleExtensionViewButton';
 import Header from '@/components/Header';
+import Navigator from '@/components/Header/components/Navigator';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SettingPopover from '@/components/SettingPopover';
 import SortBottomSheet from '@/components/SortBottomSheet';
@@ -72,6 +73,7 @@ function Index() {
   return (
     <Container>
       <Header
+        leftContent={<Navigator />}
         rightContent={
           <HeaderRightContainer>
             <IconButton

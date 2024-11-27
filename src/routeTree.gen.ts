@@ -14,6 +14,9 @@ import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as AboutIndexImport } from './pages/about/index'
+import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
+import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
+import { Route as AccountAddIndexImport } from './pages/account/add/index'
 
 // Create/Update Routes
 
@@ -32,6 +35,24 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const AboutIndexRoute = AboutIndexImport.update({
   id: '/about/',
   path: '/about/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AccountSetPasswordIndexRoute = AccountSetPasswordIndexImport.update({
+  id: '/account/set-password/',
+  path: '/account/set-password/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AccountInitialIndexRoute = AccountInitialIndexImport.update({
+  id: '/account/initial/',
+  path: '/account/initial/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AccountAddIndexRoute = AccountAddIndexImport.update({
+  id: '/account/add/',
+  path: '/account/add/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +81,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
+    '/account/add/': {
+      id: '/account/add/'
+      path: '/account/add'
+      fullPath: '/account/add'
+      preLoaderRoute: typeof AccountAddIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/account/initial/': {
+      id: '/account/initial/'
+      path: '/account/initial'
+      fullPath: '/account/initial'
+      preLoaderRoute: typeof AccountInitialIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/account/set-password/': {
+      id: '/account/set-password/'
+      path: '/account/set-password'
+      fullPath: '/account/set-password'
+      preLoaderRoute: typeof AccountSetPasswordIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -69,12 +111,18 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/account/add': typeof AccountAddIndexRoute
+  '/account/initial': typeof AccountInitialIndexRoute
+  '/account/set-password': typeof AccountSetPasswordIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/account/add': typeof AccountAddIndexRoute
+  '/account/initial': typeof AccountInitialIndexRoute
+  '/account/set-password': typeof AccountSetPasswordIndexRoute
 }
 
 export interface FileRoutesById {
@@ -82,14 +130,36 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/account/add/': typeof AccountAddIndexRoute
+  '/account/initial/': typeof AccountInitialIndexRoute
+  '/account/set-password/': typeof AccountSetPasswordIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/dashboard'
+    | '/account/add'
+    | '/account/initial'
+    | '/account/set-password'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard'
-  id: '__root__' | '/' | '/about/' | '/dashboard/'
+  to:
+    | '/'
+    | '/about'
+    | '/dashboard'
+    | '/account/add'
+    | '/account/initial'
+    | '/account/set-password'
+  id:
+    | '__root__'
+    | '/'
+    | '/about/'
+    | '/dashboard/'
+    | '/account/add/'
+    | '/account/initial/'
+    | '/account/set-password/'
   fileRoutesById: FileRoutesById
 }
 
@@ -97,12 +167,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutIndexRoute: typeof AboutIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  AccountAddIndexRoute: typeof AccountAddIndexRoute
+  AccountInitialIndexRoute: typeof AccountInitialIndexRoute
+  AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  AccountAddIndexRoute: AccountAddIndexRoute,
+  AccountInitialIndexRoute: AccountInitialIndexRoute,
+  AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +193,10 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about/",
-        "/dashboard/"
+        "/dashboard/",
+        "/account/add/",
+        "/account/initial/",
+        "/account/set-password/"
       ]
     },
     "/": {
@@ -128,6 +207,15 @@ export const routeTree = rootRoute
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
+    },
+    "/account/add/": {
+      "filePath": "account/add/index.tsx"
+    },
+    "/account/initial/": {
+      "filePath": "account/initial/index.tsx"
+    },
+    "/account/set-password/": {
+      "filePath": "account/set-password/index.tsx"
     }
   }
 }
