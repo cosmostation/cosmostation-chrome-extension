@@ -17,9 +17,9 @@ export const StyledIconButton = styled(IconButton)(({ theme }) => ({
     fill: theme.palette.color.base1300,
   },
   // NOTE 아이콘 버튼 상태에 대한 색상 정리 필요.
-  // '&:disabled': {
-  //   '& > svg > path': {
-  //     fill: 'red',
-  //   },
-  // },
+  '&:disabled': {
+    '& > svg > path': {
+      fill: 'black',
+    },
+  },
 }));

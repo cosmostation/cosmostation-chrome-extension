@@ -19,7 +19,10 @@ export const Container = styled('div')(({ theme }) => ({
 }));
 
 export const LeftContentContainer = styled('div')({
-  width: '100%',
+  position: 'absolute',
+  left: '1rem',
+
+  width: 'fit-content',
 
   display: 'flex',
   alignItems: 'center',
@@ -27,9 +30,11 @@ export const LeftContentContainer = styled('div')({
 });
 
 export const MiddleContentContainer = styled('div')({
+  width: '100%',
+
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-start',
+  justifyContent: 'center',
 });
 
 export const RightContentContainer = styled('div')({

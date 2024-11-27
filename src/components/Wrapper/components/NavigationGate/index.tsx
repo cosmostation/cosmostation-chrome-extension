@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
-import { Route as Initial } from '@/pages/account/initial';
+// import { Route as Initial } from '@/pages/account/initial';
 import type { ExtensionStorage } from '@/types/extension';
 
 type NavigationGateProps = {

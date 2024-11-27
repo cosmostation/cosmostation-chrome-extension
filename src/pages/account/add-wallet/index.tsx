@@ -3,13 +3,14 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import BaseLayout from '@/components/BaseLayout';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
+import Base1300Text from '@/components/common/Base1300Text';
 import TextButton from '@/components/common/TextButton';
 import Header from '@/components/Header';
 import Navigator from '@/components/Header/components/Navigator';
 import InformationPanel from '@/components/InformationPanel';
 
 import OptionButton from './-components/OptionButton';
-import { Body, DescriptionText, FooterContainer, OptionButtonsContainer } from './-styled';
+import { Body, FooterContainer, OptionButtonsContainer } from './-styled';
 
 export const Route = createFileRoute('/account/add-wallet/')({
   component: CreateAccount,
@@ -20,10 +21,15 @@ function CreateAccount() {
 
   return (
     <BaseLayout
-      header={<Header leftContent={<Navigator isHideHomeButton />} />}
+      header={
+        <Header
+          leftContent={<Navigator isHideHomeButton />}
+          middleContent={<Base1300Text variant="h4_B">{t('pages.account.add-wallet.index.header')}</Base1300Text>}
+        />
+      }
       footer={
         <FooterContainer>
-          <DescriptionText variant="b3_R">{t('pages.account.add-wallet.index.guide')}</DescriptionText>
+          <Base1300Text variant="b3_R">{t('pages.account.add-wallet.index.guide')}</Base1300Text>
           <TextButton variant="hyperlink">{t('pages.account.add-wallet.index.goToGuide')}</TextButton>
         </FooterContainer>
       }

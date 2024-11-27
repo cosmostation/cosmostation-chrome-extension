@@ -62,7 +62,8 @@
           "restoreWithMnemonic": "Restore With Mnemonic",
           "restoreWithMnemonicDescription": "Restore an existing wallet using a 12, 18, or 24-word mnemonic",
           "restoreWithPrivateKeyDescription": "Restore With Private Key",
-          "restoreWithPrivateKey": "Restore an account using a private key from the network"
+          "restoreWithPrivateKey": "Restore an account using a private key from the network",
+          "header": "Add Wallet"
         }
       }
     }

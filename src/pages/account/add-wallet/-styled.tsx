@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const FooterContainer = styled('div')({
@@ -18,16 +17,4 @@ export const OptionButtonsContainer = styled('div')({
   flexDirection: 'column',
 
   marginTop: '0.8rem',
-});
-
-export const DescriptionText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1300,
-}));
-
-export const PasswordInputContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  rowGap: '2.2rem',
-
-  marginTop: '3rem',
 });

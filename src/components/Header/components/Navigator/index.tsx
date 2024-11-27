@@ -17,8 +17,10 @@ export default function Navigator({ isHideBackButton, isHideHomeButton }: Naviga
   const { history } = useRouter();
   const { pathname } = useLocation();
 
-  const isDisableBackButton = history.length <= 1;
+  const isDisableBackButton = history.length <= 1 || pathname === '/';
   const isDisableHomeButton = pathname === '/';
+
+  console.log('🚀 ~ Navigator ~ isDisableHomeButton:', isDisableHomeButton);
 
   return (
     <LeftNavigatorContainer>

@@ -17,6 +17,7 @@ import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
 import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index'
+import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 
 // Create/Update Routes
 
@@ -55,6 +56,13 @@ const AccountAddWalletIndexRoute = AccountAddWalletIndexImport.update({
   path: '/account/add-wallet/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const AccountCreateWalletMnemonicIndexRoute =
+  AccountCreateWalletMnemonicIndexImport.update({
+    id: '/account/create-wallet/mnemonic/',
+    path: '/account/create-wallet/mnemonic/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -102,6 +110,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountSetPasswordIndexImport
       parentRoute: typeof rootRoute
     }
+    '/account/create-wallet/mnemonic/': {
+      id: '/account/create-wallet/mnemonic/'
+      path: '/account/create-wallet/mnemonic'
+      fullPath: '/account/create-wallet/mnemonic'
+      preLoaderRoute: typeof AccountCreateWalletMnemonicIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -114,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
+  '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -123,6 +139,7 @@ export interface FileRoutesByTo {
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
+  '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
 }
 
 export interface FileRoutesById {
@@ -133,6 +150,7 @@ export interface FileRoutesById {
   '/account/add-wallet/': typeof AccountAddWalletIndexRoute
   '/account/initial/': typeof AccountInitialIndexRoute
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
+  '/account/create-wallet/mnemonic/': typeof AccountCreateWalletMnemonicIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -144,6 +162,7 @@ export interface FileRouteTypes {
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
+    | '/account/create-wallet/mnemonic'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,6 +171,7 @@ export interface FileRouteTypes {
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
+    | '/account/create-wallet/mnemonic'
   id:
     | '__root__'
     | '/'
@@ -160,6 +180,7 @@ export interface FileRouteTypes {
     | '/account/add-wallet/'
     | '/account/initial/'
     | '/account/set-password/'
+    | '/account/create-wallet/mnemonic/'
   fileRoutesById: FileRoutesById
 }
 
@@ -170,6 +191,7 @@ export interface RootRouteChildren {
   AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
   AccountInitialIndexRoute: typeof AccountInitialIndexRoute
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
+  AccountCreateWalletMnemonicIndexRoute: typeof AccountCreateWalletMnemonicIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -179,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
+  AccountCreateWalletMnemonicIndexRoute: AccountCreateWalletMnemonicIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -196,7 +219,8 @@ export const routeTree = rootRoute
         "/dashboard/",
         "/account/add-wallet/",
         "/account/initial/",
-        "/account/set-password/"
+        "/account/set-password/",
+        "/account/create-wallet/mnemonic/"
       ]
     },
     "/": {
@@ -216,6 +240,9 @@ export const routeTree = rootRoute
     },
     "/account/set-password/": {
       "filePath": "account/set-password/index.tsx"
+    },
+    "/account/create-wallet/mnemonic/": {
+      "filePath": "account/create-wallet/mnemonic/index.tsx"
     }
   }
 }
