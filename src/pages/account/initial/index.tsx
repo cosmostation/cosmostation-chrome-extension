@@ -5,12 +5,11 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import BaseLayout from '@/components/BaseLayout';
 import Button from '@/components/common/Button';
-import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import TextButton from '@/components/common/TextButton';
 import Header from '@/components/Header';
 import { Route as SetPassword } from '@/pages/account/set-password';
 
-import { Body, TermsContainer } from './-styled';
+import { Body, StyledCheckBoxTextButton, TermsContainer } from './-styled';
 
 export const Route = createFileRoute('/account/initial/')({
   component: Initial,
@@ -28,13 +27,13 @@ function Initial() {
       footer={
         <>
           <TermsContainer>
-            <CheckBoxTextButton
+            <StyledCheckBoxTextButton
               onClick={() => {
                 setIsCheckTerms(!isCheckTerms);
               }}
             >
               <Typography variant="b3_R">{t('pages.account.initial.index.termsNotice')}</Typography>
-            </CheckBoxTextButton>
+            </StyledCheckBoxTextButton>
             <TextButton variant="hyperlink">{t('pages.account.initial.index.termsOfUse')}</TextButton>
           </TermsContainer>
           <Button

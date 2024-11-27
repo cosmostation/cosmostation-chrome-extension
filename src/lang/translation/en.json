@@ -43,7 +43,26 @@
           "title": "Set Wallet Password",
           "subTitle": "Protects important information within the wallet and is required each time you access the wallet",
           "password": "Password",
-          "verifyPassword": "Verify Password"
+          "verifyPassword": "Verify Password",
+          "passwordLength": "Password must be at least 8 characters",
+          "passwordNotMatch": "Passwords do not match",
+          "caution": "Caution",
+          "cautionDescription": "If you forget your password, you will not be able to access your wallet. Please write down your password and keep it in a safe place.",
+          "next": "Next"
+        }
+      },
+      "add-wallet": {
+        "index": {
+          "guide": "Do you need a detailed guide?",
+          "goToGuide": "Go to the guide",
+          "infoTitle": "Select Wallet Creation or Recovery Method",
+          "infoBody": "Choose a method to create a new wallet or recover an existing one. Please proceed in a secure environment.",
+          "createNewWallet": "Create New Wallet",
+          "createNewWalletDescription": "Create a cryptocurrency wallet with a new mnemonic",
+          "restoreWithMnemonic": "Restore With Mnemonic",
+          "restoreWithMnemonicDescription": "Restore an existing wallet using a 12, 18, or 24-word mnemonic",
+          "restoreWithPrivateKeyDescription": "Restore With Private Key",
+          "restoreWithPrivateKey": "Restore an account using a private key from the network"
         }
       }
     }

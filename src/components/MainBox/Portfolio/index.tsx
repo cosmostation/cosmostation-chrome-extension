@@ -25,7 +25,7 @@ import {
 } from './styled';
 import MainBox from '..';
 
-import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
+import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
 import HistoryIcon from '@/assets/images/icons/History14.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
@@ -52,7 +52,7 @@ export default function PortFolio() {
                 LeadingIcon={<GridMenuIcon />}
                 TrailingIcon={
                   <ChevronIconContainer>
-                    <BottomChevronIcon />
+                    <BottomFilledChevronIcon />
                   </ChevronIconContainer>
                 }
               >
@@ -72,7 +72,7 @@ export default function PortFolio() {
                 <Typography variant="h2_M">USD</Typography>
               </TotalBalanceContainer>
               <StyledIconButton>
-                <BottomChevronIcon />
+                <BottomFilledChevronIcon />
               </StyledIconButton>
             </BodyTopContainer>
             <BodyBottomContainer>

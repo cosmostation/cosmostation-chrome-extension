@@ -4,7 +4,7 @@ import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 import { BottomContainer, ChainImageContainer, ChevronIconContainer, HelperTextContainer, RightAdormentConatiner, StyledSelectBox } from './styled';
 import BottomSheet from '../common/BottomSheet';
 
-import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
+import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
 type ChainSelectBoxProps = TextFieldProps & {
   helperText?: string;
@@ -54,7 +54,7 @@ export default function ChainSelectBox({ error = false, helperText, rightAdornme
                 <RightAdormentConatiner>
                   {rightAdornmentComponent}
                   <ChevronIconContainer data-is-open={drawerOpen}>
-                    <BottomChevronIcon />
+                    <BottomFilledChevronIcon />
                   </ChevronIconContainer>
                 </RightAdormentConatiner>
               </InputAdornment>

@@ -8,7 +8,7 @@ import StandardInput from '@/components/common/StandardInput';
 import Header from '@/components/Header';
 import Navigator from '@/components/Header/components/Navigator';
 import InformationPanel from '@/components/InformationPanel';
-import { Route as AddWallet } from '@/pages/account/add';
+import { Route as AddWallet } from '@/pages/account/add-wallet';
 
 import { Body, CautionContainer, DescriptionContainer, DescriptionSubTitle, DescriptionTitle, PasswordInputContainer } from './-styled';
 
@@ -51,13 +51,13 @@ function SetPassword() {
         <>
           <CautionContainer>
             <InformationPanel
-              varitant="info"
+              varitant="caution"
               titleText={t('pages.account.set-password.index.caution')}
               bodyText={t('pages.account.set-password.index.cautionDescription')}
             />
           </CautionContainer>
           <Button type="button" disabled={!!passwordErrorMsg || !!verifyPasswordErrorMsg} onClick={handleOnSubmit}>
-            {t('pages.account.set-password.index.termsOfUse')}
+            {t('pages.account.set-password.index.next')}
           </Button>
         </>
       }

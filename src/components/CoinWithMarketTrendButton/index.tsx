@@ -8,7 +8,7 @@ import BaseCoinButton from '../common/BaseCoinButton';
 import type { BaseCoinImageProps } from '../common/BaseCoinImage';
 import BaseCoinImage from '../common/BaseCoinImage';
 
-import BottomChevronIcon from '@/assets/images/icons/BottomChevron14.svg';
+import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
 type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
   coinImageProps: BaseCoinImageProps;
@@ -36,7 +36,7 @@ export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...r
               </NumberTypo>
               <ChangeRateContainer trend={trend}>
                 <ChevronIconContainer trend={trend}>
-                  <BottomChevronIcon />
+                  <BottomFilledChevronIcon />
                 </ChevronIconContainer>
                 <ValueContainer>
                   <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>

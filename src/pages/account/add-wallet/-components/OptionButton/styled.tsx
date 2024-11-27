@@ -1,0 +1,71 @@
+import { Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+export const StyledButton = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+
+  padding: '1.2rem 1.6rem',
+
+  '&: hover': {
+    backgroundColor: theme.palette.color.base200,
+  },
+}));
+
+export const LeftContainer = styled('div')({
+  width: 'fit-content',
+
+  marginRight: '1.2rem',
+});
+
+export const MiddleContainer = styled('div')({
+  width: '100%',
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+
+  rowGap: '0.4rem',
+});
+
+export const RightContainer = styled('div')({
+  width: 'fit-content',
+});
+
+export const PlusIconContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  width: '4.2rem',
+  height: '4.2rem',
+
+  borderRadius: '0.9rem',
+
+  backgroundColor: theme.palette.color.base300,
+
+  '& > svg': {
+    width: '1.6rem',
+    height: '1.6rem',
+    '& > path': {
+      fill: theme.palette.color.base800,
+    },
+  },
+}));
+
+export const TitleText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.color.base1300,
+}));
+
+export const BodyText = styled(Typography)(({ theme }) => ({
+  width: '80%',
+
+  color: theme.palette.color.base900,
+  wordBreak: 'break-word',
+
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 2,
+  overflow: 'hidden',
+}));

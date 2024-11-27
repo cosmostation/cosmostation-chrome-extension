@@ -16,7 +16,7 @@ import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
-import { Route as AccountAddIndexImport } from './pages/account/add/index'
+import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index'
 
 // Create/Update Routes
 
@@ -50,9 +50,9 @@ const AccountInitialIndexRoute = AccountInitialIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AccountAddIndexRoute = AccountAddIndexImport.update({
-  id: '/account/add/',
-  path: '/account/add/',
+const AccountAddWalletIndexRoute = AccountAddWalletIndexImport.update({
+  id: '/account/add-wallet/',
+  path: '/account/add-wallet/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -81,11 +81,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
-    '/account/add/': {
-      id: '/account/add/'
-      path: '/account/add'
-      fullPath: '/account/add'
-      preLoaderRoute: typeof AccountAddIndexImport
+    '/account/add-wallet/': {
+      id: '/account/add-wallet/'
+      path: '/account/add-wallet'
+      fullPath: '/account/add-wallet'
+      preLoaderRoute: typeof AccountAddWalletIndexImport
       parentRoute: typeof rootRoute
     }
     '/account/initial/': {
@@ -111,7 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/account/add': typeof AccountAddIndexRoute
+  '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
 }
@@ -120,7 +120,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/account/add': typeof AccountAddIndexRoute
+  '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
 }
@@ -130,7 +130,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/account/add/': typeof AccountAddIndexRoute
+  '/account/add-wallet/': typeof AccountAddWalletIndexRoute
   '/account/initial/': typeof AccountInitialIndexRoute
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
 }
@@ -141,7 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/dashboard'
-    | '/account/add'
+    | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
   fileRoutesByTo: FileRoutesByTo
@@ -149,7 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/dashboard'
-    | '/account/add'
+    | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
   id:
@@ -157,7 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about/'
     | '/dashboard/'
-    | '/account/add/'
+    | '/account/add-wallet/'
     | '/account/initial/'
     | '/account/set-password/'
   fileRoutesById: FileRoutesById
@@ -167,7 +167,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutIndexRoute: typeof AboutIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  AccountAddIndexRoute: typeof AccountAddIndexRoute
+  AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
   AccountInitialIndexRoute: typeof AccountInitialIndexRoute
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
 }
@@ -176,7 +176,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  AccountAddIndexRoute: AccountAddIndexRoute,
+  AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
 }
@@ -194,7 +194,7 @@ export const routeTree = rootRoute
         "/",
         "/about/",
         "/dashboard/",
-        "/account/add/",
+        "/account/add-wallet/",
         "/account/initial/",
         "/account/set-password/"
       ]
@@ -208,8 +208,8 @@ export const routeTree = rootRoute
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
     },
-    "/account/add/": {
-      "filePath": "account/add/index.tsx"
+    "/account/add-wallet/": {
+      "filePath": "account/add-wallet/index.tsx"
     },
     "/account/initial/": {
       "filePath": "account/initial/index.tsx"
