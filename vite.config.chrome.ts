@@ -52,6 +52,7 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir,
       emptyOutDir: false,
+      minify: isProduction,
       watch,
       sourcemap: !isProduction,
       rollupOptions: {

@@ -10,7 +10,12 @@
     "dev:chrome:inject": "tsc -b && vite build --config vite.config.chrome.inject.ts --mode development",
     "dev:chrome:content": "tsc -b && vite build --config vite.config.chrome.content.ts --mode development",
     "dev:chrome:service-worker": "tsc -b && vite build --config vite.config.chrome.service-worker.ts --mode development",
-    "build:chrome": "tsc -b && vite build --config vite.config.chrome.ts --mode production",
+    "prebuild:chrome": "rimraf dist",
+    "build:chrome": "concurrently \"npm run build:chrome:main\" \"npm run build:chrome:inject\" \"npm run build:chrome:content\" \"npm run build:chrome:service-worker\"",
+    "build:chrome:main": "tsc -b && vite build --config vite.config.chrome.ts --mode production",
+    "build:chrome:inject": "tsc -b && vite build --config vite.config.chrome.inject.ts --mode production",
+    "build:chrome:content": "tsc -b && vite build --config vite.config.chrome.content.ts --mode production",
+    "build:chrome:service-worker": "tsc -b && vite build --config vite.config.chrome.service-worker.ts --mode production",
     "scan:i18n": "i18next-scanner --config i18next-scanner.config.cjs",
     "lint": "eslint .",
     "preview": "vite preview"
