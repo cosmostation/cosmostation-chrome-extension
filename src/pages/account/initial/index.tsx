@@ -32,9 +32,9 @@ function Initial() {
                 setIsCheckTerms(!isCheckTerms);
               }}
             >
-              <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
+              <Typography variant="b3_R">{t('pages.account.initial.index.termsNotice')}</Typography>
             </CheckBoxTextButton>
-            <TextButton variant="hyperlink">{t('account.initial.button')}</TextButton>
+            <TextButton variant="hyperlink">{t('pages.account.initial.index.termsOfUse')}</TextButton>
           </TermsContainer>
           <Button
             type="button"
@@ -43,7 +43,7 @@ function Initial() {
               navigate({ to: '/account/set-password' });
             }}
           >
-            {t('account.initial.button')}
+            {t('pages.account.initial.index.start')}
           </Button>
         </>
       }

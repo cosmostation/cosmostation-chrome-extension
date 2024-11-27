@@ -1,5 +1,5 @@
-import AppLayout from './components/AppLayout';
-import BackgroundLayer from './components/BackgroundLayer';
+import NavigationGate from './components/NavigationGate';
+import Scaffold from './components/Scaffold';
 
 type WrapperProps = {
   children: JSX.Element;
@@ -7,8 +7,8 @@ type WrapperProps = {
 
 export default function Wrapper({ children }: WrapperProps) {
   return (
-    <BackgroundLayer>
-      <AppLayout>{children}</AppLayout>
-    </BackgroundLayer>
+    <Scaffold>
+      <NavigationGate>{children}</NavigationGate>
+    </Scaffold>
   );
 }
