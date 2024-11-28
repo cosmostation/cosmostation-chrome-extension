@@ -17,6 +17,7 @@ import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
 import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index'
+import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index'
 import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/account/restore-wallet/mnemonic/index'
 import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 
@@ -57,6 +58,13 @@ const AccountAddWalletIndexRoute = AccountAddWalletIndexImport.update({
   path: '/account/add-wallet/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const AccountRestoreWalletPrivatekeyIndexRoute =
+  AccountRestoreWalletPrivatekeyIndexImport.update({
+    id: '/account/restore-wallet/privatekey/',
+    path: '/account/restore-wallet/privatekey/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const AccountRestoreWalletMnemonicIndexRoute =
   AccountRestoreWalletMnemonicIndexImport.update({
@@ -132,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRestoreWalletMnemonicIndexImport
       parentRoute: typeof rootRoute
     }
+    '/account/restore-wallet/privatekey/': {
+      id: '/account/restore-wallet/privatekey/'
+      path: '/account/restore-wallet/privatekey'
+      fullPath: '/account/restore-wallet/privatekey'
+      preLoaderRoute: typeof AccountRestoreWalletPrivatekeyIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -146,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
   '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
+  '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -157,6 +173,7 @@ export interface FileRoutesByTo {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
   '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
+  '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 export interface FileRoutesById {
@@ -169,6 +186,7 @@ export interface FileRoutesById {
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
   '/account/create-wallet/mnemonic/': typeof AccountCreateWalletMnemonicIndexRoute
   '/account/restore-wallet/mnemonic/': typeof AccountRestoreWalletMnemonicIndexRoute
+  '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -182,6 +200,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/account/create-wallet/mnemonic'
     | '/account/restore-wallet/mnemonic'
+    | '/account/restore-wallet/privatekey'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -192,6 +211,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/account/create-wallet/mnemonic'
     | '/account/restore-wallet/mnemonic'
+    | '/account/restore-wallet/privatekey'
   id:
     | '__root__'
     | '/'
@@ -202,6 +222,7 @@ export interface FileRouteTypes {
     | '/account/set-password/'
     | '/account/create-wallet/mnemonic/'
     | '/account/restore-wallet/mnemonic/'
+    | '/account/restore-wallet/privatekey/'
   fileRoutesById: FileRoutesById
 }
 
@@ -214,6 +235,7 @@ export interface RootRouteChildren {
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
   AccountCreateWalletMnemonicIndexRoute: typeof AccountCreateWalletMnemonicIndexRoute
   AccountRestoreWalletMnemonicIndexRoute: typeof AccountRestoreWalletMnemonicIndexRoute
+  AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -226,6 +248,8 @@ const rootRouteChildren: RootRouteChildren = {
   AccountCreateWalletMnemonicIndexRoute: AccountCreateWalletMnemonicIndexRoute,
   AccountRestoreWalletMnemonicIndexRoute:
     AccountRestoreWalletMnemonicIndexRoute,
+  AccountRestoreWalletPrivatekeyIndexRoute:
+    AccountRestoreWalletPrivatekeyIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -245,7 +269,8 @@ export const routeTree = rootRoute
         "/account/initial/",
         "/account/set-password/",
         "/account/create-wallet/mnemonic/",
-        "/account/restore-wallet/mnemonic/"
+        "/account/restore-wallet/mnemonic/",
+        "/account/restore-wallet/privatekey/"
       ]
     },
     "/": {
@@ -271,6 +296,9 @@ export const routeTree = rootRoute
     },
     "/account/restore-wallet/mnemonic/": {
       "filePath": "account/restore-wallet/mnemonic/index.tsx"
+    },
+    "/account/restore-wallet/privatekey/": {
+      "filePath": "account/restore-wallet/privatekey/index.tsx"
     }
   }
 }

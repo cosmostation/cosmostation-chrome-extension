@@ -37,8 +37,6 @@ export default function Entry() {
 
   const [values, setValues] = useState<string[]>(Array(12).fill(''));
 
-  console.log('🚀 ~ Entry ~ values:', values);
-
   // FIXME 첫번쨰 입력이 아닌 두번쨰칸에 입력됐을때 2번째 부터 입력이 되는 현상 발견.
   const handleChange = (index: number, value: string) => {
     let newValues = [...values];
@@ -108,8 +106,8 @@ export default function Entry() {
       <BaseBody>
         <Body>
           <DescriptionContainer>
-            <DescriptionTitle variant="h2_B">{t('pages.account.restore-wallet.index.title')}</DescriptionTitle>
-            <DescriptionSubTitle variant="b3_R">{t('pages.account.restore-wallet.index.subTitle')}</DescriptionSubTitle>
+            <DescriptionTitle variant="h2_B">{t('pages.account.restore-wallet.mnemonic.index.title')}</DescriptionTitle>
+            <DescriptionSubTitle variant="b3_R">{t('pages.account.restore-wallet.mnemonic.index.subTitle')}</DescriptionSubTitle>
           </DescriptionContainer>
 
           <MnemonicInputWrapper>
@@ -150,7 +148,7 @@ export default function Entry() {
                   }
                   onClick={clearAll}
                 >
-                  <ControlInputText variant="b3_R">{t('pages.account.restore-wallet.index.clearAll')}</ControlInputText>
+                  <ControlInputText variant="b3_R">{t('pages.account.restore-wallet.mnemonic.index.clearAll')}</ControlInputText>
                 </StyledIconTextButton>
               ) : (
                 <StyledIconTextButton
@@ -161,7 +159,7 @@ export default function Entry() {
                   }
                   onClick={pasteFromClipboard}
                 >
-                  <ControlInputText variant="b3_R">{t('pages.account.restore-wallet.index.pasteFromClipboard')}</ControlInputText>
+                  <ControlInputText variant="b3_R">{t('pages.account.restore-wallet.mnemonic.index.pasteFromClipboard')}</ControlInputText>
                 </StyledIconTextButton>
               )}
             </ControlInputButtonContainer>
@@ -171,7 +169,7 @@ export default function Entry() {
       <BaseFooter>
         <>
           <HdPathContainer>
-            <HdPathDescription variant="b3_R">{t('pages.account.restore-wallet.index.hdPathDescription')}</HdPathDescription>
+            <HdPathDescription variant="b3_R">{t('pages.account.restore-wallet.mnemonic.index.hdPathDescription')}</HdPathDescription>
             <TextButton
               onClick={() => {
                 setIsOpenHdPathBottomSheet(true);
@@ -179,10 +177,10 @@ export default function Entry() {
               variant="hyperlink"
               typoVarient="b2_M"
             >
-              {t('pages.account.restore-wallet.index.hdPathSetting')}
+              {t('pages.account.restore-wallet.mnemonic.index.hdPathSetting')}
             </TextButton>
           </HdPathContainer>
-          <Button>{t('pages.account.restore-wallet.index.next')}</Button>
+          <Button>{t('pages.account.restore-wallet.mnemonic.index.next')}</Button>
         </>
       </BaseFooter>
       <HdPathBottomSheet

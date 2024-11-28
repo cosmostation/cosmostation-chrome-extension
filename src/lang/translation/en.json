@@ -75,15 +75,6 @@
         }
       },
       "restore-wallet": {
-        "index": {
-          "title": "Enter in a secure space",
-          "subTitle": "This phrase consists of 12, 18 or 24 words. Please enter them in the correct order",
-          "clearAll": "Clear All",
-          "hdPathDescription": "Use custom path?",
-          "hdPathSetting": "HD Path Setting",
-          "next": "Next",
-          "pasteFromClipboard": "Paste from Clipboard"
-        },
         "mnemonic": {
           "components": {
             "HdPathBottomSheet": {
@@ -97,6 +88,24 @@
                 "confirm": "Confirm"
               }
             }
+          },
+          "index": {
+            "title": "Enter in a secure space",
+            "subTitle": "This phrase consists of 12, 18 or 24 words. Please enter them in the correct order",
+            "clearAll": "Clear All",
+            "hdPathDescription": "Use custom path?",
+            "hdPathSetting": "HD Path Setting",
+            "next": "Next",
+            "pasteFromClipboard": "Paste from Clipboard"
+          }
+        },
+        "privatekey": {
+          "index": {
+            "title": "Enter in a secure space",
+            "subTitle": "Your private key is sensitive; don't share it. Anyone can access your account with it, so be cautious",
+            "clearAll": "Clear All",
+            "pasteFromClipboard": "Paste from Clipboard",
+            "next": "Next"
           }
         }
       }
