@@ -7,10 +7,8 @@ type BaseLayoutProps = {
 export default function BaseLayout({ header, children }: BaseLayoutProps) {
   return (
     <Container>
-      <Header>{header}</Header>
-      <Body>
-        <>{children}</>
-      </Body>
+      {header && <Header>{header}</Header>}
+      <Body>{children}</Body>
     </Container>
   );
 }

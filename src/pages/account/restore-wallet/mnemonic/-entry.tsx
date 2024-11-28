@@ -14,13 +14,13 @@ export default function Entry() {
       <BaseBody>
         <Body>
           <DescriptionContainer>
-            <DescriptionTitle variant="h2_B">{t('pages.account.set-password.index.title')}</DescriptionTitle>
-            <DescriptionSubTitle variant="b3_R">{t('pages.account.set-password.index.subTitle')}</DescriptionSubTitle>
+            <DescriptionTitle variant="h2_B">{t('pages.account.restore-wallet.index.title')}</DescriptionTitle>
+            <DescriptionSubTitle variant="b3_R">{t('pages.account.restore-wallet.index.subTitle')}</DescriptionSubTitle>
           </DescriptionContainer>
         </Body>
       </BaseBody>
       <BaseFooter>
-        <Button type="button">{t('pages.account.set-password.index.next')}</Button>
+        <Button type="button">{t('pages.account.restore-wallet.index.next')}</Button>
       </BaseFooter>
     </>
   );

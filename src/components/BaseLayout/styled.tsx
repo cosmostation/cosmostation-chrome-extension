@@ -5,8 +5,7 @@ export const Container = styled('div')({
   flexDirection: 'column',
 
   width: '100%',
-
-  position: 'relative',
+  flex: 1,
 });
 
 export const Header = styled('div')(({ theme }) => ({
