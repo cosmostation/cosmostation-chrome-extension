@@ -80,6 +80,13 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
   },
 }));
 
+export const BottomWrapper = styled('div')({
+  height: '2rem',
+
+  display: 'flex',
+  alignItems: 'flex-start',
+});
+
 export const BottomContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',

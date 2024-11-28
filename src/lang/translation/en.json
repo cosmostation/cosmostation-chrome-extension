@@ -64,6 +64,31 @@
           "restoreWithPrivateKeyDescription": "Restore With Private Key",
           "restoreWithPrivateKey": "Restore an account using a private key from the network"
         }
+      },
+      "restore-wallet": {
+        "index": {
+          "title": "Enter in a secure space",
+          "subTitle": "This phrase consists of 12, 18 or 24 words. Please enter them in the correct order",
+          "clearAll": "Clear All",
+          "hdPathDescription": "Use custom path?",
+          "hdPathSetting": "HD Path Setting",
+          "next": "Next"
+        },
+        "mnemonic": {
+          "components": {
+            "HdPathBottomSheet": {
+              "index": {
+                "emptyHdPath": "Please enter a HD Path",
+                "invalidHdPathIndex": "Please enter a valid HD Path Index",
+                "header": "HD Path Setting",
+                "description": "You can create a new account with the same seed phrase but a different HD Path.",
+                "lastHdPath": "Last HD Path",
+                "majorChains": "Major Chains",
+                "confirm": "Confirm"
+              }
+            }
+          }
+        }
       }
     }
   }
