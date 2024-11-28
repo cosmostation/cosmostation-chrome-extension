@@ -5,7 +5,8 @@ export const Container = styled('div')({
   flexDirection: 'column',
 
   width: '100%',
-  height: '100%',
+
+  position: 'relative',
 });
 
 export const Header = styled('div')(({ theme }) => ({

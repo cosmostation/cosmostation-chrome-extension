@@ -229,6 +229,41 @@ export default function Entry() {
                   imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
                 }}
               />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
             </CoinButtonWrapper>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
