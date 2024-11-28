@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import CoinWithMarketTrendButton from '@/components/CoinWithMarketTrendButton';
 import Carousel from '@/components/common/Carousel';
@@ -53,216 +52,211 @@ export default function Entry() {
   };
 
   return (
-    <>
-      <BaseBody>
-        <EdgeAligner>
-          <Container>
-            <PortFolio />
+    <BaseBody>
+      <EdgeAligner>
+        <Container>
+          <PortFolio />
 
-            <StickyTabContainer>
-              <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-                {tabLabels.map((item) => (
-                  <Tab key={item} label={item} />
-                ))}
-              </Tabs>
-            </StickyTabContainer>
-            <StyledTabPanel value={tabValue} index={0}>
-              <StickyTabPanelContentsContainer>
-                <FilterContaienr>
-                  <StyledInput
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    }
-                    placeholder={'Search'}
-                    // value={search}
-                    // onChange={(event) => {
-                    //   setSearch(event.currentTarget.value);
-                    // }}
-                  />
-                  <FilterIconButton
-                    onClick={() => {
-                      setIsOpenSortBottomSheet(true);
-                    }}
-                  >
-                    <FilterSettingIcon />
-                  </FilterIconButton>
-                </FilterContaienr>
-                <AdCarouselContainer>
-                  <Carousel>
-                    <CarouselImg src={testAdImg} />
-                    <CarouselImg src={testAdImg} />
-                  </Carousel>
-                </AdCarouselContainer>
-                <ManageCryptoContainer>
-                  <CheckBoxTextButton>
-                    <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
-                  </CheckBoxTextButton>
-                  <IconTextButton LeadingIcon={<PlusIcon />}>
-                    <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
-                  </IconTextButton>
-                </ManageCryptoContainer>
-              </StickyTabPanelContentsContainer>
+          <StickyTabContainer>
+            <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+              {tabLabels.map((item) => (
+                <Tab key={item} label={item} />
+              ))}
+            </Tabs>
+          </StickyTabContainer>
+          <StyledTabPanel value={tabValue} index={0}>
+            <StickyTabPanelContentsContainer>
+              <FilterContaienr>
+                <StyledInput
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  }
+                  placeholder={'Search'}
+                  // value={search}
+                  // onChange={(event) => {
+                  //   setSearch(event.currentTarget.value);
+                  // }}
+                />
+                <FilterIconButton
+                  onClick={() => {
+                    setIsOpenSortBottomSheet(true);
+                  }}
+                >
+                  <FilterSettingIcon />
+                </FilterIconButton>
+              </FilterContaienr>
+              <AdCarouselContainer>
+                <Carousel>
+                  <CarouselImg src={testAdImg} />
+                  <CarouselImg src={testAdImg} />
+                </Carousel>
+              </AdCarouselContainer>
+              <ManageCryptoContainer>
+                <CheckBoxTextButton>
+                  <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
+                </CheckBoxTextButton>
+                <IconTextButton LeadingIcon={<PlusIcon />}>
+                  <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
+                </IconTextButton>
+              </ManageCryptoContainer>
+            </StickyTabPanelContentsContainer>
 
-              {/* NOTE 토큰 리스팅을 위한 컴포넌트 */}
-              <CoinButtonWrapper>
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'FirstBitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
+            {/* NOTE 토큰 리스팅을 위한 컴포넌트 */}
+            <CoinButtonWrapper>
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'FirstBitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
 
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
 
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
 
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
 
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
 
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-                <CoinWithMarketTrendButton
-                  baseAmount="100"
-                  symbol={'Bitcoin'}
-                  coinImageProps={{
-                    imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                  }}
-                />
-              </CoinButtonWrapper>
-            </StyledTabPanel>
-            <StyledTabPanel value={tabValue} index={1}>
-              <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
-                {/* TODO i18n 적용 필요 */}
-                <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
-              </IconTextButton>
-            </StyledTabPanel>
-            <SortBottomSheet
-              optionButtonProps={[
-                {
-                  sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
-                  children: <Typography variant="b2_M">{t('pages.index.valueHighOrder')}</Typography>,
-                },
-                {
-                  sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
-                  children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
-                },
-              ]}
-              currentSortOption={DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER}
-              open={isOpenSortBottomSheet}
-              onClose={() => setIsOpenSortBottomSheet(false)}
-              onSelectSortOption={(val) => {
-                console.log(val);
-              }}
-            />
-          </Container>
-        </EdgeAligner>
-      </BaseBody>
-      <BaseFooter>
-        <>fds</>
-      </BaseFooter>
-    </>
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+              <CoinWithMarketTrendButton
+                baseAmount="100"
+                symbol={'Bitcoin'}
+                coinImageProps={{
+                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+                }}
+              />
+            </CoinButtonWrapper>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={1}>
+            <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+              {/* TODO i18n 적용 필요 */}
+              <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
+            </IconTextButton>
+          </StyledTabPanel>
+          <SortBottomSheet
+            optionButtonProps={[
+              {
+                sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
+                children: <Typography variant="b2_M">{t('pages.index.valueHighOrder')}</Typography>,
+              },
+              {
+                sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
+                children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
+              },
+            ]}
+            currentSortOption={DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER}
+            open={isOpenSortBottomSheet}
+            onClose={() => setIsOpenSortBottomSheet(false)}
+            onSelectSortOption={(val) => {
+              console.log(val);
+            }}
+          />
+        </Container>
+      </EdgeAligner>
+    </BaseBody>
   );
 }
