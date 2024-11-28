@@ -1,25 +1,6 @@
-// NOTE index.tsx
-
-// import { useTranslation } from 'react-i18next';
-
 import BaseLayout from '@/components/BaseLayout';
-
-// import Lock from '~/Popup/components/Lock';
-
-// import Entry from './entry';
-// import Layout from './layout';
-
-// export default function Step1() {
-//   return (
-//     <Lock>
-//       <Layout>
-//         <Entry />
-//       </Layout>
-//     </Lock>
-//   );
-// }
-
-// NOTE layout.tsx
+import Header from '@/components/Header';
+import NavigationPanel from '@/components/Header/components/NavigationPanel';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -28,5 +9,5 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   //   const { t } = useTranslation();
 
-  return <BaseLayout>{children}</BaseLayout>;
+  return <BaseLayout header={<Header leftContent={<NavigationPanel isHideHomeButton />} />}>{children}</BaseLayout>;
 }

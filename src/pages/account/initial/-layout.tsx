@@ -1,6 +1,6 @@
 import BaseLayout from '@/components/BaseLayout';
 import Header from '@/components/Header';
-import Navigator from '@/components/Header/components/Navigator';
+import NavigationPanel from '@/components/Header/components/NavigationPanel';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -9,5 +9,5 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   //   const { t } = useTranslation();
 
-  return <BaseLayout header={<Header leftContent={<Navigator isHideBackButton isHideHomeButton />} />}>{children}</BaseLayout>;
+  return <BaseLayout header={<Header leftContent={<NavigationPanel isHideBackButton isHideHomeButton />} />}>{children}</BaseLayout>;
 }
