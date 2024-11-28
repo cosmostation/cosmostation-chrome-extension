@@ -8,6 +8,21 @@ export const Container = styled('div')({
   height: '100%',
 });
 
+export const Header = styled('div')(({ theme }) => ({
+  width: '100%',
+  height: 'fit-content',
+
+  padding: '0 1.2rem',
+
+  backgroundColor: theme.palette.color.base100,
+
+  boxSizing: 'border-box',
+
+  position: 'sticky',
+  top: 0,
+  zIndex: 1000,
+}));
+
 export const Body = styled('div')({
   width: '100%',
   height: '100%',

@@ -19,10 +19,6 @@ export const HeaderRightContainer = styled('div')({
   columnGap: '0.8rem',
 });
 
-export const BodyContainer = styled('div')({
-  padding: '0.8rem 1.2rem',
-});
-
 export const StyledTabPanel = styled(TabPanel)({
   marginTop: '0',
   display: 'flex',
@@ -93,7 +89,7 @@ export const ManageCryptoContainer = styled('div')({
   marginBottom: '1.1rem',
 });
 
-export const CoinButtonContainer = styled('div')({
+export const CoinButtonWrapper = styled('div')({
   width: '100%',
 });
 
@@ -112,6 +108,10 @@ export const StickyTabPanelContentsContainer = styled('div')(({ theme }) => ({
   height: 'fit-content',
   position: 'sticky',
   top: '7.8rem',
+
+  padding: '0.8rem 1.2rem',
+
+  boxSizing: 'border-box',
 
   zIndex: 1,
   backgroundColor: theme.palette.color.base50,

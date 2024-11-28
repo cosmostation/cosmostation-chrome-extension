@@ -7,13 +7,11 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   backgroundColor: 'transparent',
 
-  padding: '1.4rem 0.4rem',
+  padding: '1.4rem 1.6rem',
 
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-
-  borderRadius: '0.8rem',
 
   cursor: 'pointer',
 

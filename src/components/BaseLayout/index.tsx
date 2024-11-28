@@ -1,4 +1,4 @@
-import { Body, Container } from './styled';
+import { Body, Container, Header } from './styled';
 
 type BaseLayoutProps = {
   header?: JSX.Element;
@@ -7,7 +7,7 @@ type BaseLayoutProps = {
 export default function BaseLayout({ header, children }: BaseLayoutProps) {
   return (
     <Container>
-      {header}
+      <Header>{header}</Header>
       <Body>
         <>{children}</>
       </Body>
