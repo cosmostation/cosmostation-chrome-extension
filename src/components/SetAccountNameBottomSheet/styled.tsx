@@ -40,7 +40,7 @@ export const Body = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    height: '80%',
+    height: '45%',
   },
 });
 
@@ -66,22 +66,6 @@ export const DescriptionText = styled(Typography)(({ theme }) => ({
 
   margin: '1.2rem 0 2.8rem',
 }));
-
-export const ChainInfoTitle = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1300,
-
-  textAlign: 'left',
-
-  margin: '1rem 0 2rem',
-}));
-
-export const ChainInfoContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-
-  rowGap: '2.4rem',
-});
 
 export const ConfirmButton = styled(Button)({
   marginTop: 'auto',

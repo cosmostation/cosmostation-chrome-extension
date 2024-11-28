@@ -21,6 +21,15 @@
       "index": {
         "title": "Select Sort Option"
       }
+    },
+    "SetAccountNameBottomSheet": {
+      "index": {
+        "emptyAccountNmae": "Please enter an account name",
+        "header": "Set Account Name",
+        "description": "Please enter a name for your account. You can change the account name at any time in the future",
+        "setUpComplete": "Set Up Complete",
+        "accountName": "Account Name"
+      }
     }
   },
   "pages": {

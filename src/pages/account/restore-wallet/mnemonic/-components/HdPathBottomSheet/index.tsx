@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import StandardInput from '@/components/common/StandardInput';
+import { isNaturalNumberRegex } from '@/utils/regex';
 
 import ChainPathInfo from './components/ChainPathInfo';
 import {
@@ -96,7 +97,13 @@ export default function HdPathBottomSheet({ currentHdPath, onClose, onChangeHpPa
           <DescriptionText variant="b3_R">{t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.description')}</DescriptionText>
           <StandardInput
             label={t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.lastHdPath')}
-            onChange={(e) => setSelectedHdPath(e.currentTarget.value)}
+            onChange={(e) => {
+              if (e.currentTarget.value && !isNaturalNumberRegex.test(e.currentTarget.value)) {
+                return;
+              }
+
+              setSelectedHdPath(e.currentTarget.value);
+            }}
             value={selectedHdPath}
             error={!!errorMsg}
             helperText={errorMsg}
