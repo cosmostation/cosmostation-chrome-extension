@@ -16,6 +16,7 @@ import { Body, CautionContainer, DescriptionContainer, DescriptionSubTitle, Desc
 export const Route = createFileRoute('/account/set-password/')({
   component: SetPassword,
 });
+
 function SetPassword() {
   const { t } = useTranslation();
   const navigate = useNavigate();

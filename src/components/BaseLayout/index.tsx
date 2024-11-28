@@ -5,7 +5,7 @@ type BaseLayoutProps = {
   footer?: JSX.Element;
   children?: JSX.Element;
 };
-
+// TODO Footer제거
 export default function BaseLayout({ header, footer, children }: BaseLayoutProps) {
   return (
     <Container>
