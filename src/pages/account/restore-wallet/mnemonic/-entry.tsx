@@ -11,13 +11,14 @@ import TextButton from '@/components/common/TextButton';
 import HdPathBottomSheet from './-components/HdPathBottomSheet';
 import {
   Body,
-  CloseIconContainer,
-  CloseText,
+  ControlInputButtonContainer,
+  ControlInputText,
   DescriptionContainer,
   DescriptionSubTitle,
   DescriptionTitle,
   HdPathContainer,
   HdPathDescription,
+  IconContainer,
   MnemonicInputContainer,
   MnemonicInputWrapper,
   MnemonicWordIndexText,
@@ -26,14 +27,17 @@ import {
 } from './-styled';
 
 import CloseIcon from '@/assets/images/icons/Close24.svg';
+import PasteIcon from '@/assets/images/icons/Paste18.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
 
-  const [isOpenHdPathBottomSheet, setIsOpenHdPathBottomSheet] = useState(true);
+  const [isOpenHdPathBottomSheet, setIsOpenHdPathBottomSheet] = useState(false);
   const [currentHdPathIndex, setcurrentHdPathIndex] = useState('0');
 
   const [values, setValues] = useState<string[]>(Array(12).fill(''));
+
+  console.log('🚀 ~ Entry ~ values:', values);
 
   // FIXME 첫번쨰 입력이 아닌 두번쨰칸에 입력됐을때 2번째 부터 입력이 되는 현상 발견.
   const handleChange = (index: number, value: string) => {
@@ -60,6 +64,8 @@ export default function Entry() {
 
   const isValid = bip39.validateMnemonic('start');
 
+  const isMnemonicExists = values.some((value) => !!value);
+
   console.log('🚀 ~ Entry ~ isValid:', isValid);
 
   // encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
@@ -83,11 +89,18 @@ export default function Entry() {
   //   }
   // }
 
+  const pasteFromClipboard = async () => {
+    const clipboard = await navigator.clipboard.readText();
+
+    handleChange(0, clipboard);
+  };
+
   const clearAll = () => {
     if (values.length === 12) {
       setValues(Array(12).fill(''));
+    } else {
+      setValues(Array(24).fill(''));
     }
-    setValues(Array(24).fill(''));
   };
 
   return (
@@ -127,18 +140,31 @@ export default function Entry() {
                 />
               ))}
             </MnemonicInputContainer>
-            {values.some((value) => !!value) && (
-              <StyledIconTextButton
-                LeadingIcon={
-                  <CloseIconContainer>
-                    <CloseIcon />
-                  </CloseIconContainer>
-                }
-                onClick={clearAll}
-              >
-                <CloseText variant="b3_R">{t('pages.account.restore-wallet.index.clearAll')}</CloseText>
-              </StyledIconTextButton>
-            )}
+            <ControlInputButtonContainer>
+              {isMnemonicExists ? (
+                <StyledIconTextButton
+                  LeadingIcon={
+                    <IconContainer>
+                      <CloseIcon />
+                    </IconContainer>
+                  }
+                  onClick={clearAll}
+                >
+                  <ControlInputText variant="b3_R">{t('pages.account.restore-wallet.index.clearAll')}</ControlInputText>
+                </StyledIconTextButton>
+              ) : (
+                <StyledIconTextButton
+                  LeadingIcon={
+                    <IconContainer>
+                      <PasteIcon />
+                    </IconContainer>
+                  }
+                  onClick={pasteFromClipboard}
+                >
+                  <ControlInputText variant="b3_R">{t('pages.account.restore-wallet.index.pasteFromClipboard')}</ControlInputText>
+                </StyledIconTextButton>
+              )}
+            </ControlInputButtonContainer>
           </MnemonicInputWrapper>
         </Body>
       </BaseBody>

@@ -81,7 +81,8 @@
           "clearAll": "Clear All",
           "hdPathDescription": "Use custom path?",
           "hdPathSetting": "HD Path Setting",
-          "next": "Next"
+          "next": "Next",
+          "pasteFromClipboard": "Paste from Clipboard"
         },
         "mnemonic": {
           "components": {

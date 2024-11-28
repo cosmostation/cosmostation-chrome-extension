@@ -74,9 +74,7 @@ export const StyledInput = styled(OutlinedInput)(({ theme }) => ({
   },
 }));
 
-export const StyledIconTextButton = styled(IconTextButton)({
-  marginTop: '1.2rem',
-});
+export const StyledIconTextButton = styled(IconTextButton)({});
 
 export const MnemonicWordIndexText = styled(Typography)(({ theme }) => ({
   width: '1.6rem',
@@ -85,7 +83,15 @@ export const MnemonicWordIndexText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base800,
 }));
 
-export const CloseIconContainer = styled('div')(({ theme }) => ({
+export const ControlInputButtonContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  marginTop: '1.2rem',
+});
+
+export const IconContainer = styled('div')(({ theme }) => ({
   width: '1.8rem',
   height: '1.8rem',
 
@@ -101,7 +107,7 @@ export const CloseIconContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const CloseText = styled(Typography)(({ theme }) => ({
+export const ControlInputText = styled(Typography)(({ theme }) => ({
   marginLeft: '0.2rem',
   color: theme.palette.color.base1100,
 }));
