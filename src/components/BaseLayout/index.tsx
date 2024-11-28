@@ -1,20 +1,15 @@
-import { Body, BodyContentsContainer, Container, Footer } from './styled';
+import { Body, Container } from './styled';
 
 type BaseLayoutProps = {
   header?: JSX.Element;
-  footer?: JSX.Element;
   children?: JSX.Element;
 };
-// TODO Footer제거
-export default function BaseLayout({ header, footer, children }: BaseLayoutProps) {
+export default function BaseLayout({ header, children }: BaseLayoutProps) {
   return (
     <Container>
       {header}
       <Body>
-        <>
-          <BodyContentsContainer>{children}</BodyContentsContainer>
-          {footer && <Footer>{footer}</Footer>}
-        </>
+        <>{children}</>
       </Body>
     </Container>
   );

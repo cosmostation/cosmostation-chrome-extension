@@ -1,9 +1,9 @@
 import { Container } from './styled';
 
-type FooterProps = {
+type BaseBodyProps = {
   children?: JSX.Element;
 };
 
-export default function Footer({ children }: FooterProps) {
+export default function BaseBody({ children }: BaseBodyProps) {
   return <Container>{children}</Container>;
 }
