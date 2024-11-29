@@ -32,6 +32,7 @@ export default function Entry() {
             >
               <Typography variant="b3_R">{t('pages.account.initial.index.termsNotice')}</Typography>
             </StyledCheckBoxTextButton>
+            &nbsp;
             <TextButton variant="hyperlink">{t('pages.account.initial.index.termsOfUse')}</TextButton>
           </TermsContainer>
           <Button

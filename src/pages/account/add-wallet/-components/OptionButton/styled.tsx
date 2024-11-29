@@ -1,12 +1,15 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const StyledButton = styled('div')(({ theme }) => ({
+export const StyledButton = styled('button')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
 
   padding: '1.2rem 1.6rem',
+
+  backgroundColor: 'transparent',
+  border: 'none',
 
   '&: hover': {
     backgroundColor: theme.palette.color.base200,
@@ -49,7 +52,7 @@ export const PlusIconContainer = styled('div')(({ theme }) => ({
     width: '1.6rem',
     height: '1.6rem',
     '& > path': {
-      fill: theme.palette.color.base800,
+      stroke: theme.palette.color.base800,
     },
   },
 }));
@@ -63,6 +66,8 @@ export const BodyText = styled(Typography)(({ theme }) => ({
 
   color: theme.palette.color.base900,
   wordBreak: 'break-word',
+
+  textAlign: 'left',
 
   display: '-webkit-box',
   WebkitBoxOrient: 'vertical',

@@ -3,14 +3,14 @@ import { BodyText, LeftContainer, MiddleContainer, PlusIconContainer, RightConta
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
-type OptionButtonProps = {
+type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   titleText: string;
   bodyText: string;
 };
 
-export default function OptionButton({ titleText, bodyText }: OptionButtonProps) {
+export default function OptionButton({ titleText, bodyText, ...remainder }: OptionButtonProps) {
   return (
-    <StyledButton>
+    <StyledButton {...remainder}>
       <LeftContainer>
         <PlusIconContainer>
           <PlusIcon />

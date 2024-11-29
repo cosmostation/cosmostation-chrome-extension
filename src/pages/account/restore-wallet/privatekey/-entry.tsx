@@ -60,7 +60,7 @@ export default function Entry() {
             <ControlInputButtonContainer>
               {isPrivateKetEntered ? (
                 <StyledIconTextButton
-                  LeadingIcon={
+                  leadingIcon={
                     <IconContainer>
                       <CloseIcon />
                     </IconContainer>
@@ -71,7 +71,7 @@ export default function Entry() {
                 </StyledIconTextButton>
               ) : (
                 <StyledIconTextButton
-                  LeadingIcon={
+                  leadingIcon={
                     <IconContainer>
                       <PasteIcon />
                     </IconContainer>

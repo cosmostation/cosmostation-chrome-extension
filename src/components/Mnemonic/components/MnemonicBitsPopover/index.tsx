@@ -4,9 +4,9 @@ import { StyledIconTextButton, StyledPopover, StyledTypography } from './styled'
 
 import SettingIcon from 'assets/images/icons/Setting14.svg';
 
-type SettingPopoverProps = Omit<PopoverProps, 'children'>;
+type MnemonicBitsPopoverProps = Omit<PopoverProps, 'children'>;
 
-export default function SettingPopover({ onClose, ...remainder }: SettingPopoverProps) {
+export default function MnemonicBitsPopover({ onClose, ...remainder }: MnemonicBitsPopoverProps) {
   return (
     <StyledPopover {...remainder} onClose={onClose}>
       <StyledIconTextButton leadingIcon={<SettingIcon />}>

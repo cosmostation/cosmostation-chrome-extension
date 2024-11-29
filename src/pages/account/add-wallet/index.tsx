@@ -4,10 +4,10 @@ import Entry from './-entry';
 import Layout from './-layout';
 
 export const Route = createFileRoute('/account/add-wallet/')({
-  component: CreateAccount,
+  component: AddWallet,
 });
 
-function CreateAccount() {
+function AddWallet() {
   return (
     <Layout>
       <Entry />

@@ -1,9 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 
+import Entry from './-entry';
+import Layout from './-layout';
+
 export const Route = createFileRoute('/account/create-wallet/mnemonic/')({
-  component: RouteComponent,
+  component: CreateMnemonic,
 });
 
-function RouteComponent() {
-  return <div>Hello /account/create-wallet/mnemonic/!</div>;
+function CreateMnemonic() {
+  return (
+    <Layout>
+      <Entry />
+    </Layout>
+  );
 }

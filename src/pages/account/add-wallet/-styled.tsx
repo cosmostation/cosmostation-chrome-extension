@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import Base1300Text from '@/components/common/Base1300Text';
+
 export const FooterContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
@@ -17,4 +19,8 @@ export const OptionButtonsContainer = styled('div')({
   flexDirection: 'column',
 
   marginTop: '0.8rem',
+});
+
+export const DescriptionText = styled(Base1300Text)({
+  marginRight: '0.4rem',
 });

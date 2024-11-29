@@ -141,7 +141,7 @@ export default function Entry() {
             <ControlInputButtonContainer>
               {isMnemonicExists ? (
                 <StyledIconTextButton
-                  LeadingIcon={
+                  leadingIcon={
                     <IconContainer>
                       <CloseIcon />
                     </IconContainer>
@@ -152,7 +152,7 @@ export default function Entry() {
                 </StyledIconTextButton>
               ) : (
                 <StyledIconTextButton
-                  LeadingIcon={
+                  leadingIcon={
                     <IconContainer>
                       <PasteIcon />
                     </IconContainer>

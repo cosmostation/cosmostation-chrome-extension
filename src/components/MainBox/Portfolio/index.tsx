@@ -49,8 +49,8 @@ export default function PortFolio() {
             </TopLeftContainer>
             <TopRightContainer>
               <IconTextButton
-                LeadingIcon={<GridMenuIcon />}
-                TrailingIcon={
+                leadingIcon={<GridMenuIcon />}
+                trailingIcon={
                   <ChevronIconContainer>
                     <BottomFilledChevronIcon />
                   </ChevronIconContainer>
@@ -76,7 +76,7 @@ export default function PortFolio() {
               </StyledIconButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              <IconTextButton LeadingIcon={<HistoryIcon />}>
+              <IconTextButton leadingIcon={<HistoryIcon />}>
                 <HistoryButtonTypo variant="b3_M">{t('components.MainBox.Portfolio.index.history')}</HistoryButtonTypo>
               </IconTextButton>
               <BodyBottomChipButtonContainer>
@@ -92,16 +92,16 @@ export default function PortFolio() {
         }
         bottom={
           <BottomButtonContainer>
-            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>

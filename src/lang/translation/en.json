@@ -30,6 +30,13 @@
         "setUpComplete": "Set Up Complete",
         "accountName": "Account Name"
       }
+    },
+    "Mnemonic": {
+      "index": {
+        "seedPhrase": "Seed Phrase",
+        "twelveWords": "12 Words",
+        "twentyFourWords": "24 Words"
+      }
     }
   },
   "pages": {
@@ -70,8 +77,11 @@
           "createNewWalletDescription": "Create a cryptocurrency wallet with a new mnemonic",
           "restoreWithMnemonic": "Restore With Mnemonic",
           "restoreWithMnemonicDescription": "Restore an existing wallet using a 12, 18, or 24-word mnemonic",
-          "restoreWithPrivateKeyDescription": "Restore With Private Key",
-          "restoreWithPrivateKey": "Restore an account using a private key from the network",
+          "restoreWithPrivateKeyDescription": "Restore an account using a private key from the network",
+          "restoreWithPrivateKey": "Restore With Private Key",
+          "header": "Add Wallet"
+        },
+        "layout": {
           "header": "Add Wallet"
         }
       },
@@ -98,6 +108,9 @@
             "hdPathSetting": "HD Path Setting",
             "next": "Next",
             "pasteFromClipboard": "Paste from Clipboard"
+          },
+          "layout": {
+            "header": "Restore With Mnemonic"
           }
         },
         "privatekey": {
@@ -107,6 +120,25 @@
             "clearAll": "Clear All",
             "pasteFromClipboard": "Paste from Clipboard",
             "next": "Next"
+          },
+          "layout": {
+            "header": "Restore With Private Key"
+          }
+        }
+      },
+      "create-mnemonic": {
+        "mnemonic": {
+          "index": {
+            "title": "Write Down Your Mnemonic",
+            "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset.",
+            "next": "Next"
+          }
+        }
+      },
+      "create-wallet": {
+        "menmonic": {
+          "layout": {
+            "header": "Create New Wallet"
           }
         }
       }

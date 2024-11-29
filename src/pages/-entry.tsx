@@ -97,7 +97,7 @@ export default function Entry() {
                 <CheckBoxTextButton>
                   <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
                 </CheckBoxTextButton>
-                <IconTextButton LeadingIcon={<PlusIcon />}>
+                <IconTextButton leadingIcon={<PlusIcon />}>
                   <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
                 </IconTextButton>
               </ManageCryptoContainer>
@@ -267,7 +267,7 @@ export default function Entry() {
             </CoinButtonWrapper>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
-            <IconTextButton LeadingIcon={<StakeIcon />} direction="vertical">
+            <IconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               {/* TODO i18n 적용 필요 */}
               <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
             </IconTextButton>
