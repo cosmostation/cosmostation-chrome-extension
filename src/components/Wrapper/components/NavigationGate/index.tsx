@@ -20,7 +20,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
           // to: Initial.to,
           // to: '/account/add-wallet',
           // to: '/account/restore-wallet/mnemonic',
-          to: '/account/initial',
+          to: '/account/create-wallet/mnemonic',
         });
         return;
       }

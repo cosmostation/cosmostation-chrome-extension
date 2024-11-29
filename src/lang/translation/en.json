@@ -37,6 +37,14 @@
         "twelveWords": "12 Words",
         "twentyFourWords": "24 Words"
       }
+    },
+    "MnemonicViewer": {
+      "index": {
+        "seedPhrase": "Seed Phrase",
+        "twelveWords": "12 Words",
+        "twentyFourWords": "24 Words",
+        "copy": "Copy to Clipboard"
+      }
     }
   },
   "pages": {
@@ -132,6 +140,14 @@
             "title": "Write Down Your Mnemonic",
             "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset.",
             "next": "Next"
+          },
+          "components": {
+            "MnemonicBitPopover": {
+              "index": {
+                "twelveWords": "12 Words",
+                "twentyWords": "24 Words"
+              }
+            }
           }
         }
       },

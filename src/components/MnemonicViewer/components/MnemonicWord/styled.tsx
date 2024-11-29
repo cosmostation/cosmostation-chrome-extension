@@ -13,7 +13,7 @@ export const Container = styled('div')(({ theme }) => ({
 
   wordBreak: 'break-all',
 
-  padding: '0.8rem',
+  paddingLeft: '0.8rem',
 
   boxSizing: 'border-box',
 
@@ -29,19 +29,33 @@ export const TextContainer = styled('div')({
   alignItems: 'baseline',
 });
 
-export const IndexText = styled(Typography)(({ theme }) => ({
+export const IndexTextContainer = styled('div')({
   width: '1.6rem',
   height: '1.6rem',
+
+  marginRight: '0.8rem',
 
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+});
 
+export const IndexText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base800,
 }));
 
-export const WordText = styled(Base1300Text)({
-  width: '100%',
+export const WordTextContainer = styled('div')({
+  flex: '1',
 
-  textAlign: 'left',
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
 });
+
+type WordTextProps = {
+  'is-view-mnemonic'?: boolean;
+};
+
+export const WordText = styled(Base1300Text)<WordTextProps>(({ ...props }) => ({
+  letterSpacing: props['is-view-mnemonic'] ? 'none' : '0.5rem',
+}));

@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as bip39 from 'bip39';
-import { Button } from '@mui/material';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
-import MnemonicBox from '@/components/Mnemonic';
+import Button from '@/components/common/Button';
+import MnemonicViewer from '@/components/MnemonicViewer';
+import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 
 import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } from './-styled';
 
@@ -14,15 +15,19 @@ const mnemonicBits = {
   24: 256,
 } as const;
 
-type MnemonicBits = ValueOf<typeof mnemonicBits>;
+export type MnemonicBits = ValueOf<typeof mnemonicBits>;
 
 export default function Entry() {
   const { t } = useTranslation();
 
-  // const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
-  const [bits] = useState<MnemonicBits>(mnemonicBits[12]);
+  const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
 
+  const [bits, setBits] = useState<MnemonicBits>(mnemonicBits[12]);
   const mnemonic = useMemo(() => bip39.generateMnemonic(bits), [bits]);
+
+  const [inputAccountName, setinputAccountName] = useState('');
+
+  console.log('🚀 ~ Entry ~ inputAccountName:', inputAccountName);
 
   return (
     <>
@@ -32,12 +37,30 @@ export default function Entry() {
             <DescriptionTitle variant="h2_B">{t('pages.account.create-mnemonic.mnemonic.index.title')}</DescriptionTitle>
             <DescriptionSubTitle variant="b3_R">{t('pages.account.create-mnemonic.mnemonic.index.subTitle')}</DescriptionSubTitle>
           </DescriptionContainer>
-          <MnemonicBox rawMnemonic={mnemonic} />
+          <MnemonicViewer
+            rawMnemonic={mnemonic}
+            onClickMnemonicBits={(val) => {
+              setBits(val);
+            }}
+          />
         </Body>
       </BaseBody>
       <BaseFooter>
-        <Button type="button">{t('pages.account.create-mnemonic.mnemonic.index.next')}</Button>
+        <Button
+          onClick={() => {
+            setIsOpenSetAccountNameBottomSheet(true);
+          }}
+        >
+          {t('pages.account.create-mnemonic.mnemonic.index.next')}
+        </Button>
       </BaseFooter>
+      <SetAccountNameBottomSheet
+        open={isOpenSetAccountNameBottomSheet}
+        onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
+        setAccountName={(accountName) => {
+          setinputAccountName(accountName);
+        }}
+      />
     </>
   );
 }
