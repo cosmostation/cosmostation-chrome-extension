@@ -39,7 +39,8 @@ export const StyledTextField = styled(OutlinedInput)(({ theme, ...props }) => ({
   },
 
   '.MuiOutlinedInput-notchedOutline': {
-    border: `0.1rem solid ${theme.palette.color.base200}`,
+    // TODO : Change the border color to the theme color
+    border: props['error'] ? `0.1rem solid red` : `0.1rem solid ${theme.palette.color.base200}`,
   },
 
   '&:hover': {

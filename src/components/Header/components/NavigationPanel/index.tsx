@@ -20,8 +20,6 @@ export default function NavigationPanel({ isHideBackButton, isHideHomeButton }: 
   const isDisableBackButton = history.length <= 1 || pathname === '/';
   const isDisableHomeButton = pathname === '/';
 
-  console.log('🚀 ~ Navigator ~ isDisableHomeButton:', isDisableHomeButton);
-
   return (
     <LeftNavigatorContainer>
       {!isHideBackButton && (

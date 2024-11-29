@@ -4,6 +4,12 @@ import { styled } from '@mui/material/styles';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 
+export const FormContainer = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+});
+
 export const Body = styled('div')({
   paddingTop: '2.4rem',
 });

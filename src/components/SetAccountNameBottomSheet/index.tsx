@@ -40,7 +40,9 @@ export default function SetAccountNameBottomSheet({ currentAccountName, setAccou
   const isButtonEnabled = !!accountName;
 
   const onHandleClose = () => {
-    reset();
+    reset({
+      accountName: '',
+    });
     onClose?.({}, 'backdropClick');
   };
 

@@ -177,6 +177,9 @@
           "only": "The password confirmation does not match."
         }
       }
+    },
+    "privateKeyForm": {
+      "privateKey": "Please enter a valid private key"
     }
   }
 }
