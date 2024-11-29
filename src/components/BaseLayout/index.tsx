@@ -1,21 +1,14 @@
-import { Body, BodyContentsContainer, Container, Footer } from './styled';
+import { Body, Container, Header } from './styled';
 
 type BaseLayoutProps = {
   header?: JSX.Element;
-  footer?: JSX.Element;
   children?: JSX.Element;
 };
-
-export default function BaseLayout({ header, footer, children }: BaseLayoutProps) {
+export default function BaseLayout({ header, children }: BaseLayoutProps) {
   return (
     <Container>
-      {header}
-      <Body>
-        <>
-          <BodyContentsContainer>{children}</BodyContentsContainer>
-          {footer && <Footer>{footer}</Footer>}
-        </>
-      </Body>
+      {header && <Header>{header}</Header>}
+      <Body>{children}</Body>
     </Container>
   );
 }

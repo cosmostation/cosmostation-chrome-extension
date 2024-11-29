@@ -18,7 +18,8 @@ export default function NavigationGate({ children }: NavigationGateProps) {
       if (!accounts) {
         navigate({
           // to: Initial.to,
-          to: '/account/add-wallet',
+          // to: '/account/add-wallet',
+          to: '/account/restore-wallet/mnemonic',
         });
         return;
       }

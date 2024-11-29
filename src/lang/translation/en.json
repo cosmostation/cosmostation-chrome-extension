@@ -21,6 +21,15 @@
       "index": {
         "title": "Select Sort Option"
       }
+    },
+    "SetAccountNameBottomSheet": {
+      "index": {
+        "emptyAccountNmae": "Please enter an account name",
+        "header": "Set Account Name",
+        "description": "Please enter a name for your account. You can change the account name at any time in the future",
+        "setUpComplete": "Set Up Complete",
+        "accountName": "Account Name"
+      }
     }
   },
   "pages": {
@@ -64,6 +73,41 @@
           "restoreWithPrivateKeyDescription": "Restore With Private Key",
           "restoreWithPrivateKey": "Restore an account using a private key from the network",
           "header": "Add Wallet"
+        }
+      },
+      "restore-wallet": {
+        "mnemonic": {
+          "components": {
+            "HdPathBottomSheet": {
+              "index": {
+                "emptyHdPath": "Please enter a HD Path",
+                "invalidHdPathIndex": "Please enter a valid HD Path Index",
+                "header": "HD Path Setting",
+                "description": "You can create a new account with the same seed phrase but a different HD Path.",
+                "lastHdPath": "Last HD Path",
+                "majorChains": "Major Chains",
+                "confirm": "Confirm"
+              }
+            }
+          },
+          "index": {
+            "title": "Enter in a secure space",
+            "subTitle": "This phrase consists of 12, 18 or 24 words. Please enter them in the correct order",
+            "clearAll": "Clear All",
+            "hdPathDescription": "Use custom path?",
+            "hdPathSetting": "HD Path Setting",
+            "next": "Next",
+            "pasteFromClipboard": "Paste from Clipboard"
+          }
+        },
+        "privatekey": {
+          "index": {
+            "title": "Enter in a secure space",
+            "subTitle": "Your private key is sensitive; don't share it. Anyone can access your account with it, so be cautious",
+            "clearAll": "Clear All",
+            "pasteFromClipboard": "Paste from Clipboard",
+            "next": "Next"
+          }
         }
       }
     }

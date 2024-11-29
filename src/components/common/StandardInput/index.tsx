@@ -2,7 +2,7 @@ import type { HTMLInputTypeAttribute } from 'react';
 import { useState } from 'react';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
-import { BottomContainer, Container, HelperTextContainer, RightBottomAdornmentContainer, StyledIconButton, StyledInput } from './styled';
+import { BottomContainer, BottomWrapper, Container, HelperTextContainer, RightBottomAdornmentContainer, StyledIconButton, StyledInput } from './styled';
 
 import ViewIcon from '@/assets/images/icons/View12.svg';
 import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
@@ -41,16 +41,18 @@ export default function StandardInput({ type, error = false, helperText, rightBo
         }}
         {...remainder}
       />
-      {isShowBottomContainer && (
-        <BottomContainer>
-          {helperText && (
-            <HelperTextContainer data-is-error={error}>
-              <Typography variant="b4_M">{helperText}</Typography>
-            </HelperTextContainer>
-          )}
-          {rightBottomAdornment && <RightBottomAdornmentContainer>{rightBottomAdornment}</RightBottomAdornmentContainer>}
-        </BottomContainer>
-      )}
+      <BottomWrapper>
+        {isShowBottomContainer && (
+          <BottomContainer>
+            {helperText && (
+              <HelperTextContainer data-is-error={error}>
+                <Typography variant="b4_M">{helperText}</Typography>
+              </HelperTextContainer>
+            )}
+            {rightBottomAdornment && <RightBottomAdornmentContainer>{rightBottomAdornment}</RightBottomAdornmentContainer>}
+          </BottomContainer>
+        )}
+      </BottomWrapper>
     </Container>
   );
 }

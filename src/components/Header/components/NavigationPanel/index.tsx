@@ -7,12 +7,12 @@ import { LeftNavigatorContainer, StyledIconButton } from './styled';
 import HomeIcon from '@/assets/images/icons/Home14.svg';
 import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
 
-type NavigatorProps = {
+type NavigationPanelProps = {
   isHideBackButton?: boolean;
   isHideHomeButton?: boolean;
 };
 
-export default function Navigator({ isHideBackButton, isHideHomeButton }: NavigatorProps) {
+export default function NavigationPanel({ isHideBackButton, isHideHomeButton }: NavigationPanelProps) {
   const navigate = useNavigate();
   const { history } = useRouter();
   const { pathname } = useLocation();

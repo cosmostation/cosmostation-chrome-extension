@@ -4,6 +4,7 @@ import IconButton from '@/components/common/IconButton';
 
 export const LeftNavigatorContainer = styled('div')({
   width: '100%',
+  height: '100%',
 
   display: 'flex',
   alignItems: 'center',

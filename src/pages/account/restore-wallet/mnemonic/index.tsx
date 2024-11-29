@@ -3,11 +3,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import Entry from './-entry';
 import Layout from './-layout';
 
-export const Route = createFileRoute('/account/initial/')({
-  component: Initial,
+export const Route = createFileRoute('/account/restore-wallet/mnemonic/')({
+  component: RestoreWalletWithMnemonic,
 });
 
-function Initial() {
+function RestoreWalletWithMnemonic() {
   return (
     <Layout>
       <Entry />

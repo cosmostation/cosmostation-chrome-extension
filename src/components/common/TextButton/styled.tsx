@@ -15,6 +15,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   cursor: 'pointer',
 
+  padding: 0,
+
   '&:hover': {
     opacity: 0.8,
   },

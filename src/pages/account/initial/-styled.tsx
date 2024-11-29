@@ -5,6 +5,8 @@ import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 export const Container = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 
   width: '100%',
   height: '100%',
