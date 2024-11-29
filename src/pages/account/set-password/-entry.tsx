@@ -14,7 +14,6 @@ import { Body, CautionContainer, DescriptionContainer, DescriptionSubTitle, Desc
 import type { PasswordForm } from './-useSchema';
 import { useSchema } from './-useSchema';
 
-// TODO 훅폼, 조이 라이브러리 설정 필요.
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();

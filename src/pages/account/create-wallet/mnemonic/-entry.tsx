@@ -27,8 +27,6 @@ export default function Entry() {
 
   const [inputAccountName, setinputAccountName] = useState('');
 
-  console.log('🚀 ~ Entry ~ inputAccountName:', inputAccountName);
-
   return (
     <>
       <BaseBody>
@@ -57,6 +55,7 @@ export default function Entry() {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
+        currentAccountName={inputAccountName}
         setAccountName={(accountName) => {
           setinputAccountName(accountName);
         }}

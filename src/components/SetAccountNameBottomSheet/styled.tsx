@@ -12,6 +12,12 @@ export const Container = styled('div')({
   height: '100%',
 });
 
+export const FormContainer = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+});
+
 export const Header = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
