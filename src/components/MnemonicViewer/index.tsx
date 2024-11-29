@@ -42,7 +42,7 @@ export default function MnemonicViewer({ rawMnemonic, onClickMnemonicBits }: Mne
 
   const displayMnemonic = (() => {
     if (!isViewMnemonic) {
-      return new Array(splitedMnemonic.length).fill('••••');
+      return splitedMnemonic.map((word) => '•'.repeat(word.length));
     }
     return splitedMnemonic;
   })();

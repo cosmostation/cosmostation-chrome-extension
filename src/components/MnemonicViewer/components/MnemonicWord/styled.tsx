@@ -56,6 +56,4 @@ type WordTextProps = {
   'is-view-mnemonic'?: boolean;
 };
 
-export const WordText = styled(Base1300Text)<WordTextProps>(({ ...props }) => ({
-  letterSpacing: props['is-view-mnemonic'] ? 'none' : '0.5rem',
-}));
+export const WordText = styled(Base1300Text)<WordTextProps>({});

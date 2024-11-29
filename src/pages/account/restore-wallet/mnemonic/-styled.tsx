@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import OutlinedInput from '@/components/common/OutlinedInput';
 
@@ -19,10 +20,38 @@ export const DescriptionContainer = styled('div')({
   rowGap: '0.6rem',
 });
 
-// TOOD Base1300 컴포넌트로 교체필요.
-export const DescriptionTitle = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1300,
-}));
+export const TopContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: '0.8rem',
+});
+
+export const ViewIconContainer = styled('div')({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  '& > svg': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
+});
+
+export const BottomChevronIconContainer = styled('div')({
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg': {
+    width: '1.4rem',
+    height: '1.4rem',
+  },
+});
+
+export const MarginRightTypography = styled(Base1300Text)({
+  marginRight: '0.2rem',
+});
+
+export const DescriptionTitle = styled(Base1300Text)({});
 
 export const DescriptionSubTitle = styled(Typography)(({ theme }) => ({
   width: '95%',
@@ -47,7 +76,7 @@ export const MnemonicInputContainer = styled('div')({
   gap: '0.8rem',
 });
 
-export const StyledInput = styled(OutlinedInput)(({ theme }) => ({
+export const StyledInput = styled(OutlinedInput)(({ theme, ...props }) => ({
   height: '3.2rem',
 
   '.MuiOutlinedInput-input': {
@@ -56,6 +85,13 @@ export const StyledInput = styled(OutlinedInput)(({ theme }) => ({
     fontSize: theme.typography.b3_M.fontSize,
     lineHeight: theme.typography.b3_M.lineHeight,
     letterSpacing: theme.typography.b3_M.letterSpacing,
+
+    WebkitTextSecurity: props.type === 'password' ? 'disc' : 'none',
+    MoxTextSecurity: props.type === 'password' ? 'disc' : 'none',
+
+    '&[type=password]': {
+      letterSpacing: '0',
+    },
   },
 
   '.MuiOutlinedInput-notchedOutline': {
