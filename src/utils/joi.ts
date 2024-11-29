@@ -1,23 +1,23 @@
 import * as bip39 from 'bip39';
-import type { Root } from 'joi';
+import type { Root, StringSchema as BaseStringSchema } from 'joi';
 import BaseJoi from 'joi';
 
 import { isValidPrivateKey } from './crypto/privateKey';
 
-// interface StringSchema extends BaseStringSchema {
-// //   mnemonic(substring:string): this;
-// //   privateKey(substring:string): this;
-// }
+interface StringSchema<TSchema = string> extends BaseStringSchema<TSchema> {
+  mnemonic(): this;
+  privateKey(): this;
+}
 
-// interface Joi extends Root {
-//   string(): StringSchema;
-// }
+interface Joi extends Root {
+  string<TSchema = string>(): StringSchema<TSchema>;
+}
 
 type Helper = {
   error: (key: string) => void;
 };
 
-const customJoi: Root = BaseJoi.extend((joi) => ({
+const customJoi: Joi = BaseJoi.extend((joi) => ({
   type: 'string',
   base: joi.string(),
   messages: {

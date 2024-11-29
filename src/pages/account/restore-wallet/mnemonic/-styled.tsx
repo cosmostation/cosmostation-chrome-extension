@@ -95,7 +95,7 @@ export const StyledInput = styled(OutlinedInput)(({ theme, ...props }) => ({
   },
 
   '.MuiOutlinedInput-notchedOutline': {
-    border: `none`,
+    border: props['error'] ? '0.1rem solid red' : `none`,
   },
 
   '&:hover': {

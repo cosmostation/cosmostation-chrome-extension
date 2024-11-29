@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as bip39 from 'bip39';
 import { InputAdornment } from '@mui/material';
@@ -52,14 +52,29 @@ export default function Entry() {
 
   const [values, setValues] = useState<string[]>(Array(12).fill(''));
 
-  const isValid = bip39.validateMnemonic('start');
+  const isAnyMnemonicPresent = values.some((value) => !!value);
+  const isFormComplete = values.every((value) => !!value);
 
-  const isMnemonicExists = values.some((value) => !!value);
+  const mnemonicWordList = bip39.wordlists.english;
 
-  console.log('🚀 ~ Entry ~ isValid:', isValid);
+  const [inputTypes, setInputTypes] = useState(values.map(() => (isViewMnemonic ? 'text' : 'password')));
 
-  // encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
-  // FIXME 첫번쨰 입력이 아닌 두번쨰칸에 입력됐을때 2번째 부터 입력이 되는 현상 발견.
+  const handleFocusMnemonicInput = (index: number) => {
+    setInputTypes((prevTypes) => {
+      const newTypes = [...prevTypes];
+      newTypes[index] = 'text';
+      return newTypes;
+    });
+  };
+
+  const handleBlurMnemonicInput = (index: number) => {
+    setInputTypes((prevTypes) => {
+      const newTypes = [...prevTypes];
+      newTypes[index] = isViewMnemonic ? 'text' : 'password';
+      return newTypes;
+    });
+  };
+
   const updateMnemonicWords = (index: number, value: string) => {
     let newValues = [...values];
     const words = value.split(' ');
@@ -71,8 +86,8 @@ export default function Entry() {
 
     if (words.length > 1) {
       words.forEach((word, i) => {
-        if (index + i < newValues.length) {
-          newValues[index + i] = word;
+        if (i < newValues.length) {
+          newValues[i] = word;
         }
       });
     } else {
@@ -114,7 +129,11 @@ export default function Entry() {
     }
   };
 
+  useEffect(() => {
+    setInputTypes(values.map(() => (isViewMnemonic ? 'text' : 'password')));
+  }, [values, isViewMnemonic]);
   // NOTE 최종 스토리지 저장은 마지막 단계에서 진행하며, 각 단계에서 저장된 값들은 모두 전역변수에서 관리하자.
+  // NOTE 니모닉 검증 로직은 피그마 참조
 
   return (
     <>
@@ -156,12 +175,15 @@ export default function Entry() {
                 <StyledInput
                   key={index}
                   value={value}
-                  type={isViewMnemonic ? 'text' : 'password'}
+                  type={isViewMnemonic ? 'text' : inputTypes[index]}
                   startAdornment={
                     <InputAdornment position="start">
                       <MnemonicWordIndexText variant="h5n_M">{index}</MnemonicWordIndexText>
                     </InputAdornment>
                   }
+                  error={!!value && !mnemonicWordList.includes(value)}
+                  onFocus={() => handleFocusMnemonicInput(index)}
+                  onBlur={() => handleBlurMnemonicInput(index)}
                   onChange={(e) => {
                     if (e.target.value.endsWith(' ')) {
                       return;
@@ -173,7 +195,7 @@ export default function Entry() {
               ))}
             </MnemonicInputContainer>
             <ControlInputButtonContainer>
-              {isMnemonicExists ? (
+              {isAnyMnemonicPresent ? (
                 <StyledIconTextButton
                   leadingIcon={
                     <IconContainer>
@@ -214,7 +236,26 @@ export default function Entry() {
               {t('pages.account.restore-wallet.mnemonic.index.hdPathSetting')}
             </TextButton>
           </HdPathContainer>
-          <Button>{t('pages.account.restore-wallet.mnemonic.index.next')}</Button>
+          <Button
+            disabled={!isFormComplete}
+            onClick={() => {
+              console.log(values);
+
+              const joinedMnemonicPhrase = values.join(' ');
+
+              const isValidMnemonicPhrase = bip39.validateMnemonic(joinedMnemonicPhrase);
+
+              if (!isValidMnemonicPhrase) {
+                // TODO toast
+                alert('Invalid Mnemonic Phrase');
+                return;
+              }
+              // TODO save to global state
+              // encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
+            }}
+          >
+            {t('pages.account.restore-wallet.mnemonic.index.next')}
+          </Button>
         </>
       </BaseFooter>
       <MnemonicBitsPopover
