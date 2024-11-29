@@ -12,7 +12,7 @@ type StandardInputProps = TextFieldProps & {
   rightBottomAdornment?: React.ReactNode;
 };
 
-export default function StandardInput({ type, error = false, helperText, rightBottomAdornment, ...remainder }: StandardInputProps) {
+export default function StandardInput({ type, error = false, helperText, rightBottomAdornment, slotProps, ...remainder }: StandardInputProps) {
   const [textFieldType, setTextFieldType] = useState<HTMLInputTypeAttribute | undefined>(type);
 
   const isShowBottomContainer = helperText || rightBottomAdornment;
@@ -24,6 +24,7 @@ export default function StandardInput({ type, error = false, helperText, rightBo
         autoComplete="off"
         type={type === 'password' ? textFieldType : type}
         slotProps={{
+          ...slotProps,
           input: {
             endAdornment: type === 'password' && (
               <InputAdornment position="end">
@@ -37,6 +38,7 @@ export default function StandardInput({ type, error = false, helperText, rightBo
                 </StyledIconButton>
               </InputAdornment>
             ),
+            ...slotProps?.input,
           },
         }}
         {...remainder}

@@ -5,6 +5,12 @@ export const CautionContainer = styled('div')({
   marginBottom: '2.4rem',
 });
 
+export const FormContainer = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+});
+
 export const Body = styled('div')({
   paddingTop: '2.4rem',
 });

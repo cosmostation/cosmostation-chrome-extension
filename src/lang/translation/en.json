@@ -161,5 +161,22 @@
         }
       }
     }
+  },
+  "schema": {
+    "common": {
+      "string": {
+        "base": "Please enter characters.",
+        "empty": "required",
+        "max": "Please enter less than {#limit} characters.",
+        "min": "Please enter at least {#limit} or more characters."
+      }
+    },
+    "passwordForm": {
+      "repeatPassword": {
+        "any": {
+          "only": "The password confirmation does not match."
+        }
+      }
+    }
   }
 }

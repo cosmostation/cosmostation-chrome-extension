@@ -19,7 +19,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         navigate({
           // to: Initial.to,
           // to: '/account/add-wallet',
-          to: '/account/restore-wallet/privatekey',
+          to: '/account/set-password',
         });
         return;
       }

@@ -114,6 +114,8 @@ export default function Entry() {
     }
   };
 
+  // NOTE 최종 스토리지 저장은 마지막 단계에서 진행하며, 각 단계에서 저장된 값들은 모두 전역변수에서 관리하자.
+
   return (
     <>
       <BaseBody>
