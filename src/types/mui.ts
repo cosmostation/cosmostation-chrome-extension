@@ -1,25 +1,26 @@
 import '@mui/system';
 
-import type { Color, TypeVariantsTrue, TypoVariants } from '@/styles/theme';
+import type { AccentColor, Color, CommonColor, TypeVariantsTrue, TypoVariants } from '@/styles/theme';
 
 declare module '@mui/material/styles' {
   interface Palette {
+    accentColor: AccentColor;
     color: Color;
-    // TODO: Add accentColor
-    // accentColor: Color;
+    commonColor: CommonColor;
   }
 
   interface PaletteOptions {
+    accentColor?: AccentColor;
     color?: Color;
+    commonColor?: CommonColor;
   }
 }
 
 declare module '@mui/material/styles' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface TypographyVariants extends TypoVariants {}
 
   // allow configuration using `createTheme`
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+
   interface TypographyVariantsOptions extends TypoVariants {}
 }
 

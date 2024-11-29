@@ -26,7 +26,7 @@ export default function InformationPanel({ titleText, bodyText, varitant, icon }
         {displayedIcon}
         <Typography variant="b3_M">{titleText}</Typography>
       </TopContainer>
-      <BodyText variant="b4_R">{bodyText}</BodyText>
+      <BodyText variant="b4_R_Multiline">{bodyText}</BodyText>
     </Container>
   );
 }

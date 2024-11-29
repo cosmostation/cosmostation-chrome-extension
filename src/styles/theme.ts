@@ -19,6 +19,24 @@ const darkThemeColor = {
   base1300: '#F7F7F8',
 };
 
+export type CommonColor = typeof darkCommonColor;
+
+const darkCommonColor = {
+  commonBlack: '#23272F',
+  commonWhite: '#292E38',
+};
+
+export type AccentColor = typeof darkThemeAccentColor;
+
+const darkThemeAccentColor = {
+  purple50: '#6432F1',
+  purple100: '#7040F7',
+  purple200: '#7C4FFC',
+  purple300: '#8B63FD',
+  purple400: '#9A77FD',
+  purple500: '#A98BFD',
+};
+
 const h1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal' };
 const h2_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.6rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const h2_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.6rem', lineHeight: '2rem', letterSpacing: 'normal' };
@@ -29,10 +47,14 @@ const b1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.5rem', 
 const b1_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const b2_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const b2_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
+const b2_M_Multiline = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const b3_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const b3_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
+const b3_M_Multiline = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
+const b3_R_Multiline = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const b4_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 const b4_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
+const b4_R_Multiline = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const c1_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 
 const h1n_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal' };
@@ -60,10 +82,14 @@ export const typoVariants = {
   b1_R,
   b2_B,
   b2_M,
+  b2_M_Multiline,
   b3_M,
   b3_R,
+  b3_M_Multiline,
+  b3_R_Multiline,
   b4_M,
   b4_R,
+  b4_R_Multiline,
   c1_M,
 };
 
@@ -92,10 +118,10 @@ export type TypeVariantsTrue = Record<TypoVariantKeys | NumberTypoVariants, true
 export const theme = createTheme({
   colorSchemes: {
     dark: {
-      palette: { color: darkThemeColor },
+      palette: { color: darkThemeColor, commonColor: darkCommonColor, accentColor: darkThemeAccentColor },
     },
     light: {
-      palette: { color: darkThemeColor },
+      palette: { color: darkThemeColor, commonColor: darkCommonColor, accentColor: darkThemeAccentColor },
     },
   },
   typography: {

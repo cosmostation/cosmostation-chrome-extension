@@ -16,7 +16,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   borderRadius: '0.8rem',
 
-  backgroundColor: props['variants'] === 'light' ? 'purple' : 'grey',
+  backgroundColor: props['variants'] === 'light' ? theme.palette.accentColor.purple200 : 'grey',
   color: theme.palette.color.base1300,
 
   cursor: 'pointer',

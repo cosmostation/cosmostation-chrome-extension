@@ -93,8 +93,9 @@ export default function HdPathBottomSheet({ currentHdPath, onClose, onChangeHpPa
           </StyledButton>
         </Header>
         <Body>
-          {/* TODO 멀티라인 타이포로 변경 필요, 멀티라인 타이포 키 추가 필요 */}
-          <DescriptionText variant="b3_R">{t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.description')}</DescriptionText>
+          <DescriptionText variant="b3_R_Multiline">
+            {t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.description')}
+          </DescriptionText>
           <StandardInput
             label={t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.lastHdPath')}
             onChange={(e) => {

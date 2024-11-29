@@ -46,7 +46,7 @@ export default function Entry() {
         <Body>
           <DescriptionContainer>
             <DescriptionTitle variant="h2_B">{t('pages.account.set-password.index.title')}</DescriptionTitle>
-            <DescriptionSubTitle variant="b3_R">{t('pages.account.set-password.index.subTitle')}</DescriptionSubTitle>
+            <DescriptionSubTitle variant="b3_R_Multiline">{t('pages.account.set-password.index.subTitle')}</DescriptionSubTitle>
           </DescriptionContainer>
           <PasswordInputContainer>
             <StandardInput

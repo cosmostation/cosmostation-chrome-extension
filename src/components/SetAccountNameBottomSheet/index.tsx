@@ -55,8 +55,7 @@ export default function SetAccountNameBottomSheet({ currentAccountName, setAccou
           </StyledButton>
         </Header>
         <Body>
-          {/* TODO 멀티라인 타이포로 변경 필요, 멀티라인 타이포 키 추가 필요 */}
-          <DescriptionText variant="b3_R">{t('components.SetAccountNameBottomSheet.index.description')}</DescriptionText>
+          <DescriptionText variant="b3_R_Multiline">{t('components.SetAccountNameBottomSheet.index.description')}</DescriptionText>
           <StandardInput
             label={t('components.SetAccountNameBottomSheet.index.accountName')}
             onChange={(e) => setInputAccountName(e.currentTarget.value)}

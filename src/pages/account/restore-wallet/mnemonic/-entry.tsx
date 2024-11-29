@@ -120,7 +120,7 @@ export default function Entry() {
         <Body>
           <DescriptionContainer>
             <DescriptionTitle variant="h2_B">{t('pages.account.restore-wallet.mnemonic.index.title')}</DescriptionTitle>
-            <DescriptionSubTitle variant="b3_R">{t('pages.account.restore-wallet.mnemonic.index.subTitle')}</DescriptionSubTitle>
+            <DescriptionSubTitle variant="b3_R_Multiline">{t('pages.account.restore-wallet.mnemonic.index.subTitle')}</DescriptionSubTitle>
           </DescriptionContainer>
 
           <MnemonicInputWrapper>
