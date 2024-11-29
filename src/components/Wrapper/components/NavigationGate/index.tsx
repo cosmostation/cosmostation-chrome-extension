@@ -19,8 +19,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         navigate({
           // to: Initial.to,
           // to: '/account/add-wallet',
-          // to: '/account/restore-wallet/mnemonic',
-          to: '/account/create-wallet/mnemonic',
+          to: '/account/restore-wallet/privatekey',
         });
         return;
       }

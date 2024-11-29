@@ -1,10 +1,42 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 
 export const Body = styled('div')({
   paddingTop: '2.4rem',
+});
+
+export const TopContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: '0.8rem',
+});
+
+export const ViewIconContainer = styled('div')({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  '& > svg': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
+});
+
+export const BottomChevronIconContainer = styled('div')({
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg': {
+    width: '1.4rem',
+    height: '1.4rem',
+  },
+});
+
+export const MarginRightTypography = styled(Base1300Text)({
+  marginRight: '0.2rem',
 });
 
 export const DescriptionContainer = styled('div')({
@@ -18,10 +50,7 @@ export const DescriptionContainer = styled('div')({
   rowGap: '0.6rem',
 });
 
-// TOOD Base1300 컴포넌트로 교체필요.
-export const DescriptionTitle = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1300,
-}));
+export const DescriptionTitle = styled(Base1300Text)({});
 
 export const DescriptionSubTitle = styled(Typography)(({ theme }) => ({
   width: '95%',

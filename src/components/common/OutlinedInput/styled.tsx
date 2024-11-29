@@ -1,7 +1,7 @@
 import { OutlinedInput } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
+export const StyledTextField = styled(OutlinedInput)(({ theme, ...props }) => ({
   borderRadius: '0.4rem',
 
   backgroundColor: theme.palette.color.base100,
@@ -14,20 +14,27 @@ export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
   },
 
   '.MuiOutlinedInput-input': {
-    fontFamily: theme.typography.b4_R.fontFamily,
-    fontStyle: theme.typography.b4_R.fontStyle,
-    fontSize: theme.typography.b4_R.fontSize,
-    lineHeight: theme.typography.b4_R.lineHeight,
-    letterSpacing: theme.typography.b4_R.letterSpacing,
+    fontFamily: theme.typography.b2_M.fontFamily,
+    fontStyle: theme.typography.b2_M.fontStyle,
+    fontSize: theme.typography.b2_M.fontSize,
+    lineHeight: theme.typography.b2_M.lineHeight,
+    letterSpacing: theme.typography.b2_M.letterSpacing,
+
+    WebkitTextSecurity: props.type === 'password' ? 'disc' : 'none',
+    MoxTextSecurity: props.type === 'password' ? 'disc' : 'none',
+
+    '&[type=password]': {
+      letterSpacing: '0.3rem',
+    },
 
     '&::placeholder': {
-      fontFamily: theme.typography.b4_R.fontFamily,
-      fontStyle: theme.typography.b4_R.fontStyle,
-      fontSize: theme.typography.b4_R.fontSize,
-      lineHeight: theme.typography.b4_R.lineHeight,
-      letterSpacing: theme.typography.b4_R.letterSpacing,
+      fontFamily: theme.typography.b2_M.fontFamily,
+      fontStyle: theme.typography.b2_M.fontStyle,
+      fontSize: theme.typography.b2_M.fontSize,
+      lineHeight: theme.typography.b2_M.lineHeight,
+      letterSpacing: theme.typography.b2_M.letterSpacing,
 
-      color: theme.palette.color.base600,
+      color: theme.palette.color.base700,
     },
   },
 

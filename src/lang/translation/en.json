@@ -127,7 +127,9 @@
             "subTitle": "Your private key is sensitive; don't share it. Anyone can access your account with it, so be cautious",
             "clearAll": "Clear All",
             "pasteFromClipboard": "Paste from Clipboard",
-            "next": "Next"
+            "next": "Next",
+            "privateKey": "Private Key",
+            "enterPrivateKey": "Enter Private Key"
           },
           "layout": {
             "header": "Restore With Private Key"
