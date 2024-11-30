@@ -13,13 +13,17 @@ export interface AccountBase {
 }
 export interface PrivateAccount extends AccountBase {
   type: Extract<AccountType, 'PRIVATE_KEY'>;
+  // NOTE encryptedPrivateKey로 이름 변경 필요
   privateKey: string;
+  encryptedRestoreString: string;
 }
 
 export interface MnemonicAccount extends AccountBase {
   type: Extract<AccountType, 'MNEMONIC'>;
+  // NOTE encryptedMnemonic로 이름 변경 필요
   mnemonic: string;
   index: string;
+  encryptedRestoreString: string;
 }
 
 export type Account = PrivateAccount | MnemonicAccount;
@@ -120,3 +124,6 @@ export interface AccountSuiAsset {
   address: AccountAddress;
   balance: string;
 }
+
+export type AccountNamesById = Record<AccountBase['id'], string>;
+export type MnemonicNamesByHashedMnemonic = Record<AccountBase['id'], string>;

@@ -39,6 +39,7 @@
     "react-i18next": "^15.0.3",
     "recharts": "^2.13.3",
     "sha3": "^2.1.4",
+    "uuid": "^11.0.3",
     "zustand": "^5.0.0"
   },
   "devDependencies": {

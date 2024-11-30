@@ -19,6 +19,18 @@ export async function initExtensionLocalStorage() {
   if (!originStorage.dashboardCoinSortKey) {
     setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
   }
+
+  if (!originStorage.accounts) {
+    setExtensionLocalStorage('accounts', []);
+  }
+
+  if (!originStorage.accountNamesById) {
+    setExtensionLocalStorage('accountNamesById', {});
+  }
+
+  if (!originStorage.mnemonicNamesByHashedMnemonic) {
+    setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
+  }
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {

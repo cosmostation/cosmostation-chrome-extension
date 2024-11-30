@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { DefaultSortKey } from '@/constants/initialStorage';
-import type { SortKeyStore } from '@/types/store/sortStore';
+import type { SortKeyStore } from '@/types/store/sortKey';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 const initialState = DefaultSortKey;

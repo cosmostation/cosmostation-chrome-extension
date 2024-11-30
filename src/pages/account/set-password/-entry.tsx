@@ -9,6 +9,7 @@ import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
 import InformationPanel from '@/components/InformationPanel';
 import { Route as AddWallet } from '@/pages/account/add-wallet';
+import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import { Body, CautionContainer, DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer, PasswordInputContainer } from './-styled';
 import type { PasswordForm } from './-useSchema';
@@ -17,6 +18,8 @@ import { useSchema } from './-useSchema';
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { updateNewPassword } = useNewPasswordStore((state) => state);
 
   const { passwordForm } = useSchema();
 
@@ -36,8 +39,7 @@ export default function Entry() {
   const isButtonEnabled = password && repeatPassword;
 
   const submit = (data: PasswordForm) => {
-    console.log('🚀 ~ submit ~ data:', data);
-    // TODO 비밀번호 설정 로직 추가
+    updateNewPassword(data.password);
 
     navigate({
       to: AddWallet.to,

@@ -1,5 +1,6 @@
 import type { Account } from '@/types/account';
 import type { ExtensionStorage } from '@/types/extension';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 export async function getAccount(id: string) {
   const { accounts } = await chrome.storage.local.get<ExtensionStorage>('accounts');
@@ -15,7 +16,11 @@ export async function getAccount(id: string) {
 
 // test
 export async function addAccount(account: Account) {
-  await chrome.storage.local.set<Partial<ExtensionStorage>>({ accounts: [account] });
+  const storedAccounts = await getExtensionLocalStorage('accounts');
+
+  const updatedAccounts = [...storedAccounts, account];
+
+  await setExtensionLocalStorage('accounts', updatedAccounts);
 }
 
 export async function getAccountAddress(id: string) {
