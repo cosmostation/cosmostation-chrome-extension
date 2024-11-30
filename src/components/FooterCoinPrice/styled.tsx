@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const ContentsContainer = styled('div')({
-  paddingLeft: '1rem',
+import Base1300Text from '../common/Base1300Text';
 
-  display: 'grid',
-
-  gridTemplateColumns: '1fr',
+export const LeftContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
 
   rowGap: '0.2rem',
 });
@@ -21,18 +21,35 @@ export const RightChevronIconContainer = styled('div')({
   },
 });
 
-export const SymbolTypograpy = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1300,
+export const MarginRightText = styled(Base1300Text)({
+  marginRight: '0.2rem',
+});
+
+export const CoinGecko24Text = styled(Typography)(({ theme }) => ({
+  color: theme.palette.color.base1000,
 }));
 
-export const CoinValueContainer = styled('div')(({ theme }) => ({
+export const RightContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-start',
   alignItems: 'center',
 
-  columnGap: '0.4rem',
+  columnGap: '2rem',
+});
 
-  color: theme.palette.color.base1000,
+export const LineChartContainer = styled('div')({
+  width: '9.3rem',
+  height: '5.3rem',
+});
+
+export const RightPriceContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  justifyContent: 'center',
+
+  rowGap: '0.2rem',
+
+  color: theme.palette.color.base1300,
 }));
 
 type ChangeRateContainerProps = {
@@ -59,8 +76,8 @@ const fillColors = {
 };
 
 export const ChevronIconContainer = styled('div')<ChevronIconProps>(({ ...props }) => ({
-  width: '0.8rem',
-  height: '0.8rem',
+  width: '1rem',
+  height: '1rem',
 
   '& > svg': {
     width: '100%',
