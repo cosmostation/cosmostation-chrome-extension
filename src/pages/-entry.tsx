@@ -12,6 +12,8 @@ import { Tab, Tabs } from '@/components/common/Tab';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import { useSortKeyStore } from '@/zustand/hooks/useSortStore';
 
 import {
   AdCarouselContainer,
@@ -40,6 +42,8 @@ export default function Entry() {
   const { t } = useTranslation();
 
   Buffer.from('Hello from Index!').toString('base64');
+
+  const { dashboardCoinSortKey, updateDashboardCoinSortKey } = useSortKeyStore((state) => state);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
 
@@ -283,11 +287,11 @@ export default function Entry() {
                 children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
               },
             ]}
-            currentSortOption={DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER}
+            currentSortOption={dashboardCoinSortKey}
             open={isOpenSortBottomSheet}
             onClose={() => setIsOpenSortBottomSheet(false)}
             onSelectSortOption={(val) => {
-              console.log(val);
+              updateDashboardCoinSortKey(val as DashboardCoinSortKeyType);
             }}
           />
         </Container>

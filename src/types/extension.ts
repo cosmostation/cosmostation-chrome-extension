@@ -10,6 +10,7 @@ import type {
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
 import type { AssetId, CosmosCw20Asset, EvmErc20Asset } from './asset';
+import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
 
 export interface ExtensionStorage {
   accounts: Account[];
@@ -26,4 +27,9 @@ export interface ExtensionStorage {
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
   initAccountIds: Account['id'][];
+  dashboardCoinSortKey: DashboardCoinSortKeyType;
+  dappListSortKey: DappListSortKeyType;
+  language: string;
 }
+
+export type ExtensionStorageKeys = keyof ExtensionStorage;

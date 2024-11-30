@@ -1,5 +1,6 @@
 import NavigationGate from './components/NavigationGate';
 import Scaffold from './components/Scaffold';
+import Init from '../Init';
 
 type WrapperProps = {
   children: JSX.Element;
@@ -8,7 +9,9 @@ type WrapperProps = {
 export default function Wrapper({ children }: WrapperProps) {
   return (
     <Scaffold>
-      <NavigationGate>{children}</NavigationGate>
+      <Init>
+        <NavigationGate>{children}</NavigationGate>
+      </Init>
     </Scaffold>
   );
 }

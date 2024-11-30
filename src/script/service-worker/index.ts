@@ -59,7 +59,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 //   }
 // });
 
-
 // import { initExtensionView } from './initialize';
 
 // function main() {
@@ -67,3 +66,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 // }
 
 // main();
+
+// function startServiceWorker() {
+//   init();
+//   handleStorageUpdate();
+// }
+
+// startServiceWorker();
