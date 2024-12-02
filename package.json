@@ -37,6 +37,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
     "react-i18next": "^15.0.3",
+    "react-toastify": "^10.0.6",
     "recharts": "^2.13.3",
     "sha3": "^2.1.4",
     "uuid": "^11.0.3",

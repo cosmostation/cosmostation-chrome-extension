@@ -7,6 +7,7 @@ import { createHashHistory, createRouter, RouterProvider } from '@tanstack/react
 
 import { theme } from '@/styles/theme';
 
+import ToastContainer from './components/common/ToastContainer';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
@@ -43,6 +44,7 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ThemeProvider theme={theme} defaultMode="dark">
         <RouterProvider router={router} />
+        <ToastContainer />
       </ThemeProvider>
     </StrictMode>,
   );

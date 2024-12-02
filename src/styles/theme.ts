@@ -23,7 +23,7 @@ export type CommonColor = typeof darkCommonColor;
 
 const darkCommonColor = {
   commonBlack: '#23272F',
-  commonWhite: '#292E38',
+  commonWhite: '#FFFFFF',
 };
 
 export type AccentColor = typeof darkThemeAccentColor;
