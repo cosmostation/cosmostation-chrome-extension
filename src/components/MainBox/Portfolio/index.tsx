@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
+import AllNetworkButton from '@/components/AllNetworkButton';
 import ChipButton from '@/components/common/ChipButton';
 import IconButton from '@/components/common/IconButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
+import { TEST_CHAIN_LIST } from '@/constants/test';
 
 import {
   BodyBottomChipButtonContainer,
@@ -12,7 +15,6 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
-  ChevronIconContainer,
   HistoryButtonTypo,
   SpacedTypography,
   StyledIconButton,
@@ -20,13 +22,11 @@ import {
   TopContainer,
   TopLeftContainer,
   TopRightContainer,
-  TopRightText,
   TotalBalanceContainer,
 } from './styled';
 import MainBox from '..';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
 import HistoryIcon from '@/assets/images/icons/History14.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
@@ -35,6 +35,10 @@ import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png'
 
 export default function PortFolio() {
   const { t } = useTranslation();
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
+
+  console.log('🚀 ~ PortFolio ~ currentSelectedChain:', currentSelectedChainId);
+  const dummyChainList = TEST_CHAIN_LIST;
 
   return (
     <>
@@ -48,16 +52,14 @@ export default function PortFolio() {
               </IconButton>
             </TopLeftContainer>
             <TopRightContainer>
-              <IconTextButton
-                leadingIcon={<GridMenuIcon />}
-                trailingIcon={
-                  <ChevronIconContainer>
-                    <BottomFilledChevronIcon />
-                  </ChevronIconContainer>
-                }
-              >
-                <TopRightText variant="b4_M">{t('components.MainBox.Portfolio.index.allNetwork')}</TopRightText>
-              </IconTextButton>
+              <AllNetworkButton
+                variant="chip"
+                currentChainId={currentSelectedChainId}
+                chainList={dummyChainList}
+                selectChainOption={(id) => {
+                  setCurrentSelectedChainId(id);
+                }}
+              />
             </TopRightContainer>
           </TopContainer>
         }

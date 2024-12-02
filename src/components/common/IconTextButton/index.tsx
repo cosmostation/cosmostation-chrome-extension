@@ -1,6 +1,6 @@
 import { StyledIconButton } from './styled';
 
-type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+export type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   leadingIcon?: JSX.Element;
   trailingIcon?: JSX.Element;
   children?: JSX.Element;

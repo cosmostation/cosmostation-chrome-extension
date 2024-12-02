@@ -101,6 +101,7 @@ export default function Entry() {
       // NOTE 원래 익스텐션에서는 sha512(패스워드 스트링)한 값을 스토리지에 저장해놓고 Lock컴포넌트에서 비밀번호를 받아서 sha512(입력받은 비밀번호)한 값을 비교하는 방식을 사용했는데
       await setExtensionLocalStorage('comparisonPasswordHash', comparisonPasswordHash);
 
+      // TODO 로컬 스토리지 대신 세션스토리지로 변경 필요
       // NOTE 만약 이걸 로컬에 담았을때 외부에서 로컬 스토리지에 접근해서 데이터를 가져가면 어떡함?
       // NOTE 일정 시간뒤에 자동적으로 password의 encryptedPassword 키만 삭제해야함.
       await setExtensionLocalStorage('password', {

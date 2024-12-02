@@ -30,12 +30,6 @@ export const HistoryButtonTypo = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const TopRightText = styled(Typography)(({ theme }) => ({
-  margin: '0 0.2rem',
-
-  color: theme.palette.color.base1300,
-}));
-
 export const BodyContainer = styled('div')({});
 
 export const BodyTopContainer = styled('div')(({ theme }) => ({
@@ -105,13 +99,3 @@ export const SpacedTypography = styled(Typography)(({ theme }) => ({
 
   color: theme.palette.color.base1300,
 }));
-
-export const ChevronIconContainer = styled('div')({
-  width: '1.2rem',
-  height: '1.2rem',
-
-  '& > svg': {
-    width: '1.2rem',
-    height: '1.2rem',
-  },
-});

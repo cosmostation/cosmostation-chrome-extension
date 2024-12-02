@@ -45,6 +45,23 @@
         "twentyFourWords": "24 Words",
         "copy": "Copy to Clipboard"
       }
+    },
+    "AllNetworkButton": {
+      "index": {
+        "allNetwork": "All Network"
+      }
+    },
+    "FooterCoinPrice": {
+      "index": {
+        "currentPrice": "Current Price",
+        "coinGecko24h": "Coingecko 24H"
+      }
+    },
+    "ChainListBottomSheet": {
+      "index": {
+        "title": "Select Network",
+        "allNetwork": "All Network"
+      }
     }
   },
   "pages": {
