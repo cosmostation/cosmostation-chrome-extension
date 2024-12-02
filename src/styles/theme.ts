@@ -35,6 +35,34 @@ const darkThemeAccentColor = {
   purple300: '#8B63FD',
   purple400: '#9A77FD',
   purple500: '#A98BFD',
+
+  green50: '#29A376',
+  green100: '#2BAB7C',
+  green200: '#2DB482',
+  green300: '#2FBC88',
+  green400: '#32C891',
+  green500: '#3BCE98',
+
+  red50: '#D4465D',
+  red100: '#DB4860',
+  red200: '#E34B63',
+  red300: '#EB4D67',
+  red400: '#F24F6A',
+  red500: '#F7516C',
+
+  yellow50: '#29A376',
+  yellow100: '#2BAB7C',
+  yellow200: '#2DB482',
+  yellow300: '#2FBC88',
+  yellow400: '#32C891',
+  yellow500: '#3BCE98',
+
+  blue50: '#3084E8',
+  blue100: '#398CEF',
+  blue200: '#4294F5',
+  blue300: '#4C9CFA',
+  blue400: '#5BA4FB',
+  blue500: '#6CADFB',
 };
 
 const h1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal' };

@@ -13,7 +13,6 @@ export const StyledToastContainer = styled(ToastContainer)<ToastContainerProps>(
   },
 
   '.Toastify__toast--error': {
-    // TODO : 테마 색상 적용
-    backgroundColor: '#F53D50',
+    backgroundColor: theme.palette.accentColor.red200,
   },
 }));
