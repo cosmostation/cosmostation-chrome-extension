@@ -59,8 +59,6 @@ export default function Entry() {
 
       const storedAccounts = await getExtensionLocalStorage('accounts');
 
-      console.log('🚀 ~ createMnemonicAccount ~ accountList:', storedAccounts);
-
       const filteredMnemonicAccountList = storedAccounts.filter((account) => account.type === 'MNEMONIC');
 
       const accountId = uuidv4();

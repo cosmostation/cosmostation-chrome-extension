@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as bip39 from 'bip39';
+import { v4 as uuidv4 } from 'uuid';
 import { InputAdornment } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
@@ -9,6 +11,18 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import TextButton from '@/components/common/TextButton';
 import MnemonicBitsPopover from '@/components/MnemonicViewer/components/MnemonicBitsPopover';
+import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import { addAccount } from '@/libs/account';
+import { sendMessage } from '@/libs/extension';
+import { Route as Init } from '@/pages/account/initial';
+import { Route as Dashboard } from '@/pages/index';
+import type { Account } from '@/types/account';
+import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
+import { sha512 } from '@/utils/crypto/password';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { toastError } from '@/utils/toast';
+import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
+import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import HdPathBottomSheet from './-components/HdPathBottomSheet';
 import {
@@ -41,11 +55,17 @@ import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const { password, key, timestamp } = useNewPasswordStore((state) => state);
+  const { updateNewAccount } = useNewAccountStore((state) => state);
 
   const [isViewMnemonic, setIsViewMnemonic] = useState(false);
 
   const [isOpenPopover, setIsOpenPopover] = useState(false);
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
 
   const [isOpenHdPathBottomSheet, setIsOpenHdPathBottomSheet] = useState(false);
   const [currentHdPathIndex, setcurrentHdPathIndex] = useState('0');
@@ -134,6 +154,92 @@ export default function Entry() {
   }, [values, isViewMnemonic]);
   // NOTE 최종 스토리지 저장은 마지막 단계에서 진행하며, 각 단계에서 저장된 값들은 모두 전역변수에서 관리하자.
   // NOTE 니모닉 검증 로직은 피그마 참조
+
+  const setUp = async (newAccountName: string) => {
+    if (!password) {
+      toastError(t('pages.account.restore-wallet.mnemonic.index.passwordNotSet'));
+
+      navigate({
+        to: Init.to,
+      });
+    }
+
+    // NOTE v11 다 저장안되는 경우도 있음.
+    // TODO params, assetv11다 로딩안됐으면 여기서 다시 await해야할듯.
+
+    // NOTE 전체 로딩 start
+    // NOTE 대략 10초 걸림.
+
+    const joinedMnemonicPhrase = values.join(' ');
+
+    console.log('🚀 ~ setUp ~ joinedMnemonicPhrase:', joinedMnemonicPhrase);
+
+    const storedAccountNames = await getExtensionLocalStorage('accountNamesById');
+    const storedMnemonicNames = await getExtensionLocalStorage('mnemonicNamesByHashedMnemonic');
+
+    const storedAccounts = await getExtensionLocalStorage('accounts');
+
+    const filteredMnemonicAccountList = storedAccounts.filter((account) => account.type === 'MNEMONIC');
+
+    const accountId = uuidv4();
+
+    const decryptedPassword = aesDecrypt(password, `${key}${timestamp}`);
+
+    const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, decryptedPassword);
+    const encryptedRestoreString = sha512(joinedMnemonicPhrase);
+
+    updateNewAccount({
+      id: accountId,
+      type: 'MNEMONIC',
+      name: newAccountName,
+      index: '0',
+      mnemonic: encryptedMnemonic,
+      encryptedRestoreString,
+    });
+
+    const newAccount: Account = {
+      id: accountId,
+      type: 'MNEMONIC',
+      index: '0',
+      mnemonic: encryptedMnemonic,
+      encryptedRestoreString,
+    };
+
+    await addAccount(newAccount);
+
+    await setExtensionLocalStorage('accountNamesById', { ...storedAccountNames, [accountId]: newAccountName });
+    await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {
+      ...storedMnemonicNames,
+      [encryptedRestoreString]: `Mnemonic ${filteredMnemonicAccountList.length + 1}`,
+    });
+
+    const comparisonPasswordHash = sha512(decryptedPassword);
+    await setExtensionLocalStorage('comparisonPasswordHash', comparisonPasswordHash);
+
+    await setExtensionLocalStorage('password', {
+      encryptedPassword: password,
+      key,
+      timestamp,
+    });
+
+    await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
+    await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] });
+
+    // NOTE 이러고 어카운트 타입 여러개인 경우에 대한 처리 필요
+    // NOTE 해당 페이지에서
+
+    // NOTE 전체 로딩 stop
+
+    // NOTE 이건 로딩 프로그래스 컴포넌트가 끝나면 이동되도록 해야할듯.
+    await setExtensionLocalStorage('selectedAccountId', accountId);
+
+    navigate({
+      to: Dashboard.to,
+    });
+
+    // TOOD
+    // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+  };
 
   return (
     <>
@@ -239,19 +345,16 @@ export default function Entry() {
           <Button
             disabled={!isFormComplete}
             onClick={() => {
-              console.log(values);
-
               const joinedMnemonicPhrase = values.join(' ');
 
               const isValidMnemonicPhrase = bip39.validateMnemonic(joinedMnemonicPhrase);
 
               if (!isValidMnemonicPhrase) {
-                // TODO toast
-                alert('Invalid Mnemonic Phrase');
+                toastError(t('pages.account.restore-wallet.mnemonic.index.invalidMnemonicPhrase'));
                 return;
               }
-              // TODO save to global state
-              // encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
+
+              setIsOpenSetAccountNameBottomSheet(true);
             }}
           >
             {t('pages.account.restore-wallet.mnemonic.index.next')}
@@ -282,6 +385,13 @@ export default function Entry() {
         open={isOpenHdPathBottomSheet}
         onClose={() => setIsOpenHdPathBottomSheet(false)}
         onChangeHpPath={(val) => setcurrentHdPathIndex(val)}
+      />
+      <SetAccountNameBottomSheet
+        open={isOpenSetAccountNameBottomSheet}
+        onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
+        setAccountName={async (accountName) => {
+          await setUp(accountName);
+        }}
       />
     </>
   );

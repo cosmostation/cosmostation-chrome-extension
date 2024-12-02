@@ -15,7 +15,10 @@ import type { SuiRpcGetBalanceResponse } from '@/types/sui/api';
 export async function balance(id: string) {
   console.time(`balance-${id}`);
   try {
+    // NOTE 선언 이유? account가 정상적으로 저장, 불러오기 되는지 확인하기 위해?
     await getAccount(id);
+    // TODO 디폴트 토큰만 냅두고 나머지를 히든 토큰에 밀어넣는 로직만 있으면 될듯
+    await initAssests(id);
     await Promise.all([cosmosBalances(id), evmBalances(id), aptosBalances(id), suiBalances(id), erc20Balance(id), cw20Balance(id)]);
     await initAccount(id);
   } catch (error) {
@@ -44,6 +47,7 @@ export async function initAccount(id: string) {
       ...evmAccountAssets,
       ...suiAccountAssets,
     ]
+      // TODO 앞단에서 히든에셋 로직을 따로 넣어놨으니 여기에서는 처리 안해줘도 될듯?
       .filter((asset) => asset.balance === '0')
       .map((asset) => {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
@@ -55,19 +59,39 @@ export async function initAccount(id: string) {
       await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
     }
 
+    // NOTE 이 로직을 살리면 히든처리가 2번 들어가는 거임
+    // NOTE 1. preload기준
+    // NOTE 히든처리 제외 나머지 전체 밸런스 페칭 후 밸런스 0인 애들 히든 처리.
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
   }
+}
+
+// NOTE 기본 코인 및 디폴트 토큰(erc20. cw20의 preload만)만 냅두고 나머지는 히든처리작업
+export async function initAssests(id: string) {
+  const { cw20Assets, erc20Assets } = await getAssets();
+
+  const filteredPreloadERC20Assets = erc20Assets.filter((asset) => asset.wallet_preload);
+  const filteredPreloadCW20Assets = cw20Assets.filter((asset) => asset.wallet_preload);
+
+  // NOTE 코스모스, 수이,  이더리움 에셋 쪽은 안하는 이유가 어차피 한번 콜로 전부 가져오니깐.
+  const hiddenAssetIds = [...filteredPreloadERC20Assets, ...filteredPreloadCW20Assets].map((asset) => {
+    return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
+  });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
 }
 
 async function cosmosBalances(id: string) {
   const address = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
 
+  // NOTE 랩핑된 코스모스 체인 정보, 주소정보
   const addressWithChain = address
     .map((addr) => {
       const chain = cosmosChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
+    // NOTE 코스모스 체인만 필터링해서 쓸 수 있도록
     .filter((addr) => addr.chain);
 
   const { results } = await PromisePool.withConcurrency(10)

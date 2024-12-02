@@ -23,6 +23,7 @@ export interface EvmAsset extends AssetBase {
 export interface EvmErc20Asset extends AssetBase {
   chainType: 'evm';
   type: 'erc20';
+  wallet_preload?: boolean;
 }
 
 export interface CosmosAsset extends AssetBase {
@@ -47,6 +48,7 @@ export interface CosmosAsset extends AssetBase {
 export interface CosmosCw20Asset extends AssetBase {
   chainType: 'cosmos';
   type: string;
+  wallet_preload?: boolean;
 }
 
 export interface SuiAsset extends AssetBase {

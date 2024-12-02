@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
-import { getAccount } from '@/libs/account';
+import { getAccount, getPassword } from '@/libs/account';
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import type { AccountAddress } from '@/types/account';
@@ -12,6 +12,9 @@ export async function address(id: string) {
   try {
     const account = await getAccount(id);
     const { cosmosChains, evmChains, suiChains, aptosChains } = await getChains();
+
+    const password = await getPassword();
+
     const chains = [...cosmosChains, ...evmChains, ...suiChains, ...aptosChains];
 
     const { results: addressResponse } = await PromisePool.withConcurrency(100)
@@ -30,7 +33,7 @@ export async function address(id: string) {
           })
           .process(async (accountType) => {
             const chainItem = { ...etc, accountTypes: [accountType] };
-            const keypair = getKeypair(chainItem, account);
+            const keypair = getKeypair(chainItem, account, password);
             const address = getAddress(chainItem, keypair.publicKey);
 
             const result: AccountAddress = { chainId: etc.id, chainType: etc.chainType, address, publicKey: keypair.publicKey, accountType };

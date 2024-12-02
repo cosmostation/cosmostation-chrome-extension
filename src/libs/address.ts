@@ -13,6 +13,7 @@ import { Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
 
 import type { Account } from '@/types/account';
 import type { Chain } from '@/types/chain';
+import { aesDecrypt } from '@/utils/crypto';
 
 const bip32 = BIP32Factory(ecc);
 const ECPair = ECPairFactory(ecc);
@@ -22,7 +23,7 @@ interface Keypair {
   publicKey: string;
 }
 
-export function getKeypair(chain: Chain, account: Account): Keypair {
+export function getKeypair(chain: Chain, account: Account, password: string): Keypair {
   const { chainType, accountTypes } = chain;
 
   if (accountTypes.length === 0) {
@@ -34,10 +35,12 @@ export function getKeypair(chain: Chain, account: Account): Keypair {
     const { mnemonic, index } = account;
     const { hdPath } = accountType;
 
+    const decryptedMnemonic = aesDecrypt(mnemonic, password);
+
     if (chainType === 'cosmos' || chainType === 'evm') {
       const path = hdPath.replace('${index}', `${index}`);
 
-      const seed = bip39.mnemonicToSeedSync(mnemonic);
+      const seed = bip39.mnemonicToSeedSync(decryptedMnemonic);
       const node = bip32.fromSeed(seed);
       const child = node.derivePath(path);
 
@@ -50,7 +53,7 @@ export function getKeypair(chain: Chain, account: Account): Keypair {
     if (chainType === 'aptos' || chainType === 'sui') {
       const path = hdPath.replace('${index}', `${index}`);
 
-      const seed = bip39.mnemonicToSeedSync(mnemonic);
+      const seed = bip39.mnemonicToSeedSync(decryptedMnemonic);
       const node = derivePath(path, Buffer.from(seed).toString('hex'));
 
       const privateKey = Buffer.from(node.key).toString('hex');
@@ -59,6 +62,7 @@ export function getKeypair(chain: Chain, account: Account): Keypair {
       return { privateKey, publicKey };
     }
 
+    // TODO: bitcoin
     // if (chainType === 'bitcoin') {
     //   const path = compiled({ index: `${index}'` });
     // }

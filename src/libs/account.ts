@@ -1,5 +1,6 @@
 import type { Account } from '@/types/account';
 import type { ExtensionStorage } from '@/types/extension';
+import { aesDecrypt } from '@/utils/crypto';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 export async function getAccount(id: string) {
@@ -12,6 +13,20 @@ export async function getAccount(id: string) {
   }
 
   return account;
+}
+
+export async function getPassword() {
+  const { password } = await chrome.storage.local.get<ExtensionStorage>('password');
+
+  if (!password) {
+    throw new Error('Password not found');
+  }
+
+  const { encryptedPassword, key, timestamp } = password;
+
+  const decryptedPassword = aesDecrypt(encryptedPassword, `${key}${timestamp}`);
+
+  return decryptedPassword;
 }
 
 // test
