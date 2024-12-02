@@ -9,6 +9,7 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import OutlinedInput from '@/components/common/OutlinedInput';
 import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import { toastError } from '@/utils/toast';
 
 import {
   Body,
@@ -87,13 +88,10 @@ export default function Entry() {
   };
 
   useEffect(() => {
-    if (errors.privateKey) {
-      console.log(errors.privateKey.message);
-
-      // TODO enqueueSnackbar
-      alert(errors.privateKey.message);
+    if (errors.privateKey?.message) {
+      toastError(errors.privateKey.message);
     }
-  }, [errors.privateKey]);
+  }, [errors]);
 
   return (
     <>
