@@ -20,7 +20,7 @@ export const StyledTabs = styled((props: TabsProps) => <Tabs {...props} TabIndic
       width: '100%',
       borderTopLeftRadius: '0.4rem',
       borderTopRightRadius: '0.4rem',
-      backgroundColor: theme.palette.color.base200,
+      backgroundColor: theme.palette.accentColor.purple300,
     },
   }),
 );
