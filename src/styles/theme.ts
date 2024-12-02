@@ -22,7 +22,7 @@ const darkThemeColor = {
 export type CommonColor = typeof darkCommonColor;
 
 const darkCommonColor = {
-  commonBlack: '#23272F',
+  commonBlack: '#16181D',
   commonWhite: '#FFFFFF',
 };
 

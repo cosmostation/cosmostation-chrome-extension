@@ -10,7 +10,7 @@
         "index": {
           "totalValue": "My Total Value",
           "setting": "Setting",
-          "allNetworks": "All Networks",
+          "allNetwork": "All Network",
           "send": "Send",
           "receive": "Receive",
           "history": "History"

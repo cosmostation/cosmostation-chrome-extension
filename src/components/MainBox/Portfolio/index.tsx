@@ -56,7 +56,7 @@ export default function PortFolio() {
                   </ChevronIconContainer>
                 }
               >
-                <TopRightText variant="b4_M">{t('components.MainBox.Portfolio.index.allNetworks')}</TopRightText>
+                <TopRightText variant="b4_M">{t('components.MainBox.Portfolio.index.allNetwork')}</TopRightText>
               </IconTextButton>
             </TopRightContainer>
           </TopContainer>
