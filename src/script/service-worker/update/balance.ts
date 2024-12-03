@@ -38,6 +38,8 @@ export async function initAccount(id: string) {
   await getAccount(id);
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
+  const storedHiddenAssetIds = await getHiddenAssets(id);
+
   if (!initAccountIds?.includes(id)) {
     const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets } = await getAccountAssets(id);
 
@@ -49,11 +51,14 @@ export async function initAccount(id: string) {
       ...evmAccountAssets,
       ...suiAccountAssets,
     ]
-      // TODO 앞단에서 히든에셋 로직을 따로 넣어놨으니 여기에서는 처리 안해줘도 될듯?
       .filter((asset) => asset.balance === '0')
       .map((asset) => {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
       });
+
+    const uniqueHiddenAssetIds = [...storedHiddenAssetIds, ...hiddenAssetIds].filter(
+      (v, i, a) => a.findIndex((t) => t.id === v.id && t.chainId === v.chainId && t.chainType === v.chainType) === i,
+    );
 
     if (initAccountIds?.length > 0) {
       await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
@@ -64,7 +69,7 @@ export async function initAccount(id: string) {
     // NOTE 이 로직을 살리면 히든처리가 2번 들어가는 거임
     // NOTE 1. preload기준
     // NOTE 히든처리 제외 나머지 전체 밸런스 페칭 후 밸런스 0인 애들 히든 처리.
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
   }
 }
 
