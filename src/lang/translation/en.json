@@ -15,6 +15,13 @@
           "receive": "Receive",
           "history": "History"
         }
+      },
+      "CoinOverview": {
+        "index": {
+          "Overview": "Overview",
+          "in": "In",
+          "networks": "Networks"
+        }
       }
     },
     "SortBottomSheet": {
@@ -132,7 +139,9 @@
             "hdPathDescription": "Use custom path?",
             "hdPathSetting": "HD Path Setting",
             "next": "Next",
-            "pasteFromClipboard": "Paste from Clipboard"
+            "pasteFromClipboard": "Paste from Clipboard",
+            "passwordNotSet": "Password not set",
+            "invalidMnemonicPhrase": "Invalid mnemonic phrase"
           },
           "layout": {
             "header": "Restore With Mnemonic"

@@ -1,4 +1,4 @@
-import { BodyContainer, BottomContainer, Container, ContentsContainer, TopContainer } from './styled';
+import { BlurEffectLayer, BodyContainer, BottomContainer, CoinBackgroundImage, Container, ContentsContainer, TopContainer } from './styled';
 
 type MainBoxProps = {
   top: JSX.Element;
@@ -6,16 +6,20 @@ type MainBoxProps = {
   bottom?: JSX.Element;
   className?: string;
   backgroundImage?: string;
+  coinBackgroundImage?: string;
 };
 
-export default function MainBox({ top, body, bottom, className, backgroundImage }: MainBoxProps) {
+export default function MainBox({ top, body, bottom, className, backgroundImage, coinBackgroundImage }: MainBoxProps) {
   return (
     <Container className={className} backgroundImage={backgroundImage}>
-      <ContentsContainer data-is-bottom={!!bottom}>
-        <TopContainer>{top}</TopContainer>
-        <BodyContainer>{body}</BodyContainer>
-      </ContentsContainer>
-      {bottom && <BottomContainer>{bottom}</BottomContainer>}
+      <CoinBackgroundImage backgroundImage={coinBackgroundImage}>
+        {coinBackgroundImage && <BlurEffectLayer />}
+        <ContentsContainer data-is-bottom={!!bottom}>
+          <TopContainer>{top}</TopContainer>
+          <BodyContainer>{body}</BodyContainer>
+        </ContentsContainer>
+        {bottom && <BottomContainer>{bottom}</BottomContainer>}
+      </CoinBackgroundImage>
     </Container>
   );
 }

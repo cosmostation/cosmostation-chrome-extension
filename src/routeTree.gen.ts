@@ -10,16 +10,17 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './pages/__root';
-import { Route as IndexImport } from './pages/index';
-import { Route as DashboardIndexImport } from './pages/dashboard/index';
-import { Route as AboutIndexImport } from './pages/about/index';
-import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index';
-import { Route as AccountInitialIndexImport } from './pages/account/initial/index';
-import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index';
-import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index';
-import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/account/restore-wallet/mnemonic/index';
-import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index';
+import { Route as rootRoute } from './pages/__root'
+import { Route as IndexImport } from './pages/index'
+import { Route as DashboardIndexImport } from './pages/dashboard/index'
+import { Route as CoinOverviewIndexImport } from './pages/coin-overview/index'
+import { Route as AboutIndexImport } from './pages/about/index'
+import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
+import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
+import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index'
+import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index'
+import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/account/restore-wallet/mnemonic/index'
+import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 
 // Create/Update Routes
 
@@ -27,227 +28,255 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
+
+const CoinOverviewIndexRoute = CoinOverviewIndexImport.update({
+  id: '/coin-overview/',
+  path: '/coin-overview/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AboutIndexRoute = AboutIndexImport.update({
   id: '/about/',
   path: '/about/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AccountSetPasswordIndexRoute = AccountSetPasswordIndexImport.update({
   id: '/account/set-password/',
   path: '/account/set-password/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AccountInitialIndexRoute = AccountInitialIndexImport.update({
   id: '/account/initial/',
   path: '/account/initial/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AccountAddWalletIndexRoute = AccountAddWalletIndexImport.update({
   id: '/account/add-wallet/',
   path: '/account/add-wallet/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
-const AccountRestoreWalletPrivatekeyIndexRoute = AccountRestoreWalletPrivatekeyIndexImport.update({
-  id: '/account/restore-wallet/privatekey/',
-  path: '/account/restore-wallet/privatekey/',
-  getParentRoute: () => rootRoute,
-} as any);
+const AccountRestoreWalletPrivatekeyIndexRoute =
+  AccountRestoreWalletPrivatekeyIndexImport.update({
+    id: '/account/restore-wallet/privatekey/',
+    path: '/account/restore-wallet/privatekey/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
-const AccountRestoreWalletMnemonicIndexRoute = AccountRestoreWalletMnemonicIndexImport.update({
-  id: '/account/restore-wallet/mnemonic/',
-  path: '/account/restore-wallet/mnemonic/',
-  getParentRoute: () => rootRoute,
-} as any);
+const AccountRestoreWalletMnemonicIndexRoute =
+  AccountRestoreWalletMnemonicIndexImport.update({
+    id: '/account/restore-wallet/mnemonic/',
+    path: '/account/restore-wallet/mnemonic/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
-const AccountCreateWalletMnemonicIndexRoute = AccountCreateWalletMnemonicIndexImport.update({
-  id: '/account/create-wallet/mnemonic/',
-  path: '/account/create-wallet/mnemonic/',
-  getParentRoute: () => rootRoute,
-} as any);
+const AccountCreateWalletMnemonicIndexRoute =
+  AccountCreateWalletMnemonicIndexImport.update({
+    id: '/account/create-wallet/mnemonic/',
+    path: '/account/create-wallet/mnemonic/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
-      id: '/';
-      path: '/';
-      fullPath: '/';
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/about/': {
-      id: '/about/';
-      path: '/about';
-      fullPath: '/about';
-      preLoaderRoute: typeof AboutIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/coin-overview/': {
+      id: '/coin-overview/'
+      path: '/coin-overview'
+      fullPath: '/coin-overview'
+      preLoaderRoute: typeof CoinOverviewIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard/': {
-      id: '/dashboard/';
-      path: '/dashboard';
-      fullPath: '/dashboard';
-      preLoaderRoute: typeof DashboardIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/add-wallet/': {
-      id: '/account/add-wallet/';
-      path: '/account/add-wallet';
-      fullPath: '/account/add-wallet';
-      preLoaderRoute: typeof AccountAddWalletIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/account/add-wallet/'
+      path: '/account/add-wallet'
+      fullPath: '/account/add-wallet'
+      preLoaderRoute: typeof AccountAddWalletIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/initial/': {
-      id: '/account/initial/';
-      path: '/account/initial';
-      fullPath: '/account/initial';
-      preLoaderRoute: typeof AccountInitialIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/account/initial/'
+      path: '/account/initial'
+      fullPath: '/account/initial'
+      preLoaderRoute: typeof AccountInitialIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/set-password/': {
-      id: '/account/set-password/';
-      path: '/account/set-password';
-      fullPath: '/account/set-password';
-      preLoaderRoute: typeof AccountSetPasswordIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/account/set-password/'
+      path: '/account/set-password'
+      fullPath: '/account/set-password'
+      preLoaderRoute: typeof AccountSetPasswordIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/create-wallet/mnemonic/': {
-      id: '/account/create-wallet/mnemonic/';
-      path: '/account/create-wallet/mnemonic';
-      fullPath: '/account/create-wallet/mnemonic';
-      preLoaderRoute: typeof AccountCreateWalletMnemonicIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/account/create-wallet/mnemonic/'
+      path: '/account/create-wallet/mnemonic'
+      fullPath: '/account/create-wallet/mnemonic'
+      preLoaderRoute: typeof AccountCreateWalletMnemonicIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/restore-wallet/mnemonic/': {
-      id: '/account/restore-wallet/mnemonic/';
-      path: '/account/restore-wallet/mnemonic';
-      fullPath: '/account/restore-wallet/mnemonic';
-      preLoaderRoute: typeof AccountRestoreWalletMnemonicIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/account/restore-wallet/mnemonic/'
+      path: '/account/restore-wallet/mnemonic'
+      fullPath: '/account/restore-wallet/mnemonic'
+      preLoaderRoute: typeof AccountRestoreWalletMnemonicIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/restore-wallet/privatekey/': {
-      id: '/account/restore-wallet/privatekey/';
-      path: '/account/restore-wallet/privatekey';
-      fullPath: '/account/restore-wallet/privatekey';
-      preLoaderRoute: typeof AccountRestoreWalletPrivatekeyIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+      id: '/account/restore-wallet/privatekey/'
+      path: '/account/restore-wallet/privatekey'
+      fullPath: '/account/restore-wallet/privatekey'
+      preLoaderRoute: typeof AccountRestoreWalletPrivatekeyIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute;
-  '/about': typeof AboutIndexRoute;
-  '/dashboard': typeof DashboardIndexRoute;
-  '/account/add-wallet': typeof AccountAddWalletIndexRoute;
-  '/account/initial': typeof AccountInitialIndexRoute;
-  '/account/set-password': typeof AccountSetPasswordIndexRoute;
-  '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute;
-  '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute;
-  '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute;
+  '/': typeof IndexRoute
+  '/about': typeof AboutIndexRoute
+  '/coin-overview': typeof CoinOverviewIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/account/add-wallet': typeof AccountAddWalletIndexRoute
+  '/account/initial': typeof AccountInitialIndexRoute
+  '/account/set-password': typeof AccountSetPasswordIndexRoute
+  '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
+  '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
+  '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute;
-  '/about': typeof AboutIndexRoute;
-  '/dashboard': typeof DashboardIndexRoute;
-  '/account/add-wallet': typeof AccountAddWalletIndexRoute;
-  '/account/initial': typeof AccountInitialIndexRoute;
-  '/account/set-password': typeof AccountSetPasswordIndexRoute;
-  '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute;
-  '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute;
-  '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute;
+  '/': typeof IndexRoute
+  '/about': typeof AboutIndexRoute
+  '/coin-overview': typeof CoinOverviewIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/account/add-wallet': typeof AccountAddWalletIndexRoute
+  '/account/initial': typeof AccountInitialIndexRoute
+  '/account/set-password': typeof AccountSetPasswordIndexRoute
+  '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
+  '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
+  '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  '/': typeof IndexRoute;
-  '/about/': typeof AboutIndexRoute;
-  '/dashboard/': typeof DashboardIndexRoute;
-  '/account/add-wallet/': typeof AccountAddWalletIndexRoute;
-  '/account/initial/': typeof AccountInitialIndexRoute;
-  '/account/set-password/': typeof AccountSetPasswordIndexRoute;
-  '/account/create-wallet/mnemonic/': typeof AccountCreateWalletMnemonicIndexRoute;
-  '/account/restore-wallet/mnemonic/': typeof AccountRestoreWalletMnemonicIndexRoute;
-  '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute;
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/about/': typeof AboutIndexRoute
+  '/coin-overview/': typeof CoinOverviewIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/account/add-wallet/': typeof AccountAddWalletIndexRoute
+  '/account/initial/': typeof AccountInitialIndexRoute
+  '/account/set-password/': typeof AccountSetPasswordIndexRoute
+  '/account/create-wallet/mnemonic/': typeof AccountCreateWalletMnemonicIndexRoute
+  '/account/restore-wallet/mnemonic/': typeof AccountRestoreWalletMnemonicIndexRoute
+  '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/coin-overview'
     | '/dashboard'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
     | '/account/create-wallet/mnemonic'
     | '/account/restore-wallet/mnemonic'
-    | '/account/restore-wallet/privatekey';
-  fileRoutesByTo: FileRoutesByTo;
+    | '/account/restore-wallet/privatekey'
+  fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/coin-overview'
     | '/dashboard'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
     | '/account/create-wallet/mnemonic'
     | '/account/restore-wallet/mnemonic'
-    | '/account/restore-wallet/privatekey';
+    | '/account/restore-wallet/privatekey'
   id:
     | '__root__'
     | '/'
     | '/about/'
+    | '/coin-overview/'
     | '/dashboard/'
     | '/account/add-wallet/'
     | '/account/initial/'
     | '/account/set-password/'
     | '/account/create-wallet/mnemonic/'
     | '/account/restore-wallet/mnemonic/'
-    | '/account/restore-wallet/privatekey/';
-  fileRoutesById: FileRoutesById;
+    | '/account/restore-wallet/privatekey/'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AboutIndexRoute: typeof AboutIndexRoute;
-  DashboardIndexRoute: typeof DashboardIndexRoute;
-  AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute;
-  AccountInitialIndexRoute: typeof AccountInitialIndexRoute;
-  AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute;
-  AccountCreateWalletMnemonicIndexRoute: typeof AccountCreateWalletMnemonicIndexRoute;
-  AccountRestoreWalletMnemonicIndexRoute: typeof AccountRestoreWalletMnemonicIndexRoute;
-  AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute;
+  IndexRoute: typeof IndexRoute
+  AboutIndexRoute: typeof AboutIndexRoute
+  CoinOverviewIndexRoute: typeof CoinOverviewIndexRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
+  AccountInitialIndexRoute: typeof AccountInitialIndexRoute
+  AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
+  AccountCreateWalletMnemonicIndexRoute: typeof AccountCreateWalletMnemonicIndexRoute
+  AccountRestoreWalletMnemonicIndexRoute: typeof AccountRestoreWalletMnemonicIndexRoute
+  AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
+  CoinOverviewIndexRoute: CoinOverviewIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
   AccountCreateWalletMnemonicIndexRoute: AccountCreateWalletMnemonicIndexRoute,
-  AccountRestoreWalletMnemonicIndexRoute: AccountRestoreWalletMnemonicIndexRoute,
-  AccountRestoreWalletPrivatekeyIndexRoute: AccountRestoreWalletPrivatekeyIndexRoute,
-};
+  AccountRestoreWalletMnemonicIndexRoute:
+    AccountRestoreWalletMnemonicIndexRoute,
+  AccountRestoreWalletPrivatekeyIndexRoute:
+    AccountRestoreWalletPrivatekeyIndexRoute,
+}
 
-export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -257,6 +286,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/",
         "/about/",
+        "/coin-overview/",
         "/dashboard/",
         "/account/add-wallet/",
         "/account/initial/",
@@ -271,6 +301,9 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/about/": {
       "filePath": "about/index.tsx"
+    },
+    "/coin-overview/": {
+      "filePath": "coin-overview/index.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"

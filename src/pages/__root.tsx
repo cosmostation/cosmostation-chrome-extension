@@ -2,16 +2,16 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import Wrapper from '@/components/Wrapper';
-import { addAccount } from '@/libs/account';
-import { getAccountAssets } from '@/libs/asset';
-import { sendMessage } from '@/libs/extension';
-import { getExtensionLocalStorage } from '@/utils/storage';
+// import { addAccount } from '@/libs/account';
+// import { getAccountAssets } from '@/libs/asset';
+// import { sendMessage } from '@/libs/extension';
+// import { getExtensionLocalStorage } from '@/utils/storage';
 
 export const Route = createRootRoute({
   component: () => (
     <Wrapper>
       <>
-        <button
+        {/* <button
           type="button"
           onClick={async () => {
             await chrome.storage.local.clear();
@@ -79,7 +79,7 @@ export const Route = createRootRoute({
           }}
         >
           check it works
-        </button>
+        </button> */}
 
         <Outlet />
         <TanStackRouterDevtools />

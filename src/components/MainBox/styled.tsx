@@ -9,6 +9,8 @@ export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
   flexDirection: 'column',
   justifyContent: 'space-between',
 
+  position: 'relative',
+
   '&.portfoiloBackground': {
     background: `
   ${props['backgroundImage'] && `url(${props['backgroundImage']}) no-repeat center right/ 70% auto`} ,
@@ -20,9 +22,44 @@ export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
   },
 
   '&.circleGradient': {
-    background: 'linear-gradient(105.36deg, #22252B 0%, #0B0F17 100%)',
+    background: 'linear-gradient(108.77deg, #22252B 12.43%, #0B0F17 87.57%)',
   },
 }));
+
+type CoinBackgroundImageProps = {
+  backgroundImage?: string;
+};
+
+export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ...props }) => ({
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+  zIndex: '1',
+
+  '&::before': {
+    width: '100%',
+    height: '100%',
+    content: '""',
+    background: `url(${props['backgroundImage']}) no-repeat calc(100% + 1rem) calc(50% + 2rem)/ 55% auto`,
+    position: 'absolute',
+
+    top: '0',
+    left: '0',
+    opacity: '0.1',
+    zIndex: '-1',
+  },
+}));
+
+export const BlurEffectLayer = styled('div')({
+  position: 'absolute',
+  width: '16rem',
+  height: '16rem',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -75%)',
+  background: 'rgba(243, 243, 243, 0.18)',
+  filter: 'blur(5rem)',
+});
 
 type ContentContainerProps = {
   'data-is-bottom'?: boolean;
