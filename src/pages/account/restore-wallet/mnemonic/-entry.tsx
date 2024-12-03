@@ -233,6 +233,8 @@ export default function Entry() {
     // NOTE 이건 로딩 프로그래스 컴포넌트가 끝나면 이동되도록 해야할듯.
     await setExtensionLocalStorage('selectedAccountId', accountId);
 
+    // TODO setCurrentAccount(accountId);
+
     navigate({
       to: Dashboard.to,
     });

@@ -19,6 +19,8 @@ export async function balance(id: string) {
     await getAccount(id);
     // TODO 디폴트 토큰만 냅두고 나머지를 히든 토큰에 밀어넣는 로직만 있으면 될듯
     await initAssests(id);
+
+    // TODO init 밸런스 페칭에서는 타잉아웃 (2초 지나면 요청 취소) 설정이 필요할듯. // 궁극적으로 타임아웃은 있어도 좋을듯.
     await Promise.all([cosmosBalances(id), evmBalances(id), aptosBalances(id), suiBalances(id), erc20Balance(id), cw20Balance(id)]);
     await initAccount(id);
   } catch (error) {
@@ -68,17 +70,21 @@ export async function initAccount(id: string) {
 
 // NOTE 기본 코인 및 디폴트 토큰(erc20. cw20의 preload만)만 냅두고 나머지는 히든처리작업
 export async function initAssests(id: string) {
-  const { cw20Assets, erc20Assets } = await getAssets();
+  await getAccount(id);
+  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
-  const filteredPreloadERC20Assets = erc20Assets.filter((asset) => asset.wallet_preload);
-  const filteredPreloadCW20Assets = cw20Assets.filter((asset) => asset.wallet_preload);
+  if (!initAccountIds?.includes(id)) {
+    const { cw20Assets, erc20Assets } = await getAssets();
 
-  // NOTE 코스모스, 수이,  이더리움 에셋 쪽은 안하는 이유가 어차피 한번 콜로 전부 가져오니깐.
-  const hiddenAssetIds = [...filteredPreloadERC20Assets, ...filteredPreloadCW20Assets].map((asset) => {
-    return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
-  });
+    const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
+    const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
+    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets].map((asset) => {
+      return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
+    });
+
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
+  }
 }
 
 async function cosmosBalances(id: string) {
