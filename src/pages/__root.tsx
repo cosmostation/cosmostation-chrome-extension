@@ -2,6 +2,8 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import Wrapper from '@/components/Wrapper';
+import { getTest } from '@/libs/account';
+import { getAccountAssets } from '@/libs/asset';
 // import { addAccount } from '@/libs/account';
 // import { getAccountAssets } from '@/libs/asset';
 // import { sendMessage } from '@/libs/extension';
@@ -11,6 +13,27 @@ export const Route = createRootRoute({
   component: () => (
     <Wrapper>
       <>
+        <button
+          type="button"
+          onClick={async () => {
+            const a = await getAccountAssets('b58662f8-cde7-444f-a394-180e6f441afc');
+
+            console.log('🚀 ~ onClick={ ~ a:', a);
+          }}
+        >
+          clear
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            const a = await getTest('b58662f8-cde7-444f-a394-180e6f441afc');
+
+            console.log('🚀 ~ onClick={ ~ a:', a);
+          }}
+        >
+          clear
+        </button>
+
         {/* <button
           type="button"
           onClick={async () => {

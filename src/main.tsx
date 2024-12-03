@@ -3,6 +3,7 @@ import '@/lang/i18n';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createHashHistory, createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { theme } from '@/styles/theme';
@@ -16,6 +17,7 @@ import '@/styles/normalize.css';
 const hashHistorhy = createHashHistory();
 // Create a new router instance
 const router = createRouter({ routeTree, history: hashHistorhy });
+const queryClient = new QueryClient();
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -43,8 +45,10 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeProvider theme={theme} defaultMode="dark">
-        <RouterProvider router={router} />
-        <ToastContainer />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+          <ToastContainer />
+        </QueryClientProvider>
       </ThemeProvider>
     </StrictMode>,
   );

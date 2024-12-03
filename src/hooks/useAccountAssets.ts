@@ -1,12 +1,35 @@
-// import { getExtensionLocalStorage } from '@/utils/storage';
-// import { useCurrentAccountStore } from '@/zustand/hooks/useCurrentAccountStore';
-// import { useCurrentAccount } from './useCurrentAccount';
+import { useQuery } from '@tanstack/react-query';
 
-// export function useAccountAssets() {
-// const {currentAccount} = useCurrentAccount();
+import { getAccountAssets } from '@/libs/asset';
 
-// // 썌
-// // getAccountAssets 를 탠스택 쿼리로 랩핑해서 캐싱, 주기별로 페칭하도록
+import { useCurrentAccount } from './useCurrentAccount';
 
-//   return {};
-// }
+export function useAccountAssets() {
+  const { currentAccount } = useCurrentAccount();
+
+  console.log('🚀 ~ useAccountAssets ~ currentAccount:', currentAccount);
+
+  const fetcher = async () => {
+    try {
+      console.log(currentAccount.id);
+      return await getAccountAssets(currentAccount.id);
+    } catch {
+      return null;
+    }
+  };
+
+  const {
+    data: currentAccountAssets,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['accountAssets', currentAccount.id],
+    queryFn: fetcher,
+    enabled: !!currentAccount.id, // currentAccount가 존재할 때만 실행
+    staleTime: 1000 * 60 * 5, // 데이터가 5분 동안 신선하다고 간주
+    refetchInterval: 1000 * 60 * 10, // 10분마다 주기적으로 새로 고침
+  });
+
+  return { currentAccountAssets, isLoading, error, refetch };
+}

@@ -12,6 +12,7 @@ import { Tab, Tabs } from '@/components/common/Tab';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
 import { useSortKeyStore } from '@/zustand/hooks/useSortStore';
 
@@ -46,6 +47,10 @@ export default function Entry() {
   const { dashboardCoinSortKey, updateDashboardCoinSortKey } = useSortKeyStore((state) => state);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
+
+  const { currentAccountAssets } = useAccountAssets();
+
+  console.log('🚀 ~ Entry ~ currentAccountAssets:', currentAccountAssets);
 
   // NOTE 디비에 저장할 것.
   const [tabValue, setTabValue] = useState(0);

@@ -44,7 +44,7 @@ export type V11Param = {
       is_support_extension_wallet?: boolean;
       is_support_erc20?: boolean;
       chain_type: string[];
-      account_type: {
+      account_type?: {
         hd_path: string;
         pubkey_style: string;
         pubkey_type: string;

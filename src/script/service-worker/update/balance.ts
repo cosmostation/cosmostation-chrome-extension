@@ -105,6 +105,8 @@ async function cosmosBalances(id: string) {
     // NOTE 코스모스 체인만 필터링해서 쓸 수 있도록
     .filter((addr) => addr.chain);
 
+  console.log('🚀 ~ cosmosBalances ~ addressWithChain:', addressWithChain);
+
   const { results } = await PromisePool.withConcurrency(10)
     .for(addressWithChain)
     .process(async (addr) => {
