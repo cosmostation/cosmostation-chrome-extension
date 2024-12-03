@@ -11,7 +11,7 @@ type CoinOverviewBoxProps = {
   testCoinId: string;
 };
 
-export default function CoinOverViewBox({ testCoinId }: CoinOverviewBoxProps) {
+export default function CoinOverviewBox({ testCoinId }: CoinOverviewBoxProps) {
   const { t } = useTranslation();
 
   console.log('🚀 ~ CoinOverViewBox ~ testCoinId:', testCoinId);

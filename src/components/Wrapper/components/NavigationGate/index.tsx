@@ -17,7 +17,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
       navigate({
         // to: Initial.to,
         // to: '/account/add-wallet',
-        to: '/coin-overview',
+        to: '/coin-detail',
       });
 
       const { accounts } = await chrome.storage.local.get<ExtensionStorage>('accounts');

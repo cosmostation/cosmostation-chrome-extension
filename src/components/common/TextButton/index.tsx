@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
 
-import type { TypoVariantKeys } from '@/styles/theme';
+import type { NumberTypoVariants, TypoVariantKeys } from '@/styles/theme';
 
 import { StyledButton } from './styled';
 
 type TextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
-  typoVarient?: TypoVariantKeys;
-  variant?: 'normal' | 'hyperlink';
+  typoVarient?: TypoVariantKeys | NumberTypoVariants;
+  variant?: 'normal' | 'hyperlink' | 'underline';
 };
 
 export default function TextButton({ children, typoVarient = 'b2_M', type, variant = 'normal', ...remainder }: TextButtonProps) {

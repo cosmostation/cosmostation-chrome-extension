@@ -186,6 +186,46 @@
           }
         }
       }
+    },
+    "coin-detail": {
+      "components": {
+        "ContractAddress": {
+          "index": {
+            "copied": "Contract address successfully copied",
+            "contract": "Contract Address"
+          }
+        },
+        "StakePromotion": {
+          "index": {
+            "title": "Earn $ ${symbol} and make a profit",
+            "stake": "Go to Manage Stake"
+          }
+        },
+        "AmountDetail": {
+          "Cosmos": {
+            "title": "Coin Details",
+            "available": "Available",
+            "staked": "Staked",
+            "unstaking": "Unstaking",
+            "rewards": "Rewards"
+          },
+          "Sui": {
+            "title": "Coin Details",
+            "available": "Available",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned"
+          },
+          "Bitcoin": {
+            "title": "Coin Details",
+            "available": "Available",
+            "pendingReceive": "Pending Receive"
+          }
+        }
+      },
+      "entry": {
+        "history": "History"
+      }
     }
   },
   "schema": {

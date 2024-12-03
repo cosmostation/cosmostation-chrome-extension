@@ -15,4 +15,7 @@ export const StyledToastContainer = styled(ToastContainer)<ToastContainerProps>(
   '.Toastify__toast--error': {
     backgroundColor: theme.palette.accentColor.red200,
   },
+  '.Toastify__toast--success': {
+    backgroundColor: theme.palette.accentColor.green200,
+  },
 }));

@@ -14,6 +14,7 @@ import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as CoinOverviewIndexImport } from './pages/coin-overview/index'
+import { Route as CoinDetailIndexImport } from './pages/coin-detail/index'
 import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
@@ -39,6 +40,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const CoinOverviewIndexRoute = CoinOverviewIndexImport.update({
   id: '/coin-overview/',
   path: '/coin-overview/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CoinDetailIndexRoute = CoinDetailIndexImport.update({
+  id: '/coin-detail/',
+  path: '/coin-detail/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -105,6 +112,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutIndexImport
       parentRoute: typeof rootRoute
     }
+    '/coin-detail/': {
+      id: '/coin-detail/'
+      path: '/coin-detail'
+      fullPath: '/coin-detail'
+      preLoaderRoute: typeof CoinDetailIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/coin-overview/': {
       id: '/coin-overview/'
       path: '/coin-overview'
@@ -169,6 +183,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/coin-detail': typeof CoinDetailIndexRoute
   '/coin-overview': typeof CoinOverviewIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
@@ -182,6 +197,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/coin-detail': typeof CoinDetailIndexRoute
   '/coin-overview': typeof CoinOverviewIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
@@ -196,6 +212,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
+  '/coin-detail/': typeof CoinDetailIndexRoute
   '/coin-overview/': typeof CoinOverviewIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/account/add-wallet/': typeof AccountAddWalletIndexRoute
@@ -211,6 +228,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/coin-detail'
     | '/coin-overview'
     | '/dashboard'
     | '/account/add-wallet'
@@ -223,6 +241,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/coin-detail'
     | '/coin-overview'
     | '/dashboard'
     | '/account/add-wallet'
@@ -235,6 +254,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about/'
+    | '/coin-detail/'
     | '/coin-overview/'
     | '/dashboard/'
     | '/account/add-wallet/'
@@ -249,6 +269,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  CoinDetailIndexRoute: typeof CoinDetailIndexRoute
   CoinOverviewIndexRoute: typeof CoinOverviewIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
@@ -262,6 +283,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
+  CoinDetailIndexRoute: CoinDetailIndexRoute,
   CoinOverviewIndexRoute: CoinOverviewIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
@@ -286,6 +308,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about/",
+        "/coin-detail/",
         "/coin-overview/",
         "/dashboard/",
         "/account/add-wallet/",
@@ -301,6 +324,9 @@ export const routeTree = rootRoute
     },
     "/about/": {
       "filePath": "about/index.tsx"
+    },
+    "/coin-detail/": {
+      "filePath": "coin-detail/index.tsx"
     },
     "/coin-overview/": {
       "filePath": "coin-overview/index.tsx"

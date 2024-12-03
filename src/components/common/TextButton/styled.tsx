@@ -1,14 +1,14 @@
 import { styled } from '@mui/material/styles';
 
 type StyledButtonProps = {
-  variants?: 'normal' | 'hyperlink';
+  variants?: 'normal' | 'hyperlink' | 'underline';
 };
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   border: 'none',
 
   backgroundColor: 'transparent',
-  color: props['variants'] === 'normal' ? theme.palette.color.base1300 : 'purple',
+  color: props['variants'] === 'normal' || props['variants'] === 'underline' ? theme.palette.color.base1300 : 'purple',
 
   textDecorationLine: props['variants'] === 'normal' ? 'none' : 'underline',
   textDecorationSkipInk: 'none',
