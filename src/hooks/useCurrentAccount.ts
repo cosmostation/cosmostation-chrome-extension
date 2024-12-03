@@ -1,7 +1,7 @@
 import { useCurrentAccountStore } from '@/zustand/hooks/useCurrentAccountStore';
 
 export function useCurrentAccount() {
-  const { account, updateCurrentAccount } = useCurrentAccountStore((state) => state);
+  const { account, updateCurrentAccount, removeAccount: deleteAccount } = useCurrentAccountStore((state) => state);
 
   const currentAccount = account;
 
@@ -9,5 +9,9 @@ export function useCurrentAccount() {
     await updateCurrentAccount(id);
   };
 
-  return { currentAccount, setCurrentAccount };
+  const removeAccount = async (id: string) => {
+    await deleteAccount(id);
+  };
+
+  return { currentAccount, setCurrentAccount, removeAccount };
 }

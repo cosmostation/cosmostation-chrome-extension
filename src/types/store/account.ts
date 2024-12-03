@@ -6,6 +6,7 @@ export interface CurrentAccountState {
 
 export type CurrentAccountStateActions = {
   updateCurrentAccount: (id: CurrentAccountState['account']['id']) => void;
+  removeAccount: (id: CurrentAccountState['account']['id']) => void;
 };
 
 export type CurrentAccountStore = CurrentAccountState & CurrentAccountStateActions;

@@ -34,6 +34,29 @@ export const useCurrentAccountStore = create<CurrentAccountStore>()((set) => {
         toastError('Failed to update current account');
       }
     },
+    removeAccount: async (id) => {
+      const { accounts, accountNamesById, selectedAccountId } = await getAllExtensionLocalStorage();
+
+      const newAccounts = accounts.filter((acc) => acc.id !== id);
+
+      if (id === selectedAccountId) {
+        await setExtensionLocalStorage('selectedAccountId', newAccounts?.[0]?.id ?? '');
+      }
+
+      await setExtensionLocalStorage('accounts', newAccounts);
+
+      const deepCopiedAccountName = { ...accountNamesById };
+
+      delete deepCopiedAccountName[id];
+
+      await setExtensionLocalStorage('accountNamesById', deepCopiedAccountName);
+
+      set((state) =>
+        produce(state, (draft) => {
+          draft.account = {} as AccountWithName;
+        }),
+      );
+    },
   };
 });
 
