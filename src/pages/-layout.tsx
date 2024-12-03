@@ -2,6 +2,7 @@ import BaseLayout from '@/components/BaseLayout';
 import FooterCoinPrice from '@/components/FooterCoinPrice';
 import HandleExtensionViewButton from '@/components/HandleExtensionViewButton';
 import Header from '@/components/Header';
+import AccountButton from '@/components/Header/components/AccountButton';
 import GeneralSettingButton from '@/components/Header/components/GeneralSettingButton';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 
@@ -19,6 +20,7 @@ export default function Layout({ children }: LayoutProps) {
       header={
         <Header
           leftContent={<NavigationPanel />}
+          middleContent={<AccountButton />}
           rightContent={
             <HeaderRightContainer>
               <GeneralSettingButton />

@@ -6,8 +6,8 @@ export interface NewAccountState {
   account: NewAccount;
 }
 
-export type NewPasswordStateActions = {
+export type NewAccountStateActions = {
   updateNewAccount: (account: NewAccountState['account']) => void;
 };
 
-export type NewAccountStore = NewAccountState & NewPasswordStateActions;
+export type NewAccountStore = NewAccountState & NewAccountStateActions;

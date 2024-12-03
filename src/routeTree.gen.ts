@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
+import { Route as SwitchWalletIndexImport } from './pages/switch-wallet/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as CoinOverviewIndexImport } from './pages/coin-overview/index'
 import { Route as CoinDetailIndexImport } from './pages/coin-detail/index'
@@ -28,6 +29,12 @@ import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SwitchWalletIndexRoute = SwitchWalletIndexImport.update({
+  id: '/switch-wallet/',
+  path: '/switch-wallet/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -133,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
+    '/switch-wallet/': {
+      id: '/switch-wallet/'
+      path: '/switch-wallet'
+      fullPath: '/switch-wallet'
+      preLoaderRoute: typeof SwitchWalletIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/add-wallet/': {
       id: '/account/add-wallet/'
       path: '/account/add-wallet'
@@ -186,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/coin-detail': typeof CoinDetailIndexRoute
   '/coin-overview': typeof CoinOverviewIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/switch-wallet': typeof SwitchWalletIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
@@ -200,6 +215,7 @@ export interface FileRoutesByTo {
   '/coin-detail': typeof CoinDetailIndexRoute
   '/coin-overview': typeof CoinOverviewIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/switch-wallet': typeof SwitchWalletIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
@@ -215,6 +231,7 @@ export interface FileRoutesById {
   '/coin-detail/': typeof CoinDetailIndexRoute
   '/coin-overview/': typeof CoinOverviewIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/switch-wallet/': typeof SwitchWalletIndexRoute
   '/account/add-wallet/': typeof AccountAddWalletIndexRoute
   '/account/initial/': typeof AccountInitialIndexRoute
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
@@ -231,6 +248,7 @@ export interface FileRouteTypes {
     | '/coin-detail'
     | '/coin-overview'
     | '/dashboard'
+    | '/switch-wallet'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
@@ -244,6 +262,7 @@ export interface FileRouteTypes {
     | '/coin-detail'
     | '/coin-overview'
     | '/dashboard'
+    | '/switch-wallet'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
@@ -257,6 +276,7 @@ export interface FileRouteTypes {
     | '/coin-detail/'
     | '/coin-overview/'
     | '/dashboard/'
+    | '/switch-wallet/'
     | '/account/add-wallet/'
     | '/account/initial/'
     | '/account/set-password/'
@@ -272,6 +292,7 @@ export interface RootRouteChildren {
   CoinDetailIndexRoute: typeof CoinDetailIndexRoute
   CoinOverviewIndexRoute: typeof CoinOverviewIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  SwitchWalletIndexRoute: typeof SwitchWalletIndexRoute
   AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
   AccountInitialIndexRoute: typeof AccountInitialIndexRoute
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
@@ -286,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoinDetailIndexRoute: CoinDetailIndexRoute,
   CoinOverviewIndexRoute: CoinOverviewIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  SwitchWalletIndexRoute: SwitchWalletIndexRoute,
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
@@ -311,6 +333,7 @@ export const routeTree = rootRoute
         "/coin-detail/",
         "/coin-overview/",
         "/dashboard/",
+        "/switch-wallet/",
         "/account/add-wallet/",
         "/account/initial/",
         "/account/set-password/",
@@ -333,6 +356,9 @@ export const routeTree = rootRoute
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
+    },
+    "/switch-wallet/": {
+      "filePath": "switch-wallet/index.tsx"
     },
     "/account/add-wallet/": {
       "filePath": "account/add-wallet/index.tsx"

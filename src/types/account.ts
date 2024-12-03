@@ -28,6 +28,8 @@ export interface MnemonicAccount extends AccountBase {
 
 export type Account = PrivateAccount | MnemonicAccount;
 
+export type AccountWithName = Account & { name: string };
+
 export interface AccountAddress {
   chainId: Chain['id'];
   chainType: ChainType;
