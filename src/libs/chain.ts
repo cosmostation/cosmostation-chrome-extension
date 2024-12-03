@@ -59,6 +59,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
+          is_default: accountType.is_default ?? null,
         };
       }) ?? [];
 
@@ -141,6 +142,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
+          is_default: accountType.is_default ?? null,
         };
       }) ?? [];
 
@@ -178,6 +180,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
+          is_default: accountType.is_default ?? null,
         };
       }) ?? [];
 
@@ -215,6 +218,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
+          is_default: accountType.is_default ?? null,
         };
       }) ?? [];
 

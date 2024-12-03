@@ -48,6 +48,7 @@ export type V11Param = {
         hd_path: string;
         pubkey_style: string;
         pubkey_type: string;
+        is_default?: boolean;
       }[];
       cosmos_fee_info?: {
         base: string;
