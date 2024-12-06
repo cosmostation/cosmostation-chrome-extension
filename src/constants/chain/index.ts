@@ -79,6 +79,7 @@ import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
 import { UNIFICATION } from './cosmos/unification';
 import { UX } from './cosmos/ux';
+import { XION } from './cosmos/xion';
 import { XPLA } from './cosmos/xpla';
 import { ZETA } from './cosmos/zeta';
 import { ETHEREUM } from './ethereum/ethereum';
@@ -97,7 +98,7 @@ import { KAIA as ETHEREUM_NETWORK__KAIA } from './ethereum/network/kaia';
 import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKT as ETHEREUM_NETWORK__OKT } from './ethereum/network/okt';
 import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
-import { PLANQ as ETHEREUM_NETWORK__PLANQ} from './ethereum/network/planq';
+import { PLANQ as ETHEREUM_NETWORK__PLANQ } from './ethereum/network/planq';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
@@ -205,6 +206,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   UX,
   XPLA,
   ZETA,
+  XION,
 ];
 
 export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES, ...PRYZM_GAS_RATES];
