@@ -1,7 +1,15 @@
 import { useRef, useState } from 'react';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
-import { BottomContainer, ChainImageContainer, ChevronIconContainer, HelperTextContainer, RightAdormentConatiner, StyledSelectBox } from './styled';
+import {
+  BottomContainer,
+  BottomWrapper,
+  ChainImageContainer,
+  ChevronIconContainer,
+  HelperTextContainer,
+  RightAdormentConatiner,
+  StyledSelectBox,
+} from './styled';
 import BottomSheet from '../common/BottomSheet';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
@@ -68,15 +76,17 @@ export default function ChainSelectBox({ error = false, helperText, rightAdornme
         value={selectedValue}
         {...remainder}
       />
-      {isShowBottomContainer && (
-        <BottomContainer>
-          {helperText && (
-            <HelperTextContainer data-is-error={error}>
-              <Typography variant="b4_M">{helperText}</Typography>
-            </HelperTextContainer>
-          )}
-        </BottomContainer>
-      )}
+      <BottomWrapper>
+        {isShowBottomContainer && (
+          <BottomContainer>
+            {helperText && (
+              <HelperTextContainer data-is-error={error}>
+                <Typography variant="b4_M">{helperText}</Typography>
+              </HelperTextContainer>
+            )}
+          </BottomContainer>
+        )}
+      </BottomWrapper>
 
       {/* TODO 컴포넌트화 */}
       <BottomSheet anchor="bottom" open={drawerOpen} onClose={handleDrawerClose}>

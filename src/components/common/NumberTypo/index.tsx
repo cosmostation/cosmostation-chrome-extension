@@ -11,6 +11,7 @@ type NumberTypoProps = {
   typoOfDecimals?: NumberTypoVariants;
   fixed?: number;
   currency?: CurrencyType;
+  isApporximation?: boolean;
   isDisableLeadingCurreny?: boolean;
 };
 
@@ -20,6 +21,7 @@ export default function NumberTypo({
   typoOfDecimals = 'h4n_M',
   fixed,
   currency,
+  isApporximation = false,
   isDisableLeadingCurreny = false,
 }: NumberTypoProps) {
   const number = children ? (fixed !== undefined ? fix(children, fixed) : currency ? fix(children, CURRENCY_DECIMALS[currency]) : children) : '';
@@ -30,6 +32,7 @@ export default function NumberTypo({
     <span>
       {splitedNumber?.[0] && (
         <Typography variant={typoOfIntegers}>
+          {isApporximation && '≈ '}
           {currency && !isDisableLeadingCurreny && `${CURRENCY_SYMBOL[currency]} `}
           {splitedNumber[0].replace(/(.)(?=(\d{3})+$)/g, '$1,')}
         </Typography>

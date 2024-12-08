@@ -25,3 +25,8 @@ export const SideTextButton = styled('button')(({ theme }) => ({
     opacity: 0.7,
   },
 }));
+
+export const AmountContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'baseline',
+});

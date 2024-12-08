@@ -27,7 +27,7 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
 
     ':hover:not(.Mui-focused)': {
       '&:before': {
-        borderBottom: `0.2rem solid rgba(154, 120, 253, 1)`,
+        borderBottom: `0.2rem solid ${theme.palette.color.base500}`,
       },
     },
 
@@ -82,9 +82,6 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
 
 export const BottomWrapper = styled('div')({
   height: '2rem',
-
-  display: 'flex',
-  alignItems: 'flex-start',
 });
 
 export const BottomContainer = styled('div')({
@@ -104,6 +101,9 @@ export const BottomContainer = styled('div')({
 });
 
 export const RightBottomAdornmentContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+
   marginLeft: 'auto',
 
   overflow: 'visible',

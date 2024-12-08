@@ -37,12 +37,12 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
     },
 
     '&:after': {
-      borderBottom: `0.2rem solid ${theme.palette.color.base200}`,
+      borderBottom: `0.2rem solid ${theme.palette.color.base500}`,
       transition: 'none',
     },
 
     ':hover:not(.Mui-focused):before': {
-      borderBottom: `0.2rem solid ${theme.palette.color.base200}`,
+      borderBottom: `0.2rem solid ${theme.palette.color.base600}`,
       transition: 'none',
     },
   },
@@ -75,6 +75,10 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
     color: theme.palette.color.base1000,
   },
 }));
+
+export const BottomWrapper = styled('div')({
+  height: '2rem',
+});
 
 export const BottomContainer = styled('div')({
   display: 'flex',

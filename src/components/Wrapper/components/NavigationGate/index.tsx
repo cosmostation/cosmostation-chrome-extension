@@ -14,11 +14,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
   useEffect(() => {
     void (async () => {
       // NOTE for Test
-      // navigate({
-      //   // to: Initial.to,
-      //   // to: '/account/add-wallet',
-      //   to: '/account/restore-wallet/coin-type-setting',
-      // });
+      navigate({
+        // to: Initial.to,
+        // to: '/account/add-wallet',
+        to: '/wallet/send',
+      });
 
       const { accounts } = await chrome.storage.local.get<ExtensionStorage>('accounts');
 
