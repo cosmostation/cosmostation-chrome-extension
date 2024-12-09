@@ -14,7 +14,7 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { useSortKeyStore } from '@/zustand/hooks/useSortStore';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   AdCarouselContainer,
@@ -44,7 +44,7 @@ export default function Entry() {
 
   Buffer.from('Hello from Index!').toString('base64');
 
-  const { dashboardCoinSortKey, updateDashboardCoinSortKey } = useSortKeyStore((state) => state);
+  const { dashboardCoinSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
 
@@ -296,7 +296,7 @@ export default function Entry() {
             open={isOpenSortBottomSheet}
             onClose={() => setIsOpenSortBottomSheet(false)}
             onSelectSortOption={(val) => {
-              updateDashboardCoinSortKey(val as DashboardCoinSortKeyType);
+              updateExtensionStorageStore('dashboardCoinSortKey', val as DashboardCoinSortKeyType);
             }}
           />
         </Container>

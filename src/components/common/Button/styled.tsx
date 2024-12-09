@@ -22,7 +22,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   cursor: 'pointer',
 
   '&:hover': {
-    backgroundColor: props['variants'] === 'light' ? 'blue' : 'black',
+    backgroundColor: theme.palette.accentColor.purple300,
   },
 
   '&:disabled': {
