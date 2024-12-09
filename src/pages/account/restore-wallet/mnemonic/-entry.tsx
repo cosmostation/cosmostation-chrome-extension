@@ -155,6 +155,9 @@ export default function Entry() {
   // NOTE 최종 스토리지 저장은 마지막 단계에서 진행하며, 각 단계에서 저장된 값들은 모두 전역변수에서 관리하자.
   // NOTE 니모닉 검증 로직은 피그마 참조
 
+  // TODO 초기 계정 설정과 그렇지 않은 경우 플래그 세워서 로직 분기처리.
+  // TODO 특히 밑에  if (!password) { 이 로직 손봐야함.
+
   const setUp = async (newAccountName: string) => {
     if (!password) {
       toastError(t('pages.account.restore-wallet.mnemonic.index.passwordNotSet'));
@@ -208,6 +211,8 @@ export default function Entry() {
     await addAccount(newAccount);
 
     await setExtensionLocalStorage('accountNamesById', { ...storedAccountNames, [accountId]: newAccountName });
+
+    // NOTE 기존에 등록된 니모닉이 있으면 패스.
     await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {
       ...storedMnemonicNames,
       [encryptedRestoreString]: `Mnemonic ${filteredMnemonicAccountList.length + 1}`,

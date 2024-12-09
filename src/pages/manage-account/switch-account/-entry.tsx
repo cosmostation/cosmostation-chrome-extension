@@ -6,6 +6,7 @@ import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button/index.tsx';
 import { Route as AddWallet } from '@/pages/account/add-wallet';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
 
@@ -13,13 +14,22 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // const mnemonicList = ['b58662f8-cde7-444f-a394-180e6f441afc', 'b58662f8-cde7-444f-a394-180e6f441afc'];
+  const { accounts } = useExtensionStorageStore((state) => state);
+
+  const uniqueMnemonicRestoreString = accounts
+    .filter((item) => item.type === 'MNEMONIC')
+    .map((account) => account.encryptedRestoreString)
+    .filter((value, index, self) => self.indexOf(value) === index);
 
   return (
     <>
       <BaseBody>
         <EdgeAligner>
-          <MnemonicAccount mnemonicRestoreString="c37b134dcf0daa6fb42b82261b56d835fee00ebc369c63860046b9e84d9c57928a5a366d6619e1a4faa14c414c119b659fe9acd04ad9d898228e5bf22e5440db" />
+          <>
+            {uniqueMnemonicRestoreString.map((item, i) => (
+              <MnemonicAccount key={i} mnemonicRestoreString={item} />
+            ))}
+          </>
         </EdgeAligner>
       </BaseBody>
       <BaseFooter>

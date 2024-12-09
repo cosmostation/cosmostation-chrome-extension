@@ -4,6 +4,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   AccountButton,
@@ -33,19 +34,15 @@ type MnemonicAccountProps = {
 };
 
 export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccountProps) {
-  console.log('🚀 ~ MnemonicAccount ~ mnemonicRestoreString:', mnemonicRestoreString);
-
   const { t } = useTranslation();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, setCurrentAccount } = useCurrentAccount();
 
-  console.log('🚀 ~ MnemonicAccount ~ currentAccount:', currentAccount);
+  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
 
-  // mnemonicNamesByHashedMnemonic필드에서 currentAccount.encryptedRestoreString로 조회
-  const mnemonicName = 'Mnemonic 01';
-  const accountName = 'Cosmostation';
-  const lastHdPath = '0';
-  const isCurrentAccount = mnemonicRestoreString === currentAccount.encryptedRestoreString;
+  const filteredAccounts = accounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicRestoreString);
+
+  const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicRestoreString] || '';
 
   return (
     <Container>
@@ -67,29 +64,42 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         </TopRightContainer>
       </TopContainer>
       <BodyContainer>
-        <AccountButton>
-          <AccountLeftContainer>
-            <AccountImgContainer />
+        {filteredAccounts.map((item, i) => {
+          const accountName = accountNamesById[item.id];
+          const lastHdPath = item.type === 'MNEMONIC' ? item.index : '';
+          const isCurrentAccount = currentAccount?.id === item.id;
 
-            <AccountInfoContainer>
-              <Base1300Text variant="b2_M"> {accountName}</Base1300Text>
-              <LastHdPathTextContainer>
-                <LastHdPathText variant="b4_R">{`${t('pages.manage-account.switch-account.components.lastHdPath')} :`}</LastHdPathText>
-                &nbsp;
-                <LastHdPathIndexText>
-                  <NumberTypo typoOfIntegers="h6n_M">{lastHdPath}</NumberTypo>
-                </LastHdPathIndexText>
-              </LastHdPathTextContainer>
-            </AccountInfoContainer>
-          </AccountLeftContainer>
-          <AccountRightContainer>
-            {isCurrentAccount && (
-              <ActiveBadge>
-                <CheckIcon />
-              </ActiveBadge>
-            )}
-          </AccountRightContainer>
-        </AccountButton>
+          return (
+            <AccountButton
+              key={i}
+              onClick={() => {
+                setCurrentAccount(item.id);
+              }}
+            >
+              <AccountLeftContainer>
+                <AccountImgContainer />
+
+                <AccountInfoContainer>
+                  <Base1300Text variant="b2_M">{accountName}</Base1300Text>
+                  <LastHdPathTextContainer>
+                    <LastHdPathText variant="b4_R">{`${t('pages.manage-account.switch-account.components.lastHdPath')} :`}</LastHdPathText>
+                    &nbsp;
+                    <LastHdPathIndexText>
+                      <NumberTypo typoOfIntegers="h6n_M">{lastHdPath}</NumberTypo>
+                    </LastHdPathIndexText>
+                  </LastHdPathTextContainer>
+                </AccountInfoContainer>
+              </AccountLeftContainer>
+              <AccountRightContainer>
+                {isCurrentAccount && (
+                  <ActiveBadge>
+                    <CheckIcon />
+                  </ActiveBadge>
+                )}
+              </AccountRightContainer>
+            </AccountButton>
+          );
+        })}
       </BodyContainer>
     </Container>
   );
