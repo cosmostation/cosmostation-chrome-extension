@@ -12,12 +12,12 @@
 
 import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
-import { Route as SwitchWalletIndexImport } from './pages/switch-wallet/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as CoinOverviewIndexImport } from './pages/coin-overview/index'
 import { Route as CoinDetailIndexImport } from './pages/coin-detail/index'
 import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as WalletSendIndexImport } from './pages/wallet/send/index'
+import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
 import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index'
@@ -31,12 +31,6 @@ import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SwitchWalletIndexRoute = SwitchWalletIndexImport.update({
-  id: '/switch-wallet/',
-  path: '/switch-wallet/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -69,6 +63,13 @@ const WalletSendIndexRoute = WalletSendIndexImport.update({
   path: '/wallet/send/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const ManageAccountSwitchAccountIndexRoute =
+  ManageAccountSwitchAccountIndexImport.update({
+    id: '/manage-account/switch-account/',
+    path: '/manage-account/switch-account/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const AccountSetPasswordIndexRoute = AccountSetPasswordIndexImport.update({
   id: '/account/set-password/',
@@ -155,13 +156,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
-    '/switch-wallet/': {
-      id: '/switch-wallet/'
-      path: '/switch-wallet'
-      fullPath: '/switch-wallet'
-      preLoaderRoute: typeof SwitchWalletIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/account/add-wallet/': {
       id: '/account/add-wallet/'
       path: '/account/add-wallet'
@@ -181,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/account/set-password'
       fullPath: '/account/set-password'
       preLoaderRoute: typeof AccountSetPasswordIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-account/switch-account/': {
+      id: '/manage-account/switch-account/'
+      path: '/manage-account/switch-account'
+      fullPath: '/manage-account/switch-account'
+      preLoaderRoute: typeof ManageAccountSwitchAccountIndexImport
       parentRoute: typeof rootRoute
     }
     '/wallet/send/': {
@@ -229,10 +230,10 @@ export interface FileRoutesByFullPath {
   '/coin-detail': typeof CoinDetailIndexRoute
   '/coin-overview': typeof CoinOverviewIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/switch-wallet': typeof SwitchWalletIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
+  '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
   '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
   '/account/restore-wallet/coin-type-setting': typeof AccountRestoreWalletCoinTypeSettingIndexRoute
@@ -246,10 +247,10 @@ export interface FileRoutesByTo {
   '/coin-detail': typeof CoinDetailIndexRoute
   '/coin-overview': typeof CoinOverviewIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/switch-wallet': typeof SwitchWalletIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
+  '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
   '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
   '/account/restore-wallet/coin-type-setting': typeof AccountRestoreWalletCoinTypeSettingIndexRoute
@@ -264,10 +265,10 @@ export interface FileRoutesById {
   '/coin-detail/': typeof CoinDetailIndexRoute
   '/coin-overview/': typeof CoinOverviewIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/switch-wallet/': typeof SwitchWalletIndexRoute
   '/account/add-wallet/': typeof AccountAddWalletIndexRoute
   '/account/initial/': typeof AccountInitialIndexRoute
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
+  '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
   '/wallet/send/': typeof WalletSendIndexRoute
   '/account/create-wallet/mnemonic/': typeof AccountCreateWalletMnemonicIndexRoute
   '/account/restore-wallet/coin-type-setting/': typeof AccountRestoreWalletCoinTypeSettingIndexRoute
@@ -283,10 +284,10 @@ export interface FileRouteTypes {
     | '/coin-detail'
     | '/coin-overview'
     | '/dashboard'
-    | '/switch-wallet'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
+    | '/manage-account/switch-account'
     | '/wallet/send'
     | '/account/create-wallet/mnemonic'
     | '/account/restore-wallet/coin-type-setting'
@@ -299,10 +300,10 @@ export interface FileRouteTypes {
     | '/coin-detail'
     | '/coin-overview'
     | '/dashboard'
-    | '/switch-wallet'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
+    | '/manage-account/switch-account'
     | '/wallet/send'
     | '/account/create-wallet/mnemonic'
     | '/account/restore-wallet/coin-type-setting'
@@ -315,10 +316,10 @@ export interface FileRouteTypes {
     | '/coin-detail/'
     | '/coin-overview/'
     | '/dashboard/'
-    | '/switch-wallet/'
     | '/account/add-wallet/'
     | '/account/initial/'
     | '/account/set-password/'
+    | '/manage-account/switch-account/'
     | '/wallet/send/'
     | '/account/create-wallet/mnemonic/'
     | '/account/restore-wallet/coin-type-setting/'
@@ -333,10 +334,10 @@ export interface RootRouteChildren {
   CoinDetailIndexRoute: typeof CoinDetailIndexRoute
   CoinOverviewIndexRoute: typeof CoinOverviewIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  SwitchWalletIndexRoute: typeof SwitchWalletIndexRoute
   AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
   AccountInitialIndexRoute: typeof AccountInitialIndexRoute
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
+  ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
   WalletSendIndexRoute: typeof WalletSendIndexRoute
   AccountCreateWalletMnemonicIndexRoute: typeof AccountCreateWalletMnemonicIndexRoute
   AccountRestoreWalletCoinTypeSettingIndexRoute: typeof AccountRestoreWalletCoinTypeSettingIndexRoute
@@ -350,10 +351,10 @@ const rootRouteChildren: RootRouteChildren = {
   CoinDetailIndexRoute: CoinDetailIndexRoute,
   CoinOverviewIndexRoute: CoinOverviewIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  SwitchWalletIndexRoute: SwitchWalletIndexRoute,
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
+  ManageAccountSwitchAccountIndexRoute: ManageAccountSwitchAccountIndexRoute,
   WalletSendIndexRoute: WalletSendIndexRoute,
   AccountCreateWalletMnemonicIndexRoute: AccountCreateWalletMnemonicIndexRoute,
   AccountRestoreWalletCoinTypeSettingIndexRoute:
@@ -379,10 +380,10 @@ export const routeTree = rootRoute
         "/coin-detail/",
         "/coin-overview/",
         "/dashboard/",
-        "/switch-wallet/",
         "/account/add-wallet/",
         "/account/initial/",
         "/account/set-password/",
+        "/manage-account/switch-account/",
         "/wallet/send/",
         "/account/create-wallet/mnemonic/",
         "/account/restore-wallet/coin-type-setting/",
@@ -405,9 +406,6 @@ export const routeTree = rootRoute
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
     },
-    "/switch-wallet/": {
-      "filePath": "switch-wallet/index.tsx"
-    },
     "/account/add-wallet/": {
       "filePath": "account/add-wallet/index.tsx"
     },
@@ -416,6 +414,9 @@ export const routeTree = rootRoute
     },
     "/account/set-password/": {
       "filePath": "account/set-password/index.tsx"
+    },
+    "/manage-account/switch-account/": {
+      "filePath": "manage-account/switch-account/index.tsx"
     },
     "/wallet/send/": {
       "filePath": "wallet/send/index.tsx"

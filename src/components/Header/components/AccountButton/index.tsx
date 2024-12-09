@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import IconTextButton from '@/components/common/IconTextButton';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
-import { Route as SwithWallet } from '@/pages/switch-wallet';
+import { Route as SwithAccount } from '@/pages/manage-account/switch-account';
 
 import { AccountText, IconContainer } from './styled';
 
@@ -16,7 +16,7 @@ export default function AccountButton() {
     <IconTextButton
       onClick={() => {
         navigate({
-          to: SwithWallet.to,
+          to: SwithAccount.to,
         });
       }}
       trailingIcon={

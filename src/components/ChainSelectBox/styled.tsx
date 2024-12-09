@@ -76,9 +76,7 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
   },
 }));
 
-export const BottomWrapper = styled('div')({
-  height: '2rem',
-});
+export const BottomWrapper = styled('div')({});
 
 export const BottomContainer = styled('div')({
   display: 'flex',

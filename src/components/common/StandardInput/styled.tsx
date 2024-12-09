@@ -80,9 +80,7 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
   },
 }));
 
-export const BottomWrapper = styled('div')({
-  height: '2rem',
-});
+export const BottomWrapper = styled('div')({});
 
 export const BottomContainer = styled('div')({
   display: 'flex',

@@ -33,7 +33,7 @@ export interface ExtensionStorage {
   dashboardCoinSortKey: DashboardCoinSortKeyType;
   dappListSortKey: DappListSortKeyType;
   language: string;
-  // 복호화 가능한 패스워드 정보는 이렇게 저장해도 되나?
+  // 세션 스토리지로 이동
   password: Password;
 
   // NOTE Lock에서 입력한 패스워드가 맞는지 확인하기 위해 사용하는 값
