@@ -12,16 +12,17 @@ import IconTextButton from '@/components/common/IconTextButton';
 import TextButton from '@/components/common/TextButton';
 import MnemonicBitsPopover from '@/components/MnemonicViewer/components/MnemonicBitsPopover';
 import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
-import { addAccount } from '@/libs/account';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { getPassword } from '@/libs/account';
 import { sendMessage } from '@/libs/extension';
 import { Route as Init } from '@/pages/account/initial';
+import { Route as CoinTypeSetting } from '@/pages/account/restore-wallet/coin-type-setting';
 import { Route as Dashboard } from '@/pages/index';
-import type { Account } from '@/types/account';
+import type { Account, AccountWithName } from '@/types/account';
 import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
-import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
-import { toastError } from '@/utils/toast';
-import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
+import { toastError, toastSuccess } from '@/utils/toast';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import HdPathBottomSheet from './-components/HdPathBottomSheet';
@@ -57,10 +58,13 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+
+  const { addAccount, addAccountWithName, setCurrentAccount } = useCurrentAccount();
   const { password, key, timestamp } = useNewPasswordStore((state) => state);
-  const { updateNewAccount } = useNewAccountStore((state) => state);
 
   const [isViewMnemonic, setIsViewMnemonic] = useState(false);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
 
   const [isOpenPopover, setIsOpenPopover] = useState(false);
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -68,9 +72,11 @@ export default function Entry() {
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
 
   const [isOpenHdPathBottomSheet, setIsOpenHdPathBottomSheet] = useState(false);
-  const [currentHdPathIndex, setcurrentHdPathIndex] = useState('0');
+  const [currentHdPathIndex, setCurrentHdPathIndex] = useState('0');
 
   const [values, setValues] = useState<string[]>(Array(12).fill(''));
+
+  const isInitialSetup = accounts.length === 0;
 
   const isAnyMnemonicPresent = values.some((value) => !!value);
   const isFormComplete = values.every((value) => !!value);
@@ -152,100 +158,117 @@ export default function Entry() {
   useEffect(() => {
     setInputTypes(values.map(() => (isViewMnemonic ? 'text' : 'password')));
   }, [values, isViewMnemonic]);
-  // NOTE 최종 스토리지 저장은 마지막 단계에서 진행하며, 각 단계에서 저장된 값들은 모두 전역변수에서 관리하자.
-  // NOTE 니모닉 검증 로직은 피그마 참조
 
-  // TODO 초기 계정 설정과 그렇지 않은 경우 플래그 세워서 로직 분기처리.
-  // TODO 특히 밑에  if (!password) { 이 로직 손봐야함.
-
+  // NOTE v11 다 저장안되는 경우도 있음.
+  // TODO params, assetv11다 로딩안됐으면 여기서 다시 await해야할듯.
   const setUp = async (newAccountName: string) => {
-    if (!password) {
-      toastError(t('pages.account.restore-wallet.mnemonic.index.passwordNotSet'));
+    try {
+      setIsLoadingBalance(true);
+
+      const joinedMnemonicPhrase = values.join(' ');
+
+      const accountId = uuidv4();
+
+      const decryptedPassword = await getPassword();
+
+      const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, decryptedPassword);
+      const encryptedRestoreString = sha512(joinedMnemonicPhrase);
+
+      const newAccount: AccountWithName = {
+        id: accountId,
+        type: 'MNEMONIC',
+        name: newAccountName,
+        index: currentHdPathIndex,
+        mnemonic: encryptedMnemonic,
+        encryptedRestoreString,
+      };
+
+      await addAccountWithName(newAccount);
+
+      const isMnemonicAlreadyRegistered = mnemonicNamesByHashedMnemonic[encryptedRestoreString];
+
+      const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
+
+      if (!isMnemonicAlreadyRegistered) {
+        await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
+          ...mnemonicNamesByHashedMnemonic,
+          [encryptedRestoreString]: `Mnemonic ${totalMnemonicAccountsCount + 1}`,
+        });
+      }
+
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
+
+      await setCurrentAccount(newAccount.id);
+
+      // TODO
+      // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
       navigate({
-        to: Init.to,
+        to: Dashboard.to,
       });
+
+      toastSuccess(t('pages.account.restore-wallet.mnemonic.index.accountCreated'));
+    } catch {
+      toastError(t('pages.account.restore-wallet.mnemonic.index.addressAndBalanceFetchingError'));
+    } finally {
+      setIsLoadingBalance(false);
     }
+  };
 
-    // NOTE v11 다 저장안되는 경우도 있음.
-    // TODO params, assetv11다 로딩안됐으면 여기서 다시 await해야할듯.
+  const setUpInitial = async () => {
+    try {
+      if (isInitialSetup && !password) {
+        toastError(t('pages.account.restore-wallet.mnemonic.index.passwordNotSet'));
 
-    // NOTE 전체 로딩 start
-    // NOTE 대략 10초 걸림.
+        navigate({
+          to: Init.to,
+        });
+      }
 
-    const joinedMnemonicPhrase = values.join(' ');
+      setIsLoadingBalance(true);
 
-    console.log('🚀 ~ setUp ~ joinedMnemonicPhrase:', joinedMnemonicPhrase);
+      const joinedMnemonicPhrase = values.join(' ');
 
-    const storedAccountNames = await getExtensionLocalStorage('accountNamesById');
-    const storedMnemonicNames = await getExtensionLocalStorage('mnemonicNamesByHashedMnemonic');
+      const accountId = uuidv4();
 
-    const storedAccounts = await getExtensionLocalStorage('accounts');
+      const decryptedPassword = aesDecrypt(password, `${key}${timestamp}`);
 
-    const filteredMnemonicAccountList = storedAccounts.filter((account) => account.type === 'MNEMONIC');
+      const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, decryptedPassword);
+      const encryptedRestoreString = sha512(joinedMnemonicPhrase);
 
-    const accountId = uuidv4();
+      const newAccount: Account = {
+        id: accountId,
+        type: 'MNEMONIC',
+        index: currentHdPathIndex,
+        mnemonic: encryptedMnemonic,
+        encryptedRestoreString,
+      };
 
-    const decryptedPassword = aesDecrypt(password, `${key}${timestamp}`);
+      const comparisonPasswordHash = sha512(decryptedPassword);
+      await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
 
-    const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, decryptedPassword);
-    const encryptedRestoreString = sha512(joinedMnemonicPhrase);
+      await updateExtensionStorageStore('password', {
+        encryptedPassword: password,
+        key,
+        timestamp,
+      });
 
-    updateNewAccount({
-      id: accountId,
-      type: 'MNEMONIC',
-      name: newAccountName,
-      index: '0',
-      mnemonic: encryptedMnemonic,
-      encryptedRestoreString,
-    });
+      await addAccount(newAccount);
 
-    const newAccount: Account = {
-      id: accountId,
-      type: 'MNEMONIC',
-      index: '0',
-      mnemonic: encryptedMnemonic,
-      encryptedRestoreString,
-    };
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] });
 
-    await addAccount(newAccount);
+      // NOTE 추후에 코인타입세터 넘길지 말지 초건 추가
 
-    await setExtensionLocalStorage('accountNamesById', { ...storedAccountNames, [accountId]: newAccountName });
-
-    // NOTE 기존에 등록된 니모닉이 있으면 패스.
-    await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {
-      ...storedMnemonicNames,
-      [encryptedRestoreString]: `Mnemonic ${filteredMnemonicAccountList.length + 1}`,
-    });
-
-    const comparisonPasswordHash = sha512(decryptedPassword);
-    await setExtensionLocalStorage('comparisonPasswordHash', comparisonPasswordHash);
-
-    await setExtensionLocalStorage('password', {
-      encryptedPassword: password,
-      key,
-      timestamp,
-    });
-
-    await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
-    await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] });
-
-    // NOTE 이러고 어카운트 타입 여러개인 경우에 대한 처리 필요
-    // NOTE 해당 페이지에서
-
-    // NOTE 전체 로딩 stop
-
-    // NOTE 이건 로딩 프로그래스 컴포넌트가 끝나면 이동되도록 해야할듯.
-    await setExtensionLocalStorage('selectedAccountId', accountId);
-
-    // TODO setCurrentAccount(accountId);
-
-    navigate({
-      to: Dashboard.to,
-    });
-
-    // TOOD
-    // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+      navigate({
+        to: CoinTypeSetting.to,
+      });
+    } catch {
+      toastError(t('pages.account.restore-wallet.mnemonic.index.addressAndBalanceFetchingError'));
+    } finally {
+      setIsLoadingBalance(false);
+    }
   };
 
   return (
@@ -351,6 +374,7 @@ export default function Entry() {
           </HdPathContainer>
           <Button
             disabled={!isFormComplete}
+            isProgress={isLoadingBalance}
             onClick={() => {
               const joinedMnemonicPhrase = values.join(' ');
 
@@ -361,7 +385,11 @@ export default function Entry() {
                 return;
               }
 
-              setIsOpenSetAccountNameBottomSheet(true);
+              if (isInitialSetup) {
+                setUpInitial();
+              } else {
+                setIsOpenSetAccountNameBottomSheet(true);
+              }
             }}
           >
             {t('pages.account.restore-wallet.mnemonic.index.next')}
@@ -391,7 +419,7 @@ export default function Entry() {
         currentHdPath={currentHdPathIndex}
         open={isOpenHdPathBottomSheet}
         onClose={() => setIsOpenHdPathBottomSheet(false)}
-        onChangeHpPath={(val) => setcurrentHdPathIndex(val)}
+        onChangeHpPath={(val) => setCurrentHdPathIndex(val)}
       />
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}

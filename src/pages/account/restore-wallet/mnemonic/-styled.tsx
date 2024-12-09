@@ -95,17 +95,17 @@ export const StyledInput = styled(OutlinedInput)(({ theme, ...props }) => ({
   },
 
   '.MuiOutlinedInput-notchedOutline': {
-    border: props['error'] ? '0.1rem solid red' : `none`,
+    border: props['error'] ? `0.1rem solid ${theme.palette.accentColor.red400}` : `none`,
   },
 
   '&:hover': {
     '.MuiOutlinedInput-notchedOutline': {
-      border: '0.1rem solid #9C6CFF',
+      border: `0.1rem solid ${theme.palette.accentColor.purple400}`,
     },
   },
   '&.Mui-focused': {
     '.MuiOutlinedInput-notchedOutline': {
-      border: '0.1rem solid #9C6CFF',
+      border: `0.1rem solid ${theme.palette.accentColor.purple400}`,
     },
   },
 }));

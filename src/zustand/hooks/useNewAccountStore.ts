@@ -5,9 +5,10 @@ import type { Account } from '@/types/account';
 import type { NewAccountState, NewAccountStore } from '@/types/store/newAccount';
 
 const initialState: NewAccountState = {
-  account: {} as Account & { name: string },
+  account: {} as Account,
 };
 
+// TODO deprecated
 export const useNewAccountStore = create<NewAccountStore>()((set) => ({
   ...initialState,
   updateNewAccount: async (account) => {

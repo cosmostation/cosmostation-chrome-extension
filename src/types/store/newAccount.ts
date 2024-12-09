@@ -1,6 +1,6 @@
 import type { Account } from '../account';
 
-type NewAccount = Account & { name: string };
+type NewAccount = Account;
 
 export interface NewAccountState {
   account: NewAccount;

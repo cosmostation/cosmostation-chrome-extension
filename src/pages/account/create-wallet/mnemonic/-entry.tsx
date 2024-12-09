@@ -16,7 +16,6 @@ import type { Account } from '@/types/account';
 import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
-import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } from './-styled';
@@ -33,12 +32,13 @@ export default function Entry() {
   const navigate = useNavigate();
 
   const { password, key, timestamp } = useNewPasswordStore((state) => state);
-  const { updateNewAccount } = useNewAccountStore((state) => state);
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
 
   const [bits, setBits] = useState<MnemonicBits>(mnemonicBits[12]);
   const mnemonic = useMemo(() => bip39.generateMnemonic(bits), [bits]);
+
+  // TODO 초기생성에는 밸런스 없을테니 모두 히든 처리될텐데 이것도 고려해서 서비스워커 쪽 로직 변경 필요 / 최소 필수 코인은 히든처리 안하도록
 
   const createMnemonicAccount = async (newAccountName: string) => {
     try {
@@ -67,15 +67,6 @@ export default function Entry() {
 
       const encryptedMnemonic = aesEncrypt(mnemonic, decryptedPassword);
       const encryptedRestoreString = sha512(mnemonic);
-
-      updateNewAccount({
-        id: accountId,
-        type: 'MNEMONIC',
-        name: newAccountName,
-        index: '0',
-        mnemonic: encryptedMnemonic,
-        encryptedRestoreString,
-      });
 
       const newAccount: Account = {
         id: accountId,

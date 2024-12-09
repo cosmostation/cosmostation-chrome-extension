@@ -22,7 +22,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
 
       const { accounts } = await chrome.storage.local.get<ExtensionStorage>('accounts');
 
-      if (!accounts) {
+      if (accounts.length === 0) {
         navigate({
           // to: Initial.to,
           // to: '/account/add-wallet',

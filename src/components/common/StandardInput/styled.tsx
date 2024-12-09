@@ -21,13 +21,13 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
     },
 
     '&:after': {
-      borderBottom: `0.2rem solid rgba(154, 120, 253, 1)`,
+      borderBottom: `0.2rem solid ${theme.palette.accentColor.purple400}`,
       transition: 'none',
     },
 
     ':hover:not(.Mui-focused)': {
       '&:before': {
-        borderBottom: `0.2rem solid ${theme.palette.color.base500}`,
+        borderBottom: `0.2rem solid ${theme.palette.accentColor.purple400}`,
       },
     },
 
@@ -69,7 +69,7 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
     color: theme.palette.color.base700,
 
     '&.Mui-focused': {
-      color: 'rgba(154, 120, 253, 1)',
+      color: theme.palette.accentColor.purple400,
     },
   },
 
