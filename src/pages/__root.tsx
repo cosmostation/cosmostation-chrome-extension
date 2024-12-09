@@ -5,6 +5,8 @@ import Wrapper from '@/components/Wrapper';
 import { addAccount } from '@/libs/account';
 import { getAccountAssets } from '@/libs/asset';
 import { sendMessage } from '@/libs/extension';
+import type { ResponseAppMessage } from '@/types/message/content';
+import type { CosSupportedChainIds } from '@/types/message/inject/cosmos';
 
 export const Route = createRootRoute({
   component: () => (
@@ -64,6 +66,22 @@ export const Route = createRootRoute({
           }}
         >
           getAccountAssets
+        </button>
+
+        <button
+          type="button"
+          onClick={async () => {
+            const response = await sendMessage<ResponseAppMessage<CosSupportedChainIds>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              params: { result: { official: [], unofficial: [] } },
+              origin: 'https://google.com',
+              requestId: '',
+            });
+            console.log('responseApp', response);
+          }}
+        >
+          updateBalance
         </button>
 
         <Outlet />

@@ -51,7 +51,8 @@
   "search.exclude": {
     "**/.git": true,
     "**/node_modules": true,
-    "**/dist": true
+    "**/dist": true,
+    "**/dist-dev": true
   },
   "explorer.sortOrder": "filesFirst",
   "explorer.sortOrderLexicographicOptions": "lower"
