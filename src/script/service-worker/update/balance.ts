@@ -43,6 +43,11 @@ export async function initAccount(id: string) {
   if (!initAccountIds?.includes(id)) {
     const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets } = await getAccountAssets(id);
 
+    const defaultCoinList = [
+      { id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' },
+      { id: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', chainId: 'ethereum', chainType: 'evm' },
+    ];
+
     const hiddenAssetIds = [
       ...aptosAccountAssets,
       ...cosmosAccountAssets,
@@ -51,7 +56,14 @@ export async function initAccount(id: string) {
       ...evmAccountAssets,
       ...suiAccountAssets,
     ]
-      .filter((asset) => asset.balance === '0')
+      .filter(
+        (asset) =>
+          asset.balance === '0' &&
+          !defaultCoinList.find(
+            (defaultCoin) =>
+              defaultCoin.id === asset.asset.id && defaultCoin.chainId === asset.asset.chainId && defaultCoin.chainType === asset.asset.chainType,
+          ),
+      )
       .map((asset) => {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
       });
