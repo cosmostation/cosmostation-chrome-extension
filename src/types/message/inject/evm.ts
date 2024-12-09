@@ -1,4 +1,5 @@
 import type { EVM_METHOD_TYPE } from '@/constants/evm/message';
+import type { ChainType } from '@/types/chain';
 import type { RequestBase } from '@/types/message/inject';
 
 export type EvmRequest = EthRequestAccounts | EthRequestPermissions;
@@ -9,6 +10,7 @@ export interface EvmResponse {
 }
 
 export interface EthRequestAccounts extends RequestBase {
+  chainType: Extract<ChainType, 'evm'>;
   method: typeof EVM_METHOD_TYPE.ETH__REQUEST_ACCOUNTS;
   params?: never;
 }
@@ -16,6 +18,7 @@ export interface EthRequestAccounts extends RequestBase {
 export type EthRequestAccountsResponse = string[];
 
 export interface EthRequestPermissions extends RequestBase {
+  chainType: Extract<ChainType, 'evm'>;
   method: typeof EVM_METHOD_TYPE.WALLET__REQUEST_PERMISSIONS;
   params?: never;
 }

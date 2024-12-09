@@ -20,6 +20,7 @@ export interface CosmosResponse {
   [COSMOS_METHOD_TYPE.COS__ACTIVATED_CHAIN_NAMES]: CosActivatedChainNamesResponse;
   [COSMOS_METHOD_TYPE.COS__ACTIVATED_CHAIN_IDS]: CosActivatedChainIdsResponse;
   [COSMOS_METHOD_TYPE.COS__ACCOUNT]: CosAccountResponse;
+  [COSMOS_METHOD_TYPE.COS__SIGN_AMINO]: CosSignAminoResponse;
 }
 
 export interface CosSupportedChainNames extends RequestBase {
