@@ -17,7 +17,7 @@ export const TopContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  margin: '1.2rem 0 0.8rem',
+  margin: '1rem 0 0.8rem',
 
   padding: '0 1.6rem',
 
@@ -32,19 +32,6 @@ export const TopLeftContainer = styled('div')({
 });
 
 export const TopRightContainer = styled('div')({});
-
-export const PlusIconContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-
-  color: theme.palette.color.base1000,
-}));
-
-export const IconButtonText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.accentColor.purple400,
-
-  marginLeft: '0.2rem',
-}));
 
 export const BodyContainer = styled('div')({
   width: '100%',
@@ -112,17 +99,4 @@ export const LastHdPathText = styled(Typography)(({ theme }) => ({
 
 export const LastHdPathIndexText = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1000,
-}));
-
-export const ActiveBadge = styled('div')(({ theme }) => ({
-  width: '1.8rem',
-  height: '1.8rem',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  borderRadius: '50%',
-
-  background: theme.palette.accentColor.purple200,
 }));

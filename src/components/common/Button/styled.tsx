@@ -5,41 +5,71 @@ import type { TypoVariantKeys } from '@/styles/theme';
 
 type StyledButtonProps = {
   'data-typo-varient': TypoVariantKeys;
-  variants?: 'light' | 'dark';
+  variants?: 'light' | 'dark' | 'red';
 };
 
-export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
-  border: 'none',
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => {
+  const backgroundColor = (() => {
+    const variants = props['variants'];
+    if (variants === 'light') {
+      return theme.palette.accentColor.purple200;
+    }
+    if (variants === 'dark') {
+      return 'grey';
+    }
+    if (variants === 'red') {
+      return theme.palette.accentColor.red200;
+    }
+    return theme.palette.accentColor.purple200;
+  })();
 
-  width: '100%',
-  height: '4.8rem',
+  const hoverBackgroundColor = (() => {
+    const variants = props['variants'];
+    if (variants === 'light') {
+      return theme.palette.accentColor.purple300;
+    }
+    if (variants === 'dark') {
+      return 'grey';
+    }
+    if (variants === 'red') {
+      return theme.palette.accentColor.red300;
+    }
+    return theme.palette.accentColor.purple300;
+  })();
 
-  borderRadius: '0.8rem',
+  return {
+    border: 'none',
 
-  backgroundColor: props['variants'] === 'light' ? theme.palette.accentColor.purple200 : 'grey',
-  color: theme.palette.color.base1300,
+    width: '100%',
+    height: '4.8rem',
 
-  cursor: 'pointer',
+    borderRadius: '0.8rem',
 
-  '&:hover': {
-    backgroundColor: theme.palette.accentColor.purple300,
-  },
+    backgroundColor: backgroundColor,
+    color: theme.palette.color.base1300,
 
-  '&:disabled': {
-    backgroundColor: theme.palette.color.base600,
-    color: theme.palette.color.base1200,
+    cursor: 'pointer',
 
-    cursor: 'default',
+    '&:hover': {
+      backgroundColor: hoverBackgroundColor,
+    },
 
-    '& svg': {
-      fill: theme.palette.color.base1200,
+    '&:disabled': {
+      backgroundColor: theme.palette.color.base600,
+      color: theme.palette.color.base1200,
 
-      '& > path': {
+      cursor: 'default',
+
+      '& svg': {
         fill: theme.palette.color.base1200,
+
+        '& > path': {
+          fill: theme.palette.color.base1200,
+        },
       },
     },
-  },
-}));
+  };
+});
 
 type ContentContainerProps = {
   'data-is-icon'?: boolean;

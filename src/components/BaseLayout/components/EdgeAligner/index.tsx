@@ -1,7 +1,7 @@
 import { Container } from './styled';
 
 type EdgeAlignerProps = {
-  children?: JSX.Element;
+  children?: React.ReactNode;
 };
 
 export default function EdgeAligner({ children }: EdgeAlignerProps) {

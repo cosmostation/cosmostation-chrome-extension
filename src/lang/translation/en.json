@@ -141,7 +141,9 @@
             "next": "Next",
             "pasteFromClipboard": "Paste from Clipboard",
             "passwordNotSet": "Password not set",
-            "invalidMnemonicPhrase": "Invalid mnemonic phrase"
+            "invalidMnemonicPhrase": "Invalid mnemonic phrase",
+            "accountCreated": "Account created",
+            "addressAndBalanceFetchingError": "Failed to fetch address and balance"
           },
           "layout": {
             "header": "Restore With Mnemonic"
@@ -184,7 +186,10 @@
           "index": {
             "title": "Write Down Your Mnemonic",
             "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset.",
-            "next": "Next"
+            "next": "Next",
+            "passwordNotSet": "__STRING_NOT_TRANSLATED__",
+            "success": "__STRING_NOT_TRANSLATED__",
+            "failed": "__STRING_NOT_TRANSLATED__"
           },
           "components": {
             "MnemonicBitPopover": {
@@ -200,6 +205,13 @@
         "menmonic": {
           "layout": {
             "header": "Create New Wallet"
+          }
+        }
+      },
+      "wallet": {
+        "send": {
+          "layout": {
+            "header": "Send"
           }
         }
       }
@@ -242,6 +254,50 @@
       },
       "entry": {
         "history": "History"
+      }
+    },
+    "manage-account": {
+      "detail": {
+        "mnemonic": {
+          "entry": {
+            "deleteMnemonic": "Delete Mnemonic",
+            "viewMyMnemonic": "View My Mnemonic",
+            "viewMyMnemonicDescription": "View Recovery Phrase"
+          },
+          "layout": {
+            "header": "Wallet Detail"
+          },
+          "components": {
+            "MnemonicAccount": {
+              "myAccount": "My Account",
+              "lastHdPath": "Last HD Path"
+            }
+          }
+        }
+      },
+      "switch-account": {
+        "components": {
+          "lastHdPath": "Last HD Path",
+          "createNewWallet": "Create New Wallet"
+        },
+        "layout": {
+          "header": "Switch Account",
+          "manage": "Manage"
+        },
+        "entry": {
+          "addWallet": "Add Wallet"
+        }
+      },
+      "mange-wallet-and-account": {
+        "layout": {
+          "header": "Manage Wallet & Account",
+          "save": "Save"
+        }
+      }
+    },
+    "wallet": {
+      "send": {
+        "send": "Send"
       }
     }
   },

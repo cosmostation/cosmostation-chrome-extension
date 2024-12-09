@@ -7,7 +7,7 @@ import { ContentContainer, StyledButton, StyledCircularProgress } from './styled
 type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: TypoVariantKeys;
   isProgress?: boolean;
-  variant?: 'light' | 'dark';
+  variant?: 'light' | 'dark' | 'red';
   Icon?: JSX.Element;
 };
 

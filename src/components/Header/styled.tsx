@@ -20,14 +20,15 @@ export const LeftContentContainer = styled('div')({
 });
 
 export const MiddleContentContainer = styled('div')({
-  width: '100%',
-
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  position: 'absolute',
+  left: '50%',
+  transform: 'translateX(-50%)',
 });
 
 export const RightContentContainer = styled('div')({
+  position: 'absolute',
+  right: '1rem',
+
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',

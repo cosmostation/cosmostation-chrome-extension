@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
@@ -38,4 +39,13 @@ export const AddressBookButton = styled(IconButton)({});
 
 export const EstimatedValueTextContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1000,
+}));
+
+export const ManageIconContainer = styled('div')(({ theme }) => ({
+  color: theme.palette.accentColor.purple400,
+}));
+
+export const ManageText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.accentColor.purple400,
+  marginLeft: '0.2rem',
 }));
