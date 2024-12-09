@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
+import NumberTypo from '@/components/common/NumberTypo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 
 import {
@@ -14,7 +15,9 @@ import {
   BodyContainer,
   Container,
   IconButtonText,
+  LastHdPathIndexText,
   LastHdPathText,
+  LastHdPathTextContainer,
   PlusIconContainer,
   TopContainer,
   TopLeftContainer,
@@ -70,7 +73,13 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
 
             <AccountInfoContainer>
               <Base1300Text variant="b2_M"> {accountName}</Base1300Text>
-              <LastHdPathText variant="b4_R">{`${t('pages.manage-account.switch-account.components.lastHdPath')} : ${lastHdPath}`}</LastHdPathText>
+              <LastHdPathTextContainer>
+                <LastHdPathText variant="b4_R">{`${t('pages.manage-account.switch-account.components.lastHdPath')} :`}</LastHdPathText>
+                &nbsp;
+                <LastHdPathIndexText>
+                  <NumberTypo typoOfIntegers="h6n_M">{lastHdPath}</NumberTypo>
+                </LastHdPathIndexText>
+              </LastHdPathTextContainer>
             </AccountInfoContainer>
           </AccountLeftContainer>
           <AccountRightContainer>

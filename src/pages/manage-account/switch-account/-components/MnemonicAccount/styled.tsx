@@ -103,7 +103,16 @@ export const AccountInfoContainer = styled('div')({
   rowGap: '0.4rem',
 });
 
+export const LastHdPathTextContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 export const LastHdPathText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.color.base1000,
+}));
+
+export const LastHdPathIndexText = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
 
