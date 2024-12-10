@@ -1,9 +1,8 @@
-import { produce } from 'immer';
-
 import { DefaultSortKey } from '@/constants/initialStorage';
-import type { ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
+import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 
 import { extension } from './browser';
+import { aesDecrypt } from './crypto';
 
 export async function initExtensionLocalStorage() {
   const originStorage = await getAllExtensionLocalStorage();
@@ -49,12 +48,29 @@ export async function getAllExtensionLocalStorage(): Promise<ExtensionStorage> {
   return localStorage as ExtensionStorage;
 }
 
-export async function updateExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, data: ExtensionStorage[T]) {
-  const originStorage = await getExtensionLocalStorage(key);
+export async function setExtensionSessionStorage<T extends ExtensionSessionStorageKeys>(key: T, value: ExtensionSessionStorage[T]) {
+  await extension.storage.session.set({ [key]: value as ExtensionSessionStorage[T] });
+}
 
-  const updatedStorage = produce(originStorage, (draft) => {
-    Object.assign(draft, data);
-  });
+export async function getExtensionSessionStorage<T extends ExtensionSessionStorageKeys>(key: T) {
+  const sessionStorage = await extension.storage.session.get(key);
 
-  setExtensionLocalStorage(key, updatedStorage);
+  return sessionStorage[key] as ExtensionSessionStorage[T];
+}
+
+export async function getAllExtensionSessionStorage(): Promise<ExtensionSessionStorage> {
+  const sessionStorage = await extension.storage.session.get();
+
+  return sessionStorage as ExtensionSessionStorage;
+}
+
+export async function extensionSessionStorage() {
+  const storage = await getAllExtensionSessionStorage();
+
+  const currentPassword = storage.password ? aesDecrypt(storage.password.encryptedPassword, `${storage.password.key}${storage.password.timestamp}`) : null;
+
+  return {
+    ...storage,
+    currentPassword,
+  };
 }

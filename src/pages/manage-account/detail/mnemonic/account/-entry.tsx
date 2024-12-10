@@ -10,6 +10,7 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
+import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, OptionButtonContainer } from './-styled';
@@ -50,6 +51,9 @@ export default function Entry() {
           <EdgeAligner>
             <OptionButtonContainer>
               <BaseOptionButton
+                onClick={() => {
+                  navigate({ to: ViewMnemonic.to });
+                }}
                 leftContent={<MnemonicViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonic')}</Base1300Text>}
                 leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonicDescription')}</Base1000Text>}

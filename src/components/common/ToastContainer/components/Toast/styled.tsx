@@ -12,13 +12,12 @@ export const Container = styled('div')({
 export const TitleContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
-
-  marginRight: '0.2rem',
 });
 
 export const IconContainer = styled('div')(({ theme }) => ({
   width: '1.6rem',
   height: '1.6rem',
+  marginRight: '0.2rem',
 
   '& svg': {
     width: '100%',

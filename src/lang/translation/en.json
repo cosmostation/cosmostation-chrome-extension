@@ -50,7 +50,8 @@
         "seedPhrase": "Seed Phrase",
         "twelveWords": "12 Words",
         "twentyFourWords": "24 Words",
-        "copy": "Copy to Clipboard"
+        "copy": "Copy to Clipboard",
+        "copied": "Copied to Clipboard"
       }
     },
     "AllNetworkButton": {
@@ -187,9 +188,9 @@
             "title": "Write Down Your Mnemonic",
             "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset.",
             "next": "Next",
-            "passwordNotSet": "__STRING_NOT_TRANSLATED__",
-            "success": "__STRING_NOT_TRANSLATED__",
-            "failed": "__STRING_NOT_TRANSLATED__"
+            "passwordNotSet": "Password not set",
+            "success": "Success",
+            "failed": "Failed"
           },
           "components": {
             "MnemonicBitPopover": {
@@ -305,6 +306,14 @@
         "layout": {
           "header": "Manage Wallet & Account",
           "save": "Save"
+        }
+      },
+      "view": {
+        "mnemonic": {
+          "entry": {
+            "title": "Write Down Your Mnemonic",
+            "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset."
+          }
         }
       }
     },

@@ -34,7 +34,7 @@ export interface ExtensionStorage {
   dappListSortKey: DappListSortKeyType;
   language: string;
   // 세션 스토리지로 이동
-  password: Password;
+  password?: Password;
 
   // NOTE Lock에서 입력한 패스워드가 맞는지 확인하기 위해 사용하는 값
   comparisonPasswordHash: string;
@@ -46,3 +46,9 @@ export interface ExtensionStorage {
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;
+
+export interface ExtensionSessionStorage {
+  password: Password | null;
+}
+
+export type ExtensionSessionStorageKeys = keyof ExtensionSessionStorage;

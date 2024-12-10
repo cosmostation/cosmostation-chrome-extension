@@ -11,6 +11,7 @@ export const TopContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'space-between',
   marginBottom: '0.8rem',
+  padding: '0 0.4rem',
 });
 
 export const MnemonicContainer = styled('div')({
