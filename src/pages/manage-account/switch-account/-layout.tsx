@@ -3,12 +3,14 @@ import { useNavigate } from '@tanstack/react-router';
 
 import BaseLayout from '@/components/BaseLayout';
 import Base1300Text from '@/components/common/Base1300Text';
+import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
+import { Route as AddWallet } from '@/pages/account/add-wallet';
 import { Route as ManageWalletAndAccount } from '@/pages/manage-account/manage-wallet-and-account';
 
-import { ManageIconContainer, ManageText } from './-styled';
+import { FooterContainer, ManageIconContainer, ManageText } from './-styled';
 
 import ManageIcon from '@/assets/images/icons/MangeWalletIcon16.svg';
 
@@ -43,6 +45,17 @@ export default function Layout({ children }: LayoutProps) {
             </IconTextButton>
           }
         />
+      }
+      footer={
+        <FooterContainer>
+          <Button
+            onClick={() => {
+              navigate({ to: AddWallet.to });
+            }}
+          >
+            {t('pages.manage-account.switch-account.layout.addWallet')}
+          </Button>
+        </FooterContainer>
       }
     >
       {children}

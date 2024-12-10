@@ -70,6 +70,12 @@
         "title": "Select Network",
         "allNetwork": "All Network"
       }
+    },
+    "Lock": {
+      "index": {
+        "enterPassword": "Enter Password",
+        "unlock": "Unlock"
+      }
     }
   },
   "pages": {
@@ -296,9 +302,7 @@
         },
         "layout": {
           "header": "Switch Account",
-          "manage": "Manage"
-        },
-        "entry": {
+          "manage": "Manage",
           "addWallet": "Add Wallet"
         }
       },
@@ -336,6 +340,11 @@
       "repeatPassword": {
         "any": {
           "only": "The password confirmation does not match."
+        }
+      },
+      "password": {
+        "any": {
+          "only": "Please enter a valid password."
         }
       }
     },

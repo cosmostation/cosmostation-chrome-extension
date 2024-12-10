@@ -4,7 +4,6 @@ import { Typography } from '@mui/material';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
 import ChipButton from '@/components/common/ChipButton';
-import IconButton from '@/components/common/IconButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { TEST_CHAIN_LIST } from '@/constants/test';
@@ -23,6 +22,7 @@ import {
   TopLeftContainer,
   TopRightContainer,
   TotalBalanceContainer,
+  ViewTotalValueText,
 } from './styled';
 import MainBox from '..';
 
@@ -37,7 +37,6 @@ export default function PortFolio() {
   const { t } = useTranslation();
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
 
-  console.log('🚀 ~ PortFolio ~ currentSelectedChain:', currentSelectedChainId);
   const dummyChainList = TEST_CHAIN_LIST;
 
   return (
@@ -46,10 +45,9 @@ export default function PortFolio() {
         top={
           <TopContainer>
             <TopLeftContainer>
-              <Typography variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</Typography>
-              <IconButton>
-                <ViewIcon />
-              </IconButton>
+              <IconTextButton trailingIcon={<ViewIcon />}>
+                <ViewTotalValueText variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</ViewTotalValueText>
+              </IconTextButton>
             </TopLeftContainer>
             <TopRightContainer>
               <AllNetworkButton

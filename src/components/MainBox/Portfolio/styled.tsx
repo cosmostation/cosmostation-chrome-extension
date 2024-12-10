@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import Base1300Text from '@/components/common/Base1300Text';
 import IconButton from '@/components/common/IconButton';
 import IconTextButton from '@/components/common/IconTextButton';
 
@@ -15,6 +16,10 @@ export const TopLeftContainer = styled('div')(({ theme }) => ({
 
   color: theme.palette.color.base1300,
 }));
+
+export const ViewTotalValueText = styled(Base1300Text)({
+  marginRight: '0.2rem',
+});
 
 export const TopRightContainer = styled('div')(({ theme }) => ({
   display: 'flex',

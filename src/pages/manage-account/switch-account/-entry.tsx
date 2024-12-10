@@ -1,20 +1,22 @@
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
-import Button from '@/components/common/Button/index.tsx';
-import { Route as AddWallet } from '@/pages/account/add-wallet';
+import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
+import { StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
 
 export default function Entry() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-
   const { accounts } = useExtensionStorageStore((state) => state);
+
+  const [tabValue, setTabValue] = useState(0);
+  const tabLabels = ['Mnenmonic', 'Private Key'];
+
+  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+    setTabValue(newTabValue);
+  };
 
   const uniqueMnemonicRestoreString = accounts
     .filter((item) => item.type === 'MNEMONIC')
@@ -22,25 +24,30 @@ export default function Entry() {
     .filter((value, index, self) => self.indexOf(value) === index);
 
   return (
-    <>
-      <BaseBody>
-        <EdgeAligner>
-          <>
-            {uniqueMnemonicRestoreString.map((item, i) => (
-              <MnemonicAccount key={i} mnemonicRestoreString={item} />
-            ))}
-          </>
-        </EdgeAligner>
-      </BaseBody>
-      <BaseFooter>
-        <Button
-          onClick={() => {
-            navigate({ to: AddWallet.to });
-          }}
-        >
-          {t('pages.manage-account.switch-account.entry.addWallet')}
-        </Button>
-      </BaseFooter>
-    </>
+    <BaseBody>
+      <EdgeAligner>
+        <>
+          <StickyTabContainer>
+            <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
+              {tabLabels.map((item) => (
+                <FilledTab key={item} label={item} />
+              ))}
+            </FilledTabs>
+          </StickyTabContainer>
+          <StyledTabPanel value={tabValue} index={0}>
+            <TabPanelContentsContainer>
+              {uniqueMnemonicRestoreString.map((item, i) => (
+                <MnemonicAccount key={i} mnemonicRestoreString={item} />
+              ))}
+            </TabPanelContentsContainer>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={1}>
+            <TabPanelContentsContainer>
+              <div>Private Key</div>
+            </TabPanelContentsContainer>
+          </StyledTabPanel>
+        </>
+      </EdgeAligner>
+    </BaseBody>
   );
 }
