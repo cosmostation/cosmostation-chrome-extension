@@ -8,7 +8,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   border: 'none',
 
   backgroundColor: 'transparent',
-  color: props['variants'] === 'normal' || props['variants'] === 'underline' ? theme.palette.color.base1300 : 'purple',
+  color: props['variants'] === 'normal' || props['variants'] === 'underline' ? theme.palette.color.base1300 : theme.palette.accentColor.purple400,
 
   textDecorationLine: props['variants'] === 'normal' ? 'none' : 'underline',
   textDecorationSkipInk: 'none',

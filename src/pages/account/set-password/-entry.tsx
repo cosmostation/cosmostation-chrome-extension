@@ -49,12 +49,7 @@ export default function Entry() {
 
   return (
     <>
-      <FormContainer
-        onSubmit={handleSubmit((data) => {
-          console.log(data);
-          submit(data);
-        })}
-      >
+      <FormContainer onSubmit={handleSubmit(submit)}>
         <BaseBody>
           <Body>
             <DescriptionContainer>
