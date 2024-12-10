@@ -58,6 +58,7 @@ export async function initAccount(id: string) {
     ]
       .filter(
         (asset) =>
+          // FIXME 서로 다른 타입에서 같은 코인의 밸런스가 있다면 언 히든 처리.(카바 케이스)
           asset.balance === '0' &&
           !defaultCoinList.find(
             (defaultCoin) =>

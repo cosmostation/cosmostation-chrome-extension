@@ -10,19 +10,26 @@ export const Container = styled('div')({
   justifyContent: 'center',
 });
 
-export const TopContainer = styled('div')({
+export const TopButton = styled('button')(({ theme }) => ({
   width: '100%',
 
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  margin: '1rem 0 0.8rem',
-
-  padding: '0 1.6rem',
+  padding: '1rem 1.6rem 0.8rem',
 
   boxSizing: 'border-box',
-});
+
+  border: 'none',
+  background: 'none',
+
+  cursor: 'pointer',
+
+  '&:hover': {
+    backgroundColor: theme.palette.color.base200,
+  },
+}));
 
 export const TopLeftContainer = styled('div')({
   display: 'flex',

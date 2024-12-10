@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
 import { Route as MnemonicDetail } from '@/pages/manage-account/detail/mnemonic';
+import { Route as MnemonicAccountDetail } from '@/pages/manage-account/detail/mnemonic/account/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -17,7 +18,7 @@ import {
   LastHdPathIndexText,
   LastHdPathText,
   LastHdPathTextContainer,
-  TopContainer,
+  TopButton,
   TopLeftContainer,
   TopRightContainer,
 } from './styled';
@@ -41,7 +42,16 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
 
   return (
     <Container>
-      <TopContainer>
+      <TopButton
+        onClick={() => {
+          navigate({
+            to: MnemonicDetail.to,
+            params: {
+              mnemonicId: mnemonicRestoreString,
+            },
+          });
+        }}
+      >
         <TopLeftContainer>
           <MnemonicIcon />
           <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
@@ -49,7 +59,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         <TopRightContainer>
           <OrderIcon />
         </TopRightContainer>
-      </TopContainer>
+      </TopButton>
       <BodyContainer>
         {filteredAccounts.map((item, i) => {
           const accountName = accountNamesById[item.id];
@@ -60,8 +70,10 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               key={i}
               onClick={() => {
                 navigate({
-                  to: MnemonicDetail.to,
-                  // TODO 특정 니모닉 id 전달 필요
+                  to: MnemonicAccountDetail.to,
+                  params: {
+                    accountId: item.id,
+                  },
                 });
               }}
             >
