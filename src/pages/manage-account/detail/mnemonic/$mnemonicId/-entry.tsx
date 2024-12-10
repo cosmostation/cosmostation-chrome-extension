@@ -15,22 +15,23 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import MnemonicAccount from './-components/MnemonicAccount';
 import { MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, MnemonicIconContainer, OptionButtonContainer } from './-styled';
-import MainContentsLayout from '../-components/MainContentsLayout';
+import MainContentsLayout from '../../-components/MainContentsLayout';
 
 import EditIcon from '@/assets/images/icons/Edit18.svg';
 import MnemonicIcon from '@/assets/images/icons/Mnemonics14.svg';
 import MnemonicViewIcon from '@/assets/images/icons/MnemonicView28.svg';
 
-export default function Entry() {
+type EntryProps = {
+  mnemonicId: string;
+};
+
+export default function Entry({ mnemonicId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
 
-  const mnemonicName =
-    mnemonicNamesByHashedMnemonic[
-      'c37b134dcf0daa6fb42b82261b56d835fee00ebc369c63860046b9e84d9c57928a5a366d6619e1a4faa14c414c119b659fe9acd04ad9d898228e5bf22e5440db'
-    ];
+  const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicId];
 
   return (
     <>
@@ -48,7 +49,7 @@ export default function Entry() {
                   <IconTextButton trailingIcon={<EditIcon />}>
                     <MainContentTitleText variant="h2_B">{mnemonicName}</MainContentTitleText>
                   </IconTextButton>
-                  <MainContentSubtitleText variant="b3_M">{t('pages.manage-account.detail.mnemonic.entry.deleteMnemonic')}</MainContentSubtitleText>
+                  <MainContentSubtitleText variant="b3_M">{t('pages.manage-account.detail.mnemonic.entry.mnemonicWallet')}</MainContentSubtitleText>
                 </MainContentBody>
               }
             />
@@ -60,8 +61,7 @@ export default function Entry() {
                   navigate({
                     to: ViewMnemonic.to,
                     params: {
-                      mnemonicId:
-                        'c37b134dcf0daa6fb42b82261b56d835fee00ebc369c63860046b9e84d9c57928a5a366d6619e1a4faa14c414c119b659fe9acd04ad9d898228e5bf22e5440db',
+                      mnemonicId: mnemonicId,
                     },
                   });
                 }}
@@ -70,11 +70,7 @@ export default function Entry() {
                 leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.entry.viewMyMnemonicDescription')}</Base1000Text>}
               />
             </OptionButtonContainer>
-            <MnemonicAccount
-              mnemonicRestoreString={
-                'c37b134dcf0daa6fb42b82261b56d835fee00ebc369c63860046b9e84d9c57928a5a366d6619e1a4faa14c414c119b659fe9acd04ad9d898228e5bf22e5440db'
-              }
-            />
+            <MnemonicAccount mnemonicRestoreString={mnemonicId} />
           </EdgeAligner>
         </>
       </BaseBody>

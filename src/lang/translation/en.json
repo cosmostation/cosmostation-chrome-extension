@@ -196,7 +196,9 @@
             "next": "Next",
             "passwordNotSet": "Password not set",
             "success": "Success",
-            "failed": "Failed"
+            "failed": "Failed",
+            "setUpLater": "Set Up Later",
+            "backup": "Back Up Now"
           },
           "components": {
             "MnemonicBitPopover": {
@@ -220,6 +222,15 @@
           "layout": {
             "header": "Send"
           }
+        }
+      },
+      "backup-check": {
+        "entry": {
+          "setUpComplete": "Set Up Complete",
+          "next": "Next"
+        },
+        "layout": {
+          "header": "Back Up Wallet"
         }
       }
     },
@@ -269,7 +280,8 @@
           "entry": {
             "deleteMnemonic": "Delete Mnemonic",
             "viewMyMnemonic": "View My Mnemonic",
-            "viewMyMnemonicDescription": "View Recovery Phrase"
+            "viewMyMnemonicDescription": "View Recovery Phrase",
+            "mnemonicWallet": "Mnemonic Wallet"
           },
           "layout": {
             "header": "Wallet Detail"

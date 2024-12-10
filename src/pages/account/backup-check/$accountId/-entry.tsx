@@ -5,31 +5,32 @@ import { useNavigate } from '@tanstack/react-router';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
-import InformationPanel from '@/components/InformationPanel';
 import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
-import { toastError } from '@/utils/toast';
+import { addAccountName } from '@/utils/accountNames';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import CoinTypeSelector from './-components/CoinTypeSelector';
-import { Body, CoinTypeSelectorContainer } from './-styled';
+import { Container } from './-styled';
 
-export default function Entry() {
+type EntryProps = {
+  accountId: string;
+};
+
+export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
+  const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { setCurrentAccount } = useCurrentAccount();
 
-  // FIXME 카바 토큰이 리스팅되지 않는 이슈?? =>
-  // NOTE 내 경우 118 카바의 에셋에서 밸런스가 0이라서 히든에 들어가게 되는데 이때 들어가는 아이템이 459의 아이템과 동일하여 459는 밸런스가 있음에도 불구하고 히든처리가 되는것.
+  // TODO 어카운트롤 추가하는건 일반 니모닉 백업 과정에서는 필요없는 로직임으로 추후 수정 필요.
   const setUp = async (newAccountName: string) => {
     try {
-      const account = accounts[0];
+      const account = accounts.find((account) => account.id === accountId) || accounts[accounts.length - 1];
 
       const newAccount: AccountWithName = {
         ...account,
@@ -39,33 +40,29 @@ export default function Entry() {
       await setCurrentAccount(newAccount.id);
       // TODO
       // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+      await addAccountName(account.id, newAccountName);
 
-      await updateExtensionStorageStore('accountNamesById', { [account.id]: newAccountName });
+      const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
+
       await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
-        [newAccount.encryptedRestoreString]: `Mnemonic 1`,
+        ...mnemonicNamesByHashedMnemonic,
+        [newAccount.encryptedRestoreString]: `Mnemonic ${totalMnemonicAccountsCount}`,
       });
 
       navigate({
         to: Dashboard.to,
       });
+
+      toastSuccess('pages.account.backup-check.entry.setupSuccess');
     } catch {
-      toastError('pages.account.restore-wallet.coin-type-setting.entry.settupError');
+      toastError('pages.account.backup-check.entry.setupError');
     }
   };
 
   return (
     <>
       <BaseBody>
-        <Body>
-          <InformationPanel
-            varitant="info"
-            titleText={t('pages.account.restore-wallet.coin-type-setting.entry.infoTitle')}
-            bodyText={t('pages.account.restore-wallet.coin-type-setting.entry.infoBody')}
-          />
-          <CoinTypeSelectorContainer>
-            <CoinTypeSelector />
-          </CoinTypeSelectorContainer>
-        </Body>
+        <Container>splash screen</Container>
       </BaseBody>
       <BaseFooter>
         <Button
@@ -73,7 +70,7 @@ export default function Entry() {
             setIsOpenSetAccountNameBottomSheet(true);
           }}
         >
-          {t('pages.account.restore-wallet.coin-type-setting.entry.next')}
+          {t('pages.account.backup-check.entry.next')}
         </Button>
       </BaseFooter>
       <SetAccountNameBottomSheet
