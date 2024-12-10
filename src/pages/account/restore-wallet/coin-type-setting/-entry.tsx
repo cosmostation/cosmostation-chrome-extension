@@ -10,7 +10,7 @@ import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
-import { toastError } from '@/utils/toast';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import CoinTypeSelector from './-components/CoinTypeSelector';
@@ -48,8 +48,10 @@ export default function Entry() {
       navigate({
         to: Dashboard.to,
       });
+
+      toastSuccess(t('pages.account.restore-wallet.coin-type-setting.entry.setupSuccess'));
     } catch {
-      toastError('pages.account.restore-wallet.coin-type-setting.entry.settupError');
+      toastError(t('pages.account.restore-wallet.coin-type-setting.entry.setupError'));
     }
   };
 

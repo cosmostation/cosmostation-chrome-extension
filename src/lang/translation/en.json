@@ -181,7 +181,9 @@
           "entry": {
             "infoTitle": "The default coin type is recommended.",
             "infoBody": "You can later change the coin type again via **Portfolio > Network Filter > Switch Coin Type**.",
-            "next": "Next"
+            "next": "Next",
+            "setupSuccess": "Add Wallet Success",
+            "setupError": "Add Wallet Failed"
           },
           "layout": {
             "header": "Coin Type Setting"
