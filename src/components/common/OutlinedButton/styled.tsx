@@ -9,13 +9,13 @@ type StyledButtonProps = {
 };
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => {
-  const backgroundColor = (() => {
+  const borderColor = (() => {
     const variants = props['variants'];
     if (variants === 'light') {
       return theme.palette.accentColor.purple200;
     }
     if (variants === 'dark') {
-      return theme.palette.color.base400;
+      return theme.palette.color.base300;
     }
     if (variants === 'red') {
       return theme.palette.accentColor.red200;
@@ -23,13 +23,14 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     return theme.palette.accentColor.purple200;
   })();
 
-  const hoverBackgroundColor = (() => {
+  const hoverBorderColor = (() => {
     const variants = props['variants'];
+
     if (variants === 'light') {
-      return theme.palette.accentColor.purple300;
+      return theme.palette.accentColor.purple400;
     }
     if (variants === 'dark') {
-      return theme.palette.color.base500;
+      return theme.palette.color.base400;
     }
     if (variants === 'red') {
       return theme.palette.accentColor.red300;
@@ -38,20 +39,20 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   })();
 
   return {
-    border: 'none',
-
     width: '100%',
     height: '4.8rem',
 
     borderRadius: '0.8rem',
 
-    backgroundColor: backgroundColor,
+    backgroundColor: 'transparent',
     color: theme.palette.color.base1300,
 
     cursor: 'pointer',
 
+    border: `0.1rem solid ${borderColor}`,
+
     '&:hover': {
-      backgroundColor: hoverBackgroundColor,
+      border: `0.1rem solid ${hoverBorderColor}`,
     },
 
     '&:disabled': {
@@ -72,7 +73,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 });
 
 type ContentContainerProps = {
-  'data-is-icon'?: boolean;
+  'data-is-leadingIcon'?: boolean;
+  'data-is-trailingIcon'?: boolean;
 };
 
 export const ContentContainer = styled('div')<ContentContainerProps>((props) => ({
@@ -80,10 +82,12 @@ export const ContentContainer = styled('div')<ContentContainerProps>((props) => 
   justifyContent: 'center',
   alignItems: 'center',
 
-  marginLeft: props['data-is-icon'] ? '-0.6rem' : '0',
+  marginLeft: props['data-is-leadingIcon'] ? '-0.6rem' : '0',
+  marginRight: props['data-is-trailingIcon'] ? '-0.6rem' : '0',
 
   '& :first-of-type': {
-    marginRight: props['data-is-icon'] ? '0.4rem' : '0',
+    marginRight: props['data-is-leadingIcon'] ? '0.4rem' : '0',
+    marginLeft: props['data-is-trailingIcon'] ? '0.4rem' : '0',
   },
 }));
 

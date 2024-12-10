@@ -19,6 +19,7 @@ export default function CheckBoxButton({ isChecked = false, onClick, ...remainde
         setIsButtonActive(!isButtonActive);
         onClick?.(!isButtonActive);
       }}
+      isChecked={isButtonActive}
       {...remainder}
     >
       {isButtonActive && <CheckIcon />}

@@ -310,8 +310,7 @@
       "switch-account": {
         "components": {
           "lastHdPath": "Last HD Path",
-          "createNewWallet": "Create New Wallet",
-          "notBackedUp": "(Not Backed Up)"
+          "createNewWallet": "Create New Wallet"
         },
         "layout": {
           "header": "Switch Account",
@@ -330,6 +329,16 @@
           "entry": {
             "title": "Write Down Your Mnemonic",
             "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset."
+          }
+        }
+      },
+      "manage-wallet-and-account": {
+        "components": {
+          "MnemonicAccount": {
+            "index": {
+              "notBackedUp": "(Not Backed Up)",
+              "backUpNow": "Back Up Now"
+            }
           }
         }
       }

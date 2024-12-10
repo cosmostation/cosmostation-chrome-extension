@@ -21,7 +21,11 @@ export const StyledCheckBoxTextButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const StyledCheckBox = styled('div')(({ theme }) => ({
+type StyledCheckBoxProps = {
+  isChecked: boolean;
+};
+
+export const StyledCheckBox = styled('div')<StyledCheckBoxProps>(({ theme, ...props }) => ({
   width: '100%',
   height: '100%',
 
@@ -29,7 +33,7 @@ export const StyledCheckBox = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  backgroundColor: theme.palette.color.base300,
+  backgroundColor: props['isChecked'] ? theme.palette.accentColor.purple200 : theme.palette.color.base300,
 
   borderRadius: '0.2rem',
 

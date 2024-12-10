@@ -19,12 +19,16 @@ import {
   LastHdPathText,
   LastHdPathTextContainer,
   NotBackedUpText,
+  OutlinedButtonContainer,
+  RightArrowIconContainer,
+  StyledOutlinedButton,
   TopButton,
   TopLeftContainer,
   TopRightContainer,
 } from './styled';
 
 import MnemonicIcon from '@/assets/images/icons/Mnemonics14.svg';
+import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
 import OrderIcon from 'assets/images/icons/Order20.svg';
 
 type MnemonicAccountProps = {
@@ -58,7 +62,9 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         <TopLeftContainer>
           <MnemonicIcon />
           <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
-          {isNotBackedUp && <NotBackedUpText variant="b4_M">{t('pages.manage-account.switch-account.components.notBackedUp')}</NotBackedUpText>}
+          {isNotBackedUp && (
+            <NotBackedUpText variant="b4_M">{t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.notBackedUp')}</NotBackedUpText>
+          )}
         </TopLeftContainer>
         <TopRightContainer>
           <OrderIcon />
@@ -101,7 +107,21 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
             </AccountButton>
           );
         })}
-        {/* TODO 버튼 추가 필요 */}
+        {isNotBackedUp && (
+          <OutlinedButtonContainer>
+            <StyledOutlinedButton
+              variant="dark"
+              typoVarient="h4_B"
+              trailingIcon={
+                <RightArrowIconContainer>
+                  <RightArrowIcon />
+                </RightArrowIconContainer>
+              }
+            >
+              {t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.backUpNow')}
+            </StyledOutlinedButton>
+          </OutlinedButtonContainer>
+        )}
       </BodyContainer>
     </Container>
   );

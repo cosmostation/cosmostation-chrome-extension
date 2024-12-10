@@ -11,7 +11,7 @@ type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HT
   onClick?: (isChecked: boolean) => void;
 };
 
-export default function CheckBoxTextButton({ isChecked, children, checkBoxProps, onClick, ...remainder }: IconTextButtonProps) {
+export default function CheckBoxTextButton({ isChecked = false, children, checkBoxProps, onClick, ...remainder }: IconTextButtonProps) {
   const [isButtonActive, setIsButtonActive] = useState(isChecked);
 
   return (
@@ -24,6 +24,7 @@ export default function CheckBoxTextButton({ isChecked, children, checkBoxProps,
       {...remainder}
     >
       <StyledCheckBox
+        isChecked={isButtonActive}
         style={{
           width: '1.35rem',
           height: '1.35rem',
