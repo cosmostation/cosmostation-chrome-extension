@@ -38,6 +38,11 @@ export const TopLeftContainer = styled('div')({
   columnGap: '0.4rem',
 });
 
+export const NotBackedUpText = styled(Typography)(({ theme }) => ({
+  marginLeft: '0.4rem',
+  color: theme.palette.accentColor.red400,
+}));
+
 export const TopRightContainer = styled('div')({});
 
 export const BodyContainer = styled('div')({

@@ -310,7 +310,8 @@
       "switch-account": {
         "components": {
           "lastHdPath": "Last HD Path",
-          "createNewWallet": "Create New Wallet"
+          "createNewWallet": "Create New Wallet",
+          "notBackedUp": "(Not Backed Up)"
         },
         "layout": {
           "header": "Switch Account",

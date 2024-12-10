@@ -30,6 +30,10 @@ export async function initExtensionLocalStorage() {
   if (!originStorage.mnemonicNamesByHashedMnemonic) {
     setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
   }
+
+  if (!originStorage.notBackedUpAccountIds) {
+    setExtensionLocalStorage('notBackedUpAccountIds', []);
+  }
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {

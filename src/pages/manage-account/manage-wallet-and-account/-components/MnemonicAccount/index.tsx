@@ -18,6 +18,7 @@ import {
   LastHdPathIndexText,
   LastHdPathText,
   LastHdPathTextContainer,
+  NotBackedUpText,
   TopButton,
   TopLeftContainer,
   TopRightContainer,
@@ -34,11 +35,13 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
+  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
   const filteredAccounts = accounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicRestoreString);
 
   const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicRestoreString] || '';
+
+  const isNotBackedUp = notBackedUpAccountIds.includes(filteredAccounts.map((item) => item.id)[0]);
 
   return (
     <Container>
@@ -55,6 +58,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         <TopLeftContainer>
           <MnemonicIcon />
           <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
+          {isNotBackedUp && <NotBackedUpText>{t('pages.manage-account.switch-account.components.notBackedUp')}</NotBackedUpText>}
         </TopLeftContainer>
         <TopRightContainer>
           <OrderIcon />
@@ -97,6 +101,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
             </AccountButton>
           );
         })}
+        {/* TODO 버튼 추가 필요 */}
       </BodyContainer>
     </Container>
   );

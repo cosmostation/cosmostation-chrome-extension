@@ -20,6 +20,7 @@ const initialState: ExtensionStorageState = {
   accountNamesById: {},
   mnemonicNamesByHashedMnemonic: {},
   selectedAccountId: '',
+  notBackedUpAccountIds: [],
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {

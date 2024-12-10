@@ -17,6 +17,7 @@ import { Route as BackUpCheck } from '@/pages/account/backup-check/$accountId';
 import { Route as Init } from '@/pages/account/initial';
 import { Route as Dashboard } from '@/pages/index';
 import type { Account, AccountWithName } from '@/types/account';
+import { addAccountToNotBackedupList } from '@/utils/backupAccount';
 import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
@@ -110,7 +111,7 @@ export default function Entry() {
 
       await setCurrentAccount(newAccount.id);
 
-      // TODO 백업 미확인 어카운트에 추가 로직
+      await addAccountToNotBackedupList(newAccount.id);
 
       navigate({
         to: Dashboard.to,

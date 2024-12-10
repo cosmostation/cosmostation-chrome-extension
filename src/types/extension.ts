@@ -37,6 +37,7 @@ export interface ExtensionStorage {
   accountNamesById: AccountNamesById;
   mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;
   selectedAccountId: Account['id'];
+  notBackedUpAccountIds: Account['id'][];
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;
