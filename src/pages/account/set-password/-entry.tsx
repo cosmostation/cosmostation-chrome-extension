@@ -8,8 +8,8 @@ import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
 import InformationPanel from '@/components/InformationPanel';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { Route as AddWallet } from '@/pages/account/add-wallet';
-import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import { Body, CautionContainer, DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer, PasswordInputContainer } from './-styled';
 import type { PasswordForm } from './-useSchema';
@@ -19,7 +19,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { updateNewPassword } = useNewPasswordStore((state) => state);
+  const { setCurrentPassword } = useCurrentPassword();
 
   const { passwordForm } = useSchema();
 
@@ -39,7 +39,7 @@ export default function Entry() {
   const isButtonEnabled = password && repeatPassword;
 
   const submit = (data: PasswordForm) => {
-    updateNewPassword(data.password);
+    setCurrentPassword(data.password);
 
     navigate({
       to: AddWallet.to,

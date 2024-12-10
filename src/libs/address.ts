@@ -72,16 +72,18 @@ export function getKeypair(chain: Chain, account: Account, password: string): Ke
 
   if (account.type === 'PRIVATE_KEY') {
     const { privateKey } = account;
+    const decryptedPrivateKey = aesDecrypt(privateKey, password);
+
     if (chainType === 'cosmos' || chainType === 'evm') {
-      const ecpair = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'), {
+      const ecpair = ECPair.fromPrivateKey(Buffer.from(decryptedPrivateKey, 'hex'), {
         compressed: true,
       });
 
-      return { privateKey, publicKey: Buffer.from(ecpair.publicKey).toString('hex') };
+      return { privateKey: decryptedPrivateKey, publicKey: Buffer.from(ecpair.publicKey).toString('hex') };
     }
     if (chainType === 'aptos' || chainType === 'sui') {
-      const publicKey = Buffer.from(getPublicKey(Buffer.from(privateKey, 'hex'), false)).toString('hex');
-      return { privateKey, publicKey };
+      const publicKey = Buffer.from(getPublicKey(Buffer.from(decryptedPrivateKey, 'hex'), false)).toString('hex');
+      return { privateKey: decryptedPrivateKey, publicKey };
     }
 
     // if (chainType === 'bitcoin') {

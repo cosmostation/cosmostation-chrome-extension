@@ -6,6 +6,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
+import PrivateKeyAccount from './-components/PrivateKeyAccount';
 import { StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
 
 export default function Entry() {
@@ -43,7 +44,7 @@ export default function Entry() {
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
             <TabPanelContentsContainer>
-              <div>Private Key</div>
+              <PrivateKeyAccount />
             </TabPanelContentsContainer>
           </StyledTabPanel>
         </>

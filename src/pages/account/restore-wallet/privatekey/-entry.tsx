@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
@@ -9,7 +11,15 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import OutlinedInput from '@/components/common/OutlinedInput';
 import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
-import { toastError } from '@/utils/toast';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { sendMessage } from '@/libs/extension';
+import { Route as Dashboard } from '@/pages/index';
+import type { Account, AccountWithName, PrivateAccount } from '@/types/account';
+import { aesEncrypt } from '@/utils/crypto';
+import { sha512 } from '@/utils/crypto/password';
+import { toastError, toastSuccess } from '@/utils/toast';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   Body,
@@ -36,10 +46,19 @@ import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
+  const [isLoadingSetUp, setIsLoadingSetUp] = useState(false);
+
+  const [inputPrivateKeyForm, setInputPrivateKeyForm] = useState<PrivateKeyForm>();
 
   const [isViewPrivateKey, setIsViewPrivateKey] = useState(false);
+
+  const { accounts } = useExtensionStorageStore((state) => state);
+
+  const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
 
   const { privateKeyForm } = useSchema();
 
@@ -74,17 +93,56 @@ export default function Entry() {
   };
 
   const submit = (data: PrivateKeyForm) => {
-    console.log('🚀 ~ submit ~ data:', data);
+    setInputPrivateKeyForm(data);
     setIsOpenSetAccountNameBottomSheet(true);
   };
 
-  const setUpAccount = (accountName: string) => {
-    // NOTE prev에는 프라이빗키나 uuid같은 데이터가 들어가야함
-    // NOTE setNewAccount((prev) => ({ ...prev, accountName: data.name })); 이런식으로 단계마다 데이터를 추가하는 형태로 진행
-    // NOTE 계정 생성 후 밸런스 fetch
-    // NOTE 주요 밸런스 fetch될때 까지 가벼운 로딩
-    // NOTE 로딩 후 대시보드로 이동
-    console.log('🚀 ~ setUpAccount ~ accountName:', accountName);
+  const setUpAccount = async (accountName: string) => {
+    try {
+      setIsLoadingSetUp(true);
+
+      if (!inputPrivateKeyForm) {
+        toastError(t('pages.account.restore-wallet.privatekey.index.setUpError'));
+        return;
+      }
+
+      const privateKey = inputPrivateKeyForm.privateKey.startsWith('0x') ? inputPrivateKeyForm.privateKey.substring(2) : inputPrivateKeyForm.privateKey;
+
+      const privateKeyRestoreStrings = accounts.filter(isPrivateKeyAccount).map((account) => account.encryptedRestoreString);
+
+      if (privateKeyRestoreStrings.includes(sha512(privateKey))) {
+        toastError(t('pages.account.restore-wallet.privatekey.index.alreadyExist'));
+        return;
+      }
+
+      const accountId = uuidv4();
+
+      const newAccount: AccountWithName = {
+        id: accountId,
+        type: 'PRIVATE_KEY',
+        privateKey: aesEncrypt(privateKey, currentPassword!),
+        encryptedRestoreString: sha512(privateKey),
+        name: accountName,
+      };
+
+      await addAccountWithName(newAccount);
+
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
+
+      await setCurrentAccount(newAccount.id);
+
+      reset();
+      toastSuccess(t('pages.account.restore-wallet.privatekey.index.setUpSuccess'));
+
+      navigate({
+        to: Dashboard.to,
+      });
+    } catch {
+      toastError(t('pages.account.restore-wallet.privatekey.index.setUpError'));
+    } finally {
+      setIsLoadingSetUp(false);
+    }
   };
 
   useEffect(() => {
@@ -164,7 +222,14 @@ export default function Entry() {
           </Body>
         </BaseBody>
         <BaseFooter>
-          <Button type="submit" disabled={!isPrivateKeyEntered}>
+          <Button
+            onClick={() => {
+              setIsOpenSetAccountNameBottomSheet(true);
+            }}
+            type="submit"
+            disabled={!isPrivateKeyEntered}
+            isProgress={isLoadingSetUp}
+          >
             {t('pages.account.restore-wallet.privatekey.index.next')}
           </Button>
         </BaseFooter>
@@ -172,8 +237,14 @@ export default function Entry() {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
-        setAccountName={setUpAccount}
+        setAccountName={(accountName) => {
+          setUpAccount(accountName);
+        }}
       />
     </>
   );
+}
+
+function isPrivateKeyAccount(item: Account): item is PrivateAccount {
+  return item.type === 'PRIVATE_KEY';
 }

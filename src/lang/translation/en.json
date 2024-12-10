@@ -164,7 +164,10 @@
             "pasteFromClipboard": "Paste from Clipboard",
             "next": "Next",
             "privateKey": "Private Key",
-            "enterPrivateKey": "Enter Private Key"
+            "enterPrivateKey": "Enter Private Key",
+            "setUpError": "Failed to set up",
+            "alreadyExist": "Already exists ",
+            "setUpSuccess": "Set up success"
           },
           "layout": {
             "header": "Restore With Private Key"
