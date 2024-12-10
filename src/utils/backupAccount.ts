@@ -17,3 +17,17 @@ export const addAccountToNotBackedupList = async (accountId: string) => {
     }),
   );
 };
+
+export const removeAccountFromNotBackedupList = async (accountId: string) => {
+  const notBackedUpAccountIds = await getExtensionLocalStorage('notBackedUpAccountIds');
+
+  const updatedNotBackedUpAccountIds = notBackedUpAccountIds.filter((id) => id !== accountId);
+
+  await setExtensionLocalStorage('notBackedUpAccountIds', updatedNotBackedUpAccountIds);
+
+  useExtensionStorageStore.setState((currentState) =>
+    produce(currentState, (draft) => {
+      draft.notBackedUpAccountIds = updatedNotBackedUpAccountIds;
+    }),
+  );
+};

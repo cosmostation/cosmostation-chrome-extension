@@ -58,7 +58,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         <TopLeftContainer>
           <MnemonicIcon />
           <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
-          {isNotBackedUp && <NotBackedUpText>{t('pages.manage-account.switch-account.components.notBackedUp')}</NotBackedUpText>}
+          {isNotBackedUp && <NotBackedUpText variant="b4_M">{t('pages.manage-account.switch-account.components.notBackedUp')}</NotBackedUpText>}
         </TopLeftContainer>
         <TopRightContainer>
           <OrderIcon />
