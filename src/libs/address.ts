@@ -32,10 +32,10 @@ export function getKeypair(chain: Chain, account: Account, password: string): Ke
 
   const accountType = accountTypes[0];
   if (account.type === 'MNEMONIC') {
-    const { mnemonic, index } = account;
+    const { encryptedMnemonic, index } = account;
     const { hdPath } = accountType;
 
-    const decryptedMnemonic = aesDecrypt(mnemonic, password);
+    const decryptedMnemonic = aesDecrypt(encryptedMnemonic, password);
 
     if (chainType === 'cosmos' || chainType === 'evm') {
       const path = hdPath.replace('${index}', `${index}`);
@@ -71,8 +71,8 @@ export function getKeypair(chain: Chain, account: Account, password: string): Ke
   }
 
   if (account.type === 'PRIVATE_KEY') {
-    const { privateKey } = account;
-    const decryptedPrivateKey = aesDecrypt(privateKey, password);
+    const { encryptedPrivateKey } = account;
+    const decryptedPrivateKey = aesDecrypt(encryptedPrivateKey, password);
 
     if (chainType === 'cosmos' || chainType === 'evm') {
       const ecpair = ECPair.fromPrivateKey(Buffer.from(decryptedPrivateKey, 'hex'), {

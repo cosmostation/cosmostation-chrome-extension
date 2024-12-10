@@ -120,7 +120,7 @@ export default function Entry() {
       const newAccount: AccountWithName = {
         id: accountId,
         type: 'PRIVATE_KEY',
-        privateKey: aesEncrypt(privateKey, currentPassword!),
+        encryptedPrivateKey: aesEncrypt(privateKey, currentPassword!),
         encryptedRestoreString: sha512(privateKey),
         name: accountName,
       };

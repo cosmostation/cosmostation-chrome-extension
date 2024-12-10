@@ -13,15 +13,14 @@ export interface AccountBase {
 }
 export interface PrivateAccount extends AccountBase {
   type: Extract<AccountType, 'PRIVATE_KEY'>;
-  // NOTE encryptedPrivateKey로 이름 변경 필요
-  privateKey: string;
+  encryptedPrivateKey: string;
   encryptedRestoreString: string;
 }
 
 export interface MnemonicAccount extends AccountBase {
   type: Extract<AccountType, 'MNEMONIC'>;
   // NOTE encryptedMnemonic로 이름 변경 필요
-  mnemonic: string;
+  encryptedMnemonic: string;
   index: string;
   encryptedRestoreString: string;
 }

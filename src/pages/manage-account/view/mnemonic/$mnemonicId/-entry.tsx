@@ -19,7 +19,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const { accounts } = useExtensionStorageStore((state) => state);
   const account = accounts.find((item) => item.encryptedRestoreString === mnemonicId);
 
-  const encryptedMnemonic = account?.type === 'MNEMONIC' ? account.mnemonic : '';
+  const encryptedMnemonic = account?.type === 'MNEMONIC' ? account.encryptedMnemonic : '';
   const decryptedMnemonic = currentPassword ? aesDecrypt(encryptedMnemonic, currentPassword) : '';
 
   return (

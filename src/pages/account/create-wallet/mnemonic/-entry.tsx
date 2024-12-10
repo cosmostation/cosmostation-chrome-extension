@@ -71,7 +71,7 @@ export default function Entry() {
         type: 'MNEMONIC',
         name: newAccountName,
         index: '0',
-        mnemonic: encryptedMnemonic,
+        encryptedMnemonic: encryptedMnemonic,
         encryptedRestoreString,
       };
 
@@ -129,7 +129,7 @@ export default function Entry() {
         id: accountId,
         type: 'MNEMONIC',
         index: '0',
-        mnemonic: encryptedMnemonic,
+        encryptedMnemonic: encryptedMnemonic,
         encryptedRestoreString,
       };
 
