@@ -14,19 +14,22 @@ import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mne
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, OptionButtonContainer } from './-styled';
-import MainContentsLayout from '../../-components/MainContentsLayout';
+import MainContentsLayout from '../../../-components/MainContentsLayout';
 
 import EditIcon from '@/assets/images/icons/Edit18.svg';
 import MnemonicViewIcon from '@/assets/images/icons/MnemonicView28.svg';
 import PrivateViewIcon from '@/assets/images/icons/PrivateKeyView28.svg';
 
-export default function Entry() {
+type EntryProps = {
+  accountId: string;
+};
+
+export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { accounts, accountNamesById } = useExtensionStorageStore((state) => state);
 
-  const accountId = '3dac1512-e0ff-470a-95c0-8ce840386ffa';
   const account = accounts.find((item) => item.id === accountId);
   const hdPath = account?.type === 'MNEMONIC' ? account.index : '';
   const accountName = accountNamesById[accountId];
