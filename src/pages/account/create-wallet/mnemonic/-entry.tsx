@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import MnemonicViewer from '@/components/MnemonicViewer';
 import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
 import { Route as Init } from '@/pages/account/initial';
 import { Route as Dashboard } from '@/pages/index';
@@ -33,7 +34,8 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, password: storedPassword, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { currentPassword, setCurrentPassword } = useCurrentPassword();
 
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
 
@@ -60,10 +62,17 @@ export default function Entry() {
       setIsLoading(true);
       const accountId = uuidv4();
 
-      const decryptedPassword = isInitialSetup
-        ? aesDecrypt(password, `${key}${timestamp}`)
-        : aesDecrypt(storedPassword.encryptedPassword, `${storedPassword.key}${storedPassword.timestamp}`);
-      console.log('🚀 ~ createMnemonicAccount ~ decryptedPassword:', decryptedPassword);
+      const decryptedPassword = (() => {
+        if (isInitialSetup) {
+          return aesDecrypt(password, `${key}${timestamp}`);
+        }
+
+        if (!currentPassword) {
+          throw new Error('currentPassword is null');
+        }
+
+        return currentPassword;
+      })();
 
       const encryptedMnemonic = aesEncrypt(mnemonic, decryptedPassword);
       const encryptedRestoreString = sha512(mnemonic);
@@ -81,11 +90,7 @@ export default function Entry() {
         const comparisonPasswordHash = sha512(decryptedPassword);
         await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
 
-        await updateExtensionStorageStore('password', {
-          encryptedPassword: password,
-          key,
-          timestamp,
-        });
+        await setCurrentPassword(decryptedPassword);
       }
 
       await addAccountWithName(newAccount);

@@ -3,19 +3,31 @@ import { useTranslation } from 'react-i18next';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import MnemonicViewer from '@/components/MnemonicViewer';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+// import { Route as MnemonicDetail } from '@/pages/manage-account/detail/mnemonic';
 import { aesDecrypt } from '@/utils/crypto';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle, MnemonicViewerContainer } from './-styled';
 
-export default function Entry() {
+type EntryProps = {
+  mnemonicId: string;
+};
+
+export default function Entry({ mnemonicId }: EntryProps) {
   const { t } = useTranslation();
   const { currentPassword } = useCurrentPassword();
 
+  console.log('🚀 ~ Entry ~ currentPassword:', currentPassword);
+
   const { accounts } = useExtensionStorageStore((state) => state);
-  const accountId = '3dac1512-e0ff-470a-95c0-8ce840386ffa';
-  const account = accounts.find((item) => item.id === accountId);
+  const account = accounts.find((item) => item.encryptedRestoreString === mnemonicId);
+
+  console.log('🚀 ~ Entry ~ account:', account);
+
   const encryptedMnemonic = account?.type === 'MNEMONIC' ? account.mnemonic : '';
+
+  console.log('🚀 ~ Entry ~ encryptedMnemonic:', encryptedMnemonic);
+
   const decryptedMnemonic = currentPassword ? aesDecrypt(encryptedMnemonic, currentPassword) : '';
 
   return (

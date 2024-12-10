@@ -10,7 +10,7 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
-import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic';
+import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, OptionButtonContainer } from './-styled';
@@ -52,7 +52,12 @@ export default function Entry() {
             <OptionButtonContainer>
               <BaseOptionButton
                 onClick={() => {
-                  navigate({ to: ViewMnemonic.to });
+                  navigate({
+                    to: ViewMnemonic.to,
+                    params: {
+                      mnemonicId: account?.encryptedRestoreString || '',
+                    },
+                  });
                 }}
                 leftContent={<MnemonicViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonic')}</Base1300Text>}

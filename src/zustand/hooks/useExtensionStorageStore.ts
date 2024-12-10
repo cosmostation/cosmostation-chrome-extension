@@ -16,11 +16,6 @@ const initialState: ExtensionStorageState = {
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
   dappListSortKey: DefaultSortKey.dappListSortKey,
   language: 'en',
-  password: {
-    encryptedPassword: '',
-    key: '',
-    timestamp: 0,
-  },
   comparisonPasswordHash: '',
   accountNamesById: {},
   mnemonicNamesByHashedMnemonic: {},

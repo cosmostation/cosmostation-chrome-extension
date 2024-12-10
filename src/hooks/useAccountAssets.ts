@@ -9,6 +9,7 @@ export function useAccountAssets() {
 
   const fetcher = async () => {
     try {
+      // NOTE 스토리지 갱신 로직 이 자리에 추가. -> 갱신 생애주기가 살아있을때만 갱신.
       return await getAccountAssets(currentAccount.id);
     } catch {
       return null;
@@ -30,3 +31,5 @@ export function useAccountAssets() {
 
   return { currentAccountAssets, isLoading, error, refetch };
 }
+
+// NOTE 최상위에서 훅이 콜 안되어도 갱신될 수 있도록 하는 컴포넌트(주기적으로 useAccountAssets를 호출하는). 뮤테이트.

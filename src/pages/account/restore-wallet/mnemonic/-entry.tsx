@@ -13,6 +13,7 @@ import TextButton from '@/components/common/TextButton';
 import MnemonicBitsPopover from '@/components/MnemonicViewer/components/MnemonicBitsPopover';
 import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getPassword } from '@/libs/account';
 import { sendMessage } from '@/libs/extension';
 import { Route as Init } from '@/pages/account/initial';
@@ -58,6 +59,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { setCurrentPassword } = useCurrentPassword();
   const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { addAccount, addAccountWithName, setCurrentAccount } = useCurrentAccount();
@@ -248,11 +250,7 @@ export default function Entry() {
       const comparisonPasswordHash = sha512(decryptedPassword);
       await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
 
-      await updateExtensionStorageStore('password', {
-        encryptedPassword: password,
-        key,
-        timestamp,
-      });
+      setCurrentPassword(decryptedPassword);
 
       await addAccount(newAccount);
 
