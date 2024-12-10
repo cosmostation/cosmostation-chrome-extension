@@ -272,6 +272,19 @@
               "myAccount": "My Account",
               "lastHdPath": "Last HD Path"
             }
+          },
+          "account": {
+            "entry": {
+              "lastHdPath": "Last HD Path",
+              "viewMyMnemonic": "View My Mnemonic",
+              "viewMyMnemonicDescription": "View Recovery Phrase",
+              "deleteAccount": "Delete Account",
+              "viewPrivateKey": "View Private Key",
+              "viewPrivateKeyDescription": "Access private keys for each chain"
+            },
+            "layout": {
+              "header": "Account Detail"
+            }
           }
         }
       },

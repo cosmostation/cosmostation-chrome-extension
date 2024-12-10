@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
-import { Route as MnemonicDetail } from '@/pages/manage-account/detail/mnemonic';
+import { Route as MnemonicAccountDetail } from '@/pages/manage-account/detail/mnemonic/account';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -55,7 +55,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               key={i}
               onClick={() => {
                 navigate({
-                  to: MnemonicDetail.to,
+                  to: MnemonicAccountDetail.to,
                   // TODO 특정 니모닉 id 전달 필요
                 });
               }}
