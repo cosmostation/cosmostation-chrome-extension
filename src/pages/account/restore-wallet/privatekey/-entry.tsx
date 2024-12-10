@@ -55,7 +55,7 @@ export default function Entry() {
 
   const [isViewPrivateKey, setIsViewPrivateKey] = useState(false);
 
-  const { accounts } = useExtensionStorageStore((state) => state);
+  const { accounts, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -129,6 +129,11 @@ export default function Entry() {
 
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
+
+      if (!comparisonPasswordHash) {
+        const comparisonPasswordHash = sha512(currentPassword!);
+        await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
+      }
 
       await setCurrentAccount(newAccount.id);
 

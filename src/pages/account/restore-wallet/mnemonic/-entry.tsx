@@ -20,11 +20,10 @@ import { Route as Init } from '@/pages/account/initial';
 import { Route as CoinTypeSetting } from '@/pages/account/restore-wallet/coin-type-setting';
 import { Route as Dashboard } from '@/pages/index';
 import type { Account, AccountWithName } from '@/types/account';
-import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
+import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
-import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import HdPathBottomSheet from './-components/HdPathBottomSheet';
 import {
@@ -59,11 +58,9 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { setCurrentPassword } = useCurrentPassword();
-  const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-
+  const { currentPassword } = useCurrentPassword();
+  const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { addAccount, addAccountWithName, setCurrentAccount } = useCurrentAccount();
-  const { password, key, timestamp } = useNewPasswordStore((state) => state);
 
   const [isViewMnemonic, setIsViewMnemonic] = useState(false);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
@@ -220,7 +217,7 @@ export default function Entry() {
 
   const setUpInitial = async () => {
     try {
-      if (isInitialSetup && !password) {
+      if (isInitialSetup && !currentPassword) {
         toastError(t('pages.account.restore-wallet.mnemonic.index.passwordNotSet'));
 
         navigate({
@@ -234,9 +231,7 @@ export default function Entry() {
 
       const accountId = uuidv4();
 
-      const decryptedPassword = aesDecrypt(password, `${key}${timestamp}`);
-
-      const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, decryptedPassword);
+      const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, currentPassword!);
       const encryptedRestoreString = sha512(joinedMnemonicPhrase);
 
       const newAccount: Account = {
@@ -247,10 +242,10 @@ export default function Entry() {
         encryptedRestoreString,
       };
 
-      const comparisonPasswordHash = sha512(decryptedPassword);
-      await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
-
-      setCurrentPassword(decryptedPassword);
+      if (!comparisonPasswordHash) {
+        const comparisonPasswordHash = sha512(currentPassword!);
+        await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
+      }
 
       await addAccount(newAccount);
 

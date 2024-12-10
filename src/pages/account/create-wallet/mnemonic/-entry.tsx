@@ -18,11 +18,10 @@ import { Route as Init } from '@/pages/account/initial';
 import { Route as Dashboard } from '@/pages/index';
 import type { Account, AccountWithName } from '@/types/account';
 import { addAccountToNotBackedupList } from '@/utils/backupAccount';
-import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
+import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
-import { useNewPasswordStore } from '@/zustand/hooks/useNewPasswordStore';
 
 import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } from './-styled';
 
@@ -37,14 +36,12 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-  const { currentPassword, setCurrentPassword } = useCurrentPassword();
+  const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { currentPassword } = useCurrentPassword();
 
   const { addAccount, addAccountWithName, setCurrentAccount } = useCurrentAccount();
 
   const isInitialSetup = accounts.length === 0;
-
-  const { password, key, timestamp } = useNewPasswordStore((state) => state);
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
   const [isLoadingBackup, setIsLoadingBackup] = useState(false);
@@ -55,7 +52,7 @@ export default function Entry() {
 
   const setUpWithoutCheck = async (newAccountName: string) => {
     try {
-      if (isInitialSetup && !password) {
+      if (isInitialSetup && !currentPassword) {
         toastError(t('pages.account.create-mnemonic.mnemonic.index.passwordNotSet'));
 
         navigate({
@@ -66,19 +63,7 @@ export default function Entry() {
       setIsLoadingWithoutBackup(true);
       const accountId = uuidv4();
 
-      const decryptedPassword = (() => {
-        if (isInitialSetup) {
-          return aesDecrypt(password, `${key}${timestamp}`);
-        }
-
-        if (!currentPassword) {
-          throw new Error('currentPassword is null');
-        }
-
-        return currentPassword;
-      })();
-
-      const encryptedMnemonic = aesEncrypt(mnemonic, decryptedPassword);
+      const encryptedMnemonic = aesEncrypt(mnemonic, currentPassword!);
       const encryptedRestoreString = sha512(mnemonic);
 
       const newAccount: AccountWithName = {
@@ -90,11 +75,9 @@ export default function Entry() {
         encryptedRestoreString,
       };
 
-      if (isInitialSetup) {
-        const comparisonPasswordHash = sha512(decryptedPassword);
+      if (!comparisonPasswordHash) {
+        const comparisonPasswordHash = sha512(currentPassword!);
         await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
-
-        await setCurrentPassword(decryptedPassword);
       }
 
       const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
@@ -127,7 +110,7 @@ export default function Entry() {
 
   const setUpWithCheck = async () => {
     try {
-      if (isInitialSetup && !password) {
+      if (isInitialSetup && !currentPassword) {
         toastError(t('pages.account.create-mnemonic.mnemonic.index.passwordNotSet'));
 
         navigate({
@@ -136,21 +119,10 @@ export default function Entry() {
       }
 
       setIsLoadingBackup(true);
+
       const accountId = uuidv4();
 
-      const decryptedPassword = (() => {
-        if (isInitialSetup) {
-          return aesDecrypt(password, `${key}${timestamp}`);
-        }
-
-        if (!currentPassword) {
-          throw new Error('currentPassword is null');
-        }
-
-        return currentPassword;
-      })();
-
-      const encryptedMnemonic = aesEncrypt(mnemonic, decryptedPassword);
+      const encryptedMnemonic = aesEncrypt(mnemonic, currentPassword!);
       const encryptedRestoreString = sha512(mnemonic);
 
       const newAccount: Account = {
@@ -161,11 +133,9 @@ export default function Entry() {
         encryptedRestoreString,
       };
 
-      if (isInitialSetup) {
-        const comparisonPasswordHash = sha512(decryptedPassword);
+      if (!comparisonPasswordHash) {
+        const comparisonPasswordHash = sha512(currentPassword!);
         await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
-
-        await setCurrentPassword(decryptedPassword);
       }
 
       await addAccount(newAccount);
