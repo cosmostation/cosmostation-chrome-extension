@@ -9,7 +9,7 @@ export const COMDEX: CosmosChain = {
   type: '',
   chainId: 'comdex-1',
   chainName: 'COMDEX',
-  restURL: 'https://lcd-comdex.cosmostation.io',
+  restURL: 'https://rest.comdex.one',
   tokenImageURL: comdexTokenImg,
   imageURL: comdexChainImg,
   baseDenom: 'ucmdx',
@@ -30,4 +30,5 @@ export const COMDEX: CosmosChain = {
     average: '0.03',
   },
   gas: { send: '100000' },
+  custom: 'no-stake',
 };
