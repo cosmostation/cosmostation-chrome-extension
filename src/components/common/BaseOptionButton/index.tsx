@@ -6,9 +6,10 @@ type BaseOptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<
   leftContent?: JSX.Element;
   leftSecondHeader?: JSX.Element;
   leftSecondBody?: JSX.Element;
+  rightContent?: JSX.Element;
 };
 
-export default function BaseOptionButton({ leftContent, leftSecondHeader, leftSecondBody, ...remainder }: BaseOptionButtonProps) {
+export default function BaseOptionButton({ leftContent, leftSecondHeader, leftSecondBody, rightContent, ...remainder }: BaseOptionButtonProps) {
   return (
     <StyledButton {...remainder}>
       <LeftContainer>{leftContent}</LeftContainer>
@@ -17,6 +18,7 @@ export default function BaseOptionButton({ leftContent, leftSecondHeader, leftSe
         {leftSecondBody}
       </MiddleContainer>
       <RightContainer>
+        {rightContent}
         <RightChevronIcon />
       </RightContainer>
     </StyledButton>

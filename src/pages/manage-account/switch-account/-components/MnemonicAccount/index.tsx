@@ -21,13 +21,17 @@ import {
   LastHdPathIndexText,
   LastHdPathText,
   LastHdPathTextContainer,
+  OutlinedButtonContainer,
   PlusIconContainer,
+  RightArrowIconContainer,
+  StyledOutlinedButton,
   TopContainer,
   TopLeftContainer,
   TopRightContainer,
 } from './styled';
 
 import MnemonicIcon from '@/assets/images/icons/Mnemonics14.svg';
+import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
 import CheckIcon from 'assets/images/icons/Check.svg';
 import PlusIcon from 'assets/images/icons/Plus12.svg';
 
@@ -41,11 +45,13 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
 
   const { currentAccount, setCurrentAccount } = useCurrentAccount();
 
-  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
+  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
   const filteredAccounts = accounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicRestoreString);
 
   const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicRestoreString] || '';
+
+  const isNotBackedUp = notBackedUpAccountIds.includes(filteredAccounts.map((item) => item.id)[0]);
 
   return (
     <Container>
@@ -111,6 +117,21 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
             </AccountButton>
           );
         })}
+        {isNotBackedUp && (
+          <OutlinedButtonContainer>
+            <StyledOutlinedButton
+              variant="dark"
+              typoVarient="h4_B"
+              trailingIcon={
+                <RightArrowIconContainer>
+                  <RightArrowIcon />
+                </RightArrowIconContainer>
+              }
+            >
+              {t('pages.manage-account.switch-account.components.backUpNow')}
+            </StyledOutlinedButton>
+          </OutlinedButtonContainer>
+        )}
       </BodyContainer>
     </Container>
   );

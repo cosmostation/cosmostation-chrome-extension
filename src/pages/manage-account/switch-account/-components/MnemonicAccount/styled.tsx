@@ -1,6 +1,8 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import OutlinedButton from '@/components/common/OutlinedButton';
+
 export const Container = styled('div')({
   width: '100%',
 
@@ -125,4 +127,27 @@ export const ActiveBadge = styled('div')(({ theme }) => ({
   borderRadius: '50%',
 
   background: theme.palette.accentColor.purple200,
+}));
+
+export const OutlinedButtonContainer = styled('div')({
+  width: '100%',
+  padding: '1.6rem',
+  boxSizing: 'border-box',
+});
+
+export const StyledOutlinedButton = styled(OutlinedButton)({
+  height: '3.2rem',
+});
+
+export const RightArrowIconContainer = styled('div')(({ theme }) => ({
+  width: '1.2rem',
+  height: '1.2rem',
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+    fill: theme.palette.color.base800,
+    '& > path': {
+      fill: theme.palette.color.base800,
+    },
+  },
 }));

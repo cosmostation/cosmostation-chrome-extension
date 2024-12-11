@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 
 import type { Account, AccountWithName } from '@/types/account';
-import { toastError } from '@/utils/toast';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentAccount() {
   const { t } = useTranslation();
-  const { accounts, accountNamesById, selectedAccountId, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic, selectedAccountId, notBackedUpAccountIds, updateExtensionStorageStore } =
+    useExtensionStorageStore((state) => state);
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -39,6 +40,7 @@ export function useCurrentAccount() {
 
   const removeAccount = async (id: string) => {
     try {
+      const encryptedRestoreString = accounts.find((acc) => acc.id === id)?.encryptedRestoreString;
       const newAccounts = accounts.filter((acc) => acc.id !== id);
 
       if (id === selectedAccountId) {
@@ -52,10 +54,66 @@ export function useCurrentAccount() {
       delete deepCopiedAccountName[id];
 
       await updateExtensionStorageStore('accountNamesById', deepCopiedAccountName);
+
+      if (!newAccounts.some((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === encryptedRestoreString)) {
+        const deepCopiedMnemonicNamesByHashedMnemonic = { ...mnemonicNamesByHashedMnemonic };
+
+        delete deepCopiedMnemonicNamesByHashedMnemonic[id];
+
+        await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', deepCopiedMnemonicNamesByHashedMnemonic);
+      }
+
+      if (notBackedUpAccountIds.includes(id)) {
+        await updateExtensionStorageStore(
+          'notBackedUpAccountIds',
+          notBackedUpAccountIds.filter((accountId) => accountId !== id),
+        );
+      }
+
+      toastSuccess(t('hooks.useCurrentAccount.removeAccountSuccess'));
+
+      // TODO 어카운트 별 어드레스. 밸런스 삭제 로직 추가
     } catch {
       toastError(t('hooks.useCurrentAccount.removeAccountError'));
     }
   };
 
-  return { currentAccount: currentAccountWithName, setCurrentAccount, addAccount, addAccountWithName, removeAccount };
+  const removeMnemonic = async (mnemonicId: string) => {
+    try {
+      const targetAccounts = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === mnemonicId);
+      const newAccounts = accounts.filter((account) => !targetAccounts.map(({ id }) => id).includes(account.id));
+
+      if (!newAccounts.map(({ id }) => id).includes(selectedAccountId)) {
+        await updateExtensionStorageStore('selectedAccountId', newAccounts?.[0]?.id ?? '');
+      }
+
+      await updateExtensionStorageStore('accounts', newAccounts);
+
+      const deepCopiedAccountName = { ...accountNamesById };
+
+      targetAccounts.forEach((account) => {
+        delete deepCopiedAccountName[account.id];
+      });
+
+      await updateExtensionStorageStore('accountNamesById', deepCopiedAccountName);
+
+      const deepCopiedMnemonicNamesByHashedMnemonic = { ...mnemonicNamesByHashedMnemonic };
+
+      delete deepCopiedMnemonicNamesByHashedMnemonic[mnemonicId];
+
+      await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', deepCopiedMnemonicNamesByHashedMnemonic);
+
+      const newNotBackedUpAccountIds = notBackedUpAccountIds.filter((accountId) => newAccounts.map(({ id }) => id).includes(accountId));
+
+      await updateExtensionStorageStore('notBackedUpAccountIds', newNotBackedUpAccountIds);
+
+      // TODO 어카운트 별 어드레스. 밸런스 삭제 로직 추가
+
+      toastSuccess(t('hooks.useCurrentAccount.removeMnemonicSuccess'));
+    } catch {
+      toastError(t('hooks.useCurrentAccount.removeMnemonicError'));
+    }
+  };
+
+  return { currentAccount: currentAccountWithName, setCurrentAccount, addAccount, removeMnemonic, addAccountWithName, removeAccount };
 }

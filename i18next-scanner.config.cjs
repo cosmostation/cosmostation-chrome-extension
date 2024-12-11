@@ -4,6 +4,7 @@ module.exports = {
   input: [
     'src/pages/**/*.{ts,tsx}',
     'src/components/**/*.{ts,tsx}',
+    'src/hooks/**/*.{ts,tsx}',
     // Use ! to filter out files or directories
     '!src/**/*.spec.{ts,tsx}',
     '!src/lang/**',

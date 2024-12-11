@@ -5,7 +5,6 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
 
   padding: '1.2rem 1.6rem',
 
@@ -24,8 +23,6 @@ export const LeftContainer = styled('div')({
 });
 
 export const MiddleContainer = styled('div')({
-  width: '100%',
-
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
@@ -34,5 +31,10 @@ export const MiddleContainer = styled('div')({
 });
 
 export const RightContainer = styled('div')({
-  width: 'fit-content',
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.6rem',
+
+  marginLeft: 'auto',
 });
