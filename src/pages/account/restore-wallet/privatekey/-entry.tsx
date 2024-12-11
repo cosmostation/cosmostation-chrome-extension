@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -63,7 +63,7 @@ export default function Entry() {
   const { privateKeyForm } = useSchema();
 
   const {
-    control,
+    register,
     handleSubmit,
     watch,
     formState: { errors },
@@ -74,6 +74,8 @@ export default function Entry() {
     reValidateMode: 'onSubmit',
     shouldFocusError: true,
   });
+
+  const { ref, ...remainder } = register('privateKey');
 
   const { privateKey } = watch();
   const isPrivateKeyEntered = !!privateKey;
@@ -177,25 +179,15 @@ export default function Entry() {
                 </IconTextButton>
               </TopContainer>
 
-              <Controller
-                name="privateKey"
-                control={control}
-                render={({ field }) => (
-                  <OutlinedInput
-                    placeholder={t('pages.account.restore-wallet.privatekey.index.enterPrivateKey')}
-                    multiline
-                    minRows={5}
-                    type={isViewPrivateKey ? 'text' : 'password'}
-                    error={!!errors.privateKey}
-                    // NOTE: 다른것처럼 register가 적용이 안된다??
-                    // slotProps={{
-                    //   input: {
-                    //     ...register('privateKey', { setValueAs: (v: string) => v.trim() }),
-                    //   },
-                    // }}
-                    {...field}
-                  />
-                )}
+              <OutlinedInput
+                placeholder={t('pages.account.restore-wallet.privatekey.index.enterPrivateKey')}
+                multiline
+                minRows={5}
+                type={isViewPrivateKey ? 'text' : 'password'}
+                error={!!errors.privateKey}
+                hideViewIcon
+                inputRef={ref}
+                {...remainder}
               />
 
               <ControlInputButtonContainer>
@@ -227,14 +219,7 @@ export default function Entry() {
           </Body>
         </BaseBody>
         <BaseFooter>
-          <Button
-            onClick={() => {
-              setIsOpenSetAccountNameBottomSheet(true);
-            }}
-            type="submit"
-            disabled={!isPrivateKeyEntered}
-            isProgress={isLoadingSetUp}
-          >
+          <Button type="submit" disabled={!isPrivateKeyEntered} isProgress={isLoadingSetUp}>
             {t('pages.account.restore-wallet.privatekey.index.next')}
           </Button>
         </BaseFooter>

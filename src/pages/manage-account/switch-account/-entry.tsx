@@ -27,27 +27,25 @@ export default function Entry() {
   return (
     <BaseBody>
       <EdgeAligner>
-        <>
-          <StickyTabContainer>
-            <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
-              {tabLabels.map((item) => (
-                <FilledTab key={item} label={item} />
-              ))}
-            </FilledTabs>
-          </StickyTabContainer>
-          <StyledTabPanel value={tabValue} index={0}>
-            <TabPanelContentsContainer>
-              {uniqueMnemonicRestoreString.map((item, i) => (
-                <MnemonicAccount key={i} mnemonicRestoreString={item} />
-              ))}
-            </TabPanelContentsContainer>
-          </StyledTabPanel>
-          <StyledTabPanel value={tabValue} index={1}>
-            <TabPanelContentsContainer>
-              <PrivateKeyAccount />
-            </TabPanelContentsContainer>
-          </StyledTabPanel>
-        </>
+        <StickyTabContainer>
+          <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
+            {tabLabels.map((item) => (
+              <FilledTab key={item} label={item} />
+            ))}
+          </FilledTabs>
+        </StickyTabContainer>
+        <StyledTabPanel value={tabValue} index={0}>
+          <TabPanelContentsContainer>
+            {uniqueMnemonicRestoreString.map((item, i) => (
+              <MnemonicAccount key={i} mnemonicRestoreString={item} />
+            ))}
+          </TabPanelContentsContainer>
+        </StyledTabPanel>
+        <StyledTabPanel value={tabValue} index={1}>
+          <TabPanelContentsContainer>
+            <PrivateKeyAccount />
+          </TabPanelContentsContainer>
+        </StyledTabPanel>
       </EdgeAligner>
     </BaseBody>
   );

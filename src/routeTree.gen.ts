@@ -28,8 +28,10 @@ import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/accoun
 import { Route as AccountRestoreWalletCoinTypeSettingIndexImport } from './pages/account/restore-wallet/coin-type-setting/index'
 import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account/backup-check/$accountId/index'
+import { Route as ManageAccountViewPrivateKeyAccountIdIndexImport } from './pages/manage-account/view/privateKey/$accountId/index'
 import { Route as ManageAccountViewMnemonicMnemonicIdIndexImport } from './pages/manage-account/view/mnemonic/$mnemonicId/index'
 import { Route as ManageAccountDetailMnemonicMnemonicIdIndexImport } from './pages/manage-account/detail/mnemonic/$mnemonicId/index'
+import { Route as ManageAccountDetailPrivateKeyAccountAccountIdIndexImport } from './pages/manage-account/detail/privateKey/account/$accountId/index'
 import { Route as ManageAccountDetailMnemonicAccountAccountIdIndexImport } from './pages/manage-account/detail/mnemonic/account/$accountId/index'
 
 // Create/Update Routes
@@ -144,6 +146,13 @@ const AccountBackupCheckAccountIdIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
+const ManageAccountViewPrivateKeyAccountIdIndexRoute =
+  ManageAccountViewPrivateKeyAccountIdIndexImport.update({
+    id: '/manage-account/view/privateKey/$accountId/',
+    path: '/manage-account/view/privateKey/$accountId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const ManageAccountViewMnemonicMnemonicIdIndexRoute =
   ManageAccountViewMnemonicMnemonicIdIndexImport.update({
     id: '/manage-account/view/mnemonic/$mnemonicId/',
@@ -155,6 +164,13 @@ const ManageAccountDetailMnemonicMnemonicIdIndexRoute =
   ManageAccountDetailMnemonicMnemonicIdIndexImport.update({
     id: '/manage-account/detail/mnemonic/$mnemonicId/',
     path: '/manage-account/detail/mnemonic/$mnemonicId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute =
+  ManageAccountDetailPrivateKeyAccountAccountIdIndexImport.update({
+    id: '/manage-account/detail/privateKey/account/$accountId/',
+    path: '/manage-account/detail/privateKey/account/$accountId/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -302,11 +318,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAccountViewMnemonicMnemonicIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-account/view/privateKey/$accountId/': {
+      id: '/manage-account/view/privateKey/$accountId/'
+      path: '/manage-account/view/privateKey/$accountId'
+      fullPath: '/manage-account/view/privateKey/$accountId'
+      preLoaderRoute: typeof ManageAccountViewPrivateKeyAccountIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/detail/mnemonic/account/$accountId/': {
       id: '/manage-account/detail/mnemonic/account/$accountId/'
       path: '/manage-account/detail/mnemonic/account/$accountId'
       fullPath: '/manage-account/detail/mnemonic/account/$accountId'
       preLoaderRoute: typeof ManageAccountDetailMnemonicAccountAccountIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-account/detail/privateKey/account/$accountId/': {
+      id: '/manage-account/detail/privateKey/account/$accountId/'
+      path: '/manage-account/detail/privateKey/account/$accountId'
+      fullPath: '/manage-account/detail/privateKey/account/$accountId'
+      preLoaderRoute: typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -334,7 +364,9 @@ export interface FileRoutesByFullPath {
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   '/manage-account/view/mnemonic/$mnemonicId': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
+  '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
+  '/manage-account/detail/privateKey/account/$accountId': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -357,7 +389,9 @@ export interface FileRoutesByTo {
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   '/manage-account/view/mnemonic/$mnemonicId': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
+  '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
+  '/manage-account/detail/privateKey/account/$accountId': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
 
 export interface FileRoutesById {
@@ -381,7 +415,9 @@ export interface FileRoutesById {
   '/manage-account/create-account/$mnemonicId/': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId/': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   '/manage-account/view/mnemonic/$mnemonicId/': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
+  '/manage-account/view/privateKey/$accountId/': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId/': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
+  '/manage-account/detail/privateKey/account/$accountId/': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -406,7 +442,9 @@ export interface FileRouteTypes {
     | '/manage-account/create-account/$mnemonicId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
     | '/manage-account/view/mnemonic/$mnemonicId'
+    | '/manage-account/view/privateKey/$accountId'
     | '/manage-account/detail/mnemonic/account/$accountId'
+    | '/manage-account/detail/privateKey/account/$accountId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -428,7 +466,9 @@ export interface FileRouteTypes {
     | '/manage-account/create-account/$mnemonicId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
     | '/manage-account/view/mnemonic/$mnemonicId'
+    | '/manage-account/view/privateKey/$accountId'
     | '/manage-account/detail/mnemonic/account/$accountId'
+    | '/manage-account/detail/privateKey/account/$accountId'
   id:
     | '__root__'
     | '/'
@@ -450,7 +490,9 @@ export interface FileRouteTypes {
     | '/manage-account/create-account/$mnemonicId/'
     | '/manage-account/detail/mnemonic/$mnemonicId/'
     | '/manage-account/view/mnemonic/$mnemonicId/'
+    | '/manage-account/view/privateKey/$accountId/'
     | '/manage-account/detail/mnemonic/account/$accountId/'
+    | '/manage-account/detail/privateKey/account/$accountId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -474,7 +516,9 @@ export interface RootRouteChildren {
   ManageAccountCreateAccountMnemonicIdIndexRoute: typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   ManageAccountDetailMnemonicMnemonicIdIndexRoute: typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   ManageAccountViewMnemonicMnemonicIdIndexRoute: typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
+  ManageAccountViewPrivateKeyAccountIdIndexRoute: typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute: typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
+  ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute: typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -504,8 +548,12 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAccountDetailMnemonicMnemonicIdIndexRoute,
   ManageAccountViewMnemonicMnemonicIdIndexRoute:
     ManageAccountViewMnemonicMnemonicIdIndexRoute,
+  ManageAccountViewPrivateKeyAccountIdIndexRoute:
+    ManageAccountViewPrivateKeyAccountIdIndexRoute,
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute:
     ManageAccountDetailMnemonicAccountAccountIdIndexRoute,
+  ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute:
+    ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -537,7 +585,9 @@ export const routeTree = rootRoute
         "/manage-account/create-account/$mnemonicId/",
         "/manage-account/detail/mnemonic/$mnemonicId/",
         "/manage-account/view/mnemonic/$mnemonicId/",
-        "/manage-account/detail/mnemonic/account/$accountId/"
+        "/manage-account/view/privateKey/$accountId/",
+        "/manage-account/detail/mnemonic/account/$accountId/",
+        "/manage-account/detail/privateKey/account/$accountId/"
       ]
     },
     "/": {
@@ -597,8 +647,14 @@ export const routeTree = rootRoute
     "/manage-account/view/mnemonic/$mnemonicId/": {
       "filePath": "manage-account/view/mnemonic/$mnemonicId/index.tsx"
     },
+    "/manage-account/view/privateKey/$accountId/": {
+      "filePath": "manage-account/view/privateKey/$accountId/index.tsx"
+    },
     "/manage-account/detail/mnemonic/account/$accountId/": {
       "filePath": "manage-account/detail/mnemonic/account/$accountId/index.tsx"
+    },
+    "/manage-account/detail/privateKey/account/$accountId/": {
+      "filePath": "manage-account/detail/privateKey/account/$accountId/index.tsx"
     }
   }
 }

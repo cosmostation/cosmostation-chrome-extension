@@ -47,13 +47,20 @@ export const StyledInput = styled(OutlinedInput)<OutlinedInputProps>(({ theme, .
 
   '&:hover': {
     '.MuiOutlinedInput-notchedOutline': {
-      border: '0.1rem solid #9C6CFF',
+      border: `0.1rem solid ${theme.palette.accentColor.purple400}`,
     },
   },
   '&.Mui-focused': {
     '.MuiOutlinedInput-notchedOutline': {
-      border: '0.1rem solid #9C6CFF',
+      border: `0.1rem solid ${theme.palette.accentColor.purple400}`,
     },
+  },
+
+  '&.MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+    borderColor: theme.palette.color.base200,
+  },
+  '& .MuiInputBase-input.Mui-disabled': {
+    WebkitTextFillColor: theme.palette.color.base1300,
   },
 }));
 

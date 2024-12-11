@@ -73,6 +73,7 @@ export function useCurrentAccount() {
       toastSuccess(t('hooks.useCurrentAccount.removeAccountSuccess'));
 
       // TODO 어카운트 별 어드레스. 밸런스 삭제 로직 추가
+      // TODO initAccountIds 삭제 로직 추가
     } catch {
       toastError(t('hooks.useCurrentAccount.removeAccountError'));
     }
@@ -108,6 +109,7 @@ export function useCurrentAccount() {
       await updateExtensionStorageStore('notBackedUpAccountIds', newNotBackedUpAccountIds);
 
       // TODO 어카운트 별 어드레스. 밸런스 삭제 로직 추가
+      // TODO initAccountIds 삭제 로직 추가
 
       toastSuccess(t('hooks.useCurrentAccount.removeMnemonicSuccess'));
     } catch {

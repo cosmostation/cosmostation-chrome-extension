@@ -11,14 +11,13 @@ import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
-import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
+import { Route as ViewPrivateKey } from '@/pages/manage-account/view/privateKey/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, OptionButtonContainer } from './-styled';
+import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentTitleText, OptionButtonContainer } from './-styled';
 import MainContentsLayout from '../../../-components/MainContentsLayout';
 
 import EditIcon from '@/assets/images/icons/Edit18.svg';
-import MnemonicViewIcon from '@/assets/images/icons/MnemonicView28.svg';
 import PrivateViewIcon from '@/assets/images/icons/PrivateKeyView28.svg';
 
 type EntryProps = {
@@ -29,11 +28,9 @@ export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, accountNamesById } = useExtensionStorageStore((state) => state);
+  const { accountNamesById } = useExtensionStorageStore((state) => state);
   const { removeAccount } = useCurrentAccount();
 
-  const account = accounts.find((item) => item.id === accountId);
-  const hdPath = account?.type === 'MNEMONIC' ? account.index : '';
   const accountName = accountNamesById[accountId];
 
   return (
@@ -48,7 +45,6 @@ export default function Entry({ accountId }: EntryProps) {
                   <IconTextButton trailingIcon={<EditIcon />}>
                     <MainContentTitleText variant="h2_B">{accountName}</MainContentTitleText>
                   </IconTextButton>
-                  <MainContentSubtitleText variant="b3_R">{`${t('pages.manage-account.detail.mnemonic.account.entry.lastHdPath')} : ${hdPath}`}</MainContentSubtitleText>
                 </MainContentBody>
               }
             />
@@ -58,20 +54,17 @@ export default function Entry({ accountId }: EntryProps) {
               <BaseOptionButton
                 onClick={() => {
                   navigate({
-                    to: ViewMnemonic.to,
+                    to: ViewPrivateKey.to,
                     params: {
-                      mnemonicId: account?.encryptedRestoreString || '',
+                      accountId,
                     },
                   });
                 }}
-                leftContent={<MnemonicViewIcon />}
-                leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonic')}</Base1300Text>}
-                leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonicDescription')}</Base1000Text>}
-              />
-              <BaseOptionButton
                 leftContent={<PrivateViewIcon />}
-                leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewPrivateKey')}</Base1300Text>}
-                leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.account.entry.viewPrivateKeyDescription')}</Base1000Text>}
+                leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.privateKey.account.entry.viewPrivateKey')}</Base1300Text>}
+                leftSecondBody={
+                  <Base1000Text variant="b3_R">{t('pages.manage-account.detail.privateKey.account.entry.viewPrivateKeyDescription')}</Base1000Text>
+                }
               />
             </OptionButtonContainer>
           </EdgeAligner>
@@ -85,7 +78,7 @@ export default function Entry({ accountId }: EntryProps) {
           }}
           variant="red"
         >
-          {t('pages.manage-account.detail.mnemonic.account.entry.deleteAccount')}
+          {t('pages.manage-account.detail.privateKey.account.entry.deleteAccount')}
         </Button>
       </BaseFooter>
     </>

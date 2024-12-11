@@ -304,11 +304,23 @@
               "viewMyMnemonic": "View My Mnemonic",
               "viewMyMnemonicDescription": "View Recovery Phrase",
               "deleteAccount": "Delete Account",
-              "viewPrivateKey": "View Private Key",
+              "viewPrivateKey": "View Private Key (Each Chain)",
               "viewPrivateKeyDescription": "Access private keys for each chain"
             },
             "layout": {
               "header": "Account Detail"
+            }
+          }
+        },
+        "privateKey": {
+          "account": {
+            "entry": {
+              "viewPrivateKey": "View My Private Key",
+              "viewPrivateKeyDescription": "View Recovery Phrase",
+              "deleteAccount": "Delete Account"
+            },
+            "layout": {
+              "header": "Wallet Detail"
             }
           }
         }
@@ -336,6 +348,15 @@
           "entry": {
             "title": "Write Down Your Mnemonic",
             "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset."
+          }
+        },
+        "privateKey": {
+          "entry": {
+            "copied": "Private key successfully copied",
+            "title": "Write Down Your Private Key",
+            "subTitle": "This phrase is the only way to recover your account. Losing this Private Key could lead to loss of your asset",
+            "privateKey": "Private Key",
+            "copy": "Copy to Clipboard"
           }
         }
       },
