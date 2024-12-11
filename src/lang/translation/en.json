@@ -346,6 +346,22 @@
             }
           }
         }
+      },
+      "create-account": {
+        "entry": {
+          "failToFindMnemonic": "Failed to find mnemonic",
+          "setupSuccess": "Set up success",
+          "setupFail": "Set up fail",
+          "title": "HD Path Setting",
+          "subTitle": "You can create a new account with the same seed phrase but a different HD Path.",
+          "accountName": "Account Name",
+          "lastHdPathIndex": "Last HD Path",
+          "majorNetwork": "Major Network",
+          "setUpComplete": "Setup Complete"
+        },
+        "layout": {
+          "header": "Create New Account"
+        }
       }
     },
     "wallet": {
@@ -360,7 +376,10 @@
         "base": "Please enter characters.",
         "empty": "required",
         "max": "Please enter less than {#limit} characters.",
-        "min": "Please enter at least {#limit} or more characters."
+        "min": "Please enter at least {#limit} or more characters.",
+        "pattern": {
+          "invalidRange": "Please enter a value less than 10"
+        }
       }
     },
     "passwordForm": {

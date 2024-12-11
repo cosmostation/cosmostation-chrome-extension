@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { Route as CreateAccountWithExistMnemonic } from '@/pages/manage-account/create-account/$mnemonicId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -35,6 +37,7 @@ type MnemonicAccountProps = {
 
 export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccountProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const { currentAccount, setCurrentAccount } = useCurrentAccount();
 
@@ -53,6 +56,14 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         </TopLeftContainer>
         <TopRightContainer>
           <IconTextButton
+            onClick={() => {
+              navigate({
+                to: CreateAccountWithExistMnemonic.to,
+                params: {
+                  mnemonicId: mnemonicRestoreString,
+                },
+              });
+            }}
             leadingIcon={
               <PlusIconContainer>
                 <PlusIcon />

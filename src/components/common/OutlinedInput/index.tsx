@@ -11,9 +11,18 @@ import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 type OutlinedInputProps = BaseOutlinedInputProps & {
   helperText?: string;
   rightBottomAdornment?: React.ReactNode;
+  hideViewIcon?: boolean;
 };
 
-export default function OutlinedInput({ type, error = false, helperText, rightBottomAdornment, slotProps, ...remainder }: OutlinedInputProps) {
+export default function OutlinedInput({
+  type,
+  error = false,
+  hideViewIcon = false,
+  helperText,
+  rightBottomAdornment,
+  slotProps,
+  ...remainder
+}: OutlinedInputProps) {
   const [textFieldType, setTextFieldType] = useState<HTMLInputTypeAttribute | undefined>(type);
 
   const isShowBottomContainer = helperText || rightBottomAdornment;
@@ -24,7 +33,8 @@ export default function OutlinedInput({ type, error = false, helperText, rightBo
         autoComplete="off"
         type={type === 'password' ? textFieldType : type}
         endAdornment={
-          type === 'password' && (
+          type === 'password' &&
+          !hideViewIcon && (
             <InputAdornment position="end">
               <StyledIconButton
                 onClick={() => {

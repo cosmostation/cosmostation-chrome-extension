@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getAccountAssets } from '@/libs/asset';
+import { sendMessage } from '@/libs/extension';
 
 import { useCurrentAccount } from './useCurrentAccount';
 
@@ -10,6 +11,7 @@ export function useAccountAssets() {
   const fetcher = async () => {
     try {
       // NOTE 스토리지 갱신 로직 이 자리에 추가. -> 갱신 생애주기가 살아있을때만 갱신.
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
       return await getAccountAssets(currentAccount.id);
     } catch {
       return null;

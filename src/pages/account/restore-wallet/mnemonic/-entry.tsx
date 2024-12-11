@@ -310,6 +310,7 @@ export default function Entry() {
                       <MnemonicWordIndexText variant="h5n_M">{index}</MnemonicWordIndexText>
                     </InputAdornment>
                   }
+                  hideViewIcon
                   error={!!value && !mnemonicWordList.includes(value)}
                   onFocus={() => handleFocusMnemonicInput(index)}
                   onBlur={() => handleBlurMnemonicInput(index)}

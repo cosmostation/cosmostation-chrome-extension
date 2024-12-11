@@ -40,6 +40,7 @@ const MajorChainPath = [
   },
 ];
 
+// TODO 훅폼 적용 필요
 type HdPathBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   currentHdPath: string;
   onChangeHpPath?: (val: string) => void;

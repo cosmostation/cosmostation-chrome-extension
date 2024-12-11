@@ -1,6 +1,7 @@
 export interface ChainAccountType {
   hdPath: string;
   pubkeyStyle: string;
+  is_default: boolean | null;
   pubKeyType?: string | null;
 }
 

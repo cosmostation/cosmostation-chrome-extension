@@ -101,6 +101,7 @@ export async function getChains() {
       {
         hdPath: "m/44'/60'/0'/0/${index}",
         pubkeyStyle: 'keccak256',
+        is_default: null,
       },
     ];
 

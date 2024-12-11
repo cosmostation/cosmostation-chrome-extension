@@ -2,6 +2,6 @@ import { loadExtensionSessionStorageStoreFromStorage } from './hooks/useExtensio
 import { loadExtensionStorageStoreFromStorage } from './hooks/useExtensionStorageStore';
 
 export async function loadAllStoreFromStorage() {
-  await loadExtensionStorageStoreFromStorage();
   await loadExtensionSessionStorageStoreFromStorage();
+  await loadExtensionStorageStoreFromStorage();
 }

@@ -52,6 +52,20 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
       '&[type=password]': {
         letterSpacing: '0.5rem',
       },
+
+      '&[type=number]': {
+        fontFamily: theme.typography.h3n_B.fontFamily,
+        fontStyle: theme.typography.h3n_B.fontStyle,
+        fontSize: theme.typography.h3n_B.fontSize,
+        lineHeight: theme.typography.h3n_B.lineHeight,
+        letterSpacing: theme.typography.h3n_B.letterSpacing,
+
+        MozAppearance: 'textfield',
+        '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+          WebkitAppearance: 'none',
+          margin: '0',
+        },
+      },
     },
   },
 
