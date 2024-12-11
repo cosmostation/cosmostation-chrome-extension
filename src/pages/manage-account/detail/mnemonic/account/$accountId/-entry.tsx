@@ -12,6 +12,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
+import { Route as ViewMultiChainPrivateKey } from '@/pages/manage-account/view/multi-chain-priateKey/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, OptionButtonContainer } from './-styled';
@@ -69,6 +70,14 @@ export default function Entry({ accountId }: EntryProps) {
                 leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonicDescription')}</Base1000Text>}
               />
               <BaseOptionButton
+                onClick={() => {
+                  navigate({
+                    to: ViewMultiChainPrivateKey.to,
+                    params: {
+                      accountId: account?.id || '',
+                    },
+                  });
+                }}
                 leftContent={<PrivateViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewPrivateKey')}</Base1300Text>}
                 leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.account.entry.viewPrivateKeyDescription')}</Base1000Text>}

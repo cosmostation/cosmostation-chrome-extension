@@ -23,7 +23,11 @@ interface Keypair {
   publicKey: string;
 }
 
-export function getKeypair(chain: Chain, account: Account, password: string): Keypair {
+export function getKeypair(chain: Chain, account: Account, password: string | null): Keypair {
+  if (password === null) {
+    throw new Error('Invalid password');
+  }
+
   const { chainType, accountTypes } = chain;
 
   if (accountTypes.length === 0) {
