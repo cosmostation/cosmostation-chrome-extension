@@ -2,8 +2,6 @@ import type { TextFieldProps } from '@mui/material';
 import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { theme } from '@/styles/theme';
-
 import IconButton from '../IconButton';
 
 export const Container = styled('div')({
@@ -117,7 +115,7 @@ export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ th
   color: props['data-is-error'] ? 'red' : theme.palette.color.base1300,
 }));
 
-export const StyledIconButton = styled(IconButton)({
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   width: '2rem',
   height: '2rem',
 
@@ -138,4 +136,4 @@ export const StyledIconButton = styled(IconButton)({
       },
     },
   },
-});
+}));

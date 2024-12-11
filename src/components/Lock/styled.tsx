@@ -1,4 +1,3 @@
-import type { OutlinedInputProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import OutlinedInput from '../common/OutlinedInput';
@@ -14,7 +13,7 @@ export const FormContainer = styled('form')({
   boxSizing: 'border-box',
 });
 
-export const StyledInput = styled(OutlinedInput)<OutlinedInputProps>({
+export const StyledInput = styled(OutlinedInput)({
   height: '3.2rem',
 });
 
