@@ -13,34 +13,25 @@ export const StyledChainAccordion = styled(Accordion)(({ theme }) => ({
   borderRadius: '0',
 }));
 
-type StyledAccordionSummaryProps = {
-  'data-is-expanded': boolean;
-  'data-is-exists': boolean;
-};
+export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => <AccordionSummary expandIcon={<BottomChevronIcon />} {...props} />)(
+  ({ theme }) => ({
+    padding: '1.2rem 0.4rem',
 
-export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => (
-  <AccordionSummary expandIcon={<BottomChevronIcon />} {...props} />
-))<StyledAccordionSummaryProps>(({ theme, ...props }) => ({
-  padding: props['data-is-expanded'] ? (props['data-is-exists'] ? '1.2rem 0.4rem 0.8rem' : '1.2rem 0.4rem 0.45rem') : '1.2rem 0.4rem',
-
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(180deg)',
-  },
-
-  '& .MuiAccordionSummary-expandIconWrapper': {
-    '& > svg > path': {
-      stroke: theme.palette.color.base600,
+    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+      transform: 'rotate(180deg)',
     },
-  },
-}));
 
-type StyledAccordionDetailsProps = {
-  'data-is-exists': boolean;
-};
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      '& > svg > path': {
+        stroke: theme.palette.color.base600,
+      },
+    },
+  }),
+);
 
-export const StyledChainAccordionDetails = styled(AccordionDetails)<StyledAccordionDetailsProps>((props) => ({
-  paddingBottom: props['data-is-exists'] ? '1.2rem' : '1.4rem',
-}));
+export const StyledChainAccordionDetails = styled(AccordionDetails)({
+  paddingBottom: '1.2rem',
+});
 
 export const ItemLeftContainer = styled('div')({
   display: 'flex',
@@ -73,46 +64,32 @@ export const ItemLeftHdPathTextContainer = styled('div')({
 
 export const PrivateKeyViewer = styled('div')(({ theme }) => ({
   display: 'flex',
+  justifyContent: 'space-between',
   borderRadius: '0.6rem',
   border: `0.1rem solid ${theme.palette.color.base200}`,
   padding: '1.2rem',
   backgroundColor: theme.palette.color.base100,
 }));
 
-export const PrivateKeyTextContainer = styled('div')({
+export const PrivateKeyText = styled(Base1300Text)({
+  width: '90%',
   wordBreak: 'break-all',
 });
-
-export const PrivateKeyText = styled(Base1300Text)({});
-
-export const CopyIconContainer = styled('div')(({ theme }) => ({
-  width: '2rem',
-  height: '2rem',
-  '& > svg': {
-    width: '100%',
-    height: '100%',
-    fill: theme.palette.accentColor.purple400,
-    '& > path': {
-      fill: theme.palette.accentColor.purple400,
-    },
-  },
-}));
 
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   width: '2rem',
   height: '2rem',
   '& > svg': {
-    width: '100%',
-    height: '100%',
-    fill: theme.palette.accentColor.purple400,
+    width: '2rem',
+    height: '2rem',
     '& > path': {
       fill: theme.palette.accentColor.purple400,
     },
   },
 
   '&:hover': {
-    fill: theme.palette.accentColor.purple500,
-    '& > path': {
+    opacity: '1',
+    '& > svg > path': {
       fill: theme.palette.accentColor.purple500,
     },
   },

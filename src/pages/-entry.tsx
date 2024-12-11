@@ -42,7 +42,7 @@ import testAdImg from '@/assets/images/test-ad.png';
 export default function Entry() {
   const { t } = useTranslation();
 
-  Buffer.from('Hello from Index!').toString('base64');
+  const [search, setsearch] = useState('');
 
   const { dashboardCoinSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
@@ -83,10 +83,10 @@ export default function Entry() {
                     </InputAdornment>
                   }
                   placeholder={'Search'}
-                  // value={search}
-                  // onChange={(event) => {
-                  //   setSearch(event.currentTarget.value);
-                  // }}
+                  value={search}
+                  onChange={(event) => {
+                    setsearch(event.currentTarget.value);
+                  }}
                 />
                 <FilterIconButton
                   onClick={() => {

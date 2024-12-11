@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { getChains } from '@/libs/chain';
@@ -17,7 +18,7 @@ export function useChainList() {
     staleTime: Infinity,
   });
 
-  const flatChainList = chainList ? Object.values(chainList).flat() : [];
+  const flatChainList = useMemo(() => (chainList ? Object.values(chainList).flat() : []), [chainList]);
 
   return { chainList, flatChainList, isLoading, error };
 }

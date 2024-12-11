@@ -41,6 +41,7 @@
     "react-toastify": "^10.0.6",
     "recharts": "^2.13.3",
     "sha3": "^2.1.4",
+    "use-debounce": "^10.0.4",
     "uuid": "^11.0.3",
     "zustand": "^5.0.0"
   },

@@ -391,6 +391,19 @@
       "send": {
         "send": "Send"
       }
+    },
+    "view": {
+      "multi-chain-privateKey": {
+        "components": {
+          "index": {
+            "copied": "Copied to Clipboard",
+            "hdPath": "HD Path : "
+          }
+        },
+        "entry": {
+          "searchPlaceholder": "Search Network (Ex. Bitcoin)"
+        }
+      }
     }
   },
   "schema": {
