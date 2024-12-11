@@ -25,7 +25,7 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
 
     ':hover:not(.Mui-focused)': {
       '&:before': {
-        borderBottom: `0.2rem solid ${theme.palette.accentColor.purple400}`,
+        borderBottom: `0.2rem solid ${theme.palette.color.base500}`,
       },
     },
 

@@ -45,6 +45,7 @@ export const EstimatedFeeTextContainer = styled('div')({
 });
 
 export const RightContentContainer = styled('div')({
+  width: '40%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',

@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
 import TextButton from '@/components/common/TextButton';
+import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { shorterAddress } from '@/utils/string';
 
 import { BodyBottomContainer, BodyContainer, BodyTopContainer, BottomButtonContainer, SpacedTypography, StyledIconTextButton, TopContainer } from './styled';
@@ -17,6 +19,7 @@ type CoinDetailBoxProps = {
 
 export default function CoinDetailBox({ testCoinId }: CoinDetailBoxProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   console.log('🚀 ~ CoinOverViewBox ~ testCoinId:', testCoinId);
   // TODO
@@ -58,7 +61,16 @@ export default function CoinDetailBox({ testCoinId }: CoinDetailBoxProps) {
         }
         bottom={
           <BottomButtonContainer>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              onClick={() => {
+                navigate({
+                  to: Send.to,
+                  params: { coinId: testCoinId },
+                });
+              }}
+              leadingIcon={<StakeIcon />}
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">

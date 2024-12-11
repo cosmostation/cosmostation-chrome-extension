@@ -9,18 +9,20 @@ import ContractAddress from './-components/ContractAddress';
 import StakePromotion from './-components/StakePromotion';
 import { Container, HistorySectionTitle, SectionContainer, SectionStickyContainer, SectionWrapper } from './-styled';
 
-// NOTE props로 유니크 코인키 설정 필요.
-export default function Entry() {
+type EntryProps = {
+  coinId: string;
+};
+
+export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
 
-  const currentCoinId = '1';
   const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
   const symbol = 'ATOM';
   return (
     <BaseBody>
       <EdgeAligner>
         <Container>
-          <CoinDetailBox testCoinId={currentCoinId} />
+          <CoinDetailBox testCoinId={coinId} />
 
           <SectionWrapper>
             <SectionContainer>

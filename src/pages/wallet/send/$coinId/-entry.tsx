@@ -15,7 +15,13 @@ import { AddressBookButton, CoinContainer, CoinDenomContainer, CoinImage, CoinSy
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
-export default function Entry() {
+type EntryProps = {
+  coinId: string;
+};
+
+export default function Entry({ coinId }: EntryProps) {
+  console.log('🚀 ~ Entry ~ coinId:', coinId);
+
   const { t } = useTranslation();
   //   const navigate = useNavigate();
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
@@ -13,6 +14,7 @@ import PortFolio from '@/components/MainBox/Portfolio';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -41,6 +43,7 @@ import testAdImg from '@/assets/images/test-ad.png';
 
 export default function Entry() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [search, setsearch] = useState('');
 
@@ -115,6 +118,14 @@ export default function Entry() {
             {/* NOTE 토큰 리스팅을 위한 컴포넌트 */}
             <CoinButtonWrapper>
               <CoinWithMarketTrendButton
+                onClick={() => {
+                  navigate({
+                    to: CoinDetail.to,
+                    params: {
+                      coinId: 'FirstBitcoin',
+                    },
+                  });
+                }}
                 baseAmount="100"
                 symbol={'FirstBitcoin'}
                 coinImageProps={{
