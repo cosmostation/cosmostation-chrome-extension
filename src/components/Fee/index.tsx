@@ -6,11 +6,11 @@ import { Container, EstimatedFeeTextContainer, FeeCustomButton, LeftContentConta
 import Base1300Text from '../common/Base1300Text';
 import NumberTypo from '../common/NumberTypo';
 
-// type FeeProps = {
+type FeeProps = {
+  onClickConfirm: () => void;
+};
 
-// };
-
-export default function Fee() {
+export default function Fee({ onClickConfirm }: FeeProps) {
   const { t } = useTranslation();
 
   const baseAmount = '0.000013';
@@ -22,8 +22,6 @@ export default function Fee() {
 
   const defaultFeeId = '1';
   const [selectedFeeId, setSelectedFeeId] = useState(defaultFeeId);
-
-  console.log('🚀 ~ Fee ~ selectedFeeId:', selectedFeeId);
 
   return (
     <Container>
@@ -53,7 +51,7 @@ export default function Fee() {
           )}
         </FeeCustomButton>
       </LeftContentContainer>
-      <RightContentContainer>{<StyledButton>{t('pages.account.set-password.index.next')}</StyledButton>}</RightContentContainer>
+      <RightContentContainer>{<StyledButton onClick={onClickConfirm}>{t('pages.account.set-password.index.next')}</StyledButton>}</RightContentContainer>
       <FeeSettingBottomSheet
         feeList={[
           {

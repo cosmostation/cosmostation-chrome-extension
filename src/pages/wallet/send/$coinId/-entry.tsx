@@ -10,6 +10,7 @@ import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee';
+import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useChainList } from '@/hooks/useChainList.ts';
 import { isDecimal, shorterAddress } from '@/utils/string.ts';
 
@@ -50,6 +51,8 @@ export default function Entry({ coinId }: EntryProps) {
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
   const [inputMemo, setInputMemo] = useState('');
 
+  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
+
   const [currentRecipientChainId, setCurrentRecipientChainId] = useState('');
   const currentRecipientChain = flatChainList.find((chain) => chain.id === currentRecipientChainId);
 
@@ -59,9 +62,9 @@ export default function Entry({ coinId }: EntryProps) {
         <>
           <CoinContainer>
             <CoinImage imageURL={currentRecipientChain?.image || ''} badgeImageURL={currentRecipientChain?.image || ''} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.send')}`}</CoinSymbolText>
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.entry.send')}`}</CoinSymbolText>
             <CoinDenomContainer>
-              <Typography variant="b4_R">{`${t('pages.wallet.send.$coinId.contract')} :`}</Typography>
+              <Typography variant="b4_R">{`${t('pages.wallet.send.$coinId.entry.contract')} :`}</Typography>
               &nbsp;
               <Typography variant="b3_M">{shortCoinDenom}</Typography>
             </CoinDenomContainer>
@@ -74,13 +77,13 @@ export default function Entry({ coinId }: EntryProps) {
               onClickChain={(chainId) => {
                 setCurrentRecipientChainId(chainId);
               }}
-              label={t('pages.wallet.send.$coinId.recipientNetwork')}
-              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.ibcSend')}</IBCSendText>}
-              bottomSheetTitle={t('pages.wallet.send.$coinId.selectRecipientNetwork')}
-              bottomSheetSearchPlaceholder={t('pages.wallet.send.$coinId.searchRecipientNetwork')}
+              label={t('pages.wallet.send.$coinId.entry.recipientNetwork')}
+              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.entry.ibcSend')}</IBCSendText>}
+              bottomSheetTitle={t('pages.wallet.send.$coinId.entry.selectRecipientNetwork')}
+              bottomSheetSearchPlaceholder={t('pages.wallet.send.$coinId.entry.searchRecipientNetwork')}
             />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.recipientAddress')}
+              label={t('pages.wallet.send.$coinId.entry.recipientAddress')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={recipientAddress}
@@ -98,7 +101,7 @@ export default function Entry({ coinId }: EntryProps) {
               }}
             />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.amount')}
+              label={t('pages.wallet.send.$coinId.entry.amount')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={sendDisplayAmount}
@@ -133,7 +136,7 @@ export default function Entry({ coinId }: EntryProps) {
             <StandardInput
               multiline
               maxRows={3}
-              label={t('pages.wallet.send.$coinId.memo')}
+              label={t('pages.wallet.send.$coinId.entry.memo')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={inputMemo}
@@ -148,9 +151,26 @@ export default function Entry({ coinId }: EntryProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          <Fee />
+          <Fee
+            onClickConfirm={() => {
+              setIsOpenReviewBottomSheet(true);
+            }}
+          />
         </>
       </BaseFooter>
+      <ReviewBottomSheet
+        open={isOpenReviewBottomSheet}
+        onClose={() => setIsOpenReviewBottomSheet(false)}
+        contentsTitle={t('pages.wallet.send.$coinId.entry.sendReview')}
+        contentsSubTitle={t('pages.wallet.send.$coinId.entry.sendReviewSub')}
+        confirmButtonText={t('pages.wallet.send.$coinId.entry.send')}
+        onClickCancel={() => {
+          console.log('onClickCancel');
+        }}
+        onClickConfirm={() => {
+          console.log('onClickConfirm');
+        }}
+      />
     </>
   );
 }

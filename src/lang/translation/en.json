@@ -96,6 +96,13 @@
       "index": {
         "networkFee": "Network Fee"
       }
+    },
+    "FinalReviewBottomSheet": {
+      "index": {
+        "title": "Final Review",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
     }
   },
   "pages": {
@@ -403,17 +410,21 @@
     "wallet": {
       "send": {
         "$coinId": {
-          "send": "Send",
-          "contract": "Contract",
-          "recipientNetwork": "Recipient Network",
-          "ibcSend": "IBC Send",
-          "selectRecipientNetwork": "Select Recipient Network",
-          "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
-          "recipientAddress": "Recipient Address",
-          "amount": "Amount",
-          "memo": "Memo (Option)",
           "layout": {
             "header": "Send"
+          },
+          "entry": {
+            "send": "Send",
+            "contract": "Contract",
+            "recipientNetwork": "Recipient Network",
+            "ibcSend": "IBC Send",
+            "selectRecipientNetwork": "Select Recipient Network",
+            "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
+            "recipientAddress": "Recipient Address",
+            "amount": "Amount",
+            "memo": "Memo (Option)",
+            "sendReview": "Confirm Send",
+            "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed."
           }
         },
         "entry": {
