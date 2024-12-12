@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as MnemonicDetail } from '@/pages/manage-account/detail/mnemonic/$mnemonicId';
 import { Route as MnemonicAccountDetail } from '@/pages/manage-account/detail/mnemonic/account/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -117,6 +118,14 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
                   <RightArrowIcon />
                 </RightArrowIconContainer>
               }
+              onClick={() => {
+                navigate({
+                  to: ManageBackupStep1.to,
+                  params: {
+                    accountId: filteredAccounts[0].id,
+                  },
+                });
+              }}
             >
               {t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.backUpNow')}
             </StyledOutlinedButton>
