@@ -5,7 +5,7 @@ import Image from '@/components/common/Image';
 
 export const StyledChainButton = styled('button')(({ theme }) => ({
   width: '100%',
-  padding: '2.2rem 1.6rem',
+  padding: '1.2rem 1.6rem',
 
   display: 'flex',
   justifyContent: 'space-between',

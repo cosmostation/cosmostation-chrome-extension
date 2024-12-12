@@ -1,6 +1,10 @@
 import { styled } from '@mui/material/styles';
 
-export const StyledButton = styled('button')(({ theme }) => ({
+type StyledButtonProps = {
+  isActive: boolean;
+};
+
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   width: '100%',
 
   display: 'flex',
@@ -8,11 +12,11 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   padding: '1.2rem 1.6rem',
 
-  backgroundColor: 'transparent',
+  backgroundColor: props['isActive'] ? theme.palette.color.base200 : 'transparent',
   border: 'none',
 
   '&: hover': {
-    backgroundColor: theme.palette.color.base200,
+    backgroundColor: theme.palette.color.base100,
   },
 }));
 

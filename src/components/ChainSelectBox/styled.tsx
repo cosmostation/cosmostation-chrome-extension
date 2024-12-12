@@ -4,7 +4,13 @@ import { styled } from '@mui/material/styles';
 
 import Image from '../common/Image';
 
+export const Container = styled('div')({
+  width: '100%',
+});
+
 export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => ({
+  width: '100%',
+
   '& .MuiInput-root': {
     marginTop: '2.2rem',
 

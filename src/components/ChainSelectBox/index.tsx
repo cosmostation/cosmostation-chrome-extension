@@ -1,67 +1,80 @@
 import { useRef, useState } from 'react';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
+import type { Chain } from '@/types/chain';
+
 import {
   BottomContainer,
   BottomWrapper,
   ChainImageContainer,
   ChevronIconContainer,
+  Container,
   HelperTextContainer,
   RightAdormentConatiner,
   StyledSelectBox,
 } from './styled';
-import BottomSheet from '../common/BottomSheet';
+import ChainListBottomSheet from '../ChainListBottomSheet';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
 type ChainSelectBoxProps = TextFieldProps & {
+  chainList: Chain[];
+  currentChainId?: string;
   helperText?: string;
-  onClickChain?: (chain: string) => void;
   rightAdornmentComponent?: JSX.Element;
+  bottomSheetTitle?: string;
+  bottomSheetSearchPlaceholder?: string;
+  onClickChain?: (chainId: string) => void;
 };
 
-export default function ChainSelectBox({ error = false, helperText, rightAdornmentComponent, onClickChain, ...remainder }: ChainSelectBoxProps) {
+export default function ChainSelectBox({
+  chainList,
+  currentChainId,
+  error = false,
+  helperText,
+  rightAdornmentComponent,
+  bottomSheetTitle,
+  bottomSheetSearchPlaceholder,
+  onClickChain,
+  ...remainder
+}: ChainSelectBoxProps) {
   const isShowBottomContainer = helperText;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [selectedValue, setSelectedValue] = useState('');
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isOpenChainListBottomSheet, setIsOpenChainListBottomSheet] = useState(false);
 
-  const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
+  const currentSelectedChain = chainList.find((chain) => chain.id === currentChainId);
 
   const handleMenuItemClick = (value: string) => {
-    setSelectedValue(value);
     onClickChain?.(value);
-    setDrawerOpen(false);
+    setIsOpenChainListBottomSheet(false);
   };
 
   const handleInputClick = () => {
-    setDrawerOpen(true);
+    setIsOpenChainListBottomSheet(true);
     if (inputRef.current) {
       inputRef.current.blur();
     }
   };
 
   return (
-    <>
+    <Container>
       <StyledSelectBox
         variant="standard"
         inputRef={inputRef}
         slotProps={{
           input: {
             readOnly: true,
-            startAdornment: selectedValue ? (
+            startAdornment: currentChainId ? (
               <InputAdornment position="start">
-                <ChainImageContainer src={'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/stride/asset/stumee.png'} />
+                <ChainImageContainer src={currentSelectedChain?.image} />
               </InputAdornment>
             ) : null,
             endAdornment: (
               <InputAdornment position="end">
                 <RightAdormentConatiner>
                   {rightAdornmentComponent}
-                  <ChevronIconContainer data-is-open={drawerOpen}>
+                  <ChevronIconContainer data-is-open={isOpenChainListBottomSheet}>
                     <BottomFilledChevronIcon />
                   </ChevronIconContainer>
                 </RightAdormentConatiner>
@@ -69,11 +82,11 @@ export default function ChainSelectBox({ error = false, helperText, rightAdornme
             ),
           },
           inputLabel: {
-            shrink: !!selectedValue,
+            shrink: !!currentChainId,
           },
         }}
         onClick={handleInputClick}
-        value={selectedValue}
+        value={currentSelectedChain?.name}
         {...remainder}
       />
       <BottomWrapper>
@@ -87,14 +100,18 @@ export default function ChainSelectBox({ error = false, helperText, rightAdornme
           </BottomContainer>
         )}
       </BottomWrapper>
-
-      {/* TODO 컴포넌트화 */}
-      <BottomSheet anchor="bottom" open={drawerOpen} onClose={handleDrawerClose}>
-        <>
-          <button onClick={() => handleMenuItemClick('Option 1')}>Option 1</button>
-          <button onClick={() => handleMenuItemClick('Option 2')}>Option 2</button>
-        </>
-      </BottomSheet>
-    </>
+      <ChainListBottomSheet
+        currentChainId={currentChainId}
+        chainList={chainList}
+        disableAllNetwork
+        title={bottomSheetTitle}
+        searchPlaceholder={bottomSheetSearchPlaceholder}
+        open={isOpenChainListBottomSheet}
+        onClose={() => setIsOpenChainListBottomSheet(false)}
+        onClickChain={(id) => {
+          handleMenuItemClick(id);
+        }}
+      />
+    </Container>
   );
 }

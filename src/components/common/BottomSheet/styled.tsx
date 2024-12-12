@@ -15,7 +15,7 @@ export const StyledDrawer = styled(Drawer)(({ theme }) => ({
   },
 
   '& .MuiPaper-root': {
-    maxWidth: '55rem',
+    maxWidth: '54rem',
 
     backgroundColor: theme.palette.color.base50,
     margin: '0 auto',

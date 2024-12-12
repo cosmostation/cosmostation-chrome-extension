@@ -1,35 +1,51 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import type { Chain } from '@/types/chain';
 
 import OptionButton from './components/OptionButton';
-import { Body, Container, FilterContaienr, FilterIconButton, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput } from './styled';
+import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput } from './styled';
 
-import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 import GridMenuImage from 'assets/images/GridMenu.png';
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
+  chainList: Chain[];
   currentChainId?: string;
-  chainList?: Chain[];
+  disableAllNetwork?: boolean;
+  title?: string;
+  searchPlaceholder?: string;
   onClickChain: (id: string) => void;
 };
 
-export default function ChainListBottomSheet({ currentChainId, chainList, onClose, onClickChain, ...remainder }: ChainListBottomSheetProps) {
+export default function ChainListBottomSheet({
+  currentChainId,
+  chainList,
+  onClose,
+  onClickChain,
+  disableAllNetwork = false,
+  title,
+  searchPlaceholder,
+  ...remainder
+}: ChainListBottomSheetProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 300);
 
   const AllNetworkOptionId = '';
 
-  const filteredChainList = chainList?.filter((item) => {
-    return item.name.toLowerCase().includes(search.toLowerCase());
-  });
+  const filteredChainList = chainList?.filter((chain) => chain.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+
+  const handleClose = () => {
+    setSearch('');
+    onClose?.({}, 'backdropClick');
+  };
 
   useEffect(() => {
     if (remainder.open) {
@@ -38,22 +54,13 @@ export default function ChainListBottomSheet({ currentChainId, chainList, onClos
   }, [remainder.open]);
 
   return (
-    <StyledBottomSheet
-      {...remainder}
-      onClose={() => {
-        onClose?.({}, 'backdropClick');
-      }}
-    >
+    <StyledBottomSheet {...remainder} onClose={handleClose}>
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h2_B">{t('components.ChainListBottomSheet.index.title')}</Typography>
+            <Typography variant="h2_B">{title || t('components.ChainListBottomSheet.index.title')}</Typography>
           </HeaderTitle>
-          <StyledButton
-            onClick={() => {
-              onClose?.({}, 'escapeKeyDown');
-            }}
-          >
+          <StyledButton onClick={handleClose}>
             <Close24Icon />
           </StyledButton>
         </Header>
@@ -64,33 +71,27 @@ export default function ChainListBottomSheet({ currentChainId, chainList, onClos
                 <SearchIcon />
               </InputAdornment>
             }
-            placeholder={'Search'}
+            placeholder={searchPlaceholder || t('components.ChainListBottomSheet.index.searchPlaceholder')}
             value={search}
             onChange={(event) => {
               setSearch(event.currentTarget.value);
             }}
           />
-          <FilterIconButton
-          // TODO: 필터 설정 기능 추가
-          // onClick={() => {
-          //   setIsOpenSortBottomSheet(true);
-          // }}
-          >
-            <FilterSettingIcon />
-          </FilterIconButton>
         </FilterContaienr>
         <Body>
-          <OptionButton
-            key={'all-network'}
-            isActive={!currentChainId}
-            onClick={() => {
-              onClickChain(AllNetworkOptionId);
-              onClose?.({}, 'backdropClick');
-            }}
-            name={t('components.ChainListBottomSheet.index.allNetwork')}
-            image={GridMenuImage}
-            id={AllNetworkOptionId}
-          />
+          {!disableAllNetwork && (
+            <OptionButton
+              key={'all-network'}
+              isActive={!currentChainId}
+              onClick={() => {
+                onClickChain(AllNetworkOptionId);
+                onClose?.({}, 'backdropClick');
+              }}
+              name={t('components.ChainListBottomSheet.index.allNetwork')}
+              image={GridMenuImage}
+              id={AllNetworkOptionId}
+            />
+          )}
           {filteredChainList?.map((item) => {
             const isActive = currentChainId === item.id;
 
@@ -101,7 +102,7 @@ export default function ChainListBottomSheet({ currentChainId, chainList, onClos
                 ref={isActive ? ref : undefined}
                 onSelectChain={(id) => {
                   onClickChain(id);
-                  onClose?.({}, 'backdropClick');
+                  handleClose();
                 }}
                 name={item.name}
                 image={item.image}

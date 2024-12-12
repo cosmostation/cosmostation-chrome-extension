@@ -7,11 +7,21 @@ type BaseOptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<
   leftSecondHeader?: JSX.Element;
   leftSecondBody?: JSX.Element;
   rightContent?: JSX.Element;
+  isActive?: boolean;
+  disableRightChevron?: boolean;
 };
 
-export default function BaseOptionButton({ leftContent, leftSecondHeader, leftSecondBody, rightContent, ...remainder }: BaseOptionButtonProps) {
+export default function BaseOptionButton({
+  leftContent,
+  leftSecondHeader,
+  leftSecondBody,
+  rightContent,
+  isActive = false,
+  disableRightChevron = false,
+  ...remainder
+}: BaseOptionButtonProps) {
   return (
-    <StyledButton {...remainder}>
+    <StyledButton isActive={isActive} {...remainder}>
       <LeftContainer>{leftContent}</LeftContainer>
       <MiddleContainer>
         {leftSecondHeader}
@@ -19,7 +29,7 @@ export default function BaseOptionButton({ leftContent, leftSecondHeader, leftSe
       </MiddleContainer>
       <RightContainer>
         {rightContent}
-        <RightChevronIcon />
+        {disableRightChevron ? null : <RightChevronIcon />}
       </RightContainer>
     </StyledButton>
   );

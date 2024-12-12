@@ -61,7 +61,7 @@ export default function AllNetworkButton({
       </StyledIconButton>
       <ChainListBottomSheet
         currentChainId={currentChainId}
-        chainList={chainList}
+        chainList={chainList || []}
         open={isOpenChainListBottomSheet}
         onClose={() => setIsOpenChainListBottomSheet(false)}
         onClickChain={(id) => {

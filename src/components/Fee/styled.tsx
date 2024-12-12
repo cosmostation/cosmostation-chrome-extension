@@ -39,10 +39,12 @@ export const FeeCustomButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const EstimatedFeeTextContainer = styled('div')({
+export const EstimatedFeeTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
-});
+  alignItems: 'baseline',
+
+  borderBottom: `0.1rem solid ${theme.palette.color.base1300}`,
+}));
 
 export const RightContentContainer = styled('div')({
   width: '40%',
