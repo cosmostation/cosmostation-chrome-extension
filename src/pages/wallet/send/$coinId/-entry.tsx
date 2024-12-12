@@ -11,7 +11,7 @@ import BalanceButton from '@/components/common/StandardInput/components/BalanceB
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee';
 import { useChainList } from '@/hooks/useChainList.ts';
-import { isDecimal } from '@/utils/string.ts';
+import { isDecimal, shorterAddress } from '@/utils/string.ts';
 
 import {
   AddressBookButton,
@@ -41,8 +41,11 @@ export default function Entry({ coinId }: EntryProps) {
 
   const coinSymbol = 'USDT';
   const coinDenom = 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v';
+  const shortCoinDenom = shorterAddress(coinDenom, 16);
   const coinDecimal = 6;
   const estimatedInputAmountValue = '10000';
+
+  const maxAmount = '1000000000000';
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
@@ -57,11 +60,11 @@ export default function Entry({ coinId }: EntryProps) {
         <>
           <CoinContainer>
             <CoinImage imageURL={currentRecipientChain?.image || ''} badgeImageURL={currentRecipientChain?.image || ''} />
-            <CoinSymbolText>{`${coinSymbol} ${t('pages.wallet.send.send')}`}</CoinSymbolText>
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.send')}`}</CoinSymbolText>
             <CoinDenomContainer>
-              <Typography>{'Contract:'}</Typography>
+              <Typography variant="b4_R">{`${t('pages.wallet.send.contract')} :`}</Typography>
               &nbsp;
-              <Typography variant="b3_M">{coinDenom}</Typography>
+              <Typography variant="b3_M">{shortCoinDenom}</Typography>
             </CoinDenomContainer>
           </CoinContainer>
 
@@ -120,7 +123,13 @@ export default function Entry({ coinId }: EntryProps) {
                   ),
                 },
               }}
-              rightBottomAdornment={<BalanceButton />}
+              rightBottomAdornment={
+                <BalanceButton
+                  onClick={() => {
+                    setSendDisplayAmount(maxAmount);
+                  }}
+                />
+              }
             />
             <StandardInput
               multiline

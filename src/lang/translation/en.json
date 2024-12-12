@@ -416,7 +416,8 @@
         "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
         "recipientAddress": "Recipient Address",
         "amount": "Amount",
-        "memo": "Memo (Option)"
+        "memo": "Memo (Option)",
+        "contract": "Contract"
       }
     },
     "view": {
