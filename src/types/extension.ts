@@ -12,6 +12,7 @@ import type {
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
 import type { AssetId, CosmosCw20Asset, EvmErc20Asset } from './asset';
+import type { CurrencyType } from './currency';
 import type { Password } from './password';
 import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
 
@@ -38,6 +39,7 @@ export interface ExtensionStorage {
   mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;
   selectedAccountId: Account['id'];
   notBackedUpAccountIds: Account['id'][];
+  currency: CurrencyType;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

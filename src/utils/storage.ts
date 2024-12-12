@@ -1,3 +1,4 @@
+import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 
@@ -9,6 +10,12 @@ export async function initExtensionLocalStorage() {
 
   if (!originStorage.language) {
     setExtensionLocalStorage('language', 'en');
+  }
+
+  if (!originStorage.currency) {
+    const newCurrency = CURRENCY_TYPE.USD;
+
+    await setExtensionLocalStorage('currency', newCurrency);
   }
 
   if (!originStorage.dappListSortKey) {

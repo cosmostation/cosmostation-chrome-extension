@@ -2,6 +2,7 @@ import { produce } from 'immer';
 import { create } from 'zustand';
 
 import { DefaultSortKey } from '@/constants/initialStorage';
+import type { CurrencyType } from '@/types/currency';
 import type { ExtensionStorage } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
 import { getAllExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
@@ -21,6 +22,7 @@ const initialState: ExtensionStorageState = {
   mnemonicNamesByHashedMnemonic: {},
   selectedAccountId: '',
   notBackedUpAccountIds: [],
+  currency: '' as CurrencyType,
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
