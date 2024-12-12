@@ -2,6 +2,16 @@ import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 
+export const FormContainer = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  width: '100%',
+  padding: '1.2rem',
+
+  boxSizing: 'border-box',
+});
+
 export const Container = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -10,15 +20,6 @@ export const Container = styled('div')({
 
   width: '100%',
   height: '100%',
-});
-
-export const FormContainer = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  width: '100%',
-
-  boxSizing: 'border-box',
 });
 
 export const DescriptionContainer = styled('div')({

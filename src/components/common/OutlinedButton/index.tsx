@@ -7,7 +7,8 @@ import { ContentContainer, StyledButton, StyledCircularProgress } from './styled
 type OutlinedButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: TypoVariantKeys;
   isProgress?: boolean;
-  variant?: 'light' | 'dark' | 'red';
+  isSelected?: boolean;
+  variant?: 'light' | 'dark' | 'red' | 'primaryHoverGray';
   leadingIcon?: JSX.Element;
   trailingIcon?: JSX.Element;
 };
@@ -15,6 +16,7 @@ type OutlinedButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HT
 export default function OutlinedButton({
   children,
   isProgress = false,
+  isSelected = false,
   typoVarient = 'h3_B',
   variant = 'light',
   type,
@@ -25,7 +27,7 @@ export default function OutlinedButton({
   const disabled = isProgress ? true : remainder.disabled;
 
   return (
-    <StyledButton {...remainder} data-typo-varient={typoVarient} type={type ?? 'button'} variants={variant} disabled={disabled}>
+    <StyledButton {...remainder} data-typo-varient={typoVarient} type={type ?? 'button'} variants={variant} disabled={disabled} isSelected={isSelected}>
       {isProgress ? (
         <StyledCircularProgress size={14} />
       ) : (

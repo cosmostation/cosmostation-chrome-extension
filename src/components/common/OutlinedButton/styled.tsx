@@ -5,7 +5,8 @@ import type { TypoVariantKeys } from '@/styles/theme';
 
 type StyledButtonProps = {
   'data-typo-varient': TypoVariantKeys;
-  variants?: 'light' | 'dark' | 'red';
+  variants?: 'light' | 'dark' | 'red' | 'primaryHoverGray';
+  isSelected?: boolean;
 };
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => {
@@ -14,7 +15,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     if (variants === 'light') {
       return theme.palette.accentColor.purple200;
     }
-    if (variants === 'dark') {
+    if (variants === 'dark' || variants === 'primaryHoverGray') {
       return theme.palette.color.base300;
     }
     if (variants === 'red') {
@@ -26,8 +27,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   const hoverBorderColor = (() => {
     const variants = props['variants'];
 
-    if (variants === 'light') {
-      return theme.palette.accentColor.purple400;
+    if (variants === 'light' || variants === 'primaryHoverGray') {
+      return theme.palette.accentColor.purple300;
     }
     if (variants === 'dark') {
       return theme.palette.color.base400;
@@ -49,7 +50,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
     cursor: 'pointer',
 
-    border: `0.1rem solid ${borderColor}`,
+    border: props['isSelected'] ? `0.1rem solid ${theme.palette.accentColor.purple400}` : `0.1rem solid ${borderColor}`,
 
     '&:hover': {
       border: `0.1rem solid ${hoverBorderColor}`,

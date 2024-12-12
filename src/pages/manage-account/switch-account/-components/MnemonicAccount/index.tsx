@@ -5,6 +5,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as CreateAccountWithExistMnemonic } from '@/pages/manage-account/create-account/$mnemonicId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -127,6 +128,14 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
                   <RightArrowIcon />
                 </RightArrowIconContainer>
               }
+              onClick={() => {
+                navigate({
+                  to: ManageBackupStep1.to,
+                  params: {
+                    accountId: filteredAccounts[0].id,
+                  },
+                });
+              }}
             >
               {t('pages.manage-account.switch-account.components.backUpNow')}
             </StyledOutlinedButton>

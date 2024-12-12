@@ -103,6 +103,11 @@
         "cancel": "Cancel",
         "confirm": "Confirm"
       }
+    },
+    "MnemonicBackupChecker": {
+      "index": {
+        "phrase": "Phrase"
+      }
     }
   },
   "pages": {
@@ -252,7 +257,10 @@
       "backup-check": {
         "entry": {
           "setUpComplete": "Set Up Complete",
-          "next": "Next"
+          "next": "Next",
+          "title": "Complete the quiz in order",
+          "subTitle": "Check the backed-up mnemonic and select the correct phrase in order for each number.",
+          "incorrect": "Mnemonic does not match"
         },
         "layout": {
           "header": "Back Up Wallet"
@@ -404,6 +412,30 @@
         },
         "layout": {
           "header": "Create New Account"
+        }
+      },
+      "backup-wallet": {
+        "step1": {
+          "entry": {
+            "title": "Write Down Your Mnemonic",
+            "subTitle": "This phrase is the only way to recover your account. Losing this mnemonics could lead to loss of your asset.",
+            "continue": "Continue"
+          },
+          "layout": {
+            "header": "Back Up Wallet"
+          }
+        },
+        "step2": {
+          "entry": {
+            "backupComplete": "Backup Complete",
+            "title": "Complete the quiz in order",
+            "subTitle": "Check the backed-up mnemonic and select the correct phrase in order for each number.",
+            "incorrect": "Mnemonic does not match",
+            "success": "Your wallet has been backed up"
+          },
+          "layout": {
+            "header": "Verify Seed Phrase"
+          }
         }
       }
     },

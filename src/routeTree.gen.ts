@@ -33,6 +33,8 @@ import { Route as ManageAccountViewPrivateKeyAccountIdIndexImport } from './page
 import { Route as ManageAccountViewMultiChainPriateKeyAccountIdIndexImport } from './pages/manage-account/view/multi-chain-priateKey/$accountId/index'
 import { Route as ManageAccountViewMnemonicMnemonicIdIndexImport } from './pages/manage-account/view/mnemonic/$mnemonicId/index'
 import { Route as ManageAccountDetailMnemonicMnemonicIdIndexImport } from './pages/manage-account/detail/mnemonic/$mnemonicId/index'
+import { Route as ManageAccountBackupWalletStep2AccountIdIndexImport } from './pages/manage-account/backup-wallet/step2/$accountId/index'
+import { Route as ManageAccountBackupWalletStep1AccountIdIndexImport } from './pages/manage-account/backup-wallet/step1/$accountId/index'
 import { Route as ManageAccountDetailPrivateKeyAccountAccountIdIndexImport } from './pages/manage-account/detail/privateKey/account/$accountId/index'
 import { Route as ManageAccountDetailMnemonicAccountAccountIdIndexImport } from './pages/manage-account/detail/mnemonic/account/$accountId/index'
 
@@ -182,6 +184,20 @@ const ManageAccountDetailMnemonicMnemonicIdIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
+const ManageAccountBackupWalletStep2AccountIdIndexRoute =
+  ManageAccountBackupWalletStep2AccountIdIndexImport.update({
+    id: '/manage-account/backup-wallet/step2/$accountId/',
+    path: '/manage-account/backup-wallet/step2/$accountId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAccountBackupWalletStep1AccountIdIndexRoute =
+  ManageAccountBackupWalletStep1AccountIdIndexImport.update({
+    id: '/manage-account/backup-wallet/step1/$accountId/',
+    path: '/manage-account/backup-wallet/step1/$accountId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute =
   ManageAccountDetailPrivateKeyAccountAccountIdIndexImport.update({
     id: '/manage-account/detail/privateKey/account/$accountId/',
@@ -326,6 +342,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletSendCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-account/backup-wallet/step1/$accountId/': {
+      id: '/manage-account/backup-wallet/step1/$accountId/'
+      path: '/manage-account/backup-wallet/step1/$accountId'
+      fullPath: '/manage-account/backup-wallet/step1/$accountId'
+      preLoaderRoute: typeof ManageAccountBackupWalletStep1AccountIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-account/backup-wallet/step2/$accountId/': {
+      id: '/manage-account/backup-wallet/step2/$accountId/'
+      path: '/manage-account/backup-wallet/step2/$accountId'
+      fullPath: '/manage-account/backup-wallet/step2/$accountId'
+      preLoaderRoute: typeof ManageAccountBackupWalletStep2AccountIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/detail/mnemonic/$mnemonicId/': {
       id: '/manage-account/detail/mnemonic/$mnemonicId/'
       path: '/manage-account/detail/mnemonic/$mnemonicId'
@@ -392,6 +422,8 @@ export interface FileRoutesByFullPath {
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
+  '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
+  '/manage-account/backup-wallet/step2/$accountId': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   '/manage-account/view/mnemonic/$mnemonicId': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   '/manage-account/view/multi-chain-priateKey/$accountId': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
@@ -419,6 +451,8 @@ export interface FileRoutesByTo {
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
+  '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
+  '/manage-account/backup-wallet/step2/$accountId': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   '/manage-account/view/mnemonic/$mnemonicId': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   '/manage-account/view/multi-chain-priateKey/$accountId': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
@@ -447,6 +481,8 @@ export interface FileRoutesById {
   '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/manage-account/create-account/$mnemonicId/': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
+  '/manage-account/backup-wallet/step1/$accountId/': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
+  '/manage-account/backup-wallet/step2/$accountId/': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId/': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   '/manage-account/view/mnemonic/$mnemonicId/': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   '/manage-account/view/multi-chain-priateKey/$accountId/': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
@@ -476,6 +512,8 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey'
     | '/manage-account/create-account/$mnemonicId'
     | '/wallet/send/$coinId'
+    | '/manage-account/backup-wallet/step1/$accountId'
+    | '/manage-account/backup-wallet/step2/$accountId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
     | '/manage-account/view/mnemonic/$mnemonicId'
     | '/manage-account/view/multi-chain-priateKey/$accountId'
@@ -502,6 +540,8 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey'
     | '/manage-account/create-account/$mnemonicId'
     | '/wallet/send/$coinId'
+    | '/manage-account/backup-wallet/step1/$accountId'
+    | '/manage-account/backup-wallet/step2/$accountId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
     | '/manage-account/view/mnemonic/$mnemonicId'
     | '/manage-account/view/multi-chain-priateKey/$accountId'
@@ -528,6 +568,8 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey/'
     | '/manage-account/create-account/$mnemonicId/'
     | '/wallet/send/$coinId/'
+    | '/manage-account/backup-wallet/step1/$accountId/'
+    | '/manage-account/backup-wallet/step2/$accountId/'
     | '/manage-account/detail/mnemonic/$mnemonicId/'
     | '/manage-account/view/mnemonic/$mnemonicId/'
     | '/manage-account/view/multi-chain-priateKey/$accountId/'
@@ -556,6 +598,8 @@ export interface RootRouteChildren {
   AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
   ManageAccountCreateAccountMnemonicIdIndexRoute: typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
+  ManageAccountBackupWalletStep1AccountIdIndexRoute: typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
+  ManageAccountBackupWalletStep2AccountIdIndexRoute: typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   ManageAccountDetailMnemonicMnemonicIdIndexRoute: typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
   ManageAccountViewMnemonicMnemonicIdIndexRoute: typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute: typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
@@ -588,6 +632,10 @@ const rootRouteChildren: RootRouteChildren = {
   ManageAccountCreateAccountMnemonicIdIndexRoute:
     ManageAccountCreateAccountMnemonicIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
+  ManageAccountBackupWalletStep1AccountIdIndexRoute:
+    ManageAccountBackupWalletStep1AccountIdIndexRoute,
+  ManageAccountBackupWalletStep2AccountIdIndexRoute:
+    ManageAccountBackupWalletStep2AccountIdIndexRoute,
   ManageAccountDetailMnemonicMnemonicIdIndexRoute:
     ManageAccountDetailMnemonicMnemonicIdIndexRoute,
   ManageAccountViewMnemonicMnemonicIdIndexRoute:
@@ -630,6 +678,8 @@ export const routeTree = rootRoute
         "/account/restore-wallet/privatekey/",
         "/manage-account/create-account/$mnemonicId/",
         "/wallet/send/$coinId/",
+        "/manage-account/backup-wallet/step1/$accountId/",
+        "/manage-account/backup-wallet/step2/$accountId/",
         "/manage-account/detail/mnemonic/$mnemonicId/",
         "/manage-account/view/mnemonic/$mnemonicId/",
         "/manage-account/view/multi-chain-priateKey/$accountId/",
@@ -691,6 +741,12 @@ export const routeTree = rootRoute
     },
     "/wallet/send/$coinId/": {
       "filePath": "wallet/send/$coinId/index.tsx"
+    },
+    "/manage-account/backup-wallet/step1/$accountId/": {
+      "filePath": "manage-account/backup-wallet/step1/$accountId/index.tsx"
+    },
+    "/manage-account/backup-wallet/step2/$accountId/": {
+      "filePath": "manage-account/backup-wallet/step2/$accountId/index.tsx"
     },
     "/manage-account/detail/mnemonic/$mnemonicId/": {
       "filePath": "manage-account/detail/mnemonic/$mnemonicId/index.tsx"
