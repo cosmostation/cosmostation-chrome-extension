@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { TEST_CHAIN_LIST } from '@/constants/test';
+import { Route as SelectSendCoin } from '@/pages/wallet/send';
 
 import {
   BodyBottomChipButtonContainer,
@@ -35,6 +37,7 @@ import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png'
 
 export default function PortFolio() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
 
   const dummyChainList = TEST_CHAIN_LIST;
@@ -80,7 +83,14 @@ export default function PortFolio() {
                 <HistoryButtonTypo variant="b3_M">{t('components.MainBox.Portfolio.index.history')}</HistoryButtonTypo>
               </IconTextButton>
               <BodyBottomChipButtonContainer>
-                <ChipButton variant="light">
+                <ChipButton
+                  variant="light"
+                  onClick={() => {
+                    navigate({
+                      to: SelectSendCoin.to,
+                    });
+                  }}
+                >
                   <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
                 </ChipButton>
                 <ChipButton variant="dark">

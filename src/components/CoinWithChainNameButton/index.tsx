@@ -6,12 +6,22 @@ import BaseCoinImage from '../common/BaseCoinImage';
 
 type CoinWithChainNameButtonProps = BaseCoinButtonProps & {
   chainName?: string;
+  assetId?: string;
   coinImageProps: BaseCoinImageProps;
+  displayAssetId?: boolean;
 };
 
-export default function CoinWithChainNameButton({ symbol, chainName, coinImageProps, ...remainder }: CoinWithChainNameButtonProps) {
+export default function CoinWithChainNameButton({
+  symbol,
+  chainName,
+  assetId,
+  displayAssetId = false,
+  coinImageProps,
+  ...remainder
+}: CoinWithChainNameButtonProps) {
   const resolvedSymbol = symbol || 'UNKNOWN';
   const resolvedChainName = chainName || 'UNKNOWN';
+  const resolvedAssetId = assetId || 'UNKNOWN';
 
   return (
     <BaseCoinButton
@@ -20,7 +30,7 @@ export default function CoinWithChainNameButton({ symbol, chainName, coinImagePr
           <BaseCoinImage {...coinImageProps} />
           <ContentsContainer>
             <SymbolTypography variant="b2_M">{resolvedSymbol}</SymbolTypography>
-            <ChainNameTypography variant="b4_R">{resolvedChainName}</ChainNameTypography>
+            <ChainNameTypography variant="b4_R">{displayAssetId ? resolvedAssetId : resolvedChainName}</ChainNameTypography>
           </ContentsContainer>
         </>
       }

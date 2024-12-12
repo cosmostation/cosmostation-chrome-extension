@@ -35,7 +35,6 @@ export default function Entry({ coinId }: EntryProps) {
   console.log('🚀 ~ Entry ~ coinId:', coinId);
 
   const { t } = useTranslation();
-  //   const navigate = useNavigate();
 
   const { flatChainList } = useChainList();
 
@@ -60,9 +59,9 @@ export default function Entry({ coinId }: EntryProps) {
         <>
           <CoinContainer>
             <CoinImage imageURL={currentRecipientChain?.image || ''} badgeImageURL={currentRecipientChain?.image || ''} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.send')}`}</CoinSymbolText>
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.send')}`}</CoinSymbolText>
             <CoinDenomContainer>
-              <Typography variant="b4_R">{`${t('pages.wallet.send.contract')} :`}</Typography>
+              <Typography variant="b4_R">{`${t('pages.wallet.send.$coinId.contract')} :`}</Typography>
               &nbsp;
               <Typography variant="b3_M">{shortCoinDenom}</Typography>
             </CoinDenomContainer>
@@ -75,13 +74,13 @@ export default function Entry({ coinId }: EntryProps) {
               onClickChain={(chainId) => {
                 setCurrentRecipientChainId(chainId);
               }}
-              label={t('pages.wallet.send.recipientNetwork')}
-              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.ibcSend')}</IBCSendText>}
-              bottomSheetTitle={t('pages.wallet.send.selectRecipientNetwork')}
-              bottomSheetSearchPlaceholder={t('pages.wallet.send.searchRecipientNetwork')}
+              label={t('pages.wallet.send.$coinId.recipientNetwork')}
+              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.ibcSend')}</IBCSendText>}
+              bottomSheetTitle={t('pages.wallet.send.$coinId.selectRecipientNetwork')}
+              bottomSheetSearchPlaceholder={t('pages.wallet.send.$coinId.searchRecipientNetwork')}
             />
             <StandardInput
-              label={t('pages.wallet.send.recipientAddress')}
+              label={t('pages.wallet.send.$coinId.recipientAddress')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={recipientAddress}
@@ -99,7 +98,7 @@ export default function Entry({ coinId }: EntryProps) {
               }}
             />
             <StandardInput
-              label={t('pages.wallet.send.amount')}
+              label={t('pages.wallet.send.$coinId.amount')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={sendDisplayAmount}
@@ -134,7 +133,7 @@ export default function Entry({ coinId }: EntryProps) {
             <StandardInput
               multiline
               maxRows={3}
-              label={t('pages.wallet.send.memo')}
+              label={t('pages.wallet.send.$coinId.memo')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={inputMemo}

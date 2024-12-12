@@ -242,13 +242,6 @@
           }
         }
       },
-      "wallet": {
-        "send": {
-          "layout": {
-            "header": "Send"
-          }
-        }
-      },
       "backup-check": {
         "entry": {
           "setUpComplete": "Set Up Complete",
@@ -409,15 +402,28 @@
     },
     "wallet": {
       "send": {
-        "send": "Send",
-        "recipientNetwork": "Recipient Network",
-        "ibcSend": "IBC Send",
-        "selectRecipientNetwork": "Select Recipient Network",
-        "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
-        "recipientAddress": "Recipient Address",
-        "amount": "Amount",
-        "memo": "Memo (Option)",
-        "contract": "Contract"
+        "$coinId": {
+          "send": "Send",
+          "contract": "Contract",
+          "recipientNetwork": "Recipient Network",
+          "ibcSend": "IBC Send",
+          "selectRecipientNetwork": "Select Recipient Network",
+          "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
+          "recipientAddress": "Recipient Address",
+          "amount": "Amount",
+          "memo": "Memo (Option)",
+          "layout": {
+            "header": "Send"
+          }
+        },
+        "entry": {
+          "search": "Search Crypto (Ex. BTC)",
+          "valueHighOrder": "Value High Order",
+          "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+        },
+        "layout": {
+          "header": "Select Coin"
+        }
       }
     },
     "view": {
