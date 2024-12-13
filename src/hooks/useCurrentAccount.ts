@@ -117,5 +117,29 @@ export function useCurrentAccount() {
     }
   };
 
-  return { currentAccount: currentAccountWithName, setCurrentAccount, addAccount, removeMnemonic, addAccountWithName, removeAccount };
+  // NOTE 유틸로 사용할 지 현재 위치에서 선언할 지 고려 필요.
+  // const updateAccountName = async (id: string, newAccountName: string) => {
+  //   try {
+  //     await updateExtensionStorageStore('accountNamesById', { ...accountNamesById, [id]: newAccountName });
+  //   } catch {
+  //     toastError(t('hooks.useCurrentAccount.updateAccountNameError'));
+  //   }
+  // };
+
+  // const updateMnemonicName = async (mnemonicId: string, newMnemonicName: string) => {
+  //   try {
+  //     await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', { ...mnemonicNamesByHashedMnemonic, [mnemonicId]: newMnemonicName });
+  //   } catch {
+  //     toastError(t('hooks.useCurrentAccount.updateMnemonicNameError'));
+  //   }
+  // };
+
+  return {
+    currentAccount: currentAccountWithName,
+    setCurrentAccount,
+    addAccount,
+    removeMnemonic,
+    addAccountWithName,
+    removeAccount,
+  };
 }

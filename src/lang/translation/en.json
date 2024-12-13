@@ -323,7 +323,8 @@
             "viewMyMnemonic": "View My Mnemonic",
             "viewMyMnemonicDescription": "View Recovery Phrase",
             "mnemonicWallet": "Mnemonic Wallet",
-            "notBackedUp": "Not Backed Up"
+            "notBackedUp": "Not Backed Up",
+            "updateMnemonicNameSuccess": "Mnemonic name updated"
           },
           "layout": {
             "header": "Wallet Detail"
@@ -342,7 +343,8 @@
               "deleteAccount": "Delete Account",
               "viewPrivateKey": "View Private Key (Each Chain)",
               "viewPrivateKeyDescription": "Access private keys for each chain",
-              "notBackedUp": "Not Backed Up"
+              "notBackedUp": "Not Backed Up",
+              "accountNameUpdated": "Account name updated"
             },
             "layout": {
               "header": "Account Detail"

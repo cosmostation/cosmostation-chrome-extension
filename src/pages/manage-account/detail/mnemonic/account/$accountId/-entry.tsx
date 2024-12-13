@@ -10,12 +10,15 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
 import { Route as ViewMultiChainPrivateKey } from '@/pages/manage-account/view/multi-chain-priateKey/$accountId';
+import { updateAccountName } from '@/utils/accountNames';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -47,6 +50,7 @@ export default function Entry({ accountId }: EntryProps) {
   const { accounts, accountNamesById, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
   const { removeAccount } = useCurrentAccount();
 
+  const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
   const [isOpenVerifyPasswordBottomSheetWithMnemonic, setIsOpenVerifyPasswordBottomSheetWithMnemonic] = useState(false);
   const [isOpenVerifyPasswordBottomSheetWithPK, setIsOpenVerifyPasswordBottomSheetPK] = useState(false);
 
@@ -55,6 +59,12 @@ export default function Entry({ accountId }: EntryProps) {
   const accountName = accountNamesById[accountId];
 
   const isNotBackedUp = notBackedUpAccountIds.includes(account?.id || '');
+
+  const editAccountName = async (accountId: string, accountName: string) => {
+    await updateAccountName(accountId, accountName);
+
+    toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.accountNameUpdated'));
+  };
 
   return (
     <>
@@ -65,7 +75,12 @@ export default function Entry({ accountId }: EntryProps) {
               top={<AccountImgContainer />}
               body={
                 <MainContentBody>
-                  <IconTextButton trailingIcon={<EditIcon />}>
+                  <IconTextButton
+                    onClick={() => {
+                      setIsOpenSetAccountNameBottomSheet(true);
+                    }}
+                    trailingIcon={<EditIcon />}
+                  >
                     <MainContentTitleText variant="h2_B">{accountName}</MainContentTitleText>
                   </IconTextButton>
                   <MainContentSubtitleText variant="b3_R">{`${t('pages.manage-account.detail.mnemonic.account.entry.lastHdPath')} : ${hdPath}`}</MainContentSubtitleText>
@@ -147,6 +162,13 @@ export default function Entry({ accountId }: EntryProps) {
               accountId: account?.id || '',
             },
           });
+        }}
+      />
+      <SetAccountNameBottomSheet
+        open={isOpenSetAccountNameBottomSheet}
+        onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
+        setAccountName={async (accountName) => {
+          await editAccountName(accountId, accountName);
         }}
       />
     </>

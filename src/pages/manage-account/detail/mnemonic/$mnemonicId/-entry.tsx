@@ -10,11 +10,14 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import SetMnemonicNameBottomSheet from '@/components/SetAccountNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
+import { updateMnemonicName } from '@/utils/mnemonicNames';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
@@ -44,6 +47,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const [isOpenSetMnemonicNameBottomSheet, setIsOpenSetMnemonicNameBottomSheet] = useState(false);
   const [isOpenVerifyPasswordBottomSheet, setIsOpenVerifyPasswordBottomSheet] = useState(false);
 
   const { accounts, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
@@ -53,6 +57,12 @@ export default function Entry({ mnemonicId }: EntryProps) {
 
   const filteredAccounts = accounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicId);
   const isNotBackedUp = notBackedUpAccountIds.includes(filteredAccounts.map((item) => item.id)[0]);
+
+  const editMnemonicName = async (mnemonic: string, newMnemonicName: string) => {
+    await updateMnemonicName(mnemonic, newMnemonicName);
+
+    toastSuccess(t('pages.manage-account.detail.mnemonic.entry.updateMnemonicNameSuccess'));
+  };
 
   return (
     <>
@@ -67,7 +77,12 @@ export default function Entry({ mnemonicId }: EntryProps) {
               }
               body={
                 <MainContentBody>
-                  <IconTextButton trailingIcon={<EditIcon />}>
+                  <IconTextButton
+                    trailingIcon={<EditIcon />}
+                    onClick={() => {
+                      setIsOpenSetMnemonicNameBottomSheet(true);
+                    }}
+                  >
                     <MainContentTitleText variant="h2_B">{mnemonicName}</MainContentTitleText>
                   </IconTextButton>
                   <MainContentSubtitleText variant="b3_M">{t('pages.manage-account.detail.mnemonic.entry.mnemonicWallet')}</MainContentSubtitleText>
@@ -130,6 +145,13 @@ export default function Entry({ mnemonicId }: EntryProps) {
               },
             });
           }
+        }}
+      />
+      <SetMnemonicNameBottomSheet
+        open={isOpenSetMnemonicNameBottomSheet}
+        onClose={() => setIsOpenSetMnemonicNameBottomSheet(false)}
+        setAccountName={async (newMnemonicName) => {
+          await editMnemonicName(mnemonicId, newMnemonicName);
         }}
       />
     </>
