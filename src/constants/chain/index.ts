@@ -28,6 +28,7 @@ import { DESMOS } from './cosmos/desmos';
 import { DUNGEON } from './cosmos/dungeon';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
+import { ELYS } from './cosmos/elys';
 import { EVMOS } from './cosmos/evmos';
 import { FINSCHIA } from './cosmos/finschia';
 import { GOVGEN } from './cosmos/govgen';
@@ -153,6 +154,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   DUNGEON,
   DYDX,
   DYMENSION,
+  ELYS,
   EVMOS,
   FINSCHIA,
   GOVGEN,
