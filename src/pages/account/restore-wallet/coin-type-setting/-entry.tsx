@@ -6,7 +6,7 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
 import InformationPanel from '@/components/InformationPanel';
-import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
@@ -81,7 +81,7 @@ export default function Entry() {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
-        setAccountName={async (accountName) => {
+        setName={async (accountName) => {
           await setUp(accountName);
         }}
       />

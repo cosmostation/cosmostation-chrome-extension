@@ -11,7 +11,7 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import TextButton from '@/components/common/TextButton';
 import MnemonicBitsPopover from '@/components/MnemonicViewer/components/MnemonicBitsPopover';
-import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getPassword } from '@/libs/account';
@@ -418,7 +418,7 @@ export default function Entry() {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
-        setAccountName={async (accountName) => {
+        setName={async (accountName) => {
           await setUp(accountName);
         }}
       />

@@ -5,21 +5,32 @@ import { Typography } from '@mui/material';
 
 import StandardInput from '@/components/common/StandardInput';
 
-import type { AccountNameForm } from './-useSchema';
+import type { NameForm } from './-useSchema';
 import { useSchema } from './-useSchema';
 import { Body, ConfirmButton, Container, DescriptionText, FormContainer, Header, HeaderTitle, StyledBottomSheet, StyledButton } from './styled';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-type SetAccountNameBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  currentAccountName?: string;
-  setAccountName?: (accountName: string) => void;
+type SetNameBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
+  currentName?: string;
+  headerTitleText?: string;
+  descriptionText?: string;
+  inputPlaceholder?: string;
+  setName?: (name: string) => void;
 };
 
-export default function SetAccountNameBottomSheet({ currentAccountName, setAccountName, onClose, ...remainder }: SetAccountNameBottomSheetProps) {
+export default function SetNameBottomSheet({
+  currentName,
+  headerTitleText,
+  descriptionText,
+  inputPlaceholder,
+  setName,
+  onClose,
+  ...remainder
+}: SetNameBottomSheetProps) {
   const { t } = useTranslation();
 
-  const { accountNameForm } = useSchema();
+  const { nameForm } = useSchema();
 
   const {
     register,
@@ -27,27 +38,27 @@ export default function SetAccountNameBottomSheet({ currentAccountName, setAccou
     watch,
     formState: { errors },
     reset,
-  } = useForm<AccountNameForm>({
-    resolver: joiResolver(accountNameForm),
+  } = useForm<NameForm>({
+    resolver: joiResolver(nameForm),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: {
-      accountName: currentAccountName,
+      name: currentName,
     },
   });
 
-  const { accountName } = watch();
-  const isButtonEnabled = !!accountName;
+  const { name } = watch();
+  const isButtonEnabled = !!name;
 
   const onHandleClose = () => {
     reset({
-      accountName: '',
+      name: '',
     });
     onClose?.({}, 'backdropClick');
   };
 
-  const submit = (data: AccountNameForm) => {
-    setAccountName?.(data.accountName);
+  const submit = (data: NameForm) => {
+    setName?.(data.name);
     onHandleClose();
   };
 
@@ -57,27 +68,27 @@ export default function SetAccountNameBottomSheet({ currentAccountName, setAccou
         <Container>
           <Header>
             <HeaderTitle>
-              <Typography variant="h3_B">{t('components.SetAccountNameBottomSheet.index.header')}</Typography>
+              <Typography variant="h3_B">{headerTitleText || t('components.SetNameBottomSheet.index.header')}</Typography>
             </HeaderTitle>
             <StyledButton onClick={onHandleClose}>
               <Close24Icon />
             </StyledButton>
           </Header>
           <Body>
-            <DescriptionText variant="b3_R_Multiline">{t('components.SetAccountNameBottomSheet.index.description')}</DescriptionText>
+            <DescriptionText variant="b3_R_Multiline">{descriptionText || t('components.SetNameBottomSheet.index.description')}</DescriptionText>
             <StandardInput
-              label={t('components.SetAccountNameBottomSheet.index.accountName')}
-              error={!!errors.accountName}
-              helperText={errors.accountName?.message}
+              label={inputPlaceholder || t('components.SetNameBottomSheet.index.accountName')}
+              error={!!errors.name}
+              helperText={errors.name?.message}
               slotProps={{
                 input: {
-                  ...register('accountName'),
+                  ...register('name'),
                 },
               }}
             />
 
             <ConfirmButton type="submit" disabled={!isButtonEnabled}>
-              {t('components.SetAccountNameBottomSheet.index.setUpComplete')}
+              {t('components.SetNameBottomSheet.index.setUpComplete')}
             </ConfirmButton>
           </Body>
         </Container>

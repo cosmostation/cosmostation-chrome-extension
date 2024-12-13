@@ -9,7 +9,7 @@ import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import MnemonicViewer from '@/components/MnemonicViewer';
-import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
@@ -204,7 +204,7 @@ export default function Entry() {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
-        setAccountName={(accountName) => {
+        setName={(accountName) => {
           setUpWithoutCheck(accountName);
         }}
       />

@@ -10,7 +10,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
-import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
@@ -167,7 +167,7 @@ export default function Entry({ accountId }: EntryProps) {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
-        setAccountName={async (accountName) => {
+        setName={async (accountName) => {
           await editAccountName(accountId, accountName);
         }}
       />

@@ -11,7 +11,7 @@ import type { CheckWord } from '@/components/MnemnicBackupChecker';
 import MnemnicBackupChecker from '@/components/MnemnicBackupChecker';
 import type { MnemonicCheckForm } from '@/components/MnemnicBackupChecker/useSchema';
 import { useSchema } from '@/components/MnemnicBackupChecker/useSchema';
-import SetAccountNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { Route as Dashboard } from '@/pages/index';
@@ -145,7 +145,7 @@ export default function Entry({ accountId }: EntryProps) {
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
-        setAccountName={async (accountName) => {
+        setName={async (accountName) => {
           await setUp(accountName);
         }}
       />

@@ -10,7 +10,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
-import SetMnemonicNameBottomSheet from '@/components/SetAccountNameBottomSheet';
+import SetMnemonicNameBottomSheet from '@/components/SetNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
@@ -150,7 +150,10 @@ export default function Entry({ mnemonicId }: EntryProps) {
       <SetMnemonicNameBottomSheet
         open={isOpenSetMnemonicNameBottomSheet}
         onClose={() => setIsOpenSetMnemonicNameBottomSheet(false)}
-        setAccountName={async (newMnemonicName) => {
+        headerTitleText={t('pages.manage-account.detail.mnemonic.entry.editMnemonicName')}
+        descriptionText={t('pages.manage-account.detail.mnemonic.entry.editMnemonicNameDescription')}
+        inputPlaceholder={t('pages.manage-account.detail.mnemonic.entry.mnemonicName')}
+        setName={async (newMnemonicName) => {
           await editMnemonicName(mnemonicId, newMnemonicName);
         }}
       />

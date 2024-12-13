@@ -2,14 +2,14 @@ import { useTranslation } from 'react-i18next';
 
 import Joi from '@/utils/joi';
 
-export type AccountNameForm = {
-  accountName: string;
+export type NameForm = {
+  name: string;
 };
 
 export function useSchema() {
   const { t } = useTranslation();
-  const accountNameForm = Joi.object<AccountNameForm>({
-    accountName: Joi.string()
+  const nameForm = Joi.object<NameForm>({
+    name: Joi.string()
       .required()
       .min(1)
       .max(20)
@@ -21,5 +21,5 @@ export function useSchema() {
       }),
   });
 
-  return { accountNameForm };
+  return { nameForm };
 }

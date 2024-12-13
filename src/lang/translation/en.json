@@ -29,15 +29,6 @@
         "title": "Select Sort Option"
       }
     },
-    "SetAccountNameBottomSheet": {
-      "index": {
-        "emptyAccountNmae": "Please enter an account name",
-        "header": "Set Account Name",
-        "description": "Please enter a name for your account. You can change the account name at any time in the future",
-        "setUpComplete": "Set Up Complete",
-        "accountName": "Account Name"
-      }
-    },
     "Mnemonic": {
       "index": {
         "seedPhrase": "Seed Phrase",
@@ -115,6 +106,14 @@
         "descriptionSubTitle": "Please enter your password to proceed. This step is required to securely access sensitive information",
         "password": "Password",
         "confirm": "Confirm"
+      }
+    },
+    "SetNameBottomSheet": {
+      "index": {
+        "header": "Set Account Name",
+        "description": "Please enter a name for your account. You can change the account name at any time in the future",
+        "accountName": "Account Name",
+        "setUpComplete": "Set Up Complete"
       }
     }
   },
@@ -324,7 +323,10 @@
             "viewMyMnemonicDescription": "View Recovery Phrase",
             "mnemonicWallet": "Mnemonic Wallet",
             "notBackedUp": "Not Backed Up",
-            "updateMnemonicNameSuccess": "Mnemonic name updated"
+            "updateMnemonicNameSuccess": "Mnemonic name updated",
+            "editMnemonicName": "Edit Mnemonic Name",
+            "editMnemonicNameDescription": "Please enter a name for your mnemonic. You can change the mnemonic name at any time in the future",
+            "mnemonicName": "Mnemonic Name"
           },
           "layout": {
             "header": "Wallet Detail"
@@ -528,7 +530,9 @@
       "removeAccountError": "Fail to remove account",
       "removeMnemonicSuccess": "Mnemonic removed successfully",
       "removeMnemonicError": "Fail to remove mnemonic",
-      "removeAccountSuccess": "Account removed successfully"
+      "removeAccountSuccess": "Account removed successfully",
+      "updateAccountNameError": "Fail to update account name",
+      "updateMnemonicNameError": "Fail to update mnemonic name"
     }
   }
 }
