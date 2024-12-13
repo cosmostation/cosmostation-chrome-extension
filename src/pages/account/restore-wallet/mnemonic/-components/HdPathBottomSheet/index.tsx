@@ -87,7 +87,7 @@ export default function HdPathBottomSheet({ currentHdPath, onClose, onChangeHpPa
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h3_B">{t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.header')}</Typography>
+            <Typography variant="h2_B">{t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.header')}</Typography>
           </HeaderTitle>
           <StyledButton onClick={onHandleClose}>
             <Close24Icon />

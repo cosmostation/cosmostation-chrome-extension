@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -9,6 +10,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewPrivateKey } from '@/pages/manage-account/view/privateKey/$accountId';
@@ -30,6 +32,8 @@ export default function Entry({ accountId }: EntryProps) {
 
   const { accountNamesById } = useExtensionStorageStore((state) => state);
   const { removeAccount } = useCurrentAccount();
+
+  const [isOpenVerifyPasswordBottomSheet, setIsOpenVerifyPasswordBottomSheet] = useState(false);
 
   const accountName = accountNamesById[accountId];
 
@@ -53,12 +57,7 @@ export default function Entry({ accountId }: EntryProps) {
             <OptionButtonContainer>
               <BaseOptionButton
                 onClick={() => {
-                  navigate({
-                    to: ViewPrivateKey.to,
-                    params: {
-                      accountId,
-                    },
-                  });
+                  setIsOpenVerifyPasswordBottomSheet(true);
                 }}
                 leftContent={<PrivateViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.privateKey.account.entry.viewPrivateKey')}</Base1300Text>}
@@ -81,6 +80,18 @@ export default function Entry({ accountId }: EntryProps) {
           {t('pages.manage-account.detail.privateKey.account.entry.deleteAccount')}
         </Button>
       </BaseFooter>
+      <VerifyPasswordBottomSheet
+        open={isOpenVerifyPasswordBottomSheet}
+        onClose={() => setIsOpenVerifyPasswordBottomSheet(false)}
+        onSubmit={() => {
+          navigate({
+            to: ViewPrivateKey.to,
+            params: {
+              accountId,
+            },
+          });
+        }}
+      />
     </>
   );
 }

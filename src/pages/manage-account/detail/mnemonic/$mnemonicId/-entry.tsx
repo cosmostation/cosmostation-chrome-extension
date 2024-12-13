@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -9,7 +10,9 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -40,6 +43,8 @@ type EntryProps = {
 export default function Entry({ mnemonicId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const [isOpenVerifyPasswordBottomSheet, setIsOpenVerifyPasswordBottomSheet] = useState(false);
 
   const { accounts, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
@@ -74,12 +79,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
             <OptionButtonContainer>
               <BaseOptionButton
                 onClick={() => {
-                  navigate({
-                    to: ViewMnemonic.to,
-                    params: {
-                      mnemonicId: mnemonicId,
-                    },
-                  });
+                  setIsOpenVerifyPasswordBottomSheet(true);
                 }}
                 leftContent={<MnemonicViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.entry.viewMyMnemonic')}</Base1300Text>}
@@ -111,6 +111,27 @@ export default function Entry({ mnemonicId }: EntryProps) {
           {t('pages.manage-account.detail.mnemonic.entry.deleteMnemonic')}
         </Button>
       </BaseFooter>
+      <VerifyPasswordBottomSheet
+        open={isOpenVerifyPasswordBottomSheet}
+        onClose={() => setIsOpenVerifyPasswordBottomSheet(false)}
+        onSubmit={() => {
+          if (isNotBackedUp) {
+            navigate({
+              to: ManageBackupStep1.to,
+              params: {
+                accountId: filteredAccounts[0].id,
+              },
+            });
+          } else {
+            navigate({
+              to: ViewMnemonic.to,
+              params: {
+                mnemonicId: mnemonicId,
+              },
+            });
+          }
+        }}
+      />
     </>
   );
 }

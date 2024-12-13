@@ -35,7 +35,7 @@ export default function SortBottomSheet({ currentSortOption, optionButtonProps, 
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h3_B">{t('components.SortBottomSheet.index.title')}</Typography>
+            <Typography variant="h2_B">{t('components.SortBottomSheet.index.title')}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {

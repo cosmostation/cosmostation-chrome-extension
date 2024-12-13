@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -9,15 +10,28 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
 import { Route as ViewMultiChainPrivateKey } from '@/pages/manage-account/view/multi-chain-priateKey/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentSubtitleText, MainContentTitleText, OptionButtonContainer } from './-styled';
+import {
+  AccountImgContainer,
+  Caution,
+  CautionIconContainer,
+  CautionText,
+  MainContentBody,
+  MainContentsContainer,
+  MainContentSubtitleText,
+  MainContentTitleText,
+  OptionButtonContainer,
+} from './-styled';
 import MainContentsLayout from '../../../-components/MainContentsLayout';
 
+import CautionIcon from '@/assets/images/icons/Caution16.svg';
 import EditIcon from '@/assets/images/icons/Edit18.svg';
 import MnemonicViewIcon from '@/assets/images/icons/MnemonicView28.svg';
 import PrivateViewIcon from '@/assets/images/icons/PrivateKeyView28.svg';
@@ -30,12 +44,17 @@ export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, accountNamesById } = useExtensionStorageStore((state) => state);
+  const { accounts, accountNamesById, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
   const { removeAccount } = useCurrentAccount();
+
+  const [isOpenVerifyPasswordBottomSheetWithMnemonic, setIsOpenVerifyPasswordBottomSheetWithMnemonic] = useState(false);
+  const [isOpenVerifyPasswordBottomSheetWithPK, setIsOpenVerifyPasswordBottomSheetPK] = useState(false);
 
   const account = accounts.find((item) => item.id === accountId);
   const hdPath = account?.type === 'MNEMONIC' ? account.index : '';
   const accountName = accountNamesById[accountId];
+
+  const isNotBackedUp = notBackedUpAccountIds.includes(account?.id || '');
 
   return (
     <>
@@ -58,25 +77,25 @@ export default function Entry({ accountId }: EntryProps) {
             <OptionButtonContainer>
               <BaseOptionButton
                 onClick={() => {
-                  navigate({
-                    to: ViewMnemonic.to,
-                    params: {
-                      mnemonicId: account?.encryptedRestoreString || '',
-                    },
-                  });
+                  setIsOpenVerifyPasswordBottomSheetWithMnemonic(true);
                 }}
                 leftContent={<MnemonicViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonic')}</Base1300Text>}
                 leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.account.entry.viewMyMnemonicDescription')}</Base1000Text>}
+                rightContent={
+                  isNotBackedUp ? (
+                    <Caution>
+                      <CautionIconContainer>
+                        <CautionIcon />
+                      </CautionIconContainer>
+                      <CautionText variant="b4_M">{t('pages.manage-account.detail.mnemonic.account.entry.notBackedUp')}</CautionText>
+                    </Caution>
+                  ) : undefined
+                }
               />
               <BaseOptionButton
                 onClick={() => {
-                  navigate({
-                    to: ViewMultiChainPrivateKey.to,
-                    params: {
-                      accountId: account?.id || '',
-                    },
-                  });
+                  setIsOpenVerifyPasswordBottomSheetPK(true);
                 }}
                 leftContent={<PrivateViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.account.entry.viewPrivateKey')}</Base1300Text>}
@@ -97,6 +116,39 @@ export default function Entry({ accountId }: EntryProps) {
           {t('pages.manage-account.detail.mnemonic.account.entry.deleteAccount')}
         </Button>
       </BaseFooter>
+      <VerifyPasswordBottomSheet
+        open={isOpenVerifyPasswordBottomSheetWithMnemonic}
+        onClose={() => setIsOpenVerifyPasswordBottomSheetWithMnemonic(false)}
+        onSubmit={() => {
+          if (isNotBackedUp) {
+            navigate({
+              to: ManageBackupStep1.to,
+              params: {
+                accountId: account?.id || '',
+              },
+            });
+          } else {
+            navigate({
+              to: ViewMnemonic.to,
+              params: {
+                mnemonicId: account?.encryptedRestoreString || '',
+              },
+            });
+          }
+        }}
+      />
+      <VerifyPasswordBottomSheet
+        open={isOpenVerifyPasswordBottomSheetWithPK}
+        onClose={() => setIsOpenVerifyPasswordBottomSheetPK(false)}
+        onSubmit={() => {
+          navigate({
+            to: ViewMultiChainPrivateKey.to,
+            params: {
+              accountId: account?.id || '',
+            },
+          });
+        }}
+      />
     </>
   );
 }

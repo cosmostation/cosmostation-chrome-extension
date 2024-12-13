@@ -45,17 +45,11 @@ export default function ReviewBottomSheet({
   };
 
   return (
-    <StyledBottomSheet
-      {...remainder}
-      // NOTE check 필요
-      // onClose={() => {
-      //   onClose?.({}, 'backdropClick');
-      // }}
-    >
+    <StyledBottomSheet {...remainder}>
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h3_B">{headerTitle || t('components.FinalReviewBottomSheet.index.title')}</Typography>
+            <Typography variant="h2_B">{headerTitle || t('components.FinalReviewBottomSheet.index.title')}</Typography>
           </HeaderTitle>
         </Header>
         <Body>

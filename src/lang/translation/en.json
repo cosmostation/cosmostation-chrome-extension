@@ -108,6 +108,14 @@
       "index": {
         "phrase": "Phrase"
       }
+    },
+    "VerifyPasswordBottomSheet": {
+      "index": {
+        "title": "Verify Password",
+        "descriptionSubTitle": "Please enter your password to proceed. This step is required to securely access sensitive information",
+        "password": "Password",
+        "confirm": "Confirm"
+      }
     }
   },
   "pages": {
@@ -333,7 +341,8 @@
               "viewMyMnemonicDescription": "View Recovery Phrase",
               "deleteAccount": "Delete Account",
               "viewPrivateKey": "View Private Key (Each Chain)",
-              "viewPrivateKeyDescription": "Access private keys for each chain"
+              "viewPrivateKeyDescription": "Access private keys for each chain",
+              "notBackedUp": "Not Backed Up"
             },
             "layout": {
               "header": "Account Detail"
