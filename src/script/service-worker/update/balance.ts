@@ -120,6 +120,7 @@ export async function initAssests(id: string) {
   }
 }
 
+// TODO 요청에 대하 2초 타임아웃 설정 필요.
 async function cosmosBalances(id: string) {
   const address = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
