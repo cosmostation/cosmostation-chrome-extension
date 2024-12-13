@@ -307,7 +307,7 @@ export default function Entry() {
                   type={isViewMnemonic ? 'text' : inputTypes[index]}
                   startAdornment={
                     <InputAdornment position="start">
-                      <MnemonicWordIndexText variant="h5n_M">{index}</MnemonicWordIndexText>
+                      <MnemonicWordIndexText variant="h5n_M">{index + 1}</MnemonicWordIndexText>
                     </InputAdornment>
                   }
                   hideViewIcon

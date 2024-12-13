@@ -100,7 +100,7 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
         )}
         <MnemonicContainer>
           {displayMnemonic.map((item, index) => (
-            <MnemonicWord key={index} index={index} word={item} isViewMnemonic={isViewMnemonic} />
+            <MnemonicWord key={index} index={index + 1} word={item} isViewMnemonic={isViewMnemonic} />
           ))}
         </MnemonicContainer>
         <ControlInputButtonContainer>

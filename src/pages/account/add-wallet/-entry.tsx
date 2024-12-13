@@ -13,6 +13,10 @@ import { Route as RestoreWalletWithPrivateKey } from '@/pages/account/restore-wa
 import OptionButton from './-components/OptionButton';
 import { Body, DescriptionText, FooterContainer, OptionButtonsContainer } from './-styled';
 
+import CreateWalletIcon from '@/assets/images/icons/CreateWallet28.svg';
+import MnemonicWalletIcon from '@/assets/images/icons/MnemonicWallet28.svg';
+import PrivateKeyWalletIcon from '@/assets/images/icons/PrivateKeyWallet28.svg';
+
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -31,6 +35,7 @@ export default function Entry() {
                     to: CreateMnemonic.to,
                   })
                 }
+                icon={<CreateWalletIcon />}
                 titleText={t('pages.account.add-wallet.index.createNewWallet')}
                 bodyText={t('pages.account.add-wallet.index.createNewWalletDescription')}
               />
@@ -40,6 +45,7 @@ export default function Entry() {
                     to: RestoreWalletWithMnemonic.to,
                   })
                 }
+                icon={<MnemonicWalletIcon />}
                 titleText={t('pages.account.add-wallet.index.restoreWithMnemonic')}
                 bodyText={t('pages.account.add-wallet.index.restoreWithMnemonicDescription')}
               />
@@ -49,6 +55,7 @@ export default function Entry() {
                     to: RestoreWalletWithPrivateKey.to,
                   })
                 }
+                icon={<PrivateKeyWalletIcon />}
                 titleText={t('pages.account.add-wallet.index.restoreWithPrivateKey')}
                 bodyText={t('pages.account.add-wallet.index.restoreWithPrivateKeyDescription')}
               />

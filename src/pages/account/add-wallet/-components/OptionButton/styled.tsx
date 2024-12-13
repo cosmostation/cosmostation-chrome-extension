@@ -36,25 +36,16 @@ export const RightContainer = styled('div')({
   width: 'fit-content',
 });
 
-export const PlusIconContainer = styled('div')(({ theme }) => ({
+export const IconContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
 
-  width: '4.2rem',
-  height: '4.2rem',
+  padding: '0.7rem',
 
   borderRadius: '0.9rem',
 
   backgroundColor: theme.palette.color.base300,
-
-  '& > svg': {
-    width: '1.6rem',
-    height: '1.6rem',
-    '& > path': {
-      stroke: theme.palette.color.base800,
-    },
-  },
 }));
 
 export const TitleText = styled(Typography)(({ theme }) => ({

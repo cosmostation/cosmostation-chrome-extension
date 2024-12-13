@@ -1,20 +1,18 @@
-import { BodyText, LeftContainer, MiddleContainer, PlusIconContainer, RightContainer, StyledButton, TitleText } from './styled';
+import { BodyText, IconContainer, LeftContainer, MiddleContainer, RightContainer, StyledButton, TitleText } from './styled';
 
-import PlusIcon from '@/assets/images/icons/Plus12.svg';
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
 type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+  icon: JSX.Element;
   titleText: string;
   bodyText: string;
 };
 
-export default function OptionButton({ titleText, bodyText, ...remainder }: OptionButtonProps) {
+export default function OptionButton({ icon, titleText, bodyText, ...remainder }: OptionButtonProps) {
   return (
     <StyledButton {...remainder}>
       <LeftContainer>
-        <PlusIconContainer>
-          <PlusIcon />
-        </PlusIconContainer>
+        <IconContainer>{icon}</IconContainer>
       </LeftContainer>
       <MiddleContainer>
         <TitleText variant="b2_B">{titleText}</TitleText>
