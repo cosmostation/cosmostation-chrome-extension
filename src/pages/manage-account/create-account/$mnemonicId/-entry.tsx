@@ -159,7 +159,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
           </MajorNetworkTextContainer>
           {majorNetwork.map((network) => {
             const { name, image, id } = network || {};
-            const defaultHdPath = network?.accountTypes.find(({ is_default }) => is_default === null)?.hdPath || '';
+            const defaultHdPath = network?.accountTypes.find(({ isDefault }) => isDefault === null)?.hdPath || '';
 
             const splitHdPath = defaultHdPath.split('${index}');
             const head = splitHdPath[0].split('/').join(' / ');

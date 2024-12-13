@@ -128,3 +128,6 @@ export interface AccountSuiAsset {
 
 export type AccountNamesById = Record<AccountBase['id'], string>;
 export type MnemonicNamesByHashedMnemonic = Record<AccountBase['id'], string>;
+
+export type ChainToAccountTypeMap = Record<Chain['id'], ChainAccountType>;
+export type PreferAccountType = Record<AccountBase['id'], ChainToAccountTypeMap>;

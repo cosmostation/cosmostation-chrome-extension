@@ -15,9 +15,23 @@ export const Body = styled('div')({
 });
 
 export const CoinTypeSelectorContainer = styled('div')({
-  marginTop: '1.6rem',
+  display: 'flex',
+  flexDirection: 'column',
+  margin: '1.6rem 0',
+  rowGap: '3.2rem',
 });
 
 export const DescriptionText = styled(Base1300Text)({
   marginRight: '0.4rem',
+});
+
+export const Footer = styled('div')({
+  width: '100%',
+  height: 'fit-content',
+
+  boxSizing: 'border-box',
+
+  position: 'sticky',
+  bottom: '1.2rem',
+  zIndex: 1000,
 });

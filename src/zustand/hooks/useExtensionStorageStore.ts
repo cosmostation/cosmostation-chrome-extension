@@ -23,6 +23,7 @@ const initialState: ExtensionStorageState = {
   selectedAccountId: '',
   notBackedUpAccountIds: [],
   currency: '' as CurrencyType,
+  preferAccountType: {},
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {

@@ -59,7 +59,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
-          is_default: accountType.is_default ?? null,
+          isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
 
@@ -101,7 +101,7 @@ export async function getChains() {
       {
         hdPath: "m/44'/60'/0'/0/${index}",
         pubkeyStyle: 'keccak256',
-        is_default: null,
+        isDefault: null,
       },
     ];
 
@@ -143,7 +143,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
-          is_default: accountType.is_default ?? null,
+          isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
 
@@ -181,7 +181,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
-          is_default: accountType.is_default ?? null,
+          isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
 
@@ -219,7 +219,7 @@ export async function getChains() {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
           pubKeyType: accountType.pubkey_type ?? null,
-          is_default: accountType.is_default ?? null,
+          isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
 

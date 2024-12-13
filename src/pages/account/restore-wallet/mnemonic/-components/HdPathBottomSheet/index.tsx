@@ -105,7 +105,7 @@ export default function HdPathBottomSheet({ currentHdPathIndex, onClose, onChang
           <ChainInfoContainer>
             {majorNetwork.map((network) => {
               const { name, image, id } = network || {};
-              const defaultHdPath = network?.accountTypes.find(({ is_default }) => is_default === null)?.hdPath || '';
+              const defaultHdPath = network?.accountTypes.find(({ isDefault }) => isDefault === null)?.hdPath || '';
 
               return <ChainPathInfo key={id} chainName={name} chainImage={image || ''} fullHdPath={defaultHdPath} currentHdPathIndex={hdPathIndex} />;
             })}

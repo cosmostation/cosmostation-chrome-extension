@@ -9,6 +9,7 @@ import type {
   AccountAddressBalanceSui,
   AccountNamesById,
   MnemonicNamesByHashedMnemonic,
+  PreferAccountType,
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
 import type { AssetId, CosmosCw20Asset, EvmErc20Asset } from './asset';
@@ -40,6 +41,7 @@ export interface ExtensionStorage {
   selectedAccountId: Account['id'];
   notBackedUpAccountIds: Account['id'][];
   currency: CurrencyType;
+  preferAccountType: PreferAccountType;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

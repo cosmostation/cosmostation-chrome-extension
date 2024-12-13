@@ -1,5 +1,6 @@
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
+import type { ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
 import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 
 import { extension } from './browser';
@@ -19,27 +20,109 @@ export async function initExtensionLocalStorage() {
   }
 
   if (!originStorage.dappListSortKey) {
-    setExtensionLocalStorage('dappListSortKey', DefaultSortKey.dappListSortKey);
+    await setExtensionLocalStorage('dappListSortKey', DefaultSortKey.dappListSortKey);
   }
 
   if (!originStorage.dashboardCoinSortKey) {
-    setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
+    await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
   }
 
   if (!originStorage.accounts) {
-    setExtensionLocalStorage('accounts', []);
+    await setExtensionLocalStorage('accounts', []);
   }
 
   if (!originStorage.accountNamesById) {
-    setExtensionLocalStorage('accountNamesById', {});
+    await setExtensionLocalStorage('accountNamesById', {});
   }
 
   if (!originStorage.mnemonicNamesByHashedMnemonic) {
-    setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
+    await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
   }
 
   if (!originStorage.notBackedUpAccountIds) {
-    setExtensionLocalStorage('notBackedUpAccountIds', []);
+    await setExtensionLocalStorage('notBackedUpAccountIds', []);
+  }
+
+  if (!originStorage.preferAccountType) {
+    await setExtensionLocalStorage('preferAccountType', {});
+  }
+
+  // NOTE 이미 저장된 상태. 새 체인파람에 멀티 어카운트 타입이 감지가 됐는데 이게 스토리지에는 저장이 안되어있을때
+  if (Object.keys(originStorage.preferAccountType).length > 0) {
+    const filteredAccountTypes = Object.values(originStorage.paramsV11).filter(
+      (item) =>
+        item.params.chainlist_params?.is_support_extension_wallet &&
+        item.params.chainlist_params?.account_type &&
+        item.params.chainlist_params.account_type.length > 1,
+    );
+
+    const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.params.chainlist_params.api_name);
+
+    const notStoredNewMultiAccountTypes = freshMultiAccountChainNames.filter((item) => !Object.keys(originStorage.preferAccountType).includes(item));
+
+    if (notStoredNewMultiAccountTypes && notStoredNewMultiAccountTypes.length > 0) {
+      const newPreferAccountType: ChainToAccountTypeMap = {};
+
+      notStoredNewMultiAccountTypes.forEach((item) => {
+        const aaaaaa = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
+        const defaultAccountType = aaaaaa?.find((type) => type.is_default !== false);
+
+        if (defaultAccountType) {
+          const type = {
+            hdPath: defaultAccountType.hd_path,
+            pubkeyStyle: defaultAccountType.pubkey_style,
+            isDefault: defaultAccountType.is_default,
+            pubKeyType: defaultAccountType.pubkey_type,
+          };
+          newPreferAccountType[item] = type;
+        }
+      });
+
+      const oldPreferAccountType = Object.values(originStorage.preferAccountType)[0];
+      const mergedPreferAccountType = { ...oldPreferAccountType, ...newPreferAccountType };
+
+      const aaa = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
+        acc[cur.id] = mergedPreferAccountType;
+        return acc;
+      }, {});
+
+      await setExtensionLocalStorage('preferAccountType', aaa);
+    }
+  }
+
+  // NOTE 마이그레이션 용 로직
+  // NOTE accounts는 있지만 preferAccountType이 없는 경우
+  if (originStorage.accounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
+    const updatedPreferAccountType = Object.values(originStorage.paramsV11)
+      .filter(
+        (item) =>
+          item.params.chainlist_params?.is_support_extension_wallet &&
+          item.params.chainlist_params?.account_type &&
+          item.params.chainlist_params.account_type.length > 1,
+      )
+      .reduce((acc: ChainToAccountTypeMap, cur) => {
+        const defaultAccountType = cur.params.chainlist_params.account_type?.find((type) => type.is_default !== false);
+
+        if (defaultAccountType) {
+          const type = {
+            hdPath: defaultAccountType.hd_path,
+            pubkeyStyle: defaultAccountType.pubkey_style,
+            isDefault: defaultAccountType.is_default,
+            pubKeyType: defaultAccountType.pubkey_type,
+          };
+
+          acc[cur.params.chainlist_params.api_name] = type;
+        }
+
+        return acc;
+      }, {});
+
+    const aaa = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
+      acc[cur.id] = updatedPreferAccountType;
+      return acc;
+    }, {});
+
+    await setExtensionLocalStorage('preferAccountType', aaa);
   }
 }
 

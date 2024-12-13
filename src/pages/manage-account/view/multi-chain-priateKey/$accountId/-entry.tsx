@@ -82,7 +82,7 @@ export default function Entry({ accountId }: EntryProps) {
           ) : (
             <PrivateAccordionContainer>
               {filteredPrivateKeys.map((item) => {
-                const hdPath = item.chain.accountTypes.find((item) => item.is_default !== false)?.hdPath || item.chain.accountTypes[0].hdPath;
+                const hdPath = item.chain.accountTypes.find((item) => item.isDefault !== false)?.hdPath || item.chain.accountTypes[0].hdPath;
                 const resolvedHdPath = hdPath.replace('${index}', hdPathIndex);
 
                 return (

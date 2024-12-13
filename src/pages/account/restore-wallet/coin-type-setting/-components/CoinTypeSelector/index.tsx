@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import type { Chain, ChainAccountType } from '@/types/chain';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   AddressText,
@@ -22,54 +24,48 @@ import {
   ValueContainer,
 } from './styled';
 
-export default function CoinTypeSelector() {
+type CoinTypeSelectorProps = {
+  accountTypeDetails: {
+    address: string;
+    accountType: ChainAccountType;
+  }[];
+  selectedAccountType?: ChainAccountType;
+  chain?: Chain;
+};
+
+export default function CoinTypeSelector({ chain, selectedAccountType, accountTypeDetails }: CoinTypeSelectorProps) {
   const { t } = useTranslation();
+  const { accounts } = useExtensionStorageStore((state) => state);
+
+  // FIXME
   const isBitcoin = true;
 
-  // NOTE should be get from props
-  const chainName = 'Bitcoin';
-  const selectedHdPath = "m/84'/0'/0'/0/0";
-  const currentAccountIndex = 0;
+  const currentAccount = accounts[0];
+  const currentAccountIndex = currentAccount.type === 'MNEMONIC' ? currentAccount.index : '0';
 
-  const dummyData = [
-    {
-      address: 'bc1a17d2wax0zhjrrecvaszuyxdf5wcu5a0p4qlx12z',
-      typeName: 'Native Segwit',
-      // TODO ${index} 앞서 설정한 어카운트의 hdPath index값 가져와서 치환해줘야함.
-      hdPath: "m/84'/0'/0'/0/${index}",
-      recommended: true,
-      value: '900',
-    },
-    {
-      address: '3KEVTN17d2wax0zhjrrecvaszuyxdf5wcu5a0p4qlx1s6',
-      typeName: 'NASTED SEGWIT',
-      hdPath: 'm/44’/0’/0’/0/${index}',
-      value: '900',
-    },
-    {
-      address: '13TVLKd2wax0zhjrrecvaszuyxdf5wcu5a0p4qlxs4x',
-      typeName: 'LEGACY',
-      hdPath: 'm/49’/0’/0’/0/${index}',
-      value: '300',
-    },
-  ].map((item) => ({
-    ...item,
-    hdPath: item.hdPath.replace('${index}', currentAccountIndex.toString()),
-  }));
+  // TODO useAccountAllAssets호출해서 address에 해당하는 밸런스 가져와서 밸류 계산.
+  const value = '9000';
 
   return (
     <Container>
       <TopContainer>
-        <ChainImage src={'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/sui/asset/sui.png'} />
+        <ChainImage src={chain?.image} />
         <Base1300Text variant="h3_B">
-          {t('pages.account.restore-wallet.coin-type-setting.components.CoinTypeSelector.index.coinType').replace('${chain}', chainName)}
+          {t('pages.account.restore-wallet.coin-type-setting.components.CoinTypeSelector.index.coinType').replace('${chain}', chain?.name || 'Unknown')}
         </Base1300Text>
       </TopContainer>
       <ButtonWrapper>
-        {dummyData.map((item) => {
-          const isSelected = selectedHdPath.replace(/\s+/g, '') === item.hdPath.replace(/\s+/g, '');
+        {accountTypeDetails.map((item) => {
+          const fullHdPath = item.accountType.hdPath.replace('${index}', currentAccountIndex);
 
-          const [rootLevel, purposeLevel, coinTypeLevel, accountLevel, changeLevel, indexLevel] = item.hdPath.split('/');
+          const isSelected =
+            selectedAccountType?.hdPath.replace('${index}', currentAccountIndex).replace(/\s+/g, '') === fullHdPath.replace(/\s+/g, '') &&
+            selectedAccountType.pubkeyStyle === item.accountType.pubkeyStyle;
+
+          const isDefaultAccountType = item.accountType.isDefault !== false;
+
+          // FIXME "m/44'/60'/0'/X", 케이스 핸들링 필요.
+          const [rootLevel, purposeLevel, coinTypeLevel, accountLevel, changeLevel, indexLevel] = fullHdPath.split('/');
 
           const highlightedLeftText = `${rootLevel} / ${isBitcoin ? '' : `${purposeLevel} / `}`;
           const highlightedText = isBitcoin ? purposeLevel : coinTypeLevel;
@@ -79,12 +75,12 @@ export default function CoinTypeSelector() {
               <ButtonBodyContainer>
                 <CoinTypeNameContainer>
                   <CoinTypeNameTextContainer>
-                    <Base1300Text variant="b2_M">{item.typeName}</Base1300Text>
+                    <Base1300Text variant="b2_M">{item.accountType.pubkeyStyle}</Base1300Text>
                     &nbsp;
-                    {item.recommended && <DefaultText variant="b2_M">{'(Default)'}</DefaultText>}
+                    {isDefaultAccountType && <DefaultText variant="b2_M">{'(Default)'}</DefaultText>}
                   </CoinTypeNameTextContainer>
 
-                  {item.recommended && (
+                  {isDefaultAccountType && (
                     <Badge>
                       <Base1300Text>{'RECOMMENDED'}</Base1300Text>
                     </Badge>
@@ -105,7 +101,7 @@ export default function CoinTypeSelector() {
 
                 <ValueContainer>
                   <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
-                    {item.value}
+                    {value}
                   </NumberTypo>
                 </ValueContainer>
               </ButtonBottomContainer>

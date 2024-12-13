@@ -48,27 +48,42 @@ export async function initAccount(id: string) {
       { id: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', chainId: 'ethereum', chainType: 'evm' },
     ];
 
-    const hiddenAssetIds = [
+    const mergedAccountAssets = [
       ...aptosAccountAssets,
       ...cosmosAccountAssets,
       ...cw20AccountAssets,
       ...erc20AccountAssets,
       ...evmAccountAssets,
       ...suiAccountAssets,
-    ]
+    ];
+
+    const availableAccountAssets = mergedAccountAssets
+      .filter((asset) => asset.balance !== '0')
+      .map((asset) => {
+        return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
+      });
+
+    const hiddenAssetIds = mergedAccountAssets
       .filter(
         (asset) =>
-          // FIXME 서로 다른 타입에서 같은 코인의 밸런스가 있다면 언 히든 처리.(카바 케이스)
           asset.balance === '0' &&
           !defaultCoinList.find(
             (defaultCoin) =>
               defaultCoin.id === asset.asset.id && defaultCoin.chainId === asset.asset.chainId && defaultCoin.chainType === asset.asset.chainType,
+          ) &&
+          // NOTE 서로 다른 타입에서 같은 코인의 밸런스가 있다면 언 히든 처리.(카바 케이스)
+          !availableAccountAssets.some(
+            (availableAccountAsset) =>
+              availableAccountAsset.id === asset.asset.id &&
+              availableAccountAsset.chainId === asset.asset.chainId &&
+              availableAccountAsset.chainType === asset.asset.chainType,
           ),
       )
       .map((asset) => {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
       });
 
+    // NOTE 앞서 is_preload가 false인 erc20, cw20을 넣어놨으니 그거와 명합하는 과정
     const uniqueHiddenAssetIds = [...storedHiddenAssetIds, ...hiddenAssetIds].filter(
       (v, i, a) => a.findIndex((t) => t.id === v.id && t.chainId === v.chainId && t.chainType === v.chainType) === i,
     );
@@ -117,8 +132,6 @@ async function cosmosBalances(id: string) {
     })
     // NOTE 코스모스 체인만 필터링해서 쓸 수 있도록
     .filter((addr) => addr.chain);
-
-  console.log('🚀 ~ cosmosBalances ~ addressWithChain:', addressWithChain);
 
   const { results } = await PromisePool.withConcurrency(10)
     .for(addressWithChain)
