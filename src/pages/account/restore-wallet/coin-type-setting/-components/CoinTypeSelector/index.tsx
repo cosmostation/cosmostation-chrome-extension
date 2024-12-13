@@ -1,8 +1,13 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
 import type { Chain, ChainAccountType } from '@/types/chain';
+import { equal, lt, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -33,9 +38,13 @@ type CoinTypeSelectorProps = {
   chain?: Chain;
 };
 
+// TODO coin-type-setting이 아니라 여기 컴포넌트에서 preferredAccountTyper선언 하고 이 컴포넌트를 하위 컴포넌트로 변경
 export default function CoinTypeSelector({ chain, selectedAccountType, accountTypeDetails }: CoinTypeSelectorProps) {
   const { t } = useTranslation();
-  const { accounts } = useExtensionStorageStore((state) => state);
+  const { accounts, currency } = useExtensionStorageStore((state) => state);
+
+  const { data } = useAccountAllAssets();
+  const { data: coinGeckoData } = useCoinGeckoPriceSWR();
 
   // FIXME
   const isBitcoin = true;
@@ -43,8 +52,76 @@ export default function CoinTypeSelector({ chain, selectedAccountType, accountTy
   const currentAccount = accounts[0];
   const currentAccountIndex = currentAccount.type === 'MNEMONIC' ? currentAccount.index : '0';
 
-  // TODO useAccountAllAssets호출해서 address에 해당하는 밸런스 가져와서 밸류 계산.
-  const value = '9000';
+  const aggregatedAccountValues = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+    const chainType = chain?.chainType;
+
+    if (chainType === 'cosmos') {
+      return accountTypeDetails.map((item) => {
+        const address = item.address;
+
+        const filteredCosmosAssets = data.cosmosAccountAssets.filter((asset) => asset.address.address === address);
+        const filteredCW20Assets = data.cw20AccountAssets.filter((asset) => asset.address.address === address);
+
+        const cosmosValueSum = filteredCosmosAssets.reduce((totalValue, cur) => {
+          const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+          const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+          return plus(totalValue, assetValue);
+        }, '0');
+
+        const cw20ValueSum = filteredCW20Assets.reduce((totalValue, cur) => {
+          const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+          const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+
+          return plus(totalValue, assetValue);
+        }, '0');
+
+        const totalAssetValue = plus(cosmosValueSum, cw20ValueSum);
+
+        return {
+          address,
+          totalAssetValue,
+        };
+      });
+    }
+
+    if (chainType === 'evm') {
+      return accountTypeDetails.map((item) => {
+        const address = item.address;
+
+        const filteredEVMAssets = data.evmAccountAssets.filter((asset) => asset.address.address === address);
+        const filteredERC20Assets = data.erc20AccountAssets.filter((asset) => asset.address.address === address);
+
+        const evmValueSum = filteredEVMAssets.reduce((totalValue, cur) => {
+          const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+          const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+
+          return plus(totalValue, assetValue);
+        }, '0');
+
+        const erc20ValueSum = filteredERC20Assets.reduce((totalValue, cur) => {
+          const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+          const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+
+          return plus(totalValue, assetValue);
+        }, '0');
+
+        const totalAssetValue = plus(evmValueSum, erc20ValueSum);
+
+        return {
+          address,
+          totalAssetValue,
+        };
+      });
+    }
+
+    // TODO
+    // if(chainType === 'btc')
+
+    return [];
+  }, [accountTypeDetails, chain?.chainType, coinGeckoData, currency, data]);
 
   return (
     <Container>
@@ -70,6 +147,8 @@ export default function CoinTypeSelector({ chain, selectedAccountType, accountTy
           const highlightedLeftText = `${rootLevel} / ${isBitcoin ? '' : `${purposeLevel} / `}`;
           const highlightedText = isBitcoin ? purposeLevel : coinTypeLevel;
           const highlightedRightText = ` / ${isBitcoin ? `${coinTypeLevel} / ` : ''}${accountLevel} / ${changeLevel} / ${indexLevel}`;
+
+          const totalAssetValue = aggregatedAccountValues.find((v) => v.address === item.address)?.totalAssetValue;
           return (
             <OutlinedButton key={item.address} isSelected={isSelected}>
               <ButtonBodyContainer>
@@ -100,9 +179,24 @@ export default function CoinTypeSelector({ chain, selectedAccountType, accountTy
                 </HdPathTextContainer>
 
                 <ValueContainer>
-                  <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
-                    {value}
-                  </NumberTypo>
+                  {totalAssetValue &&
+                    (equal(totalAssetValue, '0') ? (
+                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={0}>
+                        {'0'}
+                      </NumberTypo>
+                    ) : lt(totalAssetValue, '0.001') ? (
+                      <ValueContainer>
+                        <Typography variant="h5n_M">{'<'}</Typography>
+                        &nbsp;
+                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
+                          {totalAssetValue}
+                        </NumberTypo>
+                      </ValueContainer>
+                    ) : (
+                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
+                        {totalAssetValue}
+                      </NumberTypo>
+                    ))}
                 </ValueContainer>
               </ButtonBottomContainer>
             </OutlinedButton>
