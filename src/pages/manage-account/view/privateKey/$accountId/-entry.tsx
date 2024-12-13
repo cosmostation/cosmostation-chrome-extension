@@ -67,7 +67,7 @@ export default function Entry({ accountId }: EntryProps) {
                   setIsViewPrivateKey(!isViewPrivateKey);
                 }}
               >
-                <MarginRightTypography variant="b2_M">{t('pages.manage-account.view.privateKey.entry.privateKey')}</MarginRightTypography>
+                <MarginRightTypography variant="h4_B">{t('pages.manage-account.view.privateKey.entry.privateKey')}</MarginRightTypography>
               </IconTextButton>
             </TopContainer>
 

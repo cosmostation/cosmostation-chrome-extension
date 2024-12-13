@@ -281,7 +281,7 @@ export default function Entry() {
                   setIsViewMnemonic(!isViewMnemonic);
                 }}
               >
-                <MarginRightTypography variant="b2_M">{t('components.MnemonicViewer.index.seedPhrase')}</MarginRightTypography>
+                <MarginRightTypography variant="h4_B">{t('components.MnemonicViewer.index.seedPhrase')}</MarginRightTypography>
               </IconTextButton>
               <IconTextButton
                 onClick={(event) => {
@@ -410,10 +410,12 @@ export default function Entry() {
         }}
       />
       <HdPathBottomSheet
-        currentHdPath={currentHdPathIndex}
+        currentHdPathIndex={currentHdPathIndex}
         open={isOpenHdPathBottomSheet}
         onClose={() => setIsOpenHdPathBottomSheet(false)}
-        onChangeHpPath={(val) => setCurrentHdPathIndex(val)}
+        onChangeHdPathIndex={(val) => {
+          setCurrentHdPathIndex(val);
+        }}
       />
       <SetAccountNameBottomSheet
         open={isOpenSetAccountNameBottomSheet}

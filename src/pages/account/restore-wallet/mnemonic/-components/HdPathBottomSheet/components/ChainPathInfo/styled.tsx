@@ -42,12 +42,3 @@ export const RightTextContainer = styled('div')({
   alignItems: 'center',
   textAlign: 'right',
 });
-
-export const DefaultHdPathText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1000,
-}));
-
-// TODO Base1300Text로 교체
-export const HdPathAddressIndexText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.color.base1300,
-}));

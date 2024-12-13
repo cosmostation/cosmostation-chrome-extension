@@ -1,18 +1,23 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
 import StandardInput from '@/components/common/StandardInput';
-import { isNaturalNumberRegex } from '@/utils/regex';
+import { useChainList } from '@/hooks/useChainList';
+import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
+import { isNumber } from '@/utils/string';
 
+import type { HdPathIndexForm } from './-useSchema';
+import { useSchema } from './-useSchema';
 import ChainPathInfo from './components/ChainPathInfo';
 import {
   Body,
   ChainInfoContainer,
   ChainInfoTitle,
   ConfirmButton,
-  Container,
   DescriptionText,
+  FormContainer,
   Header,
   HeaderTitle,
   StyledBottomSheet,
@@ -21,75 +26,60 @@ import {
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-// NOTE dummy data
-const MajorChainPath = [
-  {
-    chainName: 'BITCOIN',
-    chainImage: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-    hdPath: 'm / 44’ / 0’ / 0’ / 0 / ${index}',
-  },
-  {
-    chainName: 'BITCOIN',
-    chainImage: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-    hdPath: 'm / 44’ / 0’ / 0’ / 0 / ${index}',
-  },
-  {
-    chainName: 'BITCOIN',
-    chainImage: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-    hdPath: 'm / 44’ / 0’ / 0’ / 0 / ${index}',
-  },
-];
-
 // TODO 훅폼 적용 필요
 type HdPathBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  currentHdPath: string;
-  onChangeHpPath?: (val: string) => void;
+  currentHdPathIndex: string;
+  onChangeHdPathIndex?: (val: string) => void;
 };
 
-export default function HdPathBottomSheet({ currentHdPath, onClose, onChangeHpPath, ...remainder }: HdPathBottomSheetProps) {
+export default function HdPathBottomSheet({ currentHdPathIndex, onClose, onChangeHdPathIndex, ...remainder }: HdPathBottomSheetProps) {
   const { t } = useTranslation();
+  const { flatChainList } = useChainList();
 
-  const [selectedHdPath, setSelectedHdPath] = useState(currentHdPath);
+  const { newAccountForm } = useSchema();
 
-  // NOTE 니모닉 복원시에는 제한 없음, 하지만 다른 경우에는 9까지만 가능
-  const errorMsg = (() => {
-    if (!selectedHdPath) {
-      return t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.emptyHdPath');
-    }
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm<HdPathIndexForm>({
+    resolver: joiResolver(newAccountForm),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+    defaultValues: {
+      hdPathIndex: currentHdPathIndex,
+    },
+  });
 
-    if (Number(selectedHdPath) > 10) {
-      return t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.invalidHdPathIndex');
-    }
-  })();
+  const { hdPathIndex } = watch();
+  const isButtonDisabled = !hdPathIndex;
 
-  const onHandleChangeHpPath = (val: string) => {
-    if (!val) {
-      onChangeHpPath?.(currentHdPath);
-    } else {
-      onChangeHpPath?.(val);
-    }
-  };
+  const majorNetworkIds = ['cosmos', 'bitcoin', 'ethereum'];
+  const majorNetwork = majorNetworkIds
+    .map((id) => flatChainList.find((chain) => chain.id === id))
+    .filter((chain): chain is CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain => chain !== undefined);
 
-  const onHandleClose = () => {
-    if (!selectedHdPath) {
-      setSelectedHdPath(currentHdPath);
-    }
+  const submit = async (data: HdPathIndexForm) => {
+    onChangeHdPathIndex?.(data.hdPathIndex);
+
+    reset(data);
     onClose?.({}, 'backdropClick');
   };
 
-  const confirm = () => {
-    onHandleChangeHpPath(selectedHdPath);
-    onHandleClose();
+  const onCloseHandler = () => {
+    onClose?.({}, 'backdropClick');
   };
 
   return (
-    <StyledBottomSheet {...remainder} onClose={onHandleClose}>
-      <Container>
+    <StyledBottomSheet {...remainder} onClose={onCloseHandler}>
+      <FormContainer onSubmit={handleSubmit(submit)}>
         <Header>
           <HeaderTitle>
             <Typography variant="h2_B">{t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.header')}</Typography>
           </HeaderTitle>
-          <StyledButton onClick={onHandleClose}>
+          <StyledButton onClick={onCloseHandler}>
             <Close24Icon />
           </StyledButton>
         </Header>
@@ -99,29 +89,32 @@ export default function HdPathBottomSheet({ currentHdPath, onClose, onChangeHpPa
           </DescriptionText>
           <StandardInput
             label={t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.lastHdPath')}
-            onChange={(e) => {
-              if (e.currentTarget.value && !isNaturalNumberRegex.test(e.currentTarget.value)) {
-                return;
-              }
-
-              setSelectedHdPath(e.currentTarget.value);
+            error={!!errors.hdPathIndex}
+            helperText={errors.hdPathIndex?.message}
+            type="number"
+            slotProps={{
+              input: {
+                ...register('hdPathIndex', {
+                  setValueAs: (v: string) => (v && isNumber(v) ? v : ''),
+                }),
+              },
             }}
-            value={selectedHdPath}
-            error={!!errorMsg}
-            helperText={errorMsg}
           />
 
           <ChainInfoTitle variant="b3_M">{t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.majorChains')}</ChainInfoTitle>
           <ChainInfoContainer>
-            {MajorChainPath.map((item) => (
-              <ChainPathInfo key={item.chainName} {...item} currentHdPathIndex={selectedHdPath} />
-            ))}
+            {majorNetwork.map((network) => {
+              const { name, image, id } = network || {};
+              const defaultHdPath = network?.accountTypes.find(({ is_default }) => is_default === null)?.hdPath || '';
+
+              return <ChainPathInfo key={id} chainName={name} chainImage={image || ''} fullHdPath={defaultHdPath} currentHdPathIndex={hdPathIndex} />;
+            })}
           </ChainInfoContainer>
-          <ConfirmButton onClick={confirm} disabled={!selectedHdPath}>
+          <ConfirmButton type="submit" disabled={isButtonDisabled}>
             {t('pages.account.restore-wallet.mnemonic.components.HdPathBottomSheet.index.confirm')}
           </ConfirmButton>
         </Body>
-      </Container>
+      </FormContainer>
     </StyledBottomSheet>
   );
 }

@@ -67,7 +67,7 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
                 setIsViewMnemonic(!isViewMnemonic);
               }}
             >
-              <MarginRightTypography variant="b2_M">{t('components.MnemonicViewer.index.seedPhrase')}</MarginRightTypography>
+              <MarginRightTypography variant="h4_B">{t('components.MnemonicViewer.index.seedPhrase')}</MarginRightTypography>
             </IconTextButton>
             <IconTextButton
               onClick={(event) => {
@@ -94,7 +94,7 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
                 setIsViewMnemonic(!isViewMnemonic);
               }}
             >
-              <MarginRightTypography variant="b2_M">{`${mnemonicWordCounts} ${t('components.MnemonicViewer.index.seedPhrase')}`}</MarginRightTypography>
+              <MarginRightTypography variant="h4_B">{`${mnemonicWordCounts} ${t('components.MnemonicViewer.index.seedPhrase')}`}</MarginRightTypography>
             </IconTextButton>
           </TopContainer>
         )}

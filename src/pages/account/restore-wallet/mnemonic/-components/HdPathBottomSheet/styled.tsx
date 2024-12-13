@@ -4,12 +4,11 @@ import { styled } from '@mui/material/styles';
 import BottomSheet from '@/components/common/BottomSheet';
 import Button from '@/components/common/Button';
 
-export const Container = styled('div')({
-  overflow: 'hidden',
+export const FormContainer = styled('form')({
   display: 'flex',
   flexDirection: 'column',
-
   height: '100%',
+  width: '100%',
 });
 
 export const Header = styled('div')(({ theme }) => ({

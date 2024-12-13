@@ -175,7 +175,7 @@ export default function Entry() {
                     setIsViewPrivateKey(!isViewPrivateKey);
                   }}
                 >
-                  <MarginRightTypography variant="b2_M">{t('pages.account.restore-wallet.privatekey.index.privateKey')}</MarginRightTypography>
+                  <MarginRightTypography variant="h4_B">{t('pages.account.restore-wallet.privatekey.index.privateKey')}</MarginRightTypography>
                 </IconTextButton>
               </TopContainer>
 
