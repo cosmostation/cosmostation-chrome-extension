@@ -14,6 +14,7 @@ import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewPrivateKey } from '@/pages/manage-account/view/privateKey/$accountId';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AccountImgContainer, MainContentBody, MainContentsContainer, MainContentTitleText, OptionButtonContainer } from './-styled';
@@ -73,6 +74,8 @@ export default function Entry({ accountId }: EntryProps) {
         <Button
           onClick={async () => {
             await removeAccount(accountId);
+
+            toastSuccess(t('pages.manage-account.detail.privateKey.account.entry.successDeleteAccount'));
             navigate({ to: SwitchWallet.to });
           }}
           variant="red"

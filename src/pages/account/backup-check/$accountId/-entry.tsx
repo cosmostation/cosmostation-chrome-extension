@@ -16,9 +16,9 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
-import { addAccountName } from '@/utils/accountNames';
 import { aesDecrypt } from '@/utils/crypto';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { addAccountName } from '@/utils/zustand/accountNames';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer } from './-styled';

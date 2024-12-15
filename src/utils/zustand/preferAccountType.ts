@@ -40,6 +40,23 @@ export const removePreferAccountType = async (accountId: string) => {
     }),
   );
 };
+export const removePreferAccountTypes = async (accountIds: string[]) => {
+  const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');
+
+  const updatedPreferAccountType = produce(storedPreferAccountType, (draft) => {
+    accountIds.forEach((id) => {
+      delete draft[id];
+    });
+  });
+
+  await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
+
+  useExtensionStorageStore.setState((currentState) =>
+    produce(currentState, (draft) => {
+      draft.preferAccountType = updatedPreferAccountType;
+    }),
+  );
+};
 
 export const updatePreferAccountType = async (accountId: string, preferAccountType: ChainToAccountTypeMap) => {
   const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');

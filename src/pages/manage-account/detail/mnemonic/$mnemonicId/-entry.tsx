@@ -119,6 +119,8 @@ export default function Entry({ mnemonicId }: EntryProps) {
         <Button
           onClick={async () => {
             await removeMnemonic(mnemonicId);
+
+            toastSuccess(t('pages.manage-account.detail.mnemonic.entry.successDeleteMnemonic'));
             navigate({ to: SwitchWallet.to });
           }}
           variant="red"

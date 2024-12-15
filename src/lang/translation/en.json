@@ -327,7 +327,8 @@
             "updateMnemonicNameSuccess": "Mnemonic name updated",
             "editMnemonicName": "Edit Mnemonic Name",
             "editMnemonicNameDescription": "Please enter a name for your mnemonic. You can change the mnemonic name at any time in the future",
-            "mnemonicName": "Mnemonic Name"
+            "mnemonicName": "Mnemonic Name",
+            "successDeleteMnemonic": "Delete Mnemonic Success"
           },
           "layout": {
             "header": "Wallet Detail"
@@ -347,7 +348,8 @@
               "viewPrivateKey": "View Private Key (Each Chain)",
               "viewPrivateKeyDescription": "Access private keys for each chain",
               "notBackedUp": "Not Backed Up",
-              "accountNameUpdated": "Account name updated"
+              "accountNameUpdated": "Account name updated",
+              "successDeleteAccount": "Delete Account Success"
             },
             "layout": {
               "header": "Account Detail"
@@ -359,7 +361,8 @@
             "entry": {
               "viewPrivateKey": "View My Private Key",
               "viewPrivateKeyDescription": "View Recovery Phrase",
-              "deleteAccount": "Delete Account"
+              "deleteAccount": "Delete Account",
+              "successDeleteAccount": "Delete Account Success"
             },
             "layout": {
               "header": "Wallet Detail"
@@ -523,17 +526,6 @@
     },
     "privateKeyForm": {
       "privateKey": "Please enter a valid private key"
-    }
-  },
-  "hooks": {
-    "useCurrentAccount": {
-      "setCurrentAccountError": "Fail to select account to current account",
-      "removeAccountError": "Fail to remove account",
-      "removeMnemonicSuccess": "Mnemonic removed successfully",
-      "removeMnemonicError": "Fail to remove mnemonic",
-      "removeAccountSuccess": "Account removed successfully",
-      "updateAccountNameError": "Fail to update account name",
-      "updateMnemonicNameError": "Fail to update mnemonic name"
     }
   }
 }

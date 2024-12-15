@@ -1,14 +1,13 @@
-import { useTranslation } from 'react-i18next';
-
 import type { Account, AccountWithName } from '@/types/account';
-import { toastError, toastSuccess } from '@/utils/toast';
-import { removePreferAccountType } from '@/utils/zustand/preferAccountType';
+import { removeMnemonicName } from '@/utils/mnemonicNames';
+import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
+import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
+import { removeInitAccountId, removeInitAccountIds } from '@/utils/zustand/initAccountIds';
+import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentAccount() {
-  const { t } = useTranslation();
-  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic, selectedAccountId, notBackedUpAccountIds, updateExtensionStorageStore } =
-    useExtensionStorageStore((state) => state);
+  const { accounts, accountNamesById, selectedAccountId, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -19,13 +18,9 @@ export function useCurrentAccount() {
   const currentAccountWithName = { ...currentAccount, name: currentAccountName };
 
   const setCurrentAccount = async (id: string) => {
-    try {
-      if (selectedAccountId === id) return;
+    if (selectedAccountId === id) return;
 
-      await updateExtensionStorageStore('selectedAccountId', id);
-    } catch {
-      toastError(t('hooks.useCurrentAccount.setCurrentAccountError'));
-    }
+    await updateExtensionStorageStore('selectedAccountId', id);
   };
 
   const addAccount = async (account: Account) => {
@@ -40,102 +35,66 @@ export function useCurrentAccount() {
   };
 
   const removeAccount = async (id: string) => {
-    try {
-      const encryptedRestoreString = accounts.find((acc) => acc.id === id)?.encryptedRestoreString;
-      const newAccounts = accounts.filter((acc) => acc.id !== id);
+    const encryptedRestoreString = accounts.find((acc) => acc.id === id)?.encryptedRestoreString;
+    const newAccounts = accounts.filter((acc) => acc.id !== id);
 
-      if (id === selectedAccountId) {
-        await updateExtensionStorageStore('selectedAccountId', newAccounts?.[0]?.id ?? '');
-      }
-
-      await updateExtensionStorageStore('accounts', newAccounts);
-
-      const deepCopiedAccountName = { ...accountNamesById };
-
-      delete deepCopiedAccountName[id];
-
-      await updateExtensionStorageStore('accountNamesById', deepCopiedAccountName);
-
-      if (!newAccounts.some((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === encryptedRestoreString)) {
-        const deepCopiedMnemonicNamesByHashedMnemonic = { ...mnemonicNamesByHashedMnemonic };
-
-        delete deepCopiedMnemonicNamesByHashedMnemonic[id];
-
-        await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', deepCopiedMnemonicNamesByHashedMnemonic);
-      }
-
-      if (notBackedUpAccountIds.includes(id)) {
-        await updateExtensionStorageStore(
-          'notBackedUpAccountIds',
-          notBackedUpAccountIds.filter((accountId) => accountId !== id),
-        );
-      }
-
-      await removePreferAccountType(id);
-
-      toastSuccess(t('hooks.useCurrentAccount.removeAccountSuccess'));
-
-      // TODO 어카운트 별 어드레스. 밸런스 삭제 로직 추가
-      // TODO initAccountIds 삭제 로직 추가
-    } catch {
-      toastError(t('hooks.useCurrentAccount.removeAccountError'));
+    if (id === selectedAccountId) {
+      await updateExtensionStorageStore('selectedAccountId', newAccounts?.[0]?.id ?? '');
     }
+
+    await updateExtensionStorageStore('accounts', newAccounts);
+
+    await removeAccountName(id);
+    await removeAccountFromNotBackedupList(id);
+    await removePreferAccountType(id);
+    await removeInitAccountId(id);
+
+    if (encryptedRestoreString && !newAccounts.some((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === encryptedRestoreString)) {
+      await removeMnemonicName(encryptedRestoreString);
+    }
+
+    await chrome.storage.local.remove([
+      `${id}-address`,
+      `${id}-balance-cosmos`,
+      `${id}-balance-evm`,
+      `${id}-balance-aptos`,
+      `${id}-balance-sui`,
+      `${id}-balance-erc20`,
+      `${id}-balance-cw20`,
+      `${id}-hidden-assetIds`,
+    ]);
   };
 
   const removeMnemonic = async (mnemonicId: string) => {
-    try {
-      const targetAccounts = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === mnemonicId);
-      const newAccounts = accounts.filter((account) => !targetAccounts.map(({ id }) => id).includes(account.id));
+    const targetAccounts = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === mnemonicId);
+    const targetAccountsIds = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === mnemonicId).map(({ id }) => id);
+    const updatedAccounts = accounts.filter((account) => !targetAccounts.map(({ id }) => id).includes(account.id));
 
-      if (!newAccounts.map(({ id }) => id).includes(selectedAccountId)) {
-        await updateExtensionStorageStore('selectedAccountId', newAccounts?.[0]?.id ?? '');
-      }
-
-      await updateExtensionStorageStore('accounts', newAccounts);
-
-      const deepCopiedAccountName = { ...accountNamesById };
-
-      targetAccounts.forEach((account) => {
-        delete deepCopiedAccountName[account.id];
-      });
-
-      await updateExtensionStorageStore('accountNamesById', deepCopiedAccountName);
-
-      const deepCopiedMnemonicNamesByHashedMnemonic = { ...mnemonicNamesByHashedMnemonic };
-
-      delete deepCopiedMnemonicNamesByHashedMnemonic[mnemonicId];
-
-      await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', deepCopiedMnemonicNamesByHashedMnemonic);
-
-      const newNotBackedUpAccountIds = notBackedUpAccountIds.filter((accountId) => newAccounts.map(({ id }) => id).includes(accountId));
-
-      await updateExtensionStorageStore('notBackedUpAccountIds', newNotBackedUpAccountIds);
-
-      // TODO 어카운트 별 어드레스. 밸런스 삭제 로직 추가
-      // TODO initAccountIds 삭제 로직 추가
-
-      toastSuccess(t('hooks.useCurrentAccount.removeMnemonicSuccess'));
-    } catch {
-      toastError(t('hooks.useCurrentAccount.removeMnemonicError'));
+    if (!updatedAccounts.map(({ id }) => id).includes(selectedAccountId)) {
+      await updateExtensionStorageStore('selectedAccountId', updatedAccounts?.[0]?.id ?? '');
     }
+
+    await updateExtensionStorageStore('accounts', updatedAccounts);
+
+    await removeMnemonicName(mnemonicId);
+    await removeAccountNames(targetAccountsIds);
+    await removeAccountFromNotBackedupLists(targetAccountsIds);
+    await removePreferAccountTypes(targetAccountsIds);
+    await removeInitAccountIds(targetAccountsIds);
+
+    targetAccounts.forEach(async ({ id }) => {
+      await chrome.storage.local.remove([
+        `${id}-address`,
+        `${id}-balance-cosmos`,
+        `${id}-balance-evm`,
+        `${id}-balance-aptos`,
+        `${id}-balance-sui`,
+        `${id}-balance-erc20`,
+        `${id}-balance-cw20`,
+        `${id}-hidden-assetIds`,
+      ]);
+    });
   };
-
-  // NOTE 유틸로 사용할 지 현재 위치에서 선언할 지 고려 필요.
-  // const updateAccountName = async (id: string, newAccountName: string) => {
-  //   try {
-  //     await updateExtensionStorageStore('accountNamesById', { ...accountNamesById, [id]: newAccountName });
-  //   } catch {
-  //     toastError(t('hooks.useCurrentAccount.updateAccountNameError'));
-  //   }
-  // };
-
-  // const updateMnemonicName = async (mnemonicId: string, newMnemonicName: string) => {
-  //   try {
-  //     await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', { ...mnemonicNamesByHashedMnemonic, [mnemonicId]: newMnemonicName });
-  //   } catch {
-  //     toastError(t('hooks.useCurrentAccount.updateMnemonicNameError'));
-  //   }
-  // };
 
   return {
     currentAccount: currentAccountWithName,

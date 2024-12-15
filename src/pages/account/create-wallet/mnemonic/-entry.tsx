@@ -17,10 +17,10 @@ import { Route as BackUpCheck } from '@/pages/account/backup-check/$accountId';
 import { Route as Init } from '@/pages/account/initial';
 import { Route as Dashboard } from '@/pages/index';
 import type { Account, AccountWithName } from '@/types/account';
-import { addAccountToNotBackedupList } from '@/utils/backupAccount';
 import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { addAccountToNotBackedupList } from '@/utils/zustand/backupAccount';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 

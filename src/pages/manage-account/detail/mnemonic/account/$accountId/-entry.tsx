@@ -17,8 +17,8 @@ import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
 import { Route as ViewMnemonic } from '@/pages/manage-account/view/mnemonic/$mnemonicId';
 import { Route as ViewMultiChainPrivateKey } from '@/pages/manage-account/view/multi-chain-priateKey/$accountId';
-import { updateAccountName } from '@/utils/accountNames';
 import { toastSuccess } from '@/utils/toast';
+import { updateAccountName } from '@/utils/zustand/accountNames';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -124,6 +124,8 @@ export default function Entry({ accountId }: EntryProps) {
         <Button
           onClick={async () => {
             await removeAccount(accountId);
+
+            toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.successDeleteAccount'));
             navigate({ to: SwitchWallet.to });
           }}
           variant="red"
