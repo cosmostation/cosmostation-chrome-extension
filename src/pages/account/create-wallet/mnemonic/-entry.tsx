@@ -81,15 +81,13 @@ export default function Entry() {
         await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
       }
 
-      const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
-
       await addAccountWithName(newAccount);
 
       await addPreferAccountType(newAccount.id);
 
       await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
         ...mnemonicNamesByHashedMnemonic,
-        [encryptedRestoreString]: `Mnemonic ${totalMnemonicAccountsCount + 1}`,
+        [encryptedRestoreString]: `Mnemonic ${Object.keys(mnemonicNamesByHashedMnemonic).length + 1}`,
       });
 
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });

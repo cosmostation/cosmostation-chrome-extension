@@ -187,14 +187,12 @@ export default function Entry() {
 
       const isMnemonicAlreadyRegistered = mnemonicNamesByHashedMnemonic[encryptedRestoreString];
 
-      const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
-
       await addPreferAccountType(newAccount.id);
 
       if (!isMnemonicAlreadyRegistered) {
         await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
           ...mnemonicNamesByHashedMnemonic,
-          [encryptedRestoreString]: `Mnemonic ${totalMnemonicAccountsCount + 1}`,
+          [encryptedRestoreString]: `Mnemonic ${Object.keys(mnemonicNamesByHashedMnemonic).length + 1}`,
         });
       }
 
