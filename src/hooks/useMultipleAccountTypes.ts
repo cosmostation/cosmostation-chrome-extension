@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { getMultipleAccountTypesChain } from '@/libs/account';
-import type { AccountAddress, ChainToAccountTypeMap } from '@/types/account';
+import { getMultipleAccountTypesChain } from '@/libs/accountType';
+import type { AccountAddress } from '@/types/account';
 
 import { useCurrentAccount } from './useCurrentAccount';
 
@@ -23,31 +22,12 @@ export function useMultipleAccountTypes({ accountId, config }: UseMultipleAccoun
     return getMultipleAccountTypesChain(param);
   };
 
-  const {
-    data: multipleAccountTypeWithAddress,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['multipleAccountTypes', param],
     queryFn: fetcher,
     staleTime: Infinity,
     ...config,
   });
 
-  const defaultPreferAccountTypes = useMemo(() => {
-    if (multipleAccountTypeWithAddress) {
-      const defaultAccountTypeMap = Object.entries(multipleAccountTypeWithAddress).reduce((result, [chain, accounts]) => {
-        const validAccount = accounts.find((account) => account.accountType.isDefault !== false);
-        if (validAccount) {
-          result[chain] = validAccount.accountType;
-        }
-        return result;
-      }, {} as ChainToAccountTypeMap);
-
-      return defaultAccountTypeMap;
-    }
-    return;
-  }, [multipleAccountTypeWithAddress]);
-
-  return { multipleAccountTypeWithAddress, defaultPreferAccountTypes, isLoading, error };
+  return { data, isLoading, error };
 }

@@ -50,10 +50,7 @@ export async function initExtensionLocalStorage() {
   // NOTE 이미 저장된 상태. 새 체인파람에 멀티 어카운트 타입이 감지가 됐는데 이게 스토리지에는 저장이 안되어있을때
   if (Object.keys(originStorage.preferAccountType).length > 0) {
     const filteredAccountTypes = Object.values(originStorage.paramsV11).filter(
-      (item) =>
-        item.params.chainlist_params?.is_support_extension_wallet &&
-        item.params.chainlist_params?.account_type &&
-        item.params.chainlist_params.account_type.length > 1,
+      (item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1,
     );
 
     const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.params.chainlist_params.api_name);
@@ -94,12 +91,7 @@ export async function initExtensionLocalStorage() {
   // NOTE accounts는 있지만 preferAccountType이 없는 경우
   if (originStorage.accounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
     const updatedPreferAccountType = Object.values(originStorage.paramsV11)
-      .filter(
-        (item) =>
-          item.params.chainlist_params?.is_support_extension_wallet &&
-          item.params.chainlist_params?.account_type &&
-          item.params.chainlist_params.account_type.length > 1,
-      )
+      .filter((item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1)
       .reduce((acc: ChainToAccountTypeMap, cur) => {
         const defaultAccountType = cur.params.chainlist_params.account_type?.find((type) => type.is_default !== false);
 

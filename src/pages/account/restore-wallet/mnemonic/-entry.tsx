@@ -23,6 +23,7 @@ import type { Account, AccountWithName } from '@/types/account';
 import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import HdPathBottomSheet from './-components/HdPathBottomSheet';
@@ -187,6 +188,8 @@ export default function Entry() {
       const isMnemonicAlreadyRegistered = mnemonicNamesByHashedMnemonic[encryptedRestoreString];
 
       const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
+
+      await addPreferAccountType(newAccount.id);
 
       if (!isMnemonicAlreadyRegistered) {
         await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {

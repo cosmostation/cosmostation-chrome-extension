@@ -4,6 +4,7 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
 import { useMultipleAccountTypes } from '@/hooks/useMultipleAccountTypes';
+import type { ChainToAccountTypeMap } from '@/types/account';
 import type { ChainAccountType } from '@/types/chain';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -13,7 +14,7 @@ import { CoinTypeSelectorContainer } from './styled';
 
 type CoinTypeSelectorProps = {
   accountId: string;
-  currentPreferAccountTypes: Record<string, ChainAccountType>;
+  currentPreferAccountTypes: ChainToAccountTypeMap;
   variant?: 'default' | 'filtered';
   onClickChainType: (id: string, accountType: ChainAccountType) => void;
 };
@@ -22,7 +23,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
   const { currency } = useExtensionStorageStore((state) => state);
 
   const { flatChainList } = useChainList();
-  const { multipleAccountTypeWithAddress } = useMultipleAccountTypes({ accountId });
+  const { data: multipleAccountTypeWithAddress } = useMultipleAccountTypes({ accountId });
   const { data: accountAllAssets } = useAccountAllAssets({ accountId });
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
 

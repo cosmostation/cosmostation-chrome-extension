@@ -19,6 +19,7 @@ import type { Account, AccountWithName, PrivateAccount } from '@/types/account';
 import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -131,6 +132,8 @@ export default function Entry() {
 
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
+
+      await addPreferAccountType(newAccount.id);
 
       if (!comparisonPasswordHash) {
         const comparisonPasswordHash = sha512(currentPassword!);

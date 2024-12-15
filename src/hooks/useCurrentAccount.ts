@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { Account, AccountWithName } from '@/types/account';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { removePreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentAccount() {
@@ -69,6 +70,8 @@ export function useCurrentAccount() {
           notBackedUpAccountIds.filter((accountId) => accountId !== id),
         );
       }
+
+      await removePreferAccountType(id);
 
       toastSuccess(t('hooks.useCurrentAccount.removeAccountSuccess'));
 

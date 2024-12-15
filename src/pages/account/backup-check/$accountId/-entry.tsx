@@ -105,10 +105,10 @@ export default function Entry({ accountId }: EntryProps) {
         to: Dashboard.to,
       });
 
-      toastSuccess('pages.account.backup-check.entry.setupSuccess');
+      toastSuccess(t('pages.account.backup-check.entry.setUpComplete'));
       reset();
     } catch {
-      toastError('pages.account.backup-check.entry.setupError');
+      toastError(t('pages.account.backup-check.entry.setupError'));
     }
   };
 

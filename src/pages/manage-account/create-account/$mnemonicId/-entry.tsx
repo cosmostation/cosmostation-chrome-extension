@@ -19,6 +19,7 @@ import type { AccountWithName } from '@/types/account';
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import { isNumber } from '@/utils/string';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -101,6 +102,8 @@ export default function Entry({ mnemonicId }: EntryProps) {
         };
 
         await addAccountWithName(newAccount);
+
+        await addPreferAccountType(newAccount.id);
 
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
