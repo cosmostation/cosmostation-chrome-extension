@@ -12,7 +12,7 @@ import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
-import { Route as Send } from '@/pages/wallet/send/$coinId';
+import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -149,7 +149,7 @@ export default function Entry() {
                 }}
                 onClick={() => {
                   navigate({
-                    to: Send.to,
+                    to: Receive.to,
                     params: {
                       coinId: getCoinId(coin.asset),
                     },

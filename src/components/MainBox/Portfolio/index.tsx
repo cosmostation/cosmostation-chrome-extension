@@ -8,7 +8,9 @@ import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { TEST_CHAIN_LIST } from '@/constants/test';
+import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   BodyBottomChipButtonContainer,
@@ -38,6 +40,8 @@ import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png'
 export default function PortFolio() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { currency } = useExtensionStorageStore((state) => state);
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
 
   const dummyChainList = TEST_CHAIN_LIST;
@@ -68,7 +72,7 @@ export default function PortFolio() {
           <BodyContainer>
             <BodyTopContainer>
               <TotalBalanceContainer>
-                <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency="usd" isDisableLeadingCurreny>
+                <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={currency} isDisableLeadingCurreny>
                   95000.000
                 </NumberTypo>
                 &nbsp;
@@ -93,7 +97,14 @@ export default function PortFolio() {
                 >
                   <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
                 </ChipButton>
-                <ChipButton variant="dark">
+                <ChipButton
+                  variant="dark"
+                  onClick={() => {
+                    navigate({
+                      to: SelectReceiveCoin.to,
+                    });
+                  }}
+                >
                   <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.receive')}</Typography>
                 </ChipButton>
               </BodyBottomChipButtonContainer>

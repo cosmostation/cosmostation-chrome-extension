@@ -97,7 +97,7 @@ export default function ChainListBottomSheet({
 
             return (
               <OptionButton
-                key={item.chainId}
+                key={String(item.chainId).concat(item.chainType).concat(item.id)}
                 isActive={isActive}
                 ref={isActive ? ref : undefined}
                 onSelectChain={(id) => {

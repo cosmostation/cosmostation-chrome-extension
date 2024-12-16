@@ -484,6 +484,27 @@
         "layout": {
           "header": "Select Coin"
         }
+      },
+      "receive": {
+        "entry": {
+          "search": "Search Crypto (Ex. BTC)",
+          "valueHighOrder": "Value High Order",
+          "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+        },
+        "layout": {
+          "header": "Select Coin"
+        },
+        "$coinId": {
+          "entry": {
+            "contract": "Contract",
+            "ibc": "IBC",
+            "denom": "Denom",
+            "copied": "Address successfully copied",
+            "addressDescription1": "Send",
+            "addressDescription2": "Network assets Only",
+            "myAddress": "My Address"
+          }
+        }
       }
     },
     "view": {

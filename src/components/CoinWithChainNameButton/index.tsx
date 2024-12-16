@@ -1,3 +1,5 @@
+import { shorterAddress } from '@/utils/string';
+
 import { ChainNameTypography, ContentsContainer, SymbolTypography } from './styled';
 import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
 import BaseCoinButton from '../common/BaseCoinButton';
@@ -21,7 +23,7 @@ export default function CoinWithChainNameButton({
 }: CoinWithChainNameButtonProps) {
   const resolvedSymbol = symbol || 'UNKNOWN';
   const resolvedChainName = chainName || 'UNKNOWN';
-  const resolvedAssetId = assetId || 'UNKNOWN';
+  const resolvedAssetId = assetId ? (assetId?.length > 15 ? shorterAddress(assetId, 16) : assetId) : 'UNKNOWN';
 
   return (
     <BaseCoinButton

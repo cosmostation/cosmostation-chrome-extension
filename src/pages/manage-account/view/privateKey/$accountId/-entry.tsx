@@ -74,18 +74,16 @@ export default function Entry({ accountId }: EntryProps) {
             <OutlinedInput multiline minRows={5} type={isViewPrivateKey ? 'text' : 'password'} hideViewIcon disabled value={decryptedPrivateKey} />
 
             <ControlInputButtonContainer>
-              {
-                <StyledIconTextButton
-                  leadingIcon={
-                    <IconContainer>
-                      <PasteIcon />
-                    </IconContainer>
-                  }
-                  onClick={copyToClipboard}
-                >
-                  <CopyText variant="b3_R">{t('pages.manage-account.view.privateKey.entry.copy')}</CopyText>
-                </StyledIconTextButton>
-              }
+              <StyledIconTextButton
+                leadingIcon={
+                  <IconContainer>
+                    <PasteIcon />
+                  </IconContainer>
+                }
+                onClick={copyToClipboard}
+              >
+                <CopyText variant="b3_R">{t('pages.manage-account.view.privateKey.entry.copy')}</CopyText>
+              </StyledIconTextButton>
             </ControlInputButtonContainer>
           </PrivateKeyViewerContainer>
         </Body>
