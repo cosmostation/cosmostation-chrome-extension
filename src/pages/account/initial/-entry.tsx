@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
-import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
 import TextButton from '@/components/common/TextButton';
@@ -18,10 +17,7 @@ export default function Entry() {
   const [isCheckTerms, setIsCheckTerms] = useState(false);
 
   return (
-    <>
-      <BaseBody>
-        <Container>splash screen</Container>
-      </BaseBody>
+    <Container>
       <BaseFooter>
         <>
           <TermsContainer>
@@ -45,6 +41,6 @@ export default function Entry() {
           </Button>
         </>
       </BaseFooter>
-    </>
+    </Container>
   );
 }

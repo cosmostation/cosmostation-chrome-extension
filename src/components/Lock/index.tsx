@@ -10,7 +10,7 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sha512 } from '@/utils/crypto/password';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { FormContainer, StyledInput } from './styled';
+import { FormContainer, RecoverPasswordTextButton, StyledInput, StyledInputContainer } from './styled';
 import type { PasswordForm } from './useSchema';
 import { useSchema } from './useSchema';
 
@@ -69,16 +69,21 @@ export default function Lock({ children }: LockProps) {
     return (
       <FormContainer onSubmit={handleSubmit(submit)}>
         <BaseBody>
-          <StyledInput
-            placeholder={t('components.Lock.index.enterPassword')}
-            type="password"
-            error={!!errors.password}
-            helperText={errors.password?.message}
-            inputRef={ref}
-            {...remainder}
-          />
+          <StyledInputContainer>
+            <StyledInput
+              placeholder={t('components.Lock.index.enterPassword')}
+              type="password"
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              inputRef={ref}
+              {...remainder}
+            />
+          </StyledInputContainer>
         </BaseBody>
         <BaseFooter>
+          <RecoverPasswordTextButton typoVarient="b2_M" variant="underline">
+            {t('components.Lock.index.forgotPassword')}
+          </RecoverPasswordTextButton>
           <Button type="submit" disabled={!isButtonEnabled}>
             {t('components.Lock.index.unlock')}
           </Button>

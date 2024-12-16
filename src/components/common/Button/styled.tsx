@@ -55,8 +55,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     },
 
     '&:disabled': {
-      backgroundColor: theme.palette.color.base600,
-      color: theme.palette.color.base1200,
+      backgroundColor: theme.palette.color.base300,
+      color: theme.palette.color.base700,
 
       cursor: 'default',
 

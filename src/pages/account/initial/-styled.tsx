@@ -2,15 +2,23 @@ import { styled } from '@mui/material/styles';
 
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 
-export const Container = styled('div')({
+import backgroungImg from '@/assets/images/backgroundImage/background.png';
+
+export const Container = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  width: '100%',
   height: '100%',
-});
+  width: '100%',
+  padding: '1.2rem',
+
+  boxSizing: 'border-box',
+
+  backgroundImage: `url(${backgroungImg})`,
+  backgroundSize: 'cover',
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  backgroundColor: theme.palette.common.black,
+}));
 
 export const TermsContainer = styled('div')({
   display: 'flex',
