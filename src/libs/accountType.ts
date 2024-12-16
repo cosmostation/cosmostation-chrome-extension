@@ -1,3 +1,5 @@
+import { produce } from 'immer';
+
 import type { AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
@@ -43,7 +45,11 @@ export async function getMultipleAccountTypesChain(id: string) {
   const mutlipleAccountTypesWithAddress = Object.entries(groupedAccountAddressesByChainId).reduce(
     (acc, [key, value]) => {
       const filteredCosmosAccountAddress = value.filter((item) => item.chainType === 'cosmos');
-      acc[key] = filteredCosmosAccountAddress;
+      acc[key] = filteredCosmosAccountAddress.map((item) => {
+        return produce(item, (draft) => {
+          draft.accountType.hdPath = draft.accountType.hdPath.replace('X', '${index}');
+        });
+      });
       return acc;
     },
     {} as Record<string, AccountAddress[]>,

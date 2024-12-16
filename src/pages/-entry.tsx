@@ -16,6 +16,7 @@ import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -45,19 +46,58 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [search, setsearch] = useState('');
-
   const { dashboardCoinSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
-
-  const { currentAccountAssets } = useAccountAssets();
-
-  console.log('🚀 ~ Entry ~ currentAccountAssets:', currentAccountAssets);
-
   // NOTE 디비에 저장할 것.
+  const [search, setsearch] = useState('');
+  const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['Crypto', 'NFTs'];
+
+  const { data: currentAccountAssets } = useAccountAssets();
+  // const { data: groupAssets } = useGroupAssets();
+
+  const coinList = currentAccountAssets?.flatAccountAssets || [];
+
+  // const groupedAssets = useMemo(() => {
+  //   // const sample = [
+  //   //   {
+  //   //     asset: {
+
+  //   //     }
+  //   //     isGroup: true,
+  //   //     totalDisplayAmount: '100'
+  //   //   }.{
+  //   //     asset: {
+
+  //   //     }
+  //   //     isGroup: false,
+  //   //     totalDisplayAmount: '100'
+  //   //   }
+  //   // ]
+
+  //   // const a = coinList.reduce((acc :{asset: Asset}, cur) => {
+
+  //   //   const asset = groupAssets?.groups[cur.asset.id];
+  //   //   if (!asset) return acc;
+  //   //   if(acc.)
+
+  //   //   const totalDisplayAmount = cur.balance;
+  //   //   return [...acc, { asset: asset[0], totalDisplayAmount }];
+  //   // }, [])
+
+  //   if (!groupAssets) return [];
+  //   const aaa = Object.values(groupAssets?.groups).map((group) => {
+  //     return group.map((asset) => {
+  //       return {
+  //         asset,
+  //         isGroup: true,
+  //         displayAmont: coinList.find((coin) => isSameCoin(coin.asset, asset))?.balance,
+  //       };
+  //     });
+  //   });
+  //   console.log('🚀 ~ aaa ~ aaa:', aaa);
+  // }, [coinList, groupAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -114,176 +154,29 @@ export default function Entry() {
                 </IconTextButton>
               </ManageCryptoContainer>
             </StickyTabPanelContentsContainer>
-
-            {/* NOTE 토큰 리스팅을 위한 컴포넌트 */}
             <CoinButtonWrapper>
-              <CoinWithMarketTrendButton
-                onClick={() => {
-                  navigate({
-                    to: CoinDetail.to,
-                    params: {
-                      coinId: 'FirstBitcoin',
-                    },
-                  });
-                }}
-                baseAmount="100"
-                symbol={'FirstBitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
-              <CoinWithMarketTrendButton
-                baseAmount="100"
-                symbol={'Bitcoin'}
-                coinImageProps={{
-                  imageURL: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
-                }}
-              />
+              {coinList.map((coin) => {
+                return (
+                  <CoinWithMarketTrendButton
+                    key={coin.chain.id + coin.asset.type}
+                    onClick={() => {
+                      navigate({
+                        to: CoinDetail.to,
+                        params: {
+                          coinId: getCoinId(coin.asset),
+                        },
+                      });
+                    }}
+                    baseAmount={coin.balance}
+                    symbol={coin.asset.symbol}
+                    decimals={coin.asset.decimals}
+                    coinGeckoId={coin.asset.coinGeckoId}
+                    coinImageProps={{
+                      imageURL: coin.asset.image,
+                    }}
+                  />
+                );
+              })}
             </CoinButtonWrapper>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>

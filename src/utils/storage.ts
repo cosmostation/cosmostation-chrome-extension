@@ -61,12 +61,12 @@ export async function initExtensionLocalStorage() {
       const newPreferAccountType: ChainToAccountTypeMap = {};
 
       notStoredNewMultiAccountTypes.forEach((item) => {
-        const aaaaaa = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
-        const defaultAccountType = aaaaaa?.find((type) => type.is_default !== false);
+        const newChainAccountType = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
+        const defaultAccountType = newChainAccountType?.find((type) => type.is_default !== false);
 
         if (defaultAccountType) {
           const type = {
-            hdPath: defaultAccountType.hd_path,
+            hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
             pubkeyStyle: defaultAccountType.pubkey_style,
             isDefault: defaultAccountType.is_default,
             pubKeyType: defaultAccountType.pubkey_type,
@@ -75,29 +75,29 @@ export async function initExtensionLocalStorage() {
         }
       });
 
-      const oldPreferAccountType = Object.values(originStorage.preferAccountType)[0];
-      const mergedPreferAccountType = { ...oldPreferAccountType, ...newPreferAccountType };
+      const updatedPreferAccountType = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
+        const oldPreferAccountType = originStorage.preferAccountType[cur.id];
+        const mergedPreferAccountType = { ...oldPreferAccountType, ...newPreferAccountType };
 
-      const aaa = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
         acc[cur.id] = mergedPreferAccountType;
         return acc;
       }, {});
 
-      await setExtensionLocalStorage('preferAccountType', aaa);
+      await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
     }
   }
 
   // NOTE 마이그레이션 용 로직
   // NOTE accounts는 있지만 preferAccountType이 없는 경우
   if (originStorage.accounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
-    const updatedPreferAccountType = Object.values(originStorage.paramsV11)
+    const defaultPreferAccountType = Object.values(originStorage.paramsV11)
       .filter((item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1)
       .reduce((acc: ChainToAccountTypeMap, cur) => {
         const defaultAccountType = cur.params.chainlist_params.account_type?.find((type) => type.is_default !== false);
 
         if (defaultAccountType) {
           const type = {
-            hdPath: defaultAccountType.hd_path,
+            hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
             pubkeyStyle: defaultAccountType.pubkey_style,
             isDefault: defaultAccountType.is_default,
             pubKeyType: defaultAccountType.pubkey_type,
@@ -109,12 +109,12 @@ export async function initExtensionLocalStorage() {
         return acc;
       }, {});
 
-    const aaa = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
-      acc[cur.id] = updatedPreferAccountType;
+    const updatedPreferAccountType = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
+      acc[cur.id] = defaultPreferAccountType;
       return acc;
     }, {});
 
-    await setExtensionLocalStorage('preferAccountType', aaa);
+    await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
   }
 }
 

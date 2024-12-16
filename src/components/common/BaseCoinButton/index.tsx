@@ -1,3 +1,7 @@
+import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import { times, toDisplayDenomAmount } from '@/utils/numbers';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+
 import { LeftContainer, RightContainer, RightDisplayAmountContainer, RightTextContainer, RightValueContainer, StyledButton } from './styled';
 import NumberTypo from '../NumberTypo';
 
@@ -11,10 +15,15 @@ export type BaseCoinButtonProps = {
   onClick?: () => void;
 };
 
-export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, leftComponent, onClick }: BaseCoinButtonProps) {
-  const displayAmount = String(Number(baseAmount) * decimals);
+export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coinGeckoId, leftComponent, onClick }: BaseCoinButtonProps) {
+  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+  const { currency } = useExtensionStorageStore((state) => state);
 
-  const value = '60000';
+  const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
+
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+
+  const value = times(displayAmount, chainPrice);
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>

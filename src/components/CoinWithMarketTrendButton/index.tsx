@@ -1,6 +1,8 @@
 import { Typography } from '@mui/material';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { ChangeRateContainer, ChevronIconContainer, CoinValueContainer, ContentsContainer, SymbolTypograpy, ValueContainer } from './styled';
 import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
@@ -15,13 +17,16 @@ type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
 };
 
 export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
-  const { baseAmount } = remainder;
+  const { coinGeckoId } = remainder;
+  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+  const { currency } = useExtensionStorageStore((state) => state);
 
-  const cap = 99999;
+  const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${currency}_24h_change`]) || 0;
 
   const trend = cap > 0 ? 'upward' : cap < 0 ? 'downward' : 'unchanged';
 
   const coinSymbol = symbol || 'UNKNOWN';
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
   return (
     <BaseCoinButton
@@ -32,7 +37,7 @@ export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...r
             <SymbolTypograpy variant="b2_M">{coinSymbol}</SymbolTypograpy>
             <CoinValueContainer>
               <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency="usd">
-                {baseAmount}
+                {String(chainPrice)}
               </NumberTypo>
               <ChangeRateContainer trend={trend}>
                 <ChevronIconContainer trend={trend}>
