@@ -459,6 +459,33 @@
             "header": "Verify Seed Phrase"
           }
         }
+      },
+      "reset-wallet": {
+        "components": {
+          "ResetBottomSheet": {
+            "index": {
+              "title": "Confirm Reset",
+              "description1": "To delete the Program, please enter the text",
+              "description1-1": " \"RESET\" ",
+              "description2": "You must know your mnemonic to recover your wallet before reset.",
+              "inputLabel": "Enter “RESET”",
+              "cancel": "Cancel",
+              "reset": "Reset"
+            }
+          }
+        },
+        "entry": {
+          "title": "Save Your Mnemonics",
+          "subTitle": "If you lose your password: Back up your mnemonic, reset your Cosmostation Extension, and start next.",
+          "description1": "The Cosmostation wallet does not store your password or mnemonic phrase.",
+          "description2": "If you lose your password, you can reset the program and restore your account using your backed-up mnemonic. However, if you lose your mnemonic, account recovery will be difficult.",
+          "description3": "Resetting the program will remove all registered accounts. After the reset, you can restore your accounts using your backed-up mnemonic.",
+          "resetWallet": "Reset Wallet",
+          "resetSuccess": "Reset Success"
+        },
+        "layout": {
+          "header": "Reset Wallet"
+        }
       }
     },
     "wallet": {
@@ -552,6 +579,13 @@
     },
     "privateKeyForm": {
       "privateKey": "Please enter a valid private key"
+    },
+    "resetForm": {
+      "reset": {
+        "any": {
+          "only": "Please enter the text 'RESET'."
+        }
+      }
     }
   }
 }

@@ -22,6 +22,11 @@ export const useExtensionSessionStorageStore = create<ExtensionSessionStorageSto
         }),
       );
     },
+    resetExtensionSessionStorageStore: async () => {
+      await setExtensionSessionStorage('password', null);
+
+      set(initialState);
+    },
   };
 });
 

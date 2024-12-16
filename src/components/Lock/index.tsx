@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { Route as ResetWallet } from '@/pages/manage-account/reset-wallet';
 import { sha512 } from '@/utils/crypto/password';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -20,6 +22,8 @@ type LockProps = {
 
 export default function Lock({ children }: LockProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const { currentPassword, setCurrentPassword } = useCurrentPassword();
   const { comparisonPasswordHash } = useExtensionStorageStore((state) => state);
 
@@ -81,7 +85,15 @@ export default function Lock({ children }: LockProps) {
           </StyledInputContainer>
         </BaseBody>
         <BaseFooter>
-          <RecoverPasswordTextButton typoVarient="b2_M" variant="underline">
+          <RecoverPasswordTextButton
+            typoVarient="b2_M"
+            variant="underline"
+            onClick={() => {
+              navigate({
+                to: ResetWallet.to,
+              });
+            }}
+          >
             {t('components.Lock.index.forgotPassword')}
           </RecoverPasswordTextButton>
           <Button type="submit" disabled={!isButtonEnabled}>

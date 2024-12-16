@@ -18,6 +18,7 @@ import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as WalletSendIndexImport } from './pages/wallet/send/index'
 import { Route as WalletReceiveIndexImport } from './pages/wallet/receive/index'
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
+import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
 import { Route as CoinDetailCoinIdIndexImport } from './pages/coin-detail/$coinId/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
@@ -82,6 +83,13 @@ const ManageAccountSwitchAccountIndexRoute =
   ManageAccountSwitchAccountIndexImport.update({
     id: '/manage-account/switch-account/',
     path: '/manage-account/switch-account/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAccountResetWalletIndexRoute =
+  ManageAccountResetWalletIndexImport.update({
+    id: '/manage-account/reset-wallet/',
+    path: '/manage-account/reset-wallet/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -293,6 +301,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAccountManageWalletAndAccountIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-account/reset-wallet/': {
+      id: '/manage-account/reset-wallet/'
+      path: '/manage-account/reset-wallet'
+      fullPath: '/manage-account/reset-wallet'
+      preLoaderRoute: typeof ManageAccountResetWalletIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/switch-account/': {
       id: '/manage-account/switch-account/'
       path: '/manage-account/switch-account'
@@ -441,6 +456,7 @@ export interface FileRoutesByFullPath {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
+  '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
@@ -472,6 +488,7 @@ export interface FileRoutesByTo {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
+  '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
@@ -504,6 +521,7 @@ export interface FileRoutesById {
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId/': typeof CoinDetailCoinIdIndexRoute
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
+  '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
   '/wallet/receive/': typeof WalletReceiveIndexRoute
   '/wallet/send/': typeof WalletSendIndexRoute
@@ -537,6 +555,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/coin-detail/$coinId'
     | '/manage-account/manage-wallet-and-account'
+    | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
     | '/wallet/receive'
     | '/wallet/send'
@@ -567,6 +586,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/coin-detail/$coinId'
     | '/manage-account/manage-wallet-and-account'
+    | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
     | '/wallet/receive'
     | '/wallet/send'
@@ -597,6 +617,7 @@ export interface FileRouteTypes {
     | '/account/set-password/'
     | '/coin-detail/$coinId/'
     | '/manage-account/manage-wallet-and-account/'
+    | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
     | '/wallet/receive/'
     | '/wallet/send/'
@@ -629,6 +650,7 @@ export interface RootRouteChildren {
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
   CoinDetailCoinIdIndexRoute: typeof CoinDetailCoinIdIndexRoute
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
+  ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
   WalletReceiveIndexRoute: typeof WalletReceiveIndexRoute
   WalletSendIndexRoute: typeof WalletSendIndexRoute
@@ -661,6 +683,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoinDetailCoinIdIndexRoute: CoinDetailCoinIdIndexRoute,
   ManageAccountManageWalletAndAccountIndexRoute:
     ManageAccountManageWalletAndAccountIndexRoute,
+  ManageAccountResetWalletIndexRoute: ManageAccountResetWalletIndexRoute,
   ManageAccountSwitchAccountIndexRoute: ManageAccountSwitchAccountIndexRoute,
   WalletReceiveIndexRoute: WalletReceiveIndexRoute,
   WalletSendIndexRoute: WalletSendIndexRoute,
@@ -713,6 +736,7 @@ export const routeTree = rootRoute
         "/account/set-password/",
         "/coin-detail/$coinId/",
         "/manage-account/manage-wallet-and-account/",
+        "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
         "/wallet/receive/",
         "/wallet/send/",
@@ -760,6 +784,9 @@ export const routeTree = rootRoute
     },
     "/manage-account/manage-wallet-and-account/": {
       "filePath": "manage-account/manage-wallet-and-account/index.tsx"
+    },
+    "/manage-account/reset-wallet/": {
+      "filePath": "manage-account/reset-wallet/index.tsx"
     },
     "/manage-account/switch-account/": {
       "filePath": "manage-account/switch-account/index.tsx"
