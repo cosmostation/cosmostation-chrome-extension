@@ -380,6 +380,10 @@
           "header": "Switch Account",
           "manage": "Manage",
           "addWallet": "Add Wallet"
+        },
+        "entry": {
+          "importPrivateKey": "Import Private Key",
+          "importPrivateKeyDescription": "Account will be displayed after importing with a private key"
         }
       },
       "mange-wallet-and-account": {

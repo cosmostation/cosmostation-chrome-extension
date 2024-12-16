@@ -1,18 +1,27 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
+import EmptyAsset from '@/components/EmptyAsset';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
 import PrivateKeyAccount from './-components/PrivateKeyAccount';
-import { StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
+import { EmptyAssetContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
+
+import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
 
 export default function Entry() {
+  const { t } = useTranslation();
   const { accounts } = useExtensionStorageStore((state) => state);
+  const { currentAccount } = useCurrentAccount();
 
-  const [tabValue, setTabValue] = useState(0);
+  const isMnemonicAccount = currentAccount.type === 'MNEMONIC';
+
+  const [tabValue, setTabValue] = useState(isMnemonicAccount ? 0 : 1);
   const tabLabels = ['Mnenmonic', 'Private Key'];
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
@@ -23,6 +32,8 @@ export default function Entry() {
     .filter((item) => item.type === 'MNEMONIC')
     .map((account) => account.encryptedRestoreString)
     .filter((value, index, self) => self.indexOf(value) === index);
+
+  const filteredPrivateKeyAccounts = accounts.filter((item) => item.type === 'PRIVATE_KEY');
 
   return (
     <BaseBody>
@@ -36,14 +47,32 @@ export default function Entry() {
         </StickyTabContainer>
         <StyledTabPanel value={tabValue} index={0}>
           <TabPanelContentsContainer>
-            {uniqueMnemonicRestoreString.map((item, i) => (
-              <MnemonicAccount key={i} mnemonicRestoreString={item} />
-            ))}
+            {uniqueMnemonicRestoreString.length > 0 ? (
+              uniqueMnemonicRestoreString.map((item, i) => <MnemonicAccount key={i} mnemonicRestoreString={item} />)
+            ) : (
+              <EmptyAssetContainer>
+                <EmptyAsset
+                  icon={<ImportPrivateKeyIcon />}
+                  title={t('pages.manage-account.switch-account.entry.importPrivateKey')}
+                  subTitle={t('pages.manage-account.switch-account.entry.importPrivateKeyDescription')}
+                />
+              </EmptyAssetContainer>
+            )}
           </TabPanelContentsContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
           <TabPanelContentsContainer>
-            <PrivateKeyAccount />
+            {filteredPrivateKeyAccounts.length > 0 ? (
+              <PrivateKeyAccount />
+            ) : (
+              <EmptyAssetContainer>
+                <EmptyAsset
+                  icon={<ImportPrivateKeyIcon />}
+                  title={t('pages.manage-account.switch-account.entry.importPrivateKey')}
+                  subTitle={t('pages.manage-account.switch-account.entry.importPrivateKeyDescription')}
+                />
+              </EmptyAssetContainer>
+            )}
           </TabPanelContentsContainer>
         </StyledTabPanel>
       </EdgeAligner>
