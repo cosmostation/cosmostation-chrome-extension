@@ -113,6 +113,7 @@ export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ th
 export const ChainImageContainer = styled(Image)({
   width: '2.2rem',
   height: '2.2rem',
+  paddingBottom: '0.5rem',
 });
 
 export const RightAdormentConatiner = styled('div')({

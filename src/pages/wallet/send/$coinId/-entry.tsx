@@ -11,8 +11,13 @@ import BalanceButton from '@/components/common/StandardInput/components/BalanceB
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
+import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useChainList } from '@/hooks/useChainList.ts';
+import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice.ts';
+import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, shorterAddress } from '@/utils/string.ts';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import {
   AddressBookButton,
@@ -33,41 +38,103 @@ type EntryProps = {
 };
 
 export default function Entry({ coinId }: EntryProps) {
-  console.log('🚀 ~ Entry ~ coinId:', coinId);
-
   const { t } = useTranslation();
 
+  const { currency } = useExtensionStorageStore((state) => state);
+  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+
   const { flatChainList } = useChainList();
+  const { data } = useAccountAssets();
 
-  const coinSymbol = 'USDT';
-  const coinDenom = 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v';
+  const parsedCoinId = parseCoinId(coinId);
+
+  const selectedCoinToSend = (() => {
+    if (!data) return undefined;
+
+    if (parsedCoinId.chainType === 'cosmos') {
+      const aggregatedCosmosAccountAssets = [...data.cosmosAccountAssets, ...data.cw20AccountAssets];
+
+      return aggregatedCosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+    }
+
+    if (parsedCoinId.chainType === 'evm') {
+      const aggregatedEVMAccountAssets = [...data.evmAccountAssets, ...data.erc20AccountAssets];
+
+      return aggregatedEVMAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+    }
+
+    if (parsedCoinId.chainType === 'sui') {
+      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+    }
+    if (parsedCoinId.chainType === 'aptos') {
+      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+    }
+
+    // TODO bitcoin...
+    return undefined;
+  })();
+
+  const coinImageURL = selectedCoinToSend?.asset.image || '';
+  const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
+
+  const coinSymbol = selectedCoinToSend?.asset.symbol || '';
+  const coinDenom = selectedCoinToSend?.asset.id || '';
   const shortCoinDenom = shorterAddress(coinDenom, 16);
-  const coinDecimal = 6;
-  const estimatedInputAmountValue = '10000';
+  const coinDecimal = selectedCoinToSend?.asset.decimals || 0;
 
+  const coinType = (() => {
+    if (selectedCoinToSend?.asset.type === 'erc20' || selectedCoinToSend?.asset.type === 'cw20') {
+      return t('pages.wallet.send.$coinId.entry.contract');
+    }
+
+    if (selectedCoinToSend?.asset.type === 'ibc') {
+      return t('pages.wallet.send.$coinId.entry.denom');
+    }
+
+    return '';
+  })();
+
+  const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+
+  const baseAvailableAmount = selectedCoinToSend?.balance || '0';
+  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
+
+  console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
+
+  // FIXME: 밸런스 그대로를 입력할 지 예상 가스비를 제외한 값을 맥스값으로 설정할 지 결정 필요.
   const maxAmount = '1000000000000';
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
+
+  const displaySendAmountPrice = sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0';
+
   const [inputMemo, setInputMemo] = useState('');
 
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
+  // TODO
+  // const recipientChainList =
   const [currentRecipientChainId, setCurrentRecipientChainId] = useState('');
   const currentRecipientChain = flatChainList.find((chain) => chain.id === currentRecipientChainId);
+
+  console.log('🚀 ~ Entry ~ currentRecipientChain:', currentRecipientChain);
 
   return (
     <>
       <BaseBody>
         <>
           <CoinContainer>
-            <CoinImage imageURL={currentRecipientChain?.image || ''} badgeImageURL={currentRecipientChain?.image || ''} />
+            <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
             <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.entry.send')}`}</CoinSymbolText>
-            <CoinDenomContainer>
-              <Typography variant="b4_R">{`${t('pages.wallet.send.$coinId.entry.contract')} :`}</Typography>
-              &nbsp;
-              <Typography variant="b3_M">{shortCoinDenom}</Typography>
-            </CoinDenomContainer>
+            {coinType && (
+              <CoinDenomContainer>
+                <Typography variant="b4_R">{`${coinType} :`}</Typography>
+                &nbsp;
+                <Typography variant="b3_M">{shortCoinDenom}</Typography>
+              </CoinDenomContainer>
+            )}
           </CoinContainer>
 
           <InputWrapper>
@@ -117,8 +184,8 @@ export default function Entry({ coinId }: EntryProps) {
                   endAdornment: (
                     <InputAdornment position="end">
                       <EstimatedValueTextContainer>
-                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency="usd" isApporximation>
-                          {estimatedInputAmountValue}
+                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency} isApporximation>
+                          {displaySendAmountPrice}
                         </NumberTypo>
                       </EstimatedValueTextContainer>
                     </InputAdornment>
@@ -126,11 +193,15 @@ export default function Entry({ coinId }: EntryProps) {
                 },
               }}
               rightBottomAdornment={
-                <BalanceButton
-                  onClick={() => {
-                    setSendDisplayAmount(maxAmount);
-                  }}
-                />
+                selectedCoinToSend && (
+                  <BalanceButton
+                    onClick={() => {
+                      setSendDisplayAmount(maxAmount);
+                    }}
+                    coin={selectedCoinToSend?.asset}
+                    balance={baseAvailableAmount}
+                  />
+                )
               }
             />
             <StandardInput
