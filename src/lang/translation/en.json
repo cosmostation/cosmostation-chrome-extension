@@ -578,6 +578,20 @@
       },
       "layout": {
         "header": "Setting"
+      },
+      "components": {
+        "LanguageBottomSheet": {
+          "components": {
+            "OptionButton": {
+              "index": {
+                "english": "English"
+              }
+            }
+          },
+          "index": {
+            "title": "Select Language"
+          }
+        }
       }
     }
   },
