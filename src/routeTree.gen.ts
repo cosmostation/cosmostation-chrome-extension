@@ -36,6 +36,7 @@ import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/accoun
 import { Route as AccountRestoreWalletCoinTypeSettingIndexImport } from './pages/account/restore-wallet/coin-type-setting/index'
 import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account/backup-check/$accountId/index'
+import { Route as WalletTxResultTxHashCoinIdIndexImport } from './pages/wallet/tx-result/$txHash/$coinId/index'
 import { Route as ManageAccountViewPrivateKeyAccountIdIndexImport } from './pages/manage-account/view/privateKey/$accountId/index'
 import { Route as ManageAccountViewMultiChainPriateKeyAccountIdIndexImport } from './pages/manage-account/view/multi-chain-priateKey/$accountId/index'
 import { Route as ManageAccountViewMnemonicMnemonicIdIndexImport } from './pages/manage-account/view/mnemonic/$mnemonicId/index'
@@ -204,6 +205,13 @@ const AccountBackupCheckAccountIdIndexRoute =
   AccountBackupCheckAccountIdIndexImport.update({
     id: '/account/backup-check/$accountId/',
     path: '/account/backup-check/$accountId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const WalletTxResultTxHashCoinIdIndexRoute =
+  WalletTxResultTxHashCoinIdIndexImport.update({
+    id: '/wallet/tx-result/$txHash/$coinId/',
+    path: '/wallet/tx-result/$txHash/$coinId/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -484,6 +492,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAccountViewPrivateKeyAccountIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/tx-result/$txHash/$coinId/': {
+      id: '/wallet/tx-result/$txHash/$coinId/'
+      path: '/wallet/tx-result/$txHash/$coinId'
+      fullPath: '/wallet/tx-result/$txHash/$coinId'
+      preLoaderRoute: typeof WalletTxResultTxHashCoinIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/detail/mnemonic/account/$accountId/': {
       id: '/manage-account/detail/mnemonic/account/$accountId/'
       path: '/manage-account/detail/mnemonic/account/$accountId'
@@ -535,6 +550,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/view/mnemonic/$mnemonicId': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   '/manage-account/view/multi-chain-priateKey/$accountId': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
+  '/wallet/tx-result/$txHash/$coinId': typeof WalletTxResultTxHashCoinIdIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   '/manage-account/detail/privateKey/account/$accountId': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -571,6 +587,7 @@ export interface FileRoutesByTo {
   '/manage-account/view/mnemonic/$mnemonicId': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   '/manage-account/view/multi-chain-priateKey/$accountId': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
+  '/wallet/tx-result/$txHash/$coinId': typeof WalletTxResultTxHashCoinIdIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   '/manage-account/detail/privateKey/account/$accountId': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -608,6 +625,7 @@ export interface FileRoutesById {
   '/manage-account/view/mnemonic/$mnemonicId/': typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   '/manage-account/view/multi-chain-priateKey/$accountId/': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   '/manage-account/view/privateKey/$accountId/': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
+  '/wallet/tx-result/$txHash/$coinId/': typeof WalletTxResultTxHashCoinIdIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId/': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   '/manage-account/detail/privateKey/account/$accountId/': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -646,6 +664,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/mnemonic/$mnemonicId'
     | '/manage-account/view/multi-chain-priateKey/$accountId'
     | '/manage-account/view/privateKey/$accountId'
+    | '/wallet/tx-result/$txHash/$coinId'
     | '/manage-account/detail/mnemonic/account/$accountId'
     | '/manage-account/detail/privateKey/account/$accountId'
   fileRoutesByTo: FileRoutesByTo
@@ -681,6 +700,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/mnemonic/$mnemonicId'
     | '/manage-account/view/multi-chain-priateKey/$accountId'
     | '/manage-account/view/privateKey/$accountId'
+    | '/wallet/tx-result/$txHash/$coinId'
     | '/manage-account/detail/mnemonic/account/$accountId'
     | '/manage-account/detail/privateKey/account/$accountId'
   id:
@@ -716,6 +736,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/mnemonic/$mnemonicId/'
     | '/manage-account/view/multi-chain-priateKey/$accountId/'
     | '/manage-account/view/privateKey/$accountId/'
+    | '/wallet/tx-result/$txHash/$coinId/'
     | '/manage-account/detail/mnemonic/account/$accountId/'
     | '/manage-account/detail/privateKey/account/$accountId/'
   fileRoutesById: FileRoutesById
@@ -753,6 +774,7 @@ export interface RootRouteChildren {
   ManageAccountViewMnemonicMnemonicIdIndexRoute: typeof ManageAccountViewMnemonicMnemonicIdIndexRoute
   ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute: typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   ManageAccountViewPrivateKeyAccountIdIndexRoute: typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
+  WalletTxResultTxHashCoinIdIndexRoute: typeof WalletTxResultTxHashCoinIdIndexRoute
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute: typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute: typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -801,6 +823,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute,
   ManageAccountViewPrivateKeyAccountIdIndexRoute:
     ManageAccountViewPrivateKeyAccountIdIndexRoute,
+  WalletTxResultTxHashCoinIdIndexRoute: WalletTxResultTxHashCoinIdIndexRoute,
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute:
     ManageAccountDetailMnemonicAccountAccountIdIndexRoute,
   ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute:
@@ -848,6 +871,7 @@ export const routeTree = rootRoute
         "/manage-account/view/mnemonic/$mnemonicId/",
         "/manage-account/view/multi-chain-priateKey/$accountId/",
         "/manage-account/view/privateKey/$accountId/",
+        "/wallet/tx-result/$txHash/$coinId/",
         "/manage-account/detail/mnemonic/account/$accountId/",
         "/manage-account/detail/privateKey/account/$accountId/"
       ]
@@ -944,6 +968,9 @@ export const routeTree = rootRoute
     },
     "/manage-account/view/privateKey/$accountId/": {
       "filePath": "manage-account/view/privateKey/$accountId/index.tsx"
+    },
+    "/wallet/tx-result/$txHash/$coinId/": {
+      "filePath": "wallet/tx-result/$txHash/$coinId/index.tsx"
     },
     "/manage-account/detail/mnemonic/account/$accountId/": {
       "filePath": "manage-account/detail/mnemonic/account/$accountId/index.tsx"
