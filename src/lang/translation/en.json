@@ -583,6 +583,26 @@
             "header": "Swap"
           }
         }
+      },
+      "tx-result": {
+        "$txHash": {
+          "$coinId": {
+            "entry": {
+              "txSuccess": "Transaction Success",
+              "goToExplorer": "Go to Explorer",
+              "addAddresstoBook": "Is this a frequently used address?",
+              "addToAddress": "Add to address",
+              "confirm": "Confirm"
+            }
+          }
+        },
+        "$tx-hash": {
+          "$coin-id": {
+            "layout": {
+              "header": "Transaction Result"
+            }
+          }
+        }
       }
     },
     "view": {
