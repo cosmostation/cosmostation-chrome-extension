@@ -613,6 +613,22 @@
             }
           }
         }
+      },
+      "change-password": {
+        "entry": {
+          "success": "Password changed successfully",
+          "title": "Set Wallet Password",
+          "subTitle": "Protects important information within the wallet and is required each time you access the wallet",
+          "currentPassword": "Current Password",
+          "newPassword": "New Password",
+          "confirmNewPassword": "Confirm New Password",
+          "caution": "Caution",
+          "cautionDescription": "If you forget your password, you will not be able to access your wallet. Please write down your password and keep it in a safe place.",
+          "submit": "Submit"
+        },
+        "layout": {
+          "header": "Change Password"
+        }
       }
     }
   },
@@ -647,6 +663,18 @@
       "reset": {
         "any": {
           "only": "Please enter the text 'RESET'."
+        }
+      }
+    },
+    "changePasswordForm": {
+      "password": {
+        "any": {
+          "only": "The entered password does not match the current password."
+        }
+      },
+      "repeatPassword": {
+        "any": {
+          "only": "The password confirmation does not match."
         }
       }
     }

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import { Route as ChangePassword } from '@/pages/general-setting/change-password';
 
 import CurrencyBottomSheet from './-components/CurrencyBottomSheet';
 import LanguageBottomSheet from './-components/LanguageBottomSheet';
@@ -20,6 +22,7 @@ import PriceChangeColorIcon from '@/assets/images/icons/PriceChangeColor28.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [isOpenLanguageBottomSheet, setIsOpenLanguageBottomSheet] = useState(false);
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
@@ -45,6 +48,11 @@ export default function Entry() {
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.backupWalletDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: ChangePassword.to,
+                    });
+                  }}
                   leftContent={
                     <OptionButtonIconContainer>
                       <ChangePasswordIcon />

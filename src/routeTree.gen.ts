@@ -21,6 +21,7 @@ import { Route as WalletReceiveIndexImport } from './pages/wallet/receive/index'
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
+import { Route as GeneralSettingChangePasswordIndexImport } from './pages/general-setting/change-password/index'
 import { Route as CoinDetailCoinIdIndexImport } from './pages/coin-detail/$coinId/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
@@ -104,6 +105,13 @@ const ManageAccountManageWalletAndAccountIndexRoute =
   ManageAccountManageWalletAndAccountIndexImport.update({
     id: '/manage-account/manage-wallet-and-account/',
     path: '/manage-account/manage-wallet-and-account/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const GeneralSettingChangePasswordIndexRoute =
+  GeneralSettingChangePasswordIndexImport.update({
+    id: '/general-setting/change-password/',
+    path: '/general-setting/change-password/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -308,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoinDetailCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/general-setting/change-password/': {
+      id: '/general-setting/change-password/'
+      path: '/general-setting/change-password'
+      fullPath: '/general-setting/change-password'
+      preLoaderRoute: typeof GeneralSettingChangePasswordIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/manage-wallet-and-account/': {
       id: '/manage-account/manage-wallet-and-account/'
       path: '/manage-account/manage-wallet-and-account'
@@ -470,6 +485,7 @@ export interface FileRoutesByFullPath {
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
+  '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
@@ -503,6 +519,7 @@ export interface FileRoutesByTo {
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
+  '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
@@ -537,6 +554,7 @@ export interface FileRoutesById {
   '/account/initial/': typeof AccountInitialIndexRoute
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId/': typeof CoinDetailCoinIdIndexRoute
+  '/general-setting/change-password/': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
@@ -572,6 +590,7 @@ export interface FileRouteTypes {
     | '/account/initial'
     | '/account/set-password'
     | '/coin-detail/$coinId'
+    | '/general-setting/change-password'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
@@ -604,6 +623,7 @@ export interface FileRouteTypes {
     | '/account/initial'
     | '/account/set-password'
     | '/coin-detail/$coinId'
+    | '/general-setting/change-password'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
@@ -636,6 +656,7 @@ export interface FileRouteTypes {
     | '/account/initial/'
     | '/account/set-password/'
     | '/coin-detail/$coinId/'
+    | '/general-setting/change-password/'
     | '/manage-account/manage-wallet-and-account/'
     | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
@@ -670,6 +691,7 @@ export interface RootRouteChildren {
   AccountInitialIndexRoute: typeof AccountInitialIndexRoute
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
   CoinDetailCoinIdIndexRoute: typeof CoinDetailCoinIdIndexRoute
+  GeneralSettingChangePasswordIndexRoute: typeof GeneralSettingChangePasswordIndexRoute
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
@@ -703,6 +725,8 @@ const rootRouteChildren: RootRouteChildren = {
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
   CoinDetailCoinIdIndexRoute: CoinDetailCoinIdIndexRoute,
+  GeneralSettingChangePasswordIndexRoute:
+    GeneralSettingChangePasswordIndexRoute,
   ManageAccountManageWalletAndAccountIndexRoute:
     ManageAccountManageWalletAndAccountIndexRoute,
   ManageAccountResetWalletIndexRoute: ManageAccountResetWalletIndexRoute,
@@ -758,6 +782,7 @@ export const routeTree = rootRoute
         "/account/initial/",
         "/account/set-password/",
         "/coin-detail/$coinId/",
+        "/general-setting/change-password/",
         "/manage-account/manage-wallet-and-account/",
         "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
@@ -807,6 +832,9 @@ export const routeTree = rootRoute
     },
     "/coin-detail/$coinId/": {
       "filePath": "coin-detail/$coinId/index.tsx"
+    },
+    "/general-setting/change-password/": {
+      "filePath": "general-setting/change-password/index.tsx"
     },
     "/manage-account/manage-wallet-and-account/": {
       "filePath": "manage-account/manage-wallet-and-account/index.tsx"
