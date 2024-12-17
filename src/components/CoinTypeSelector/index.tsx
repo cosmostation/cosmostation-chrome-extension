@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
-import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useMultipleAccountTypes } from '@/hooks/useMultipleAccountTypes';
 import type { ChainToAccountTypeMap } from '@/types/account';
 import type { ChainAccountType } from '@/types/chain';
@@ -25,7 +25,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
   const { flatChainList } = useChainList();
   const { data: multipleAccountTypeWithAddress } = useMultipleAccountTypes({ accountId });
   const { data: accountAllAssets } = useAccountAllAssets({ accountId });
-  const { data: coinGeckoData } = useCoinGeckoPriceSWR();
+  const { data: coinGeckoData } = useCoinGeckoPrice();
 
   const mappedMultipleAccountTypes = useMemo(() => {
     if (multipleAccountTypeWithAddress && flatChainList) {

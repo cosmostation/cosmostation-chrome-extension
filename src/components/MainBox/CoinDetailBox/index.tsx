@@ -71,16 +71,16 @@ export default function CoinDetailBox({ testCoinId }: CoinDetailBoxProps) {
               leadingIcon={<StakeIcon />}
               direction="vertical"
             >
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.send')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.receive')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.vote')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>
         }

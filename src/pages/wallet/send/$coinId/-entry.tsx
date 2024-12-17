@@ -13,7 +13,7 @@ import Fee from '@/components/Fee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useChainList } from '@/hooks/useChainList.ts';
-import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice.ts';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, shorterAddress } from '@/utils/string.ts';
@@ -41,7 +41,7 @@ export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
 
   const { currency } = useExtensionStorageStore((state) => state);
-  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { flatChainList } = useChainList();
   const { data } = useAccountAssets();

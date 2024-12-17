@@ -1,4 +1,4 @@
-import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -16,7 +16,7 @@ export type BaseCoinButtonProps = {
 };
 
 export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coinGeckoId, leftComponent, onClick }: BaseCoinButtonProps) {
-  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
   const displayAmount = toDisplayDenomAmount(baseAmount, decimals);

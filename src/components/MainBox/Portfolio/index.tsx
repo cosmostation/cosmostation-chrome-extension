@@ -10,6 +10,7 @@ import NumberTypo from '@/components/common/NumberTypo';
 import { TEST_CHAIN_LIST } from '@/constants/test';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
+import { Route as SelectSwapCoin } from '@/pages/wallet/swap';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -114,16 +115,24 @@ export default function PortFolio() {
         bottom={
           <BottomButtonContainer>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.stake')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton
+              leadingIcon={<StakeIcon />}
+              direction="vertical"
+              onClick={() => {
+                navigate({
+                  to: SelectSwapCoin.to,
+                });
+              }}
+            >
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.buy')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
-            </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.setting')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.dapp')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>
         }

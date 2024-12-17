@@ -1,8 +1,7 @@
 import { Container } from './styled';
 
-// TODO React.node로 변경
 type BaseBodyProps = {
-  children?: JSX.Element;
+  children?: React.ReactNode;
 };
 
 export default function BaseBody({ children }: BaseBodyProps) {

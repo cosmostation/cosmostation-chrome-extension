@@ -9,18 +9,25 @@
       "Portfolio": {
         "index": {
           "totalValue": "My Total Value",
-          "setting": "Setting",
           "allNetwork": "All Network",
           "send": "Send",
           "receive": "Receive",
-          "history": "History"
+          "history": "History",
+          "stake": "Stake",
+          "swap": "Swap",
+          "buy": "Buy",
+          "dapp": "Dapp"
         }
       },
       "CoinOverview": {
         "index": {
           "Overview": "Overview",
           "in": "In",
-          "networks": "Networks"
+          "networks": "Networks",
+          "send": "Send",
+          "receive": "Receive",
+          "swap": "Swap",
+          "vote": "Vote"
         }
       }
     },
@@ -540,6 +547,37 @@
             "addressDescription1": "Send",
             "addressDescription2": "Network assets Only",
             "myAddress": "My Address"
+          }
+        }
+      },
+      "swap": {
+        "layout": {
+          "header": "Select Coin"
+        },
+        "$coinId": {
+          "components": {
+            "CoinInputBox": {
+              "index": {
+                "payAmount": "Pay Amount"
+              }
+            },
+            "CoinOutputBox": {
+              "index": {
+                "minReceived": "Min Received"
+              }
+            }
+          },
+          "entry": {
+            "slippage": "Slippage",
+            "exchageRate": "Exchange Rate",
+            "provider": "Provider",
+            "swapVenue": "Swap Venue",
+            "sendReview": "Confirm Swap",
+            "sendReviewSub": "Are you sure you want to proceed with the swap? \nThis action cannot be undone once completed.",
+            "swap": "Swap"
+          },
+          "layout": {
+            "header": "Swap"
           }
         }
       }

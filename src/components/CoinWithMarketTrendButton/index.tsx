@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 
 import NumberTypo from '@/components/common/NumberTypo';
-import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { ChangeRateContainer, ChevronIconContainer, CoinValueContainer, ContentsContainer, SymbolTypograpy, ValueContainer } from './styled';
@@ -18,7 +18,7 @@ type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
 
 export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
   const { coinGeckoId } = remainder;
-  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
   const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${currency}_24h_change`]) || 0;

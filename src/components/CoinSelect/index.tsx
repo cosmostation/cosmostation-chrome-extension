@@ -8,7 +8,7 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useChainList } from '@/hooks/useChainList';
-import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
@@ -30,7 +30,7 @@ type CoinSelectProps = {
 export default function CoinSelect({ chainList, coinList, onSelectCoin }: CoinSelectProps) {
   const { t } = useTranslation();
 
-  const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
   const { flatChainList } = useChainList();

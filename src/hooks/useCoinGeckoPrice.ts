@@ -7,7 +7,7 @@ import type { CoinGeckoPriceResponse, SimplePrice } from '@/types/coinGecko';
 import { get } from '@/utils/axios';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-export function useCoinGeckoPriceSWR(config?: UseQueryOptions<CoinGeckoPriceResponse>) {
+export function useCoinGeckoPrice(config?: UseQueryOptions<CoinGeckoPriceResponse>) {
   const { currency } = useExtensionStorageStore((state) => state);
 
   const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/prices?currency=${currency}`;
