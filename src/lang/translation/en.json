@@ -116,6 +116,13 @@
         "accountName": "Account Name",
         "setUpComplete": "Set Up Complete"
       }
+    },
+    "SetttingPopover": {
+      "index": {
+        "setting": "Setting",
+        "manageDapps": "Manage Dapps",
+        "lockWallet": "Lock Wallet"
+      }
     }
   },
   "pages": {
@@ -550,6 +557,27 @@
         "entry": {
           "searchPlaceholder": "Search Network (Ex. Bitcoin)"
         }
+      }
+    },
+    "general-setting": {
+      "entry": {
+        "security": "Security",
+        "backupWallet": "Back Up Wallet",
+        "backupWalletDescription": "Back up your wallet to prevent loss of assets",
+        "changePassword": "Change Password",
+        "changePasswordDescription": "Change your wallet password",
+        "setAutoLock": "Set Auto Lock",
+        "setAutoLockDescription": "Set the time to automatically lock the wallet",
+        "preference": "Preference",
+        "language": "Language",
+        "languageDescription": "Select the language to use",
+        "currency": "Currency",
+        "currencyDescription": "Select the currency to use",
+        "priceChangeColor": "Price Change Color",
+        "priceChangeColorDescription": "Select the color of the price change"
+      },
+      "layout": {
+        "header": "Setting"
       }
     }
   },
