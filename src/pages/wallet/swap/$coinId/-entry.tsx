@@ -23,12 +23,15 @@ import {
   CoinBoxContainer,
   CoinBoxDivider,
   Divider,
+  FlipCoinButton,
   InformAmountSpan,
   InformContainer,
   SlippageTextButton,
   SwapInfoContainer,
   SwapInfoRowContainer,
 } from './-styled.tsx';
+
+import FlipIcon from '@/assets/images/icons/Flip18.svg';
 
 type EntryProps = {
   coinId: string;
@@ -175,6 +178,9 @@ export default function Entry({ coinId }: EntryProps) {
               setCurrentToCoinId(coinId);
             }}
           />
+          <FlipCoinButton>
+            <FlipIcon />
+          </FlipCoinButton>
         </CoinBoxContainer>
         <InformContainer>
           <InformationPanel
