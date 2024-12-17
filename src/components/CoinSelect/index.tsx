@@ -9,6 +9,7 @@ import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPriceSWR } from '@/hooks/useCoinGeckoPrice';
+import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -22,10 +23,11 @@ import SearchIcon from '@/assets/images/icons/Search18.svg';
 
 type CoinSelectProps = {
   chainList?: Chain[];
+  coinList?: FlatAccountAssets[];
   onSelectCoin: (coinId: string) => void;
 };
 
-export default function CoinSelect({ chainList, onSelectCoin }: CoinSelectProps) {
+export default function CoinSelect({ chainList, coinList, onSelectCoin }: CoinSelectProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPriceSWR();
@@ -42,6 +44,7 @@ export default function CoinSelect({ chainList, onSelectCoin }: CoinSelectProps)
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
 
   const baseChainList = chainList || flatChainList;
+  const baseCoinList = coinList || data?.flatAccountAssets;
 
   const currentSelectedChain = baseChainList.find((chain) => chain.id === currentSelectedChainId);
 
@@ -49,7 +52,7 @@ export default function CoinSelect({ chainList, onSelectCoin }: CoinSelectProps)
 
   const computedAssetValues = useMemo(() => {
     return (
-      data?.flatAccountAssets.map((item) => {
+      baseCoinList?.map((item) => {
         const displayAmount = toDisplayDenomAmount(item.balance, item.asset.decimals);
 
         const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
@@ -62,7 +65,7 @@ export default function CoinSelect({ chainList, onSelectCoin }: CoinSelectProps)
         };
       }) || []
     );
-  }, [coinGeckoPrice, currency, data?.flatAccountAssets]);
+  }, [baseCoinList, coinGeckoPrice, currency]);
 
   const sortedAssets = computedAssetValues.sort((a, b) => {
     if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
