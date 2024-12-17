@@ -87,7 +87,7 @@ export default function Entry({ accountId }: EntryProps) {
 
                 return (
                   <PrivateKeyAccordion
-                    key={item.chain.id}
+                    key={item.chain.id.concat(item.chain.chainType).concat(item.id)}
                     name={item.chain.name}
                     image={item.chain.image}
                     hdPath={resolvedHdPath}

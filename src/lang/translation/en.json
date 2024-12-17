@@ -123,6 +123,13 @@
         "manageDapps": "Manage Dapps",
         "lockWallet": "Lock Wallet"
       }
+    },
+    "CoinSelect": {
+      "index": {
+        "searchPlaceholder": "Search Crypto (Ex. BTC)",
+        "valueHighOrder": "Value High Order",
+        "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+      }
     }
   },
   "pages": {
@@ -516,21 +523,11 @@
             "denom": "Denom"
           }
         },
-        "entry": {
-          "search": "Search Crypto (Ex. BTC)",
-          "valueHighOrder": "Value High Order",
-          "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
-        },
         "layout": {
           "header": "Select Coin"
         }
       },
       "receive": {
-        "entry": {
-          "search": "Search Crypto (Ex. BTC)",
-          "valueHighOrder": "Value High Order",
-          "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
-        },
         "layout": {
           "header": "Select Coin"
         },

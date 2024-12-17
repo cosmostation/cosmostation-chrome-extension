@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import type { Chain } from '@/types/chain';
@@ -36,11 +35,10 @@ export default function ChainListBottomSheet({
   const ref = useRef<HTMLButtonElement>(null);
 
   const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search, 300);
 
   const AllNetworkOptionId = '';
 
-  const filteredChainList = chainList?.filter((chain) => chain.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+  const filteredChainList = chainList?.filter((chain) => chain.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
 
   const handleClose = () => {
     setSearch('');
