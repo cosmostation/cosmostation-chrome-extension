@@ -31,7 +31,6 @@ export default function Entry() {
   const { currency } = useExtensionStorageStore((state) => state);
 
   const { flatChainList } = useChainList();
-  // FIXME 60패스를 선택했을떄 카바의 asset이 decimal이 6으로 잡혀서 실 어마운트 계산에 오류가 있음.
   // FIXME 60패스의 이더민트 계열 네이티브 코인들에서 중복되는 코인들이 있음.
   const { data } = useAccountAssets();
 

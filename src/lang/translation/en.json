@@ -512,7 +512,8 @@
             "amount": "Amount",
             "memo": "Memo (Option)",
             "sendReview": "Confirm Send",
-            "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed."
+            "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+            "denom": "Denom"
           }
         },
         "entry": {
@@ -584,12 +585,7 @@
           "components": {
             "OptionButton": {
               "index": {
-                "english": "English",
-                "us": "__STRING_NOT_TRANSLATED__",
-                "kr": "__STRING_NOT_TRANSLATED__",
-                "jp": "__STRING_NOT_TRANSLATED__",
-                "cn": "__STRING_NOT_TRANSLATED__",
-                "eu": "__STRING_NOT_TRANSLATED__"
+                "english": "English"
               }
             }
           },

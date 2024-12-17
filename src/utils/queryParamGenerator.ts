@@ -1,7 +1,6 @@
 import type { Account, MnemonicAccount } from '@/types/account';
-import type { AssetBase } from '@/types/asset';
+import type { AssetBase, AssetId } from '@/types/asset';
 
-// NOTE url query param에 넘겨지는 mnemonicId를 가져오는 함수
 export function getMnemonicId(account: Account): account is MnemonicAccount {
   return 'encryptedRestoreString' in account;
 }
@@ -12,7 +11,7 @@ export function getCoinId(coinAsset: AssetBase) {
 
 export function parseCoinId(coinId: string) {
   const [id, chainId, chainType] = coinId.split('-');
-  return { id, chainId, chainType };
+  return { id, chainId, chainType } as AssetId;
 }
 
 export function isMatchingCoinId(baseCoin: AssetBase, targetCoinId: string) {
