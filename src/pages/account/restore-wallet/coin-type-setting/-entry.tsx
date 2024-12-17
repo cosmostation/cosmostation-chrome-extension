@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -90,8 +91,8 @@ export default function Entry() {
         <Body>
           <InformationPanel
             varitant="info"
-            titleText={t('pages.account.restore-wallet.coin-type-setting.entry.infoTitle')}
-            bodyText={t('pages.account.restore-wallet.coin-type-setting.entry.infoBody')}
+            title={<Typography variant="b3_M">{t('pages.account.restore-wallet.coin-type-setting.entry.infoTitle')}</Typography>}
+            body={<Typography variant="b4_R_Multiline">{t('pages.account.restore-wallet.coin-type-setting.entry.infoBody')}</Typography>}
           />
           <CoinTypeSelector
             accountId={accountId}

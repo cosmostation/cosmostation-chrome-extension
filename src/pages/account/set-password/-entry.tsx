@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -87,8 +88,8 @@ export default function Entry() {
             <CautionContainer>
               <InformationPanel
                 varitant="caution"
-                titleText={t('pages.account.set-password.index.caution')}
-                bodyText={t('pages.account.set-password.index.cautionDescription')}
+                title={<Typography variant="b3_M">{t('pages.account.set-password.index.caution')}</Typography>}
+                body={<Typography variant="b4_R_Multiline">{t('pages.account.set-password.index.cautionDescription')}</Typography>}
               />
             </CautionContainer>
             <Button type="submit" disabled={!isButtonEnabled}>

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
@@ -8,6 +9,7 @@ import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import Fee from '@/components/Fee';
+import InformationPanel from '@/components/InformationPanel/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
@@ -17,7 +19,16 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import CoinInputBox from './-components/CoinInputBox/index.tsx';
 import CoinOutputBox from './-components/CoinOutputBox/index.tsx';
-import { CoinBoxContainer, CoinBoxDivider, Divider, SlippageTextButton, SwapInfoContainer, SwapInfoRowContainer } from './-styled.tsx';
+import {
+  CoinBoxContainer,
+  CoinBoxDivider,
+  Divider,
+  InformAmountSpan,
+  InformContainer,
+  SlippageTextButton,
+  SwapInfoContainer,
+  SwapInfoRowContainer,
+} from './-styled.tsx';
 
 type EntryProps = {
   coinId: string;
@@ -126,6 +137,20 @@ export default function Entry({ coinId }: EntryProps) {
   // TODO
   // const recipientChainList =
 
+  const informTitleErrorMessage = useMemo(() => {
+    return t('pages.wallet.swap.$coinId.entry.invalidFee');
+  }, [t]);
+
+  const informSubTitleErrorMessage = useMemo(() => {
+    return (
+      <>
+        {t('pages.wallet.swap.$coinId.entry.invalidFeeDescription1')}
+        <InformAmountSpan>{'0.0097123 ETH'}</InformAmountSpan>
+        {t('pages.wallet.swap.$coinId.entry.invalidFeeDescription2')}
+      </>
+    );
+  }, [t]);
+
   return (
     <>
       <BaseBody>
@@ -151,6 +176,13 @@ export default function Entry({ coinId }: EntryProps) {
             }}
           />
         </CoinBoxContainer>
+        <InformContainer>
+          <InformationPanel
+            varitant="error"
+            title={<Typography variant="b3_M">{informTitleErrorMessage}</Typography>}
+            body={<Typography variant="b4_R_Multiline">{informSubTitleErrorMessage}</Typography>}
+          />
+        </InformContainer>
       </BaseBody>
       <BaseFooter>
         <>

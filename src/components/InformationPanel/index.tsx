@@ -1,17 +1,16 @@
-import { Typography } from '@mui/material';
-
 import { BodyText, Container, TopContainer } from './styled';
 
 import InformationIcon from '@/assets/images/icons/InforMation14.svg';
 
 type InformationPanelProps = {
-  titleText: string;
-  bodyText: string;
-  varitant: 'caution' | 'info';
+  title: JSX.Element;
+  body: JSX.Element;
+  varitant: 'caution' | 'info' | 'error';
+  children?: React.ReactNode;
   icon?: JSX.Element;
 };
 
-export default function InformationPanel({ titleText, bodyText, varitant, icon }: InformationPanelProps) {
+export default function InformationPanel({ title, body, varitant, icon, children }: InformationPanelProps) {
   const displayedIcon = (() => {
     if (icon) {
       return icon;
@@ -24,9 +23,10 @@ export default function InformationPanel({ titleText, bodyText, varitant, icon }
     <Container>
       <TopContainer variant={varitant}>
         {displayedIcon}
-        <Typography variant="b3_M">{titleText}</Typography>
+        {title}
       </TopContainer>
-      <BodyText variant="b4_R_Multiline">{bodyText}</BodyText>
+      <BodyText>{body}</BodyText>
+      {children}
     </Container>
   );
 }

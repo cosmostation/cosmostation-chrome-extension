@@ -574,7 +574,10 @@
             "swapVenue": "Swap Venue",
             "sendReview": "Confirm Swap",
             "sendReviewSub": "Are you sure you want to proceed with the swap? \nThis action cannot be undone once completed.",
-            "swap": "Swap"
+            "swap": "Swap",
+            "invalidFee": "Lack of Network Fee",
+            "invalidFeeDescription1": "The balance is insufficient to cover the estimated gas fee for this transaction. Please ensure you have at least ",
+            "invalidFeeDescription2": " before trying again."
           },
           "layout": {
             "header": "Swap"

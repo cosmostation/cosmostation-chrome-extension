@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')(({ theme }) => ({
@@ -17,26 +16,46 @@ export const Container = styled('div')(({ theme }) => ({
 }));
 
 type TopContainerProps = {
-  variant?: 'caution' | 'info';
+  variant?: 'caution' | 'info' | 'error';
 };
 
-export const TopContainer = styled('div')<TopContainerProps>(({ ...props }) => ({
-  display: 'flex',
-  alignItems: 'center',
+export const TopContainer = styled('div')<TopContainerProps>(({ theme, ...props }) => {
+  const { variant } = props;
 
-  columnGap: '0.2rem',
+  const color = (() => {
+    if (variant === 'caution') {
+      return theme.palette.accentColor.yellow400;
+    }
 
-  color: props.variant === 'caution' ? '#FFA000' : '#0078D4',
+    if (variant === 'error') {
+      return theme.palette.accentColor.red400;
+    }
 
-  '& > svg': {
-    fill: props.variant === 'caution' ? '#FFA000' : '#0078D4',
-    '& > path': {
-      fill: props.variant === 'caution' ? '#FFA000' : '#0078D4',
+    if (variant === 'info') {
+      return theme.palette.accentColor.blue400;
+    }
+
+    return theme.palette.color.base1300;
+  })();
+
+  return {
+    display: 'flex',
+    alignItems: 'center',
+
+    columnGap: '0.2rem',
+
+    color: color,
+
+    '& > svg': {
+      fill: color,
+      '& > path': {
+        fill: color,
+      },
     },
-  },
-}));
+  };
+});
 
-export const BodyText = styled(Typography)(({ theme }) => ({
+export const BodyText = styled('div')(({ theme }) => ({
   wordBreak: 'break-word',
   color: theme.palette.color.base1000,
 
