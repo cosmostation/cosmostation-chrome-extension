@@ -7,6 +7,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 
+import CurrencyBottomSheet from './-components/CurrencyBottomSheet';
 import LanguageBottomSheet from './-components/LanguageBottomSheet';
 import { Container, OptionButtonContainer, OptionButtonIconContainer, SectionContainer, SectionTitleContainer } from './-styled';
 
@@ -21,6 +22,7 @@ export default function Entry() {
   const { t } = useTranslation();
 
   const [isOpenLanguageBottomSheet, setIsOpenLanguageBottomSheet] = useState(false);
+  const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
 
   return (
     <>
@@ -82,6 +84,9 @@ export default function Entry() {
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.languageDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
+                  onClick={() => {
+                    setIsOpenCurrencyBottomSheet(true);
+                  }}
                   leftContent={
                     <OptionButtonIconContainer>
                       <CurrencyIcon />
@@ -106,6 +111,7 @@ export default function Entry() {
         </EdgeAligner>
       </BaseBody>
       <LanguageBottomSheet open={isOpenLanguageBottomSheet} onClose={() => setIsOpenLanguageBottomSheet(false)} />
+      <CurrencyBottomSheet open={isOpenCurrencyBottomSheet} onClose={() => setIsOpenCurrencyBottomSheet(false)} />
     </>
   );
 }

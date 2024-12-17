@@ -584,12 +584,33 @@
           "components": {
             "OptionButton": {
               "index": {
-                "english": "English"
+                "english": "English",
+                "us": "__STRING_NOT_TRANSLATED__",
+                "kr": "__STRING_NOT_TRANSLATED__",
+                "jp": "__STRING_NOT_TRANSLATED__",
+                "cn": "__STRING_NOT_TRANSLATED__",
+                "eu": "__STRING_NOT_TRANSLATED__"
               }
             }
           },
           "index": {
             "title": "Select Language"
+          }
+        },
+        "CurrencyBottomSheet": {
+          "index": {
+            "title": "Select Currency"
+          },
+          "components": {
+            "OptionButton": {
+              "index": {
+                "us": "United States Dollar",
+                "kr": "Korean Won",
+                "jp": "Japanese Yen",
+                "cn": "Chinese Yuan",
+                "eu": "Euro"
+              }
+            }
           }
         }
       }
