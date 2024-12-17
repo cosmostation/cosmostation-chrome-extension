@@ -39,24 +39,13 @@ export async function getAssets() {
   );
 
   const evmAssets: EvmAsset[] = filteredEvmAssets.map((asset) => {
-    // TODO 하드코딩 제거
-    if (asset.chain === 'kava') {
-      return {
-        ...asset,
-        type: 'native',
-        id: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-        chainId: asset.chain,
-        chainType: 'evm',
-        decimals: 18,
-      };
-    }
-
     return {
       ...asset,
       type: 'native',
       id: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       chainId: asset.chain,
       chainType: 'evm',
+      decimals: 18,
     };
   });
 
