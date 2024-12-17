@@ -72,12 +72,6 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
   '& .MuiInputLabel-shrink': {
     padding: '0 0.4rem 0.8rem',
 
-    fontFamily: theme.typography.b4_R.fontFamily,
-    fontStyle: theme.typography.b4_R.fontStyle,
-    fontSize: theme.typography.b4_R.fontSize,
-    lineHeight: theme.typography.b4_R.lineHeight,
-    letterSpacing: theme.typography.b4_R.letterSpacing,
-
     color: theme.palette.color.base1000,
   },
 }));
