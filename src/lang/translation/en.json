@@ -94,6 +94,21 @@
     "Fee": {
       "index": {
         "networkFee": "Network Fee"
+      },
+      "Components": {
+        "FeeSettingBottomSheet": {
+          "components": {
+            "FeeCustomOverlay": {
+              "index": {
+                "networkFee": "Network Fee",
+                "gasAmount": "Gas Amount",
+                "inform": "How Network Fees are paid",
+                "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
+                "done": "Done"
+              }
+            }
+          }
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -137,6 +152,9 @@
         "valueHighOrder": "Value High Order",
         "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
       }
+    },
+    "History": {
+      "received": "__STRING_NOT_TRANSLATED__"
     }
   },
   "pages": {

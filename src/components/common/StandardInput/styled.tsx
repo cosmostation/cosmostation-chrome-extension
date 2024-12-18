@@ -66,6 +66,10 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
           margin: '0',
         },
       },
+
+      '&::placeholder': {
+        color: theme.palette.color.base700,
+      },
     },
   },
 
