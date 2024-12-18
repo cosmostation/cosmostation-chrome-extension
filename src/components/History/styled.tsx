@@ -25,3 +25,19 @@ type SymbolTextProps = {
 export const SymbolText = styled(Typography)<SymbolTextProps>(({ theme, ...props }) => ({
   color: props['data-symbol-color'] ? props['data-symbol-color'] : theme.palette.color.base1300,
 }));
+
+export const ChainContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.2rem',
+});
+
+export const ChainImageContainer = styled('div')({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  '& > img': {
+    width: '100%',
+    height: '100%',
+  },
+});

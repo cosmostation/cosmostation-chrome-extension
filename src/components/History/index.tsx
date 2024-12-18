@@ -1,16 +1,27 @@
 import { useTranslation } from 'react-i18next';
 
+import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { shorterAddress } from '@/utils/string';
 
 import DateLine from './components/DateLine';
 import TxDetail from './components/TxDetail';
-import { AmountContainer, Container, DateLineContainer, SymbolText, TxDetailContainer } from './styled';
+import { AmountContainer, ChainContainer, ChainImageContainer, Container, DateLineContainer, SymbolText, TxDetailContainer } from './styled';
 import Base1000Text from '../common/Base1000Text';
 import Base1300Text from '../common/Base1300Text';
+import Image from '../common/Image';
 import NumberTypo from '../common/NumberTypo';
 
-export default function History() {
+type HistoryProps = {
+  coinId?: string;
+};
+
+export default function History({ coinId }: HistoryProps) {
   const { t } = useTranslation();
+
+  // TODO filtering history by coinId
+  console.log('🚀 ~ History ~ coinId:', coinId);
+  const { data } = useAccountAssets();
+  // const isFullHistory = !coinId;
 
   const timeStamp = '2024-12-18T01:52:47Z';
 
@@ -24,7 +35,8 @@ export default function History() {
   const symbol = 'ATOPM';
   const symbolColor = '#9248DB';
   const decimals = 6;
-
+  const chainImage = data?.cosmosAccountAssets[0].chain.image;
+  const chainName = data?.cosmosAccountAssets[0].chain.name;
   const fromAddress = shorterAddress('cosmos1aygdt8742gamxv8ca99wzh56ry4xw5s39smmhm', 18);
   return (
     <Container>
@@ -66,9 +78,12 @@ export default function History() {
             </AmountContainer>
           }
           leftBottom={
-            <Base1000Text variant="b4_R">
-              To : <Base1000Text variant="b4_M">{fromAddress}</Base1000Text>
-            </Base1000Text>
+            <ChainContainer>
+              <ChainImageContainer>
+                <Image src={chainImage} />
+              </ChainImageContainer>
+              <Base1000Text variant="b4_M">{chainName}</Base1000Text>
+            </ChainContainer>
           }
           rightBottom={<Base1000Text variant="h7n_R">{`${hour} : ${minute} : ${second}`}</Base1000Text>}
         />
