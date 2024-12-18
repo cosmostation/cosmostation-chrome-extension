@@ -2,12 +2,13 @@ import { useTranslation } from 'react-i18next';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
+import History from '@/components/History';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 
 import AmountDetail from './-components/AmountDetail';
 import ContractAddress from './-components/ContractAddress';
 import StakePromotion from './-components/StakePromotion';
-import { Container, HistorySectionTitle, SectionContainer, SectionStickyContainer, SectionWrapper } from './-styled';
+import { Container, HistoryContainer, HistorySectionTitle, SectionContainer, SectionStickyContainer, SectionWrapper } from './-styled';
 
 type EntryProps = {
   coinId: string;
@@ -38,6 +39,15 @@ export default function Entry({ coinId }: EntryProps) {
               <SectionStickyContainer>
                 <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
               </SectionStickyContainer>
+              <HistoryContainer>
+                <History />
+                <History />
+                <History />
+                <History />
+                <History />
+                <History />
+                <History />
+              </HistoryContainer>
             </SectionContainer>
           </SectionWrapper>
         </Container>
