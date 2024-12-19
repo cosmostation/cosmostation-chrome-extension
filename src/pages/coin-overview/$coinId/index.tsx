@@ -3,15 +3,16 @@ import { createFileRoute } from '@tanstack/react-router';
 import Entry from './-entry';
 import Layout from './-layout';
 
-export const Route = createFileRoute('/coin-overview/')({
+export const Route = createFileRoute('/coin-overview/$coinId/')({
   component: CoinOverview,
 });
 
 function CoinOverview() {
-  // TODO useParams로 코인 아이디 props로 전달 필요.
+  const params = Route.useParams();
+
   return (
-    <Layout>
-      <Entry />
+    <Layout coinId={params.coinId}>
+      <Entry coinId={params.coinId} />
     </Layout>
   );
 }

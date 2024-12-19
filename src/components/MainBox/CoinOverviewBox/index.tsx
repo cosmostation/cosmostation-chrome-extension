@@ -3,22 +3,26 @@ import { Typography } from '@mui/material';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { BodyBottomContainer, BodyContainer, BodyTopContainer, TopContainer } from './styled';
 import MainBox from '..';
 
 type CoinOverviewBoxProps = {
-  testCoinId: string;
+  coinId: string;
 };
 
-export default function CoinOverviewBox({ testCoinId }: CoinOverviewBoxProps) {
+export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
   const { t } = useTranslation();
 
-  console.log('🚀 ~ CoinOverViewBox ~ testCoinId:', testCoinId);
+  const { data } = useAccountAssets();
   // TODO
   // const currentCoin = 전체코인리스트.find((coin) => coin.id === testCoinId);
 
-  const symbol = 'USDT';
+  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+
+  const symbol = currentCoin?.asset.symbol;
   const networkCount = 5;
   const totalAmount = '24000';
   const totalValue = '24000';

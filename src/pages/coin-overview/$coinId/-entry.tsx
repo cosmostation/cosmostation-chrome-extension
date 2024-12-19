@@ -15,13 +15,15 @@ import { CoinButtonWrapper, Container, FilterContaienr, FilterIconButton, Sticky
 import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 
-export default function Entry() {
+type EntryProps = {
+  coinId: string;
+};
+
+export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
 
   // TODO sortKey를 어떻게 관리할지 결정 필요.
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
-
-  const currentCoinId = '1';
 
   // AllNetworkButton에 들어간 체인 리스트는 리스팅되는 코인들의 네트워크로 필터링 필요.
 
@@ -29,7 +31,7 @@ export default function Entry() {
     <BaseBody>
       <EdgeAligner>
         <Container>
-          <CoinOverViewBox testCoinId={currentCoinId} />
+          <CoinOverViewBox coinId={coinId} />
 
           <StickyContentsContainer>
             <FilterContaienr>

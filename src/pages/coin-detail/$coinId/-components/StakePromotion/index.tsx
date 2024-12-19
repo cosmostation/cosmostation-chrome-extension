@@ -6,16 +6,15 @@ import { IconContainer, StyledButton, SubTitleContainer, SubTitleText } from './
 
 import RightArrow from '@/assets/images/icons/RightArrow14.svg';
 
-type StakePromotionProps = {
+type StakePromotionProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   symbol: string;
-  // navigateTo: string;
 };
 
-export default function StakePromotion({ symbol }: StakePromotionProps) {
+export default function StakePromotion({ symbol, ...remainer }: StakePromotionProps) {
   const { t } = useTranslation();
 
   return (
-    <StyledButton>
+    <StyledButton {...remainer}>
       <Base1300Text variant="h3_B">{t('pages.coin-detail.components.StakePromotion.index.title').replace('${symbol}', symbol)}</Base1300Text>
 
       <SubTitleContainer>

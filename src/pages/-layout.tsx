@@ -1,5 +1,4 @@
 import BaseLayout from '@/components/BaseLayout';
-import FooterCoinPrice from '@/components/FooterCoinPrice';
 import HandleExtensionViewButton from '@/components/HandleExtensionViewButton';
 import Header from '@/components/Header';
 import AccountButton from '@/components/Header/components/AccountButton';
@@ -27,14 +26,6 @@ export default function Layout({ children }: LayoutProps) {
               <HandleExtensionViewButton />
             </HeaderRightContainer>
           }
-        />
-      }
-      footer={
-        <FooterCoinPrice
-          coin={{
-            coinGeckoId: 'bitcoin',
-            id: 'bitcoin',
-          }}
         />
       }
     >

@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import History from '@/components/History';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
+import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 
 import AmountDetail from './-components/AmountDetail';
 import ContractAddress from './-components/ContractAddress';
@@ -16,6 +18,7 @@ type EntryProps = {
 
 export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
   const symbol = 'ATOM';
@@ -30,7 +33,17 @@ export default function Entry({ coinId }: EntryProps) {
               <ContractAddress contractAddress={contractAddress} />
             </SectionContainer>
             <SectionContainer>
-              <StakePromotion symbol={symbol} />
+              <StakePromotion
+                symbol={symbol}
+                onClick={() => {
+                  navigate({
+                    to: ManageStake.to,
+                    params: {
+                      coinId: coinId,
+                    },
+                  });
+                }}
+              />
             </SectionContainer>
             <SectionContainer>
               <AmountDetail uniqueCoinId="osmo" />
