@@ -1,6 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
+import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useCoinGeckoHistory } from '@/hooks/useCoinGeckoHistory';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { getCoinId } from '@/utils/queryParamGenerator';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+
 import {
   ChangeRateContainer,
   ChevronIconContainer,
@@ -22,27 +28,32 @@ import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
 type FooterCoinPriceProps = {
-  coin: {
-    coinGeckoId: string;
-    id: string;
-  };
+  coinId: string;
 };
-export default function FooterCoinPrice({ coin }: FooterCoinPriceProps) {
-  console.log('🚀 ~ FooterCoinPrice ~ coin:', coin);
-
+export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
   const { t } = useTranslation();
 
-  const price = '1';
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
+  const { currency } = useExtensionStorageStore((state) => state);
+  const { data } = useAccountAssets();
 
-  const cap = 1;
+  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const coinGeckoId = currentCoin?.asset.coinGeckoId;
+
+  const { data: coinGeckoHistory } = useCoinGeckoHistory(coinGeckoId);
+
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+
+  const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${currency}_24h_change`]) || 0;
 
   const trend = cap > 0 ? 'upward' : cap < 0 ? 'downward' : 'unchanged';
 
-  // NOTE example ethereum price data 30days
-  const chartData = [
-    1000, 1050, 1100, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900, 1950, 2000, 2050, 2100, 2150, 2200, 2250, 2300,
-    2350, 2400, 2450, 2500,
-  ];
+  const chartData =
+    coinGeckoHistory?.values.data
+      .flatMap((item) => {
+        return Number(item[0]);
+      })
+      .reverse() || [];
 
   return (
     <StickyFooter
@@ -67,8 +78,8 @@ export default function FooterCoinPrice({ coin }: FooterCoinPriceProps) {
           </LineChartContainer>
 
           <RightPriceContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
-              {price}
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+              {String(chainPrice)}
             </NumberTypo>
 
             <ChangeRateContainer trend={trend}>

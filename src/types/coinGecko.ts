@@ -36,3 +36,11 @@ export type SimplePrice = Record<
     eth_market_cap?: number;
   }
 >;
+
+export type CoinGeckoHistoryResponse = {
+  data_key: string[];
+  values: {
+    denom: string;
+    data: string[][];
+  };
+};

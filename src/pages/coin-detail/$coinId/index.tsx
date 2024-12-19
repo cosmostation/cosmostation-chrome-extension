@@ -11,7 +11,7 @@ function CoinDetail() {
   const { coinId } = Route.useParams();
 
   return (
-    <Layout>
+    <Layout coinId={coinId}>
       <Entry coinId={coinId} />
     </Layout>
   );

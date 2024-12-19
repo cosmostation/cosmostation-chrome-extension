@@ -15,7 +15,7 @@ export default function LineChart({ lineChartData }: LineChartProps) {
     };
   });
 
-  const isTrendUpward = formattedData?.[formattedData.length - 1].pv > formattedData?.[0].pv;
+  const isTrendUpward = formattedData?.[formattedData.length - 1]?.pv > formattedData?.[0]?.pv;
 
   return (
     <LineStrokeEffectLayer is-upward={isTrendUpward}>
