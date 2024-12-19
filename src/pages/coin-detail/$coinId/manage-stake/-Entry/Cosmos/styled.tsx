@@ -8,7 +8,7 @@ export const Container = styled('div')({
 
 export const Divider = styled('div')(({ theme }) => ({
   width: '100%',
-  borderBottom: `0.2rem solid ${theme.palette.color.base100}`,
+  borderBottom: `0.4rem solid ${theme.palette.color.base100}`,
 }));
 
 export const TabWrapper = styled('div')({

@@ -8,6 +8,7 @@ import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import StakingItem from './components/StakingItem';
+import UnstakingItem from './components/UnstakingItem';
 import { Container, Divider, StakingItemContainer, StickyTabContainer, StyledTabPanel, TabWrapper } from './styled';
 
 type CosmosProps = {
@@ -54,7 +55,16 @@ export default function Cosmos({ coinId }: CosmosProps) {
               </StakingItemContainer>
             </StyledTabPanel>
             <StyledTabPanel value={tabValue} index={1}>
-              <>f</>
+              <StakingItemContainer>
+                <UnstakingItem
+                  validatorImage="https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png"
+                  validatorName="Cosmostation"
+                  symbol="ATOM"
+                  decimals={6}
+                  unstakingAmount="100"
+                  unstakingCompletionTime="2024-12-20T01:52:47Z"
+                />
+              </StakingItemContainer>
             </StyledTabPanel>
           </TabWrapper>
         </Container>

@@ -394,6 +394,11 @@
                     "staked": "Staked",
                     "reward": "Reward +{{counts}}"
                   }
+                },
+                "UnstakingItem": {
+                  "index": {
+                    "unstaking": "Unstaking"
+                  }
                 }
               }
             }

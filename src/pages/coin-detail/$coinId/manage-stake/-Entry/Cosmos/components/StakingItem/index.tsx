@@ -20,7 +20,7 @@ import {
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
-type StakingProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   validatorName: string;
   commission: string;
   symbol: string;
@@ -41,7 +41,7 @@ export default function StakingItem({
   rewardCounts,
   validatorImage,
   ...remainder
-}: StakingProps) {
+}: StakingItemProps) {
   const { t } = useTranslation();
 
   return (
@@ -70,11 +70,7 @@ export default function StakingItem({
       </TopContainer>
       <StakingInfoContainer>
         <StakingInfoRowContainer>
-          <Base1000Text variant="b2_M">
-            {t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.staked', {
-              counts: 3,
-            })}
-          </Base1000Text>
+          <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.staked')}</Base1000Text>
           <AmountContainer>
             <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
               {stakedAmount}
@@ -84,7 +80,7 @@ export default function StakingItem({
           </AmountContainer>
         </StakingInfoRowContainer>
         <StakingInfoRowContainer>
-          <Base1000Text variant="b2_M">
+          <Base1000Text variant="b3_R">
             {t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.reward', {
               counts: rewardCounts,
             })}

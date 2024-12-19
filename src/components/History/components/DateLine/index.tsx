@@ -1,4 +1,4 @@
-import { formatDate } from '@/utils/string';
+import { formatDateForHistory } from '@/utils/date';
 
 import { Container, DateContainer, DateDivider, DateText } from './styled';
 
@@ -9,7 +9,7 @@ type DateLineProps = {
 };
 
 export default function DateLine({ date }: DateLineProps) {
-  const formattedDate = formatDate(date);
+  const formattedDate = formatDateForHistory(date);
 
   return (
     <Container>

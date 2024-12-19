@@ -4,16 +4,16 @@ import { useQuery } from '@tanstack/react-query';
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { CoinGeckoHistoryResponse } from '@/types/coinGecko';
 import { get } from '@/utils/axios';
-import { convertDateToISOFormat } from '@/utils/string';
+import { formatToYearMonthDay } from '@/utils/date';
 
 export function useCoinGeckoHistory(coinGeckoId?: string, config?: UseQueryOptions<CoinGeckoHistoryResponse>) {
   const today = new Date();
   const oneMonthAgo = new Date();
 
-  const formattedToday = convertDateToISOFormat(today.toISOString());
+  const formattedToday = formatToYearMonthDay(today.toISOString());
 
   oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  const formattedOneMonthAgo = convertDateToISOFormat(oneMonthAgo.toISOString());
+  const formattedOneMonthAgo = formatToYearMonthDay(oneMonthAgo.toISOString());
 
   const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/history/range/daily/${coinGeckoId}?start_date=${formattedOneMonthAgo}&end_date=${formattedToday}`;
 

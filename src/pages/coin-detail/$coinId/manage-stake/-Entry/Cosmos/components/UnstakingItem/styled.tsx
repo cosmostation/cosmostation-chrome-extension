@@ -24,7 +24,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
 export const TopContainer = styled('div')(({ theme }) => ({
   width: '100%',
   display: 'flex',
-  justifyContent: 'flex-start',
+  justifyContent: 'space-between',
   alignItems: 'center',
   paddingBottom: '1.2rem',
   borderBottom: `0.2rem solid ${theme.palette.color.base300}`,
@@ -32,10 +32,9 @@ export const TopContainer = styled('div')(({ theme }) => ({
 
 export const TopLeftContainer = styled('div')({
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  marginLeft: '1rem',
-  rowGap: '0.2rem',
+  alignItems: 'center',
+  justifyContent: 'center',
+  columnGap: '1rem',
 });
 
 export const ValidatorNameContainer = styled('div')({
@@ -69,9 +68,11 @@ export const ImageContainer = styled('div')({
   },
 });
 
-export const CommissionContainer = styled('div')({
+export const TopRightContainer = styled('div')({
   display: 'flex',
-  alignItems: 'center',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  rowGap: '0.4rem',
 });
 
 export const StakingInfoContainer = styled('div')({
