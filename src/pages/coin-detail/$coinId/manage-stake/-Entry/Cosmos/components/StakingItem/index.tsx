@@ -72,7 +72,7 @@ export default function StakingItem({
         <StakingInfoRowContainer>
           <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.staked')}</Base1000Text>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
               {stakedAmount}
             </NumberTypo>
             &nbsp;
@@ -86,7 +86,7 @@ export default function StakingItem({
             })}
           </Base1000Text>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
               {rewardAmount}
             </NumberTypo>
             &nbsp;

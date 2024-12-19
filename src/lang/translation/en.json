@@ -401,6 +401,35 @@
                   }
                 }
               }
+            },
+            "Sui": {
+              "components": {
+                "StakingItem": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "totalStaked": "Total Staked",
+                    "startEarning": "Start Earning"
+                  }
+                }
+              }
+            }
+          },
+          "entry": {
+            "Sui": {
+              "components": {
+                "EpochIndicator": {
+                  "index": {
+                    "currentEpoch": "Current Epoch",
+                    "nextRewardShare": "Next Reward Share"
+                  }
+                }
+              },
+              "index": {
+                "emptyPending": "emptyPending",
+                "emptyPendingDescription": "emptyPendingDescription"
+              }
             }
           }
         }
