@@ -29,6 +29,25 @@
           "swap": "Swap",
           "vote": "Vote"
         }
+      },
+      "StakeDetailBox": {
+        "Cosmos": {
+          "index": {
+            "title": "Stake & Earn {{symbol}}",
+            "available": "Available",
+            "reward": "Reward +{{counts}}",
+            "stake": "{{symbol}} Stake",
+            "claimAll": "Claim All",
+            "compountAll": "Compount All"
+          }
+        },
+        "Sui": {
+          "index": {
+            "title": "Stake & Earn {{symbol}}",
+            "available": "Available",
+            "suiStake": "Sui Stake"
+          }
+        }
       }
     },
     "SortBottomSheet": {
@@ -360,6 +379,13 @@
       },
       "entry": {
         "history": "History"
+      },
+      "$coinId": {
+        "manage-stake": {
+          "layout": {
+            "header": "Manage Stake"
+          }
+        }
       }
     },
     "manage-account": {
