@@ -6,34 +6,38 @@ import { useNavigate } from '@tanstack/react-router';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
-import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
+import Base1000Text from '@/components/common/Base1000Text';
+import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee';
+import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
+import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
-import { useChainList } from '@/hooks/useChainList.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result/$txHash/$coinId';
 import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, shorterAddress } from '@/utils/string.ts';
+import { isDecimal } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
+import ValidatorBottomSheet from './-components/ValidatorBottomSheet';
 import {
-  AddressBookButton,
+  APRText,
+  ChainNameContainer,
   CoinContainer,
-  CoinDenomContainer,
   CoinImage,
   CoinSymbolText,
   Divider,
+  EstimatedReward,
+  EstimatedRewardAmountContainer,
+  EstimatedRewardCoin,
+  EstimatedRewardCoinImage,
   EstimatedValueTextContainer,
-  IBCSendText,
   InputWrapper,
 } from './-styled';
-
-import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
 type EntryProps = {
   coinId: string;
@@ -46,12 +50,11 @@ export default function Entry({ coinId }: EntryProps) {
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { flatChainList } = useChainList();
   const { data } = useAccountAssets();
 
   const parsedCoinId = parseCoinId(coinId);
 
-  const selectedCoinToSend = (() => {
+  const selectedStakingCoin = (() => {
     if (!data) return undefined;
 
     if (parsedCoinId.chainType === 'cosmos') {
@@ -77,30 +80,17 @@ export default function Entry({ coinId }: EntryProps) {
     return undefined;
   })();
 
-  const coinImageURL = selectedCoinToSend?.asset.image || '';
-  const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
+  const coinImageURL = selectedStakingCoin?.asset.image || '';
 
-  const coinSymbol = selectedCoinToSend?.asset.symbol || '';
-  const coinDenom = selectedCoinToSend?.asset.id || '';
-  const shortCoinDenom = shorterAddress(coinDenom, 16);
-  const coinDecimal = selectedCoinToSend?.asset.decimals || 0;
+  const coinSymbol = selectedStakingCoin?.asset.symbol || '';
+  const coinDecimal = selectedStakingCoin?.asset.decimals || 0;
 
-  const coinType = (() => {
-    if (selectedCoinToSend?.asset.type === 'erc20' || selectedCoinToSend?.asset.type === 'cw20') {
-      return t('pages.wallet.send.$coinId.entry.contract');
-    }
+  const chainName = selectedStakingCoin?.chain.name || '';
 
-    if (selectedCoinToSend?.asset.type === 'ibc') {
-      return t('pages.wallet.send.$coinId.entry.denom');
-    }
-
-    return '';
-  })();
-
-  const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
+  const coinGeckoId = selectedStakingCoin?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
-  const baseAvailableAmount = selectedCoinToSend?.balance || '0';
+  const baseAvailableAmount = selectedStakingCoin?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
 
   console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
@@ -108,7 +98,6 @@ export default function Entry({ coinId }: EntryProps) {
   // FIXME: 밸런스 그대로를 입력할 지 예상 가스비를 제외한 값을 맥스값으로 설정할 지 결정 필요.
   const maxAmount = '1000000000000';
 
-  const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
 
   const displaySendAmountPrice = sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0';
@@ -116,62 +105,78 @@ export default function Entry({ coinId }: EntryProps) {
   const [inputMemo, setInputMemo] = useState('');
 
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
+  const [isOpenValidatorBottomSheet, setIsOpenValidatorBottomSheet] = useState(false);
 
-  // TODO
-  // const recipientChainList =
-  const [currentRecipientChainId, setCurrentRecipientChainId] = useState('');
-  const currentRecipientChain = flatChainList.find((chain) => chain.id === currentRecipientChainId);
+  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState('');
 
-  console.log('🚀 ~ Entry ~ currentRecipientChain:', currentRecipientChain);
+  const testValidator = [
+    {
+      validatorName: 'testValidator1',
+      validatorAddress: 'testValidatorAddress1',
+      votingPower: '23895865',
+      commission: '5',
+      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
+    },
+    {
+      validatorName: 'testValidator2',
+      validatorAddress: 'testValidatorAddress2',
+      votingPower: '23895865',
+      commission: '5',
+      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
+    },
+    {
+      validatorName: 'testValidator3',
+      validatorAddress: 'testValidatorAddress3',
+      votingPower: '23895865',
+      commission: '5',
+      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
+    },
+  ];
 
+  const currentValidator = testValidator.find((validator) => validator.validatorAddress === currentValidaotrAddress);
+  const apr = 14.92;
+
+  const estimatedMonthlyReward = '1';
   return (
     <>
       <BaseBody>
         <>
           <CoinContainer>
-            <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.entry.send')}`}</CoinSymbolText>
-            {coinType && (
-              <CoinDenomContainer>
-                <Typography variant="b4_R">{`${coinType} :`}</Typography>
-                &nbsp;
-                <Typography variant="b3_M">{shortCoinDenom}</Typography>
-              </CoinDenomContainer>
-            )}
+            <CoinImage imageURL={coinImageURL} />
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.stake.$coinId.entry.stake')}`}</CoinSymbolText>
+            <ChainNameContainer>
+              <Typography variant="b3_M">
+                {t('pages.wallet.stake.$coinId.entry.stakingCoin', {
+                  chainName: chainName,
+                })}
+              </Typography>
+            </ChainNameContainer>
           </CoinContainer>
 
           <InputWrapper>
-            <ChainSelectBox
-              chainList={flatChainList}
-              currentChainId={currentRecipientChainId}
-              onClickChain={(chainId) => {
-                setCurrentRecipientChainId(chainId);
+            <ValidatorSelectBox
+              validatorList={testValidator}
+              currentValidaotorAddress={currentValidaotrAddress}
+              onClickItem={() => {
+                setIsOpenValidatorBottomSheet(true);
               }}
-              label={t('pages.wallet.send.$coinId.entry.recipientNetwork')}
-              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.entry.ibcSend')}</IBCSendText>}
-              bottomSheetTitle={t('pages.wallet.send.$coinId.entry.selectRecipientNetwork')}
-              bottomSheetSearchPlaceholder={t('pages.wallet.send.$coinId.entry.searchRecipientNetwork')}
+              isBottomSheetOpen={isOpenValidatorBottomSheet}
+              label={t('pages.wallet.stake.$coinId.entry.validator')}
+              rightAdornmentComponent={
+                currentValidator && (
+                  <Base1000Text variant="b3_R">
+                    {'Commission: '}
+                    <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={2}>
+                      {currentValidator.commission}
+                    </NumberTypo>
+                    {'%'}
+                  </Base1000Text>
+                )
+              }
             />
+
             <StandardInput
-              label={t('pages.wallet.send.$coinId.entry.recipientAddress')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <AddressBookButton>
-                        <AddressBookIcon />
-                      </AddressBookButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            <StandardInput
-              label={t('pages.wallet.send.$coinId.entry.amount')}
+              label={t('pages.wallet.stake.$coinId.entry.stakingAmount')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={sendDisplayAmount}
@@ -196,12 +201,12 @@ export default function Entry({ coinId }: EntryProps) {
                 },
               }}
               rightBottomAdornment={
-                selectedCoinToSend && (
+                selectedStakingCoin && (
                   <BalanceButton
                     onClick={() => {
                       setSendDisplayAmount(maxAmount);
                     }}
-                    coin={selectedCoinToSend?.asset}
+                    coin={selectedStakingCoin?.asset}
                     balance={baseAvailableAmount}
                   />
                 )
@@ -210,11 +215,10 @@ export default function Entry({ coinId }: EntryProps) {
             <StandardInput
               multiline
               maxRows={3}
-              label={t('pages.wallet.send.$coinId.entry.memo')}
+              label={t('pages.wallet.stake.$coinId.entry.memo')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={inputMemo}
-              // TODO 숫자만 입력할 수 있도록 처리 필요.
               onChange={(e) => setInputMemo(e.target.value)}
             />
           </InputWrapper>
@@ -222,6 +226,36 @@ export default function Entry({ coinId }: EntryProps) {
       </BaseBody>
       <BaseFooter>
         <>
+          <InformationPanel
+            varitant="info"
+            title={<Typography variant="b3_M">{t('pages.wallet.stake.$coinId.entry.inform')}</Typography>}
+            body={
+              <Typography variant="b4_R_Multiline">
+                {t('pages.wallet.stake.$coinId.entry.inform1', {
+                  symbol: coinSymbol,
+                })}
+                &nbsp;
+                <APRText variant="b4_R_Multiline">
+                  {t('pages.wallet.stake.$coinId.entry.inform2', {
+                    apr: apr.toFixed(2),
+                  })}
+                </APRText>
+              </Typography>
+            }
+          >
+            <Divider />
+            <EstimatedReward>
+              <EstimatedRewardCoin>
+                <EstimatedRewardCoinImage src={coinImageURL} />
+                <Base1300Text variant="b3_M">{coinSymbol}</Base1300Text>
+              </EstimatedRewardCoin>
+              <EstimatedRewardAmountContainer>
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={coinDecimal}>
+                  {estimatedMonthlyReward}
+                </NumberTypo>
+              </EstimatedRewardAmountContainer>
+            </EstimatedReward>
+          </InformationPanel>
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
@@ -235,9 +269,9 @@ export default function Entry({ coinId }: EntryProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.entry.sendReview')}
-        contentsSubTitle={t('pages.wallet.send.$coinId.entry.sendReviewSub')}
-        confirmButtonText={t('pages.wallet.send.$coinId.entry.send')}
+        contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}
+        contentsSubTitle={t('pages.wallet.stake.$coinId.entry.stakeReviewSub')}
+        confirmButtonText={t('pages.wallet.stake.$coinId.entry.stake')}
         onClickCancel={() => {
           console.log('onClickCancel');
         }}
@@ -249,6 +283,15 @@ export default function Entry({ coinId }: EntryProps) {
               txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
             },
           });
+        }}
+      />
+      <ValidatorBottomSheet
+        validatorList={testValidator}
+        open={isOpenValidatorBottomSheet}
+        onClose={() => setIsOpenValidatorBottomSheet(false)}
+        currentValidatorId={currentValidaotrAddress}
+        onClickItem={(validatorAddress) => {
+          setCurrentValidaotrAddress(validatorAddress);
         }}
       />
     </>

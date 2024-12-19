@@ -33,6 +33,7 @@ export default function CoinListBottomSheet({
     onClose?.({}, 'backdropClick');
   };
 
+  // FIXME props로 전달하던지 해결 필요.
   useEffect(() => {
     if (remainder.open) {
       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);

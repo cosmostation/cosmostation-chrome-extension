@@ -112,7 +112,8 @@
     },
     "Fee": {
       "index": {
-        "networkFee": "Network Fee"
+        "networkFee": "Network Fee",
+        "continue": "Continue"
       },
       "Components": {
         "FeeSettingBottomSheet": {
@@ -714,6 +715,45 @@
             "layout": {
               "header": "Transaction Result"
             }
+          }
+        }
+      },
+      "stake": {
+        "layout": {
+          "header": "Select Coin"
+        },
+        "$coinId": {
+          "components": {
+            "ValidatorBottomSheet": {
+              "components": {
+                "ValidatorItem": {
+                  "index": {
+                    "votingPower": "Voting Power"
+                  }
+                }
+              },
+              "index": {
+                "title": "Select Validator",
+                "searchPlaceholder": "Search Validator (Ex. Cosmostation)",
+                "validator": "Validator",
+                "commisson": "Commission"
+              }
+            }
+          },
+          "entry": {
+            "stake": "Stake",
+            "stakingCoin": "{{chainName}} Staking Coin",
+            "validator": "Validator",
+            "stakingAmount": "Staking Amount",
+            "memo": "Memo (Option)",
+            "inform": "Expected Monthly Reward",
+            "inform1": "The estimated {{symbol}} staking",
+            "inform2": "APR is {{apr}}%",
+            "stakeReview": "Confirm Stake",
+            "stakeReviewSub": "Are you sure you want to proceed with the stake? \nThis action cannot be undone once completed."
+          },
+          "layout": {
+            "header": "Stake"
           }
         }
       }

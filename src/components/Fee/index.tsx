@@ -51,7 +51,7 @@ export default function Fee({ onClickConfirm }: FeeProps) {
           )}
         </FeeCustomButton>
       </LeftContentContainer>
-      <RightContentContainer>{<StyledButton onClick={onClickConfirm}>{t('pages.account.set-password.index.next')}</StyledButton>}</RightContentContainer>
+      <RightContentContainer>{<StyledButton onClick={onClickConfirm}>{t('components.Fee.index.continue')}</StyledButton>}</RightContentContainer>
       <FeeSettingBottomSheet
         feeList={[
           {

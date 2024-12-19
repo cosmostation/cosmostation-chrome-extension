@@ -2,7 +2,7 @@ import { LeftContainer, MiddleContainer, RightContainer, StyledButton } from './
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
-type BaseOptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+export type BaseOptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   leftContent?: JSX.Element;
   leftSecondHeader?: JSX.Element;
   leftSecondBody?: JSX.Element;
