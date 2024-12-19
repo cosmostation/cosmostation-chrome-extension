@@ -22,7 +22,7 @@ export default function BaseOptionButton({
 }: BaseOptionButtonProps) {
   return (
     <StyledButton isActive={isActive} {...remainder}>
-      <LeftContainer>{leftContent}</LeftContainer>
+      {leftContent && <LeftContainer>{leftContent}</LeftContainer>}
       <MiddleContainer>
         {leftSecondHeader}
         {leftSecondBody}

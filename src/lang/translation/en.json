@@ -392,7 +392,15 @@
                   "index": {
                     "commission": "Commission",
                     "staked": "Staked",
-                    "reward": "Reward +{{counts}}"
+                    "reward": "Reward +{{counts}}",
+                    "stake": "Stake",
+                    "stakeDescription": "Lock your tokens to earn rewards over time",
+                    "unstake": "Unstake",
+                    "unstakeDescription": "Withdraw staked tokens, may have a delay",
+                    "claimRewards": "Claim Rewards",
+                    "claimRewardsDescription": "Collect your accumulated staking rewards",
+                    "compounding": "Compounding",
+                    "compoundingDescription": "Reinvest rewards to increase future earnings"
                   }
                 },
                 "UnstakingItem": {
@@ -412,6 +420,13 @@
                     "totalStaked": "Total Staked",
                     "startEarning": "Start Earning"
                   }
+                }
+              }
+            },
+            "components": {
+              "StakingOptionBottomSheet": {
+                "index": {
+                  "title": "Select Option"
                 }
               }
             }

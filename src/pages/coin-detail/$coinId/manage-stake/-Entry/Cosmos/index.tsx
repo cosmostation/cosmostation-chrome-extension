@@ -21,11 +21,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['My Staking', 'My Unstaking'];
-  console.log('🚀 ~ Cosmos ~ currentCoin:', currentCoin);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
+
   return (
     <BaseBody>
       <EdgeAligner>
@@ -46,9 +46,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
                   validatorImage="https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png"
                   validatorName="Cosmostation"
                   commission="5"
-                  symbol="ATOM"
+                  symbol={currentCoin?.asset.symbol || ''}
                   stakedAmount="100"
-                  decimals={6}
+                  decimals={currentCoin?.asset.decimals || 0}
                   rewardAmount="40"
                   rewardCounts="3"
                 />
@@ -59,8 +59,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
                 <UnstakingItem
                   validatorImage="https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png"
                   validatorName="Cosmostation"
-                  symbol="ATOM"
-                  decimals={6}
+                  symbol={currentCoin?.asset.symbol || ''}
+                  decimals={currentCoin?.asset.decimals || 0}
                   unstakingAmount="100"
                   unstakingCompletionTime="2024-12-20T01:52:47Z"
                 />
