@@ -36,11 +36,15 @@ export const CoinButtonWrapper = styled('div')({
   width: '100%',
 });
 
-export const StickyContentsContainer = styled('div')(({ theme }) => ({
+type StickyContentsContainerProps = {
+  'data-is-bottom-sheet'?: boolean;
+};
+
+export const StickyContentsContainer = styled('div')<StickyContentsContainerProps>(({ theme, ...props }) => ({
   width: '100%',
   height: 'fit-content',
   position: 'sticky',
-  top: '3rem',
+  top: props['data-is-bottom-sheet'] ? '0' : '3rem',
 
   padding: '0.8rem 1.2rem',
 

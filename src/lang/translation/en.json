@@ -104,7 +104,9 @@
                 "gasAmount": "Gas Amount",
                 "inform": "How Network Fees are paid",
                 "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
-                "done": "Done"
+                "done": "Done",
+                "feeToken": "Fee Token",
+                "selectFeeToken": "Select Fee Token"
               }
             }
           }
@@ -154,7 +156,12 @@
       }
     },
     "History": {
-      "received": "__STRING_NOT_TRANSLATED__"
+      "received": "Received"
+    },
+    "CoinListBottomSheet": {
+      "index": {
+        "title": "Select Coin"
+      }
     }
   },
   "pages": {

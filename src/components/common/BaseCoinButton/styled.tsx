@@ -1,11 +1,15 @@
 import { styled } from '@mui/material/styles';
 
-export const StyledButton = styled('button')(({ theme }) => ({
+type StyledButtonProps = {
+  'data-is-active'?: boolean;
+};
+
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   width: '100%',
 
   border: 'none',
 
-  backgroundColor: 'transparent',
+  backgroundColor: props['data-is-active'] ? theme.palette.color.base200 : 'transparent',
 
   padding: '1.4rem 1.6rem',
 

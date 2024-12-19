@@ -22,12 +22,15 @@ import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 
 type CoinSelectProps = {
+  currentCoinId?: string;
   chainList?: Chain[];
   coinList?: FlatAccountAssets[];
+  isBottomSheet?: boolean;
+  searchPlaceholder?: string;
   onSelectCoin: (coinId: string) => void;
 };
 
-export default function CoinSelect({ chainList, coinList, onSelectCoin }: CoinSelectProps) {
+export default function CoinSelect({ currentCoinId, chainList, coinList, isBottomSheet = false, searchPlaceholder, onSelectCoin }: CoinSelectProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -102,7 +105,7 @@ export default function CoinSelect({ chainList, coinList, onSelectCoin }: CoinSe
 
   return (
     <Container>
-      <StickyContentsContainer>
+      <StickyContentsContainer data-is-bottom-sheet={isBottomSheet}>
         <FilterContaienr>
           <StyledInput
             startAdornment={
@@ -110,7 +113,7 @@ export default function CoinSelect({ chainList, coinList, onSelectCoin }: CoinSe
                 <SearchIcon />
               </InputAdornment>
             }
-            placeholder={t('components.CoinSelect.index.searchPlaceholder')}
+            placeholder={searchPlaceholder || t('components.CoinSelect.index.searchPlaceholder')}
             value={search}
             onChange={(event) => {
               setSearch(event.currentTarget.value);
@@ -140,6 +143,7 @@ export default function CoinSelect({ chainList, coinList, onSelectCoin }: CoinSe
         {filteredCoinList?.map((coin) => (
           <CoinWithChainNameButton
             key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
+            isActive={currentCoinId === getCoinId(coin.asset)}
             baseAmount={coin.balance}
             symbol={coin.asset.symbol}
             chainName={coin.chain.name}

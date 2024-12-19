@@ -12,10 +12,11 @@ export type BaseCoinButtonProps = {
   disabled?: boolean;
   coinGeckoId?: string;
   leftComponent?: JSX.Element;
+  isActive?: boolean;
   onClick?: () => void;
 };
 
-export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coinGeckoId, leftComponent, onClick }: BaseCoinButtonProps) {
+export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coinGeckoId, leftComponent, isActive, onClick }: BaseCoinButtonProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
@@ -26,7 +27,7 @@ export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coi
   const value = times(displayAmount, chainPrice);
 
   return (
-    <StyledButton onClick={onClick} disabled={disabled}>
+    <StyledButton onClick={onClick} data-is-active={isActive} disabled={disabled}>
       <LeftContainer>{leftComponent}</LeftContainer>
       <RightContainer>
         <RightTextContainer>

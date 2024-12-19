@@ -22,7 +22,7 @@ type FeeSettingBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomS
 export default function FeeSettingBottomSheet({ feeList, currentSelectedFeeId, onClose, onSelectOption, ...remainder }: FeeSettingBottomSheetProps) {
   const { t } = useTranslation();
 
-  const [isOpenFeeCustomOverlay, setIsOpenFeeCustomOverlay] = useState(true);
+  const [isOpenFeeCustomOverlay, setIsOpenFeeCustomOverlay] = useState(false);
 
   const onHandelClose = () => {
     setIsOpenFeeCustomOverlay(false);
@@ -33,6 +33,9 @@ export default function FeeSettingBottomSheet({ feeList, currentSelectedFeeId, o
     onSelectOption?.(id);
     onHandelClose();
   };
+
+  const feeCoinId = 'uatom-cosmos-cosmos';
+  const gasAmount = '100';
 
   return (
     <>
@@ -70,6 +73,8 @@ export default function FeeSettingBottomSheet({ feeList, currentSelectedFeeId, o
           onClose={() => {
             setIsOpenFeeCustomOverlay(false);
           }}
+          baseGasAmount={gasAmount}
+          feeCoinId={feeCoinId}
           onConfirm={(feeCoinId, gasAmount) => {
             // TODO: Implement
             console.log(feeCoinId, gasAmount);

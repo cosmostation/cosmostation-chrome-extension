@@ -51,7 +51,13 @@ export const FeeContainer = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   rowGap: '0.6rem',
-  marginTop: '0.4rem',
+  margin: '0.4rem 0 1.6rem',
+});
+
+export const InputContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '1.2rem',
 });
 
 export const BottomContainer = styled('div')({
