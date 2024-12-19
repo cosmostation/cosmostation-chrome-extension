@@ -26,7 +26,7 @@ export default function Entry({ coinId }: EntryProps) {
     <BaseBody>
       <EdgeAligner>
         <Container>
-          <CoinDetailBox testCoinId={coinId} />
+          <CoinDetailBox coinId={coinId} />
 
           <SectionWrapper>
             <SectionContainer>

@@ -384,6 +384,19 @@
         "manage-stake": {
           "layout": {
             "header": "Manage Stake"
+          },
+          "Entry": {
+            "Cosmos": {
+              "components": {
+                "StakingItem": {
+                  "index": {
+                    "commission": "Commission",
+                    "staked": "Staked",
+                    "reward": "Reward +{{counts}}"
+                  }
+                }
+              }
+            }
           }
         }
       }
