@@ -172,7 +172,8 @@
       "index": {
         "searchPlaceholder": "Search Crypto (Ex. BTC)",
         "valueHighOrder": "Value High Order",
-        "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+        "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
+        "aprDesc": "APR Desc"
       }
     },
     "History": {

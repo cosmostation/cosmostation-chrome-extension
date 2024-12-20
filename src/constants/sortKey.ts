@@ -7,3 +7,9 @@ export const DAPP_LIST_SORT_KEY = {
   ALPHABETICAL_ASC: 'alphabetical_asc',
   IS_MULTICHAIN_SUPPORT: 'is_multichain_support',
 } as const;
+
+export const COIN_SELECT_SORT_KEY = {
+  VALUE_HIGH_ORDER: 'value_high_order',
+  ALPHABETICAL_ASC: 'alphabetical_asc',
+  APR_DESC: 'apr_desc',
+} as const;

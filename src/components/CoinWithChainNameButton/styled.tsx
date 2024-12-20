@@ -18,3 +18,16 @@ export const SymbolTypography = styled(Typography)(({ theme }) => ({
 export const ChainNameTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
+
+export const APRTextContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+type APRTextProps = {
+  'data-is-high-apr'?: boolean;
+};
+
+export const APRText = styled('div')<APRTextProps>(({ theme, ...props }) => ({
+  color: props['data-is-high-apr'] ? theme.palette.accentColor.green400 : theme.palette.color.base1000,
+}));

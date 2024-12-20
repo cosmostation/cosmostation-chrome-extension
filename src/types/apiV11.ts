@@ -38,6 +38,7 @@ export type V11Param = {
       bech_validator_prefix?: string;
       origin_genesis_time: string;
       api_name: string;
+      is_stake_enabled?: boolean;
       is_support_mintscan?: boolean;
       is_support_cw20?: boolean;
       is_support_mobile_wallet?: boolean;

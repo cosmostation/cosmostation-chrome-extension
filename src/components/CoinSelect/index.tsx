@@ -5,7 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import SortBottomSheet from '@/components/SortBottomSheet';
-import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -27,10 +27,19 @@ type CoinSelectProps = {
   coinList?: FlatAccountAssets[];
   isBottomSheet?: boolean;
   searchPlaceholder?: string;
+  variant?: 'default' | 'stake';
   onSelectCoin: (coinId: string) => void;
 };
 
-export default function CoinSelect({ currentCoinId, chainList, coinList, isBottomSheet = false, searchPlaceholder, onSelectCoin }: CoinSelectProps) {
+export default function CoinSelect({
+  currentCoinId,
+  chainList,
+  coinList,
+  variant = 'default',
+  isBottomSheet = false,
+  searchPlaceholder,
+  onSelectCoin,
+}: CoinSelectProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -46,12 +55,27 @@ export default function CoinSelect({ currentCoinId, chainList, coinList, isBotto
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
 
+  // FIXME 코인 리스트 기반으로 체인 리스트를 추려야할 듯.
   const baseChainList = chainList || flatChainList;
-  const baseCoinList = coinList || data?.flatAccountAssets;
+
+  const baseCoinList = (() => {
+    if (coinList) return coinList;
+
+    // FIXME sui도 스테이킹 리스트에 포함되도록 수정 필요.
+    if (variant === 'stake') {
+      return data?.flatAccountAssets.filter(
+        (item) => item.chain.chainType === 'cosmos' && item.chain.isSupportStaking !== false && item.asset.id === item.chain.mainAssetDenom,
+      );
+    }
+
+    return data?.flatAccountAssets;
+  })();
 
   const currentSelectedChain = baseChainList.find((chain) => chain.id === currentSelectedChainId);
 
   const isShowAssetId = !!currentSelectedChain || !!search;
+
+  // FIXME apr가져오는 비즈니스 로직 필요.
 
   const computedAssetValues = useMemo(() => {
     return (
@@ -62,13 +86,17 @@ export default function CoinSelect({ currentCoinId, chainList, coinList, isBotto
 
         const value = times(displayAmount, chainPrice);
 
+        // FIXME 비즈니스 로직 처리 필요. 10 부터 30까지의 랜덤값으로 처리함.
+        const apr = variant === 'stake' ? Math.floor(Math.random() * 30) + 10 : undefined;
+
         return {
           ...item,
           value,
+          apr,
         };
       }) || []
     );
-  }, [baseCoinList, coinGeckoPrice, currency]);
+  }, [baseCoinList, coinGeckoPrice, currency, variant]);
 
   const sortedAssets = computedAssetValues.sort((a, b) => {
     if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
@@ -77,6 +105,12 @@ export default function CoinSelect({ currentCoinId, chainList, coinList, isBotto
 
     if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
       return a.asset.symbol.localeCompare(b.asset.symbol);
+    }
+
+    if (variant === 'stake') {
+      if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
+        return Number(minus(b.apr || 0, a.apr || 0));
+      }
     }
 
     return 0;
@@ -145,6 +179,7 @@ export default function CoinSelect({ currentCoinId, chainList, coinList, isBotto
             key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
             isActive={currentCoinId === getCoinId(coin.asset)}
             baseAmount={coin.balance}
+            apr={coin.apr ? coin.apr.toString() : undefined}
             symbol={coin.asset.symbol}
             chainName={coin.chain.name}
             assetId={coin.asset.id}
@@ -163,16 +198,33 @@ export default function CoinSelect({ currentCoinId, chainList, coinList, isBotto
       </CoinButtonWrapper>
 
       <SortBottomSheet
-        optionButtonProps={[
-          {
-            sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
-            children: <Typography variant="b2_M">{t('components.CoinSelect.index.valueHighOrder')}</Typography>,
-          },
-          {
-            sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
-            children: <Typography variant="b2_M">{t('components.CoinSelect.index.alphabeticalAsc')}</Typography>,
-          },
-        ]}
+        optionButtonProps={
+          variant === 'stake'
+            ? [
+                {
+                  sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
+                  children: <Typography variant="b2_M">{t('components.CoinSelect.index.valueHighOrder')}</Typography>,
+                },
+                {
+                  sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
+                  children: <Typography variant="b2_M">{t('components.CoinSelect.index.alphabeticalAsc')}</Typography>,
+                },
+                {
+                  sortKey: COIN_SELECT_SORT_KEY.APR_DESC,
+                  children: <Typography variant="b2_M">{t('components.CoinSelect.index.aprDesc')}</Typography>,
+                },
+              ]
+            : [
+                {
+                  sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
+                  children: <Typography variant="b2_M">{t('components.CoinSelect.index.valueHighOrder')}</Typography>,
+                },
+                {
+                  sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
+                  children: <Typography variant="b2_M">{t('components.CoinSelect.index.alphabeticalAsc')}</Typography>,
+                },
+              ]
+        }
         currentSortOption={sortOption}
         open={isOpenSortBottomSheet}
         onClose={() => setIsOpenSortBottomSheet(false)}

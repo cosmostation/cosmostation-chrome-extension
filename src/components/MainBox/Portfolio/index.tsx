@@ -10,6 +10,7 @@ import NumberTypo from '@/components/common/NumberTypo';
 import { TEST_CHAIN_LIST } from '@/constants/test';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
+import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import { Route as SelectSwapCoin } from '@/pages/wallet/swap';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -114,7 +115,15 @@ export default function PortFolio() {
         }
         bottom={
           <BottomButtonContainer>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              onClick={() => {
+                navigate({
+                  to: SelectStakeCoin.to,
+                });
+              }}
+              leadingIcon={<StakeIcon />}
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.stake')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton

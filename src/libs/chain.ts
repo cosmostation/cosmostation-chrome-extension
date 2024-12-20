@@ -63,6 +63,8 @@ export async function getChains() {
         };
       }) ?? [];
 
+    const isSupportStaking = chain.params.chainlist_params?.is_stake_enabled !== false;
+
     return {
       id,
       chainId,
@@ -77,6 +79,7 @@ export async function getChains() {
       explorer,
       feeInfo,
       accountTypes,
+      isSupportStaking,
     };
   });
 

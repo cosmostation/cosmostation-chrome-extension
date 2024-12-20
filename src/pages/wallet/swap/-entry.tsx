@@ -8,6 +8,7 @@ import { Route as Swap } from '@/pages/wallet/swap/$coinId';
 export default function Entry() {
   const navigate = useNavigate();
 
+  // TODO 스왑 가능한 코인 리스팅.
   return (
     <BaseBody>
       <EdgeAligner>

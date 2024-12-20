@@ -69,7 +69,7 @@ export default function Entry({ coinId }: EntryProps) {
       return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
     if (parsedFromCoinId.chainType === 'aptos') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+      return data?.aptosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
 
     // TODO bitcoin...
@@ -112,7 +112,7 @@ export default function Entry({ coinId }: EntryProps) {
       return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
     if (parsedToCoinId.chainType === 'aptos') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+      return data?.aptosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
 
     // TODO bitcoin...
