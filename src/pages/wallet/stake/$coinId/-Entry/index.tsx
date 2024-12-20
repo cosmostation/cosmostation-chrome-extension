@@ -23,7 +23,7 @@ import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import ValidatorBottomSheet from './-components/ValidatorBottomSheet';
+import ValidatorBottomSheet from './components/ValidatorBottomSheet';
 import {
   APRText,
   ChainNameContainer,
@@ -39,13 +39,14 @@ import {
   EstimatedRewardCoinImage,
   EstimatedValueTextContainer,
   InputWrapper,
-} from './-styled';
+} from './styled';
 
 type EntryProps = {
   coinId: string;
+  validatorAddress?: string;
 };
 
-export default function Entry({ coinId }: EntryProps) {
+export default function Entry({ coinId, validatorAddress }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -109,7 +110,7 @@ export default function Entry({ coinId }: EntryProps) {
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
   const [isOpenValidatorBottomSheet, setIsOpenValidatorBottomSheet] = useState(false);
 
-  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState('');
+  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState(validatorAddress || '');
 
   const testValidator = [
     {

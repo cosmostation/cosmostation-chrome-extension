@@ -7,6 +7,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
+import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
 import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
 
 import {
@@ -117,6 +118,13 @@ export default function StakingItem({
       <StakingOptionBottomSheet open={isOpenStakingOptionBottomSheet} onClose={() => setIsOpenStakingOptionBottomSheet(false)}>
         <BaseOptionButton
           onClick={() => {
+            navigate({
+              to: Stake.to,
+              params: {
+                coinId: stakingCoinId,
+                validatorAddress: validatorAddress,
+              },
+            });
             setIsOpenStakingOptionBottomSheet(false);
           }}
           leftSecondHeader={
