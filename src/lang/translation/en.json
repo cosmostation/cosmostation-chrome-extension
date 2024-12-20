@@ -794,6 +794,31 @@
             }
           }
         }
+      },
+      "claim-rewards": {
+        "$coinId": {
+          "$validatorAddress": {
+            "Entry": {
+              "Cosmos": {
+                "index": {
+                  "claimSymbolRewards": "Claim {{symbol}} Rewards",
+                  "stakingCoin": "{{chainName}} Staking Coin",
+                  "validator": "Validator",
+                  "rewardAmount": "Reward Amount",
+                  "memo": "Memo (Option)",
+                  "inform": "Rewards Address",
+                  "informDescription": "{{address}}\nrewards will be sent to the above address.",
+                  "claimRewardsReview": "Confirm Claim Rewards",
+                  "claimRewardsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed.",
+                  "claimRewards": "Claim Rewards"
+                }
+              }
+            },
+            "layout": {
+              "header": "Claim Rewards"
+            }
+          }
+        }
       }
     },
     "view": {

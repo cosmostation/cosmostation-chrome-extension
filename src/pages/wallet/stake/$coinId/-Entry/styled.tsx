@@ -37,7 +37,7 @@ export const InputWrapper = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  rowGap: '1.2rem',
+  rowGap: '2.2rem',
 });
 
 export const Divider = styled('div')(({ theme }) => ({

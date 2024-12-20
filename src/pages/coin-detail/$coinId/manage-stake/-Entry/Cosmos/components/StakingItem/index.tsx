@@ -7,6 +7,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
+import { Route as ClaimRewards } from '@/pages/wallet/claim-rewards/$coinId/$validatorAddress';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
 import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
 
@@ -156,6 +157,13 @@ export default function StakingItem({
         />
         <BaseOptionButton
           onClick={() => {
+            navigate({
+              to: ClaimRewards.to,
+              params: {
+                coinId: stakingCoinId,
+                validatorAddress: validatorAddress,
+              },
+            });
             setIsOpenStakingOptionBottomSheet(false);
           }}
           leftSecondHeader={

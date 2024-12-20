@@ -26,6 +26,7 @@ export type Validator = {
 type ValidatorSelectBoxProps = TextFieldProps & {
   validatorList: Validator[];
   currentValidaotorAddress?: string;
+  validatorCounts?: number;
   helperText?: string;
   rightAdornmentComponent?: JSX.Element;
   isBottomSheetOpen?: boolean;
@@ -35,6 +36,7 @@ type ValidatorSelectBoxProps = TextFieldProps & {
 export default function ValidatorSelectBox({
   validatorList,
   currentValidaotorAddress,
+  validatorCounts,
   helperText,
   rightAdornmentComponent,
   error = false,
@@ -42,6 +44,8 @@ export default function ValidatorSelectBox({
   onClickItem,
   ...remainder
 }: ValidatorSelectBoxProps) {
+  const { disabled } = remainder;
+
   const isShowBottomContainer = helperText;
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -62,12 +66,13 @@ export default function ValidatorSelectBox({
         slotProps={{
           input: {
             readOnly: true,
-            startAdornment: currentValidaotorAddress ? (
-              <InputAdornment position="start">
-                <ImageContainer src={currentValidator?.validatorImage} />
-              </InputAdornment>
-            ) : null,
-            endAdornment: (
+            startAdornment:
+              !validatorCounts && currentValidaotorAddress ? (
+                <InputAdornment position="start">
+                  <ImageContainer src={currentValidator?.validatorImage} />
+                </InputAdornment>
+              ) : null,
+            endAdornment: disabled ? null : (
               <InputAdornment position="end">
                 <RightAdormentConatiner>
                   {rightAdornmentComponent}
@@ -83,7 +88,7 @@ export default function ValidatorSelectBox({
           },
         }}
         onClick={handleInputClick}
-        value={currentValidator?.validatorName}
+        value={validatorCounts ? `${currentValidator?.validatorName} + ${validatorCounts}` : currentValidator?.validatorName}
         {...remainder}
       />
       <BottomWrapper>

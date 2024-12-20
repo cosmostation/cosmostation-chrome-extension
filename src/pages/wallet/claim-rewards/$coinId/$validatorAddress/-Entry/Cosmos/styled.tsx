@@ -47,6 +47,6 @@ export const EstimatedValueTextContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
 
-export const LockDateTextSpan = styled('span')(({ theme }) => ({
-  color: theme.palette.accentColor.red400,
-}));
+export const InformationPanelBody = styled('div')({
+  whiteSpace: 'pre-wrap',
+});

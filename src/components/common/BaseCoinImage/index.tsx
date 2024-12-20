@@ -2,6 +2,8 @@ import Image from 'components/common/Image';
 
 import { BadgeImageContainer, CoinAfterImage, ImageContainer } from './styled';
 
+import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
+
 export type BaseCoinImageProps = React.HTMLAttributes<HTMLDivElement> & {
   imageURL?: string;
   badgeImageURL?: string;
@@ -11,12 +13,12 @@ export type BaseCoinImageProps = React.HTMLAttributes<HTMLDivElement> & {
 export default function BaseCoinImage({ imageURL, badgeImageURL, isAggregatedCoin, ...remainder }: BaseCoinImageProps) {
   return (
     <ImageContainer style={{ width: '3.2rem', height: '3.2rem' }} {...remainder}>
-      <Image src={imageURL} />
+      <Image src={imageURL} defaultImgSrc={DefaultCoinImage} />
       {isAggregatedCoin && (
         <CoinAfterImage>
-          <Image src={imageURL} />
+          <Image src={imageURL} defaultImgSrc={DefaultCoinImage} />
           <CoinAfterImage>
-            <Image src={imageURL} />
+            <Image src={imageURL} defaultImgSrc={DefaultCoinImage} />
           </CoinAfterImage>
         </CoinAfterImage>
       )}

@@ -71,6 +71,25 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
         color: theme.palette.color.base700,
       },
     },
+    '& .MuiInputBase-input.Mui-disabled': {
+      WebkitTextFillColor: theme.palette.color.base1300,
+    },
+  },
+
+  '& .MuiInput-underline.Mui-disabled': {
+    '&:before': {
+      borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+    },
+
+    '&:after': {
+      borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+      transition: 'none',
+    },
+
+    ':hover:not(.Mui-focused):before': {
+      borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+      transition: 'none',
+    },
   },
 
   '& .MuiInputLabel-standard': {
