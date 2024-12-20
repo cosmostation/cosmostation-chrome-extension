@@ -14,8 +14,10 @@ import PortFolio from '@/components/MainBox/Portfolio';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import { gte, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -46,18 +48,19 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { dashboardCoinSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
+  const { dashboardCoinSortKey, currency, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   // NOTE 디비에 저장할 것.
   const [search, setsearch] = useState('');
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+  const [isHideSmallValue, setIsHideSmallValue] = useState(false);
+
   const tabLabels = ['Crypto', 'NFTs'];
 
   const { data: currentAccountAssets } = useAccountAssets();
   // const { data: groupAssets } = useGroupAssets();
-
-  const coinList = currentAccountAssets?.flatAccountAssets || [];
 
   // const groupedAssets = useMemo(() => {
   //   // const sample = [
@@ -98,6 +101,37 @@ export default function Entry() {
   //   });
   //   console.log('🚀 ~ aaa ~ aaa:', aaa);
   // }, [coinList, groupAssets]);
+
+  const filteredAssetsBySearch = (() => {
+    const baesCoinList = currentAccountAssets?.flatAccountAssets || [];
+
+    const hideSmallValueAssets = (() => {
+      if (isHideSmallValue) {
+        return baesCoinList.filter((coin) => {
+          const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
+
+          const chainPrice = (coin.asset.coinGeckoId && coinGeckoPrice?.[coin.asset.coinGeckoId]?.[currency]) || 0;
+
+          const value = times(displayAmount, chainPrice);
+
+          return gte(value, '0.001');
+        });
+      }
+
+      return baesCoinList;
+    })();
+
+    if (search.length > 1) {
+      return (
+        hideSmallValueAssets.filter((asset) => {
+          const condition = [asset.asset.symbol, asset.asset.id];
+
+          return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
+        }) || []
+      );
+    }
+    return hideSmallValueAssets;
+  })();
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -146,7 +180,11 @@ export default function Entry() {
                 </Carousel>
               </AdCarouselContainer>
               <ManageCryptoContainer>
-                <CheckBoxTextButton>
+                <CheckBoxTextButton
+                  onClick={() => {
+                    setIsHideSmallValue(!isHideSmallValue);
+                  }}
+                >
                   <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
                 </CheckBoxTextButton>
                 <IconTextButton leadingIcon={<PlusIcon />}>
@@ -154,11 +192,12 @@ export default function Entry() {
                 </IconTextButton>
               </ManageCryptoContainer>
             </StickyTabPanelContentsContainer>
+            {/* FIXME 스크롤이 아래 인 상태에서 클릭 시 스크롤이 그대로 유지되어 아래에 있는 문제 해결 필요 */}
             <CoinButtonWrapper>
-              {coinList.map((coin) => {
+              {filteredAssetsBySearch.map((coin) => {
                 return (
                   <CoinWithMarketTrendButton
-                    key={coin.chain.id + coin.asset.type}
+                    key={getCoinId(coin.asset)}
                     onClick={() => {
                       navigate({
                         to: CoinDetail.to,
