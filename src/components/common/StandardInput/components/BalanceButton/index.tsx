@@ -11,17 +11,18 @@ import WalletIcon from 'assets/images/icons/Wallet14.svg';
 type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   coin: Asset;
   balance: string;
+  leftComponent?: JSX.Element;
   children?: JSX.Element;
 };
 
-export default function BalanceButton({ coin, balance, ...remainder }: IconTextButtonProps) {
+export default function BalanceButton({ coin, balance, leftComponent, ...remainder }: IconTextButtonProps) {
   const { symbol, decimals } = coin;
 
   const displayAvailableAmount = toDisplayDenomAmount(balance, decimals);
 
   return (
     <SideTextButton {...remainder} type="button">
-      <WalletIcon />
+      {leftComponent ? leftComponent : <WalletIcon />}
       <AmountContainer>
         <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimals}>
           {displayAvailableAmount}

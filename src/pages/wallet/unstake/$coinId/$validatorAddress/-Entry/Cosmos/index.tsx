@@ -7,7 +7,6 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
 import Base1000Text from '@/components/common/Base1000Text';
-import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
@@ -23,29 +22,15 @@ import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import ValidatorBottomSheet from './-components/ValidatorBottomSheet';
-import {
-  APRText,
-  ChainNameContainer,
-  CoinContainer,
-  CoinImage,
-  CoinSymbolText,
-  CommissionContainer,
-  CommissionTextSpan,
-  Divider,
-  EstimatedReward,
-  EstimatedRewardAmountContainer,
-  EstimatedRewardCoin,
-  EstimatedRewardCoinImage,
-  EstimatedValueTextContainer,
-  InputWrapper,
-} from './-styled';
+import ValidatorBottomSheet from './components/ValidatorBottomSheet';
+import { ChainNameContainer, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper, LockDateTextSpan } from './styled';
 
-type EntryProps = {
+type CosmosProps = {
   coinId: string;
+  validatorAddress: string;
 };
 
-export default function Entry({ coinId }: EntryProps) {
+export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -56,43 +41,27 @@ export default function Entry({ coinId }: EntryProps) {
 
   const parsedCoinId = parseCoinId(coinId);
 
-  const selectedStakingCoin = (() => {
+  const selectedUnstakingCoin = (() => {
     if (!data) return undefined;
 
     if (parsedCoinId.chainType === 'cosmos') {
-      const aggregatedCosmosAccountAssets = [...data.cosmosAccountAssets, ...data.cw20AccountAssets];
-
-      return aggregatedCosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+      return data.cosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
 
-    if (parsedCoinId.chainType === 'evm') {
-      const aggregatedEVMAccountAssets = [...data.evmAccountAssets, ...data.erc20AccountAssets];
-
-      return aggregatedEVMAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-
-    if (parsedCoinId.chainType === 'sui') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-    if (parsedCoinId.chainType === 'aptos') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-
-    // TODO bitcoin...
     return undefined;
   })();
 
-  const coinImageURL = selectedStakingCoin?.asset.image || '';
+  const coinImageURL = selectedUnstakingCoin?.asset.image || '';
 
-  const coinSymbol = selectedStakingCoin?.asset.symbol || '';
-  const coinDecimal = selectedStakingCoin?.asset.decimals || 0;
+  const coinSymbol = selectedUnstakingCoin?.asset.symbol || '';
+  const coinDecimal = selectedUnstakingCoin?.asset.decimals || 0;
 
-  const chainName = selectedStakingCoin?.chain.name || '';
+  const chainName = selectedUnstakingCoin?.chain.name || '';
 
-  const coinGeckoId = selectedStakingCoin?.asset.coinGeckoId || '';
+  const coinGeckoId = selectedUnstakingCoin?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
-  const baseAvailableAmount = selectedStakingCoin?.balance || '0';
+  const baseAvailableAmount = selectedUnstakingCoin?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
 
   console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
@@ -109,7 +78,7 @@ export default function Entry({ coinId }: EntryProps) {
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
   const [isOpenValidatorBottomSheet, setIsOpenValidatorBottomSheet] = useState(false);
 
-  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState('');
+  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState(validatorAddress);
 
   const testValidator = [
     {
@@ -136,19 +105,20 @@ export default function Entry({ coinId }: EntryProps) {
   ];
 
   const currentValidator = testValidator.find((validator) => validator.validatorAddress === currentValidaotrAddress);
-  const apr = 14.92;
 
-  const estimatedMonthlyReward = '1';
+  const lockUpPeriod = '21';
+  console.log('🚀 ~ Entry ~ currentValidator:', currentValidator);
+
   return (
     <>
       <BaseBody>
         <>
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.stake.$coinId.entry.stake')}`}</CoinSymbolText>
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstake')}`}</CoinSymbolText>
             <ChainNameContainer>
               <Typography variant="b3_M">
-                {t('pages.wallet.stake.$coinId.entry.stakingCoin', {
+                {t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.stakingCoin', {
                   chainName: chainName,
                 })}
               </Typography>
@@ -163,27 +133,11 @@ export default function Entry({ coinId }: EntryProps) {
                 setIsOpenValidatorBottomSheet(true);
               }}
               isBottomSheetOpen={isOpenValidatorBottomSheet}
-              label={t('pages.wallet.stake.$coinId.entry.validator')}
-              rightAdornmentComponent={
-                currentValidator && (
-                  <CommissionContainer>
-                    <Base1000Text variant="b3_R">
-                      {`${t('pages.wallet.stake.$coinId.entry.commission')} : `}
-                      <CommissionTextSpan>
-                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={2}>
-                          {currentValidator.commission}
-                        </NumberTypo>
-                      </CommissionTextSpan>
-                    </Base1000Text>
-                    &nbsp;
-                    <Base1300Text variant="h7n_R">{'%'}</Base1300Text>
-                  </CommissionContainer>
-                )
-              }
+              label={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.validator')}
             />
 
             <StandardInput
-              label={t('pages.wallet.stake.$coinId.entry.stakingAmount')}
+              label={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakingAmount')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={sendDisplayAmount}
@@ -208,12 +162,15 @@ export default function Entry({ coinId }: EntryProps) {
                 },
               }}
               rightBottomAdornment={
-                selectedStakingCoin && (
+                selectedUnstakingCoin && (
                   <BalanceButton
                     onClick={() => {
                       setSendDisplayAmount(maxAmount);
                     }}
-                    coin={selectedStakingCoin?.asset}
+                    leftComponent={
+                      <Base1000Text variant="b3_R">{`${t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.staked')} :`}</Base1000Text>
+                    }
+                    coin={selectedUnstakingCoin?.asset}
                     balance={baseAvailableAmount}
                   />
                 )
@@ -222,7 +179,7 @@ export default function Entry({ coinId }: EntryProps) {
             <StandardInput
               multiline
               maxRows={3}
-              label={t('pages.wallet.stake.$coinId.entry.memo')}
+              label={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.memo')}
               // error={!!errors.password}
               // helperText={errors.password?.message}
               value={inputMemo}
@@ -235,34 +192,22 @@ export default function Entry({ coinId }: EntryProps) {
         <>
           <InformationPanel
             varitant="info"
-            title={<Typography variant="b3_M">{t('pages.wallet.stake.$coinId.entry.inform')}</Typography>}
+            title={<Typography variant="b3_M">{t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.inform')}</Typography>}
             body={
               <Typography variant="b4_R_Multiline">
-                {t('pages.wallet.stake.$coinId.entry.inform1', {
+                {t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.informDescription1', {
                   symbol: coinSymbol,
                 })}
-                &nbsp;
-                <APRText variant="b4_R_Multiline">
-                  {t('pages.wallet.stake.$coinId.entry.inform2', {
-                    apr: apr.toFixed(2),
+                <LockDateTextSpan>
+                  {t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.lockUpPeriod', {
+                    lockUpPeriod: lockUpPeriod,
                   })}
-                </APRText>
+                </LockDateTextSpan>
+                {t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.informDescription2')}
               </Typography>
             }
-          >
-            <Divider />
-            <EstimatedReward>
-              <EstimatedRewardCoin>
-                <EstimatedRewardCoinImage src={coinImageURL} />
-                <Base1300Text variant="b3_M">{coinSymbol}</Base1300Text>
-              </EstimatedRewardCoin>
-              <EstimatedRewardAmountContainer>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={coinDecimal}>
-                  {estimatedMonthlyReward}
-                </NumberTypo>
-              </EstimatedRewardAmountContainer>
-            </EstimatedReward>
-          </InformationPanel>
+          />
+
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
@@ -276,9 +221,9 @@ export default function Entry({ coinId }: EntryProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}
-        contentsSubTitle={t('pages.wallet.stake.$coinId.entry.stakeReviewSub')}
-        confirmButtonText={t('pages.wallet.stake.$coinId.entry.stake')}
+        contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReview')}
+        contentsSubTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReviewDescription')}
+        confirmButtonText={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstake')}
         onClickCancel={() => {
           console.log('onClickCancel');
         }}
@@ -297,6 +242,7 @@ export default function Entry({ coinId }: EntryProps) {
         open={isOpenValidatorBottomSheet}
         onClose={() => setIsOpenValidatorBottomSheet(false)}
         currentValidatorId={currentValidaotrAddress}
+        currentUnstakingCoinId={coinId}
         onClickItem={(validatorAddress) => {
           setCurrentValidaotrAddress(validatorAddress);
         }}

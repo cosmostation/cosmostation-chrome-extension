@@ -1,0 +1,37 @@
+import { styled } from '@mui/material/styles';
+
+type StyledButtonProps = {
+  isActive: boolean;
+};
+
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
+  width: '100%',
+
+  display: 'flex',
+  alignItems: 'center',
+
+  padding: '1.2rem 1.6rem',
+
+  backgroundColor: props['isActive'] ? theme.palette.color.base200 : 'transparent',
+  border: 'none',
+
+  '&: hover': {
+    backgroundColor: theme.palette.color.base100,
+  },
+}));
+
+export const ImageContainer = styled('div')({
+  width: '3.2rem',
+  height: '3.2rem',
+  borderRadius: '50%',
+  overflow: 'hidden',
+  marginRight: '1rem',
+  '& > img': {
+    width: '100%',
+    height: '100%',
+  },
+});
+
+export const StakedAmountTextContainer = styled('div')(({ theme }) => ({
+  color: theme.palette.color.base1300,
+}));

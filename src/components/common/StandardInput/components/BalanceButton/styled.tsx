@@ -19,8 +19,6 @@ export const SideTextButton = styled('button')(({ theme }) => ({
 
   color: theme.palette.color.base1200,
 
-  textDecorationLine: 'underline',
-
   '&:hover': {
     opacity: 0.7,
   },
@@ -29,4 +27,5 @@ export const SideTextButton = styled('button')(({ theme }) => ({
 export const AmountContainer = styled('div')({
   display: 'flex',
   alignItems: 'baseline',
+  textDecorationLine: 'underline',
 });

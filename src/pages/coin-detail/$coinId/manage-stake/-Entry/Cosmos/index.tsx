@@ -43,6 +43,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <StyledTabPanel value={tabValue} index={0}>
               <StakingItemContainer>
                 <StakingItem
+                  stakingCoinId={coinId}
+                  validatorAddress="testValidatorAddress2"
                   validatorImage="https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png"
                   validatorName="Cosmostation"
                   commission="5"

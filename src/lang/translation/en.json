@@ -750,10 +750,48 @@
             "inform1": "The estimated {{symbol}} staking",
             "inform2": "APR is {{apr}}%",
             "stakeReview": "Confirm Stake",
-            "stakeReviewSub": "Are you sure you want to proceed with the stake? \nThis action cannot be undone once completed."
+            "stakeReviewSub": "Are you sure you want to proceed with the stake? \nThis action cannot be undone once completed.",
+            "commission": "Commission"
           },
           "layout": {
             "header": "Stake"
+          }
+        }
+      },
+      "unstake": {
+        "$coinId": {
+          "$validatorAddress": {
+            "Entry": {
+              "Cosmos": {
+                "components": {
+                  "ValidatorBottomSheet": {
+                    "index": {
+                      "title": "Select Validator",
+                      "searchPlaceholder": "Search Validator",
+                      "validator": "Validator",
+                      "staked": "Staked"
+                    }
+                  }
+                },
+                "index": {
+                  "unstake": "Unstake",
+                  "stakingCoin": "{{chainName}} Staking Coin",
+                  "validator": "Validator",
+                  "unstakingAmount": "Unstaking Amount",
+                  "staked": "Staked",
+                  "memo": "Memo (Option)",
+                  "inform": "Unstake Period",
+                  "informDescription1": "Unstaking {{symbol}} incurs a ",
+                  "lockUpPeriod": "{{lockUpPeriod}} day ",
+                  "informDescription2": "waiting period, during which you can cancel the process",
+                  "unstakeReview": "Confirm Unstake",
+                  "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed."
+                }
+              }
+            },
+            "layout": {
+              "header": "Unstake"
+            }
           }
         }
       }

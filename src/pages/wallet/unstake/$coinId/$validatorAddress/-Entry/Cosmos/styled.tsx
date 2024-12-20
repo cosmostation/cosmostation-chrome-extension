@@ -1,9 +1,7 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseCoinImage from '@/components/common/BaseCoinImage';
-import Image from '@/components/common/Image';
 
 export const CoinContainer = styled('div')({
   display: 'flex',
@@ -49,36 +47,6 @@ export const EstimatedValueTextContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
 
-export const APRText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.accentColor.green400,
-}));
-
-export const EstimatedReward = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-});
-
-export const EstimatedRewardCoin = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  columnGap: '0.5rem',
-});
-
-export const EstimatedRewardCoinImage = styled(Image)({
-  width: '1.8rem',
-  height: '1.8rem',
-});
-
-export const EstimatedRewardAmountContainer = styled('div')(({ theme }) => ({
-  color: theme.palette.color.base1300,
-}));
-
-export const CommissionContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-});
-
-export const CommissionTextSpan = styled('span')(({ theme }) => ({
-  color: theme.palette.color.base1300,
+export const LockDateTextSpan = styled('span')(({ theme }) => ({
+  color: theme.palette.accentColor.red400,
 }));

@@ -39,6 +39,7 @@ import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/accoun
 import { Route as AccountRestoreWalletCoinTypeSettingIndexImport } from './pages/account/restore-wallet/coin-type-setting/index'
 import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account/backup-check/$accountId/index'
+import { Route as WalletUnstakeCoinIdValidatorAddressIndexImport } from './pages/wallet/unstake/$coinId/$validatorAddress/index'
 import { Route as WalletTxResultTxHashCoinIdIndexImport } from './pages/wallet/tx-result/$txHash/$coinId/index'
 import { Route as ManageAccountViewPrivateKeyAccountIdIndexImport } from './pages/manage-account/view/privateKey/$accountId/index'
 import { Route as ManageAccountViewMultiChainPriateKeyAccountIdIndexImport } from './pages/manage-account/view/multi-chain-priateKey/$accountId/index'
@@ -227,6 +228,13 @@ const AccountBackupCheckAccountIdIndexRoute =
   AccountBackupCheckAccountIdIndexImport.update({
     id: '/account/backup-check/$accountId/',
     path: '/account/backup-check/$accountId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const WalletUnstakeCoinIdValidatorAddressIndexRoute =
+  WalletUnstakeCoinIdValidatorAddressIndexImport.update({
+    id: '/wallet/unstake/$coinId/$validatorAddress/',
+    path: '/wallet/unstake/$coinId/$validatorAddress/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -542,6 +550,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletTxResultTxHashCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/unstake/$coinId/$validatorAddress/': {
+      id: '/wallet/unstake/$coinId/$validatorAddress/'
+      path: '/wallet/unstake/$coinId/$validatorAddress'
+      fullPath: '/wallet/unstake/$coinId/$validatorAddress'
+      preLoaderRoute: typeof WalletUnstakeCoinIdValidatorAddressIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/detail/mnemonic/account/$accountId/': {
       id: '/manage-account/detail/mnemonic/account/$accountId/'
       path: '/manage-account/detail/mnemonic/account/$accountId'
@@ -597,6 +612,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/view/multi-chain-priateKey/$accountId': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/wallet/tx-result/$txHash/$coinId': typeof WalletTxResultTxHashCoinIdIndexRoute
+  '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   '/manage-account/detail/privateKey/account/$accountId': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -637,6 +653,7 @@ export interface FileRoutesByTo {
   '/manage-account/view/multi-chain-priateKey/$accountId': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/wallet/tx-result/$txHash/$coinId': typeof WalletTxResultTxHashCoinIdIndexRoute
+  '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   '/manage-account/detail/privateKey/account/$accountId': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -678,6 +695,7 @@ export interface FileRoutesById {
   '/manage-account/view/multi-chain-priateKey/$accountId/': typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   '/manage-account/view/privateKey/$accountId/': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/wallet/tx-result/$txHash/$coinId/': typeof WalletTxResultTxHashCoinIdIndexRoute
+  '/wallet/unstake/$coinId/$validatorAddress/': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId/': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   '/manage-account/detail/privateKey/account/$accountId/': typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -720,6 +738,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/multi-chain-priateKey/$accountId'
     | '/manage-account/view/privateKey/$accountId'
     | '/wallet/tx-result/$txHash/$coinId'
+    | '/wallet/unstake/$coinId/$validatorAddress'
     | '/manage-account/detail/mnemonic/account/$accountId'
     | '/manage-account/detail/privateKey/account/$accountId'
   fileRoutesByTo: FileRoutesByTo
@@ -759,6 +778,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/multi-chain-priateKey/$accountId'
     | '/manage-account/view/privateKey/$accountId'
     | '/wallet/tx-result/$txHash/$coinId'
+    | '/wallet/unstake/$coinId/$validatorAddress'
     | '/manage-account/detail/mnemonic/account/$accountId'
     | '/manage-account/detail/privateKey/account/$accountId'
   id:
@@ -798,6 +818,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/multi-chain-priateKey/$accountId/'
     | '/manage-account/view/privateKey/$accountId/'
     | '/wallet/tx-result/$txHash/$coinId/'
+    | '/wallet/unstake/$coinId/$validatorAddress/'
     | '/manage-account/detail/mnemonic/account/$accountId/'
     | '/manage-account/detail/privateKey/account/$accountId/'
   fileRoutesById: FileRoutesById
@@ -839,6 +860,7 @@ export interface RootRouteChildren {
   ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute: typeof ManageAccountViewMultiChainPriateKeyAccountIdIndexRoute
   ManageAccountViewPrivateKeyAccountIdIndexRoute: typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   WalletTxResultTxHashCoinIdIndexRoute: typeof WalletTxResultTxHashCoinIdIndexRoute
+  WalletUnstakeCoinIdValidatorAddressIndexRoute: typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute: typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
   ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute: typeof ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute
 }
@@ -891,6 +913,8 @@ const rootRouteChildren: RootRouteChildren = {
   ManageAccountViewPrivateKeyAccountIdIndexRoute:
     ManageAccountViewPrivateKeyAccountIdIndexRoute,
   WalletTxResultTxHashCoinIdIndexRoute: WalletTxResultTxHashCoinIdIndexRoute,
+  WalletUnstakeCoinIdValidatorAddressIndexRoute:
+    WalletUnstakeCoinIdValidatorAddressIndexRoute,
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute:
     ManageAccountDetailMnemonicAccountAccountIdIndexRoute,
   ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute:
@@ -942,6 +966,7 @@ export const routeTree = rootRoute
         "/manage-account/view/multi-chain-priateKey/$accountId/",
         "/manage-account/view/privateKey/$accountId/",
         "/wallet/tx-result/$txHash/$coinId/",
+        "/wallet/unstake/$coinId/$validatorAddress/",
         "/manage-account/detail/mnemonic/account/$accountId/",
         "/manage-account/detail/privateKey/account/$accountId/"
       ]
@@ -1050,6 +1075,9 @@ export const routeTree = rootRoute
     },
     "/wallet/tx-result/$txHash/$coinId/": {
       "filePath": "wallet/tx-result/$txHash/$coinId/index.tsx"
+    },
+    "/wallet/unstake/$coinId/$validatorAddress/": {
+      "filePath": "wallet/unstake/$coinId/$validatorAddress/index.tsx"
     },
     "/manage-account/detail/mnemonic/account/$accountId/": {
       "filePath": "manage-account/detail/mnemonic/account/$accountId/index.tsx"

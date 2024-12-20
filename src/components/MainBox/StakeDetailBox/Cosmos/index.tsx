@@ -5,7 +5,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { Route as Send } from '@/pages/wallet/send/$coinId';
+import { Route as Stake } from '@/pages/wallet/stake/$coinId';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
@@ -75,7 +75,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <StyledIconTextButton
               onClick={() => {
                 navigate({
-                  to: Send.to,
+                  to: Stake.to,
                   params: { coinId: coinId },
                 });
               }}

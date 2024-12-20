@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
+import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
 
 import {
   AmountContainer,
@@ -24,6 +26,8 @@ import StakingOptionBottomSheet from '../../../components/StakingOptionBottomShe
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
 type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+  stakingCoinId: string;
+  validatorAddress: string;
   validatorName: string;
   commission: string;
   symbol: string;
@@ -35,6 +39,8 @@ type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLB
 };
 
 export default function StakingItem({
+  stakingCoinId,
+  validatorAddress,
   validatorName,
   commission,
   symbol,
@@ -46,6 +52,7 @@ export default function StakingItem({
   ...remainder
 }: StakingItemProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [isOpenStakingOptionBottomSheet, setIsOpenStakingOptionBottomSheet] = useState(false);
 
@@ -121,6 +128,13 @@ export default function StakingItem({
         />
         <BaseOptionButton
           onClick={() => {
+            navigate({
+              to: Unstake.to,
+              params: {
+                coinId: stakingCoinId,
+                validatorAddress: validatorAddress,
+              },
+            });
             setIsOpenStakingOptionBottomSheet(false);
           }}
           leftSecondHeader={
