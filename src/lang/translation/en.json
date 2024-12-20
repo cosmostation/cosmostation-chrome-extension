@@ -422,6 +422,15 @@
                     "totalStaked": "Total Staked",
                     "startEarning": "Start Earning"
                   }
+                },
+                "PendingItem": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "totalStaked": "Total Staked",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "startEarning": "Start Earning"
+                  }
                 }
               }
             },
@@ -444,8 +453,11 @@
                 }
               },
               "index": {
-                "emptyPending": "emptyPending",
-                "emptyPendingDescription": "emptyPendingDescription"
+                "emptyPending": "No Unstaking",
+                "emptyPendingDescription": "There are no pending objects.",
+                "startStaking": "Start Staking with COSMOSTATION",
+                "startStakingDescription": "Start earning staking rewards and\ncontribute to the network ecosystem",
+                "goToStake": "Go to Stake"
               }
             }
           }

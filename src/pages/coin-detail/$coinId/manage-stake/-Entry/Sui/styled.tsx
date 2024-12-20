@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import { TabPanel } from '@/components/common/Tab';
+import OutlinedChipButton from '@/components/OutlinedChipButton';
 
 export const Container = styled('div')({
   width: '100%',
@@ -57,4 +58,30 @@ export const EmptyAssetContainer = styled('div')({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
+
+  display: 'flex',
+  flexDirection: 'column',
+
+  alignItems: 'center',
 });
+
+export const StyledOutlinedChipButton = styled(OutlinedChipButton)({
+  marginTop: '1.2rem',
+});
+
+export const RightArrowIconContainer = styled('div')(({ theme }) => ({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  marginLeft: '0.2rem',
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+
+    fill: theme.palette.color.base800,
+
+    '& > path': {
+      fill: theme.palette.color.base800,
+    },
+  },
+}));
