@@ -2,7 +2,8 @@ import { styled } from '@mui/material/styles';
 
 export const ImageContainer = styled('div')({
   position: 'relative',
-
+  width: '3.2rem',
+  height: '3.2rem',
   zIndex: 0,
   '& > img': {
     width: '100%',

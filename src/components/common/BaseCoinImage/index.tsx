@@ -12,7 +12,7 @@ export type BaseCoinImageProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export default function BaseCoinImage({ imageURL, badgeImageURL, isAggregatedCoin, ...remainder }: BaseCoinImageProps) {
   return (
-    <ImageContainer style={{ width: '3.2rem', height: '3.2rem' }} {...remainder}>
+    <ImageContainer {...remainder}>
       <Image src={imageURL} defaultImgSrc={DefaultCoinImage} />
       {isAggregatedCoin && (
         <CoinAfterImage>

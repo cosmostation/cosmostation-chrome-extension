@@ -25,7 +25,6 @@ export const ImageContainer = styled('div')({
   height: '3.2rem',
   borderRadius: '50%',
   overflow: 'hidden',
-  marginRight: '1rem',
   '& > img': {
     width: '100%',
     height: '100%',
