@@ -99,6 +99,7 @@ export default function Sui({ coinId }: SuiProps) {
                   dummyStakingItems.map((item, index) => (
                     <StakingItem
                       key={index}
+                      stakingCoinId={coinId}
                       validatorImage={item.validatorImage}
                       validatorName={item.validatorName}
                       symbol={item.symbol}
