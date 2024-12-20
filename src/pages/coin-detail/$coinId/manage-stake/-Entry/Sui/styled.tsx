@@ -27,7 +27,6 @@ export const StickyTabContainer = styled('div')(({ theme }) => ({
 }));
 
 export const StyledTabPanel = styled(TabPanel)({
-  marginTop: '0.8rem',
   display: 'flex',
   flexDirection: 'column',
 });
@@ -50,6 +49,7 @@ export const StakingItemContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   rowGap: '0.8rem',
+  marginTop: '0.8rem',
 });
 
 export const EmptyAssetContainer = styled('div')({
