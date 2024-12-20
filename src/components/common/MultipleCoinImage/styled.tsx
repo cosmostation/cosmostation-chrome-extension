@@ -5,10 +5,15 @@ import Image from '../Image';
 export const ImageContainer = styled('div')({
   position: 'relative',
 
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
   zIndex: 0,
   '& > img': {
-    width: '100%',
-    height: '100%',
+    width: '3.2rem',
+    height: '3.2rem',
   },
 });
 

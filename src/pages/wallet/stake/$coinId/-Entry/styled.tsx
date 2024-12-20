@@ -11,7 +11,7 @@ export const CoinContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
 
-  margin: '1.4rem 0 1.2rem',
+  margin: '1.6rem 0 1.2rem',
 });
 
 export const CoinImage = styled(BaseCoinImage)({

@@ -5,25 +5,34 @@ export type MultipleCoinImageProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 export default function MultipleCoinImage({ imageURLs, ...remainder }: MultipleCoinImageProps) {
-  // return (
-  //   <ImageContainer style={{ width: '3.2rem', height: '3.2rem' }} {...remainder}>
-  //     {imageURLs?.map((imageURL, i )=>{
-
-  //       return <Image key={imageURL} src={imageURL}/>
-  //     })}
-  //   </ImageContainer>
-  // );
-
   return (
-    <ImageContainer style={{ width: '3.2rem', height: '3.2rem' }} {...remainder}>
+    <ImageContainer {...remainder}>
       {imageURLs?.map((item, i) => {
+        const imageURLCount = imageURLs?.length || 0;
+
+        const imageCountLimit = (() => {
+          if (imageURLCount === 5) {
+            return 39;
+          }
+          if (imageURLCount === 4) {
+            return 40;
+          }
+          if (imageURLCount === 3) {
+            return 42;
+          }
+          if (imageURLCount === 2) {
+            return 43;
+          }
+          return 46;
+        })();
+
         return (
           <MultipleImage
             key={item}
             src={item}
             sx={{
-              left: `${i * 25}%`,
-              zIndex: i,
+              left: `${imageCountLimit + i * 4}%`,
+              zIndex: -i,
             }}
           />
         );

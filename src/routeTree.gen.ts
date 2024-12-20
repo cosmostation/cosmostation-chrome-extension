@@ -32,6 +32,7 @@ import { Route as WalletSwapCoinIdIndexImport } from './pages/wallet/swap/$coinI
 import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coinId/index'
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
+import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
 import { Route as ManageAccountCreateAccountMnemonicIdIndexImport } from './pages/manage-account/create-account/$mnemonicId/index'
 import { Route as CoinDetailCoinIdManageStakeIndexImport } from './pages/coin-detail/$coinId/manage-stake/index'
 import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index'
@@ -183,6 +184,13 @@ const WalletReceiveCoinIdIndexRoute = WalletReceiveCoinIdIndexImport.update({
   path: '/wallet/receive/$coinId/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const WalletClaimAllRewardsCoinIdIndexRoute =
+  WalletClaimAllRewardsCoinIdIndexImport.update({
+    id: '/wallet/claim-all-rewards/$coinId/',
+    path: '/wallet/claim-all-rewards/$coinId/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ManageAccountCreateAccountMnemonicIdIndexRoute =
   ManageAccountCreateAccountMnemonicIdIndexImport.update({
@@ -489,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAccountCreateAccountMnemonicIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/claim-all-rewards/$coinId/': {
+      id: '/wallet/claim-all-rewards/$coinId/'
+      path: '/wallet/claim-all-rewards/$coinId'
+      fullPath: '/wallet/claim-all-rewards/$coinId'
+      preLoaderRoute: typeof WalletClaimAllRewardsCoinIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/receive/$coinId/': {
       id: '/wallet/receive/$coinId/'
       path: '/wallet/receive/$coinId'
@@ -631,6 +646,7 @@ export interface FileRoutesByFullPath {
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -674,6 +690,7 @@ export interface FileRoutesByTo {
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -718,6 +735,7 @@ export interface FileRoutesById {
   '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake/': typeof CoinDetailCoinIdManageStakeIndexRoute
   '/manage-account/create-account/$mnemonicId/': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
@@ -763,6 +781,7 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
     | '/manage-account/create-account/$mnemonicId'
+    | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -805,6 +824,7 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
     | '/manage-account/create-account/$mnemonicId'
+    | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -847,6 +867,7 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey/'
     | '/coin-detail/$coinId/manage-stake/'
     | '/manage-account/create-account/$mnemonicId/'
+    | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
     | '/wallet/stake/$coinId/'
@@ -891,6 +912,7 @@ export interface RootRouteChildren {
   AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
   CoinDetailCoinIdManageStakeIndexRoute: typeof CoinDetailCoinIdManageStakeIndexRoute
   ManageAccountCreateAccountMnemonicIdIndexRoute: typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
@@ -940,6 +962,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoinDetailCoinIdManageStakeIndexRoute: CoinDetailCoinIdManageStakeIndexRoute,
   ManageAccountCreateAccountMnemonicIdIndexRoute:
     ManageAccountCreateAccountMnemonicIdIndexRoute,
+  WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
   WalletStakeCoinIdIndexRoute: WalletStakeCoinIdIndexRoute,
@@ -1003,6 +1026,7 @@ export const routeTree = rootRoute
         "/account/restore-wallet/privatekey/",
         "/coin-detail/$coinId/manage-stake/",
         "/manage-account/create-account/$mnemonicId/",
+        "/wallet/claim-all-rewards/$coinId/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
         "/wallet/stake/$coinId/",
@@ -1092,6 +1116,9 @@ export const routeTree = rootRoute
     },
     "/manage-account/create-account/$mnemonicId/": {
       "filePath": "manage-account/create-account/$mnemonicId/index.tsx"
+    },
+    "/wallet/claim-all-rewards/$coinId/": {
+      "filePath": "wallet/claim-all-rewards/$coinId/index.tsx"
     },
     "/wallet/receive/$coinId/": {
       "filePath": "wallet/receive/$coinId/index.tsx"
