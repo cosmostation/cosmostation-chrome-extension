@@ -17,6 +17,7 @@ type AllNetworkButtonprops = IconTextButtonProps & {
   sizeVariant?: 'small' | 'medium' | 'large';
   currentChainId?: string;
   chainList?: Chain[];
+  isManageAssets?: boolean;
   selectChainOption?: (id: string) => void;
 };
 
@@ -26,6 +27,7 @@ export default function AllNetworkButton({
   variant = 'normal',
   currentChainId,
   chainList,
+  isManageAssets = false,
   selectChainOption,
   ...remainder
 }: AllNetworkButtonprops) {
@@ -64,6 +66,7 @@ export default function AllNetworkButton({
         chainList={chainList || []}
         open={isOpenChainListBottomSheet}
         onClose={() => setIsOpenChainListBottomSheet(false)}
+        customType={isManageAssets ? 'manageAssets' : 'normal'}
         onClickChain={(id) => {
           selectChainOption?.(id);
         }}

@@ -50,12 +50,12 @@ const darkThemeAccentColor = {
   red400: '#F24F6A',
   red500: '#F7516C',
 
-  yellow50: '#29A376',
-  yellow100: '#2BAB7C',
-  yellow200: '#2DB482',
-  yellow300: '#2FBC88',
-  yellow400: '#32C891',
-  yellow500: '#3BCE98',
+  yellow50: '#DF8E16',
+  yellow100: '#EF9A1A',
+  yellow200: '#F6A328',
+  yellow300: '#F7AC3B',
+  yellow400: '#F8B44F',
+  yellow500: '#F8BC62',
 
   blue50: '#3084E8',
   blue100: '#398CEF',

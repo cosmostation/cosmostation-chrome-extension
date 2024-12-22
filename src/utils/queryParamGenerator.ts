@@ -9,6 +9,10 @@ export function getCoinId(coinAsset: AssetBase) {
   return `${coinAsset.id}-${coinAsset.chainId}-${coinAsset.chainType}`;
 }
 
+export function getCoinIdWithManual({ id, chainId, chainType }: AssetId) {
+  return `${id}-${chainId}-${chainType}`;
+}
+
 export function parseCoinId(coinId: string) {
   const [id, chainId, chainType] = coinId.split('-');
   return { id, chainId, chainType } as AssetId;

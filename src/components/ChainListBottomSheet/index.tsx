@@ -5,10 +5,29 @@ import { InputAdornment, Typography } from '@mui/material';
 import type { Chain } from '@/types/chain';
 
 import OptionButton from './components/OptionButton';
-import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput } from './styled';
+import {
+  Body,
+  Container,
+  CustomNetworkButton,
+  CustomNetworkTextContaienr,
+  FilterContaienr,
+  Header,
+  HeaderTitle,
+  ManageAssetsContaienr,
+  NetworkCounts,
+  NetworkInfoContainer,
+  StyledBottomSheet,
+  StyledButton,
+  StyledInput,
+  SwtichCoinType,
+} from './styled';
+import Base1300Text from '../common/Base1300Text';
+import IconTextButton from '../common/IconTextButton';
 
 import SearchIcon from '@/assets/images/icons/Search18.svg';
+import ChangeIcon from 'assets/images/icons/Change14.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
+import CustomNetworkIcon from 'assets/images/icons/CustomNetwork28.svg';
 
 import GridMenuImage from 'assets/images/GridMenu.png';
 
@@ -18,6 +37,7 @@ type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSh
   disableAllNetwork?: boolean;
   title?: string;
   searchPlaceholder?: string;
+  customType?: 'normal' | 'manageAssets';
   onClickChain: (id: string) => void;
 };
 
@@ -29,6 +49,7 @@ export default function ChainListBottomSheet({
   disableAllNetwork = false,
   title,
   searchPlaceholder,
+  customType = 'normal',
   ...remainder
 }: ChainListBottomSheetProps) {
   const { t } = useTranslation();
@@ -39,6 +60,8 @@ export default function ChainListBottomSheet({
   const AllNetworkOptionId = '';
 
   const filteredChainList = chainList?.filter((chain) => chain.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
+
+  const chainsCount = String(chainList.length);
 
   const handleClose = () => {
     setSearch('');
@@ -76,6 +99,31 @@ export default function ChainListBottomSheet({
             }}
           />
         </FilterContaienr>
+        {customType === 'manageAssets' && (
+          <ManageAssetsContaienr>
+            <CustomNetworkButton
+              leftContent={<CustomNetworkIcon />}
+              leftSecondBody={
+                <CustomNetworkTextContaienr>
+                  <Base1300Text variant="b3_M_Multiline">{t('components.ChainListBottomSheet.index.customNetwork')}</Base1300Text>
+                </CustomNetworkTextContaienr>
+              }
+            />
+            <NetworkInfoContainer>
+              <Base1300Text variant="b3_M">
+                {t('components.ChainListBottomSheet.index.network')}
+                &nbsp;
+                <NetworkCounts>{chainsCount}</NetworkCounts>
+              </Base1300Text>
+
+              <IconTextButton leadingIcon={<ChangeIcon />}>
+                <SwtichCoinType>
+                  <Typography variant="b3_M">{t('components.ChainListBottomSheet.index.switchCoinType')}</Typography>
+                </SwtichCoinType>
+              </IconTextButton>
+            </NetworkInfoContainer>
+          </ManageAssetsContaienr>
+        )}
         <Body>
           {!disableAllNetwork && (
             <OptionButton

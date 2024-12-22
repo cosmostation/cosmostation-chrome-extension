@@ -86,7 +86,10 @@
       "index": {
         "title": "Select Network",
         "allNetwork": "All Network",
-        "searchPlaceholder": "Search Network (Ex. Bitcoin)"
+        "searchPlaceholder": "Search Network (Ex. Bitcoin)",
+        "customNetwork": "Can't find your network?\nYou can manually add a custom network",
+        "network": "Network",
+        "switchCoinType": "Switch Coin Type"
       }
     },
     "Lock": {
@@ -420,7 +423,15 @@
                     "staked": "Staked",
                     "earned": "Earned",
                     "totalStaked": "Total Staked",
-                    "startEarning": "Start Earning"
+                    "startEarning": "Start Earning",
+                    "stake": "__STRING_NOT_TRANSLATED__",
+                    "stakeDescription": "__STRING_NOT_TRANSLATED__",
+                    "unstake": "__STRING_NOT_TRANSLATED__",
+                    "unstakeDescription": "__STRING_NOT_TRANSLATED__",
+                    "claimRewards": "__STRING_NOT_TRANSLATED__",
+                    "claimRewardsDescription": "__STRING_NOT_TRANSLATED__",
+                    "compounding": "__STRING_NOT_TRANSLATED__",
+                    "compoundingDescription": "__STRING_NOT_TRANSLATED__"
                   }
                 },
                 "PendingItem": {
@@ -800,6 +811,12 @@
                   "unstakeReview": "Confirm Unstake",
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed."
                 }
+              },
+              "Sui": {
+                "index": {
+                  "inform": "__STRING_NOT_TRANSLATED__",
+                  "informDescription": "__STRING_NOT_TRANSLATED__"
+                }
               }
             },
             "layout": {
@@ -938,6 +955,20 @@
         },
         "layout": {
           "header": "Change Password"
+        }
+      }
+    },
+    "manage-assets": {
+      "visibility": {
+        "layout": {
+          "header": "Manage Crypto"
+        },
+        "assets": {
+          "entry": {
+            "importCrypto": "Import Crypto",
+            "valueHighOrder": "Value High Order",
+            "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+          }
         }
       }
     }

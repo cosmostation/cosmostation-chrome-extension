@@ -19,6 +19,7 @@ import { Route as WalletSwapIndexImport } from './pages/wallet/swap/index'
 import { Route as WalletStakeIndexImport } from './pages/wallet/stake/index'
 import { Route as WalletSendIndexImport } from './pages/wallet/send/index'
 import { Route as WalletReceiveIndexImport } from './pages/wallet/receive/index'
+import { Route as ManageAssetsSwitchAccoutTypeIndexImport } from './pages/manage-assets/switch-accout-type/index'
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
@@ -33,6 +34,10 @@ import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coi
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
+import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
+import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
+import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
+import { Route as ManageAssetsImportAssetsIndexImport } from './pages/manage-assets/import/assets/index'
 import { Route as ManageAccountCreateAccountMnemonicIdIndexImport } from './pages/manage-account/create-account/$mnemonicId/index'
 import { Route as CoinDetailCoinIdManageStakeIndexImport } from './pages/coin-detail/$coinId/manage-stake/index'
 import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index'
@@ -102,6 +107,13 @@ const WalletReceiveIndexRoute = WalletReceiveIndexImport.update({
   path: '/wallet/receive/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const ManageAssetsSwitchAccoutTypeIndexRoute =
+  ManageAssetsSwitchAccoutTypeIndexImport.update({
+    id: '/manage-assets/switch-accout-type/',
+    path: '/manage-assets/switch-accout-type/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ManageAccountSwitchAccountIndexRoute =
   ManageAccountSwitchAccountIndexImport.update({
@@ -189,6 +201,34 @@ const WalletClaimAllRewardsCoinIdIndexRoute =
   WalletClaimAllRewardsCoinIdIndexImport.update({
     id: '/wallet/claim-all-rewards/$coinId/',
     path: '/wallet/claim-all-rewards/$coinId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAssetsVisibilityNetworkIndexRoute =
+  ManageAssetsVisibilityNetworkIndexImport.update({
+    id: '/manage-assets/visibility/network/',
+    path: '/manage-assets/visibility/network/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAssetsVisibilityAssetsIndexRoute =
+  ManageAssetsVisibilityAssetsIndexImport.update({
+    id: '/manage-assets/visibility/assets/',
+    path: '/manage-assets/visibility/assets/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAssetsImportNetworkIndexRoute =
+  ManageAssetsImportNetworkIndexImport.update({
+    id: '/manage-assets/import/network/',
+    path: '/manage-assets/import/network/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAssetsImportAssetsIndexRoute =
+  ManageAssetsImportAssetsIndexImport.update({
+    id: '/manage-assets/import/assets/',
+    path: '/manage-assets/import/assets/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -420,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAccountSwitchAccountIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-assets/switch-accout-type/': {
+      id: '/manage-assets/switch-accout-type/'
+      path: '/manage-assets/switch-accout-type'
+      fullPath: '/manage-assets/switch-accout-type'
+      preLoaderRoute: typeof ManageAssetsSwitchAccoutTypeIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/receive/': {
       id: '/wallet/receive/'
       path: '/wallet/receive'
@@ -495,6 +542,34 @@ declare module '@tanstack/react-router' {
       path: '/manage-account/create-account/$mnemonicId'
       fullPath: '/manage-account/create-account/$mnemonicId'
       preLoaderRoute: typeof ManageAccountCreateAccountMnemonicIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-assets/import/assets/': {
+      id: '/manage-assets/import/assets/'
+      path: '/manage-assets/import/assets'
+      fullPath: '/manage-assets/import/assets'
+      preLoaderRoute: typeof ManageAssetsImportAssetsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-assets/import/network/': {
+      id: '/manage-assets/import/network/'
+      path: '/manage-assets/import/network'
+      fullPath: '/manage-assets/import/network'
+      preLoaderRoute: typeof ManageAssetsImportNetworkIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-assets/visibility/assets/': {
+      id: '/manage-assets/visibility/assets/'
+      path: '/manage-assets/visibility/assets'
+      fullPath: '/manage-assets/visibility/assets'
+      preLoaderRoute: typeof ManageAssetsVisibilityAssetsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/manage-assets/visibility/network/': {
+      id: '/manage-assets/visibility/network/'
+      path: '/manage-assets/visibility/network'
+      fullPath: '/manage-assets/visibility/network'
+      preLoaderRoute: typeof ManageAssetsVisibilityNetworkIndexImport
       parentRoute: typeof rootRoute
     }
     '/wallet/claim-all-rewards/$coinId/': {
@@ -635,6 +710,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
+  '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
   '/wallet/stake': typeof WalletStakeIndexRoute
@@ -646,6 +722,10 @@ export interface FileRoutesByFullPath {
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  '/manage-assets/import/assets': typeof ManageAssetsImportAssetsIndexRoute
+  '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
+  '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
+  '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
@@ -679,6 +759,7 @@ export interface FileRoutesByTo {
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
+  '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
   '/wallet/stake': typeof WalletStakeIndexRoute
@@ -690,6 +771,10 @@ export interface FileRoutesByTo {
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  '/manage-assets/import/assets': typeof ManageAssetsImportAssetsIndexRoute
+  '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
+  '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
+  '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
@@ -724,6 +809,7 @@ export interface FileRoutesById {
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
+  '/manage-assets/switch-accout-type/': typeof ManageAssetsSwitchAccoutTypeIndexRoute
   '/wallet/receive/': typeof WalletReceiveIndexRoute
   '/wallet/send/': typeof WalletSendIndexRoute
   '/wallet/stake/': typeof WalletStakeIndexRoute
@@ -735,6 +821,10 @@ export interface FileRoutesById {
   '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake/': typeof CoinDetailCoinIdManageStakeIndexRoute
   '/manage-account/create-account/$mnemonicId/': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  '/manage-assets/import/assets/': typeof ManageAssetsImportAssetsIndexRoute
+  '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
+  '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
+  '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
@@ -770,6 +860,7 @@ export interface FileRouteTypes {
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
+    | '/manage-assets/switch-accout-type'
     | '/wallet/receive'
     | '/wallet/send'
     | '/wallet/stake'
@@ -781,6 +872,10 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
     | '/manage-account/create-account/$mnemonicId'
+    | '/manage-assets/import/assets'
+    | '/manage-assets/import/network'
+    | '/manage-assets/visibility/assets'
+    | '/manage-assets/visibility/network'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
@@ -813,6 +908,7 @@ export interface FileRouteTypes {
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
+    | '/manage-assets/switch-accout-type'
     | '/wallet/receive'
     | '/wallet/send'
     | '/wallet/stake'
@@ -824,6 +920,10 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
     | '/manage-account/create-account/$mnemonicId'
+    | '/manage-assets/import/assets'
+    | '/manage-assets/import/network'
+    | '/manage-assets/visibility/assets'
+    | '/manage-assets/visibility/network'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
@@ -856,6 +956,7 @@ export interface FileRouteTypes {
     | '/manage-account/manage-wallet-and-account/'
     | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
+    | '/manage-assets/switch-accout-type/'
     | '/wallet/receive/'
     | '/wallet/send/'
     | '/wallet/stake/'
@@ -867,6 +968,10 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/privatekey/'
     | '/coin-detail/$coinId/manage-stake/'
     | '/manage-account/create-account/$mnemonicId/'
+    | '/manage-assets/import/assets/'
+    | '/manage-assets/import/network/'
+    | '/manage-assets/visibility/assets/'
+    | '/manage-assets/visibility/network/'
     | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
@@ -901,6 +1006,7 @@ export interface RootRouteChildren {
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
+  ManageAssetsSwitchAccoutTypeIndexRoute: typeof ManageAssetsSwitchAccoutTypeIndexRoute
   WalletReceiveIndexRoute: typeof WalletReceiveIndexRoute
   WalletSendIndexRoute: typeof WalletSendIndexRoute
   WalletStakeIndexRoute: typeof WalletStakeIndexRoute
@@ -912,6 +1018,10 @@ export interface RootRouteChildren {
   AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
   CoinDetailCoinIdManageStakeIndexRoute: typeof CoinDetailCoinIdManageStakeIndexRoute
   ManageAccountCreateAccountMnemonicIdIndexRoute: typeof ManageAccountCreateAccountMnemonicIdIndexRoute
+  ManageAssetsImportAssetsIndexRoute: typeof ManageAssetsImportAssetsIndexRoute
+  ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
+  ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
+  ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
@@ -947,6 +1057,8 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAccountManageWalletAndAccountIndexRoute,
   ManageAccountResetWalletIndexRoute: ManageAccountResetWalletIndexRoute,
   ManageAccountSwitchAccountIndexRoute: ManageAccountSwitchAccountIndexRoute,
+  ManageAssetsSwitchAccoutTypeIndexRoute:
+    ManageAssetsSwitchAccoutTypeIndexRoute,
   WalletReceiveIndexRoute: WalletReceiveIndexRoute,
   WalletSendIndexRoute: WalletSendIndexRoute,
   WalletStakeIndexRoute: WalletStakeIndexRoute,
@@ -962,6 +1074,12 @@ const rootRouteChildren: RootRouteChildren = {
   CoinDetailCoinIdManageStakeIndexRoute: CoinDetailCoinIdManageStakeIndexRoute,
   ManageAccountCreateAccountMnemonicIdIndexRoute:
     ManageAccountCreateAccountMnemonicIdIndexRoute,
+  ManageAssetsImportAssetsIndexRoute: ManageAssetsImportAssetsIndexRoute,
+  ManageAssetsImportNetworkIndexRoute: ManageAssetsImportNetworkIndexRoute,
+  ManageAssetsVisibilityAssetsIndexRoute:
+    ManageAssetsVisibilityAssetsIndexRoute,
+  ManageAssetsVisibilityNetworkIndexRoute:
+    ManageAssetsVisibilityNetworkIndexRoute,
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
@@ -1015,6 +1133,7 @@ export const routeTree = rootRoute
         "/manage-account/manage-wallet-and-account/",
         "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
+        "/manage-assets/switch-accout-type/",
         "/wallet/receive/",
         "/wallet/send/",
         "/wallet/stake/",
@@ -1026,6 +1145,10 @@ export const routeTree = rootRoute
         "/account/restore-wallet/privatekey/",
         "/coin-detail/$coinId/manage-stake/",
         "/manage-account/create-account/$mnemonicId/",
+        "/manage-assets/import/assets/",
+        "/manage-assets/import/network/",
+        "/manage-assets/visibility/assets/",
+        "/manage-assets/visibility/network/",
         "/wallet/claim-all-rewards/$coinId/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
@@ -1084,6 +1207,9 @@ export const routeTree = rootRoute
     "/manage-account/switch-account/": {
       "filePath": "manage-account/switch-account/index.tsx"
     },
+    "/manage-assets/switch-accout-type/": {
+      "filePath": "manage-assets/switch-accout-type/index.tsx"
+    },
     "/wallet/receive/": {
       "filePath": "wallet/receive/index.tsx"
     },
@@ -1116,6 +1242,18 @@ export const routeTree = rootRoute
     },
     "/manage-account/create-account/$mnemonicId/": {
       "filePath": "manage-account/create-account/$mnemonicId/index.tsx"
+    },
+    "/manage-assets/import/assets/": {
+      "filePath": "manage-assets/import/assets/index.tsx"
+    },
+    "/manage-assets/import/network/": {
+      "filePath": "manage-assets/import/network/index.tsx"
+    },
+    "/manage-assets/visibility/assets/": {
+      "filePath": "manage-assets/visibility/assets/index.tsx"
+    },
+    "/manage-assets/visibility/network/": {
+      "filePath": "manage-assets/visibility/network/index.tsx"
     },
     "/wallet/claim-all-rewards/$coinId/": {
       "filePath": "wallet/claim-all-rewards/$coinId/index.tsx"

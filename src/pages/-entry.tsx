@@ -16,6 +16,7 @@ import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
+import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
 import { gte, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -187,7 +188,14 @@ export default function Entry() {
                 >
                   <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
                 </CheckBoxTextButton>
-                <IconTextButton leadingIcon={<PlusIcon />}>
+                <IconTextButton
+                  onClick={() => [
+                    navigate({
+                      to: ManageAssets.to,
+                    }),
+                  ]}
+                  leadingIcon={<PlusIcon />}
+                >
                   <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
                 </IconTextButton>
               </ManageCryptoContainer>

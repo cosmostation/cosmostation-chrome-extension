@@ -12,11 +12,21 @@ export type BaseCoinButtonProps = {
   disabled?: boolean;
   coinGeckoId?: string;
   leftComponent?: JSX.Element;
+  rightComponent?: JSX.Element;
   isActive?: boolean;
   onClick?: () => void;
 };
 
-export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coinGeckoId, leftComponent, isActive, onClick }: BaseCoinButtonProps) {
+export default function BaseCoinButton({
+  disabled,
+  baseAmount,
+  decimals = 0,
+  coinGeckoId,
+  leftComponent,
+  rightComponent,
+  isActive,
+  onClick,
+}: BaseCoinButtonProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
@@ -43,6 +53,7 @@ export default function BaseCoinButton({ disabled, baseAmount, decimals = 0, coi
             </NumberTypo>
           </RightValueContainer>
         </RightTextContainer>
+        {rightComponent && rightComponent}
       </RightContainer>
     </StyledButton>
   );

@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 
+import BaseOptionButton from '../common/BaseOptionButton';
 import BottomSheet from '../common/BottomSheet';
 import OutlinedInput from '../common/OutlinedInput';
 
@@ -62,3 +63,48 @@ export const FilterContaienr = styled('div')({
 
   margin: '0.8rem 1.2rem 1.2rem',
 });
+
+export const ManageAssetsContaienr = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '1.2rem',
+});
+
+export const CustomNetworkButton = styled(BaseOptionButton)(({ theme }) => ({
+  borderBottom: `0.1rem solid ${theme.palette.color.base100}`,
+  borderTop: `0.1rem solid ${theme.palette.color.base100}`,
+
+  '& > svg': {
+    fill: theme.palette.color.base1300 + ' !important',
+    '& > path': {
+      fill: theme.palette.color.base1300 + ' !important',
+    },
+  },
+}));
+
+export const CustomNetworkContaienr = styled('div')(({ theme }) => ({
+  borderBottom: `0.1rem solid ${theme.palette.color.base100}`,
+  borderTop: `0.1rem solid ${theme.palette.color.base100}`,
+}));
+
+export const CustomNetworkTextContaienr = styled('div')({
+  wordBreak: 'break-word',
+  textAlign: 'start',
+  whiteSpace: 'pre-wrap',
+});
+
+export const NetworkInfoContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  padding: '0 1.6rem',
+  marginBottom: '1.2rem',
+});
+
+export const NetworkCounts = styled('span')(({ theme }) => ({
+  color: theme.palette.color.base1000,
+}));
+
+export const SwtichCoinType = styled('div')(({ theme }) => ({
+  color: theme.palette.accentColor.purple400,
+  marginLeft: '0.2rem',
+}));
