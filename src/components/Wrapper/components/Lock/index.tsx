@@ -26,8 +26,6 @@ export default function Lock({ children }: LockProps) {
 
   const { currentPassword, setCurrentPassword } = useCurrentPassword();
 
-  console.log('🚀 ~ Lock ~ currentPassword:', currentPassword);
-
   const { comparisonPasswordHash } = useExtensionStorageStore((state) => state);
 
   const [inputPassword, setInputPassword] = useState('');

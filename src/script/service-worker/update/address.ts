@@ -33,16 +33,18 @@ export async function address(id: string) {
             throw error;
           })
           .process(async (accountType) => {
-            const existingAddress = storedAccountAddresses.find(
-              (storedAddress) =>
-                storedAddress.chainId === etc.id &&
-                storedAddress.chainType === etc.chainType &&
-                storedAddress.accountType.hdPath === accountType.hdPath &&
-                storedAddress.accountType.pubKeyType === accountType.pubKeyType,
-            );
+            if (storedAccountAddresses && storedAccountAddresses.length > 0) {
+              const existingAddress = storedAccountAddresses.find(
+                (storedAddress) =>
+                  storedAddress.chainId === etc.id &&
+                  storedAddress.chainType === etc.chainType &&
+                  storedAddress.accountType.hdPath === accountType.hdPath &&
+                  storedAddress.accountType.pubKeyType === accountType.pubKeyType,
+              );
 
-            if (existingAddress) {
-              return existingAddress;
+              if (existingAddress) {
+                return existingAddress;
+              }
             }
 
             const chainItem = { ...etc, accountTypes: [accountType] };

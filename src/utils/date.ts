@@ -50,7 +50,6 @@ export function formatDateForUnstakingEndDate(dateString: string) {
 
   const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
 
-  console.log('🚀 ~ formatDateForUnstakingEndDate ~ formattedDate:', formattedDate);
   const hour = date.getHours();
   const minute = date.getMinutes();
 
