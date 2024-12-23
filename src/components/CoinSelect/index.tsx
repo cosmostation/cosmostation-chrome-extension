@@ -174,27 +174,30 @@ export default function CoinSelect({
       </StickyContentsContainer>
 
       <CoinButtonWrapper>
-        {filteredCoinList?.map((coin) => (
-          <CoinWithChainNameButton
-            key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
-            isActive={currentCoinId === getCoinId(coin.asset)}
-            baseAmount={coin.balance}
-            apr={coin.apr ? coin.apr.toString() : undefined}
-            symbol={coin.asset.symbol}
-            chainName={coin.chain.name}
-            assetId={coin.asset.id}
-            decimals={coin.asset.decimals}
-            coinGeckoId={coin.asset.coinGeckoId}
-            displayAssetId={isShowAssetId}
-            coinImageProps={{
-              imageURL: coin.asset.image,
-              badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
-            }}
-            onClick={() => {
-              onSelectCoin(getCoinId(coin.asset));
-            }}
-          />
-        ))}
+        {filteredCoinList?.map((coin) => {
+          const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
+
+          return (
+            <CoinWithChainNameButton
+              key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
+              isActive={currentCoinId === getCoinId(coin.asset)}
+              displayAmount={displayAmount}
+              apr={coin.apr ? coin.apr.toString() : undefined}
+              symbol={coin.asset.symbol}
+              chainName={coin.chain.name}
+              assetId={coin.asset.id}
+              coinGeckoId={coin.asset.coinGeckoId}
+              displayAssetId={isShowAssetId}
+              coinImageProps={{
+                imageURL: coin.asset.image,
+                badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
+              }}
+              onClick={() => {
+                onSelectCoin(getCoinId(coin.asset));
+              }}
+            />
+          );
+        })}
       </CoinButtonWrapper>
 
       <SortBottomSheet

@@ -214,9 +214,8 @@ export default function Entry() {
                         },
                       });
                     }}
-                    baseAmount={coin.balance}
+                    displayAmount={coin.balance}
                     symbol={coin.asset.symbol}
-                    decimals={coin.asset.decimals}
                     coinGeckoId={coin.asset.coinGeckoId}
                     coinImageProps={{
                       imageURL: coin.asset.image,

@@ -100,14 +100,14 @@ export default function SupportedAssets({ currentSearch, currentSelectedChainId,
       {filteredCoinList?.map((coin) => {
         const isHiddenAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
 
+        const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
         return (
           <CoinWithChainNameButton
             key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
-            baseAmount={coin.balance}
+            displayAmount={displayAmount}
             symbol={coin.asset.symbol}
             chainName={coin.chain.name}
             assetId={coin.asset.id}
-            decimals={coin.asset.decimals}
             coinGeckoId={coin.asset.coinGeckoId}
             displayAssetId={isShowAssetId}
             coinImageProps={{
