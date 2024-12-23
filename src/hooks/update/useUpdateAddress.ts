@@ -13,6 +13,7 @@ export function useUpdateAddress() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['updateAddress', currentAccount.id],
+    enabled: !!currentAccount.id,
     queryFn: fetcher,
     refetchInterval: 1000 * 60 * 30,
   });

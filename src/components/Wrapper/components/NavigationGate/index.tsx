@@ -22,9 +22,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         return;
       }
     })();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accounts.length, navigate]);
 
   return <>{children}</>;
 }

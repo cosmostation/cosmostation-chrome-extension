@@ -26,7 +26,7 @@ export default function Lock({ children }: LockProps) {
 
   const { currentPassword, setCurrentPassword } = useCurrentPassword();
 
-  const { comparisonPasswordHash } = useExtensionStorageStore((state) => state);
+  const { accounts, comparisonPasswordHash } = useExtensionStorageStore((state) => state);
 
   const [inputPassword, setInputPassword] = useState('');
 
@@ -59,16 +59,9 @@ export default function Lock({ children }: LockProps) {
     reset();
   };
 
-  // TODO
-  //   useEffect(() => {
-  //     if (extensionStorage.accounts.length < 1) {
-  //       navigate('/');
-  //     }
-  //   }, [extensionStorage.accounts, navigate]);
-
-  //   if (extensionStorage.accounts.length < 1) {
-  //     return null;
-  //   }
+  if (accounts.length < 1) {
+    return children;
+  }
 
   if (!currentPassword && comparisonPasswordHash) {
     return (
@@ -104,5 +97,6 @@ export default function Lock({ children }: LockProps) {
       </FormContainer>
     );
   }
+
   return children;
 }

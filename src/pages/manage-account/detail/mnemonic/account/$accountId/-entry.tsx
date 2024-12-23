@@ -125,8 +125,13 @@ export default function Entry({ accountId }: EntryProps) {
           onClick={async () => {
             await removeAccount(accountId);
 
-            toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.successDeleteAccount'));
-            navigate({ to: SwitchWallet.to });
+            const accounts = await useExtensionStorageStore.getState().accounts;
+
+            if (accounts && accounts.length > 0) {
+              toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.successDeleteAccount'));
+
+              navigate({ to: SwitchWallet.to });
+            }
           }}
           variant="red"
         >

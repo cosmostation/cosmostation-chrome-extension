@@ -13,6 +13,7 @@ export function useUpdateBalance() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['updateBalance', currentAccount.id],
+    enabled: !!currentAccount.id,
     queryFn: fetcher,
     staleTime: 1000 * 14,
     refetchInterval: 1000 * 15,
