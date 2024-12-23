@@ -159,8 +159,6 @@ export default function Entry() {
     setInputTypes(values.map(() => (isViewMnemonic ? 'text' : 'password')));
   }, [values, isViewMnemonic]);
 
-  // NOTE v11 다 저장안되는 경우도 있음.
-  // TODO params, assetv11다 로딩안됐으면 여기서 다시 await해야할듯.
   const setUp = async (newAccountName: string) => {
     try {
       setIsLoadingBalance(true);

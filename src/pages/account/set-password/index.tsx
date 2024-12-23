@@ -5,6 +5,8 @@ import Layout from './-layout';
 
 export const Route = createFileRoute('/account/set-password/')({
   component: SetPassword,
+  // FIXME comparisonPasswordHash이 로컬스토리지에 존재하면  '/account/add-wallet/'로 리다이렉트
+  // 없으면 SetPassword 컴포넌트 렌더링
 });
 
 function SetPassword() {

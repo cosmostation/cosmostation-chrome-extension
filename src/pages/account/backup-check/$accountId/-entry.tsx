@@ -14,29 +14,31 @@ import { useSchema } from '@/components/MnemnicBackupChecker/useSchema';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { sendMessage } from '@/libs/extension';
 import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
 import { aesDecrypt } from '@/utils/crypto';
+import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { addAccountName } from '@/utils/zustand/accountNames';
+import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 
 import { DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer } from './-styled';
 
-type EntryProps = {
-  accountId: string;
-};
-
-export default function Entry({ accountId }: EntryProps) {
+export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
-  const { accounts, mnemonicNamesByHashedMnemonic, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-  const { setCurrentAccount } = useCurrentAccount();
+  const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { setCurrentAccount, addAccountWithName } = useCurrentAccount();
+  const { account } = useNewAccountStore();
+
   const { currentPassword } = useCurrentPassword();
 
-  const account = accounts.find((account) => account.id === accountId) || accounts[accounts.length - 1];
+  const [isLoadingBackup, setIsLoadingBackup] = useState(false);
 
   const decryptedMnemonic = account?.type === 'MNEMONIC' ? aesDecrypt(account.encryptedMnemonic, currentPassword!) : '';
 
@@ -84,12 +86,27 @@ export default function Entry({ accountId }: EntryProps) {
   // TODO 어카운트롤 추가하는건 일반 니모닉 백업 과정에서는 필요없는 로직임으로 추후 수정 필요.
   const setUp = async (newAccountName: string) => {
     try {
+      setIsLoadingBackup(true);
+
       const newAccount: AccountWithName = {
         ...account,
         name: newAccountName,
       };
 
+      if (!comparisonPasswordHash) {
+        const comparisonPasswordHash = sha512(currentPassword!);
+        await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
+      }
+
+      await addAccountWithName(newAccount);
+
+      await addPreferAccountType(newAccount.id);
+
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
+
       await setCurrentAccount(newAccount.id);
+
       // TODO
       // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
       await addAccountName(account.id, newAccountName);
@@ -109,6 +126,8 @@ export default function Entry({ accountId }: EntryProps) {
       reset();
     } catch {
       toastError(t('pages.account.backup-check.entry.setupError'));
+    } finally {
+      setIsLoadingBackup(false);
     }
   };
 
@@ -137,7 +156,7 @@ export default function Entry({ accountId }: EntryProps) {
           </>
         </BaseBody>
         <BaseFooter>
-          <Button type="submit" disabled={isDisabledButton}>
+          <Button type="submit" disabled={isDisabledButton} isProgress={isLoadingBackup}>
             {t('pages.account.backup-check.entry.next')}
           </Button>
         </BaseFooter>

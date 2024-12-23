@@ -8,11 +8,9 @@ export const Route = createFileRoute('/account/backup-check/$accountId/')({
 });
 
 function BackupCheck() {
-  const params = Route.useParams();
-
   return (
     <Layout>
-      <Entry accountId={params.accountId} />
+      <Entry />
     </Layout>
   );
 }

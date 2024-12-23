@@ -1,7 +1,7 @@
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { v11 } from '@/script/service-worker/update/v11';
-import type { ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
+import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
 import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 
 import { extension } from './browser';
@@ -50,6 +50,55 @@ export async function initExtensionLocalStorage() {
 
   if (!originStorage.preferAccountType) {
     await setExtensionLocalStorage('preferAccountType', {});
+  }
+
+  if (!originStorage.selectedAccountId) {
+    const defaultAccountId = originStorage.accounts?.[0]?.id || '';
+    await setExtensionLocalStorage('selectedAccountId', defaultAccountId);
+  }
+
+  if (originStorage.accountNamesById) {
+    const accountMissingNames = (() => {
+      const storedAccounts = originStorage.accounts;
+      const accountNameIds = Object.keys(originStorage.accountNamesById);
+
+      return storedAccounts.filter((item) => !accountNameIds.includes(item.id));
+    })();
+
+    if (accountMissingNames.length > 0) {
+      const oldPreferAccountType = originStorage.accountNamesById;
+
+      const generatedAccountNames = accountMissingNames.reduce((acc: AccountNamesById, cur, i) => {
+        acc[cur.id] = `Account ${i + 1}`;
+        return acc;
+      }, {});
+
+      const mergedAccountNamesById = { ...oldPreferAccountType, ...generatedAccountNames };
+
+      await setExtensionLocalStorage('accountNamesById', mergedAccountNamesById);
+    }
+  }
+
+  if (originStorage.mnemonicNamesByHashedMnemonic) {
+    const mnemonicAccountsMissingMnemonicNames = (() => {
+      const mnemonicAccounts = originStorage.accounts.filter((item) => item.type === 'MNEMONIC');
+      const mnemonicNameKeys = Object.keys(originStorage.mnemonicNamesByHashedMnemonic);
+
+      return mnemonicAccounts.filter((item) => !mnemonicNameKeys.includes(item.encryptedRestoreString));
+    })();
+
+    if (mnemonicAccountsMissingMnemonicNames.length > 0) {
+      const oldMnemonicNamesByHashedMnemonic = originStorage.mnemonicNamesByHashedMnemonic;
+
+      const updatedMnemonicNamesByHashedMnemonic = mnemonicAccountsMissingMnemonicNames.reduce((acc: AccountNamesById, cur, i) => {
+        acc[cur.encryptedRestoreString] = `Mnemonic ${i + 1}`;
+        return acc;
+      }, {});
+
+      const mergedMnemonicNamesByHashedMnemonic = { ...oldMnemonicNamesByHashedMnemonic, ...updatedMnemonicNamesByHashedMnemonic };
+
+      await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', mergedMnemonicNamesByHashedMnemonic);
+    }
   }
 
   // NOTE 이미 저장된 상태. 새 체인파람에 멀티 어카운트 타입이 감지가 됐는데 이게 스토리지에는 저장이 안되어있을때

@@ -23,6 +23,7 @@ import { toastError, toastSuccess } from '@/utils/toast';
 import { addAccountToNotBackedupList } from '@/utils/zustand/backupAccount';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 
 import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } from './-styled';
 
@@ -38,9 +39,10 @@ export default function Entry() {
   const navigate = useNavigate();
 
   const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { updateNewAccount } = useNewAccountStore();
   const { currentPassword } = useCurrentPassword();
 
-  const { addAccount, addAccountWithName, setCurrentAccount } = useCurrentAccount();
+  const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
 
   const isInitialSetup = accounts.length === 0;
 
@@ -109,7 +111,6 @@ export default function Entry() {
     }
   };
 
-  // FIXME 여기서 바로 어카운트 셋 하면 안되는게 백업체크 페이지에서 뒤로가기 시에 큰 문제 생김.
   const setUpWithCheck = async () => {
     try {
       if (isInitialSetup && !currentPassword) {
@@ -135,19 +136,7 @@ export default function Entry() {
         encryptedRestoreString,
       };
 
-      if (!comparisonPasswordHash) {
-        const comparisonPasswordHash = sha512(currentPassword!);
-        await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
-      }
-
-      await addAccount(newAccount);
-
-      await addPreferAccountType(newAccount.id);
-
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
-
-      await setCurrentAccount(newAccount.id);
+      updateNewAccount(newAccount);
 
       navigate({
         to: BackUpCheck.to,
