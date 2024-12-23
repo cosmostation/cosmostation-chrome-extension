@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -13,12 +13,13 @@ import { Tab, Tabs } from '@/components/common/Tab';
 import PortFolio from '@/components/MainBox/Portfolio';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
+import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { gte, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, gte, minus, times } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -52,7 +53,6 @@ export default function Entry() {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { dashboardCoinSortKey, currency, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  // NOTE 디비에 저장할 것.
   const [search, setsearch] = useState('');
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -60,79 +60,65 @@ export default function Entry() {
 
   const tabLabels = ['Crypto', 'NFTs'];
 
-  const { data: currentAccountAssets } = useAccountAssets();
-  // const { data: groupAssets } = useGroupAssets();
+  const { data: groupAccountAssets } = useGroupAccountAssets();
 
-  // const groupedAssets = useMemo(() => {
-  //   // const sample = [
-  //   //   {
-  //   //     asset: {
+  const filteredAssetsBySearch = useMemo(() => {
+    const baesCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
-  //   //     }
-  //   //     isGroup: true,
-  //   //     totalDisplayAmount: '100'
-  //   //   }.{
-  //   //     asset: {
+    const computedAssetValues = baesCoinList.map((item) => {
+      const displayAmount = item.totalDisplayAmount || '0';
 
-  //   //     }
-  //   //     isGroup: false,
-  //   //     totalDisplayAmount: '100'
-  //   //   }
-  //   // ]
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
 
-  //   // const a = coinList.reduce((acc :{asset: Asset}, cur) => {
+      const value = times(displayAmount, coinPrice);
 
-  //   //   const asset = groupAssets?.groups[cur.asset.id];
-  //   //   if (!asset) return acc;
-  //   //   if(acc.)
-
-  //   //   const totalDisplayAmount = cur.balance;
-  //   //   return [...acc, { asset: asset[0], totalDisplayAmount }];
-  //   // }, [])
-
-  //   if (!groupAssets) return [];
-  //   const aaa = Object.values(groupAssets?.groups).map((group) => {
-  //     return group.map((asset) => {
-  //       return {
-  //         asset,
-  //         isGroup: true,
-  //         displayAmont: coinList.find((coin) => isSameCoin(coin.asset, asset))?.balance,
-  //       };
-  //     });
-  //   });
-  //   console.log('🚀 ~ aaa ~ aaa:', aaa);
-  // }, [coinList, groupAssets]);
-
-  const filteredAssetsBySearch = (() => {
-    const baesCoinList = currentAccountAssets?.flatAccountAssets || [];
+      return {
+        ...item,
+        value,
+      };
+    });
 
     const hideSmallValueAssets = (() => {
       if (isHideSmallValue) {
-        return baesCoinList.filter((coin) => {
-          const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
-
-          const chainPrice = (coin.asset.coinGeckoId && coinGeckoPrice?.[coin.asset.coinGeckoId]?.[currency]) || 0;
-
-          const value = times(displayAmount, chainPrice);
-
-          return gte(value, '0.001');
+        return computedAssetValues.filter((coin) => {
+          return gte(coin.value, '0.001');
         });
       }
 
-      return baesCoinList;
+      return computedAssetValues;
     })();
+
+    const sortedAssets = hideSmallValueAssets.sort((a, b) => {
+      if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+        return Number(minus(b.value, a.value));
+      }
+
+      if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+        return a.asset.symbol.localeCompare(b.asset.symbol);
+      }
+
+      return 0;
+    });
 
     if (search.length > 1) {
       return (
-        hideSmallValueAssets.filter((asset) => {
+        sortedAssets.filter((asset) => {
           const condition = [asset.asset.symbol, asset.asset.id];
 
           return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
         }) || []
       );
     }
-    return hideSmallValueAssets;
-  })();
+    return sortedAssets;
+  }, [
+    coinGeckoPrice,
+    currency,
+    dashboardCoinSortKey,
+    groupAccountAssets?.groupAccountAssets,
+    groupAccountAssets?.singleAccountAssets,
+    isHideSmallValue,
+    search,
+  ]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -203,22 +189,25 @@ export default function Entry() {
             {/* FIXME 스크롤이 아래 인 상태에서 클릭 시 스크롤이 그대로 유지되어 아래에 있는 문제 해결 필요 */}
             <CoinButtonWrapper>
               {filteredAssetsBySearch.map((coin) => {
+                const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
+
                 return (
                   <CoinWithMarketTrendButton
                     key={getCoinId(coin.asset)}
                     onClick={() => {
                       navigate({
-                        to: CoinDetail.to,
+                        to: destinationRoute,
                         params: {
                           coinId: getCoinId(coin.asset),
                         },
                       });
                     }}
-                    displayAmount={coin.balance}
+                    displayAmount={coin.totalDisplayAmount || '0'}
                     symbol={coin.asset.symbol}
                     coinGeckoId={coin.asset.coinGeckoId}
                     coinImageProps={{
                       imageURL: coin.asset.image,
+                      isAggregatedCoin: gt(coin.counts || '0', '1'),
                     }}
                   />
                 );

@@ -9,3 +9,8 @@ export interface AccountAssets {
   erc20AccountAssets: AccountErc20Asset[];
 }
 export type FlatAccountAssets = AccountCosmosAsset | AccountCw20Asset | AccountErc20Asset | AccountEvmAsset | AccountSuiAsset | AccountAptosAsset;
+
+export type SingleOrGroupAccountAssets = FlatAccountAssets & {
+  totalDisplayAmount: string;
+  counts: string;
+};

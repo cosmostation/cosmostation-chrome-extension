@@ -59,7 +59,10 @@ export default function ChainListBottomSheet({
 
   const AllNetworkOptionId = '';
 
-  const filteredChainList = chainList?.filter((chain) => chain.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
+  const sortedChainList = chainList?.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+  const filteredChainList = sortedChainList?.filter((chain) => chain.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
 
   const chainsCount = String(chainList.length);
 

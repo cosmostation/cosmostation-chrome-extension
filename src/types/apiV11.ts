@@ -34,6 +34,9 @@ export type V11Param = {
       main_asset_denom: string;
       main_asset_symbol: string;
       main_asset_image: string;
+      gas_asset_denom?: string;
+      gas_asset_symbol?: string;
+      gas_asset_image?: string;
       bech_account_prefix?: string;
       bech_validator_prefix?: string;
       origin_genesis_time: string;

@@ -33,9 +33,14 @@ export async function getAssets() {
   const aptosChainIds = aptosChains.map((chain) => chain.id);
   const bitcoinChainIds = bitcoinChains.map((chain) => chain.id);
 
-  const filteredEvmAssets = assets.filter(
-    (asset) =>
-      evmChainIds.includes(asset.chain) && asset.type === 'native' && chains?.[asset.chain]?.params?.chainlist_params?.main_asset_denom === asset.denom,
+  const filteredEvmAssets = assets.filter((asset) =>
+    // FIXME Optimism, Arbitrum의 경우 main_asset_denom이 0xeee가 아니어서 리스트에서 제외되는 문제가 발생.
+    {
+      const gasCoinDenom =
+        chains?.[asset.chain]?.params?.chainlist_params?.gas_asset_denom || chains?.[asset.chain]?.params?.chainlist_params?.main_asset_denom;
+
+      return evmChainIds.includes(asset.chain) && asset.type === 'native' && gasCoinDenom === asset.denom;
+    },
   );
 
   const evmAssets: EvmAsset[] = filteredEvmAssets.map((asset) => {
@@ -127,9 +132,31 @@ export async function getGroupAssets() {
   );
 
   const singles = assetToSingleOrGroup.singles;
+
   const groups = assetToSingleOrGroup.groups;
 
-  return { singles, groups };
+  const trueGroup = Object.fromEntries(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.entries(groups).filter(([_, value]) => {
+      return value.length > 1;
+    }),
+  );
+
+  const fakeGroup = Object.values(
+    Object.fromEntries(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      Object.entries(groups).filter(([_, value]) => {
+        return value.length === 1;
+      }),
+    ),
+  );
+
+  const aa = [...singles, ...fakeGroup.flat()];
+
+  console.log('🚀 ~ getGroupAssets ~ trueSingle:', aa);
+  console.log('🚀 ~ getGroupAssets ~ trueGroup:', trueGroup);
+
+  return { singles: aa, groups: trueGroup };
 }
 
 export async function getAccountAssets(id: string) {
@@ -147,8 +174,18 @@ export async function getAccountAssets(id: string) {
 
   const hiddenAssetIds = await getHiddenAssets(id);
 
+  console.log(
+    '🚀 ~ getAccountAssets ~ hiddenAssetIds:',
+    hiddenAssetIds.filter((item) => item.chainId === 'optimism'),
+  );
+
   const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
+
+  console.log('🚀 ~ getAccountAssets ~ evmChains:', evmChains);
+
   const { aptosAssets, cosmosAssets, cw20Assets, erc20Assets, evmAssets, suiAssets } = await getAssets();
+
+  console.log('🚀 ~ getAccountAssets ~ evmAssets:', evmAssets);
 
   const aptosAssetsWithoutHidden = aptosAssets.filter(
     (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),

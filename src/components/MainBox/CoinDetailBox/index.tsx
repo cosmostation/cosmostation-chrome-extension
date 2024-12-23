@@ -35,9 +35,10 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const coinImage = currentCoin?.asset.image;
   const symbol = currentCoin?.asset.symbol;
   const chainName = currentCoin?.chain.name;
+  const coinGeckoId = currentCoin?.asset.coinGeckoId;
 
   const totalDisplayAmount = toDisplayDenomAmount(currentCoin?.balance || '0', currentCoin?.asset.decimals || 0);
-  const chainPrice = (currentCoin?.asset.coinGeckoId && coinGeckoPrice?.[currentCoin?.asset.coinGeckoId][currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
   const totalValue = times(totalDisplayAmount, chainPrice);
   const address = currentCoin?.address.address || '';

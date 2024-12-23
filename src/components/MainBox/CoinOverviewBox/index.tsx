@@ -3,8 +3,11 @@ import { Typography } from '@mui/material';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
+import { times } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { BodyBottomContainer, BodyContainer, BodyTopContainer, TopContainer } from './styled';
 import MainBox from '..';
@@ -16,16 +19,19 @@ type CoinOverviewBoxProps = {
 export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
   const { t } = useTranslation();
 
-  const { data } = useAccountAssets();
-  // TODO
-  // const currentCoin = 전체코인리스트.find((coin) => coin.id === testCoinId);
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
+  const { currency } = useExtensionStorageStore((state) => state);
 
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { data: groupAccountAssets } = useGroupAccountAssets();
 
-  const symbol = currentCoin?.asset.symbol;
-  const networkCount = 5;
-  const totalAmount = '24000';
-  const totalValue = '24000';
+  const currentGroupCoin = groupAccountAssets?.groupAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+
+  const symbol = currentGroupCoin?.asset.symbol;
+  const networkCount = currentGroupCoin?.counts || '1';
+  const totalDisplayAmount = currentGroupCoin?.totalDisplayAmount || '0';
+
+  const coinPrice = (currentGroupCoin?.asset?.coinGeckoId && coinGeckoPrice?.[currentGroupCoin.asset.coinGeckoId]?.[currency]) || 0;
+  const totalValue = times(totalDisplayAmount, coinPrice);
 
   return (
     <>
@@ -40,7 +46,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
             <BodyTopContainer>
               <Base1300Text variant="h1_B">{symbol}</Base1300Text>
               <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M">
-                {totalAmount}
+                {totalDisplayAmount}
               </NumberTypo>
             </BodyTopContainer>
             <BodyBottomContainer>
@@ -54,7 +60,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
           </BodyContainer>
         }
         className="circleGradient"
-        coinBackgroundImage={'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/sui/asset/sui.png'}
+        coinBackgroundImage={currentGroupCoin?.asset.image}
       />
     </>
   );

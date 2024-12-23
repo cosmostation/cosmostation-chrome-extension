@@ -32,18 +32,28 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
       // await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [param] });
       const accountAssets = await getAccountAssets(param);
 
-      const filteredCosmos = accountAssets.cosmosAccountAssets.filter((item) => {
-        const selectedChainAccountType = accountType[item.chain.id];
+      const filteredCosmos = accountAssets.cosmosAccountAssets
+        .filter((item) => {
+          const selectedChainAccountType = accountType[item.chain.id];
 
-        if (selectedChainAccountType) {
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
-          );
-        }
-        return true;
-      });
+          if (selectedChainAccountType) {
+            return (
+              selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+              selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
+              selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+            );
+          }
+          return true;
+        })
+        // NOTE 60패스 evm, cosmos 중복 에셋 코스모스 쪽 리스트에서 필터링.
+        .filter((item) => {
+          const isDuplicatedEVMAsset = item.chain.chainType === 'cosmos' && item.chain.isEvm && item.chain.mainAssetDenom === item.asset.id;
+          if (isDuplicatedEVMAsset) {
+            return false;
+          }
+
+          return true;
+        });
 
       const filteredCW20 = accountAssets.cw20AccountAssets.filter((item) => {
         const selectedChainAccountType = accountType[item.chain.id];
