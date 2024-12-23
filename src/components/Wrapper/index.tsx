@@ -1,6 +1,6 @@
+import Init from './components/Init';
 import NavigationGate from './components/NavigationGate';
 import Scaffold from './components/Scaffold';
-import Init from '../Init';
 
 type WrapperProps = {
   children: JSX.Element;

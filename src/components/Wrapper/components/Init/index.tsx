@@ -1,18 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { initExtensionLocalStorage } from '@/utils/storage';
 import { loadAllStoreFromStorage } from '@/zustand/utils';
+
+import { Splash } from './styled';
 
 type InitProps = {
   children: JSX.Element;
 };
 
 export default function Init({ children }: InitProps) {
+  const [isHydrated, setIsHydrated] = useState(false);
+
   useEffect(() => {
     void (async () => {
       await initExtensionLocalStorage();
 
       await loadAllStoreFromStorage();
+
+      setIsHydrated(true);
 
       // TODO 플래그 설정해서 로딩 후, 다음 컴포넌트로 진입할 수 있도록. setOverlayLoading(false); => HOC구조.등등등
       // TODO 상위 컴포넌트에서 일정 주기별로, asset, params데이터 갱신 전략(중간에 데이터 못가져왔을때 갱신 안되도록.) 잘 고려 필요. 데이터 정합성 체크 필요, 추후에 백업 전략도 고려 필요.
@@ -20,6 +26,10 @@ export default function Init({ children }: InitProps) {
       // NOTE 프로토버프 사용전략 api 민캔 api로 변경 고려.
     })();
   }, []);
+
+  if (!isHydrated) {
+    return <Splash />;
+  }
 
   return <>{children}</>;
 }
