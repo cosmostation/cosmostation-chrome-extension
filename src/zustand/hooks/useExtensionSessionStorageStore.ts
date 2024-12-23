@@ -9,7 +9,6 @@ const initialState: ExtensionSessionStorageState = {
   password: null,
 };
 
-// TODO hydate될 떄 까지 보여줄 스플래시 스크린 필요.
 export const useExtensionSessionStorageStore = create<ExtensionSessionStorageStore>()((set) => {
   return {
     ...initialState,
@@ -33,7 +32,10 @@ export const useExtensionSessionStorageStore = create<ExtensionSessionStorageSto
 export const loadExtensionSessionStorageStoreFromStorage = async () => {
   const allStorage = await getAllExtensionSessionStorage();
 
+  const initState = useExtensionSessionStorageStore.getInitialState();
+
   useExtensionSessionStorageStore.setState({
+    ...initState,
     ...allStorage,
   });
 };

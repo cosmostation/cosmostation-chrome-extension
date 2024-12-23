@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import { extension } from '@/utils/browser';
 import { initExtensionLocalStorage } from '@/utils/storage';
+import { loadExtensionSessionStorageStoreFromStorage } from '@/zustand/hooks/useExtensionSessionStorageStore';
 import { loadAllStoreFromStorage } from '@/zustand/utils';
 
 import { Splash } from './styled';
@@ -12,7 +14,17 @@ type InitProps = {
 export default function Init({ children }: InitProps) {
   const [isHydrated, setIsHydrated] = useState(false);
 
+  const handleOnStorageChange = (_: unknown, areaName: string) => {
+    void (async () => {
+      if (areaName === 'session') {
+        await loadExtensionSessionStorageStoreFromStorage();
+      }
+    })();
+  };
+
   useEffect(() => {
+    extension.storage.onChanged.addListener(handleOnStorageChange);
+
     void (async () => {
       await initExtensionLocalStorage();
 
@@ -25,6 +37,10 @@ export default function Init({ children }: InitProps) {
       // TODO 카바 118로 고정시 evm쪽 에셋 미노출 & evm kava 사인 요청 거절 => 컨펌필요.
       // NOTE 프로토버프 사용전략 api 민캔 api로 변경 고려.
     })();
+
+    return () => {
+      extension.storage.onChanged.removeListener(handleOnStorageChange);
+    };
   }, []);
 
   if (!isHydrated) {

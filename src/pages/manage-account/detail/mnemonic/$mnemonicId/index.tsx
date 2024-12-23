@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import Lock from '@/components/Lock';
-
 import Entry from './-entry';
 import Layout from './-layout';
 
@@ -13,10 +11,8 @@ function MnemonicDetail() {
   const params = Route.useParams();
 
   return (
-    <Lock>
-      <Layout>
-        <Entry mnemonicId={params.mnemonicId} />
-      </Layout>
-    </Lock>
+    <Layout>
+      <Entry mnemonicId={params.mnemonicId} />
+    </Layout>
   );
 }

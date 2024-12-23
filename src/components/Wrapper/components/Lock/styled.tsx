@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
-import OutlinedInput from '../common/OutlinedInput';
-import TextButton from '../common/TextButton';
+import OutlinedInput from '../../../common/OutlinedInput';
+import TextButton from '../../../common/TextButton';
 
 import backgroungImg from '@/assets/images/backgroundImage/background.png';
 

@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import Lock from '@/components/Lock';
-
 import Entry from './-entry';
 import Layout from './-layout';
 
@@ -12,10 +10,8 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   return (
-    <Lock>
-      <Layout>
-        <Entry />
-      </Layout>
-    </Lock>
+    <Layout>
+      <Entry />
+    </Layout>
   );
 }

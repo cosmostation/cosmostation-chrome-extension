@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
-import { getAccount, getPassword } from '@/libs/account';
+import { getAccount, getAccountAddress, getPassword } from '@/libs/account';
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import type { AccountAddress } from '@/types/account';
@@ -17,13 +17,14 @@ export async function address(id: string) {
 
     const chains = [...cosmosChains, ...evmChains, ...suiChains, ...aptosChains];
 
+    const storedAccountAddresses = await getAccountAddress(id);
+
     const { results: addressResponse } = await PromisePool.withConcurrency(100)
       .for(chains)
       .handleError((error) => {
         throw error;
       })
       .process(async (c) => {
-        // TODO: 기존에 있는지 확인하고 있으면 넘어가기
         const { accountTypes, ...etc } = c;
 
         const { results: addresses } = await PromisePool.withConcurrency(100)
@@ -32,6 +33,18 @@ export async function address(id: string) {
             throw error;
           })
           .process(async (accountType) => {
+            const existingAddress = storedAccountAddresses.find(
+              (storedAddress) =>
+                storedAddress.chainId === etc.id &&
+                storedAddress.chainType === etc.chainType &&
+                storedAddress.accountType.hdPath === accountType.hdPath &&
+                storedAddress.accountType.pubKeyType === accountType.pubKeyType,
+            );
+
+            if (existingAddress) {
+              return existingAddress;
+            }
+
             const chainItem = { ...etc, accountTypes: [accountType] };
             const keypair = getKeypair(chainItem, account, password);
             const address = getAddress(chainItem, keypair.publicKey);

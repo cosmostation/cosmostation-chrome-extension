@@ -1,5 +1,6 @@
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
+import { v11 } from '@/script/service-worker/update/v11';
 import type { ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
 import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 
@@ -8,6 +9,10 @@ import { aesDecrypt } from './crypto';
 
 export async function initExtensionLocalStorage() {
   const originStorage = await getAllExtensionLocalStorage();
+
+  if (!originStorage.paramsV11 || !originStorage.assetsV11) {
+    await v11();
+  }
 
   if (!originStorage.language) {
     setExtensionLocalStorage('language', 'en');

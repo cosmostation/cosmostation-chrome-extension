@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
-// import { Route as Initial } from '@/pages/account/initial';
-import type { ExtensionStorage } from '@/types/extension';
+import { Route as Initial } from '@/pages/account/initial';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 type NavigationGateProps = {
   children: JSX.Element;
@@ -11,22 +11,13 @@ type NavigationGateProps = {
 export default function NavigationGate({ children }: NavigationGateProps) {
   const navigate = useNavigate();
 
+  const { accounts } = useExtensionStorageStore((state) => state);
+
   useEffect(() => {
     void (async () => {
-      // NOTE for Test
-      // navigate({
-      //   // to: Initial.to,
-      //   // to: '/account/add-wallet',
-      //   to: '/wallet/send',
-      // });
-
-      const { accounts } = await chrome.storage.local.get<ExtensionStorage>('accounts');
-
       if (accounts.length === 0) {
         navigate({
-          // to: Initial.to,
-          // to: '/account/add-wallet',
-          to: '/account/initial',
+          to: Initial.to,
         });
         return;
       }

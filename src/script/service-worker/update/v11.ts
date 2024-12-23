@@ -15,7 +15,7 @@ export async function v11() {
     const params = paramResponse.data;
     const chains = params;
 
-    if (!chains) {
+    if (!chains || Object.keys(chains).length === 0) {
       throw new Error('No chains found');
     }
 
@@ -23,7 +23,7 @@ export async function v11() {
     const assetResponse = await axios.get<Record<'assets', V11Asset[]>>(assetsUrl);
     const assets = assetResponse.data?.assets;
 
-    if (!assets) {
+    if (!assets || assets.length === 0) {
       throw new Error('No assets found');
     }
 
