@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
+import { Route as ManageDappsIndexImport } from './pages/manage-dapps/index'
 import { Route as GeneralSettingIndexImport } from './pages/general-setting/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as AboutIndexImport } from './pages/about/index'
@@ -63,6 +64,12 @@ import { Route as ManageAccountDetailMnemonicAccountAccountIdIndexImport } from 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ManageDappsIndexRoute = ManageDappsIndexImport.update({
+  id: '/manage-dapps/',
+  path: '/manage-dapps/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -397,6 +404,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeneralSettingIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-dapps/': {
+      id: '/manage-dapps/'
+      path: '/manage-dapps'
+      fullPath: '/manage-dapps'
+      preLoaderRoute: typeof ManageDappsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/account/add-wallet/': {
       id: '/account/add-wallet/'
       path: '/account/add-wallet'
@@ -701,6 +715,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
+  '/manage-dapps': typeof ManageDappsIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
@@ -750,6 +765,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
+  '/manage-dapps': typeof ManageDappsIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
   '/account/initial': typeof AccountInitialIndexRoute
   '/account/set-password': typeof AccountSetPasswordIndexRoute
@@ -800,6 +816,7 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/general-setting/': typeof GeneralSettingIndexRoute
+  '/manage-dapps/': typeof ManageDappsIndexRoute
   '/account/add-wallet/': typeof AccountAddWalletIndexRoute
   '/account/initial/': typeof AccountInitialIndexRoute
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
@@ -851,6 +868,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/dashboard'
     | '/general-setting'
+    | '/manage-dapps'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
@@ -899,6 +917,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/dashboard'
     | '/general-setting'
+    | '/manage-dapps'
     | '/account/add-wallet'
     | '/account/initial'
     | '/account/set-password'
@@ -947,6 +966,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/dashboard/'
     | '/general-setting/'
+    | '/manage-dapps/'
     | '/account/add-wallet/'
     | '/account/initial/'
     | '/account/set-password/'
@@ -997,6 +1017,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   GeneralSettingIndexRoute: typeof GeneralSettingIndexRoute
+  ManageDappsIndexRoute: typeof ManageDappsIndexRoute
   AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
   AccountInitialIndexRoute: typeof AccountInitialIndexRoute
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
@@ -1046,6 +1067,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   GeneralSettingIndexRoute: GeneralSettingIndexRoute,
+  ManageDappsIndexRoute: ManageDappsIndexRoute,
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
   AccountInitialIndexRoute: AccountInitialIndexRoute,
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
@@ -1124,6 +1146,7 @@ export const routeTree = rootRoute
         "/about/",
         "/dashboard/",
         "/general-setting/",
+        "/manage-dapps/",
         "/account/add-wallet/",
         "/account/initial/",
         "/account/set-password/",
@@ -1179,6 +1202,9 @@ export const routeTree = rootRoute
     },
     "/general-setting/": {
       "filePath": "general-setting/index.tsx"
+    },
+    "/manage-dapps/": {
+      "filePath": "manage-dapps/index.tsx"
     },
     "/account/add-wallet/": {
       "filePath": "account/add-wallet/index.tsx"

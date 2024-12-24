@@ -13,3 +13,8 @@ export const COIN_SELECT_SORT_KEY = {
   ALPHABETICAL_ASC: 'alphabetical_asc',
   APR_DESC: 'apr_desc',
 } as const;
+
+export const DAPPS_SORT_KEY = {
+  CONNECTED_DATE_DESC: 'connected_date_desc',
+  ALPHABETICAL_ASC: 'alphabetical_asc',
+} as const;

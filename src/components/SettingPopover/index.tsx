@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { Route as GeneralSetting } from '@/pages/general-setting';
+import { Route as ManageDapps } from '@/pages/manage-dapps';
 
 import { StyledIconTextButton, StyledPopover, StyledTypography } from './styled';
 
@@ -30,7 +31,14 @@ export default function SettingPopover({ onClose, ...remainder }: SettingPopover
       >
         <StyledTypography variant="b3_M">{t('components.SetttingPopover.index.setting')}</StyledTypography>
       </StyledIconTextButton>
-      <StyledIconTextButton leadingIcon={<DappIcon />}>
+      <StyledIconTextButton
+        onClick={() => {
+          navigate({
+            to: ManageDapps.to,
+          });
+        }}
+        leadingIcon={<DappIcon />}
+      >
         <StyledTypography variant="b3_M">{t('components.SetttingPopover.index.manageDapps')}</StyledTypography>
       </StyledIconTextButton>
       <StyledIconTextButton
