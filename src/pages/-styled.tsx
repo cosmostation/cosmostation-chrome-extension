@@ -2,7 +2,6 @@ import { Typography as BaseTypography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Image from '@/components/common/Image';
-import OutlinedInput from '@/components/common/OutlinedInput';
 import { TabPanel } from '@/components/common/Tab';
 
 export const Container = styled('div')({
