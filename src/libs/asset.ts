@@ -174,18 +174,9 @@ export async function getAccountAssets(id: string) {
 
   const hiddenAssetIds = await getHiddenAssets(id);
 
-  console.log(
-    '🚀 ~ getAccountAssets ~ hiddenAssetIds:',
-    hiddenAssetIds.filter((item) => item.chainId === 'optimism'),
-  );
-
   const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
 
-  console.log('🚀 ~ getAccountAssets ~ evmChains:', evmChains);
-
   const { aptosAssets, cosmosAssets, cw20Assets, erc20Assets, evmAssets, suiAssets } = await getAssets();
-
-  console.log('🚀 ~ getAccountAssets ~ evmAssets:', evmAssets);
 
   const aptosAssetsWithoutHidden = aptosAssets.filter(
     (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),

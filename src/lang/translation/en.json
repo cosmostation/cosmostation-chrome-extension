@@ -967,7 +967,9 @@
           "entry": {
             "importCrypto": "Import Crypto",
             "valueHighOrder": "Value High Order",
-            "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+            "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
+            "supportedCrypto": "Supported Crypto",
+            "customCrypto": "Custom Crypto"
           }
         }
       }

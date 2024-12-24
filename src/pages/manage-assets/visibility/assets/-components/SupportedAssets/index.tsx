@@ -1,55 +1,130 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { produce } from 'immer';
+import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 
+import AllNetworkButton from '@/components/AllNetworkButton';
 import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
+import IntersectionObserver from '@/components/common/IntersectionObserver';
+import Search from '@/components/Search';
+import SortBottomSheet from '@/components/SortBottomSheet';
+import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentHiddenAssetIds } from '@/hooks/useCurrentHiddenAssetIds';
+import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getCoinIdWithManual } from '@/utils/queryParamGenerator';
+import { getCoinId, getCoinIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { IconContainer } from './styled';
+import { CoinButtonWrapper, FilterContaienr, IconContainer, StickyTabPanelContentsContainer } from './styled';
 
 import AddIcon from '@/assets/images/icons/Add20.svg';
 import RemoveIcon from '@/assets/images/icons/Remove20.svg';
 
-type SupportedAssetsProps = {
-  currentSearch: string;
-  currentSelectedChainId: string;
-  currentSortOption: CommonSortKeyType;
-};
-
-export default function SupportedAssets({ currentSearch, currentSelectedChainId, currentSortOption }: SupportedAssetsProps) {
+export default function SupportedAssets() {
+  const { t } = useTranslation();
+  const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
-  const { data: currentHiddenAssetIds } = useCurrentHiddenAssetIds();
-  // TODO 별도로 preferAccountType별로 필터링 한 리스트를 베이스로 사용해야함. 아래 훅에 넣으면 다른데에서 쓸때 문제발생.
+  const { currency, preferAccountType } = useExtensionStorageStore((state) => state);
+
+  const { currentAccount } = useCurrentAccount();
+
+  const { currentHiddenAssetIds, addHiddenAssetId, removeHiddenAssetId } = useCurrentHiddenAssetIds();
+
   const { data: currentAccountAllAssets } = useAccountAllAssets();
 
-  const hiddenAssetCoinIds = currentHiddenAssetIds?.map((item) => getCoinIdWithManual(item));
+  const { flatChainList } = useChainList();
+
+  const [viewLimit, setViewLimit] = useState(30);
+
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+  const isDebouncing = !!search && isPending();
+
+  const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
+  const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
+
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>('');
+
+  const hiddenAssetCoinIds = useMemo(() => currentHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [currentHiddenAssetIds]);
+
+  const currentPreferAccountType = useMemo(() => preferAccountType[currentAccount.id], [currentAccount.id, preferAccountType]);
+
+  const baseCoinList = useMemo(() => {
+    if (!currentAccountAllAssets) return [];
+
+    const filteredCosmos = currentAccountAllAssets.cosmosAccountAssets
+      .filter((item) => {
+        const selectedChainAccountType = currentPreferAccountType[item.chain.id];
+
+        if (selectedChainAccountType) {
+          return (
+            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+            selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+          );
+        }
+        return true;
+      })
+      // NOTE 60패스 evm, cosmos 중복 에셋 코스모스 쪽 리스트에서 필터링.
+      .filter((item) => {
+        const isDuplicatedEVMAsset = item.chain.chainType === 'cosmos' && item.chain.isEvm && item.chain.mainAssetDenom === item.asset.id;
+        if (isDuplicatedEVMAsset) {
+          return false;
+        }
+
+        return true;
+      });
+
+    const filteredCW20 = currentAccountAllAssets.cw20AccountAssets.filter((item) => {
+      const selectedChainAccountType = currentPreferAccountType[item.chain.id];
+
+      if (selectedChainAccountType) {
+        return (
+          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+          selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+        );
+      }
+      return true;
+    });
+
+    const filteredAccountAssets = produce(currentAccountAllAssets, (draft) => {
+      draft.cosmosAccountAssets = filteredCosmos;
+      draft.cw20AccountAssets = filteredCW20;
+    });
+
+    const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];
+
+    return flatAccountAssets;
+  }, [currentAccountAllAssets, currentPreferAccountType]);
 
   const chainList = useMemo(
-    () => currentAccountAllAssets?.cosmosAccountAssets?.map((item) => item.chain) || [],
-    [currentAccountAllAssets?.cosmosAccountAssets],
+    () =>
+      flatChainList.filter((item) =>
+        baseCoinList.some((coin) => coin.chain.id === item.id && coin.chain.chainType === item.chainType && coin.chain.chainId === item.chainId),
+      ),
+    [baseCoinList, flatChainList],
   );
 
-  const currentSelectedChain = chainList.find((item) => item.id === currentSelectedChainId);
+  const currentSelectedChain = useMemo(() => chainList.find((item) => item.id === currentSelectedChainId), [chainList, currentSelectedChainId]);
 
-  const isShowAssetId = !!currentSelectedChain || !!currentSearch;
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
-  // TODO 훅으로 전환
   const computedAssetValues = useMemo(() => {
-    const baesCoinList = currentAccountAllAssets?.cosmosAccountAssets || [];
-
     return (
-      baesCoinList?.map((item) => {
+      baseCoinList?.map((item) => {
         const displayAmount = toDisplayDenomAmount(item.balance, item.asset.decimals);
 
-        const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+        const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
 
-        const value = times(displayAmount, chainPrice);
+        const value = times(displayAmount, coinPrice, 10);
 
         return {
           ...item,
@@ -57,80 +132,171 @@ export default function SupportedAssets({ currentSearch, currentSelectedChainId,
         };
       }) || []
     );
-  }, [coinGeckoPrice, currency, currentAccountAllAssets?.cosmosAccountAssets]);
+  }, [baseCoinList, coinGeckoPrice, currency]);
 
   const sortedAssets = computedAssetValues.sort((a, b) => {
-    if (currentSortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+    if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
       return Number(minus(b.value, a.value));
     }
 
-    if (currentSortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+    if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
       return a.asset.symbol.localeCompare(b.asset.symbol);
     }
 
     return 0;
   });
 
-  // FIXME 키 중복 이슈가 발생. 테라의 assets_2에 cw20에 포함되는 토큰이 중복으로 들어가 있어서 문제발생.
-  // TODO 내부적으로 코인키가 중복 필터링 로직 넣어야할 듯.\
-  // TODO 에셋이 2000개가 넘어가서 렌더링이 느림. 렌더링 최적화 필요.
-  const filteredCoinList = useMemo(() => {
-    const filteredAssetsByChain = currentSelectedChain
-      ? sortedAssets.filter((item) => currentSelectedChain?.id === item.chain.id && currentSelectedChain.chainId === item.chain.chainId) || []
-      : sortedAssets || [];
+  const filteredCoinListWithChain = useMemo(
+    () =>
+      currentSelectedChain
+        ? sortedAssets.filter((item) => currentSelectedChain?.id === item.chain.id && currentSelectedChain.chainId === item.chain.chainId) || []
+        : sortedAssets || [],
+    [currentSelectedChain, sortedAssets],
+  );
+
+  const filteredCoinListBySearch = useMemo(() => {
+    const filteredAssetsByChain = filteredCoinListWithChain;
 
     const filteredAssetsBySearch = (() => {
-      if (currentSearch.length > 1) {
+      if (!!search && debouncedSearch.length > 1) {
         return (
-          filteredAssetsByChain.filter((asset) => {
-            const condition = [asset.asset.symbol, asset.asset.id];
+          filteredAssetsByChain
+            .filter((asset) => {
+              const condition = [asset.asset.symbol, asset.asset.id];
 
-            return condition.some((item) => item.toLowerCase().indexOf(currentSearch.toLowerCase()) > -1);
-          }) || []
+              return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+            })
+            .slice(0, viewLimit) || []
         );
       }
-      return filteredAssetsByChain;
+      return filteredAssetsByChain.slice(0, viewLimit);
     })();
 
     return filteredAssetsBySearch;
-  }, [currentSearch, currentSelectedChain, sortedAssets]);
+  }, [debouncedSearch, filteredCoinListWithChain, search, viewLimit]);
+
+  const sortedCoinListByHidden = useMemo(() => {
+    const hiddenAssets = filteredCoinListBySearch.filter((item) => hiddenAssetCoinIds?.includes(getCoinId(item.asset)));
+
+    const visibleAssets = filteredCoinListBySearch.filter((item) => !hiddenAssetCoinIds?.includes(getCoinId(item.asset)));
+
+    return [...visibleAssets, ...hiddenAssets];
+  }, [filteredCoinListBySearch, hiddenAssetCoinIds]);
+
+  const handleHiddenAsset = async (assetId: string) => {
+    const isHiddenAsset = hiddenAssetCoinIds?.includes(assetId);
+
+    if (isHiddenAsset) {
+      await removeHiddenAssetId(parseCoinId(assetId));
+    } else {
+      await addHiddenAssetId(parseCoinId(assetId));
+    }
+  };
+
+  useEffect(() => {
+    if (search.length > 1 || search.length === 0) {
+      scrollToTop();
+      setViewLimit(30);
+    }
+  }, [scrollToTop, search.length]);
 
   return (
     <>
-      {filteredCoinList?.map((coin) => {
-        const isHiddenAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
-
-        const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
-        return (
-          <CoinWithChainNameButton
-            key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
-            displayAmount={displayAmount}
-            symbol={coin.asset.symbol}
-            chainName={coin.chain.name}
-            assetId={coin.asset.id}
-            coinGeckoId={coin.asset.coinGeckoId}
-            displayAssetId={isShowAssetId}
-            coinImageProps={{
-              imageURL: coin.asset.image,
-              badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
+      <StickyTabPanelContentsContainer>
+        <FilterContaienr>
+          <Search
+            value={search}
+            onChange={(event) => {
+              setSearch(event.currentTarget.value);
             }}
-            rightComponent={
-              isHiddenAsset ? (
-                <IconContainer>
-                  <AddIcon />
-                </IconContainer>
-              ) : (
-                <IconContainer>
-                  <RemoveIcon />
-                </IconContainer>
-              )
-            }
-            onClick={() => {
-              console.log(getCoinId(coin.asset));
+            isPending={isDebouncing}
+            onClickFilter={() => {
+              setIsOpenSortBottomSheet(true);
+            }}
+            onClear={() => {
+              setSearch('');
+              setViewLimit(30);
+              cancel();
             }}
           />
-        );
-      })}
+        </FilterContaienr>
+        <AllNetworkButton
+          sizeVariant="medium"
+          typoVarient="b2_M"
+          currentChainId={currentSelectedChainId}
+          chainList={flatChainList}
+          isManageAssets
+          selectChainOption={(id) => {
+            setCurrentSelectedChainId(id);
+          }}
+        />
+      </StickyTabPanelContentsContainer>
+      <CoinButtonWrapper>
+        {!isDebouncing && (
+          <>
+            {sortedCoinListByHidden?.map((coin) => {
+              const isHiddenAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
+
+              const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
+              return (
+                <CoinWithChainNameButton
+                  key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
+                  displayAmount={displayAmount}
+                  symbol={coin.asset.symbol}
+                  chainName={coin.chain.name}
+                  assetId={coin.asset.id}
+                  coinGeckoId={coin.asset.coinGeckoId}
+                  displayAssetId={isShowAssetId}
+                  coinImageProps={{
+                    imageURL: coin.asset.image,
+                    badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
+                  }}
+                  rightComponent={
+                    isHiddenAsset ? (
+                      <IconContainer>
+                        <AddIcon />
+                      </IconContainer>
+                    ) : (
+                      <IconContainer>
+                        <RemoveIcon />
+                      </IconContainer>
+                    )
+                  }
+                  onClick={() => {
+                    handleHiddenAsset(getCoinId(coin.asset));
+                  }}
+                />
+              );
+            })}
+
+            {filteredCoinListBySearch?.length > viewLimit - 1 && (
+              <IntersectionObserver
+                onIntersect={() => {
+                  setViewLimit((limit) => limit + 30);
+                }}
+              />
+            )}
+          </>
+        )}
+      </CoinButtonWrapper>
+      <SortBottomSheet
+        optionButtonProps={[
+          {
+            sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
+            children: <Typography variant="b2_M">{t('pages.manage-assets.visibility.assets.entry.valueHighOrder')}</Typography>,
+          },
+          {
+            sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
+            children: <Typography variant="b2_M">{t('pages.manage-assets.visibility.assets.entry.alphabeticalAsc')}</Typography>,
+          },
+        ]}
+        currentSortOption={DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER}
+        open={isOpenSortBottomSheet}
+        onClose={() => setIsOpenSortBottomSheet(false)}
+        onSelectSortOption={(val) => {
+          setSortOption(val);
+        }}
+      />
     </>
   );
 }

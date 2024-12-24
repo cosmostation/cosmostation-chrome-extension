@@ -1,3 +1,5 @@
+import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
+
 type ImageProps = {
   src?: string | null;
   defaultImgSrc?: string;
@@ -5,7 +7,7 @@ type ImageProps = {
   className?: string;
 };
 
-export default function Image({ src = 'https://', alt, className }: ImageProps) {
+export default function Image({ src = 'https://', defaultImgSrc = DefaultCoinImage, alt, className }: ImageProps) {
   const validSrc = src || 'https://';
 
   return (
@@ -15,6 +17,8 @@ export default function Image({ src = 'https://', alt, className }: ImageProps) 
       alt={alt}
       onError={(event) => {
         event.currentTarget.onerror = null;
+
+        event.currentTarget.src = defaultImgSrc;
       }}
     />
   );

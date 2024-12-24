@@ -3,6 +3,7 @@ import Lock from './components/Lock';
 import NavigationGate from './components/NavigationGate';
 import RefetchController from './components/RefetchController';
 import Scaffold from './components/Scaffold';
+import ScrollProvider from './components/ScrollProvider';
 
 type WrapperProps = {
   children: JSX.Element;
@@ -14,7 +15,9 @@ export default function Wrapper({ children }: WrapperProps) {
       <Init>
         <Lock>
           <RefetchController>
-            <NavigationGate>{children}</NavigationGate>
+            <NavigationGate>
+              <ScrollProvider>{children}</ScrollProvider>
+            </NavigationGate>
           </RefetchController>
         </Lock>
       </Init>

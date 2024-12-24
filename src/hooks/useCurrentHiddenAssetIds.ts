@@ -1,42 +1,43 @@
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
-
-import { getHiddenAssets } from '@/libs/asset';
 import type { AssetId } from '@/types/asset';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useAccountAllAssets } from './useAccountAllAssets';
+import { useAccountAssets } from './useAccountAssets';
 import { useCurrentAccount } from './useCurrentAccount';
+import { useGroupAccountAssets } from './useGroupAccountAssets';
 
-type UseCurrentHiddenAssetIdsProps =
-  | {
-      accountId?: string;
-      config?: UseQueryOptions<AssetId[] | null>;
-    }
-  | undefined;
-
-export function useCurrentHiddenAssetIds({ accountId, config }: UseCurrentHiddenAssetIdsProps = {}) {
+export function useCurrentHiddenAssetIds() {
   const { currentAccount } = useCurrentAccount();
 
-  const param = accountId || currentAccount.id;
+  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refetch: refetchGroupAssets } = useGroupAccountAssets();
 
-  const fetcher = async () => {
-    try {
-      const hiddenAssetIds = await getHiddenAssets(param);
+  const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-      return hiddenAssetIds;
-    } catch {
-      return null;
-    }
+  const currentHiddenAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-hidden-assetIds`];
+
+  const addHiddenAssetId = async (assetId: AssetId) => {
+    const updatedHiddenAssetIds = [...currentHiddenAssetIds, assetId];
+
+    await updateExtensionStorageStore(`${currentAccount.id}-hidden-assetIds`, updatedHiddenAssetIds);
+
+    await refetchAccountAssets();
+    await refetchAccountAllAssets();
+    await refetchGroupAssets();
   };
 
-  // NORW 옵션 수정 필요. 뮤테이트 함수 리턴 필요
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['currentHiddenAssets', param],
-    queryFn: fetcher,
-    enabled: !!param,
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: 1000 * 60 * 10,
-    ...config,
-  });
+  const removeHiddenAssetId = async (assetId: AssetId) => {
+    const updatedHiddenAssetIds = currentHiddenAssetIds.filter(
+      (item) => !(item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType),
+    );
 
-  return { data, isLoading, error, refetch };
+    await updateExtensionStorageStore(`${currentAccount.id}-hidden-assetIds`, updatedHiddenAssetIds);
+
+    await refetchAccountAssets();
+    await refetchAccountAllAssets();
+    await refetchGroupAssets();
+  };
+
+  return { currentHiddenAssetIds, addHiddenAssetId, removeHiddenAssetId };
 }
