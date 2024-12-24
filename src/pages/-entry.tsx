@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, Typography } from '@mui/material';
+import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -11,6 +12,7 @@ import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import { Tab, Tabs } from '@/components/common/Tab';
 import PortFolio from '@/components/MainBox/Portfolio';
+import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -29,19 +31,15 @@ import {
   CoinButtonWrapper,
   Container,
   FilterContaienr,
-  FilterIconButton,
   ManageCryptoContainer,
   MarginLeftTypography,
   MarginTopTypography,
   StickyTabContainer,
   StickyTabPanelContentsContainer,
-  StyledInput,
   StyledTabPanel,
 } from './-styled';
 
-import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
-import SearchIcon from '@/assets/images/icons/Search18.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 
 import testAdImg from '@/assets/images/test-ad.png';
@@ -53,7 +51,11 @@ export default function Entry() {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { dashboardCoinSortKey, currency, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const [search, setsearch] = useState('');
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
+
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [isHideSmallValue, setIsHideSmallValue] = useState(false);
@@ -62,10 +64,10 @@ export default function Entry() {
 
   const { data: groupAccountAssets } = useGroupAccountAssets();
 
-  const filteredAssetsBySearch = useMemo(() => {
-    const baesCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
+  const computedAssetValues = (() => {
+    const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
-    const computedAssetValues = baesCoinList.map((item) => {
+    return baseCoinList.map((item) => {
       const displayAmount = item.totalDisplayAmount || '0';
 
       const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
@@ -77,18 +79,20 @@ export default function Entry() {
         value,
       };
     });
+  })();
 
-    const hideSmallValueAssets = (() => {
-      if (isHideSmallValue) {
-        return computedAssetValues.filter((coin) => {
-          return gte(coin.value, '0.001');
-        });
-      }
+  const hideSmallValueAssets = (() => {
+    if (isHideSmallValue) {
+      return computedAssetValues.filter((coin) => {
+        return gte(coin.value, '0.001');
+      });
+    }
 
-      return computedAssetValues;
-    })();
+    return computedAssetValues;
+  })();
 
-    const sortedAssets = hideSmallValueAssets.sort((a, b) => {
+  const sortedAssets = (() =>
+    hideSmallValueAssets.sort((a, b) => {
       if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
         return Number(minus(b.value, a.value));
       }
@@ -98,27 +102,20 @@ export default function Entry() {
       }
 
       return 0;
-    });
+    }))();
 
-    if (search.length > 1) {
+  const filteredAssetsBySearch = useMemo(() => {
+    if (!!search && debouncedSearch.length > 1) {
       return (
         sortedAssets.filter((asset) => {
           const condition = [asset.asset.symbol, asset.asset.id];
 
-          return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
+          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
         }) || []
       );
     }
     return sortedAssets;
-  }, [
-    coinGeckoPrice,
-    currency,
-    dashboardCoinSortKey,
-    groupAccountAssets?.groupAccountAssets,
-    groupAccountAssets?.singleAccountAssets,
-    isHideSmallValue,
-    search,
-  ]);
+  }, [debouncedSearch, search, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -140,25 +137,20 @@ export default function Entry() {
           <StyledTabPanel value={tabValue} index={0}>
             <StickyTabPanelContentsContainer>
               <FilterContaienr>
-                <StyledInput
-                  startAdornment={
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  }
-                  placeholder={'Search'}
+                <Search
                   value={search}
                   onChange={(event) => {
-                    setsearch(event.currentTarget.value);
+                    setSearch(event.currentTarget.value);
                   }}
-                />
-                <FilterIconButton
-                  onClick={() => {
+                  isPending={isDebouncing}
+                  onClickFilter={() => {
                     setIsOpenSortBottomSheet(true);
                   }}
-                >
-                  <FilterSettingIcon />
-                </FilterIconButton>
+                  onClear={() => {
+                    setSearch('');
+                    cancel();
+                  }}
+                />
               </FilterContaienr>
               <AdCarouselContainer>
                 <Carousel>

@@ -8,7 +8,7 @@ import { BottomContainer, BottomWrapper, Container, HelperTextContainer, RightBo
 import ViewIcon from '@/assets/images/icons/View12.svg';
 import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 
-type OutlinedInputProps = BaseOutlinedInputProps & {
+export type OutlinedInputProps = BaseOutlinedInputProps & {
   helperText?: string;
   rightBottomAdornment?: React.ReactNode;
   hideViewIcon?: boolean;

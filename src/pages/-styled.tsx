@@ -1,7 +1,6 @@
 import { Typography as BaseTypography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import IconButton from '@/components/common/IconButton';
 import Image from '@/components/common/Image';
 import OutlinedInput from '@/components/common/OutlinedInput';
 import { TabPanel } from '@/components/common/Tab';
@@ -25,18 +24,6 @@ export const StyledTabPanel = styled(TabPanel)({
   flexDirection: 'column',
 });
 
-export const FilterIconButton = styled(IconButton)(({ theme }) => ({
-  position: 'relative',
-
-  width: '3.2rem',
-  height: '3.2rem',
-
-  borderRadius: '0.4rem',
-
-  border: `0.1rem solid ${theme.palette.color.base200}`,
-  backgroundColor: theme.palette.color.base100,
-}));
-
 export const MarginTopTypography = styled(BaseTypography)(({ theme }) => ({
   marginTop: '0.4rem',
 
@@ -50,17 +37,8 @@ export const MarginLeftTypography = styled(BaseTypography)(({ theme }) => ({
 }));
 
 export const FilterContaienr = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  columnGap: '0.6rem',
-
+  width: '100%',
   marginTop: '0.8rem',
-});
-
-export const StyledInput = styled(OutlinedInput)({
-  height: '3.2rem',
 });
 
 export const AdCarouselContainer = styled('div')({
