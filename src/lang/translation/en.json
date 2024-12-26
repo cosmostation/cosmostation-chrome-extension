@@ -186,6 +186,11 @@
       "index": {
         "title": "Select Coin"
       }
+    },
+    "GithubBottomSheet": {
+      "index": {
+        "goToGithub": "Go to Github"
+      }
     }
   },
   "pages": {
@@ -961,7 +966,9 @@
     "manage-assets": {
       "visibility": {
         "layout": {
-          "header": "Manage Crypto"
+          "header": "Manage Crypto",
+          "headerTitle": "Token Listing Information",
+          "contentsSubTitle": "All assets and token information are being developed in collaboration with the community. If your token is not displayed, please provide the following GitHub link to the token issuer or community. Registered information will automatically appear in the wallet and on Mintscan."
         },
         "assets": {
           "entry": {
