@@ -35,10 +35,18 @@ type CoinTypeSelectorProps = {
   }[];
   selectedAccountType?: ChainAccountType;
   chain: Chain;
+  isDisableTopContents?: boolean;
   onClickChainType: (id: string, accountType: ChainAccountType) => void;
 };
 
-export default function CoinTypeSelector({ accountId, chain, selectedAccountType, accountTypeDetails, onClickChainType }: CoinTypeSelectorProps) {
+export default function CoinTypeSelector({
+  accountId,
+  chain,
+  selectedAccountType,
+  accountTypeDetails,
+  isDisableTopContents = false,
+  onClickChainType,
+}: CoinTypeSelectorProps) {
   const { t } = useTranslation();
   const { accounts, currency } = useExtensionStorageStore((state) => state);
 
@@ -49,12 +57,14 @@ export default function CoinTypeSelector({ accountId, chain, selectedAccountType
 
   return (
     <Container>
-      <TopContainer>
-        <ChainImage src={chain.image} />
-        <Base1300Text variant="h3_B">
-          {t('pages.account.restore-wallet.coin-type-setting.components.CoinTypeSelector.index.coinType').replace('${chain}', chain.name)}
-        </Base1300Text>
-      </TopContainer>
+      {!isDisableTopContents && (
+        <TopContainer>
+          <ChainImage src={chain.image} />
+          <Base1300Text variant="h3_B">
+            {t('pages.account.restore-wallet.coin-type-setting.components.CoinTypeSelector.index.coinType').replace('${chain}', chain.name)}
+          </Base1300Text>
+        </TopContainer>
+      )}
       <ButtonWrapper>
         {accountTypeDetails.map((item) => {
           const fullHdPath = item.accountType.hdPath.replace('${index}', currentAccountIndex);
@@ -89,6 +99,7 @@ export default function CoinTypeSelector({ accountId, chain, selectedAccountType
                   )}
                 </CoinTypeNameContainer>
                 <AddressTextContainer>
+                  {/* FIXME 60패스일때 코스모스, 이더리움 주소 같이 표시되도록 */}
                   <AddressText variant="b4_R">{item.address}</AddressText>
                 </AddressTextContainer>
               </ButtonBodyContainer>

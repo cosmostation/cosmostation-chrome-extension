@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
+import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
 import type { Chain } from '@/types/chain';
 
 import OptionButton from './components/OptionButton';
@@ -54,6 +56,7 @@ export default function ChainListBottomSheet({
 }: ChainListBottomSheetProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
 
@@ -119,7 +122,14 @@ export default function ChainListBottomSheet({
                 <NetworkCounts>{chainsCount}</NetworkCounts>
               </Base1300Text>
 
-              <IconTextButton leadingIcon={<ChangeIcon />}>
+              <IconTextButton
+                onClick={() => {
+                  navigate({
+                    to: SwitchAccountType.to,
+                  });
+                }}
+                leadingIcon={<ChangeIcon />}
+              >
                 <SwtichCoinType>
                   <Typography variant="b3_M">{t('components.ChainListBottomSheet.index.switchCoinType')}</Typography>
                 </SwtichCoinType>

@@ -979,6 +979,26 @@
             "customCrypto": "Custom Crypto"
           }
         }
+      },
+      "switch-account-type": {
+        "layout": {
+          "header": "Switch Coin Type"
+        },
+        "entry": {
+          "info": "The default coin type is recommended.",
+          "infoDescription": "Please set a type for one coin. The assets of the selected coin type will be displayed in the portfolio, and using the default type is recommended.",
+          "network": "Network",
+          "selected": "Selected :",
+          "type": "{{accountType}} TYPE"
+        },
+        "components": {
+          "coinTypeBottomSheet": {
+            "index": {
+              "coinType": "{{chainName}} Coin Type",
+              "description": "We recommend using the latest default type address, as using an old address may result in compatibility issues."
+            }
+          }
+        }
       }
     },
     "manage-dapps": {

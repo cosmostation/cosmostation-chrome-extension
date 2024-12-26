@@ -109,7 +109,9 @@ export async function initExtensionLocalStorage() {
 
     const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.params.chainlist_params.api_name);
 
-    const notStoredNewMultiAccountTypes = freshMultiAccountChainNames.filter((item) => !Object.keys(originStorage.preferAccountType).includes(item));
+    const notStoredNewMultiAccountTypes = freshMultiAccountChainNames
+      .filter((item) => !Object.keys(Object.values(originStorage.preferAccountType)[0]).includes(item))
+      .filter((item) => !!item);
 
     if (notStoredNewMultiAccountTypes && notStoredNewMultiAccountTypes.length > 0) {
       const newPreferAccountType: ChainToAccountTypeMap = {};
