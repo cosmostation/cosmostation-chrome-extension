@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 import { QRCodeSVG } from 'qrcode.react';
@@ -6,6 +7,7 @@ import { Typography } from '@mui/material';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
+import { FilledTab, FilledTabs } from '@/components/common/FilledTab/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
 import { shorterAddress } from '@/utils/string.ts';
@@ -26,6 +28,7 @@ import {
   CoinSymbolText,
   Container,
   CornerIconContainer,
+  FilledTabContainer,
   InfoIconContainer,
   QRBorderContainer,
   QRContainer,
@@ -45,22 +48,71 @@ type EntryProps = {
 export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
 
-  const { data: currentAccountAssets } = useAccountAssets();
+  const [tabValue, setTabValue] = useState(0);
+  const tabLabels = ['EVM Style', 'COSMOS Style'];
+
+  const { data: currentAccountAssets } = useAccountAssets({
+    accountId: undefined,
+    isOrign: true,
+  });
 
   const selectedCoin = currentAccountAssets?.flatAccountAssets && currentAccountAssets.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 
-  const coinDenom = selectedCoin?.asset.id;
+  const isEthermint = selectedCoin?.chain.chainType === 'evm' && selectedCoin.chain.isCosmos;
+
+  const cosmosStyleCoin = isEthermint
+    ? currentAccountAssets?.cosmosAccountAssets.find(
+        (item) =>
+          item.chain.id === selectedCoin.chain.id &&
+          item.address.chainId === selectedCoin.address.chainId &&
+          item.address.accountType.hdPath === selectedCoin.address.accountType.hdPath,
+      )
+    : undefined;
+
+  const coinDenom = (() => {
+    if (isEthermint) {
+      if (tabValue === 0) {
+        return selectedCoin?.asset.id;
+      }
+      if (tabValue === 1) {
+        return cosmosStyleCoin?.asset.id;
+      }
+    }
+
+    return selectedCoin?.asset.id;
+  })();
+
   const coinType = selectedCoin?.asset.type;
 
   const coinImage = selectedCoin?.asset.image;
 
   const symbol = selectedCoin?.asset.symbol || '';
 
-  const chainAddres = selectedCoin?.address.address || '';
+  const chainAddress = (() => {
+    if (isEthermint) {
+      if (tabValue === 0) {
+        return selectedCoin.address.address;
+      }
+      if (tabValue === 1) {
+        return cosmosStyleCoin?.address.address || '';
+      }
+    }
+
+    return selectedCoin?.address.address || '';
+  })();
 
   const chainName = selectedCoin?.chain.name || '';
 
   const coinTypeText = (() => {
+    if (isEthermint) {
+      if (tabValue === 0) {
+        return `${t('pages.wallet.receive.$coinId.entry.contract')} : `;
+      }
+      if (tabValue === 1) {
+        return `${t('pages.wallet.receive.$coinId.entry.denom')} : `;
+      }
+    }
+
     if (coinType === 'erc20' || coinType === 'cw20') {
       return `${t('pages.wallet.receive.$coinId.entry.contract')} : `;
     }
@@ -81,9 +133,22 @@ export default function Entry({ coinId }: EntryProps) {
     toastSuccess(t('pages.wallet.receive.$coinId.entry.copied'));
   };
 
+  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+    setTabValue(newTabValue);
+  };
+
   return (
     <BaseBody>
       <Container>
+        {isEthermint && (
+          <FilledTabContainer>
+            <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
+              {tabLabels.map((item) => (
+                <FilledTab key={item} label={item} />
+              ))}
+            </FilledTabs>
+          </FilledTabContainer>
+        )}
         <CoinContainer>
           <CoinSymbolText variant="h2_B">{symbol}</CoinSymbolText>
           <CoinDenomContainer>
@@ -94,7 +159,7 @@ export default function Entry({ coinId }: EntryProps) {
         </CoinContainer>
         <QRBorderContainer>
           <QRContainer>
-            <QRCodeSVG value={chainAddres} size={200} />
+            <QRCodeSVG value={chainAddress} size={200} />
           </QRContainer>
           <BottomLeftCornerContainer>
             <CornerIconContainer>
@@ -125,11 +190,12 @@ export default function Entry({ coinId }: EntryProps) {
         <AddressContainer>
           <AddressTopContainer>
             <AddressTopTitleContainer>
-              <Base1000Text variant="b3_M">{t('pages.wallet.receive.$coinId.entry.myAddress')}</Base1000Text>
+              <Base1000Text variant="b3_M">{`${t('pages.wallet.receive.$coinId.entry.myAddress')}
+              ${tabValue === 1 && isEthermint ? ' (Cosmos Style)' : ''}`}</Base1000Text>
             </AddressTopTitleContainer>
 
             <AddressBodyContainer>
-              <AddressText variant="b3_M_Multiline">{chainAddres}</AddressText>
+              <AddressText variant="b3_M_Multiline">{chainAddress}</AddressText>
 
               <StyledIconButton onClick={copyToClipboard}>
                 <CopyIcon />

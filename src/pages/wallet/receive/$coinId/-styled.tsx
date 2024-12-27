@@ -11,6 +11,11 @@ export const Container = styled('div')({
   alignItems: 'center',
 });
 
+export const FilledTabContainer = styled('div')({
+  width: '100%',
+  height: 'fit-content',
+});
+
 export const CoinContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
