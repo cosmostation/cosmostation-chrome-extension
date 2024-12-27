@@ -999,6 +999,44 @@
             }
           }
         }
+      },
+      "import": {
+        "assets": {
+          "components": {
+            "ERC20": {
+              "index": {
+                "success": "Successfully added the ERC20 token.",
+                "contractAddress": "Contract Address",
+                "symbol": "Symbol",
+                "decimals": "Decimals",
+                "logoUrl": "Crypyo Logo URL (Optional)",
+                "addCustomCrypto": "Add Custom Crypto",
+                "error": "Failed to add ERC20 token",
+                "supportedAssets": "This token is already supported!"
+              }
+            },
+            "CW20": {
+              "index": {
+                "supportedAssets": "This token is already supported!",
+                "success": "Successfully added the CW20 token.",
+                "error": "Failed to add CW20 token",
+                "contractAddress": "Contract Address",
+                "symbol": "Symbol",
+                "decimals": "Decimals",
+                "logoUrl": "Crypyo Logo URL (Optional)",
+                "addCustomCrypto": "Add Custom Crypto"
+              }
+            }
+          },
+          "layout": {
+            "header": "Import Custom Crypto"
+          },
+          "entry": {
+            "network": "Network",
+            "selectNetwork": "Select Network",
+            "searchNetwork": "Search Network (Ex. Bitcoin)"
+          }
+        }
       }
     },
     "manage-dapps": {
@@ -1045,6 +1083,14 @@
         "pattern": {
           "invalidRange": "Please enter a value less than 10"
         }
+      },
+      "any": {
+        "required": "required"
+      },
+      "number": {
+        "base": "Please enter numbers.",
+        "empty": "Please enter numbers.",
+        "min": "Please enter at least {#limit} or more numbers."
       }
     },
     "passwordForm": {
@@ -1078,6 +1124,15 @@
       "repeatPassword": {
         "any": {
           "only": "The password confirmation does not match."
+        }
+      }
+    },
+    "importTokenForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Invalid token address"
+          }
         }
       }
     }

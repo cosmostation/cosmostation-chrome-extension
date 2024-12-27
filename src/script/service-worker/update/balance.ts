@@ -21,7 +21,16 @@ export async function balance(id: string) {
     await initAssests(id);
 
     // TODO init 밸런스 페칭에서는 타잉아웃 (2초 지나면 요청 취소) 설정이 필요할듯. // 궁극적으로 타임아웃은 있어도 좋을듯.
-    await Promise.all([cosmosBalances(id), evmBalances(id), aptosBalances(id), suiBalances(id), erc20Balance(id), cw20Balance(id)]);
+    await Promise.all([
+      cosmosBalances(id),
+      evmBalances(id),
+      aptosBalances(id),
+      suiBalances(id),
+      erc20Balance(id),
+      customErc20Balance(id),
+      cw20Balance(id),
+      customCw20Balance(id),
+    ]);
     await initAccount(id);
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -389,6 +398,66 @@ async function erc20Balance(id: string) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${id}-balance-erc20`]: results });
 }
 
+async function customErc20Balance(id: string) {
+  // NOTE 여기에 커스텀 체인의 erc20이 있을 수 있으니 getAccountAddress에서 커스텀 체인의 주소도 가져올 수 있도록 해야한다.
+  const accountAddress = await getAccountAddress(id);
+  // NOTE 마찬가지로 여기에서도 커스텀 체인이 나올 수 있도록
+  const { evmChains } = await getChains();
+  const { customErc20Assets } = await getAssets();
+
+  const addressWithChain = accountAddress
+    .map((addr) => {
+      const chain = evmChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(5)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const { rpcUrls } = chain;
+      const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
+
+      const providers = rpcUrls.map(
+        (rpcUrl) =>
+          new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
+            batchMaxCount: 1,
+            polling: false,
+            staticNetwork: true,
+          }),
+      );
+
+      const { results: allBalances } = await PromisePool.withConcurrency(10)
+        .for(assets)
+        .process(async (asset) => {
+          const { id: contractAddress } = asset;
+          const promises = providers.map(async (provider) => {
+            const contract = new Contract(contractAddress, ERC20_READ_ABI, provider);
+            const response: bigint = await contract.balanceOf(address);
+
+            const balance = response.toString();
+            return balance;
+          });
+
+          const balance = await Promise.any(promises);
+
+          const result = { contract: contractAddress, balance };
+
+          return result;
+        });
+
+      providers.forEach((provider) => provider.destroy());
+
+      const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+      const result = { id, chainId, chainType, address, balances };
+      return result;
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: results });
+}
+
 async function cw20Balance(id: string) {
   const accountAddress = await getAccountAddress(id);
   const hiddenAssets = await getHiddenAssets(id);
@@ -444,4 +513,56 @@ async function cw20Balance(id: string) {
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: results });
+}
+
+async function customCw20Balance(id: string) {
+  const accountAddress = await getAccountAddress(id);
+  // NOTE 커스텀 체인도 함께 리스팅
+  const { cosmosChains } = await getChains();
+  const { customCw20Assets } = await getAssets();
+
+  const cosmosChainsWithCosmwasm = cosmosChains.filter((chain) => chain.isCosmwasm);
+
+  const addressWithChain = accountAddress
+    .map((addr) => {
+      const chain = cosmosChainsWithCosmwasm.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(5)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const { lcdUrls } = chain;
+      const assets = customCw20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
+
+      const { results: allBalances } = await PromisePool.withConcurrency(10)
+        .for(assets)
+        .process(async (asset) => {
+          const { id: contractAddress } = asset;
+          const promises = lcdUrls.map(async (lcdUrl) => {
+            const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
+            const urlPath = `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${btoa(`{"balance":{"address":"${address}"}}`)}`;
+            const requestUrl = `${url}${urlPath}`;
+
+            const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl);
+
+            return response.data?.data?.balance ?? '0';
+          });
+
+          const balance = await Promise.any(promises);
+
+          const result = { contract: contractAddress, balance };
+
+          return result;
+        });
+
+      const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+      const result = { id, chainId, chainType, address, balances };
+      return result;
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: results });
 }

@@ -60,7 +60,9 @@ export function useCurrentAccount() {
       `${id}-balance-aptos`,
       `${id}-balance-sui`,
       `${id}-balance-erc20`,
+      `${id}-custom-balance-erc20`,
       `${id}-balance-cw20`,
+      `${id}-custom-balance-cw20`,
       `${id}-hidden-assetIds`,
     ]);
   };
@@ -90,7 +92,9 @@ export function useCurrentAccount() {
         `${id}-balance-aptos`,
         `${id}-balance-sui`,
         `${id}-balance-erc20`,
+        `${id}-custom-balance-erc20`,
         `${id}-balance-cw20`,
+        `${id}-custom-balance-cw20`,
         `${id}-hidden-assetIds`,
       ]);
     });

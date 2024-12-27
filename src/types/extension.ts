@@ -22,7 +22,9 @@ export interface ExtensionStorage {
   paramsV11: Record<string, V11Param>;
   assetsV11: V11Asset[];
   erc20Assets: EvmErc20Asset[];
+  customErc20Assets: EvmErc20Asset[];
   cw20Assets: CosmosCw20Asset[];
+  customCw20Assets: CosmosCw20Asset[];
   [key: `${string}-address`]: AccountAddress[];
   [key: `${string}-balance-cosmos`]: AccountAddressBalanceCosmos[];
   [key: `${string}-balance-evm`]: AccountAddressBalanceEvm[];
@@ -31,6 +33,8 @@ export interface ExtensionStorage {
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
+  [key: `${string}-custom-balance-erc20`]: AccountAddressBalanceErc20[];
+  [key: `${string}-custom-balance-cw20`]: AccountAddressBalanceCw20[];
   initAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;
   dappListSortKey: DappListSortKeyType;

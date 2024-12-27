@@ -52,6 +52,14 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('preferAccountType', {});
   }
 
+  if (!originStorage.customErc20Assets) {
+    await setExtensionLocalStorage('customErc20Assets', []);
+  }
+
+  if (!originStorage.customCw20Assets) {
+    await setExtensionLocalStorage('customCw20Assets', []);
+  }
+
   if (!originStorage.selectedAccountId) {
     const defaultAccountId = originStorage.accounts?.[0]?.id || '';
     await setExtensionLocalStorage('selectedAccountId', defaultAccountId);
@@ -102,7 +110,7 @@ export async function initExtensionLocalStorage() {
   }
 
   // NOTE 이미 저장된 상태. 새 체인파람에 멀티 어카운트 타입이 감지가 됐는데 이게 스토리지에는 저장이 안되어있을때
-  if (Object.keys(originStorage.preferAccountType).length > 0) {
+  if (originStorage.preferAccountType && Object.keys(originStorage.preferAccountType).length > 0) {
     const filteredAccountTypes = Object.values(originStorage.paramsV11).filter(
       (item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1,
     );

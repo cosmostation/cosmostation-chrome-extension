@@ -7,6 +7,8 @@ export interface AccountAssets {
   suiAccountAssets: AccountSuiAsset[];
   cw20AccountAssets: AccountCw20Asset[];
   erc20AccountAssets: AccountErc20Asset[];
+  customErc20AccountAssets: AccountErc20Asset[];
+  customCw20AccountAssets: AccountCw20Asset[];
 }
 export type FlatAccountAssets = AccountCosmosAsset | AccountCw20Asset | AccountErc20Asset | AccountEvmAsset | AccountSuiAsset | AccountAptosAsset;
 

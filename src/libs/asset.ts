@@ -20,7 +20,9 @@ export async function getAssets() {
     paramsV11: chains,
     erc20Assets,
     cw20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'paramsV11', 'cw20Assets', 'erc20Assets']);
+    customErc20Assets,
+    customCw20Assets,
+  } = await chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'paramsV11', 'cw20Assets', 'erc20Assets', 'customErc20Assets', 'customCw20Assets']);
   if (!assets) {
     throw new Error('No assets found');
   }
@@ -105,7 +107,9 @@ export async function getAssets() {
     aptosAssets,
     bitcoinAssets,
     erc20Assets,
+    customErc20Assets,
     cw20Assets,
+    customCw20Assets,
   };
 }
 
@@ -170,13 +174,15 @@ export async function getAccountAssets(id: string) {
     `${id}-balance-sui`,
     `${id}-balance-erc20`,
     `${id}-balance-cw20`,
+    `${id}-custom-balance-erc20`,
+    `${id}-custom-balance-cw20`,
   ]);
 
   const hiddenAssetIds = await getHiddenAssets(id);
 
   const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
 
-  const { aptosAssets, cosmosAssets, cw20Assets, erc20Assets, evmAssets, suiAssets } = await getAssets();
+  const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets } = await getAssets();
 
   const aptosAssetsWithoutHidden = aptosAssets.filter(
     (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
@@ -204,7 +210,9 @@ export async function getAccountAssets(id: string) {
   const aptosBalances = storage[`${id}-balance-aptos`];
   const suiBalances = storage[`${id}-balance-sui`];
   const erc20Balances = storage[`${id}-balance-erc20`];
+  const customErc20Balances = storage[`${id}-custom-balance-erc20`];
   const cw20Balances = storage[`${id}-balance-cw20`];
+  const customCw20Balances = storage[`${id}-custom-balance-cw20`];
 
   const cosmosPromise = PromisePool.withConcurrency(concurrency)
     .for(cosmosAssetsWithoutHidden)
@@ -318,6 +326,64 @@ export async function getAccountAssets(id: string) {
       return results;
     });
 
+  const customErc20Promise = PromisePool.withConcurrency(concurrency)
+    .for(customErc20Assets)
+    .process(async (asset) => {
+      // NOTE 커스텀 체인도 반영되도록.
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const type = asset.id;
+          const balanceInfo = customErc20Balances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+          const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+
+          const result: AccountErc20Asset = {
+            chain,
+            asset,
+            address,
+            balance: balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
+  const customCW20Promise = PromisePool.withConcurrency(concurrency)
+    .for(customCw20Assets)
+    .process(async (asset) => {
+      // NOTE 커스텀 체인도 반영되도록.
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const type = asset.id;
+          const balanceInfo = customCw20Balances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+          const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+
+          const result: AccountCw20Asset = {
+            chain,
+            asset,
+            address,
+            balance: balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
   const aptosPromise = PromisePool.withConcurrency(concurrency)
     .for(aptosAssetsWithoutHidden)
     .process(async (asset) => {
@@ -372,7 +438,7 @@ export async function getAccountAssets(id: string) {
       return results;
     });
 
-  const results = await Promise.all([cosmosPromise, evmPromise, aptosPromise, suiPromise, cw20Promise, erc20Promise]);
+  const results = await Promise.all([cosmosPromise, evmPromise, aptosPromise, suiPromise, cw20Promise, erc20Promise, customErc20Promise, customCW20Promise]);
 
   const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
   const evmAccountAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
@@ -380,8 +446,19 @@ export async function getAccountAssets(id: string) {
   const suiAccountAssets = results[3].results.flat().filter((asset) => asset.chain && asset.address);
   const cw20AccountAssets = results[4].results.flat().filter((asset) => asset.chain && asset.address);
   const erc20AccountAssets = results[5].results.flat().filter((asset) => asset.chain && asset.address);
+  const customErc20AccountAssets = results[6].results.flat().filter((asset) => asset.chain && asset.address);
+  const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
 
   console.timeEnd('getAccountAssets');
 
-  return { cosmosAccountAssets, evmAccountAssets, aptosAccountAssets, suiAccountAssets, cw20AccountAssets, erc20AccountAssets };
+  return {
+    cosmosAccountAssets,
+    evmAccountAssets,
+    aptosAccountAssets,
+    suiAccountAssets,
+    cw20AccountAssets,
+    erc20AccountAssets,
+    customErc20AccountAssets,
+    customCw20AccountAssets,
+  };
 }

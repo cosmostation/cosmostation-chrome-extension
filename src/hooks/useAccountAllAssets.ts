@@ -33,9 +33,11 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
         `${param}-balance-sui`,
         `${param}-balance-erc20`,
         `${param}-balance-cw20`,
+        `${param}-custom-balance-erc20`,
+        `${param}-custom-balance-cw20`,
       ]);
       const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
-      const { aptosAssets, cosmosAssets, cw20Assets, erc20Assets, evmAssets, suiAssets } = await getAssets();
+      const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets } = await getAssets();
 
       const accountAddress = storage[`${param}-address`];
 
@@ -44,7 +46,9 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
       const aptosBalances = storage[`${param}-balance-aptos`];
       const suiBalances = storage[`${param}-balance-sui`];
       const erc20Balances = storage[`${param}-balance-erc20`];
+      const customErc20Balances = storage[`${param}-custom-balance-erc20`];
       const cw20Balances = storage[`${param}-balance-cw20`];
+      const customCw20Balances = storage[`${param}-custom-balance-cw20`];
 
       const cosmosPromise = PromisePool.withConcurrency(concurrency)
         .for(cosmosAssets)
@@ -158,6 +162,64 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
           return results;
         });
 
+      const customErc20Promise = PromisePool.withConcurrency(concurrency)
+        .for(customErc20Assets)
+        .process(async (asset) => {
+          // NOTE 커스텀 체인도 반영되도록.
+          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+          const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+          const { results } = await PromisePool.withConcurrency(concurrency)
+            .for(addresses)
+            .process((address) => {
+              const type = asset.id;
+              const balanceInfo = customErc20Balances?.find(
+                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+              );
+              const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+
+              const result: AccountErc20Asset = {
+                chain,
+                asset,
+                address,
+                balance: balance,
+              };
+
+              return result;
+            });
+
+          return results;
+        });
+
+      const customCW20Promise = PromisePool.withConcurrency(concurrency)
+        .for(customCw20Assets)
+        .process(async (asset) => {
+          // NOTE 커스텀 체인도 반영되도록.
+          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+          const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+          const { results } = await PromisePool.withConcurrency(concurrency)
+            .for(addresses)
+            .process((address) => {
+              const type = asset.id;
+              const balanceInfo = customCw20Balances?.find(
+                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+              );
+              const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+
+              const result: AccountCw20Asset = {
+                chain,
+                asset,
+                address,
+                balance: balance,
+              };
+
+              return result;
+            });
+
+          return results;
+        });
+
       const aptosPromise = PromisePool.withConcurrency(concurrency)
         .for(aptosAssets)
         .process(async (asset) => {
@@ -212,7 +274,16 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
           return results;
         });
 
-      const results = await Promise.all([cosmosPromise, evmPromise, aptosPromise, suiPromise, cw20Promise, erc20Promise]);
+      const results = await Promise.all([
+        cosmosPromise,
+        evmPromise,
+        aptosPromise,
+        suiPromise,
+        cw20Promise,
+        erc20Promise,
+        customErc20Promise,
+        customCW20Promise,
+      ]);
 
       const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
       const evmAccountAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
@@ -220,10 +291,21 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
       const suiAccountAssets = results[3].results.flat().filter((asset) => asset.chain && asset.address);
       const cw20AccountAssets = results[4].results.flat().filter((asset) => asset.chain && asset.address);
       const erc20AccountAssets = results[5].results.flat().filter((asset) => asset.chain && asset.address);
+      const customErc20AccountAssets = results[6].results.flat().filter((asset) => asset.chain && asset.address);
+      const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
 
       console.timeEnd('getAccountAssets');
 
-      return { cosmosAccountAssets, evmAccountAssets, aptosAccountAssets, suiAccountAssets, cw20AccountAssets, erc20AccountAssets };
+      return {
+        cosmosAccountAssets,
+        evmAccountAssets,
+        aptosAccountAssets,
+        suiAccountAssets,
+        cw20AccountAssets,
+        erc20AccountAssets,
+        customErc20AccountAssets,
+        customCw20AccountAssets,
+      };
     } catch {
       return null;
     }

@@ -8,7 +8,7 @@ import GithubBottomSheet from '@/components/GithubBottomSheet';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 
-import { IconContainer } from './-styled';
+import { InfoIconContainer } from './-styled';
 
 import InfoIcon from '@/assets/images/icons/Information14.svg';
 
@@ -30,9 +30,9 @@ export default function Layout({ children }: LayoutProps) {
             middleContent={<Base1300Text variant="h4_B">{t('pages.manage-assets.visibility.layout.header')}</Base1300Text>}
             rightContent={
               <IconButton onClick={() => setIsOpenBottomSheet(true)}>
-                <IconContainer>
+                <InfoIconContainer>
                   <InfoIcon />
-                </IconContainer>
+                </InfoIconContainer>
               </IconButton>
             }
           />

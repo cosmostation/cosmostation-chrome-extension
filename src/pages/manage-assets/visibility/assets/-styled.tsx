@@ -1,28 +1,53 @@
 import { styled } from '@mui/material/styles';
 
-import { TabPanel } from '@/components/common/Tab';
-
 export const Container = styled('div')({
   width: '100%',
 });
 
-export const StyledTabPanel = styled(TabPanel)({
-  marginTop: '0',
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-export const StickyTabContainer = styled('div')(({ theme }) => ({
+export const StickyContainer = styled('div')(({ theme }) => ({
   width: '100%',
   height: 'fit-content',
   position: 'sticky',
   top: '3rem',
 
   zIndex: 1,
+  padding: '0.8rem 1.2rem',
+
   backgroundColor: theme.palette.color.base50,
+  boxSizing: 'border-box',
 }));
 
-export const IconContainer = styled('div')(({ theme }) => ({
+export const RowContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+
+  marginTop: '1rem',
+});
+
+export const PurpleContainer = styled('div')(({ theme }) => ({
+  '& > svg': {
+    fill: theme.palette.accentColor.purple400,
+    '& > path': {
+      fill: theme.palette.accentColor.purple400,
+    },
+  },
+}));
+
+export const ImportTextContainer = styled('div')(({ theme }) => ({
+  color: theme.palette.accentColor.purple400,
+  marginLeft: '0.2rem',
+}));
+
+export const CoinButtonWrapper = styled('div')({
+  width: '100%',
+});
+
+export const IconContainer = styled('div')({
+  marginLeft: '0.6rem',
+});
+
+export const InfoIconContainer = styled('div')(({ theme }) => ({
   width: '1.6rem',
   height: '1.6rem',
   '& > svg': {
