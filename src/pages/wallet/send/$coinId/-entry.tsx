@@ -16,8 +16,9 @@ import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useChainList } from '@/hooks/useChainList.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result/$txHash/$coinId';
+import type { UniqueChainId } from '@/types/chain.ts';
 import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
@@ -119,8 +120,8 @@ export default function Entry({ coinId }: EntryProps) {
 
   // TODO
   // const recipientChainList =
-  const [currentRecipientChainId, setCurrentRecipientChainId] = useState('');
-  const currentRecipientChain = flatChainList.find((chain) => chain.id === currentRecipientChainId);
+  const [currentRecipientChainId, setCurrentRecipientChainId] = useState<UniqueChainId>();
+  const currentRecipientChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, currentRecipientChainId));
 
   console.log('🚀 ~ Entry ~ currentRecipientChain:', currentRecipientChain);
 

@@ -13,9 +13,10 @@ import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
+import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, FilterIconButton, StickyContentsContainer, StyledInput } from './-styled';
@@ -38,7 +39,7 @@ export default function Entry({ coinId }: EntryProps) {
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState('');
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const { data: groupAccountAssets } = useGroupAccountAssets();
 
@@ -52,7 +53,7 @@ export default function Entry({ coinId }: EntryProps) {
   const filteredAssetsBySearch = useMemo(() => {
     const filteredByChain = baseCoinList?.filter((item) => {
       if (currentSelectedChainId) {
-        return item.chain.id === currentSelectedChainId;
+        return isMatchingUniqueChainId(item.chain, currentSelectedChainId);
       }
       return true;
     });

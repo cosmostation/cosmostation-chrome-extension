@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { TypoVariantKeys } from '@/styles/theme';
-import type { Chain } from '@/types/chain';
+import type { Chain, UniqueChainId } from '@/types/chain';
+import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import { ChainImageContainer, ChevronIconContainer, GridMenuIconContainer, StyledIconButton, TextContainer } from './styled';
 import ChainListBottomSheet from '../ChainListBottomSheet';
@@ -15,10 +16,10 @@ type AllNetworkButtonprops = IconTextButtonProps & {
   typoVarient?: TypoVariantKeys;
   variant?: 'normal' | 'chip';
   sizeVariant?: 'small' | 'medium' | 'large';
-  currentChainId?: string;
+  currentChainId?: UniqueChainId;
   chainList?: Chain[];
   isManageAssets?: boolean;
-  selectChainOption?: (id: string) => void;
+  selectChainOption?: (id?: UniqueChainId) => void;
 };
 
 export default function AllNetworkButton({
@@ -34,7 +35,7 @@ export default function AllNetworkButton({
   const { t } = useTranslation();
   const [isOpenChainListBottomSheet, setIsOpenChainListBottomSheet] = useState(false);
 
-  const currentChain = chainList?.find((chain) => chain.id === currentChainId);
+  const currentChain = chainList?.find((chain) => isMatchingUniqueChainId(chain, currentChainId));
 
   return (
     <>

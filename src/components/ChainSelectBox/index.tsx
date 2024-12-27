@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
-import type { Chain } from '@/types/chain';
+import type { Chain, UniqueChainId } from '@/types/chain';
+import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import {
   BottomContainer,
@@ -19,12 +20,12 @@ import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14
 
 type ChainSelectBoxProps = TextFieldProps & {
   chainList: Chain[];
-  currentChainId?: string;
+  currentChainId?: UniqueChainId;
   helperText?: string;
   rightAdornmentComponent?: JSX.Element;
   bottomSheetTitle?: string;
   bottomSheetSearchPlaceholder?: string;
-  onClickChain?: (chainId: string) => void;
+  onClickChain?: (id?: UniqueChainId) => void;
 };
 
 export default function ChainSelectBox({
@@ -43,9 +44,9 @@ export default function ChainSelectBox({
 
   const [isOpenChainListBottomSheet, setIsOpenChainListBottomSheet] = useState(false);
 
-  const currentSelectedChain = chainList.find((chain) => chain.id === currentChainId);
+  const currentSelectedChain = chainList.find((chain) => isMatchingUniqueChainId(chain, currentChainId));
 
-  const handleMenuItemClick = (value: string) => {
+  const handleMenuItemClick = (value?: UniqueChainId) => {
     onClickChain?.(value);
     setIsOpenChainListBottomSheet(false);
   };

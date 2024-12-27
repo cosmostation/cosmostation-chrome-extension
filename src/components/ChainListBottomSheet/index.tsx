@@ -4,7 +4,8 @@ import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
-import type { Chain } from '@/types/chain';
+import type { Chain, UniqueChainId } from '@/types/chain';
+import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import OptionButton from './components/OptionButton';
 import {
@@ -35,12 +36,12 @@ import GridMenuImage from 'assets/images/GridMenu.png';
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   chainList: Chain[];
-  currentChainId?: string;
+  currentChainId?: UniqueChainId;
   disableAllNetwork?: boolean;
   title?: string;
   searchPlaceholder?: string;
   customType?: 'normal' | 'manageAssets';
-  onClickChain: (id: string) => void;
+  onClickChain: (id?: UniqueChainId) => void;
 };
 
 export default function ChainListBottomSheet({
@@ -60,7 +61,7 @@ export default function ChainListBottomSheet({
 
   const [search, setSearch] = useState('');
 
-  const AllNetworkOptionId = '';
+  const AllNetworkOptionId = undefined;
 
   const sortedChainList = chainList?.sort((a, b) => {
     return a.name.localeCompare(b.name);
@@ -152,7 +153,7 @@ export default function ChainListBottomSheet({
             />
           )}
           {filteredChainList?.map((item) => {
-            const isActive = currentChainId === item.id;
+            const isActive = isMatchingUniqueChainId(item, currentChainId);
 
             return (
               <OptionButton
@@ -165,7 +166,7 @@ export default function ChainListBottomSheet({
                 }}
                 name={item.name}
                 image={item.image}
-                id={item.id}
+                id={getUniqueChainId(item)}
               />
             );
           })}

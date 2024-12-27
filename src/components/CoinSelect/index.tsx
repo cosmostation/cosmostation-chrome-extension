@@ -10,10 +10,10 @@ import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
-import type { Chain } from '@/types/chain';
+import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, FilterIconButton, StickyContentsContainer, StyledInput } from './styled';
@@ -53,7 +53,7 @@ export default function CoinSelect({
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   // FIXME 코인 리스트 기반으로 체인 리스트를 추려야할 듯.
   const baseChainList = chainList || flatChainList;
@@ -71,7 +71,7 @@ export default function CoinSelect({
     return data?.flatAccountAssets;
   })();
 
-  const currentSelectedChain = baseChainList.find((chain) => chain.id === currentSelectedChainId);
+  const currentSelectedChain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId));
 
   const isShowAssetId = !!currentSelectedChain || !!search;
 

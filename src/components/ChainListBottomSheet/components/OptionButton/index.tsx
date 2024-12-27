@@ -1,28 +1,32 @@
 import { forwardRef } from 'react';
 
+import type { UniqueChainId } from '@/types/chain';
+
 import { ActiveBadge, ChainImage, ChainNameText, LeftContainer, StyledChainButton } from './styled';
 
 import CheckIcon from 'assets/images/icons/Check.svg';
 
+import DefaultChain from '@/assets/images/chain/defaultChain.png';
+
 type OptionButtonProps = {
   image: string | null;
   name: string;
-  id: string;
+  id?: UniqueChainId;
   isActive?: boolean;
-  onSelectChain?: (id: string) => void;
+  onSelectChain?: (id?: UniqueChainId) => void;
 };
 
-const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ image, name, id, isActive, onSelectChain, ...remainder }, ref) => {
+const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ image, name, isActive, id, onSelectChain, ...remainder }, ref) => {
   return (
     <StyledChainButton
       onClick={() => {
-        onSelectChain?.(String(id));
+        onSelectChain?.(id);
       }}
       {...remainder}
       ref={isActive ? ref : undefined}
     >
       <LeftContainer>
-        <ChainImage src={image} />
+        <ChainImage src={image} defaultImgSrc={DefaultChain} />
         <ChainNameText variant="b2_M">{name}</ChainNameText>
       </LeftContainer>
       {isActive && (

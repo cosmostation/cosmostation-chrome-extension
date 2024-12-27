@@ -12,6 +12,7 @@ import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import { Route as SelectSwapCoin } from '@/pages/wallet/swap';
+import type { UniqueChainId } from '@/types/chain';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -44,7 +45,7 @@ export default function PortFolio() {
   const navigate = useNavigate();
 
   const { currency } = useExtensionStorageStore((state) => state);
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>();
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const dummyChainList = TEST_CHAIN_LIST;
 

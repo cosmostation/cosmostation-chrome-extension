@@ -17,9 +17,10 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentHiddenAssetIds } from '@/hooks/useCurrentHiddenAssetIds';
 import type { FlatAccountAssets } from '@/types/accountAssets';
+import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getCoinIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getCoinIdWithManual, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, FilterContaienr, IconContainer, StickyTabPanelContentsContainer } from './styled';
@@ -50,7 +51,7 @@ export default function SupportedAssets() {
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<string>('');
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const hiddenAssetCoinIds = useMemo(() => currentHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [currentHiddenAssetIds]);
 
@@ -113,7 +114,7 @@ export default function SupportedAssets() {
     [baseCoinList, flatChainList],
   );
 
-  const currentSelectedChain = useMemo(() => chainList.find((item) => item.id === currentSelectedChainId), [chainList, currentSelectedChainId]);
+  const currentSelectedChain = useMemo(() => chainList.find((item) => getUniqueChainId(item) === currentSelectedChainId), [chainList, currentSelectedChainId]);
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
