@@ -17,7 +17,6 @@ type UseAccountAllAssets =
     }
   | undefined;
 
-// FIXME 리턴타입을 useAccountAssets와 동일하게 수정필요
 export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
 
