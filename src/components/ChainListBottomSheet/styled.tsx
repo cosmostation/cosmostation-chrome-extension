@@ -2,7 +2,6 @@ import { styled } from '@mui/material/styles';
 
 import BaseOptionButton from '../common/BaseOptionButton';
 import BottomSheet from '../common/BottomSheet';
-import OutlinedInput from '../common/OutlinedInput';
 
 export const Container = styled('div')({
   overflow: 'hidden',
@@ -50,18 +49,12 @@ export const StyledButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const StyledInput = styled(OutlinedInput)({
-  height: '3.2rem',
-});
-
 export const FilterContaienr = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  width: '100%',
 
-  columnGap: '0.6rem',
+  padding: '0.8rem 1.2rem 1.2rem',
 
-  margin: '0.8rem 1.2rem 1.2rem',
+  boxSizing: 'border-box',
 });
 
 export const ManageAssetsContaienr = styled('div')({

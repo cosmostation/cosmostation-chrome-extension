@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, Typography } from '@mui/material';
+import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
@@ -21,13 +22,12 @@ import {
   NetworkInfoContainer,
   StyledBottomSheet,
   StyledButton,
-  StyledInput,
   SwtichCoinType,
 } from './styled';
 import Base1300Text from '../common/Base1300Text';
 import IconTextButton from '../common/IconTextButton';
+import Search from '../Search';
 
-import SearchIcon from '@/assets/images/icons/Search18.svg';
 import ChangeIcon from 'assets/images/icons/Change14.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 import CustomNetworkIcon from 'assets/images/icons/CustomNetwork28.svg';
@@ -60,13 +60,22 @@ export default function ChainListBottomSheet({
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
 
   const AllNetworkOptionId = undefined;
 
   const sortedChainList = chainList?.sort((a, b) => {
     return a.name.localeCompare(b.name);
   });
-  const filteredChainList = sortedChainList?.filter((chain) => chain.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
+
+  const filteredChainList = (() => {
+    if (!!search && debouncedSearch.length > 1) {
+      return sortedChainList?.filter((chain) => chain.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+    }
+    return sortedChainList;
+  })();
 
   const chainsCount = String(chainList.length);
 
@@ -93,16 +102,17 @@ export default function ChainListBottomSheet({
           </StyledButton>
         </Header>
         <FilterContaienr>
-          <StyledInput
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-            placeholder={searchPlaceholder || t('components.ChainListBottomSheet.index.searchPlaceholder')}
+          <Search
             value={search}
             onChange={(event) => {
               setSearch(event.currentTarget.value);
+            }}
+            disableFilter
+            searchPlaceholder={searchPlaceholder || t('components.ChainListBottomSheet.index.searchPlaceholder')}
+            isPending={isDebouncing}
+            onClear={() => {
+              setSearch('');
+              cancel();
             }}
           />
         </FilterContaienr>
@@ -139,7 +149,7 @@ export default function ChainListBottomSheet({
           </ManageAssetsContaienr>
         )}
         <Body>
-          {!disableAllNetwork && (
+          {!disableAllNetwork && !isDebouncing && (
             <OptionButton
               key={'all-network'}
               isActive={!currentChainId}
@@ -152,24 +162,26 @@ export default function ChainListBottomSheet({
               id={AllNetworkOptionId}
             />
           )}
-          {filteredChainList?.map((item) => {
-            const isActive = isMatchingUniqueChainId(item, currentChainId);
+          {!isDebouncing &&
+            filteredChainList?.length > 0 &&
+            filteredChainList?.map((item) => {
+              const isActive = isMatchingUniqueChainId(item, currentChainId);
 
-            return (
-              <OptionButton
-                key={String(item.chainId).concat(item.chainType).concat(item.id)}
-                isActive={isActive}
-                ref={isActive ? ref : undefined}
-                onSelectChain={(id) => {
-                  onClickChain(id);
-                  handleClose();
-                }}
-                name={item.name}
-                image={item.image}
-                id={getUniqueChainId(item)}
-              />
-            );
-          })}
+              return (
+                <OptionButton
+                  key={String(item.chainId).concat(item.chainType).concat(item.id)}
+                  isActive={isActive}
+                  ref={isActive ? ref : undefined}
+                  onSelectChain={(id) => {
+                    onClickChain(id);
+                    handleClose();
+                  }}
+                  name={item.name}
+                  image={item.image}
+                  id={getUniqueChainId(item)}
+                />
+              );
+            })}
         </Body>
       </Container>
     </StyledBottomSheet>
