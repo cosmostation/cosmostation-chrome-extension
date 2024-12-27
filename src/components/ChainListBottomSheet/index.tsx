@@ -142,9 +142,9 @@ export default function ChainListBottomSheet({
             <OptionButton
               key={'all-network'}
               isActive={!currentChainId}
-              onClick={() => {
-                onClickChain(AllNetworkOptionId);
-                onClose?.({}, 'backdropClick');
+              onSelectChain={(id) => {
+                onClickChain(id);
+                handleClose();
               }}
               name={t('components.ChainListBottomSheet.index.allNetwork')}
               image={GridMenuImage}

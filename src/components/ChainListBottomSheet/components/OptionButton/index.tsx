@@ -1,8 +1,10 @@
+import { forwardRef } from 'react';
+
 import { ActiveBadge, ChainImage, ChainNameText, LeftContainer, StyledChainButton } from './styled';
 
 import CheckIcon from 'assets/images/icons/Check.svg';
 
-type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+type OptionButtonProps = {
   image: string | null;
   name: string;
   id: string;
@@ -10,13 +12,14 @@ type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTML
   onSelectChain?: (id: string) => void;
 };
 
-export default function OptionButton({ image, name, id, isActive, onSelectChain, ...remainder }: OptionButtonProps) {
+const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ image, name, id, isActive, onSelectChain, ...remainder }, ref) => {
   return (
     <StyledChainButton
       onClick={() => {
         onSelectChain?.(String(id));
       }}
       {...remainder}
+      ref={isActive ? ref : undefined}
     >
       <LeftContainer>
         <ChainImage src={image} />
@@ -29,4 +32,8 @@ export default function OptionButton({ image, name, id, isActive, onSelectChain,
       )}
     </StyledChainButton>
   );
-}
+});
+
+OptionButton.displayName = 'OptionButton';
+
+export default OptionButton;
