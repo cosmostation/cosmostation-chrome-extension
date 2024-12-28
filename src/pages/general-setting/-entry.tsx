@@ -7,18 +7,22 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import { Route as AddressBook } from '@/pages/general-setting/address-book';
 import { Route as ChangePassword } from '@/pages/general-setting/change-password';
 
 import CurrencyBottomSheet from './-components/CurrencyBottomSheet';
 import LanguageBottomSheet from './-components/LanguageBottomSheet';
 import { Container, OptionButtonContainer, OptionButtonIconContainer, SectionContainer, SectionTitleContainer } from './-styled';
 
+import AddressBookIcon from '@/assets/images/icons/AddressBook28.svg';
 import AutoLockIcon from '@/assets/images/icons/AutoLock28.svg';
 import BackupWalletIcon from '@/assets/images/icons/BackupWallet28.svg';
 import ChangePasswordIcon from '@/assets/images/icons/ChangePassword28.svg';
 import CurrencyIcon from '@/assets/images/icons/Currency28.svg';
 import LanguageIcon from '@/assets/images/icons/Language28.svg';
+import ManageCustomNetworkIcon from '@/assets/images/icons/ManageCustomNetwork28.svg';
 import PriceChangeColorIcon from '@/assets/images/icons/PriceChangeColor28.svg';
+import PrioritizeIcon from '@/assets/images/icons/PriotizeWallet28.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -73,6 +77,58 @@ export default function Entry() {
                 />
               </OptionButtonContainer>
             </SectionContainer>
+
+            <SectionContainer>
+              <SectionTitleContainer>
+                <Base1300Text variant="h4_B">{t('pages.general-setting.entry.wallet')} </Base1300Text>
+                <Base1000Text variant="h4_B">{'3'}</Base1000Text>
+              </SectionTitleContainer>
+              <OptionButtonContainer>
+                <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: AddressBook.to,
+                    });
+                  }}
+                  leftContent={
+                    <OptionButtonIconContainer>
+                      <AddressBookIcon />
+                    </OptionButtonIconContainer>
+                  }
+                  leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.addressBook')}</Base1300Text>}
+                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.addressBookDescription')}</Base1000Text>}
+                />
+                <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: AddressBook.to,
+                    });
+                  }}
+                  leftContent={
+                    <OptionButtonIconContainer>
+                      <ManageCustomNetworkIcon />
+                    </OptionButtonIconContainer>
+                  }
+                  leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.manageCustomNetwork')}</Base1300Text>}
+                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.manageCustomNetworkDescription')}</Base1000Text>}
+                />
+                <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: AddressBook.to,
+                    });
+                  }}
+                  leftContent={
+                    <OptionButtonIconContainer>
+                      <PrioritizeIcon />
+                    </OptionButtonIconContainer>
+                  }
+                  leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.prioritize')}</Base1300Text>}
+                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.prioritizeDescription')}</Base1000Text>}
+                />
+              </OptionButtonContainer>
+            </SectionContainer>
+
             <SectionContainer>
               <SectionTitleContainer>
                 <Base1300Text variant="h4_B">{t('pages.general-setting.entry.preference')} </Base1300Text>

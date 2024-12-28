@@ -911,7 +911,14 @@
         "currency": "Currency",
         "currencyDescription": "Select the currency to use",
         "priceChangeColor": "Price Change Color",
-        "priceChangeColorDescription": "Select the color of the price change"
+        "priceChangeColorDescription": "Select the color of the price change",
+        "wallet": "Wallet",
+        "addressBook": "Address Book",
+        "addressBookDescription": "Manage frequently used addresses",
+        "manageCustomNetwork": "Manage Custom Network",
+        "manageCustomNetworkDescription": "Manage Added Custom Chains",
+        "prioritize": "Prioritize",
+        "prioritizeDescription": "Set Cosmostation as your default wallet."
       },
       "layout": {
         "header": "Setting"
@@ -961,6 +968,19 @@
         "layout": {
           "header": "Change Password"
         }
+      },
+      "address-book": {
+        "components": {
+          "AddressItemBook": {
+            "index": {
+              "memo": "Memo :"
+            }
+          }
+        },
+        "entry": {
+          "addAddress": "Add Address"
+        },
+        "header": "Address Book"
       }
     },
     "manage-assets": {

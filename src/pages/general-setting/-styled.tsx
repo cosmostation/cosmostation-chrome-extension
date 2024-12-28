@@ -24,6 +24,10 @@ export const OptionButtonContainer = styled('div')({
 });
 
 export const OptionButtonIconContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
   width: '3.2rem',
   height: '3.2rem',
 

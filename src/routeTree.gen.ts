@@ -25,6 +25,7 @@ import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-a
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
 import { Route as GeneralSettingChangePasswordIndexImport } from './pages/general-setting/change-password/index'
+import { Route as GeneralSettingAddressBookIndexImport } from './pages/general-setting/address-book/index'
 import { Route as CoinOverviewCoinIdIndexImport } from './pages/coin-overview/$coinId/index'
 import { Route as CoinDetailCoinIdIndexImport } from './pages/coin-detail/$coinId/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
@@ -40,6 +41,7 @@ import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage
 import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
 import { Route as ManageAssetsImportAssetsIndexImport } from './pages/manage-assets/import/assets/index'
 import { Route as ManageAccountCreateAccountMnemonicIdIndexImport } from './pages/manage-account/create-account/$mnemonicId/index'
+import { Route as GeneralSettingAddressBookAddAddressIndexImport } from './pages/general-setting/address-book/add-address/index'
 import { Route as CoinDetailCoinIdManageStakeIndexImport } from './pages/coin-detail/$coinId/manage-stake/index'
 import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index'
 import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/account/restore-wallet/mnemonic/index'
@@ -150,6 +152,13 @@ const GeneralSettingChangePasswordIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
+const GeneralSettingAddressBookIndexRoute =
+  GeneralSettingAddressBookIndexImport.update({
+    id: '/general-setting/address-book/',
+    path: '/general-setting/address-book/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const CoinOverviewCoinIdIndexRoute = CoinOverviewCoinIdIndexImport.update({
   id: '/coin-overview/$coinId/',
   path: '/coin-overview/$coinId/',
@@ -243,6 +252,13 @@ const ManageAccountCreateAccountMnemonicIdIndexRoute =
   ManageAccountCreateAccountMnemonicIdIndexImport.update({
     id: '/manage-account/create-account/$mnemonicId/',
     path: '/manage-account/create-account/$mnemonicId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const GeneralSettingAddressBookAddAddressIndexRoute =
+  GeneralSettingAddressBookAddAddressIndexImport.update({
+    id: '/general-setting/address-book/add-address/',
+    path: '/general-setting/address-book/add-address/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -446,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoinOverviewCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/general-setting/address-book/': {
+      id: '/general-setting/address-book/'
+      path: '/general-setting/address-book'
+      fullPath: '/general-setting/address-book'
+      preLoaderRoute: typeof GeneralSettingAddressBookIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/general-setting/change-password/': {
       id: '/general-setting/change-password/'
       path: '/general-setting/change-password'
@@ -549,6 +572,13 @@ declare module '@tanstack/react-router' {
       path: '/coin-detail/$coinId/manage-stake'
       fullPath: '/coin-detail/$coinId/manage-stake'
       preLoaderRoute: typeof CoinDetailCoinIdManageStakeIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/general-setting/address-book/add-address/': {
+      id: '/general-setting/address-book/add-address/'
+      path: '/general-setting/address-book/add-address'
+      fullPath: '/general-setting/address-book/add-address'
+      preLoaderRoute: typeof GeneralSettingAddressBookAddAddressIndexImport
       parentRoute: typeof rootRoute
     }
     '/manage-account/create-account/$mnemonicId/': {
@@ -721,6 +751,7 @@ export interface FileRoutesByFullPath {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
   '/coin-overview/$coinId': typeof CoinOverviewCoinIdIndexRoute
+  '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
@@ -736,6 +767,7 @@ export interface FileRoutesByFullPath {
   '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
+  '/general-setting/address-book/add-address': typeof GeneralSettingAddressBookAddAddressIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-assets/import/assets': typeof ManageAssetsImportAssetsIndexRoute
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
@@ -771,6 +803,7 @@ export interface FileRoutesByTo {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
   '/coin-overview/$coinId': typeof CoinOverviewCoinIdIndexRoute
+  '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
@@ -786,6 +819,7 @@ export interface FileRoutesByTo {
   '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
+  '/general-setting/address-book/add-address': typeof GeneralSettingAddressBookAddAddressIndexRoute
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-assets/import/assets': typeof ManageAssetsImportAssetsIndexRoute
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
@@ -822,6 +856,7 @@ export interface FileRoutesById {
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId/': typeof CoinDetailCoinIdIndexRoute
   '/coin-overview/$coinId/': typeof CoinOverviewCoinIdIndexRoute
+  '/general-setting/address-book/': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password/': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
@@ -837,6 +872,7 @@ export interface FileRoutesById {
   '/account/restore-wallet/mnemonic/': typeof AccountRestoreWalletMnemonicIndexRoute
   '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake/': typeof CoinDetailCoinIdManageStakeIndexRoute
+  '/general-setting/address-book/add-address/': typeof GeneralSettingAddressBookAddAddressIndexRoute
   '/manage-account/create-account/$mnemonicId/': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-assets/import/assets/': typeof ManageAssetsImportAssetsIndexRoute
   '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
@@ -874,6 +910,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/coin-detail/$coinId'
     | '/coin-overview/$coinId'
+    | '/general-setting/address-book'
     | '/general-setting/change-password'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
@@ -889,6 +926,7 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/mnemonic'
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
+    | '/general-setting/address-book/add-address'
     | '/manage-account/create-account/$mnemonicId'
     | '/manage-assets/import/assets'
     | '/manage-assets/import/network'
@@ -923,6 +961,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/coin-detail/$coinId'
     | '/coin-overview/$coinId'
+    | '/general-setting/address-book'
     | '/general-setting/change-password'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
@@ -938,6 +977,7 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/mnemonic'
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
+    | '/general-setting/address-book/add-address'
     | '/manage-account/create-account/$mnemonicId'
     | '/manage-assets/import/assets'
     | '/manage-assets/import/network'
@@ -972,6 +1012,7 @@ export interface FileRouteTypes {
     | '/account/set-password/'
     | '/coin-detail/$coinId/'
     | '/coin-overview/$coinId/'
+    | '/general-setting/address-book/'
     | '/general-setting/change-password/'
     | '/manage-account/manage-wallet-and-account/'
     | '/manage-account/reset-wallet/'
@@ -987,6 +1028,7 @@ export interface FileRouteTypes {
     | '/account/restore-wallet/mnemonic/'
     | '/account/restore-wallet/privatekey/'
     | '/coin-detail/$coinId/manage-stake/'
+    | '/general-setting/address-book/add-address/'
     | '/manage-account/create-account/$mnemonicId/'
     | '/manage-assets/import/assets/'
     | '/manage-assets/import/network/'
@@ -1023,6 +1065,7 @@ export interface RootRouteChildren {
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
   CoinDetailCoinIdIndexRoute: typeof CoinDetailCoinIdIndexRoute
   CoinOverviewCoinIdIndexRoute: typeof CoinOverviewCoinIdIndexRoute
+  GeneralSettingAddressBookIndexRoute: typeof GeneralSettingAddressBookIndexRoute
   GeneralSettingChangePasswordIndexRoute: typeof GeneralSettingChangePasswordIndexRoute
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
@@ -1038,6 +1081,7 @@ export interface RootRouteChildren {
   AccountRestoreWalletMnemonicIndexRoute: typeof AccountRestoreWalletMnemonicIndexRoute
   AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
   CoinDetailCoinIdManageStakeIndexRoute: typeof CoinDetailCoinIdManageStakeIndexRoute
+  GeneralSettingAddressBookAddAddressIndexRoute: typeof GeneralSettingAddressBookAddAddressIndexRoute
   ManageAccountCreateAccountMnemonicIdIndexRoute: typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   ManageAssetsImportAssetsIndexRoute: typeof ManageAssetsImportAssetsIndexRoute
   ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
@@ -1073,6 +1117,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
   CoinDetailCoinIdIndexRoute: CoinDetailCoinIdIndexRoute,
   CoinOverviewCoinIdIndexRoute: CoinOverviewCoinIdIndexRoute,
+  GeneralSettingAddressBookIndexRoute: GeneralSettingAddressBookIndexRoute,
   GeneralSettingChangePasswordIndexRoute:
     GeneralSettingChangePasswordIndexRoute,
   ManageAccountManageWalletAndAccountIndexRoute:
@@ -1094,6 +1139,8 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRestoreWalletPrivatekeyIndexRoute:
     AccountRestoreWalletPrivatekeyIndexRoute,
   CoinDetailCoinIdManageStakeIndexRoute: CoinDetailCoinIdManageStakeIndexRoute,
+  GeneralSettingAddressBookAddAddressIndexRoute:
+    GeneralSettingAddressBookAddAddressIndexRoute,
   ManageAccountCreateAccountMnemonicIdIndexRoute:
     ManageAccountCreateAccountMnemonicIdIndexRoute,
   ManageAssetsImportAssetsIndexRoute: ManageAssetsImportAssetsIndexRoute,
@@ -1152,6 +1199,7 @@ export const routeTree = rootRoute
         "/account/set-password/",
         "/coin-detail/$coinId/",
         "/coin-overview/$coinId/",
+        "/general-setting/address-book/",
         "/general-setting/change-password/",
         "/manage-account/manage-wallet-and-account/",
         "/manage-account/reset-wallet/",
@@ -1167,6 +1215,7 @@ export const routeTree = rootRoute
         "/account/restore-wallet/mnemonic/",
         "/account/restore-wallet/privatekey/",
         "/coin-detail/$coinId/manage-stake/",
+        "/general-setting/address-book/add-address/",
         "/manage-account/create-account/$mnemonicId/",
         "/manage-assets/import/assets/",
         "/manage-assets/import/network/",
@@ -1221,6 +1270,9 @@ export const routeTree = rootRoute
     "/coin-overview/$coinId/": {
       "filePath": "coin-overview/$coinId/index.tsx"
     },
+    "/general-setting/address-book/": {
+      "filePath": "general-setting/address-book/index.tsx"
+    },
     "/general-setting/change-password/": {
       "filePath": "general-setting/change-password/index.tsx"
     },
@@ -1265,6 +1317,9 @@ export const routeTree = rootRoute
     },
     "/coin-detail/$coinId/manage-stake/": {
       "filePath": "coin-detail/$coinId/manage-stake/index.tsx"
+    },
+    "/general-setting/address-book/add-address/": {
+      "filePath": "general-setting/address-book/add-address/index.tsx"
     },
     "/manage-account/create-account/$mnemonicId/": {
       "filePath": "manage-account/create-account/$mnemonicId/index.tsx"
