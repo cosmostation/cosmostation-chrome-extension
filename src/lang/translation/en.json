@@ -997,6 +997,26 @@
             "unversalAddressInfoDescription": "Indicates that a specific address can be used simultaneously across multiple EVM-based networks.",
             "universal": "Universal",
             "failedToGetChainId": "Failed to get chain ID"
+          },
+          "header": "Add Address Book"
+        },
+        "edit-address": {
+          "$id": {
+            "entry": {
+              "failedToGetChainId": "Failed to get chain ID",
+              "editAddressSuccess": "Address edited successfully",
+              "network": "Network",
+              "universal": "Universal",
+              "selectNetwork": "Select Network",
+              "searchNetwork": "Search Network (Ex. Bitcoin)",
+              "label": "Label",
+              "address": "Address",
+              "memo": "Memo (Option)",
+              "deleteAddressDescription": "No longer using this ?",
+              "deleteAddress": "Delete Address",
+              "confirm": "Confirm"
+            },
+            "header": "Edit Address Book"
           }
         }
       }

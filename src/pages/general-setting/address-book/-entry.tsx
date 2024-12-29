@@ -11,6 +11,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 import Search from '@/components/Search';
 import { useChainList } from '@/hooks/useChainList';
 import { Route as AddAddress } from '@/pages/general-setting/address-book/add-address';
+import { Route as EditAddress } from '@/pages/general-setting/address-book/edit-address/$id';
 import type { UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
@@ -135,6 +136,14 @@ export default function Entry() {
                     memo={item.memo}
                     chainName={chain?.name || 'Unknown'}
                     chainImage={chain?.image || ''}
+                    onClick={() => {
+                      navigate({
+                        to: EditAddress.to,
+                        params: {
+                          id: item.id,
+                        },
+                      });
+                    }}
                   />
                 );
               })}

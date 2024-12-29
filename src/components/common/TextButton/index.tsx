@@ -6,7 +6,7 @@ import { StyledButton } from './styled';
 
 type TextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: TypoVariantKeys | NumberTypoVariants;
-  variant?: 'normal' | 'hyperlink' | 'underline';
+  variant?: 'normal' | 'hyperlink' | 'underline' | 'redHyperlink';
 };
 
 export default function TextButton({ children, typoVarient = 'b2_M', type, variant = 'normal', ...remainder }: TextButtonProps) {

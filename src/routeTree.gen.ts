@@ -58,6 +58,7 @@ import { Route as ManageAccountViewMnemonicMnemonicIdIndexImport } from './pages
 import { Route as ManageAccountDetailMnemonicMnemonicIdIndexImport } from './pages/manage-account/detail/mnemonic/$mnemonicId/index'
 import { Route as ManageAccountBackupWalletStep2AccountIdIndexImport } from './pages/manage-account/backup-wallet/step2/$accountId/index'
 import { Route as ManageAccountBackupWalletStep1AccountIdIndexImport } from './pages/manage-account/backup-wallet/step1/$accountId/index'
+import { Route as GeneralSettingAddressBookEditAddressIdIndexImport } from './pages/general-setting/address-book/edit-address/$id/index'
 import { Route as ManageAccountDetailPrivateKeyAccountAccountIdIndexImport } from './pages/manage-account/detail/privateKey/account/$accountId/index'
 import { Route as ManageAccountDetailMnemonicAccountAccountIdIndexImport } from './pages/manage-account/detail/mnemonic/account/$accountId/index'
 
@@ -374,6 +375,13 @@ const ManageAccountBackupWalletStep1AccountIdIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
+const GeneralSettingAddressBookEditAddressIdIndexRoute =
+  GeneralSettingAddressBookEditAddressIdIndexImport.update({
+    id: '/general-setting/address-book/edit-address/$id/',
+    path: '/general-setting/address-book/edit-address/$id/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const ManageAccountDetailPrivateKeyAccountAccountIdIndexRoute =
   ManageAccountDetailPrivateKeyAccountAccountIdIndexImport.update({
     id: '/manage-account/detail/privateKey/account/$accountId/',
@@ -651,6 +659,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletSwapCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/general-setting/address-book/edit-address/$id/': {
+      id: '/general-setting/address-book/edit-address/$id/'
+      path: '/general-setting/address-book/edit-address/$id'
+      fullPath: '/general-setting/address-book/edit-address/$id'
+      preLoaderRoute: typeof GeneralSettingAddressBookEditAddressIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/backup-wallet/step1/$accountId/': {
       id: '/manage-account/backup-wallet/step1/$accountId/'
       path: '/manage-account/backup-wallet/step1/$accountId'
@@ -778,6 +793,7 @@ export interface FileRoutesByFullPath {
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId': typeof WalletSwapCoinIdIndexRoute
+  '/general-setting/address-book/edit-address/$id': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   '/manage-account/backup-wallet/step2/$accountId': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -830,6 +846,7 @@ export interface FileRoutesByTo {
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId': typeof WalletSwapCoinIdIndexRoute
+  '/general-setting/address-book/edit-address/$id': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   '/manage-account/backup-wallet/step2/$accountId': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -883,6 +900,7 @@ export interface FileRoutesById {
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId/': typeof WalletSwapCoinIdIndexRoute
+  '/general-setting/address-book/edit-address/$id/': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId/': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   '/manage-account/backup-wallet/step2/$accountId/': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId/': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -937,6 +955,7 @@ export interface FileRouteTypes {
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
     | '/wallet/swap/$coinId'
+    | '/general-setting/address-book/edit-address/$id'
     | '/manage-account/backup-wallet/step1/$accountId'
     | '/manage-account/backup-wallet/step2/$accountId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
@@ -988,6 +1007,7 @@ export interface FileRouteTypes {
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
     | '/wallet/swap/$coinId'
+    | '/general-setting/address-book/edit-address/$id'
     | '/manage-account/backup-wallet/step1/$accountId'
     | '/manage-account/backup-wallet/step2/$accountId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
@@ -1039,6 +1059,7 @@ export interface FileRouteTypes {
     | '/wallet/send/$coinId/'
     | '/wallet/stake/$coinId/'
     | '/wallet/swap/$coinId/'
+    | '/general-setting/address-book/edit-address/$id/'
     | '/manage-account/backup-wallet/step1/$accountId/'
     | '/manage-account/backup-wallet/step2/$accountId/'
     | '/manage-account/detail/mnemonic/$mnemonicId/'
@@ -1092,6 +1113,7 @@ export interface RootRouteChildren {
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
   WalletSwapCoinIdIndexRoute: typeof WalletSwapCoinIdIndexRoute
+  GeneralSettingAddressBookEditAddressIdIndexRoute: typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   ManageAccountBackupWalletStep1AccountIdIndexRoute: typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   ManageAccountBackupWalletStep2AccountIdIndexRoute: typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   ManageAccountDetailMnemonicMnemonicIdIndexRoute: typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -1154,6 +1176,8 @@ const rootRouteChildren: RootRouteChildren = {
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
   WalletStakeCoinIdIndexRoute: WalletStakeCoinIdIndexRoute,
   WalletSwapCoinIdIndexRoute: WalletSwapCoinIdIndexRoute,
+  GeneralSettingAddressBookEditAddressIdIndexRoute:
+    GeneralSettingAddressBookEditAddressIdIndexRoute,
   ManageAccountBackupWalletStep1AccountIdIndexRoute:
     ManageAccountBackupWalletStep1AccountIdIndexRoute,
   ManageAccountBackupWalletStep2AccountIdIndexRoute:
@@ -1226,6 +1250,7 @@ export const routeTree = rootRoute
         "/wallet/send/$coinId/",
         "/wallet/stake/$coinId/",
         "/wallet/swap/$coinId/",
+        "/general-setting/address-book/edit-address/$id/",
         "/manage-account/backup-wallet/step1/$accountId/",
         "/manage-account/backup-wallet/step2/$accountId/",
         "/manage-account/detail/mnemonic/$mnemonicId/",
@@ -1350,6 +1375,9 @@ export const routeTree = rootRoute
     },
     "/wallet/swap/$coinId/": {
       "filePath": "wallet/swap/$coinId/index.tsx"
+    },
+    "/general-setting/address-book/edit-address/$id/": {
+      "filePath": "general-setting/address-book/edit-address/$id/index.tsx"
     },
     "/manage-account/backup-wallet/step1/$accountId/": {
       "filePath": "manage-account/backup-wallet/step1/$accountId/index.tsx"
