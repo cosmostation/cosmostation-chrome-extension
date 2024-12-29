@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
-import type { Chain, UniqueChainId } from '@/types/chain';
+import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import OptionButton from './components/OptionButton';
@@ -35,7 +35,7 @@ import CustomNetworkIcon from 'assets/images/icons/CustomNetwork28.svg';
 import GridMenuImage from 'assets/images/GridMenu.png';
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  chainList: Chain[];
+  chainList: ChainBase[];
   currentChainId?: UniqueChainId;
   disableAllNetwork?: boolean;
   title?: string;
@@ -169,7 +169,7 @@ export default function ChainListBottomSheet({
 
               return (
                 <OptionButton
-                  key={String(item.chainId).concat(item.chainType).concat(item.id)}
+                  key={getUniqueChainId(item)}
                   isActive={isActive}
                   ref={isActive ? ref : undefined}
                   onSelectChain={(id) => {

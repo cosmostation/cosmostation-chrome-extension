@@ -980,7 +980,25 @@
         "entry": {
           "addAddress": "Add Address"
         },
-        "header": "Address Book"
+        "header": "Address Book",
+        "add-address": {
+          "entry": {
+            "addAddressSuccess": "Address added successfully",
+            "network": "Network",
+            "selectNetwork": "Select Network",
+            "searchNetwork": "Search Network (Ex. Bitcoin)",
+            "label": "Label",
+            "address": "Address",
+            "memo": "Memo (Option)",
+            "confirm": "Confirm",
+            "memoInfo": "Enter Memo",
+            "unversalAddressInfo": "Universal Address",
+            "memoInfoDescription": "Description Description Description Description Description Description Description Description Description Description",
+            "unversalAddressInfoDescription": "Indicates that a specific address can be used simultaneously across multiple EVM-based networks.",
+            "universal": "Universal",
+            "failedToGetChainId": "Failed to get chain ID"
+          }
+        }
       }
     },
     "manage-assets": {
@@ -1152,6 +1170,15 @@
         "string": {
           "pattern": {
             "base": "Invalid token address"
+          }
+        }
+      }
+    },
+    "addressBookForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Invalid address"
           }
         }
       }

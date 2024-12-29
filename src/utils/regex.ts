@@ -4,6 +4,8 @@ export const aptosAddressRegex = /^0x([a-fA-F0-9]{64}|[a-fA-F1-9]{1}[a-fA-F0-9]{
 
 export const suiAddressRegex = /^0x([a-fA-F0-9]{64}|[a-fA-F1-9]{1}[a-fA-F0-9]{62})$/;
 
+export const bitcoinAddressRegex = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/;
+
 export const getCosmosAddressRegex = (prefix: string, lengths: number[]) =>
   new RegExp(`^${prefix}(${lengths.map((item) => `(.{${item},${item}})`).join('|')})$`);
 

@@ -36,12 +36,12 @@ export function parseUniqueChainId(chainId: UniqueChainId) {
   return { id, chainType } as ChainId;
 }
 
-export function isMatchingUniqueChainId(baseCoin?: ChainId, targetChainId?: string) {
-  if (!baseCoin || !targetChainId) {
+export function isMatchingUniqueChainId(baseChain?: ChainId, targetChainId?: string) {
+  if (!baseChain || !targetChainId) {
     return false;
   }
 
-  return getUniqueChainId(baseCoin) === targetChainId;
+  return getUniqueChainId(baseChain) === targetChainId;
 }
 
 export function isSameChain(baseChain: ChainId, targetChain: ChainId) {

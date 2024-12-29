@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
-import type { Chain, UniqueChainId } from '@/types/chain';
+import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import {
@@ -19,7 +19,7 @@ import ChainListBottomSheet from '../ChainListBottomSheet';
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
 type ChainSelectBoxProps = TextFieldProps & {
-  chainList: Chain[];
+  chainList: ChainBase[];
   currentChainId?: UniqueChainId;
   helperText?: string;
   rightAdornmentComponent?: JSX.Element;

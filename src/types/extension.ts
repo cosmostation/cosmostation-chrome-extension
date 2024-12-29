@@ -13,9 +13,18 @@ import type {
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
 import type { AssetId, CosmosCw20Asset, EvmErc20Asset } from './asset';
+import type { UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
 import type { Password } from './password';
 import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
+
+export type AddressInfo = {
+  id: string;
+  chainId: UniqueChainId;
+  label: string;
+  address: string;
+  memo?: string;
+};
 
 export interface ExtensionStorage {
   accounts: Account[];
