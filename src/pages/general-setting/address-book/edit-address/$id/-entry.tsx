@@ -13,6 +13,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
 import TextButton from '@/components/common/TextButton';
+import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList.ts';
 import type { ChainType, CosmosChain, UniqueChainId } from '@/types/chain.ts';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
@@ -35,6 +36,8 @@ export default function Entry({ id }: EntryProps) {
   const { t } = useTranslation();
   const { history } = useRouter();
 
+  const { addressBookList, editAddressItem, removeAddressItem } = useAddressBook();
+
   const { flatChainList } = useChainList();
 
   const baseChainList = [
@@ -47,38 +50,7 @@ export default function Entry({ id }: EntryProps) {
     ...flatChainList,
   ];
 
-  const dummyAddressList = [
-    {
-      id: '471c6230-bc54-47d2-aa9d-61e7c3ab0ba3',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos' as UniqueChainId,
-      memo: 'test Memo',
-    },
-
-    {
-      id: '914f2218-ccdf-4e45-9501-9e96def4c2dc',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos' as UniqueChainId,
-      memo: 'ENS',
-    },
-    {
-      id: '0c182fbc-1101-45aa-a4f5-76ba046b9265',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos' as UniqueChainId,
-      memo: 'dm,ajfklsadnknsdakfnfjsadknjdnbjafsjknjkdsjkfksksdahufhhdsjkfhjkashdjfkasjkbjksbdajbasbsjkadsjafakh',
-    },
-    {
-      id: 'e88c574e-101a-4f4d-9cca-9791e98cda44',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos' as UniqueChainId,
-    },
-  ];
-
-  const currentAddressItem = dummyAddressList.find((item) => item.id === id);
+  const currentAddressItem = addressBookList.find((item) => item.id === id);
 
   const [currentChainId, setCurrentChainId] = useState<UniqueChainId | undefined>(currentAddressItem?.chainId);
   const currentChain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, currentChainId));
@@ -129,7 +101,6 @@ export default function Entry({ id }: EntryProps) {
   const { address, label } = watch();
   const isButtonEnabled = address && label;
 
-  // TODO : Implement submit function
   const submit = async (data: AddressBookForm) => {
     if (!currentChainId || !currentAddressItem) {
       toastError(t('pages.general-setting.address-book.edit-address.$id.entry.failedToGetChainId'));
@@ -141,12 +112,20 @@ export default function Entry({ id }: EntryProps) {
       draft.memo = data.memo;
     });
 
-    console.log('🚀 ~ submit ~ newAddressInfo:', newAddressInfo);
-
-    // const newAddressBook = [...addressBook, newAddressInfo];
-    // await setExtensionStorage('addressBook', newAddressBook);
+    await editAddressItem(newAddressInfo);
     toastSuccess(t('pages.general-setting.address-book.edit-address.$id.entry.editAddressSuccess'));
     reset();
+    history.back();
+  };
+
+  const deleteAddressItem = async () => {
+    if (!currentAddressItem) {
+      toastError(t('pages.general-setting.address-book.edit-address.$id.entry.failedToDeleteAddress'));
+      return;
+    }
+
+    await removeAddressItem(currentAddressItem.id);
+    toastSuccess(t('pages.general-setting.address-book.edit-address.$id.entry.deleteAddressSuccess'));
     history.back();
   };
 
@@ -224,7 +203,7 @@ export default function Entry({ id }: EntryProps) {
         <FooterContainer>
           <Base1300Text variant="b3_R">{t('pages.general-setting.address-book.edit-address.$id.entry.deleteAddressDescription')}</Base1300Text>
           <RedTextContainer>
-            <TextButton variant="redHyperlink" typoVarient="b2_M">
+            <TextButton onClick={deleteAddressItem} variant="redHyperlink" typoVarient="b2_M">
               {t('pages.general-setting.address-book.edit-address.$id.entry.deleteAddress')}
             </TextButton>
           </RedTextContainer>

@@ -28,6 +28,7 @@ const initialState: ExtensionStorageState = {
   // TODO language에 따라 초기화
   currency: CURRENCY_TYPE.USD as CurrencyType,
   preferAccountType: {},
+  addressBookList: [],
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
@@ -56,6 +57,9 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('notBackedUpAccountIds', []);
       await setExtensionLocalStorage('currency', CURRENCY_TYPE.USD as CurrencyType);
       await setExtensionLocalStorage('preferAccountType', {});
+      await setExtensionLocalStorage('addressBookList', []);
+      await setExtensionLocalStorage('customCw20Assets', []);
+      await setExtensionLocalStorage('customErc20Assets', []);
 
       const accountIds = accounts.map((account) => account.id);
 
@@ -69,6 +73,8 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
           `${accountId}-balance-evm`,
           `${accountId}-balance-sui`,
           `${accountId}-hidden-assetIds`,
+          `${accountId}-custom-balance-erc20`,
+          `${accountId}-custom-balance-cw20`,
         ]);
       });
 

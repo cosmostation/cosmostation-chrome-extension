@@ -60,6 +60,10 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('customCw20Assets', []);
   }
 
+  if (!originStorage.addressBookList) {
+    await setExtensionLocalStorage('addressBookList', []);
+  }
+
   if (!originStorage.selectedAccountId) {
     const defaultAccountId = originStorage.accounts?.[0]?.id || '';
     await setExtensionLocalStorage('selectedAccountId', defaultAccountId);

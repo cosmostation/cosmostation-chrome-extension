@@ -55,6 +55,7 @@ export interface ExtensionStorage {
   notBackedUpAccountIds: Account['id'][];
   currency: CurrencyType;
   preferAccountType: PreferAccountType;
+  addressBookList: AddressInfo[];
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

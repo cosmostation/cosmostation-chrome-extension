@@ -1014,7 +1014,9 @@
               "memo": "Memo (Option)",
               "deleteAddressDescription": "No longer using this ?",
               "deleteAddress": "Delete Address",
-              "confirm": "Confirm"
+              "confirm": "Confirm",
+              "failedToDeleteAddress": "Failed to delete address",
+              "deleteAddressSuccess": "Address deleted successfully"
             },
             "header": "Edit Address Book"
           }

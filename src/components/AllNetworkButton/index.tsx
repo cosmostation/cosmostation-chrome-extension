@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { TypoVariantKeys } from '@/styles/theme';
-import type { Chain, UniqueChainId } from '@/types/chain';
+import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import { ChainImageContainer, ChevronIconContainer, GridMenuIconContainer, StyledIconButton, TextContainer } from './styled';
@@ -17,7 +17,7 @@ type AllNetworkButtonprops = IconTextButtonProps & {
   variant?: 'normal' | 'chip';
   sizeVariant?: 'small' | 'medium' | 'large';
   currentChainId?: UniqueChainId;
-  chainList?: Chain[];
+  chainList?: ChainBase[];
   isManageAssets?: boolean;
   selectChainOption?: (id?: UniqueChainId) => void;
 };

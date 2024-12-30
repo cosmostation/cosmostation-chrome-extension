@@ -12,6 +12,7 @@ import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
 import InformationPanel from '@/components/InformationPanel';
+import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList.ts';
 import type { ChainType, CosmosChain, UniqueChainId } from '@/types/chain.ts';
 import type { AddressInfo } from '@/types/extension';
@@ -25,11 +26,13 @@ import { useSchema } from './-useSchema';
 
 import EVMImage from '@/assets/images/chain/evm.png';
 
-const UNIVERSAL_EVM_NETWORK_ID = 'universal';
+export const UNIVERSAL_EVM_NETWORK_ID = 'universal';
 
 export default function Entry() {
   const { t } = useTranslation();
   const { history } = useRouter();
+
+  const { addAddressItem } = useAddressBook();
 
   const { flatChainList } = useChainList();
 
@@ -103,10 +106,7 @@ export default function Entry() {
     }
     const newAddressInfo: AddressInfo = { id: uuidv4(), chainId: currentChainId, ...data };
 
-    console.log('🚀 ~ submit ~ newAddressInfo:', newAddressInfo);
-
-    // const newAddressBook = [...addressBook, newAddressInfo];
-    // await setExtensionStorage('addressBook', newAddressBook);
+    await addAddressItem(newAddressInfo);
     toastSuccess(t('pages.general-setting.address-book.add-address.entry.addAddressSuccess'));
     reset();
     history.back();

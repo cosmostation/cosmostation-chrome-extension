@@ -9,22 +9,38 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import IconTextButton from '@/components/common/IconTextButton';
 import Search from '@/components/Search';
+import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList';
 import { Route as AddAddress } from '@/pages/general-setting/address-book/add-address';
 import { Route as EditAddress } from '@/pages/general-setting/address-book/edit-address/$id';
-import type { UniqueChainId } from '@/types/chain';
+import type { ChainType, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import AddressItemButton from './-components/AddressItemButton';
 import { AddressItemWrapper, AddTextContainer, Container, PurpleContainer, RowContainer, StickyContainer } from './-styled';
+import { UNIVERSAL_EVM_NETWORK_ID } from './add-address/-entry';
 
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
+
+import EVMImage from '@/assets/images/chain/evm.png';
 
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { addressBookList } = useAddressBook();
+
   const { flatChainList } = useChainList();
+
+  const baseChainList = [
+    {
+      id: UNIVERSAL_EVM_NETWORK_ID,
+      name: 'EVM Network',
+      image: EVMImage,
+      chainType: 'evm' as ChainType,
+    },
+    ...flatChainList,
+  ];
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -33,33 +49,8 @@ export default function Entry() {
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
-  const dummyAddressList = [
-    {
-      id: '471c6230-bc54-47d2-aa9d-61e7c3ab0ba3',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos',
-      memo: 'test Memo',
-    },
-
-    {
-      id: '914f2218-ccdf-4e45-9501-9e96def4c2dc',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos',
-      memo: 'ENS',
-    },
-    {
-      id: '0c182fbc-1101-45aa-a4f5-76ba046b9265',
-      label: 'test',
-      address: 'cosmos1p3ucd3ptpw902fluyjzhq3ffgq4ntddac9sa3s',
-      chainId: 'cosmos-cosmos',
-      memo: 'dm,ajfklsadnknsdakfnfjsadknjdnbjafsjknjkdsjkfksksdahufhhdsjkfhjkashdjfkasjkbjksbdajbasbsjkadsjafakh',
-    },
-  ];
-
   const filteredAddressesWithChain = (() => {
-    return currentSelectedChainId ? dummyAddressList.filter((item) => item.chainId === currentSelectedChainId) || [] : dummyAddressList || [];
+    return currentSelectedChainId ? addressBookList.filter((item) => item.chainId === currentSelectedChainId) || [] : addressBookList || [];
   })();
 
   const filteredAddresses = (() => {
@@ -98,7 +89,7 @@ export default function Entry() {
                 sizeVariant="medium"
                 typoVarient="b2_M"
                 currentChainId={currentSelectedChainId}
-                chainList={flatChainList}
+                chainList={baseChainList}
                 selectChainOption={(id) => {
                   setCurrentSelectedChainId(id);
                 }}
@@ -125,8 +116,9 @@ export default function Entry() {
           <AddressItemWrapper>
             {!isDebouncing &&
               filteredAddresses.map((item) => {
-                const chain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, item.chainId));
+                const chain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, item.chainId));
 
+                const chainName = chain?.id === UNIVERSAL_EVM_NETWORK_ID ? `${chain.name} (Universal)` : chain?.name || 'Unknown';
                 return (
                   <AddressItemButton
                     key={item.id}
@@ -134,7 +126,7 @@ export default function Entry() {
                     label={item.label}
                     address={item.address}
                     memo={item.memo}
-                    chainName={chain?.name || 'Unknown'}
+                    chainName={chainName}
                     chainImage={chain?.image || ''}
                     onClick={() => {
                       navigate({
