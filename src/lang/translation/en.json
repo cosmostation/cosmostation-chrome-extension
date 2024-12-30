@@ -1129,6 +1129,39 @@
         "header": "Manage Dapps",
         "disconnectAll": "Disconnect All"
       }
+    },
+    "popup": {
+      "components": {
+        "BaseTxInfo": {
+          "index": {
+            "network": "Network",
+            "networkFee": "Network Fee"
+          }
+        },
+        "MemoInput": {
+          "components": {
+            "MemoBottomSheet": {
+              "index": {
+                "enterMemo": "Enter Memo",
+                "description": "Memo is a feature that allows users to add personalized notes to their transactions for better tracking and organization.",
+                "memo": "Memo (Optional)",
+                "confirm": "Confirm"
+              }
+            }
+          },
+          "index": {
+            "memo": "Memo (Optional)"
+          }
+        }
+      },
+      "cosmos": {
+        "sign": {
+          "entry": {
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        }
+      }
     }
   },
   "schema": {
