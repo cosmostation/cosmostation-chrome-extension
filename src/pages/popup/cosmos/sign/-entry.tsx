@@ -5,15 +5,24 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button';
+import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import { StyledTabPanel } from '@/pages/-styled';
 
-import { Divider, DividerContainer, LineDivider, TxBaseInfoContainer } from './-styled';
+import { Divider, DividerContainer, LineDivider, StickyTabContainer, TxBaseInfoContainer } from './-styled';
 import BaseTxInfo from '../../-components/BaseTxInfo';
 import DappInfo from '../../-components/DappInfo';
 import MemoInput from '../../-components/MemoInput';
 
 export default function Entry() {
   const { t } = useTranslation();
+
+  const [tabValue, setTabValue] = useState(0);
+  const tabLabels = ['Detail', 'Data'];
+
+  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+    setTabValue(newTabValue);
+  };
 
   const [inputMemo, setInputMemo] = useState('memo');
 
@@ -38,6 +47,19 @@ export default function Entry() {
             }}
           />
           <LineDivider />
+          <StickyTabContainer>
+            <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
+              {tabLabels.map((item) => (
+                <FilledTab key={item} label={item} />
+              ))}
+            </FilledTabs>
+          </StickyTabContainer>
+          <StyledTabPanel value={tabValue} index={0}>
+            <>a</>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={1}>
+            <>a</>
+          </StyledTabPanel>
         </EdgeAligner>
       </BaseBody>
       <BaseFooter>

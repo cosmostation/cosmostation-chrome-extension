@@ -17,3 +17,17 @@ export const TxBaseInfoContainer = styled('div')({
 export const DividerContainer = styled('div')({
   padding: '0 1.6rem',
 });
+
+export const StickyTabContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+  height: 'fit-content',
+  position: 'sticky',
+  top: '3rem',
+
+  zIndex: 1,
+  backgroundColor: theme.palette.color.base50,
+}));
+
+export const TabPanelContentsContainer = styled('div')({
+  overflow: 'auto',
+});
