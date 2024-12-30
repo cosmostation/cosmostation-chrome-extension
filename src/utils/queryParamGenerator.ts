@@ -7,15 +7,15 @@ export function getMnemonicId(account: Account): account is MnemonicAccount {
 }
 
 export function getCoinId(coinAsset: AssetBase) {
-  return `${coinAsset.id}-${coinAsset.chainId}-${coinAsset.chainType}`;
+  return `${coinAsset.id}__${coinAsset.chainId}__${coinAsset.chainType}`;
 }
 
 export function getCoinIdWithManual({ id, chainId, chainType }: AssetId) {
-  return `${id}-${chainId}-${chainType}`;
+  return `${id}__${chainId}__${chainType}`;
 }
 
 export function parseCoinId(coinId: string) {
-  const [id, chainId, chainType] = coinId.split('-');
+  const [id, chainId, chainType] = coinId.split('__');
   return { id, chainId, chainType } as AssetId;
 }
 
@@ -28,11 +28,11 @@ export function isSameCoin(baseCoin: AssetBase, targetCoin: AssetBase) {
 }
 
 export function getUniqueChainId(chain: ChainId): UniqueChainId {
-  return `${chain.id}-${chain.chainType}`;
+  return `${chain.id}__${chain.chainType}`;
 }
 
 export function parseUniqueChainId(chainId: UniqueChainId) {
-  const [id, chainType] = chainId.split('-');
+  const [id, chainType] = chainId.split('__');
   return { id, chainType } as ChainId;
 }
 
