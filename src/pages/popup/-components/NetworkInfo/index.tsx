@@ -19,7 +19,7 @@ export default function NetworkInfo({ chainId }: NetworkInfoProps) {
   const { flatChainList } = useChainList();
   const chain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, chainId));
 
-  const networkName = chainId ? 'Multi-Chain' : chain?.name;
+  const networkName = chainId ? chain?.name : 'Multi-Chain';
   const networkImage = chain?.image;
 
   return (

@@ -1152,6 +1152,25 @@
           "index": {
             "memo": "Memo (Optional)"
           }
+        },
+        "NetworkInfo": {
+          "index": {
+            "network": "Network"
+          }
+        },
+        "requests": {
+          "AccessRequest": {
+            "index": {
+              "allowOption": "Allow the Dapp to :",
+              "allowAddress": "Know your wallet address",
+              "allowRequestSign": "Request signatures for transactions",
+              "encryptMessage": "Encrypt/Decrypt messages",
+              "informTitle": "Secure Authorization",
+              "informDescription": "Your mnemonic and private key will not be shared during the authorization.",
+              "reject": "Reject",
+              "access": "Access"
+            }
+          }
         }
       },
       "cosmos": {
