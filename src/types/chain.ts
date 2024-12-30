@@ -32,7 +32,7 @@ export interface ChainId {
   chainType: ChainType;
 }
 
-export type UniqueChainId = `${ChainId['id']}-${ChainId['chainType']}`;
+export type UniqueChainId = `${ChainId['id']}__${ChainId['chainType']}`;
 
 export interface ChainBase extends ChainId {
   name: string;

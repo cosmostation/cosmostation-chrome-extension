@@ -56,7 +56,7 @@ export default function Entry({ id }: EntryProps) {
   const currentChain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, currentChainId));
 
   const isDisplayMemo = currentChain?.chainType === 'cosmos';
-  const isUniversalChain = currentChainId === `${UNIVERSAL_EVM_NETWORK_ID}-evm`;
+  const isUniversalChain = currentChainId === `${UNIVERSAL_EVM_NETWORK_ID}__evm`;
 
   const regex = (() => {
     if (currentChain?.chainType === 'cosmos') {
