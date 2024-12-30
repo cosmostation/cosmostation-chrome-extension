@@ -157,7 +157,7 @@ export async function initExtensionLocalStorage() {
 
   // NOTE 마이그레이션 용 로직
   // NOTE accounts는 있지만 preferAccountType이 없는 경우
-  if (originStorage.accounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
+  if (originStorage.accounts && originStorage.accounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
     const defaultPreferAccountType = Object.values(originStorage.paramsV11)
       .filter((item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1)
       .reduce((acc: ChainToAccountTypeMap, cur) => {
