@@ -163,13 +163,13 @@ export default function Entry({ id }: EntryProps) {
     <FormContainer onSubmit={handleSubmit(submit)}>
       <BaseBody>
         <Container>
-          {/* FIXME 선택 가능한지 확인 필요 */}
           <ChainSelectBox
             chainList={baseChainList}
             currentChainId={currentChainId}
             onClickChain={(chainId) => {
               setCurrentChainId(chainId);
             }}
+            disabled
             label={t('pages.general-setting.address-book.edit-address.$id.entry.network')}
             rightAdornmentComponent={
               isUniversalChain ? (

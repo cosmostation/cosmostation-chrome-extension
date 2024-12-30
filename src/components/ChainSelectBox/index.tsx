@@ -71,7 +71,7 @@ export default function ChainSelectBox({
                 <ChainImageContainer src={currentSelectedChain?.image} />
               </InputAdornment>
             ) : null,
-            endAdornment: (
+            endAdornment: remainder.disabled ? null : (
               <InputAdornment position="end">
                 <RightAdormentConatiner>
                   {rightAdornmentComponent}
