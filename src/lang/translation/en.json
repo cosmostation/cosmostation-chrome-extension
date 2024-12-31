@@ -1043,6 +1043,22 @@
             "supportedCrypto": "Supported Crypto",
             "customCrypto": "Custom Crypto"
           }
+        },
+        "asset": {
+          "layout": {
+            "header": "Manage Crypto"
+          }
+        },
+        "network": {
+          "entry": {
+            "searchPlaceholder": "Search Network (Ex. Bitcoin)",
+            "viewTestnet": "View Testnet",
+            "importNetwork": "Import Network",
+            "network": "Network"
+          },
+          "layout": {
+            "header": "Manage Custom Network"
+          }
         }
       },
       "switch-account-type": {
@@ -1100,6 +1116,19 @@
             "network": "Network",
             "selectNetwork": "Select Network",
             "searchNetwork": "Search Network (Ex. Bitcoin)"
+          }
+        },
+        "network": {
+          "layout": {
+            "header": "__STRING_NOT_TRANSLATED__"
+          }
+        }
+      },
+      "visibilitynetwork": {
+        "network": {
+          "layout": {
+            "headerTitle": "__STRING_NOT_TRANSLATED__",
+            "contentsSubTitle": "__STRING_NOT_TRANSLATED__"
           }
         }
       }

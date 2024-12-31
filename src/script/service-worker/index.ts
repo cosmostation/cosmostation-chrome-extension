@@ -4,8 +4,8 @@
 // import { addressToStorage, balanceToStorage, chainsAndAssetstoStorage } from './storage';
 import type { Message } from '@/types/message';
 
-import { address } from './update/address';
-import { updateActiveAssetsBalance, updateDefaultAssetsBalance } from './update/balance';
+import { address, customChainAddress } from './update/address';
+import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance } from './update/balance';
 import { v11 } from './update/v11';
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
@@ -21,6 +21,8 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
       if (message.method === 'updateBalance') {
         const [id] = message.params;
         await updateActiveAssetsBalance(id);
+        await updateCustomBalance(id);
+
         sendResponse(null);
       }
 
@@ -33,6 +35,7 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
       if (message.method === 'updateAddress') {
         const [id] = message.params;
         await address(id);
+        await customChainAddress(id);
         sendResponse(null);
       }
     }

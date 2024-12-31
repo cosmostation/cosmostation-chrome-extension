@@ -64,6 +64,10 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('addressBookList', []);
   }
 
+  if (!originStorage.addedCustomChainList) {
+    await setExtensionLocalStorage('addedCustomChainList', []);
+  }
+
   if (!originStorage.selectedAccountId) {
     const defaultAccountId = originStorage.accounts?.[0]?.id || '';
     await setExtensionLocalStorage('selectedAccountId', defaultAccountId);

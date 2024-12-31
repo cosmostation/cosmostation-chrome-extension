@@ -3,9 +3,9 @@ import { Contract, ethers } from 'ethers';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
-import { getAccount, getAccountAddress } from '@/libs/account';
+import { getAccount, getAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
-import { getChains } from '@/libs/chain';
+import { getAddedCustomChains, getChains } from '@/libs/chain';
 import type { AccountAddressBalanceAptos, AccountAddressBalanceCosmos, AccountAddressBalanceEvm, AccountAddressBalanceSui } from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
@@ -93,6 +93,22 @@ export async function updateBalance(id: string) {
     }
   } finally {
     console.timeEnd(`update-balance-${id}`);
+  }
+}
+
+export async function updateCustomBalance(id: string) {
+  console.time(`update-custom-balance-${id}`);
+  try {
+    await getAccount(id);
+    await Promise.all([customCosmosBalances(id), customEvmBalances(id)]);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+    } else {
+      console.error(error);
+    }
+  } finally {
+    console.timeEnd(`update-custom-balance-${id}`);
   }
 }
 
@@ -292,6 +308,71 @@ async function cosmosBalances(id: string, { isMinimal = false } = {}) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: results });
 }
 
+async function customCosmosBalances(id: string) {
+  const address = await getCustomAccountAddress(id);
+  const addedCustomChains = await getAddedCustomChains();
+
+  const addressWithChain = address
+    .map((addr) => {
+      const addedCosmosCustomChains = addedCustomChains.filter((chain) => chain.chainType === 'cosmos');
+      const chain = addedCosmosCustomChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const urlPath = `/cosmos/bank/v1beta1/balances/${address}`;
+      const urlQuery = 'pagination.limit=10000';
+
+      const { lcdUrls } = chain;
+
+      let nextKey: string | null = null;
+
+      const responseBalances: CosmosBalance[][] = [];
+
+      const promises = lcdUrls.map(async (lcdUrl) => {
+        const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
+        const requestUrl = `${url}${urlPath}?${urlQuery}`;
+
+        const response = await axios.get<CosmosBalanceResponse>(requestUrl);
+
+        return response.data;
+      });
+
+      const response = await Promise.any(promises);
+
+      nextKey = response?.pagination?.next_key ?? null;
+
+      responseBalances.push(response?.balances ?? []);
+
+      while (nextKey) {
+        const nextPromises = lcdUrls.map(async (lcdUrl) => {
+          const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
+          const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
+
+          const response = await axios.get<CosmosBalanceResponse>(requestUrl);
+
+          return response.data;
+        });
+        const nextResponse = await Promise.any(nextPromises);
+
+        responseBalances.push(nextResponse?.balances ?? []);
+        nextKey = nextResponse?.pagination?.next_key ?? null;
+      }
+
+      const balances = responseBalances.flat();
+
+      const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+
+      return result;
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${id}-custom-balance-cosmos`]: results });
+}
+
 async function evmBalances(id: string, { isMinimal = false } = {}) {
   const address = await getAccountAddress(id);
   const { evmChains } = await getChains();
@@ -339,6 +420,53 @@ async function evmBalances(id: string, { isMinimal = false } = {}) {
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${id}-balance-evm`]: results });
+}
+
+async function customEvmBalances(id: string) {
+  const address = await getCustomAccountAddress(id);
+  const addedCustomChains = await getAddedCustomChains();
+
+  const addressWithChain = address
+    .map((addr) => {
+      const addedEVMCustomChains = addedCustomChains.filter((chain) => chain.chainType === 'evm');
+      const chain = addedEVMCustomChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls } = chain;
+
+      const body = {
+        jsonrpc: '2.0',
+        method: 'eth_getBalance',
+        params: [address, 'latest'],
+        id: 1,
+      };
+
+      const promises = rpcUrls.map(async (rpcUrl) => {
+        const url = rpcUrl.url;
+
+        const response = await axios.post<EvmRpcGetBalanceResponse>(url, body);
+
+        return response.data;
+      });
+
+      const response = await Promise.any(promises);
+
+      const balance = response?.result ?? '0x0';
+
+      const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance };
+
+      return result;
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${id}-custom-balance-evm`]: results });
 }
 
 async function aptosBalances(id: string) {

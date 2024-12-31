@@ -290,6 +290,11 @@ export default function Entry() {
         encryptedRestoreString,
       };
 
+      if (!comparisonPasswordHash) {
+        const comparisonPasswordHash = sha512(currentPassword!);
+        await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
+      }
+
       await addAccountWithName(newAccount);
 
       const isMnemonicAlreadyRegistered = mnemonicNamesByHashedMnemonic[encryptedRestoreString];

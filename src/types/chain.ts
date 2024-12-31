@@ -53,12 +53,36 @@ export interface CosmosChain extends ChainBase {
   isSupportStaking?: boolean;
 }
 
+export interface CustomCosmosChain extends ChainBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  chainId: string;
+  mainAssetDenom: string;
+  accountPrefix: string;
+  isCosmwasm: boolean;
+  isEvm: boolean;
+  lcdUrls: ChainEndpoint[];
+  explorer: ChainExplorer;
+  feeInfo: CosmosFeeInfo;
+  accountTypes: ChainAccountType[];
+}
+
 export interface EvmFeeInfo {
   isEip1559: boolean;
   gasCoefficient: number;
 }
 
 export interface EvmChain extends ChainBase {
+  chainType: Extract<ChainType, 'evm'>;
+  chainId: string;
+  mainAssetDenom: string | null;
+  isCosmos: boolean;
+  feeInfo: EvmFeeInfo;
+  rpcUrls: ChainEndpoint[];
+  accountTypes: ChainAccountType[];
+  explorer: ChainExplorer;
+}
+
+export interface CustomEvmChain extends ChainBase {
   chainType: Extract<ChainType, 'evm'>;
   chainId: string;
   mainAssetDenom: string | null;
@@ -95,5 +119,7 @@ export interface BitcoinChain extends ChainBase {
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
 }
+
+export type CustomChain = CustomCosmosChain | CustomEvmChain;
 
 export type Chain = CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain;

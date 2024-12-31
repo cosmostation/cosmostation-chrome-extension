@@ -29,6 +29,7 @@ const initialState: ExtensionStorageState = {
   currency: CURRENCY_TYPE.USD as CurrencyType,
   preferAccountType: {},
   addressBookList: [],
+  addedCustomChainList: [],
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {

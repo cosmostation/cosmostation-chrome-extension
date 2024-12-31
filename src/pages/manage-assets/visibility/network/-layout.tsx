@@ -27,7 +27,7 @@ export default function Layout({ children }: LayoutProps) {
         header={
           <Header
             leftContent={<NavigationPanel />}
-            middleContent={<Base1300Text variant="h4_B">{t('pages.manage-assets.visibility.asset.layout.header')}</Base1300Text>}
+            middleContent={<Base1300Text variant="h4_B">{t('pages.manage-assets.visibility.network.layout.header')}</Base1300Text>}
             rightContent={
               <IconButton onClick={() => setIsOpenBottomSheet(true)}>
                 <InfoIconContainer>
@@ -42,8 +42,8 @@ export default function Layout({ children }: LayoutProps) {
       </BaseLayout>
       <GithubBottomSheet
         open={isOpenBottomSheet}
-        headerTitle={t('pages.manage-assets.visibility.layout.headerTitle')}
-        contentsSubTitle={t('pages.manage-assets.visibility.layout.contentsSubTitle')}
+        headerTitle={t('pages.manage-assets.visibilitynetwork.network.layout.headerTitle')}
+        contentsSubTitle={t('pages.manage-assets.visibilitynetwork.network.layout.contentsSubTitle')}
         onClose={() => setIsOpenBottomSheet(false)}
         onClickConfirm={() => {
           window.open('https://github.com/cosmostation/chainlist', '_blank');

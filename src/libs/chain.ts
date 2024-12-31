@@ -247,3 +247,11 @@ export async function getChains() {
     bitcoinChains: remappedBitcoinChains,
   };
 }
+
+export async function getAddedCustomChains() {
+  const storage = await chrome.storage.local.get<ExtensionStorage>('addedCustomChainList');
+
+  const addedCustomChainList = storage['addedCustomChainList'];
+
+  return addedCustomChainList;
+}
