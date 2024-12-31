@@ -22,7 +22,7 @@ import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { addAccountToNotBackedupList } from '@/utils/zustand/backupAccount';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 
 import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } from './-styled';
@@ -98,6 +98,8 @@ export default function Entry() {
       await setCurrentAccount(newAccount.id);
 
       await addAccountToNotBackedupList(newAccount.id);
+
+      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: Dashboard.to,

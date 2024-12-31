@@ -20,7 +20,7 @@ import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   Body,
@@ -144,6 +144,8 @@ export default function Entry() {
 
       reset();
       toastSuccess(t('pages.account.restore-wallet.privatekey.index.setUpSuccess'));
+
+      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: Dashboard.to,

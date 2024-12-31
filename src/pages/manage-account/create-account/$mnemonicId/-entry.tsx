@@ -20,7 +20,7 @@ import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '
 import { isNumber } from '@/utils/string';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
   Body,
@@ -110,6 +110,8 @@ export default function Entry({ mnemonicId }: EntryProps) {
 
         await setCurrentAccount(newAccount.id);
       }
+
+      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: SwitchAccount.to,

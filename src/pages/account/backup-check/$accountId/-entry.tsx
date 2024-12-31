@@ -22,7 +22,7 @@ import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { addAccountName } from '@/utils/zustand/accountNames';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 
 import { DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer } from './-styled';
@@ -117,6 +117,8 @@ export default function Entry() {
         ...mnemonicNamesByHashedMnemonic,
         [newAccount.encryptedRestoreString]: `Mnemonic ${totalMnemonicAccountsCount}`,
       });
+
+      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: Dashboard.to,
