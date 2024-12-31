@@ -12,6 +12,7 @@ export function useUpdateBalance() {
   // Note 원 데이터에서 체인,에셋 데이터로 분리 저장.
 
   // NOTE 체인, 에셋 / api name, 중복 필터링 로직 필요
+  // NOTE 이 함수 자체에 스로틀링 구현 필요.
   const fetcher = async () => {
     await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
   };
