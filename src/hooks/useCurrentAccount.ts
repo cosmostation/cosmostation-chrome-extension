@@ -1,5 +1,6 @@
 import type { Account, AccountWithName } from '@/types/account';
 import { removeMnemonicName } from '@/utils/mnemonicNames';
+import { deleteKeysContainingString } from '@/utils/storage';
 import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
 import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
 import { removeInitAccountId, removeInitAccountIds } from '@/utils/zustand/initAccountIds';
@@ -53,18 +54,7 @@ export function useCurrentAccount() {
       await removeMnemonicName(encryptedRestoreString);
     }
 
-    await chrome.storage.local.remove([
-      `${id}-address`,
-      `${id}-balance-cosmos`,
-      `${id}-balance-evm`,
-      `${id}-balance-aptos`,
-      `${id}-balance-sui`,
-      `${id}-balance-erc20`,
-      `${id}-custom-balance-erc20`,
-      `${id}-balance-cw20`,
-      `${id}-custom-balance-cw20`,
-      `${id}-hidden-assetIds`,
-    ]);
+    await deleteKeysContainingString(id);
   };
 
   const removeMnemonic = async (mnemonicId: string) => {
@@ -84,20 +74,9 @@ export function useCurrentAccount() {
     await removePreferAccountTypes(targetAccountsIds);
     await removeInitAccountIds(targetAccountsIds);
 
-    targetAccounts.forEach(async ({ id }) => {
-      await chrome.storage.local.remove([
-        `${id}-address`,
-        `${id}-balance-cosmos`,
-        `${id}-balance-evm`,
-        `${id}-balance-aptos`,
-        `${id}-balance-sui`,
-        `${id}-balance-erc20`,
-        `${id}-custom-balance-erc20`,
-        `${id}-balance-cw20`,
-        `${id}-custom-balance-cw20`,
-        `${id}-hidden-assetIds`,
-      ]);
-    });
+    const removePromises = targetAccounts.map(({ id }) => deleteKeysContainingString(id));
+
+    await Promise.all(removePromises);
   };
 
   return {

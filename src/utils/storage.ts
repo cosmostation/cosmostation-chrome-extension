@@ -200,6 +200,27 @@ export async function getExtensionLocalStorage<T extends ExtensionStorageKeys>(k
   return localStorage[key] as ExtensionStorage[T];
 }
 
+export const deleteKeysContainingString = async (searchString: string): Promise<void> => {
+  chrome.storage.local.get(null, (items) => {
+    if (chrome.runtime.lastError) {
+      console.error(chrome.runtime.lastError);
+      return;
+    }
+
+    const keysToDelete = Object.keys(items).filter((key) => key.includes(searchString));
+
+    if (keysToDelete.length > 0) {
+      chrome.storage.local.remove(keysToDelete, () => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        }
+      });
+    } else {
+      console.log(`No keys found containing the string: "${searchString}"`);
+    }
+  });
+};
+
 export async function getAllExtensionLocalStorage(): Promise<ExtensionStorage> {
   const localStorage = await extension.storage.local.get();
 
