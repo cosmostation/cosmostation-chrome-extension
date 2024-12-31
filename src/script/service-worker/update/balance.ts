@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Contract, ethers } from 'ethers';
 import { PromisePool } from '@supercharge/promise-pool';
 
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { getAccount, getAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
@@ -12,7 +13,40 @@ import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { ExtensionStorage } from '@/types/extension';
 import type { SuiRpcGetBalanceResponse } from '@/types/sui/api';
 
-export async function balance(id: string) {
+const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
+const defaultEvmCoinList = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
+
+const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList];
+
+export async function updateDefaultAssetsBalance(id: string) {
+  console.time(`default-balance-${id}`);
+  try {
+    await getAccount(id);
+
+    await Promise.all([
+      cosmosBalances(id, {
+        isMinimal: true,
+      }),
+      evmBalances(id, {
+        isMinimal: true,
+      }),
+    ]);
+
+    await updateHiddenAssetsExcludingDefault(id);
+
+    updateBalance(id);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+    } else {
+      console.error(error);
+    }
+  } finally {
+    console.timeEnd(`balance-${id}`);
+  }
+}
+
+export async function updateActiveAssetsBalance(id: string) {
   console.time(`balance-${id}`);
   try {
     // NOTE 선언 이유? account가 정상적으로 저장, 불러오기 되는지 확인하기 위해?
@@ -21,16 +55,8 @@ export async function balance(id: string) {
     await initAssests(id);
 
     // TODO init 밸런스 페칭에서는 타잉아웃 (2초 지나면 요청 취소) 설정이 필요할듯. // 궁극적으로 타임아웃은 있어도 좋을듯.
-    await Promise.all([
-      cosmosBalances(id),
-      evmBalances(id),
-      aptosBalances(id),
-      suiBalances(id),
-      erc20Balance(id),
-      customErc20Balance(id),
-      cw20Balance(id),
-      customCw20Balance(id),
-    ]);
+    await updateBalance(id);
+
     await initAccount(id);
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -43,6 +69,33 @@ export async function balance(id: string) {
   }
 }
 
+// FIXME 이게 지금 한번 더 호출되면서 이상함.
+export async function updateBalance(id: string) {
+  console.time(`update-balance-${id}`);
+  try {
+    await getAccount(id);
+
+    await Promise.all([
+      cosmosBalances(id),
+      evmBalances(id),
+      aptosBalances(id),
+      suiBalances(id),
+      erc20Balance(id),
+      customErc20Balance(id),
+      cw20Balance(id),
+      customCw20Balance(id),
+    ]);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+    } else {
+      console.error(error);
+    }
+  } finally {
+    console.timeEnd(`update-balance-${id}`);
+  }
+}
+
 export async function initAccount(id: string) {
   await getAccount(id);
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
@@ -51,11 +104,6 @@ export async function initAccount(id: string) {
 
   if (!initAccountIds?.includes(id)) {
     const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets } = await getAccountAssets(id);
-
-    const defaultCoinList = [
-      { id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' },
-      { id: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', chainId: 'ethereum', chainType: 'evm' },
-    ];
 
     const mergedAccountAssets = [
       ...aptosAccountAssets,
@@ -110,6 +158,50 @@ export async function initAccount(id: string) {
   }
 }
 
+export async function updateHiddenAssetsExcludingDefault(id: string) {
+  await getAccount(id);
+  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+
+  const storedHiddenAssetIds = await getHiddenAssets(id);
+
+  if (!initAccountIds?.includes(id)) {
+    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets } = await getAccountAssets(id);
+
+    const mergedAccountAssets = [
+      ...aptosAccountAssets,
+      ...cosmosAccountAssets,
+      ...cw20AccountAssets,
+      ...erc20AccountAssets,
+      ...evmAccountAssets,
+      ...suiAccountAssets,
+    ];
+
+    const hiddenAssetIds = mergedAccountAssets
+      .filter(
+        (asset) =>
+          !defaultCoinList.find(
+            (defaultCoin) =>
+              defaultCoin.id === asset.asset.id && defaultCoin.chainId === asset.asset.chainId && defaultCoin.chainType === asset.asset.chainType,
+          ),
+      )
+      .map((asset) => {
+        return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
+      });
+
+    const uniqueHiddenAssetIds = [...storedHiddenAssetIds, ...hiddenAssetIds].filter(
+      (v, i, a) => a.findIndex((t) => t.id === v.id && t.chainId === v.chainId && t.chainType === v.chainType) === i,
+    );
+
+    if (initAccountIds?.length > 0) {
+      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
+    } else {
+      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
+    }
+
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+  }
+}
+
 // NOTE 기본 코인 및 디폴트 토큰(erc20. cw20의 preload만)만 냅두고 나머지는 히든처리작업
 export async function initAssests(id: string) {
   await getAccount(id);
@@ -130,12 +222,16 @@ export async function initAssests(id: string) {
 }
 
 // TODO 요청에 대하 2초 타임아웃 설정 필요.
-async function cosmosBalances(id: string) {
+async function cosmosBalances(id: string, { isMinimal = false } = {}) {
   const address = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
 
+  const addressList = isMinimal
+    ? address.filter((addr) => defaultCosmosCoinList.some((chain) => chain.chainId === addr.chainId && chain.chainType === addr.chainType))
+    : address;
+
   // NOTE 랩핑된 코스모스 체인 정보, 주소정보
-  const addressWithChain = address
+  const addressWithChain = addressList
     .map((addr) => {
       const chain = cosmosChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
@@ -196,11 +292,15 @@ async function cosmosBalances(id: string) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: results });
 }
 
-async function evmBalances(id: string) {
+async function evmBalances(id: string, { isMinimal = false } = {}) {
   const address = await getAccountAddress(id);
   const { evmChains } = await getChains();
 
-  const addressWithChain = address
+  const addressList = isMinimal
+    ? address.filter((addr) => defaultEvmCoinList.find((chain) => chain.chainId === addr.chainId && chain.chainType === addr.chainType))
+    : address;
+
+  const addressWithChain = addressList
     .map((addr) => {
       const chain = evmChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
@@ -340,10 +440,14 @@ async function erc20Balance(id: string) {
   const { evmChains } = await getChains();
   const { erc20Assets } = await getAssets();
 
-  const erc20AssetsWithoutHidden = erc20Assets.filter(
-    (asset) =>
-      !hiddenAssets.find((hiddenAsset) => hiddenAsset.id === asset.id && hiddenAsset.chainId === asset.chainId && hiddenAsset.chainType === asset.chainType),
-  );
+  const erc20AssetsToDisplay = erc20Assets.filter((asset) => {
+    const isAssetVisible = !hiddenAssets.find(
+      (hiddenAsset) => hiddenAsset.id === asset.id && hiddenAsset.chainId === asset.chainId && hiddenAsset.chainType === asset.chainType,
+    );
+    const isPreload = asset.wallet_preload;
+
+    return isAssetVisible || isPreload;
+  });
 
   const addressWithChain = accountAddress
     .map((addr) => {
@@ -357,7 +461,7 @@ async function erc20Balance(id: string) {
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
       const { rpcUrls } = chain;
-      const assets = erc20AssetsWithoutHidden.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
+      const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
       const providers = rpcUrls.map(
         (rpcUrl) =>
@@ -464,10 +568,14 @@ async function cw20Balance(id: string) {
   const { cosmosChains } = await getChains();
   const { cw20Assets } = await getAssets();
 
-  const cw20AssetsWithoutHidden = cw20Assets.filter(
-    (asset) =>
-      !hiddenAssets.find((hiddenAsset) => hiddenAsset.id === asset.id && hiddenAsset.chainId === asset.chainId && hiddenAsset.chainType === asset.chainType),
-  );
+  const cw20AssetsWithoutHidden = cw20Assets.filter((asset) => {
+    const isAssetVisible = !hiddenAssets.find(
+      (hiddenAsset) => hiddenAsset.id === asset.id && hiddenAsset.chainId === asset.chainId && hiddenAsset.chainType === asset.chainType,
+    );
+    const isPreload = asset.wallet_preload;
+
+    return isAssetVisible || isPreload;
+  });
 
   const cosmosChainsWithCosmwasm = cosmosChains.filter((chain) => chain.isCosmwasm);
 

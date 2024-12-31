@@ -265,7 +265,12 @@
             "passwordNotSet": "Password not set",
             "invalidMnemonicPhrase": "Invalid mnemonic phrase",
             "accountCreated": "Account created",
-            "addressAndBalanceFetchingError": "Failed to fetch address and balance"
+            "addressAndBalanceFetchingError": "Failed to fetch address and balance",
+            "importAllAssets": "Import Assets",
+            "importBottmSheetContentsTitle": "Find My Coins",
+            "importBottmSheetContentsSubTitle": "Would you like to load all your assets? \nIt may take some time if you have many coins.",
+            "no": "No",
+            "import": "Import"
           },
           "layout": {
             "header": "Restore With Mnemonic"

@@ -5,7 +5,7 @@
 import type { Message } from '@/types/message';
 
 import { address } from './update/address';
-import { balance } from './update/balance';
+import { updateActiveAssetsBalance, updateDefaultAssetsBalance } from './update/balance';
 import { v11 } from './update/v11';
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
@@ -20,7 +20,13 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
     if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
       if (message.method === 'updateBalance') {
         const [id] = message.params;
-        await balance(id);
+        await updateActiveAssetsBalance(id);
+        sendResponse(null);
+      }
+
+      if (message.method === 'updateDefaultBalance') {
+        const [id] = message.params;
+        await updateDefaultAssetsBalance(id);
         sendResponse(null);
       }
 

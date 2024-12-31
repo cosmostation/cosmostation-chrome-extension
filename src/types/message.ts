@@ -16,13 +16,19 @@ export interface UpdateBalanceMessage extends MessageBase {
   params: [string];
 }
 
+export interface UpdateDefaultBalanceMessage extends MessageBase {
+  target: Extract<TargetType, 'SERVICE_WORKER'>;
+  method: 'updateDefaultBalance';
+  params: [string];
+}
+
 export interface UpdateAddressMessage extends MessageBase {
   target: Extract<TargetType, 'SERVICE_WORKER'>;
   method: 'updateAddress';
   params: [string];
 }
 
-export type ServiceWorkerMessage = UpdateBalanceMessage | UpdateAddressMessage;
+export type ServiceWorkerMessage = UpdateBalanceMessage | UpdateAddressMessage | UpdateDefaultBalanceMessage;
 
 export interface ServiceWorkerResponse {
   updateBalance: null;

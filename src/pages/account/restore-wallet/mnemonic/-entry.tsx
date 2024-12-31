@@ -11,6 +11,7 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import TextButton from '@/components/common/TextButton';
 import MnemonicBitsPopover from '@/components/MnemonicViewer/components/MnemonicBitsPopover';
+import ImportBottomSheet from '@/components/ReviewBottomSheet';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -24,7 +25,7 @@ import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import HdPathBottomSheet from './-components/HdPathBottomSheet';
 import {
@@ -73,6 +74,8 @@ export default function Entry() {
 
   const [isOpenHdPathBottomSheet, setIsOpenHdPathBottomSheet] = useState(false);
   const [currentHdPathIndex, setCurrentHdPathIndex] = useState('0');
+
+  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
   const [values, setValues] = useState<string[]>(Array(12).fill(''));
 
@@ -201,6 +204,7 @@ export default function Entry() {
 
       // TODO
       // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: Dashboard.to,
@@ -251,11 +255,68 @@ export default function Entry() {
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] });
 
+      await loadExtensionStorageStoreFromStorage();
       // NOTE 추후에 코인타입세터 넘길지 말지 초건 추가
 
       navigate({
         to: CoinTypeSetting.to,
       });
+    } catch {
+      toastError(t('pages.account.restore-wallet.mnemonic.index.addressAndBalanceFetchingError'));
+    } finally {
+      setIsLoadingBalance(false);
+    }
+  };
+
+  const setUpInitialWithoutImportAll = async (newAccountName: string) => {
+    try {
+      setIsLoadingBalance(true);
+
+      const joinedMnemonicPhrase = values.join(' ');
+
+      const accountId = uuidv4();
+
+      const decryptedPassword = await getPassword();
+
+      const encryptedMnemonic = aesEncrypt(joinedMnemonicPhrase, decryptedPassword);
+      const encryptedRestoreString = sha512(joinedMnemonicPhrase);
+
+      const newAccount: AccountWithName = {
+        id: accountId,
+        type: 'MNEMONIC',
+        name: newAccountName,
+        index: currentHdPathIndex,
+        encryptedMnemonic: encryptedMnemonic,
+        encryptedRestoreString,
+      };
+
+      await addAccountWithName(newAccount);
+
+      const isMnemonicAlreadyRegistered = mnemonicNamesByHashedMnemonic[encryptedRestoreString];
+
+      await addPreferAccountType(newAccount.id);
+
+      if (!isMnemonicAlreadyRegistered) {
+        await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
+          ...mnemonicNamesByHashedMnemonic,
+          [encryptedRestoreString]: `Mnemonic ${Object.keys(mnemonicNamesByHashedMnemonic).length + 1}`,
+        });
+      }
+
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [accountId] });
+
+      await setCurrentAccount(newAccount.id);
+
+      // TODO
+      // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+      await loadExtensionStorageStoreFromStorage();
+
+      navigate({
+        to: Dashboard.to,
+      });
+
+      toastSuccess(t('pages.account.restore-wallet.mnemonic.index.accountCreated'));
     } catch {
       toastError(t('pages.account.restore-wallet.mnemonic.index.addressAndBalanceFetchingError'));
     } finally {
@@ -379,7 +440,7 @@ export default function Entry() {
               }
 
               if (isInitialSetup) {
-                setUpInitial();
+                setIsOpenReviewBottomSheet(true);
               } else {
                 setIsOpenSetAccountNameBottomSheet(true);
               }
@@ -420,7 +481,28 @@ export default function Entry() {
         open={isOpenSetAccountNameBottomSheet}
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
         setName={async (accountName) => {
-          await setUp(accountName);
+          if (isInitialSetup) {
+            await setUpInitialWithoutImportAll(accountName);
+          } else {
+            await setUp(accountName);
+          }
+        }}
+      />
+      <ImportBottomSheet
+        open={isOpenReviewBottomSheet}
+        onClose={() => setIsOpenReviewBottomSheet(false)}
+        headerTitle={t('pages.account.restore-wallet.mnemonic.index.importAllAssets')}
+        contentsTitle={t('pages.account.restore-wallet.mnemonic.index.importBottmSheetContentsTitle')}
+        contentsSubTitle={t('pages.account.restore-wallet.mnemonic.index.importBottmSheetContentsSubTitle')}
+        cancleButtonText={t('pages.account.restore-wallet.mnemonic.index.no')}
+        confirmButtonText={t('pages.account.restore-wallet.mnemonic.index.import')}
+        onClickCancel={() => {
+          setIsOpenSetAccountNameBottomSheet(true);
+          setIsOpenReviewBottomSheet(false);
+        }}
+        onClickConfirm={() => {
+          setUpInitial();
+          setIsOpenReviewBottomSheet(false);
         }}
       />
     </>
