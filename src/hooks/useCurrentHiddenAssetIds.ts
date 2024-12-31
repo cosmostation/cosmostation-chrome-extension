@@ -1,3 +1,4 @@
+import { getHiddenAssets } from '@/libs/asset';
 import type { AssetId } from '@/types/asset';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -18,7 +19,17 @@ export function useCurrentHiddenAssetIds() {
   const currentHiddenAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-hidden-assetIds`];
 
   const addHiddenAssetId = async (assetId: AssetId) => {
-    const updatedHiddenAssetIds = [...currentHiddenAssetIds, assetId];
+    const storedHiddenAssetIds = await getHiddenAssets(currentAccount.id);
+
+    const isAlreadyHidden = storedHiddenAssetIds.some(
+      (item) => item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType,
+    );
+
+    if (isAlreadyHidden) {
+      return;
+    }
+
+    const updatedHiddenAssetIds = [...storedHiddenAssetIds, assetId];
 
     await updateExtensionStorageStore(`${currentAccount.id}-hidden-assetIds`, updatedHiddenAssetIds);
 
@@ -28,6 +39,8 @@ export function useCurrentHiddenAssetIds() {
   };
 
   const removeHiddenAssetId = async (assetId: AssetId) => {
+    const currentHiddenAssetIds = await getHiddenAssets(currentAccount.id);
+
     const updatedHiddenAssetIds = currentHiddenAssetIds.filter(
       (item) => !(item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType),
     );
