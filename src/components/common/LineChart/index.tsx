@@ -22,7 +22,7 @@ export default function LineChart({ lineChartData }: LineChartProps) {
       <ResponsiveContainer>
         <BaseLineChart data={formattedData}>
           <YAxis domain={['dataMin', 'dataMax']} hide />
-          <Line type="monotone" dataKey={chartDataKey} stroke={isTrendUpward ? '#97eb88' : '#ed3215'} strokeWidth={2} dot={false} isAnimationActive={false} />
+          <Line type="monotone" dataKey={chartDataKey} stroke={isTrendUpward ? '#DFF6EA' : '#FFEFEF'} strokeWidth={1.2} dot={false} isAnimationActive={false} />
         </BaseLineChart>
       </ResponsiveContainer>
     </LineStrokeEffectLayer>
