@@ -260,7 +260,6 @@ export default function Entry() {
                   typoVarient="b2_M"
                   currentChainId={currentSelectedChainId}
                   chainList={flatChainList}
-                  isManageAssets
                   selectChainOption={(id) => {
                     setCurrentSelectedChainId(id);
                   }}

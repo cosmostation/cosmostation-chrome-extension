@@ -64,6 +64,7 @@ export default function PortFolio() {
                 variant="chip"
                 currentChainId={currentSelectedChainId}
                 chainList={dummyChainList}
+                isManageAssets
                 selectChainOption={(id) => {
                   setCurrentSelectedChainId(id);
                 }}
