@@ -6,7 +6,7 @@ import { DefaultSortKey } from '@/constants/initialStorage';
 import type { CurrencyType } from '@/types/currency';
 import type { ExtensionStorage } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
-import { getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 const initialState: ExtensionStorageState = {
   accounts: [],
@@ -30,6 +30,8 @@ const initialState: ExtensionStorageState = {
   preferAccountType: {},
   addressBookList: [],
   addedCustomChainList: [],
+  customAssets: [],
+  customHiddenAssetIds: [],
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
@@ -61,23 +63,11 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('addressBookList', []);
       await setExtensionLocalStorage('customCw20Assets', []);
       await setExtensionLocalStorage('customErc20Assets', []);
+      await setExtensionLocalStorage('customAssets', []);
+      await setExtensionLocalStorage('customHiddenAssetIds', []);
 
-      const accountIds = accounts.map((account) => account.id);
-
-      accountIds.forEach(async (accountId) => {
-        await chrome.storage.local.remove([
-          `${accountId}-address`,
-          `${accountId}-balance-aptos`,
-          `${accountId}-balance-cosmos`,
-          `${accountId}-balance-cw20`,
-          `${accountId}-balance-erc20`,
-          `${accountId}-balance-evm`,
-          `${accountId}-balance-sui`,
-          `${accountId}-hidden-assetIds`,
-          `${accountId}-custom-balance-erc20`,
-          `${accountId}-custom-balance-cw20`,
-        ]);
-      });
+      const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
+      await Promise.all(removePromises);
 
       set(initialState);
     },

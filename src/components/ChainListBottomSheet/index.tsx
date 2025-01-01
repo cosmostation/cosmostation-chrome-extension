@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
+import { Route as ManageCustomNetwork } from '@/pages/manage-assets/visibility/network';
 import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
@@ -119,6 +120,11 @@ export default function ChainListBottomSheet({
         {customType === 'manageAssets' && (
           <ManageAssetsContaienr>
             <CustomNetworkButton
+              onClick={() => {
+                navigate({
+                  to: ManageCustomNetwork.to,
+                });
+              }}
               leftContent={<CustomNetworkIcon />}
               leftSecondBody={
                 <CustomNetworkTextContaienr>

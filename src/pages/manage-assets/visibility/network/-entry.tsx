@@ -14,12 +14,14 @@ import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
+import { useCustomAssets } from '@/hooks/useCustomAssets';
 import { useCustomChain } from '@/hooks/useCustomChain';
 import { useCustomChainParam } from '@/hooks/useCustomChainParam';
 import { Route as ImportToken } from '@/pages/manage-assets/import/assets';
+import type { CustomAsset } from '@/types/asset';
 import type { UniqueChainId } from '@/types/chain';
 import type { CustomChainAsset } from '@/types/customChain';
-import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinIdWithManual, getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 
 import {
   ButtonWrapper,
@@ -45,6 +47,7 @@ export default function Entry() {
   const { data: managedCustomChains } = useCustomChainParam();
 
   const { addedCustomChainList, addCustomChain, removeCustomChain } = useCustomChain();
+  const { addCustomAsset, removeCustomAsset } = useCustomAssets();
 
   const userDefinedCustomChains = addedCustomChainList.filter((chain) => !managedCustomChains?.some((managedChain) => isSameChain(managedChain, chain)));
 
@@ -92,23 +95,35 @@ export default function Entry() {
   }, [addedCustomChainList, filteredCustomChainBySearch, viewLimit]);
 
   const addCustom = async (customChainAsset: CustomChainAsset) => {
-    const mainCoin = {
-      denom: customChainAsset.mainAssetDenom,
+    const mainCoin: CustomAsset = {
+      id: customChainAsset.mainAssetDenom,
+      chainId: customChainAsset.id,
+      chainType: customChainAsset.chainType,
+      type: 'native',
+      name: customChainAsset.mainAssetSymbol,
       symbol: customChainAsset.mainAssetSymbol,
       decimals: customChainAsset.mainAssetDecimals,
-      image: customChainAsset.mainAssetImage,
-      coinGeckoId: customChainAsset.mainAssetCoinGeckoId,
+      image: customChainAsset.mainAssetImage || '',
+      coinGeckoId: customChainAsset.mainAssetCoinGeckoId || '',
     };
 
-    console.log('🚀 ~ addCustom ~ mainCoin:', mainCoin);
-
     await addCustomChain(customChainAsset);
+
+    await addCustomAsset(mainCoin);
   };
 
   const removeCustom = async (chainId: UniqueChainId) => {
-    // NOTE 저장된 메인코인를 get하는 로직 필요.
-
     await removeCustomChain(chainId);
+
+    const matchingChain = baseCustomChainList.find((chain) => isMatchingUniqueChainId(chain, chainId));
+    const coinId = matchingChain
+      ? getCoinIdWithManual({
+          id: matchingChain.mainAssetDenom || '',
+          chainId: matchingChain.id,
+          chainType: matchingChain.chainType,
+        })
+      : '';
+    await removeCustomAsset(coinId);
   };
 
   useEffect(() => {

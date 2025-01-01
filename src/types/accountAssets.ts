@@ -1,4 +1,13 @@
-import type { AccountAptosAsset, AccountCosmosAsset, AccountCw20Asset, AccountErc20Asset, AccountEvmAsset, AccountSuiAsset } from './account';
+import type {
+  AccountAptosAsset,
+  AccountCosmosAsset,
+  AccountCustomCosmosAsset,
+  AccountCustomEvmAsset,
+  AccountCw20Asset,
+  AccountErc20Asset,
+  AccountEvmAsset,
+  AccountSuiAsset,
+} from './account';
 
 export interface AccountAssets {
   cosmosAccountAssets: AccountCosmosAsset[];
@@ -11,6 +20,13 @@ export interface AccountAssets {
   customCw20AccountAssets: AccountCw20Asset[];
 }
 export type FlatAccountAssets = AccountCosmosAsset | AccountCw20Asset | AccountErc20Asset | AccountEvmAsset | AccountSuiAsset | AccountAptosAsset;
+
+export interface AccountCustomAssets {
+  cosmosAccountCustomAssets: AccountCustomCosmosAsset[];
+  evmAccountCustomAssets: AccountCustomEvmAsset[];
+}
+
+export type FlatAccountCustomAssets = AccountCustomCosmosAsset | AccountCustomEvmAsset;
 
 export type SingleOrGroupAccountAssets = FlatAccountAssets & {
   totalDisplayAmount: string;

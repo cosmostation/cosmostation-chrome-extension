@@ -1,10 +1,20 @@
 import PromisePool from '@supercharge/promise-pool';
 
-import type { AccountAptosAsset, AccountCosmosAsset, AccountCw20Asset, AccountErc20Asset, AccountEvmAsset, AccountSuiAsset } from '@/types/account';
+import type {
+  AccountAptosAsset,
+  AccountCosmosAsset,
+  AccountCustomCosmosAsset,
+  AccountCustomEvmAsset,
+  AccountCw20Asset,
+  AccountErc20Asset,
+  AccountEvmAsset,
+  AccountSuiAsset,
+} from '@/types/account';
 import type { AptosAsset, AssetSingleGroup, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
+import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 
-import { getChains } from './chain';
+import { getAddedCustomChains, getChains } from './chain';
 
 export async function getHiddenAssets(id: string) {
   const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-hidden-assetIds`);
@@ -12,6 +22,14 @@ export async function getHiddenAssets(id: string) {
   const hiddenAssetIds = storage[`${id}-hidden-assetIds`];
 
   return hiddenAssetIds ?? [];
+}
+
+export async function getHiddenCustomAssets() {
+  const storage = await chrome.storage.local.get<ExtensionStorage>('customHiddenAssetIds');
+
+  const hiddenCustomAssetIds = storage['customHiddenAssetIds'];
+
+  return hiddenCustomAssetIds ?? [];
 }
 
 export async function getAssets() {
@@ -460,5 +478,97 @@ export async function getAccountAssets(id: string) {
     erc20AccountAssets,
     customErc20AccountAssets,
     customCw20AccountAssets,
+  };
+}
+
+export async function getAccountCustomAssets(id: string) {
+  console.time('getAccountCustomAssets');
+  const concurrency = 10;
+  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
+
+  const hiddenAssetIds = await getHiddenCustomAssets();
+
+  const customChains = await getAddedCustomChains();
+
+  const cosmosChains = customChains.filter((chain) => chain.chainType === 'cosmos');
+  const evmChains = customChains.filter((chain) => chain.chainType === 'evm');
+
+  const { customAssets } = await chrome.storage.local.get<ExtensionStorage>(['customAssets']);
+
+  const visibleCustomAssets = customAssets.filter((asset) => !hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset)));
+
+  const customCosmosAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'cosmos');
+  const customEvmAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'evm');
+
+  const accountAddress = storage[`${id}-custom-address`];
+
+  const customCosmosBalances = storage[`${id}-custom-balance-cosmos`];
+  const customEvmBalances = storage[`${id}-custom-balance-evm`];
+
+  const cosmosPromise = PromisePool.withConcurrency(concurrency)
+    .for(customCosmosAssets)
+    .process(async (asset) => {
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const type = asset.id;
+          const balanceInfo = customCosmosBalances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+          const balance = balanceInfo?.balances?.find((balance) => balance.denom === type)?.amount || '0';
+
+          const result: AccountCustomCosmosAsset = {
+            chain,
+            asset,
+            address,
+            balance: balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
+  const evmPromise = PromisePool.withConcurrency(concurrency)
+    .for(customEvmAssets)
+    .process(async (asset) => {
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const balanceInfo = customEvmBalances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
+
+          const result: AccountCustomEvmAsset = {
+            chain,
+            asset,
+            address,
+            balance: balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
+  const results = await Promise.all([cosmosPromise, evmPromise]);
+
+  const cosmosAccountCustomAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
+  const evmAccountCustomAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
+  console.timeEnd('getAccountCustomAssets');
+
+  return {
+    cosmosAccountCustomAssets,
+    evmAccountCustomAssets,
   };
 }

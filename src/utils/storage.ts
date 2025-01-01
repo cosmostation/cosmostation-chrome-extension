@@ -73,6 +73,14 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('selectedAccountId', defaultAccountId);
   }
 
+  if (!originStorage.customAssets) {
+    await setExtensionLocalStorage('customAssets', []);
+  }
+
+  if (!originStorage.customHiddenAssetIds) {
+    await setExtensionLocalStorage('customHiddenAssetIds', []);
+  }
+
   if (originStorage.accountNamesById) {
     const accountMissingNames = (() => {
       const storedAccounts = originStorage.accounts;

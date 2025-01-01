@@ -12,7 +12,7 @@ import type {
   PreferAccountType,
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
-import type { AssetId, CosmosCw20Asset, EvmErc20Asset } from './asset';
+import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './asset';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
 import type { Password } from './password';
@@ -42,8 +42,11 @@ export interface ExtensionStorage {
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
+  [key: `${string}-custom-address`]: AccountAddress[];
   [key: `${string}-custom-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-custom-balance-cw20`]: AccountAddressBalanceCw20[];
+  [key: `${string}-custom-balance-cosmos`]: AccountAddressBalanceCosmos[];
+  [key: `${string}-custom-balance-evm`]: AccountAddressBalanceEvm[];
   initAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;
   dappListSortKey: DappListSortKeyType;
@@ -57,9 +60,8 @@ export interface ExtensionStorage {
   preferAccountType: PreferAccountType;
   addressBookList: AddressInfo[];
   addedCustomChainList: CustomChain[];
-  // TODO
-  // customCosmosAssets
-  // customEvmAssets
+  customAssets: CustomAsset[];
+  customHiddenAssetIds: AssetId[];
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

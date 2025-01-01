@@ -72,3 +72,15 @@ export type AssetSingleGroup = {
   singles: Asset[];
   groups: Record<string, Asset[]>;
 };
+
+export interface CustomCosmosAsset extends AssetBase {
+  chainType: 'cosmos';
+  type: string;
+}
+
+export interface CustomEvmAsset extends AssetBase {
+  chainType: 'evm';
+  type: string;
+}
+
+export type CustomAsset = CustomCosmosAsset | CustomEvmAsset;
