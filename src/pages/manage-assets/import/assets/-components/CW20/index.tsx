@@ -30,7 +30,7 @@ export default function CW20({ chainId }: CW20Props) {
   const { addCustomCW20Token } = useCurrentCustomCW20Tokens();
   const { chainList } = useChainList();
 
-  const currentChain = chainList?.cosmosChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+  const currentChain = chainList?.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, chainId));
 
   // NOTE useTokenInfoSWR로 일부 인풋값 대체하도록 변경.
   const { importCustomCW20TokenForm } = useSchema({

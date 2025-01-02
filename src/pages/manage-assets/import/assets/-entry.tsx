@@ -17,7 +17,7 @@ export default function Entry() {
   const { chainList } = useChainList();
 
   // FIXME Shido케이스 핸들링 필요., 커스텀 체인도 리스팅되도록 로직 수정 필요
-  const mergedChainList = [...(chainList?.evmChains || []), ...(chainList?.cosmosChains.filter((chain) => chain.isCosmwasm) || [])];
+  const mergedChainList = [...(chainList?.evmChains || []), ...(chainList?.cosmosChains?.filter((chain) => chain.isCosmwasm) || [])];
 
   const defaultChain = mergedChainList.length > 0 ? mergedChainList.find((chain) => chain.id === 'ethereum') || mergedChainList[0] : undefined;
   const defaultChainId = defaultChain ? getUniqueChainId(defaultChain) : undefined;
