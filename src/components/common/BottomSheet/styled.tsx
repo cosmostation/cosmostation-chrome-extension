@@ -8,7 +8,7 @@ export const StyledDrawer = styled(Drawer)(({ theme }) => ({
     backgroundColor: 'transparent',
   },
   '*::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.color.base600,
+    display: 'none',
   },
   '*::-webkit-scrollbar-corner': {
     backgroundColor: 'transparent',

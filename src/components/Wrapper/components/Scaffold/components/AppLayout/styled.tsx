@@ -12,4 +12,6 @@ export const PopupLayout = styled('div')(({ theme }) => ({
   alignItems: 'flex-start',
   backgroundColor: theme.palette.color.base50,
   overflowY: 'scroll',
+
+  scrollbarWidth: 'none',
 }));
