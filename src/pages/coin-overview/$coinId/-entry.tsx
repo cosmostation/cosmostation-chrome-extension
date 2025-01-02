@@ -41,7 +41,7 @@ export default function Entry({ coinId }: EntryProps) {
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
-  const { data: groupAccountAssets } = useGroupAccountAssets();
+  const { groupAccountAssets } = useGroupAccountAssets();
 
   const baseCoinList = useMemo(() => {
     const selectedCoin = groupAccountAssets?.groupAccountAssets.find((item) => getCoinId(item.asset) === coinId);

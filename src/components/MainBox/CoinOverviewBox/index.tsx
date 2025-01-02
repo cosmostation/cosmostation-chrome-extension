@@ -22,7 +22,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
-  const { data: groupAccountAssets } = useGroupAccountAssets();
+  const { groupAccountAssets } = useGroupAccountAssets();
 
   const currentGroupCoin = groupAccountAssets?.groupAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 

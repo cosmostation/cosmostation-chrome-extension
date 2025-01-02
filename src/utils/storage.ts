@@ -149,7 +149,7 @@ export async function initExtensionLocalStorage() {
             hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
             pubkeyStyle: defaultAccountType.pubkey_style,
             isDefault: defaultAccountType.is_default,
-            pubKeyType: defaultAccountType.pubkey_type,
+            pubkeyType: defaultAccountType.pubkey_type,
           };
           newPreferAccountType[item] = type;
         }
@@ -180,7 +180,7 @@ export async function initExtensionLocalStorage() {
             hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
             pubkeyStyle: defaultAccountType.pubkey_style,
             isDefault: defaultAccountType.is_default,
-            pubKeyType: defaultAccountType.pubkey_type,
+            pubkeyType: defaultAccountType.pubkey_type,
           };
 
           acc[cur.params.chainlist_params.api_name] = type;

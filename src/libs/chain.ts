@@ -58,7 +58,7 @@ export async function getChains() {
         return {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
-          pubKeyType: accountType.pubkey_type ?? null,
+          pubkeyType: accountType.pubkey_type ?? null,
           isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
@@ -100,13 +100,29 @@ export async function getChains() {
 
     const rpcUrls = chain.params.chainlist_params.evm_rpc_endpoint ?? [];
 
-    const accountTypes = [
-      {
-        hdPath: "m/44'/60'/0'/0/${index}",
-        pubkeyStyle: 'keccak256',
-        isDefault: null,
-      },
-    ];
+    const filteredAccountTypes = chain.params.chainlist_params?.account_type
+      ?.filter((item) => {
+        return item.hd_path.includes(`m/44'/60'/0'/0/`);
+      })
+      .map((item) => {
+        return {
+          hdPath: "m/44'/60'/0'/0/${index}",
+          pubkeyStyle: item.pubkey_style,
+          pubkeyType: item.pubkey_type ?? null,
+          isDefault: item.is_default ?? null,
+        };
+      });
+
+    const accountTypes =
+      filteredAccountTypes && filteredAccountTypes.length > 0
+        ? filteredAccountTypes
+        : [
+            {
+              hdPath: "m/44'/60'/0'/0/${index}",
+              pubkeyStyle: 'keccak256',
+              isDefault: null,
+            },
+          ];
 
     const explorer = chain.params.chainlist_params?.explorer ?? null;
 
@@ -145,7 +161,7 @@ export async function getChains() {
         return {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
-          pubKeyType: accountType.pubkey_type ?? null,
+          pubkeyType: accountType.pubkey_type ?? null,
           isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
@@ -183,7 +199,7 @@ export async function getChains() {
         return {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
-          pubKeyType: accountType.pubkey_type ?? null,
+          pubkeyType: accountType.pubkey_type ?? null,
           isDefault: accountType.is_default ?? null,
         };
       }) ?? [];
@@ -221,7 +237,7 @@ export async function getChains() {
         return {
           hdPath,
           pubkeyStyle: accountType.pubkey_style,
-          pubKeyType: accountType.pubkey_type ?? null,
+          pubkeyType: accountType.pubkey_type ?? null,
           isDefault: accountType.is_default ?? null,
         };
       }) ?? [];

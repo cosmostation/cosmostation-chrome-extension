@@ -7,6 +7,7 @@ import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
 import type { AccountAssets, FlatAccountAssets } from '@/types/accountAssets';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useAccountAllAssets } from './useAccountAllAssets';
 import { useCurrentAccount } from './useCurrentAccount';
 
 type UseAccountAssetsResponse = AccountAssets & {
@@ -23,7 +24,8 @@ type UseAccountAssets =
 
 export function useAccountAssets({ accountId, isOrign = false, config }: UseAccountAssets = {}) {
   const { currentAccount } = useCurrentAccount();
-  const { preferAccountType } = useExtensionStorageStore((state) => state);
+  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
+  const { data: currentAccountAllAssets } = useAccountAllAssets();
 
   const param = accountId || currentAccount.id;
   const accountType = preferAccountType[param];
@@ -47,7 +49,6 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
     queryKey: ['accountAssets', param],
     queryFn: fetcher,
     enabled: !!param,
-    staleTime: 1000 * 14,
     refetchInterval: 1000 * 15,
     ...config,
   });
@@ -72,15 +73,26 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
         if (selectedChainAccountType) {
           return (
             selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
           );
         }
         return true;
       })
-      // NOTE 60패스 evm, cosmos 중복 에셋 코스모스 쪽 리스트에서 필터링.
       .filter((item) => {
-        const isDuplicatedEVMAsset = item.chain.chainType === 'cosmos' && item.chain.isEvm && item.chain.mainAssetDenom === item.asset.id;
+        const isDuplicatedEVMAsset =
+          item.chain.chainType === 'cosmos' &&
+          item.chain.isEvm &&
+          item.chain.mainAssetDenom === item.asset.id &&
+          currentAccountAllAssets?.evmAccountAssets.some((evmAsset) => {
+            const isSameAssetChain = evmAsset.chain.id === item.chain.id;
+
+            const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
+            const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubkeyType: comparePubkeyType } = item.address.accountType;
+            const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubkeyType === comparePubkeyType;
+
+            return isSameAssetChain && isSameAccountType;
+          });
         if (isDuplicatedEVMAsset) {
           return false;
         }
@@ -94,8 +106,21 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
       if (selectedChainAccountType) {
         return (
           selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-          selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
-          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
+        );
+      }
+      return true;
+    });
+
+    const filteredEVM = data.evmAccountAssets.filter((item) => {
+      const selectedChainAccountType = accountType[item.chain.id];
+
+      if (selectedChainAccountType) {
+        return (
+          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
         );
       }
       return true;
@@ -104,6 +129,7 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
     const filteredAccountAssets = produce(data, (draft) => {
       draft.cosmosAccountAssets = filteredCosmos;
       draft.cw20AccountAssets = filteredCW20;
+      draft.evmAccountAssets = filteredEVM;
     });
 
     const flatAccountAssets = Object.values(filteredAccountAssets).flat();
@@ -114,7 +140,7 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
     };
 
     return returnData;
-  }, [accountType, data, isOrign]);
+  }, [accountType, currentAccountAllAssets?.evmAccountAssets, data, isOrign]);
 
   return { data: returnData, isLoading, error, refetch };
 }

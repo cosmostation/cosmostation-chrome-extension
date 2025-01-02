@@ -5,14 +5,12 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import { useAccountAllAssets } from './useAccountAllAssets';
 import { useAccountAssets } from './useAccountAssets';
-import { useGroupAccountAssets } from './useGroupAccountAssets';
 
 export function useCurrentCustomCW20Tokens() {
   const { customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
-  const { refetch: refetchGroupAssets } = useGroupAccountAssets();
 
   const currentCustomCW20Tokens = customCw20Assets;
 
@@ -34,7 +32,6 @@ export function useCurrentCustomCW20Tokens() {
 
     await refetchAccountAssets();
     await refetchAccountAllAssets();
-    await refetchGroupAssets();
   };
 
   const removeCustomCW20Token = async (coinId: string) => {
@@ -45,7 +42,6 @@ export function useCurrentCustomCW20Tokens() {
 
     await refetchAccountAssets();
     await refetchAccountAllAssets();
-    await refetchGroupAssets();
   };
 
   return { currentCustomCW20Tokens, addCustomCW20Token, removeCustomCW20Token };

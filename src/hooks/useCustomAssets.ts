@@ -6,7 +6,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { useAccountAllAssets } from './useAccountAllAssets';
 import { useAccountAssets } from './useAccountAssets';
 import { useAccountCustomAssets } from './useAccountCustomAssets';
-import { useGroupAccountAssets } from './useGroupAccountAssets';
 
 export function useCustomAssets() {
   const { customAssets, customHiddenAssetIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
@@ -14,12 +13,10 @@ export function useCustomAssets() {
   const { refetch: refetchAccountCustomAssets } = useAccountCustomAssets();
   const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
-  const { refetch: refetchGroupAssets } = useGroupAccountAssets();
 
   const refetchAll = async () => {
     await refetchAccountAssets();
     await refetchAccountAllAssets();
-    await refetchGroupAssets();
     await refetchAccountCustomAssets();
   };
 

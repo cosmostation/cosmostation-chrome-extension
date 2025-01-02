@@ -28,7 +28,7 @@ import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, isSameChain, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, IconContainer, ImportTextContainer, PurpleContainer, RowContainer, StickyContainer } from './-styled';
@@ -44,8 +44,6 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency, preferAccountType } = useExtensionStorageStore((state) => state);
-
-  console.log('🚀 ~ Entry ~ preferAccountType:', preferAccountType);
 
   const { currentAccount } = useCurrentAccount();
 
@@ -87,8 +85,8 @@ export default function Entry() {
         if (selectedChainAccountType) {
           return (
             selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
           );
         }
         return true;
@@ -99,12 +97,11 @@ export default function Entry() {
           item.chain.isEvm &&
           item.chain.mainAssetDenom === item.asset.id &&
           currentAccountAllAssets.evmAccountAssets.some((evmAsset) => {
-            const isSameAssetChain = isSameChain(evmAsset.chain, item.chain);
+            const isSameAssetChain = evmAsset.chain.id === item.chain.id;
 
-            const { hdPath, pubkeyStyle, pubKeyType } = evmAsset.address.accountType;
-            const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubKeyType: comparePubkeyType } = item.address.accountType;
-            const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubKeyType === comparePubkeyType;
-
+            const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
+            const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubkeyType: comparePubkeyType } = item.address.accountType;
+            const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubkeyType === comparePubkeyType;
             return isSameAssetChain && isSameAccountType;
           });
         if (isDuplicatedEVMAsset) {
@@ -120,8 +117,8 @@ export default function Entry() {
       if (selectedChainAccountType) {
         return (
           selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-          selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
-          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
         );
       }
       return true;
@@ -133,8 +130,8 @@ export default function Entry() {
       if (selectedChainAccountType) {
         return (
           selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-          selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
-          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
         );
       }
       return true;

@@ -6,14 +6,12 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import { useAccountAllAssets } from './useAccountAllAssets';
 import { useAccountAssets } from './useAccountAssets';
-import { useGroupAccountAssets } from './useGroupAccountAssets';
 
 export function useCustomChain() {
   const { accounts, addedCustomChainList, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
-  const { refetch: refetchGroupAssets } = useGroupAccountAssets();
 
   const addCustomChain = async (newChain: CustomChain) => {
     const storedAddedCustomChainList = await getExtensionLocalStorage('addedCustomChainList');
@@ -46,7 +44,6 @@ export function useCustomChain() {
 
     await refetchAccountAssets();
     await refetchAccountAllAssets();
-    await refetchGroupAssets();
   };
 
   const removeCustomChain = async (chainId: string) => {
@@ -59,7 +56,6 @@ export function useCustomChain() {
 
     await refetchAccountAssets();
     await refetchAccountAllAssets();
-    await refetchGroupAssets();
   };
 
   return { addedCustomChainList, addCustomChain, removeCustomChain };

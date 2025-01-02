@@ -2,7 +2,7 @@ export interface ChainAccountType {
   hdPath: string;
   pubkeyStyle: string;
   isDefault?: boolean | null;
-  pubKeyType?: string | null;
+  pubkeyType?: string | null;
 }
 
 export interface ChainEndpoint {

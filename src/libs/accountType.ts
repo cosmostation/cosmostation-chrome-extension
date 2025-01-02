@@ -84,7 +84,7 @@ export async function getDefaultAccountTypes() {
       hdPath: defaultAccount.hd_path.replace('X', '${index}'),
       pubkeyStyle: defaultAccount.pubkey_style,
       isDefault: defaultAccount.is_default,
-      pubKeyType: defaultAccount.pubkey_style,
+      pubkeyType: defaultAccount.pubkey_type,
     };
 
     acc[api_name] = defaultAccountType;

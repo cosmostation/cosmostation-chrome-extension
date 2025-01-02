@@ -62,7 +62,7 @@ export default function Entry() {
 
   const tabLabels = ['Crypto', 'NFTs'];
 
-  const { data: groupAccountAssets } = useGroupAccountAssets();
+  const { groupAccountAssets } = useGroupAccountAssets();
 
   const computedAssetValues = (() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];

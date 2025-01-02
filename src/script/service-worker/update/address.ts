@@ -40,7 +40,7 @@ export async function address(id: string) {
                   storedAddress.chainId === etc.id &&
                   storedAddress.chainType === etc.chainType &&
                   storedAddress.accountType.hdPath === accountType.hdPath &&
-                  storedAddress.accountType.pubKeyType === accountType.pubKeyType,
+                  storedAddress.accountType.pubkeyType === accountType.pubkeyType,
               );
 
               if (existingAddress) {
@@ -99,7 +99,7 @@ export async function customChainAddress(id: string) {
               storedAddress.chainId === etc.id &&
               storedAddress.chainType === etc.chainType &&
               storedAddress.accountType.hdPath === primaryAccountType.hdPath &&
-              storedAddress.accountType.pubKeyType === primaryAccountType.pubKeyType,
+              storedAddress.accountType.pubkeyType === primaryAccountType.pubkeyType,
           );
 
           if (existingAddress) {

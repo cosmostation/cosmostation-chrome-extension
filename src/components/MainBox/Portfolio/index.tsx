@@ -51,7 +51,7 @@ export default function PortFolio() {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
-  const { data: groupAccountAssets } = useGroupAccountAssets();
+  const { groupAccountAssets } = useGroupAccountAssets();
 
   const [isProcessing, setIsProcessing] = useState(true);
   const [aggregatedTotalValue, setAggregatedTotalValue] = useState('0');

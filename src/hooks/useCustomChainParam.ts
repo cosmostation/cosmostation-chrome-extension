@@ -50,7 +50,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
           return {
             hdPath,
             pubkeyStyle: accountType.pubkey_style,
-            pubKeyType: accountType.pubkey_type ?? null,
+            pubkeyType: accountType.pubkey_type ?? null,
             isDefault: accountType.is_default ?? null,
           };
         }) ?? [];

@@ -5,7 +5,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { useAccountAllAssets } from './useAccountAllAssets';
 import { useAccountAssets } from './useAccountAssets';
 import { useCurrentAccount } from './useCurrentAccount';
-import { useGroupAccountAssets } from './useGroupAccountAssets';
 
 export function useCurrentPreferAccountTypes() {
   const { currentAccount } = useCurrentAccount();
@@ -13,7 +12,6 @@ export function useCurrentPreferAccountTypes() {
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
-  const { refetch: refetchGroupAssets } = useGroupAccountAssets();
 
   const currentPreferAccountType = preferAccountType[currentAccount.id];
 
@@ -22,7 +20,6 @@ export function useCurrentPreferAccountTypes() {
 
     await refetchAccountAssets();
     await refetchAccountAllAssets();
-    await refetchGroupAssets();
   };
 
   return { currentPreferAccountType, updateCurrentPreferAccountType };

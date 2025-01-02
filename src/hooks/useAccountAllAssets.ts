@@ -318,8 +318,7 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
     queryKey: ['accountAllAssets', param],
     queryFn: fetcher,
     enabled: !!param,
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: 1000 * 60 * 10,
+    refetchInterval: 1000 * 15,
     ...config,
   });
 
