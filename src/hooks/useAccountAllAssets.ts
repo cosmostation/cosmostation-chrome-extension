@@ -2,7 +2,7 @@ import PromisePool from '@supercharge/promise-pool';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { getAssets } from '@/libs/asset';
+import { getAccountCustomAssets, getAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
 import type { AccountAptosAsset, AccountCosmosAsset, AccountCw20Asset, AccountErc20Asset, AccountEvmAsset, AccountSuiAsset } from '@/types/account';
 import type { AccountAssets as AccountAllAssets } from '@/types/accountAssets';
@@ -285,6 +285,8 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
         customCW20Promise,
       ]);
 
+      const accountCustomAssets = await getAccountCustomAssets(param, { filterHidden: false });
+
       const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
       const evmAccountAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
       const aptosAccountAssets = results[2].results.flat().filter((asset) => asset.chain && asset.address);
@@ -305,6 +307,7 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
         erc20AccountAssets,
         customErc20AccountAssets,
         customCw20AccountAssets,
+        ...accountCustomAssets,
       };
     } catch {
       return null;

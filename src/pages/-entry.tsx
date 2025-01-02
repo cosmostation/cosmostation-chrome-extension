@@ -15,14 +15,13 @@ import PortFolio from '@/components/MainBox/Portfolio';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
-import { useAccountCustomAssets } from '@/hooks/useAccountCustomAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, gte, minus, times } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -64,21 +63,9 @@ export default function Entry() {
   const tabLabels = ['Crypto', 'NFTs'];
 
   const { data: groupAccountAssets } = useGroupAccountAssets();
-  const { data: accountCustomAssets } = useAccountCustomAssets();
-
-  const mappedCustomAssets = (() => {
-    return accountCustomAssets?.flatAccountCustomAssets.map((item) => {
-      return {
-        ...item,
-        asset: item.asset,
-        totalDisplayAmount: toDisplayDenomAmount(item.balance, item.asset?.decimals || 0),
-        counts: 1,
-      };
-    });
-  })();
 
   const computedAssetValues = (() => {
-    const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || []), ...(mappedCustomAssets || [])];
+    const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
     return baseCoinList.map((item) => {
       const displayAmount = item.totalDisplayAmount || '0';

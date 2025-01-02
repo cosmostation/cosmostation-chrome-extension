@@ -3,7 +3,7 @@ import { produce } from 'immer';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { getAccountAssets } from '@/libs/asset';
+import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
 import type { AccountAssets, FlatAccountAssets } from '@/types/accountAssets';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -33,7 +33,11 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
       // NOTE 스토리지 갱신 로직 이 자리에 추가. -> 갱신 생애주기가 살아있을때만 갱신.
       // await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [param] });
       const accountAssets = await getAccountAssets(param);
-      return accountAssets;
+      const accountCustomAssets = await getAccountCustomAssets(param);
+      return {
+        ...accountAssets,
+        ...accountCustomAssets,
+      };
     } catch {
       return null;
     }

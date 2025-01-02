@@ -1,14 +1,27 @@
 import type { AssetId, CustomAsset } from '@/types/asset';
-import { getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin } from '@/utils/queryParamGenerator';
+import { isMatchingCoinId, isSameCoin } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useAccountAllAssets } from './useAccountAllAssets';
+import { useAccountAssets } from './useAccountAssets';
 import { useAccountCustomAssets } from './useAccountCustomAssets';
+import { useGroupAccountAssets } from './useGroupAccountAssets';
 
 export function useCustomAssets() {
   const { customAssets, customHiddenAssetIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { refetch: refetchAccountCustomAssets } = useAccountCustomAssets();
+  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refetch: refetchGroupAssets } = useGroupAccountAssets();
+
+  const refetchAll = async () => {
+    await refetchAccountAssets();
+    await refetchAccountAllAssets();
+    await refetchGroupAssets();
+    await refetchAccountCustomAssets();
+  };
 
   const addCustomAsset = async (newAsset: CustomAsset) => {
     const storedCustomAssets = await getExtensionLocalStorage('customAssets');
@@ -25,7 +38,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refetchAccountCustomAssets();
+    await refetchAll();
   };
 
   const removeCustomAsset = async (coinId: string) => {
@@ -35,7 +48,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refetchAccountCustomAssets();
+    await refetchAll();
   };
 
   const hideCustomAsset = async (targetAsset: AssetId) => {
@@ -45,17 +58,17 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
-    await refetchAccountCustomAssets();
+    await refetchAll();
   };
 
-  const showCustomAsset = async (targetAsset: AssetId) => {
+  const showCustomAsset = async (assetId: AssetId) => {
     const storedCustomHiddenAssetIds = await getExtensionLocalStorage('customHiddenAssetIds');
 
-    const updatedCustomHiddenAssetIds = storedCustomHiddenAssetIds.filter((item) => !isMatchingUniqueChainId(item, getCoinIdWithManual(targetAsset)));
+    const updatedCustomHiddenAssetIds = storedCustomHiddenAssetIds.filter((item) => !isSameCoin(item, assetId));
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
-    await refetchAccountCustomAssets();
+    await refetchAll();
   };
 
   return {

@@ -18,8 +18,18 @@ export interface AccountAssets {
   erc20AccountAssets: AccountErc20Asset[];
   customErc20AccountAssets: AccountErc20Asset[];
   customCw20AccountAssets: AccountCw20Asset[];
+  cosmosAccountCustomAssets: AccountCustomCosmosAsset[];
+  evmAccountCustomAssets: AccountCustomEvmAsset[];
 }
-export type FlatAccountAssets = AccountCosmosAsset | AccountCw20Asset | AccountErc20Asset | AccountEvmAsset | AccountSuiAsset | AccountAptosAsset;
+export type FlatAccountAssets =
+  | AccountCosmosAsset
+  | AccountCw20Asset
+  | AccountErc20Asset
+  | AccountEvmAsset
+  | AccountSuiAsset
+  | AccountAptosAsset
+  | AccountCustomCosmosAsset
+  | AccountCustomEvmAsset;
 
 export interface AccountCustomAssets {
   cosmosAccountCustomAssets: AccountCustomCosmosAsset[];

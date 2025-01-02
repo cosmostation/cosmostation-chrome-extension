@@ -64,6 +64,7 @@ export interface CustomCosmosChain extends ChainBase {
   explorer: ChainExplorer;
   feeInfo: CosmosFeeInfo;
   accountTypes: ChainAccountType[];
+  isSupportStaking?: boolean;
 }
 
 export interface EvmFeeInfo {

@@ -18,7 +18,7 @@ export function useCurrentHiddenAssetIds() {
 
   const currentHiddenAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-hidden-assetIds`];
 
-  const addHiddenAssetId = async (assetId: AssetId) => {
+  const hideAsset = async (assetId: AssetId) => {
     const storedHiddenAssetIds = await getHiddenAssets(currentAccount.id);
 
     const isAlreadyHidden = storedHiddenAssetIds.some(
@@ -38,7 +38,7 @@ export function useCurrentHiddenAssetIds() {
     await refetchGroupAssets();
   };
 
-  const removeHiddenAssetId = async (assetId: AssetId) => {
+  const showAsset = async (assetId: AssetId) => {
     const currentHiddenAssetIds = await getHiddenAssets(currentAccount.id);
 
     const updatedHiddenAssetIds = currentHiddenAssetIds.filter(
@@ -52,5 +52,5 @@ export function useCurrentHiddenAssetIds() {
     await refetchGroupAssets();
   };
 
-  return { currentHiddenAssetIds, addHiddenAssetId, removeHiddenAssetId };
+  return { currentHiddenAssetIds, hideAsset, showAsset };
 }

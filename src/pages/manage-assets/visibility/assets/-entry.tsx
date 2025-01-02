@@ -22,6 +22,7 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentCustomCW20Tokens } from '@/hooks/useCurrentCustomCW20Tokens';
 import { useCurrentCustomERC20Tokens } from '@/hooks/useCurrentCustomERC20Tokens';
 import { useCurrentHiddenAssetIds } from '@/hooks/useCurrentHiddenAssetIds';
+import { useCustomAssets } from '@/hooks/useCustomAssets';
 import { Route as ImportToken } from '@/pages/manage-assets/import/assets';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
@@ -46,11 +47,15 @@ export default function Entry() {
 
   const { currentAccount } = useCurrentAccount();
 
-  const { currentHiddenAssetIds, addHiddenAssetId, removeHiddenAssetId } = useCurrentHiddenAssetIds();
+  const { currentHiddenAssetIds, hideAsset, showAsset } = useCurrentHiddenAssetIds();
+  const { customHiddenAssetIds, hideCustomAsset, showCustomAsset } = useCustomAssets();
+
   const { currentCustomERC20Tokens, removeCustomERC20Token } = useCurrentCustomERC20Tokens();
   const { currentCustomCW20Tokens, removeCustomCW20Token } = useCurrentCustomCW20Tokens();
 
   const { data: currentAccountAllAssets } = useAccountAllAssets();
+
+  const { customAssets } = useCustomAssets();
 
   const { flatChainList } = useChainList();
 
@@ -66,6 +71,7 @@ export default function Entry() {
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const hiddenAssetCoinIds = useMemo(() => currentHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [currentHiddenAssetIds]);
+  const hiddenCustomAssetCoinIds = useMemo(() => customHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [customHiddenAssetIds]);
 
   const currentPreferAccountType = useMemo(() => preferAccountType[currentAccount.id], [currentAccount.id, preferAccountType]);
 
@@ -190,40 +196,50 @@ export default function Entry() {
   }, [debouncedSearch, filteredCoinListWithChain, search]);
 
   const sortedCoinListByHidden = useMemo(() => {
-    const hiddenAssets = filteredCoinListBySearch.filter((item) => hiddenAssetCoinIds?.includes(getCoinId(item.asset)));
+    const mergedHiddenCoinIds = [...hiddenAssetCoinIds, ...hiddenCustomAssetCoinIds];
 
-    const visibleAssets = filteredCoinListBySearch.filter((item) => !hiddenAssetCoinIds?.includes(getCoinId(item.asset)));
+    const hiddenAssets = filteredCoinListBySearch.filter((item) => mergedHiddenCoinIds?.includes(getCoinId(item.asset)));
+
+    const visibleAssets = filteredCoinListBySearch.filter((item) => !mergedHiddenCoinIds?.includes(getCoinId(item.asset)));
 
     return [...visibleAssets, ...hiddenAssets].slice(0, viewLimit);
-  }, [filteredCoinListBySearch, hiddenAssetCoinIds, viewLimit]);
+  }, [filteredCoinListBySearch, hiddenAssetCoinIds, hiddenCustomAssetCoinIds, viewLimit]);
 
   // TODO 디바운싱 혹은 플래그를 통해서 무작위 클릭 방지. // 플래그를 통해서 버튼 disable 처리도 가능.
   // NOTE 큐 형식으로 처리하는 방식 고려.
-  const handleHiddenAsset = async (assetId: string) => {
-    const isHiddenAsset = hiddenAssetCoinIds?.includes(assetId);
-
-    if (isHiddenAsset) {
-      await removeHiddenAssetId(parseCoinId(assetId));
-    } else {
-      await addHiddenAssetId(parseCoinId(assetId));
-    }
-  };
-
-  const handleCustomERC20Token = async (assetId: string) => {
+  const handleAssetVisibility = async (assetId: string) => {
     const isCustomERC20Token = currentCustomERC20Tokens.some((item) => isMatchingCoinId(item, assetId));
+    const isCustomCW20Token = currentCustomCW20Tokens.some((item) => isMatchingCoinId(item, assetId));
+
+    const isCustomAsset = customAssets.some((item) => isMatchingCoinId(item, assetId));
 
     if (isCustomERC20Token) {
       await removeCustomERC20Token(assetId);
       return;
     }
-  };
-
-  const handleCustomCW20Token = async (assetId: string) => {
-    const isCustomCW20Token = currentCustomCW20Tokens.some((item) => isMatchingCoinId(item, assetId));
 
     if (isCustomCW20Token) {
       await removeCustomCW20Token(assetId);
       return;
+    }
+
+    if (isCustomAsset) {
+      const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(assetId);
+
+      if (isHiddenCustomAsset) {
+        await showCustomAsset(parseCoinId(assetId));
+      } else {
+        await hideCustomAsset(parseCoinId(assetId));
+      }
+      return;
+    }
+
+    const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(assetId);
+
+    if (isHiddenManagedAsset) {
+      await showAsset(parseCoinId(assetId));
+    } else {
+      await hideAsset(parseCoinId(assetId));
     }
   };
 
@@ -287,7 +303,12 @@ export default function Entry() {
               {!isDebouncing && (
                 <>
                   {sortedCoinListByHidden?.map((coin) => {
-                    const isHiddenAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
+                    const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
+                    const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(getCoinId(coin.asset));
+
+                    const isCustomAsset = customAssets.some((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
+
+                    const isHiddenAsset = isCustomAsset ? isHiddenCustomAsset : isHiddenManagedAsset;
 
                     const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
                     return (
@@ -315,17 +336,7 @@ export default function Entry() {
                           )
                         }
                         onClick={() => {
-                          const isCustomERC20Token = currentCustomERC20Tokens.some((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
-                          const isCustomCW20Token = currentCustomCW20Tokens.some((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
-
-                          if (isCustomERC20Token) {
-                            handleCustomERC20Token(getCoinId(coin.asset));
-                          }
-                          if (isCustomCW20Token) {
-                            handleCustomCW20Token(getCoinId(coin.asset));
-                          } else {
-                            handleHiddenAsset(getCoinId(coin.asset));
-                          }
+                          handleAssetVisibility(getCoinId(coin.asset));
                         }}
                       />
                     );

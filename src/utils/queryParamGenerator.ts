@@ -1,12 +1,12 @@
 import type { Account, MnemonicAccount } from '@/types/account';
-import type { AssetBase, AssetId } from '@/types/asset';
+import type { AssetId } from '@/types/asset';
 import type { ChainId, UniqueChainId } from '@/types/chain';
 
 export function getMnemonicId(account: Account): account is MnemonicAccount {
   return 'encryptedRestoreString' in account;
 }
 
-export function getCoinId(coinAsset: AssetBase) {
+export function getCoinId(coinAsset: AssetId) {
   return `${coinAsset.id}__${coinAsset.chainId}__${coinAsset.chainType}`;
 }
 
@@ -19,11 +19,11 @@ export function parseCoinId(coinId: string) {
   return { id, chainId, chainType } as AssetId;
 }
 
-export function isMatchingCoinId(baseCoin: AssetBase, targetCoinId: string) {
+export function isMatchingCoinId(baseCoin: AssetId, targetCoinId: string) {
   return getCoinId(baseCoin) === targetCoinId;
 }
 
-export function isSameCoin(baseCoin: AssetBase, targetCoin: AssetBase) {
+export function isSameCoin(baseCoin: AssetId, targetCoin: AssetId) {
   return getCoinId(baseCoin) === getCoinId(targetCoin);
 }
 

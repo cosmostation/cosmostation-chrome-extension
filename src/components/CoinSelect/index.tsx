@@ -7,13 +7,12 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, FilterIconButton, StickyContentsContainer, StyledInput } from './styled';
@@ -45,7 +44,6 @@ export default function CoinSelect({
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
-  const { flatChainList } = useChainList();
   // FIXME 60패스의 이더민트 계열 네이티브 코인들에서 중복되는 코인들이 있음.
   const { data } = useAccountAssets();
 
@@ -55,23 +53,25 @@ export default function CoinSelect({
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
-  // FIXME 코인 리스트 기반으로 체인 리스트를 추려야할 듯.
-  const baseChainList = chainList || flatChainList;
-
   const baseCoinList = (() => {
     if (coinList) return coinList;
 
-    // FIXME sui도 스테이킹 리스트에 포함되도록 수정 필요.
     if (variant === 'stake') {
-      return data?.flatAccountAssets.filter(
-        (item) => item.chain.chainType === 'cosmos' && item.chain.isSupportStaking !== false && item.asset.id === item.chain.mainAssetDenom,
-      );
+      return data?.flatAccountAssets.filter((item) => {
+        const isCosmosStakingChain = item.chain.chainType === 'cosmos' && item.chain.isSupportStaking && item.asset.id === item.chain.mainAssetDenom;
+        const isSuiStakingChain = item.chain.chainType === 'sui' && item.asset.id === item.chain.mainAssetDenom;
+
+        return isCosmosStakingChain || isSuiStakingChain;
+      });
     }
 
     return data?.flatAccountAssets;
   })();
 
-  const currentSelectedChain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId));
+  const baseChainList =
+    chainList || baseCoinList?.map((item) => item.chain).filter((chain, index, self) => self.findIndex((t) => isSameChain(t, chain)) === index);
+
+  const currentSelectedChain = baseChainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId));
 
   const isShowAssetId = !!currentSelectedChain || !!search;
 

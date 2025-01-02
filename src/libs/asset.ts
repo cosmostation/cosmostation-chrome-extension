@@ -481,7 +481,14 @@ export async function getAccountAssets(id: string) {
   };
 }
 
-export async function getAccountCustomAssets(id: string) {
+export async function getAccountCustomAssets(
+  id: string,
+  {
+    filterHidden = true,
+  }: {
+    filterHidden?: boolean;
+  } = {},
+) {
   console.time('getAccountCustomAssets');
   const concurrency = 10;
   const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
@@ -495,7 +502,9 @@ export async function getAccountCustomAssets(id: string) {
 
   const { customAssets } = await chrome.storage.local.get<ExtensionStorage>(['customAssets']);
 
-  const visibleCustomAssets = customAssets.filter((asset) => !hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset)));
+  const visibleCustomAssets = filterHidden
+    ? customAssets.filter((asset) => !hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset)))
+    : customAssets;
 
   const customCosmosAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'cosmos');
   const customEvmAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'evm');
