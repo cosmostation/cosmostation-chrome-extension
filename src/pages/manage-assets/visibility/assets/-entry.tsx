@@ -28,7 +28,7 @@ import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, isSameChain, parseCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, IconContainer, ImportTextContainer, PurpleContainer, RowContainer, StickyContainer } from './-styled';
@@ -44,6 +44,8 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency, preferAccountType } = useExtensionStorageStore((state) => state);
+
+  console.log('🚀 ~ Entry ~ preferAccountType:', preferAccountType);
 
   const { currentAccount } = useCurrentAccount();
 
@@ -91,9 +93,20 @@ export default function Entry() {
         }
         return true;
       })
-      // NOTE 60패스 evm, cosmos 중복 에셋 코스모스 쪽 리스트에서 필터링.
       .filter((item) => {
-        const isDuplicatedEVMAsset = item.chain.chainType === 'cosmos' && item.chain.isEvm && item.chain.mainAssetDenom === item.asset.id;
+        const isDuplicatedEVMAsset =
+          item.chain.chainType === 'cosmos' &&
+          item.chain.isEvm &&
+          item.chain.mainAssetDenom === item.asset.id &&
+          currentAccountAllAssets.evmAccountAssets.some((evmAsset) => {
+            const isSameAssetChain = isSameChain(evmAsset.chain, item.chain);
+
+            const { hdPath, pubkeyStyle, pubKeyType } = evmAsset.address.accountType;
+            const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubKeyType: comparePubkeyType } = item.address.accountType;
+            const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubKeyType === comparePubkeyType;
+
+            return isSameAssetChain && isSameAccountType;
+          });
         if (isDuplicatedEVMAsset) {
           return false;
         }
@@ -114,9 +127,23 @@ export default function Entry() {
       return true;
     });
 
+    const filteredEVM = currentAccountAllAssets.evmAccountAssets.filter((item) => {
+      const selectedChainAccountType = currentPreferAccountType[item.chain.id];
+
+      if (selectedChainAccountType) {
+        return (
+          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+          selectedChainAccountType.pubKeyType === item.address.accountType.pubKeyType &&
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle
+        );
+      }
+      return true;
+    });
+
     const filteredAccountAssets = produce(currentAccountAllAssets, (draft) => {
       draft.cosmosAccountAssets = filteredCosmos;
       draft.cw20AccountAssets = filteredCW20;
+      draft.evmAccountAssets = filteredEVM;
     });
 
     const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];
@@ -275,7 +302,7 @@ export default function Entry() {
                   sizeVariant="medium"
                   typoVarient="b2_M"
                   currentChainId={currentSelectedChainId}
-                  chainList={flatChainList}
+                  chainList={chainList}
                   selectChainOption={(id) => {
                     setCurrentSelectedChainId(id);
                   }}

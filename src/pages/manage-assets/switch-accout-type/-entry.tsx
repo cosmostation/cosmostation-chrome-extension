@@ -8,6 +8,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import InformationPanel from '@/components/InformationPanel';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
+import { isSameChain } from '@/utils/queryParamGenerator';
 
 import CoinTypeButton from './-components/CoinTypeButton';
 import { RowContainer, StickyContainer, TopContainer } from './-styled';
@@ -16,11 +17,14 @@ export default function Entry() {
   const { t } = useTranslation();
 
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
-  const { flatChainList } = useChainList();
+  const { chainList, flatChainList } = useChainList();
+
+  const customChains = [...chainList.customCosmosChains, ...chainList.customEvmChains];
+  const managedChains = flatChainList.filter((chain) => !customChains.some((customChain) => isSameChain(chain, customChain)));
 
   const mappedAccountTypes = Object.keys(currentPreferAccountType)
     .map((item) => {
-      const chain = flatChainList.find((chain) => chain.id === item);
+      const chain = managedChains.find((chain) => chain.id === item);
 
       return {
         chain,

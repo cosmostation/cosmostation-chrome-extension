@@ -1,6 +1,6 @@
 import type { AptosResourceResponse } from './aptos/api';
 import type { AptosAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
-import type { AptosChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, EvmChain, SuiChain } from './chain';
+import type { AptosChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, CustomEvmChain, EvmChain, SuiChain } from './chain';
 import type { CosmosBalance } from './cosmos/api';
 import type { Cw20Balance } from './cosmos/balance';
 import type { Erc20Balance } from './evm/balance';
@@ -114,7 +114,7 @@ export interface AccountEvmAsset {
 }
 
 export interface AccountCustomEvmAsset {
-  chain: EvmChain;
+  chain: CustomEvmChain;
   asset: EvmAsset;
   address: AccountAddress;
   balance: string;
