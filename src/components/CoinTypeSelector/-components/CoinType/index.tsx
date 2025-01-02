@@ -122,12 +122,12 @@ export default function CoinTypeSelector({
                       <ValueContainer>
                         <Typography variant="h5n_M">{'<'}</Typography>
                         &nbsp;
-                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
+                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
                           {item.totalAssetValue}
                         </NumberTypo>
                       </ValueContainer>
                     ) : (
-                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
+                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
                         {item.totalAssetValue}
                       </NumberTypo>
                     ))}
