@@ -77,7 +77,6 @@ export default function CW20({ chainId }: CW20Props) {
         return;
       }
 
-      console.log('first');
       await addCustomCW20Token(newToken);
 
       toastSuccess(t('pages.manage-assets.import.assets.components.CW20.index.success'));
