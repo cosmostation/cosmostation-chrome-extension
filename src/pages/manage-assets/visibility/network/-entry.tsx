@@ -44,7 +44,7 @@ export default function Entry() {
   const navigate = useNavigate();
   const { scrollToTop } = useScroll();
 
-  const { data: managedCustomChains } = useCustomChainParam();
+  const { data: managedCustomChains, isLoading } = useCustomChainParam();
 
   const { addedCustomChainList, addCustomChain, removeCustomChain } = useCustomChain();
   const { addCustomAsset, removeCustomAsset } = useCustomAssets();
@@ -59,7 +59,10 @@ export default function Entry() {
 
   const [isViewTestnet, setIsViewTestnet] = useState(false);
 
-  const baseCustomChainList = [...(managedCustomChains || []), ...userDefinedCustomChains];
+  const baseCustomChainList = useMemo(
+    () => (!isLoading ? [...(managedCustomChains || []), ...userDefinedCustomChains] : []),
+    [isLoading, managedCustomChains, userDefinedCustomChains],
+  );
 
   const customChainListCount = baseCustomChainList?.length || 0;
 
