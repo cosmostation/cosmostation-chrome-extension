@@ -15,7 +15,7 @@ import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import { Route as SelectSwapCoin } from '@/pages/wallet/swap';
 import type { UniqueChainId } from '@/types/chain';
 import { plus, times } from '@/utils/numbers';
-import { isSameChain } from '@/utils/queryParamGenerator';
+import { isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -43,13 +43,17 @@ import ViewIcon from '@/assets/images/icons/View12.svg';
 
 import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
 
-export default function PortFolio() {
+type PortFolioProps = {
+  selectedChainId?: UniqueChainId;
+  onChangeChaindId: (chainId?: UniqueChainId) => void;
+};
+
+export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFolioProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const { groupAccountAssets } = useGroupAccountAssets();
 
@@ -86,13 +90,17 @@ export default function PortFolio() {
       return;
     }
 
-    const aggregateValue = totalVisibleAssets.reduce((acc, item) => {
+    const filteredAssetsByChainId = selectedChainId
+      ? totalVisibleAssets.filter((item) => isMatchingUniqueChainId(item.chain, selectedChainId))
+      : totalVisibleAssets;
+
+    const aggregateValue = filteredAssetsByChainId.reduce((acc, item) => {
       return plus(acc, item.value);
     }, '0');
 
     setAggregatedTotalValue(aggregateValue);
     setIsProcessing(false);
-  }, [totalVisibleAssets]);
+  }, [selectedChainId, totalVisibleAssets]);
 
   return (
     <>
@@ -107,11 +115,11 @@ export default function PortFolio() {
             <TopRightContainer>
               <AllNetworkButton
                 variant="chip"
-                currentChainId={currentSelectedChainId}
+                currentChainId={selectedChainId}
                 chainList={chainList}
                 isManageAssets
                 selectChainOption={(id) => {
-                  setCurrentSelectedChainId(id);
+                  onChangeChaindId(id);
                 }}
               />
             </TopRightContainer>

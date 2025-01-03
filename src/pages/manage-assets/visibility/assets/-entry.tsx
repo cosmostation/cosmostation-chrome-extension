@@ -37,6 +37,10 @@ import AddIcon from '@/assets/images/icons/Add20.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 import RemoveIcon from '@/assets/images/icons/Remove20.svg';
 
+type FlatAccountAssetsWithValue = FlatAccountAssets & {
+  value: string;
+};
+
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -163,7 +167,7 @@ export default function Entry() {
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
-  const computedAssetValues = useMemo(() => {
+  const computedAssetValues = useMemo<FlatAccountAssetsWithValue[]>(() => {
     return (
       baseCoinList?.map((item) => {
         const displayAmount = toDisplayDenomAmount(item.balance, item.asset.decimals);

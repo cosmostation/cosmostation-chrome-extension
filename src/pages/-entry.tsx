@@ -20,9 +20,10 @@ import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
+import type { UniqueChainId } from '@/types/chain';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { gt, gte, minus, times } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -56,6 +57,8 @@ export default function Entry() {
 
   const isDebouncing = !!search && isPending();
 
+  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
+
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [isHideSmallValue, setIsHideSmallValue] = useState(false);
@@ -67,7 +70,21 @@ export default function Entry() {
   const computedAssetValues = (() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
-    return baseCoinList.map((item) => {
+    const unGroupedAccountAssets = Object.values(groupAccountAssets?.groupMap || []).flat();
+    const mappedUngroupAccountAssets = unGroupedAccountAssets.map((item) => {
+      return {
+        ...item,
+        counts: '1',
+        totalDisplayAmount: toDisplayDenomAmount(item.balance, item.asset.decimals),
+      };
+    });
+
+    const displayedAssets =
+      (!!search && debouncedSearch.length > 1) || currentSelectedChainId
+        ? [...mappedUngroupAccountAssets, ...(groupAccountAssets?.singleAccountAssets || [])]
+        : baseCoinList;
+
+    return displayedAssets.map((item) => {
       const displayAmount = item.totalDisplayAmount || '0';
 
       const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
@@ -105,17 +122,19 @@ export default function Entry() {
     }))();
 
   const filteredAssetsBySearch = useMemo(() => {
+    const filterdByChain = currentSelectedChainId ? sortedAssets.filter((asset) => isMatchingUniqueChainId(asset.chain, currentSelectedChainId)) : sortedAssets;
+
     if (!!search && debouncedSearch.length > 1) {
       return (
-        sortedAssets.filter((asset) => {
+        filterdByChain.filter((asset) => {
           const condition = [asset.asset.symbol, asset.asset.id];
 
           return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
         }) || []
       );
     }
-    return sortedAssets;
-  }, [debouncedSearch, search, sortedAssets]);
+    return filterdByChain;
+  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -125,7 +144,12 @@ export default function Entry() {
     <BaseBody>
       <EdgeAligner>
         <Container>
-          <PortFolio />
+          <PortFolio
+            selectedChainId={currentSelectedChainId}
+            onChangeChaindId={(chainId) => {
+              setCurrentSelectedChainId(chainId);
+            }}
+          />
 
           <StickyTabContainer>
             <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
