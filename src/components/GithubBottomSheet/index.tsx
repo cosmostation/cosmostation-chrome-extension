@@ -23,7 +23,12 @@ export default function GithubBottomSheet({ headerTitle, contentsSubTitle, onCli
   };
 
   return (
-    <StyledBottomSheet {...remainder}>
+    <StyledBottomSheet
+      {...remainder}
+      onClose={() => {
+        onClose?.({}, 'backdropClick');
+      }}
+    >
       <Container>
         <Header>
           <HeaderTitle>
