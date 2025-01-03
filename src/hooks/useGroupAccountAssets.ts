@@ -51,11 +51,6 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
       { singles: [], groups: {} },
     );
 
-    console.log('🚀 ~ fetcher ~ currentAccountAssets?.flatAccountAssets:', currentAccountAssets?.flatAccountAssets);
-
-    console.log('hihihihi');
-    console.log(!assetToSingleOrGroup);
-
     if (!assetToSingleOrGroup) return null;
 
     const singles = assetToSingleOrGroup.singles;
