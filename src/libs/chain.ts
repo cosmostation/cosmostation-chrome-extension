@@ -271,3 +271,10 @@ export async function getAddedCustomChains() {
 
   return addedCustomChainList;
 }
+
+export async function getAllChains() {
+  const managedChains = await getChains();
+  const addedCustomChainList = await getAddedCustomChains();
+
+  return [...Object.values(managedChains).flat(), ...addedCustomChainList];
+}

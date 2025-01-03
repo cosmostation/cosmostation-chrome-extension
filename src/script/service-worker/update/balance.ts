@@ -3,9 +3,9 @@ import { Contract, ethers } from 'ethers';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
-import { getAccount, getAccountAddress, getCustomAccountAddress } from '@/libs/account';
+import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
-import { getAddedCustomChains, getChains } from '@/libs/chain';
+import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
 import type { AccountAddressBalanceAptos, AccountAddressBalanceCosmos, AccountAddressBalanceEvm, AccountAddressBalanceSui } from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
@@ -631,15 +631,17 @@ async function erc20Balance(id: string) {
 }
 
 async function customErc20Balance(id: string) {
-  // NOTE 여기에 커스텀 체인의 erc20이 있을 수 있으니 getAccountAddress에서 커스텀 체인의 주소도 가져올 수 있도록 해야한다.
-  const accountAddress = await getAccountAddress(id);
-  // NOTE 마찬가지로 여기에서도 커스텀 체인이 나올 수 있도록
-  const { evmChains } = await getChains();
+  const allAccountAddress = await getAllAccountAddress(id);
+
+  const allChain = await getAllChains();
+
+  const allEVMChains = allChain.filter((chain) => chain.chainType === 'evm');
+
   const { customErc20Assets } = await getAssets();
 
-  const addressWithChain = accountAddress
+  const addressWithChain = allAccountAddress
     .map((addr) => {
-      const chain = evmChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = allEVMChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);

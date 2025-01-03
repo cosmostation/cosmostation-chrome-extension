@@ -53,3 +53,10 @@ export async function getCustomAccountAddress(id: string) {
 
   return address;
 }
+
+export async function getAllAccountAddress(id: string) {
+  const accountAddress = await getAccountAddress(id);
+  const customAccountAddress = await getCustomAccountAddress(id);
+
+  return [...accountAddress, ...customAccountAddress];
+}
