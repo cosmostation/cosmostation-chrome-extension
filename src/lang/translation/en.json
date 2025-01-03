@@ -1001,7 +1001,9 @@
             "memoInfoDescription": "Description Description Description Description Description Description Description Description Description Description",
             "unversalAddressInfoDescription": "Indicates that a specific address can be used simultaneously across multiple EVM-based networks.",
             "universal": "Universal",
-            "failedToGetChainId": "Failed to get chain ID"
+            "failedToGetChainId": "Failed to get chain ID",
+            "cosmwasm": "Cosmwasm",
+            "pubkeyStyle": "Pubkey Style"
           },
           "header": "Add Address Book"
         },
@@ -1120,15 +1122,63 @@
         },
         "network": {
           "layout": {
-            "header": "__STRING_NOT_TRANSLATED__"
+            "header": "Import Network"
+          },
+          "components": {
+            "Cosmos": {
+              "index": {
+                "restURLError": "Failed to get chain information, please check the REST URL",
+                "invalidChainId": "This chain is already supported",
+                "success": "Successfully added the network",
+                "error": "Failed to add the network",
+                "chainName": "Chain Name",
+                "restURL": "REST URL",
+                "denom": "Native Denom (e.g., uatom)",
+                "symbol": "Symbol (e.g., ATOM)",
+                "coinTypePath": "Coin Type (e.g., 118 by default)",
+                "exploreURL": "Block explorer URL (Optional)",
+                "decimals": "Decimals (e.g., 6)",
+                "tokenImageURL": "Token Image URL (Optional)",
+                "gasRateLow": "Low Gas Rate (e.g., 0.00025 by default)",
+                "gasRateAverage": "Average Gas Rate (e.g., 0.0025 by default)",
+                "defaultGasLimit": "Default Gas Limit (e.g., 300000 by default)",
+                "addCustomNetwork": "Add Custom Network",
+                "gasRateHigh": "High Gas Rate (e.g., 0.025 by default)",
+                "accountPrefix": "Account Prefix (e.g., cosmos)",
+                "advanced": "Advanced (Optional)",
+                "chainImage": "Chain Image URL (Optional)",
+                "selectCosmwasm": "Enable CosmWasm",
+                "selectPubkeyStyle": "Select Pubkey Style"
+              }
+            },
+            "EVM": {
+              "index": {
+                "success": "Successfully added the network",
+                "error": "Failed to add the network",
+                "networkName": "Network Name",
+                "rpcURL": "RPC URL",
+                "chainId": "Chain ID (e.g., 1 or 0x1)",
+                "symbol": "Symbol (e.g., ETH)",
+                "advanced": "Advanced (Optional)",
+                "chainImage": "Chain Image URL (Optional)",
+                "tokenImageURL": "Token Image URL (Optional)",
+                "exploreURL": "Block explorer URL (Optional)",
+                "addCustomNetwork": "Add Custom Network"
+              }
+            }
+          },
+          "entry": {
+            "network": "Network",
+            "selectNetwork": "Select Network",
+            "searchNetwork": "Search Network (Ex. Bitcoin)"
           }
         }
       },
       "visibilitynetwork": {
         "network": {
           "layout": {
-            "headerTitle": "__STRING_NOT_TRANSLATED__",
-            "contentsSubTitle": "__STRING_NOT_TRANSLATED__"
+            "headerTitle": "Token Listing Information",
+            "contentsSubTitle": "All asset and token information is being developed together with the community. If your token is not displayed, please share the GitHub link below with the token issuer or community. Once registered, the information will be automatically reflected in the wallet and Mintscan."
           }
         }
       }
@@ -1287,6 +1337,40 @@
         "string": {
           "pattern": {
             "base": "Invalid address"
+          }
+        }
+      }
+    },
+    "addChainForm": {
+      "chainName": {
+        "any": {
+          "invalid": "Already registered chain name"
+        }
+      },
+      "restUrl": {
+        "any": {
+          "invalid": "Already registered chain's rest url"
+        }
+      },
+      "coinType": {
+        "any": {
+          "invalid": "The input format is not valid"
+        }
+      },
+      "decimal": {
+        "base": "Please enter a decimal number"
+      },
+      "gasRate": {
+        "object": {
+          "and": "Please enter whole Gas Rate value"
+        }
+      }
+    },
+    "addNetworkForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Must be entered in hexadecimal or decimal (eg. 0x1 or 1)"
           }
         }
       }

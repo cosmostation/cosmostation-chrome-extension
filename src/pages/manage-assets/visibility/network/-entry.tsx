@@ -17,7 +17,7 @@ import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { useCustomAssets } from '@/hooks/useCustomAssets';
 import { useCustomChain } from '@/hooks/useCustomChain';
 import { useCustomChainParam } from '@/hooks/useCustomChainParam';
-import { Route as ImportToken } from '@/pages/manage-assets/import/assets';
+import { Route as ImportNetwork } from '@/pages/manage-assets/import/network';
 import type { CustomAsset } from '@/types/asset';
 import type { UniqueChainId } from '@/types/chain';
 import type { CustomChainAsset } from '@/types/customChain';
@@ -167,7 +167,7 @@ export default function Entry() {
                 <IconTextButton
                   onClick={() => {
                     navigate({
-                      to: ImportToken.to,
+                      to: ImportNetwork.to,
                     });
                   }}
                   leadingIcon={

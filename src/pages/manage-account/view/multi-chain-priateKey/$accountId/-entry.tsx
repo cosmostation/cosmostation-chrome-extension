@@ -76,7 +76,7 @@ export default function Entry({ accountId }: EntryProps) {
               }}
             />
           </StickyContainer>
-
+          {/* FIXME */}
           {isLoading ? (
             <div>loading...</div>
           ) : (
