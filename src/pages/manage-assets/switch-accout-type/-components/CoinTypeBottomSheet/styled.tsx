@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import BaseChainImage from '@/components/common/BaseChainImage';
 import BottomSheet from '@/components/common/BottomSheet';
-import Image from '@/components/common/Image';
 
 export const Container = styled('div')({
   overflow: 'hidden',
@@ -27,7 +27,7 @@ export const HeaderTitle = styled('div')({
   columnGap: '0.4rem',
 });
 
-export const ChainImage = styled(Image)({
+export const ChainImage = styled(BaseChainImage)({
   width: '2.4rem',
   height: '2.4rem',
 });

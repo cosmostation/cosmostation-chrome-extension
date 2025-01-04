@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import BaseChainImage from '@/components/common/BaseChainImage';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
-import Image from '@/components/common/Image';
 
 export const StyledOptionButton = styled(BaseOptionButton)(({ theme }) => ({
   width: '100%',
@@ -56,7 +56,7 @@ export const ChainContainer = styled('div')({
   columnGap: '0.2rem',
 });
 
-export const ChainImage = styled(Image)({
+export const ChainImage = styled(BaseChainImage)({
   width: '1.6rem',
-  height: '1.2=6rem',
+  height: '1.6rem',
 });

@@ -7,7 +7,6 @@ import Base1300Text from '@/components/common/Base1300Text';
 import Badge from './components/Badge';
 import { AddressContainer, ChainContainer, ChainImage, Container, LabelContainer, MemoContainer, MemoContentsContainer, StyledOptionButton } from './styled';
 
-import DefaultChain from '@/assets/images/chain/defaultChain.png';
 import ENS from '@/assets/images/logos/ENS.png';
 
 type AddressItemButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
@@ -68,7 +67,7 @@ export default function AddressItemButton({ id, address, label, memo, chainName,
             </MemoContainer>
           )}
           <ChainContainer>
-            <ChainImage src={chainImage} defaultImgSrc={DefaultChain} />
+            <ChainImage src={chainImage} />
             <Base1000Text variant="b4_M">{chainName}</Base1000Text>
           </ChainContainer>
         </Container>

@@ -1,13 +1,13 @@
 import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
 
-type ImageProps = {
+type AssetImageProps = {
   src?: string | null;
   defaultImgSrc?: string;
   alt?: string;
   className?: string;
 };
 
-export default function Image({ src, defaultImgSrc = DefaultCoinImage, alt, className }: ImageProps) {
+export default function AssetImage({ src, defaultImgSrc = DefaultCoinImage, alt, className }: AssetImageProps) {
   const validSrc = src || defaultImgSrc;
 
   return (

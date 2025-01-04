@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 
-import Image from '@/components/common/Image';
+import BaseChainImage from '@/components/common/BaseChainImage';
 
 export const Container = styled('div')({
   width: '100%',
@@ -18,7 +18,7 @@ export const ChainContainer = styled('div')({
   columnGap: '0.2rem',
 });
 
-export const ChainImage = styled(Image)({
+export const ChainImage = styled(BaseChainImage)({
   width: '1.8rem',
   height: '1.8rem',
 });

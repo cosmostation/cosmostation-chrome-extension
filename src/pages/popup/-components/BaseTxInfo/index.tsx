@@ -21,8 +21,6 @@ import {
   RowRightContainer,
 } from './styled';
 
-import DefaultChain from '@/assets/images/chain/defaultChain.png';
-
 type BaseTxInfoProps = {
   chainId: string;
   feeBaseAmount: string;
@@ -56,7 +54,7 @@ export default function BaseTxInfo({ chainId, feeBaseAmount, feeCoinId, onClickF
         </RowLeftContainer>
         <RowRightContainer>
           <ChainContainer>
-            <ChainImageContainer src={chain?.image} defaultImgSrc={DefaultChain} />
+            <ChainImageContainer src={chain?.image} />
             <Base1300Text variant="b3_M">{chain?.name}</Base1300Text>
           </ChainContainer>
         </RowRightContainer>

@@ -7,8 +7,6 @@ import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import { ChainContainer, ChainImage, Container } from './styled';
 
-import DefaultChain from '@/assets/images/chain/defaultChain.png';
-
 type NetworkInfoProps = {
   chainId?: string;
 };
@@ -27,7 +25,7 @@ export default function NetworkInfo({ chainId }: NetworkInfoProps) {
       <Base1000Text variant="b3_R">{t('pages.popup.components.NetworkInfo.index.network')}</Base1000Text>
 
       <ChainContainer>
-        {networkImage && <ChainImage src={networkImage} defaultImgSrc={DefaultChain} />}
+        <ChainImage src={networkImage} />
         <Base1300Text variant="b3_M">{networkName}</Base1300Text>
       </ChainContainer>
     </Container>

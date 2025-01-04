@@ -6,8 +6,6 @@ import { ActiveBadge, ChainImage, ChainNameText, LeftContainer, StyledChainButto
 
 import CheckIcon from 'assets/images/icons/Check.svg';
 
-import DefaultChain from '@/assets/images/chain/defaultChain.png';
-
 type OptionButtonProps = {
   image: string | null;
   name: string;
@@ -26,7 +24,7 @@ const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ image, 
       ref={isActive ? ref : undefined}
     >
       <LeftContainer>
-        <ChainImage src={image} defaultImgSrc={DefaultChain} />
+        <ChainImage src={image} />
         <ChainNameText variant="b2_M">{name}</ChainNameText>
       </LeftContainer>
       {isActive && (

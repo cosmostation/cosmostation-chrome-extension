@@ -1,9 +1,11 @@
-import Image from 'components/common/Image';
+import AssetImage from '@/components/AssetImage';
 
 import DefaultChainImage from '@/assets/images/chain/defaultChain.png';
 
-export type BaseChainImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
+interface BaseChainImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
+  src?: string | null;
+}
 
 export default function BaseChainImage({ ...remainder }: BaseChainImageProps) {
-  return <Image defaultImgSrc={DefaultChainImage} {...remainder} />;
+  return <AssetImage defaultImgSrc={DefaultChainImage} {...remainder} />;
 }

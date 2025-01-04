@@ -13,8 +13,6 @@ import { getExtensionLocalStorage } from '@/utils/storage';
 import { AccountTypeTextContainer, ChainImage } from './styled';
 import CoinTypeBottomSheet from '../CoinTypeBottomSheet';
 
-import DefaultChain from '@/assets/images/chain/defaultChain.png';
-
 type CoinTypeButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   chain: Chain;
   coinTypeLevel: string;
@@ -34,7 +32,7 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
         onClick={() => {
           setIsOpenBottomSheet(true);
         }}
-        leftContent={<ChainImage src={chain.image} defaultImgSrc={DefaultChain} />}
+        leftContent={<ChainImage src={chain.image} />}
         leftSecondHeader={<Base1300Text variant="b2_M">{chain.name}</Base1300Text>}
         leftSecondBody={
           <AccountTypeTextContainer>
