@@ -39,6 +39,13 @@ export const AccountImgContainer = styled('div')({
   background: 'gray',
 });
 
+export const SmallAccountImgContainer = styled('div')({
+  width: '5.4rem',
+  height: '5.4rem',
+
+  background: 'gray',
+});
+
 export const Caution = styled('div')({
   width: 'fit-content',
 

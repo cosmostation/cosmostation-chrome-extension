@@ -19,6 +19,7 @@ type EntryProps = {
   accountId: string;
 };
 
+// FIXME 페이지 진입이 느림. 최적화 필요.
 export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
 

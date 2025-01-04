@@ -9,8 +9,11 @@ import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
+import Base1000Text from '@/components/common/Base1000Text';
+import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
+import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
@@ -29,9 +32,22 @@ import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { CoinButtonWrapper, Container, IconContainer, ImportTextContainer, PurpleContainer, RowContainer, StickyContainer } from './-styled';
+import {
+  CoinButtonWrapper,
+  CoinContainer,
+  CoinIdContainer,
+  CoinImage,
+  CoinSymbolContainer,
+  Container,
+  IconContainer,
+  ImportTextContainer,
+  PurpleContainer,
+  RowContainer,
+  StickyContainer,
+} from './-styled';
 
 import AddIcon from '@/assets/images/icons/Add20.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
@@ -57,6 +73,8 @@ export default function Entry() {
   const { currentCustomERC20Tokens, removeCustomERC20Token } = useCurrentCustomERC20Tokens();
   const { currentCustomCW20Tokens, removeCustomCW20Token } = useCurrentCustomCW20Tokens();
 
+  const currentCustomTokens = [...currentCustomERC20Tokens, ...currentCustomCW20Tokens];
+
   const { data: currentAccountAllAssets } = useAccountAllAssets();
 
   const { customAssets } = useCustomAssets();
@@ -71,6 +89,8 @@ export default function Entry() {
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
+
+  const [isOpenDeleteCoinBottomSheet, setIsOpenDeleteCoinBottomSheet] = useState(false);
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
@@ -331,6 +351,8 @@ export default function Entry() {
               {!isDebouncing && (
                 <>
                   {sortedCoinListByHidden?.map((coin) => {
+                    const customToken = currentCustomTokens.find((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
+
                     const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
                     const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(getCoinId(coin.asset));
 
@@ -340,33 +362,63 @@ export default function Entry() {
 
                     const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
                     return (
-                      <CoinWithChainNameButton
-                        key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
-                        displayAmount={displayAmount}
-                        symbol={coin.asset.symbol}
-                        chainName={coin.chain.name}
-                        assetId={coin.asset.id}
-                        coinGeckoId={coin.asset.coinGeckoId}
-                        displayAssetId={isShowAssetId}
-                        coinImageProps={{
-                          imageURL: coin.asset.image,
-                          badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
-                        }}
-                        rightComponent={
-                          isHiddenAsset ? (
-                            <IconContainer>
-                              <AddIcon />
-                            </IconContainer>
-                          ) : (
-                            <IconContainer>
-                              <RemoveIcon />
-                            </IconContainer>
-                          )
-                        }
-                        onClick={() => {
-                          handleAssetVisibility(getCoinId(coin.asset));
-                        }}
-                      />
+                      <>
+                        <CoinWithChainNameButton
+                          key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
+                          displayAmount={displayAmount}
+                          symbol={coin.asset.symbol}
+                          chainName={coin.chain.name}
+                          assetId={coin.asset.id}
+                          coinGeckoId={coin.asset.coinGeckoId}
+                          displayAssetId={isShowAssetId}
+                          coinImageProps={{
+                            imageURL: coin.asset.image,
+                            badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
+                          }}
+                          rightComponent={
+                            isHiddenAsset ? (
+                              <IconContainer>
+                                <AddIcon />
+                              </IconContainer>
+                            ) : (
+                              <IconContainer>
+                                <RemoveIcon />
+                              </IconContainer>
+                            )
+                          }
+                          onClick={() => {
+                            if (customToken) {
+                              setIsOpenDeleteCoinBottomSheet(true);
+                            } else {
+                              handleAssetVisibility(getCoinId(coin.asset));
+                            }
+                          }}
+                        />
+                        {customToken && (
+                          <DeleteConfirmBottomSheet
+                            open={isOpenDeleteCoinBottomSheet}
+                            onClose={() => setIsOpenDeleteCoinBottomSheet(false)}
+                            contents={
+                              <CoinContainer>
+                                <CoinImage imageURL={customToken.image} badgeImageURL={coin.chain.image || ''} />
+                                <CoinSymbolContainer>
+                                  <Base1300Text variant="b1_B">{customToken.symbol}</Base1300Text>
+                                  <CoinIdContainer>
+                                    <Base1000Text variant="b4_R">{t('pages.manage-assets.visibility.assets.entry.contract')}</Base1000Text>
+                                    &nbsp;
+                                    <Base1000Text variant="b3_M">{shorterAddress(customToken.id, 16)}</Base1000Text>
+                                  </CoinIdContainer>
+                                </CoinSymbolContainer>
+                              </CoinContainer>
+                            }
+                            descriptionText={t('pages.manage-assets.visibility.assets.entry.deleteDescription')}
+                            onClickConfirm={() => {
+                              handleAssetVisibility(getCoinId(coin.asset));
+                              setIsOpenDeleteCoinBottomSheet(false);
+                            }}
+                          />
+                        )}
+                      </>
                     );
                   })}
 

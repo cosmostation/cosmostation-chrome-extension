@@ -10,6 +10,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import SetMnemonicNameBottomSheet from '@/components/SetNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -49,6 +50,9 @@ export default function Entry({ mnemonicId }: EntryProps) {
 
   const [isOpenSetMnemonicNameBottomSheet, setIsOpenSetMnemonicNameBottomSheet] = useState(false);
   const [isOpenVerifyPasswordBottomSheet, setIsOpenVerifyPasswordBottomSheet] = useState(false);
+  const [isOpenVerifyPasswordBottomSheetWithRemove, setIsOpenVerifyPasswordBottomSheetWithRemove] = useState(false);
+
+  const [isOpenDeleteAccountBottomSheet, setIsOpenDeleteAccountBottomSheet] = useState(false);
 
   const { accounts, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
@@ -62,6 +66,35 @@ export default function Entry({ mnemonicId }: EntryProps) {
     await updateMnemonicName(mnemonic, newMnemonicName);
 
     toastSuccess(t('pages.manage-account.detail.mnemonic.entry.updateMnemonicNameSuccess'));
+  };
+
+  const handleSubmit = async (type: 'removeMnemonic' | 'viewMnemonic') => {
+    if (type === 'removeMnemonic') {
+      await removeMnemonic(mnemonicId);
+      const accounts = await useExtensionStorageStore.getState().accounts;
+
+      if (accounts && accounts.length > 0) {
+        toastSuccess(t('pages.manage-account.detail.mnemonic.entry.successDeleteMnemonic'));
+        navigate({ to: SwitchWallet.to });
+      }
+    }
+    if (type === 'viewMnemonic') {
+      if (isNotBackedUp) {
+        navigate({
+          to: ManageBackupStep1.to,
+          params: {
+            accountId: filteredAccounts[0].id,
+          },
+        });
+      } else {
+        navigate({
+          to: ViewMnemonic.to,
+          params: {
+            mnemonicId: mnemonicId,
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -117,15 +150,8 @@ export default function Entry({ mnemonicId }: EntryProps) {
       </BaseBody>
       <BaseFooter>
         <Button
-          onClick={async () => {
-            await removeMnemonic(mnemonicId);
-
-            const accounts = await useExtensionStorageStore.getState().accounts;
-
-            if (accounts && accounts.length > 0) {
-              toastSuccess(t('pages.manage-account.detail.mnemonic.entry.successDeleteMnemonic'));
-              navigate({ to: SwitchWallet.to });
-            }
+          onClick={() => {
+            setIsOpenDeleteAccountBottomSheet(true);
           }}
           variant="red"
         >
@@ -133,23 +159,17 @@ export default function Entry({ mnemonicId }: EntryProps) {
         </Button>
       </BaseFooter>
       <VerifyPasswordBottomSheet
-        open={isOpenVerifyPasswordBottomSheet}
-        onClose={() => setIsOpenVerifyPasswordBottomSheet(false)}
+        open={isOpenVerifyPasswordBottomSheet || isOpenVerifyPasswordBottomSheetWithRemove}
+        onClose={() => {
+          setIsOpenVerifyPasswordBottomSheet(false);
+          setIsOpenVerifyPasswordBottomSheetWithRemove(false);
+        }}
         onSubmit={() => {
-          if (isNotBackedUp) {
-            navigate({
-              to: ManageBackupStep1.to,
-              params: {
-                accountId: filteredAccounts[0].id,
-              },
-            });
-          } else {
-            navigate({
-              to: ViewMnemonic.to,
-              params: {
-                mnemonicId: mnemonicId,
-              },
-            });
+          if (isOpenVerifyPasswordBottomSheet) {
+            handleSubmit('viewMnemonic');
+          }
+          if (isOpenVerifyPasswordBottomSheetWithRemove) {
+            handleSubmit('removeMnemonic');
           }
         }}
       />
@@ -161,6 +181,30 @@ export default function Entry({ mnemonicId }: EntryProps) {
         inputPlaceholder={t('pages.manage-account.detail.mnemonic.entry.mnemonicName')}
         setName={async (newMnemonicName) => {
           await editMnemonicName(mnemonicId, newMnemonicName);
+        }}
+      />
+      <DeleteConfirmBottomSheet
+        open={isOpenDeleteAccountBottomSheet}
+        onClose={() => setIsOpenDeleteAccountBottomSheet(false)}
+        contents={
+          <MainContentsLayout
+            top={
+              <MnemonicIconContainer sx={{ width: '4.2rem', height: '4.2rem' }}>
+                <MnemonicIcon />
+              </MnemonicIconContainer>
+            }
+            body={
+              <MainContentBody>
+                <MainContentTitleText variant="b1_B">{mnemonicName}</MainContentTitleText>
+                <MainContentSubtitleText variant="b3_R">{t('pages.manage-account.detail.mnemonic.entry.mnemonicWallet')}</MainContentSubtitleText>
+              </MainContentBody>
+            }
+          />
+        }
+        descriptionText={t('pages.manage-account.detail.mnemonic.entry.deleteAccountDescription')}
+        onClickConfirm={() => {
+          setIsOpenVerifyPasswordBottomSheetWithRemove(true);
+          setIsOpenDeleteAccountBottomSheet(false);
         }}
       />
     </>

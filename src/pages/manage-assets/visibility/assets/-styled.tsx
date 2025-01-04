@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import BaseCoinImage from '@/components/common/BaseCoinImage';
+
 export const Container = styled('div')({
   width: '100%',
 });
@@ -59,3 +61,27 @@ export const InfoIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const CoinContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  rowGap: '0.8rem',
+});
+
+export const CoinImage = styled(BaseCoinImage)({
+  width: '4.2rem',
+  height: '4.2rem',
+});
+
+export const CoinSymbolContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  rowGap: '0.2rem',
+});
+
+export const CoinIdContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});

@@ -10,6 +10,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Button from '@/components/common/Button/index.tsx';
 import IconTextButton from '@/components/common/IconTextButton';
+import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -31,6 +32,7 @@ import {
   MainContentSubtitleText,
   MainContentTitleText,
   OptionButtonContainer,
+  SmallAccountImgContainer,
 } from './-styled';
 import MainContentsLayout from '../../../-components/MainContentsLayout';
 
@@ -51,8 +53,12 @@ export default function Entry({ accountId }: EntryProps) {
   const { removeAccount } = useCurrentAccount();
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
+
   const [isOpenVerifyPasswordBottomSheetWithMnemonic, setIsOpenVerifyPasswordBottomSheetWithMnemonic] = useState(false);
   const [isOpenVerifyPasswordBottomSheetWithPK, setIsOpenVerifyPasswordBottomSheetPK] = useState(false);
+  const [isOpenVerifyPasswordBottomSheetWithRemove, setIsOpenVerifyPasswordBottomSheetWithRemove] = useState(false);
+
+  const [isOpenDeleteAccountBottomSheet, setIsOpenDeleteAccountBottomSheet] = useState(false);
 
   const account = accounts.find((item) => item.id === accountId);
   const hdPath = account?.type === 'MNEMONIC' ? account.index : '';
@@ -64,6 +70,44 @@ export default function Entry({ accountId }: EntryProps) {
     await updateAccountName(accountId, accountName);
 
     toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.accountNameUpdated'));
+  };
+
+  const handleSubmit = async (type: 'removeAccount' | 'viewMnemonic' | 'viewPrivatekey') => {
+    if (type === 'removeAccount') {
+      await removeAccount(accountId);
+      const accounts = await useExtensionStorageStore.getState().accounts;
+      if (accounts && accounts.length > 0) {
+        toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.successDeleteAccount'));
+        navigate({ to: SwitchWallet.to });
+      }
+    }
+
+    if (type === 'viewMnemonic') {
+      if (isNotBackedUp) {
+        navigate({
+          to: ManageBackupStep1.to,
+          params: {
+            accountId: account?.id || '',
+          },
+        });
+      } else {
+        navigate({
+          to: ViewMnemonic.to,
+          params: {
+            mnemonicId: account?.encryptedRestoreString || '',
+          },
+        });
+      }
+    }
+
+    if (type === 'viewPrivatekey') {
+      navigate({
+        to: ViewMultiChainPrivateKey.to,
+        params: {
+          accountId: account?.id || '',
+        },
+      });
+    }
   };
 
   return (
@@ -122,16 +166,8 @@ export default function Entry({ accountId }: EntryProps) {
       </BaseBody>
       <BaseFooter>
         <Button
-          onClick={async () => {
-            await removeAccount(accountId);
-
-            const accounts = await useExtensionStorageStore.getState().accounts;
-
-            if (accounts && accounts.length > 0) {
-              toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.successDeleteAccount'));
-
-              navigate({ to: SwitchWallet.to });
-            }
+          onClick={() => {
+            setIsOpenDeleteAccountBottomSheet(true);
           }}
           variant="red"
         >
@@ -139,36 +175,22 @@ export default function Entry({ accountId }: EntryProps) {
         </Button>
       </BaseFooter>
       <VerifyPasswordBottomSheet
-        open={isOpenVerifyPasswordBottomSheetWithMnemonic}
-        onClose={() => setIsOpenVerifyPasswordBottomSheetWithMnemonic(false)}
-        onSubmit={() => {
-          if (isNotBackedUp) {
-            navigate({
-              to: ManageBackupStep1.to,
-              params: {
-                accountId: account?.id || '',
-              },
-            });
-          } else {
-            navigate({
-              to: ViewMnemonic.to,
-              params: {
-                mnemonicId: account?.encryptedRestoreString || '',
-              },
-            });
-          }
+        open={isOpenVerifyPasswordBottomSheetWithMnemonic || isOpenVerifyPasswordBottomSheetWithPK || isOpenVerifyPasswordBottomSheetWithRemove}
+        onClose={() => {
+          setIsOpenVerifyPasswordBottomSheetWithMnemonic(false);
+          setIsOpenVerifyPasswordBottomSheetPK(false);
+          setIsOpenVerifyPasswordBottomSheetWithRemove(false);
         }}
-      />
-      <VerifyPasswordBottomSheet
-        open={isOpenVerifyPasswordBottomSheetWithPK}
-        onClose={() => setIsOpenVerifyPasswordBottomSheetPK(false)}
         onSubmit={() => {
-          navigate({
-            to: ViewMultiChainPrivateKey.to,
-            params: {
-              accountId: account?.id || '',
-            },
-          });
+          if (isOpenVerifyPasswordBottomSheetWithMnemonic) {
+            handleSubmit('viewMnemonic');
+          }
+          if (isOpenVerifyPasswordBottomSheetWithPK) {
+            handleSubmit('viewPrivatekey');
+          }
+          if (isOpenVerifyPasswordBottomSheetWithRemove) {
+            handleSubmit('removeAccount');
+          }
         }}
       />
       <SetAccountNameBottomSheet
@@ -176,6 +198,26 @@ export default function Entry({ accountId }: EntryProps) {
         onClose={() => setIsOpenSetAccountNameBottomSheet(false)}
         setName={async (accountName) => {
           await editAccountName(accountId, accountName);
+        }}
+      />
+      <DeleteConfirmBottomSheet
+        open={isOpenDeleteAccountBottomSheet}
+        onClose={() => setIsOpenDeleteAccountBottomSheet(false)}
+        contents={
+          <MainContentsLayout
+            top={<SmallAccountImgContainer />}
+            body={
+              <MainContentBody>
+                <MainContentTitleText variant="b1_B">{accountName}</MainContentTitleText>
+                <MainContentSubtitleText variant="b3_R">{`${t('pages.manage-account.detail.mnemonic.account.entry.lastHdPath')} : ${hdPath}`}</MainContentSubtitleText>
+              </MainContentBody>
+            }
+          />
+        }
+        descriptionText={t('pages.manage-account.detail.mnemonic.account.entry.deleteAccountDescription')}
+        onClickConfirm={() => {
+          setIsOpenVerifyPasswordBottomSheetWithRemove(true);
+          setIsOpenDeleteAccountBottomSheet(false);
         }}
       />
     </>
