@@ -8,7 +8,7 @@ export const DUNGEON: CosmosChain = {
   type: '',
   chainId: 'dungeon-1',
   chainName: 'DUNGEON',
-  restURL: 'https://api-dungeonchain.apeironnodes.com',
+  restURL: 'https://dungeon-wallet.api.quasarstaking.ai',
   tokenImageURL: dungeonTokenImg,
   imageURL: dungeonChainImg,
   baseDenom: 'udgn',
