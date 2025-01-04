@@ -1,8 +1,8 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import BaseChainImage from '../common/BaseChainImage';
 import IconTextButton from '../common/IconTextButton';
-import Image from '../common/Image';
 
 type StyledIconTextButton = {
   variants?: 'normal' | 'chip';
@@ -70,7 +70,7 @@ type ChainImageContainer = {
   sizeVariant: 'small' | 'medium' | 'large';
 };
 
-export const ChainImageContainer = styled(Image)<ChainImageContainer>(({ ...props }) => {
+export const ChainImageContainer = styled(BaseChainImage)<ChainImageContainer>(({ ...props }) => {
   const size = {
     small: '1.4rem',
     medium: '1.6rem',

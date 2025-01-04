@@ -2,7 +2,7 @@ import type { TextFieldProps } from '@mui/material';
 import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import Image from '../common/Image';
+import BaseChainImage from '../common/BaseChainImage';
 
 export const Container = styled('div')({
   width: '100%',
@@ -126,7 +126,7 @@ export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ th
   color: props['data-is-error'] ? 'red' : theme.palette.color.base1300,
 }));
 
-export const ChainImageContainer = styled(Image)({
+export const ChainImageContainer = styled(BaseChainImage)({
   width: '2.2rem',
   height: '2.2rem',
   paddingBottom: '0.5rem',

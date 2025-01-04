@@ -43,7 +43,7 @@ export default function AllNetworkButton({
         variants={variant}
         leadingIcon={
           currentChain ? (
-            <ChainImageContainer sizeVariant={sizeVariant} src={currentChain.image} />
+            <ChainImageContainer sizeVariant={sizeVariant} src={currentChain.image || ''} />
           ) : (
             <GridMenuIconContainer sizeVariant={sizeVariant}>
               <GridMenuIcon />

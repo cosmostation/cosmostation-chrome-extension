@@ -68,7 +68,7 @@ export default function ChainSelectBox({
             readOnly: true,
             startAdornment: currentChainId ? (
               <InputAdornment position="start">
-                <ChainImageContainer src={currentSelectedChain?.image} />
+                <ChainImageContainer src={currentSelectedChain?.image || ''} />
               </InputAdornment>
             ) : null,
             endAdornment: remainder.disabled ? null : (
