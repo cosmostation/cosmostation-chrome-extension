@@ -21,7 +21,7 @@ import { Route as ImportNetwork } from '@/pages/manage-assets/import/network';
 import type { CustomAsset } from '@/types/asset';
 import type { UniqueChainId } from '@/types/chain';
 import type { CustomChainAsset } from '@/types/customChain';
-import { getCoinIdWithManual, getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 
 import {
   ButtonWrapper,
@@ -47,7 +47,7 @@ export default function Entry() {
   const { data: managedCustomChains, isLoading } = useCustomChainParam();
 
   const { addedCustomChainList, addCustomChain, removeCustomChain } = useCustomChain();
-  const { addCustomAsset, removeCustomAsset } = useCustomAssets();
+  const { addCustomAsset } = useCustomAssets();
 
   const userDefinedCustomChains = addedCustomChainList.filter((chain) => !managedCustomChains?.some((managedChain) => isSameChain(managedChain, chain)));
 
@@ -117,16 +117,6 @@ export default function Entry() {
 
   const removeCustom = async (chainId: UniqueChainId) => {
     await removeCustomChain(chainId);
-
-    const matchingChain = baseCustomChainList.find((chain) => isMatchingUniqueChainId(chain, chainId));
-    const coinId = matchingChain
-      ? getCoinIdWithManual({
-          id: matchingChain.mainAssetDenom || '',
-          chainId: matchingChain.id,
-          chainType: matchingChain.chainType,
-        })
-      : '';
-    await removeCustomAsset(coinId);
   };
 
   useEffect(() => {

@@ -14,6 +14,7 @@ import type { AptosAsset, AssetSingleGroup, BitcoinAsset, CosmosAsset, EvmAsset,
 import type { ExtensionStorage } from '@/types/extension';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 
+import { getAllAccountAddress } from './account';
 import { getAddedCustomChains, getChains } from './chain';
 
 export async function getHiddenAssets(id: string) {
@@ -199,6 +200,10 @@ export async function getAccountAssets(id: string) {
   const hiddenAssetIds = await getHiddenAssets(id);
 
   const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
+  const addedCustomChains = await getAddedCustomChains();
+
+  const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
+  const allCosmosChains = [...cosmosChains, ...addedCustomChains.filter((chain) => chain.chainType === 'cosmos')];
 
   const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets } = await getAssets();
 
@@ -222,6 +227,7 @@ export async function getAccountAssets(id: string) {
   );
 
   const accountAddress = storage[`${id}-address`];
+  const allAccountAddress = await getAllAccountAddress(id);
 
   const cosmosBalances = storage[`${id}-balance-cosmos`];
   const evmBalances = storage[`${id}-balance-evm`];
@@ -347,9 +353,8 @@ export async function getAccountAssets(id: string) {
   const customErc20Promise = PromisePool.withConcurrency(concurrency)
     .for(customErc20Assets)
     .process(async (asset) => {
-      // NOTE 커스텀 체인도 반영되도록.
-      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-      const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+      const addresses = allAccountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = allEVMChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
 
       const { results } = await PromisePool.withConcurrency(concurrency)
         .for(addresses)
@@ -376,9 +381,8 @@ export async function getAccountAssets(id: string) {
   const customCW20Promise = PromisePool.withConcurrency(concurrency)
     .for(customCw20Assets)
     .process(async (asset) => {
-      // NOTE 커스텀 체인도 반영되도록.
-      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-      const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+      const addresses = allAccountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = allCosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
 
       const { results } = await PromisePool.withConcurrency(concurrency)
         .for(addresses)

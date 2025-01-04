@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -26,6 +27,8 @@ export default function ERC20({ chainId }: ERC20Props) {
   const { t } = useTranslation();
   const { history } = useRouter();
 
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const { addCustomERC20Token } = useCurrentCustomERC20Tokens();
 
   const { importCustomERC20TokenForm } = useSchema();
@@ -47,6 +50,8 @@ export default function ERC20({ chainId }: ERC20Props) {
 
   const submit = async (data: ImportCustomERC20TokenForm) => {
     try {
+      setIsProcessing(true);
+
       const { address, symbol, decimals, logoUrl } = data;
       const { id } = parseUniqueChainId(chainId);
 
@@ -77,6 +82,7 @@ export default function ERC20({ chainId }: ERC20Props) {
     } catch {
       toastError(t('pages.manage-assets.import.assets.components.ERC20.index.error'));
     } finally {
+      setIsProcessing(false);
       reset();
     }
   };
@@ -128,7 +134,7 @@ export default function ERC20({ chainId }: ERC20Props) {
         />
       </InputWrapper>
       <BaseFooter>
-        <Button type="submit" disabled={!isButtonEnabled}>
+        <Button type="submit" disabled={!isButtonEnabled} isProgress={isProcessing}>
           {t('pages.manage-assets.import.assets.components.ERC20.index.addCustomCrypto')}
         </Button>
       </BaseFooter>

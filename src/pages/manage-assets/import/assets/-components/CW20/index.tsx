@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -27,12 +28,13 @@ export default function CW20({ chainId }: CW20Props) {
   const { t } = useTranslation();
   const { history } = useRouter();
 
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const { addCustomCW20Token } = useCurrentCustomCW20Tokens();
   const { chainList } = useChainList();
 
   const currentChain = chainList?.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, chainId));
 
-  // NOTE useTokenInfoSWR로 일부 인풋값 대체하도록 변경.
   const { importCustomCW20TokenForm } = useSchema({
     chain: currentChain,
   });
@@ -54,6 +56,8 @@ export default function CW20({ chainId }: CW20Props) {
 
   const submit = async (data: ImportCustomCW20TokenForm) => {
     try {
+      setIsProcessing(true);
+
       const { address, symbol, decimals, logoUrl } = data;
       const { id } = parseUniqueChainId(chainId);
 
@@ -84,6 +88,7 @@ export default function CW20({ chainId }: CW20Props) {
     } catch {
       toastError(t('pages.manage-assets.import.assets.components.CW20.index.error'));
     } finally {
+      setIsProcessing(false);
       reset();
     }
   };
@@ -135,7 +140,7 @@ export default function CW20({ chainId }: CW20Props) {
         />
       </InputWrapper>
       <BaseFooter>
-        <Button type="submit" disabled={!isButtonEnabled}>
+        <Button type="submit" disabled={!isButtonEnabled} isProgress={isProcessing}>
           {t('pages.manage-assets.import.assets.components.CW20.index.addCustomCrypto')}
         </Button>
       </BaseFooter>

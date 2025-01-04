@@ -1,6 +1,6 @@
 import { customChainAddress } from '@/script/service-worker/update/address';
-import type { CustomChain } from '@/types/chain';
-import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import type { CustomChain, UniqueChainId } from '@/types/chain';
+import { getCoinChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -8,7 +8,9 @@ import { useAccountAllAssets } from './useAccountAllAssets';
 import { useAccountAssets } from './useAccountAssets';
 
 export function useCustomChain() {
-  const { accounts, addedCustomChainList, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { accounts, addedCustomChainList, customAssets, customErc20Assets, customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore(
+    (state) => state,
+  );
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
@@ -46,13 +48,28 @@ export function useCustomChain() {
     await refetchAccountAllAssets();
   };
 
-  const removeCustomChain = async (chainId: string) => {
+  const removeCustomChain = async (chainId: UniqueChainId) => {
     const storedAddedCustomChainList = await getExtensionLocalStorage('addedCustomChainList');
+
+    const { chainType } = parseUniqueChainId(chainId);
+
+    if (chainType === 'evm') {
+      const filteredErc20Assets = customErc20Assets.filter((item) => getCoinChainId(item) !== chainId);
+      await updateExtensionStorageStore('customErc20Assets', filteredErc20Assets);
+
+      const filteredCustomAssets = customAssets.filter((item) => getCoinChainId(item) !== chainId);
+      await updateExtensionStorageStore('customAssets', filteredCustomAssets);
+    } else if (chainType === 'cosmos') {
+      const filteredCw20Assets = customCw20Assets.filter((item) => getCoinChainId(item) !== chainId);
+      await updateExtensionStorageStore('customCw20Assets', filteredCw20Assets);
+
+      const filteredCustomAssets = customAssets.filter((item) => getCoinChainId(item) !== chainId);
+      await updateExtensionStorageStore('customAssets', filteredCustomAssets);
+    }
+
     const updatedAddedCustomChainList = storedAddedCustomChainList.filter((item) => !isMatchingUniqueChainId(item, chainId));
 
     await updateExtensionStorageStore('addedCustomChainList', updatedAddedCustomChainList);
-
-    // TODO 추가적으로 해당 체인의 기본 코인도 삭제해주어야함.
 
     await refetchAccountAssets();
     await refetchAccountAllAssets();

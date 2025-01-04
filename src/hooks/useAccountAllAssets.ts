@@ -2,8 +2,9 @@ import PromisePool from '@supercharge/promise-pool';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { getAllAccountAddress } from '@/libs/account';
 import { getAccountCustomAssets, getAssets } from '@/libs/asset';
-import { getChains } from '@/libs/chain';
+import { getAddedCustomChains, getChains } from '@/libs/chain';
 import type { AccountAptosAsset, AccountCosmosAsset, AccountCw20Asset, AccountErc20Asset, AccountEvmAsset, AccountSuiAsset } from '@/types/account';
 import type { AccountAssets as AccountAllAssets } from '@/types/accountAssets';
 import type { ExtensionStorage } from '@/types/extension';
@@ -37,9 +38,15 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
         `${param}-custom-balance-cw20`,
       ]);
       const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
+      const addedCustomChains = await getAddedCustomChains();
+
+      const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
+      const allCosmosChains = [...cosmosChains, ...addedCustomChains.filter((chain) => chain.chainType === 'cosmos')];
+
       const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets } = await getAssets();
 
       const accountAddress = storage[`${param}-address`];
+      const allAccountAddress = await getAllAccountAddress(param);
 
       const cosmosBalances = storage[`${param}-balance-cosmos`];
       const evmBalances = storage[`${param}-balance-evm`];
@@ -165,9 +172,8 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
       const customErc20Promise = PromisePool.withConcurrency(concurrency)
         .for(customErc20Assets)
         .process(async (asset) => {
-          // NOTE 커스텀 체인도 반영되도록.
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+          const addresses = allAccountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+          const chain = allEVMChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
 
           const { results } = await PromisePool.withConcurrency(concurrency)
             .for(addresses)
@@ -194,9 +200,8 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
       const customCW20Promise = PromisePool.withConcurrency(concurrency)
         .for(customCw20Assets)
         .process(async (asset) => {
-          // NOTE 커스텀 체인도 반영되도록.
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+          const addresses = allAccountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+          const chain = allCosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
 
           const { results } = await PromisePool.withConcurrency(concurrency)
             .for(addresses)

@@ -10,6 +10,10 @@ export function getCoinId(coinAsset: AssetId) {
   return `${coinAsset.id}__${coinAsset.chainId}__${coinAsset.chainType}`;
 }
 
+export function getCoinChainId(coinAsset: AssetId): UniqueChainId {
+  return `${coinAsset.chainId}__${coinAsset.chainType}`;
+}
+
 export function getCoinIdWithManual({ id, chainId, chainType }: AssetId) {
   return `${id}__${chainId}__${chainType}`;
 }

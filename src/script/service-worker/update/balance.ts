@@ -754,14 +754,17 @@ async function cw20Balance(id: string) {
 }
 
 async function customCw20Balance(id: string) {
-  const accountAddress = await getAccountAddress(id);
-  // NOTE 커스텀 체인도 함께 리스팅
-  const { cosmosChains } = await getChains();
+  const allAccountAddress = await getAllAccountAddress(id);
+
+  const allChain = await getAllChains();
+
+  const allCosmosChains = allChain.filter((chain) => chain.chainType === 'cosmos');
+
   const { customCw20Assets } = await getAssets();
 
-  const cosmosChainsWithCosmwasm = cosmosChains.filter((chain) => chain.isCosmwasm);
+  const cosmosChainsWithCosmwasm = allCosmosChains.filter((chain) => chain.isCosmwasm);
 
-  const addressWithChain = accountAddress
+  const addressWithChain = allAccountAddress
     .map((addr) => {
       const chain = cosmosChainsWithCosmwasm.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
