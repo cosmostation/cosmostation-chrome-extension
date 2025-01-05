@@ -24,7 +24,8 @@ export const IconContainer = styled('div')({
 export const TextContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  width: '60%',
+  minWidth: '20rem',
+  maxWidth: '60%',
   marginBottom: '0.4rem',
 });
 
