@@ -1,4 +1,5 @@
 import BaseLayout from '@/components/BaseLayout';
+import ConnectedDapp from '@/components/ConnectedDapp';
 import HandleExtensionViewButton from '@/components/HandleExtensionViewButton';
 import Header from '@/components/Header';
 import AccountButton from '@/components/Header/components/AccountButton';
@@ -28,6 +29,7 @@ export default function Layout({ children }: LayoutProps) {
           }
         />
       }
+      footer={<ConnectedDapp />}
     >
       {children}
     </BaseLayout>
