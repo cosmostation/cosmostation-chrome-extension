@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
@@ -10,10 +10,12 @@ import CoinWithMarketTrendButton from '@/components/CoinWithMarketTrendButton';
 import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconTextButton from '@/components/common/IconTextButton';
+import IntersectionObserver from '@/components/common/IntersectionObserver';
 import { Tab, Tabs } from '@/components/common/Tab';
 import PortFolio from '@/components/MainBox/Portfolio';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
+import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
@@ -49,6 +51,8 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { scrollToTop } = useScroll();
+
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { dashboardCoinSortKey, currency, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
@@ -64,6 +68,8 @@ export default function Entry() {
   const [isHideSmallValue, setIsHideSmallValue] = useState(false);
 
   const tabLabels = ['Crypto', 'NFTs'];
+
+  const [viewLimit, setViewLimit] = useState(30);
 
   const { groupAccountAssets } = useGroupAccountAssets();
 
@@ -126,19 +132,28 @@ export default function Entry() {
 
     if (!!search && debouncedSearch.length > 1) {
       return (
-        filterdByChain.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
+        filterdByChain
+          .filter((asset) => {
+            const condition = [asset.asset.symbol, asset.asset.id];
 
-          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-        }) || []
+            return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+          })
+          .slice(0, viewLimit) || []
       );
     }
-    return filterdByChain;
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
+    return filterdByChain.slice(0, viewLimit);
+  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets, viewLimit]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
+
+  useEffect(() => {
+    if (search.length > 1 || search.length === 0) {
+      scrollToTop();
+      setViewLimit(30);
+    }
+  }, [scrollToTop, search.length]);
 
   return (
     <BaseBody>
@@ -172,6 +187,7 @@ export default function Entry() {
                   }}
                   onClear={() => {
                     setSearch('');
+                    setViewLimit(30);
                     cancel();
                   }}
                 />
@@ -202,7 +218,6 @@ export default function Entry() {
                 </IconTextButton>
               </ManageCryptoContainer>
             </StickyTabPanelContentsContainer>
-            {/* FIXME 스크롤이 아래 인 상태에서 클릭 시 스크롤이 그대로 유지되어 아래에 있는 문제 해결 필요 */}
             <CoinButtonWrapper>
               {filteredAssetsBySearch.map((coin) => {
                 const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
@@ -228,6 +243,13 @@ export default function Entry() {
                   />
                 );
               })}
+              {filteredAssetsBySearch?.length > viewLimit - 1 && (
+                <IntersectionObserver
+                  onIntersect={() => {
+                    setViewLimit((limit) => limit + 30);
+                  }}
+                />
+              )}
             </CoinButtonWrapper>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
