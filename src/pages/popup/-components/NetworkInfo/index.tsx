@@ -25,7 +25,7 @@ export default function NetworkInfo({ chainId }: NetworkInfoProps) {
       <Base1000Text variant="b3_R">{t('pages.popup.components.NetworkInfo.index.network')}</Base1000Text>
 
       <ChainContainer>
-        <ChainImage src={networkImage} />
+        {networkImage && <ChainImage src={networkImage} />}
         <Base1300Text variant="b3_M">{networkName}</Base1300Text>
       </ChainContainer>
     </Container>
