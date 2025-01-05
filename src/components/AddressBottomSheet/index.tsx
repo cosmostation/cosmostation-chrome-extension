@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import type { UniqueChainId } from '@/types/chain';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import AddressBookItem from './components/AddressBook';
 import MnemonicAccount from './components/MnemonicAccount';
 import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledTabPanel, TabPanelContentsContainer } from './styled';
 import { FilledTab, FilledTabs } from '../common/FilledTab';
@@ -59,12 +60,12 @@ export default function AddressBottomSheet({ chainId, headerTitle, onClose, onCl
             <Close24Icon />
           </StyledButton>
         </Header>
+        <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
+          {tabLabels.map((item) => (
+            <FilledTab key={item} label={item} />
+          ))}
+        </FilledTabs>
         <Body>
-          <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
-            {tabLabels.map((item) => (
-              <FilledTab key={item} label={item} />
-            ))}
-          </FilledTabs>
           <StyledTabPanel value={tabValue} index={0}>
             <TabPanelContentsContainer>
               {uniqueMnemonicRestoreString.map((item, i) => (
@@ -81,7 +82,12 @@ export default function AddressBottomSheet({ chainId, headerTitle, onClose, onCl
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
             <TabPanelContentsContainer>
-              <></>
+              <AddressBookItem
+                chainId={chainId}
+                onClickAddress={(address, memo) => {
+                  onHandleClick(address, memo);
+                }}
+              />
             </TabPanelContentsContainer>
           </StyledTabPanel>
         </Body>

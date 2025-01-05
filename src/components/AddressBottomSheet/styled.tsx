@@ -7,6 +7,7 @@ export const Container = styled('div')({
   overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
+  height: '100%',
 });
 
 export const Header = styled('div')(({ theme }) => ({
@@ -27,11 +28,13 @@ export const HeaderTitle = styled('div')(({ theme }) => ({
 
 export const Body = styled('div')({
   width: '100%',
+  overflow: 'auto',
 });
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    minHeight: '70%',
+    minHeight: '60%',
+    maxHeight: '70%',
   },
 });
 
@@ -51,7 +54,10 @@ export const StyledButton = styled('button')(({ theme }) => ({
 }));
 
 export const TabPanelContentsContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   overflow: 'auto',
+  height: '100%',
 });
 
 export const StyledTabPanel = styled(FilledTabPanel)({
