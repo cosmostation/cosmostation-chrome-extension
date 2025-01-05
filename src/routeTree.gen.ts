@@ -20,6 +20,7 @@ import { Route as WalletSwapIndexImport } from './pages/wallet/swap/index'
 import { Route as WalletStakeIndexImport } from './pages/wallet/stake/index'
 import { Route as WalletSendIndexImport } from './pages/wallet/send/index'
 import { Route as WalletReceiveIndexImport } from './pages/wallet/receive/index'
+import { Route as PopupRequestAccountIndexImport } from './pages/popup/request-account/index'
 import { Route as ManageAssetsSwitchAccoutTypeIndexImport } from './pages/manage-assets/switch-accout-type/index'
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
@@ -116,6 +117,12 @@ const WalletSendIndexRoute = WalletSendIndexImport.update({
 const WalletReceiveIndexRoute = WalletReceiveIndexImport.update({
   id: '/wallet/receive/',
   path: '/wallet/receive/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupRequestAccountIndexRoute = PopupRequestAccountIndexImport.update({
+  id: '/popup/request-account/',
+  path: '/popup/request-account/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -519,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsSwitchAccoutTypeIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/request-account/': {
+      id: '/popup/request-account/'
+      path: '/popup/request-account'
+      fullPath: '/popup/request-account'
+      preLoaderRoute: typeof PopupRequestAccountIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/receive/': {
       id: '/wallet/receive/'
       path: '/wallet/receive'
@@ -786,6 +800,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  '/popup/request-account': typeof PopupRequestAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
   '/wallet/stake': typeof WalletStakeIndexRoute
@@ -840,6 +855,7 @@ export interface FileRoutesByTo {
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  '/popup/request-account': typeof PopupRequestAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
   '/wallet/stake': typeof WalletStakeIndexRoute
@@ -895,6 +911,7 @@ export interface FileRoutesById {
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
   '/manage-assets/switch-accout-type/': typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  '/popup/request-account/': typeof PopupRequestAccountIndexRoute
   '/wallet/receive/': typeof WalletReceiveIndexRoute
   '/wallet/send/': typeof WalletSendIndexRoute
   '/wallet/stake/': typeof WalletStakeIndexRoute
@@ -951,6 +968,7 @@ export interface FileRouteTypes {
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
     | '/manage-assets/switch-accout-type'
+    | '/popup/request-account'
     | '/wallet/receive'
     | '/wallet/send'
     | '/wallet/stake'
@@ -1004,6 +1022,7 @@ export interface FileRouteTypes {
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
     | '/manage-assets/switch-accout-type'
+    | '/popup/request-account'
     | '/wallet/receive'
     | '/wallet/send'
     | '/wallet/stake'
@@ -1057,6 +1076,7 @@ export interface FileRouteTypes {
     | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
     | '/manage-assets/switch-accout-type/'
+    | '/popup/request-account/'
     | '/wallet/receive/'
     | '/wallet/send/'
     | '/wallet/stake/'
@@ -1112,6 +1132,7 @@ export interface RootRouteChildren {
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
   ManageAssetsSwitchAccoutTypeIndexRoute: typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  PopupRequestAccountIndexRoute: typeof PopupRequestAccountIndexRoute
   WalletReceiveIndexRoute: typeof WalletReceiveIndexRoute
   WalletSendIndexRoute: typeof WalletSendIndexRoute
   WalletStakeIndexRoute: typeof WalletStakeIndexRoute
@@ -1169,6 +1190,7 @@ const rootRouteChildren: RootRouteChildren = {
   ManageAccountSwitchAccountIndexRoute: ManageAccountSwitchAccountIndexRoute,
   ManageAssetsSwitchAccoutTypeIndexRoute:
     ManageAssetsSwitchAccoutTypeIndexRoute,
+  PopupRequestAccountIndexRoute: PopupRequestAccountIndexRoute,
   WalletReceiveIndexRoute: WalletReceiveIndexRoute,
   WalletSendIndexRoute: WalletSendIndexRoute,
   WalletStakeIndexRoute: WalletStakeIndexRoute,
@@ -1251,6 +1273,7 @@ export const routeTree = rootRoute
         "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
         "/manage-assets/switch-accout-type/",
+        "/popup/request-account/",
         "/wallet/receive/",
         "/wallet/send/",
         "/wallet/stake/",
@@ -1335,6 +1358,9 @@ export const routeTree = rootRoute
     },
     "/manage-assets/switch-accout-type/": {
       "filePath": "manage-assets/switch-accout-type/index.tsx"
+    },
+    "/popup/request-account/": {
+      "filePath": "popup/request-account/index.tsx"
     },
     "/wallet/receive/": {
       "filePath": "wallet/receive/index.tsx"
