@@ -22,9 +22,9 @@ export const DUNGEON: CosmosChain = {
   },
   bech32Prefix: { address: 'dungeon' },
   gasRate: {
-    tiny: '0',
-    low: '0',
-    average: '0',
+    tiny: '0.0005',
+    low: '0.005',
+    average: '0.05',
   },
   gas: { send: '100000' },
 };
