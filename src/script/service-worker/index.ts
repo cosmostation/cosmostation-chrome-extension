@@ -4,11 +4,12 @@
 // import { addressToStorage, balanceToStorage, chainsAndAssetstoStorage } from './storage';
 import type { Message } from '@/types/message';
 
+import { initExtensionView } from './initialize';
 import { address, customChainAddress } from './update/address';
 import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance } from './update/balance';
 import { v11 } from './update/v11';
 
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+initExtensionView();
 
 // const response = await chrome.runtime.sendMessage({ })
 
