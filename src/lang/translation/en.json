@@ -917,7 +917,7 @@
         "changePassword": "Change Password",
         "changePasswordDescription": "Change your wallet password",
         "setAutoLock": "Set Auto Lock",
-        "setAutoLockDescription": "Set the time to automatically lock the wallet",
+        "setAutoLockDescription": "Set auto-lock time",
         "preference": "Preference",
         "language": "Language",
         "languageDescription": "Select the language to use",
@@ -931,7 +931,12 @@
         "manageCustomNetwork": "Manage Custom Network",
         "manageCustomNetworkDescription": "Manage Added Custom Chains",
         "prioritize": "Prioritize",
-        "prioritizeDescription": "Set Cosmostation as your default wallet."
+        "prioritizeDescription": "Set Cosmostation as your default wallet.",
+        "support": "Support",
+        "guide": "Guide",
+        "guideDescription": "Learn how to use the wallet",
+        "about": "About",
+        "aboutDescription": "Check wallet version & info"
       },
       "layout": {
         "header": "Setting"
@@ -1036,6 +1041,21 @@
             "header": "Edit Address Book"
           }
         }
+      },
+      "about": {
+        "entry": {
+          "termsOfService": "Terms of Service",
+          "termsOfServiceDescription": "Review our service terms",
+          "privacy": "Privacy Policy",
+          "privacyDescription": "How we protect your data",
+          "github": "GitHub",
+          "githubDescription": "Browse our open-source projects",
+          "homepage": "Homepage",
+          "homepageDescription": "Visit our official website",
+          "x": "X (Twitter)",
+          "xDescription": "Explore our latest updates on X"
+        },
+        "header": "About"
       }
     },
     "manage-assets": {

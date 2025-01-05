@@ -27,6 +27,7 @@ import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-acc
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
 import { Route as GeneralSettingChangePasswordIndexImport } from './pages/general-setting/change-password/index'
 import { Route as GeneralSettingAddressBookIndexImport } from './pages/general-setting/address-book/index'
+import { Route as GeneralSettingAboutIndexImport } from './pages/general-setting/about/index'
 import { Route as CoinOverviewCoinIdIndexImport } from './pages/coin-overview/$coinId/index'
 import { Route as CoinDetailCoinIdIndexImport } from './pages/coin-detail/$coinId/index'
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
@@ -167,6 +168,12 @@ const GeneralSettingAddressBookIndexRoute =
     path: '/general-setting/address-book/',
     getParentRoute: () => rootRoute,
   } as any)
+
+const GeneralSettingAboutIndexRoute = GeneralSettingAboutIndexImport.update({
+  id: '/general-setting/about/',
+  path: '/general-setting/about/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const CoinOverviewCoinIdIndexRoute = CoinOverviewCoinIdIndexImport.update({
   id: '/coin-overview/$coinId/',
@@ -484,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoinOverviewCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/general-setting/about/': {
+      id: '/general-setting/about/'
+      path: '/general-setting/about'
+      fullPath: '/general-setting/about'
+      preLoaderRoute: typeof GeneralSettingAboutIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/general-setting/address-book/': {
       id: '/general-setting/address-book/'
       path: '/general-setting/address-book'
@@ -794,6 +808,7 @@ export interface FileRoutesByFullPath {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
   '/coin-overview/$coinId': typeof CoinOverviewCoinIdIndexRoute
+  '/general-setting/about': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
@@ -849,6 +864,7 @@ export interface FileRoutesByTo {
   '/account/set-password': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId': typeof CoinDetailCoinIdIndexRoute
   '/coin-overview/$coinId': typeof CoinOverviewCoinIdIndexRoute
+  '/general-setting/about': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
@@ -905,6 +921,7 @@ export interface FileRoutesById {
   '/account/set-password/': typeof AccountSetPasswordIndexRoute
   '/coin-detail/$coinId/': typeof CoinDetailCoinIdIndexRoute
   '/coin-overview/$coinId/': typeof CoinOverviewCoinIdIndexRoute
+  '/general-setting/about/': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book/': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password/': typeof GeneralSettingChangePasswordIndexRoute
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
@@ -962,6 +979,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/coin-detail/$coinId'
     | '/coin-overview/$coinId'
+    | '/general-setting/about'
     | '/general-setting/address-book'
     | '/general-setting/change-password'
     | '/manage-account/manage-wallet-and-account'
@@ -1016,6 +1034,7 @@ export interface FileRouteTypes {
     | '/account/set-password'
     | '/coin-detail/$coinId'
     | '/coin-overview/$coinId'
+    | '/general-setting/about'
     | '/general-setting/address-book'
     | '/general-setting/change-password'
     | '/manage-account/manage-wallet-and-account'
@@ -1070,6 +1089,7 @@ export interface FileRouteTypes {
     | '/account/set-password/'
     | '/coin-detail/$coinId/'
     | '/coin-overview/$coinId/'
+    | '/general-setting/about/'
     | '/general-setting/address-book/'
     | '/general-setting/change-password/'
     | '/manage-account/manage-wallet-and-account/'
@@ -1126,6 +1146,7 @@ export interface RootRouteChildren {
   AccountSetPasswordIndexRoute: typeof AccountSetPasswordIndexRoute
   CoinDetailCoinIdIndexRoute: typeof CoinDetailCoinIdIndexRoute
   CoinOverviewCoinIdIndexRoute: typeof CoinOverviewCoinIdIndexRoute
+  GeneralSettingAboutIndexRoute: typeof GeneralSettingAboutIndexRoute
   GeneralSettingAddressBookIndexRoute: typeof GeneralSettingAddressBookIndexRoute
   GeneralSettingChangePasswordIndexRoute: typeof GeneralSettingChangePasswordIndexRoute
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
@@ -1181,6 +1202,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountSetPasswordIndexRoute: AccountSetPasswordIndexRoute,
   CoinDetailCoinIdIndexRoute: CoinDetailCoinIdIndexRoute,
   CoinOverviewCoinIdIndexRoute: CoinOverviewCoinIdIndexRoute,
+  GeneralSettingAboutIndexRoute: GeneralSettingAboutIndexRoute,
   GeneralSettingAddressBookIndexRoute: GeneralSettingAddressBookIndexRoute,
   GeneralSettingChangePasswordIndexRoute:
     GeneralSettingChangePasswordIndexRoute,
@@ -1267,6 +1289,7 @@ export const routeTree = rootRoute
         "/account/set-password/",
         "/coin-detail/$coinId/",
         "/coin-overview/$coinId/",
+        "/general-setting/about/",
         "/general-setting/address-book/",
         "/general-setting/change-password/",
         "/manage-account/manage-wallet-and-account/",
@@ -1340,6 +1363,9 @@ export const routeTree = rootRoute
     },
     "/coin-overview/$coinId/": {
       "filePath": "coin-overview/$coinId/index.tsx"
+    },
+    "/general-setting/about/": {
+      "filePath": "general-setting/about/index.tsx"
     },
     "/general-setting/address-book/": {
       "filePath": "general-setting/address-book/index.tsx"

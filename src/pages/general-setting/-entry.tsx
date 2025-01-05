@@ -7,18 +7,23 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import { Route as About } from '@/pages/general-setting/about';
 import { Route as AddressBook } from '@/pages/general-setting/address-book';
 import { Route as ChangePassword } from '@/pages/general-setting/change-password';
+import { extension } from '@/utils/browser';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import CurrencyBottomSheet from './-components/CurrencyBottomSheet';
 import LanguageBottomSheet from './-components/LanguageBottomSheet';
 import { Container, OptionButtonContainer, OptionButtonIconContainer, SectionContainer, SectionTitleContainer } from './-styled';
 
+import AbountIcon from '@/assets/images/icons/About28.svg';
 import AddressBookIcon from '@/assets/images/icons/AddressBook28.svg';
 import AutoLockIcon from '@/assets/images/icons/AutoLock28.svg';
 import BackupWalletIcon from '@/assets/images/icons/BackupWallet28.svg';
 import ChangePasswordIcon from '@/assets/images/icons/ChangePassword28.svg';
 import CurrencyIcon from '@/assets/images/icons/Currency28.svg';
+import GuideIcon from '@/assets/images/icons/Guide28.svg';
 import LanguageIcon from '@/assets/images/icons/Language28.svg';
 import ManageCustomNetworkIcon from '@/assets/images/icons/ManageCustomNetwork28.svg';
 import PriceChangeColorIcon from '@/assets/images/icons/PriceChangeColor28.svg';
@@ -27,6 +32,10 @@ import PrioritizeIcon from '@/assets/images/icons/PriotizeWallet28.svg';
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { currency } = useExtensionStorageStore((state) => state);
+
+  const { version } = extension.runtime.getManifest();
 
   const [isOpenLanguageBottomSheet, setIsOpenLanguageBottomSheet] = useState(false);
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
@@ -158,6 +167,7 @@ export default function Entry() {
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.currency')}</Base1300Text>}
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.currencyDescription')}</Base1000Text>}
+                  rightContent={<Base1000Text variant="h6n_M">{currency.toUpperCase()}</Base1000Text>}
                 />
                 <BaseOptionButton
                   leftContent={
@@ -168,6 +178,42 @@ export default function Entry() {
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.priceChangeColor')}</Base1300Text>}
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.priceChangeColorDescription')}</Base1000Text>}
                   rightContent={<Base1000Text variant="h6n_M">{'60 Min'}</Base1000Text>}
+                />
+              </OptionButtonContainer>
+            </SectionContainer>
+
+            <SectionContainer>
+              <SectionTitleContainer>
+                <Base1300Text variant="h4_B">{t('pages.general-setting.entry.support')} </Base1300Text>
+                <Base1000Text variant="h4_B">{'2'}</Base1000Text>
+              </SectionTitleContainer>
+              <OptionButtonContainer>
+                <BaseOptionButton
+                  onClick={() => {
+                    window.open('https://cosmostation.gitbook.io/cosmostation-documents/user-guide/cosmostation-extension', '_blank');
+                  }}
+                  leftContent={
+                    <OptionButtonIconContainer>
+                      <GuideIcon />
+                    </OptionButtonIconContainer>
+                  }
+                  leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.guide')}</Base1300Text>}
+                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.guideDescription')}</Base1000Text>}
+                />
+                <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: About.to,
+                    });
+                  }}
+                  leftContent={
+                    <OptionButtonIconContainer>
+                      <AbountIcon />
+                    </OptionButtonIconContainer>
+                  }
+                  leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.about')}</Base1300Text>}
+                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.aboutDescription')}</Base1000Text>}
+                  rightContent={<Base1000Text variant="h6n_M">{`V ${version}`}</Base1000Text>}
                 />
               </OptionButtonContainer>
             </SectionContainer>
