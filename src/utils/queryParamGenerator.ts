@@ -1,6 +1,6 @@
 import type { Account, MnemonicAccount } from '@/types/account';
 import type { AssetId } from '@/types/asset';
-import type { ChainId, UniqueChainId } from '@/types/chain';
+import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 
 export function getMnemonicId(account: Account): account is MnemonicAccount {
   return 'encryptedRestoreString' in account;
@@ -33,6 +33,10 @@ export function isSameCoin(baseCoin: AssetId, targetCoin: AssetId) {
 
 export function getUniqueChainId(chain: ChainId): UniqueChainId {
   return `${chain.id}__${chain.chainType}`;
+}
+
+export function getUniqueChainIdWithManual(id: string, chainType: ChainType) {
+  return `${id}__${chainType}`;
 }
 
 export function parseUniqueChainId(chainId: UniqueChainId) {

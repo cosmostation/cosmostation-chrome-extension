@@ -197,6 +197,13 @@
         "header": "Delete Confirmation",
         "delete": "Delete"
       }
+    },
+    "AddressBottomSheet": {
+      "index": {
+        "myAddress": "My Address",
+        "addressBook": "Address Book",
+        "title": "Select Address"
+      }
     }
   },
   "pages": {
@@ -683,7 +690,8 @@
             "memo": "Memo (Option)",
             "sendReview": "Confirm Send",
             "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
-            "denom": "Denom"
+            "denom": "Denom",
+            "chooseRecipientAddress": "Choose Recipient"
           }
         },
         "layout": {

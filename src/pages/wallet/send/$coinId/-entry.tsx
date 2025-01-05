@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
@@ -116,6 +117,7 @@ export default function Entry({ coinId }: EntryProps) {
 
   const [inputMemo, setInputMemo] = useState('');
 
+  const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
   // TODO
@@ -163,7 +165,7 @@ export default function Entry({ coinId }: EntryProps) {
                 input: {
                   endAdornment: (
                     <InputAdornment position="end">
-                      <AddressBookButton>
+                      <AddressBookButton disabled={!currentRecipientChainId} onClick={() => setIsOpenAddressBottomSheet(true)}>
                         <AddressBookIcon />
                       </AddressBookButton>
                     </InputAdornment>
@@ -233,6 +235,21 @@ export default function Entry({ coinId }: EntryProps) {
           />
         </>
       </BaseFooter>
+
+      {currentRecipientChainId && (
+        <AddressBottomSheet
+          open={isOpenAddressBottomSheet}
+          onClose={() => setIsOpenAddressBottomSheet(false)}
+          chainId={currentRecipientChainId}
+          headerTitle={t('pages.wallet.send.$coinId.entry.chooseRecipientAddress')}
+          onClickAddress={(address, memo) => {
+            setRecipientAddress(address);
+            if (memo) {
+              setInputMemo(memo);
+            }
+          }}
+        />
+      )}
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
