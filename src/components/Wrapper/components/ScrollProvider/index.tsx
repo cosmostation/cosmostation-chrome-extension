@@ -1,4 +1,5 @@
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
+import { useLocation } from '@tanstack/react-router';
 
 const ScrollContext = createContext<{ scrollToTop: () => void } | undefined>(undefined);
 
@@ -16,10 +17,18 @@ type ScrollProviderProps = {
 
 export default function ScrollProvider({ children }: ScrollProviderProps) {
   const topRef = useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
 
   const scrollToTop = () => {
-    setTimeout(() => topRef.current?.scrollIntoView(), 0);
+    if (topRef.current) {
+      topRef.current.scrollIntoView();
+    }
   };
+
+  useEffect(() => {
+    requestAnimationFrame(scrollToTop);
+  }, [pathname]);
+
   return (
     <ScrollContext.Provider value={{ scrollToTop }}>
       <div ref={topRef} />
