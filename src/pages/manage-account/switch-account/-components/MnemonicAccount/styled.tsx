@@ -3,14 +3,18 @@ import { styled } from '@mui/material/styles';
 
 import OutlinedButton from '@/components/common/OutlinedButton';
 
-export const Container = styled('div')({
+export const Container = styled('div')(({ theme }) => ({
   width: '100%',
 
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-});
+
+  paddingBottom: '1.2rem',
+
+  borderBottom: `0.06rem solid ${theme.palette.color.base200}`,
+}));
 
 export const TopContainer = styled('div')({
   width: '100%',
@@ -131,7 +135,7 @@ export const ActiveBadge = styled('div')(({ theme }) => ({
 
 export const OutlinedButtonContainer = styled('div')({
   width: '100%',
-  padding: '1.6rem',
+  padding: '1.6rem 1.6rem 0',
   boxSizing: 'border-box',
 });
 

@@ -18,6 +18,8 @@ import MainBox from '..';
 
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 
+import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
+
 type CoinDetailBoxProps = {
   coinId: string;
 };
@@ -95,7 +97,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
           </BottomButtonContainer>
         }
         className="circleGradient"
-        coinBackgroundImage={coinImage}
+        coinBackgroundImage={coinImage || DefaultCoinImage}
       />
     </>
   );

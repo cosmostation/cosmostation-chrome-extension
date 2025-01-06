@@ -12,6 +12,8 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { BodyBottomContainer, BodyContainer, BodyTopContainer, TopContainer } from './styled';
 import MainBox from '..';
 
+import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
+
 type CoinOverviewBoxProps = {
   coinId: string;
 };
@@ -60,7 +62,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
           </BodyContainer>
         }
         className="circleGradient"
-        coinBackgroundImage={currentGroupCoin?.asset.image}
+        coinBackgroundImage={currentGroupCoin?.asset.image || DefaultCoinImage}
       />
     </>
   );
