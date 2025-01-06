@@ -33,15 +33,15 @@ import {
   EstimatedValueTextContainer,
   IBCSendText,
   InputWrapper,
-} from './-styled.tsx';
+} from './styled.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
-type EntryProps = {
+type EVMProps = {
   coinId: string;
 };
 
-export default function Entry({ coinId }: EntryProps) {
+export default function EVM({ coinId }: EVMProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -56,26 +56,17 @@ export default function Entry({ coinId }: EntryProps) {
   const selectedCoinToSend = (() => {
     if (!data) return undefined;
 
-    if (parsedCoinId.chainType === 'cosmos') {
-      const aggregatedCosmosAccountAssets = [...data.cosmosAccountAssets, ...data.cw20AccountAssets];
-
-      return aggregatedCosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-
     if (parsedCoinId.chainType === 'evm') {
-      const aggregatedEVMAccountAssets = [...data.evmAccountAssets, ...data.erc20AccountAssets];
+      const aggregatedEVMAccountAssets = [
+        ...data.evmAccountAssets,
+        ...data.evmAccountCustomAssets,
+        ...data.erc20AccountAssets,
+        ...data.customErc20AccountAssets,
+      ];
 
       return aggregatedEVMAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
 
-    if (parsedCoinId.chainType === 'sui') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-    if (parsedCoinId.chainType === 'aptos') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-
-    // TODO bitcoin...
     return undefined;
   })();
 
@@ -88,12 +79,8 @@ export default function Entry({ coinId }: EntryProps) {
   const coinDecimal = selectedCoinToSend?.asset.decimals || 0;
 
   const coinType = (() => {
-    if (selectedCoinToSend?.asset.type === 'erc20' || selectedCoinToSend?.asset.type === 'cw20') {
+    if (selectedCoinToSend?.asset.type === 'erc20') {
       return t('pages.wallet.send.$coinId.entry.contract');
-    }
-
-    if (selectedCoinToSend?.asset.type === 'ibc') {
-      return t('pages.wallet.send.$coinId.entry.denom');
     }
 
     return '';
