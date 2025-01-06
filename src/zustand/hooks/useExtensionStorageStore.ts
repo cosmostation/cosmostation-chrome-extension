@@ -32,6 +32,7 @@ const initialState: ExtensionStorageState = {
   addedCustomChainList: [],
   customAssets: [],
   customHiddenAssetIds: [],
+  approvedOrigins: [],
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {

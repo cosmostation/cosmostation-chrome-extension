@@ -27,6 +27,8 @@ export type AddressInfo = {
   memo?: string;
 };
 
+export type ApprovedOrigin = { accountId: Account['id']; origin: string };
+
 export interface ExtensionStorage {
   accounts: Account[];
   paramsV11: Record<string, V11Param>;
@@ -64,6 +66,7 @@ export interface ExtensionStorage {
   addedCustomChainList: CustomChain[];
   customAssets: CustomAsset[];
   customHiddenAssetIds: AssetId[];
+  approvedOrigins: ApprovedOrigin[];
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

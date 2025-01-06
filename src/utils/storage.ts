@@ -89,6 +89,10 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('customCw20Assets', []);
   }
 
+  if (!originStorage.approvedOrigins) {
+    await setExtensionLocalStorage('customCw20Assets', []);
+  }
+
   if (originStorage.accountNamesById) {
     const accountMissingNames = (() => {
       const storedAccounts = originStorage.accounts;
