@@ -1,6 +1,10 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+export const WrapperContainer = styled('div')({
+  width: '100%',
+});
+
 export const Container = styled('div')(({ theme }) => ({
   width: '100%',
 
@@ -67,6 +71,13 @@ export const AccountButton = styled('button')(({ theme }) => ({
     backgroundColor: theme.palette.color.base200,
   },
 }));
+
+export const AccountImgContainer = styled('div')({
+  width: '2.8rem',
+  height: '2.8rem',
+
+  background: 'gray',
+});
 
 export const AccountLeftContainer = styled('div')({
   display: 'flex',

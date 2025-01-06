@@ -231,6 +231,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <AddressBottomSheet
           open={isOpenAddressBottomSheet}
           onClose={() => setIsOpenAddressBottomSheet(false)}
+          filterAddress={selectedCoinToSend?.address.address}
           chainId={currentRecipientChainId}
           headerTitle={t('pages.wallet.send.$coinId.entry.chooseRecipientAddress')}
           onClickAddress={(address, memo) => {

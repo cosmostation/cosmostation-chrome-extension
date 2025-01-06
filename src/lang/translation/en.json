@@ -203,6 +203,14 @@
         "myAddress": "My Address",
         "addressBook": "Address Book",
         "title": "Select Address"
+      },
+      "components": {
+        "PrivatekeyAccount": "Private Key"
+      }
+    },
+    "AddressBook": {
+      "index": {
+        "memo": "Memo :"
       }
     }
   },

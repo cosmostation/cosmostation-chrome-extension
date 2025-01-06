@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import type { UniqueChainId } from '@/types/chain';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import AddressBookItem from './components/AddressBook';
-import MnemonicAccount from './components/MnemonicAccount';
+import MyAddress from './components/MyAddress';
 import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledTabPanel, TabPanelContentsContainer } from './styled';
 import { FilledTab, FilledTabs } from '../common/FilledTab';
 
@@ -14,11 +13,12 @@ import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type AddressBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   chainId: UniqueChainId;
+  filterAddress?: string;
   headerTitle?: string;
   onClickAddress?: (address: string, memo?: string) => void;
 };
 
-export default function AddressBottomSheet({ chainId, headerTitle, onClose, onClickAddress, ...remainder }: AddressBottomSheetProps) {
+export default function AddressBottomSheet({ chainId, headerTitle, filterAddress, onClose, onClickAddress, ...remainder }: AddressBottomSheetProps) {
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(0);
@@ -27,13 +27,6 @@ export default function AddressBottomSheet({ chainId, headerTitle, onClose, onCl
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
-
-  const { accounts } = useExtensionStorageStore((state) => state);
-
-  const uniqueMnemonicRestoreString = accounts
-    .filter((item) => item.type === 'MNEMONIC')
-    .map((account) => account.encryptedRestoreString)
-    .filter((value, index, self) => self.indexOf(value) === index);
 
   const onHandleClick = (address: string, memo?: string) => {
     onClickAddress?.(address, memo);
@@ -68,16 +61,13 @@ export default function AddressBottomSheet({ chainId, headerTitle, onClose, onCl
         <Body>
           <StyledTabPanel value={tabValue} index={0}>
             <TabPanelContentsContainer>
-              {uniqueMnemonicRestoreString.map((item, i) => (
-                <MnemonicAccount
-                  key={i}
-                  mnemonicRestoreString={item}
-                  chainId={chainId}
-                  onClickAddress={(address) => {
-                    onHandleClick(address);
-                  }}
-                />
-              ))}
+              <MyAddress
+                chainId={chainId}
+                filterAddress={filterAddress}
+                onClickAddress={(address) => {
+                  onHandleClick(address);
+                }}
+              />
             </TabPanelContentsContainer>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
