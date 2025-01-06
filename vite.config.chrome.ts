@@ -51,15 +51,14 @@ export default defineConfig(({ mode }) => {
     ],
     build: {
       outDir,
+      emptyOutDir: false,
+      minify: isProduction,
       watch,
       sourcemap: !isProduction,
       rollupOptions: {
         input: {
           popup: resolve(__dirname, 'popup.html'),
           sidepanel: resolve(__dirname, 'sidepanel.html'),
-          service_worker: resolve(__dirname, 'src/script/service-worker/index.ts'),
-          inject: resolve(__dirname, 'src/script/inject/index.ts'),
-          content: resolve(__dirname, 'src/script/content/index.ts'),
         },
         output: [
           {

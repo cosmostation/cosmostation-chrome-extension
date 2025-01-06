@@ -21,5 +21,22 @@
     "256": "extension-assets/icon256-dark.png"
   },
   "permissions": ["storage", "unlimitedStorage", "tabs", "sidePanel", "debugger", "alarms"],
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "resources": ["js/inject.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "js/service_worker.js",
+    "type": "module"
+  }
 }

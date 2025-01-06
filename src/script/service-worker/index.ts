@@ -2,9 +2,10 @@
 // import { getAccountAssets } from '@/libs/asset';
 
 // import { addressToStorage, balanceToStorage, chainsAndAssetstoStorage } from './storage';
-import type { Message } from '@/types/message';
+import type { ServiceWorkerMessage } from '@/types/message/service-worker';
 
 import { initExtensionView } from './initialize';
+import { process } from './message';
 import { address, customChainAddress } from './update/address';
 import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance } from './update/balance';
 import { v11 } from './update/v11';
@@ -13,10 +14,10 @@ initExtensionView();
 
 // const response = await chrome.runtime.sendMessage({ })
 
-chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
   (async () => {
-    console.log('message', message);
-    console.log('sender', sender);
+    console.log('service worker message', message);
+    console.log('service worker sender', sender);
 
     if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
       if (message.method === 'updateBalance') {
@@ -37,6 +38,13 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
         const [id] = message.params;
         await address(id);
         await customChainAddress(id);
+        sendResponse(null);
+      }
+
+      if (message.method === 'requestApp') {
+        const { params } = message;
+
+        await process({ ...params, tabId: sender.tab?.id });
         sendResponse(null);
       }
     }
@@ -83,3 +91,11 @@ chrome.runtime.onInstalled.addListener(async () => {
 // }
 
 // startServiceWorker();
+
+// import { initExtensionView } from './initialize';
+
+// function main() {
+//   initExtensionView();
+// }
+
+// main();
