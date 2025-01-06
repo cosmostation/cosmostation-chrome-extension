@@ -1,6 +1,7 @@
 import { bech32 } from 'bech32';
 import BIP32Factory from 'bip32';
 import * as bip39 from 'bip39';
+import { networks, payments } from 'bitcoinjs-lib';
 import encHex from 'crypto-js/enc-hex';
 import ripemd160 from 'crypto-js/ripemd160';
 import sha256 from 'crypto-js/sha256';
@@ -41,7 +42,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
 
     const decryptedMnemonic = aesDecrypt(encryptedMnemonic, password);
 
-    if (chainType === 'cosmos' || chainType === 'evm') {
+    if (chainType === 'cosmos' || chainType === 'evm' || chainType === 'bitcoin') {
       const path = hdPath.replace('${index}', `${index}`);
 
       const seed = bip39.mnemonicToSeedSync(decryptedMnemonic);
@@ -66,11 +67,6 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
       return { privateKey, publicKey };
     }
 
-    // TODO: bitcoin
-    // if (chainType === 'bitcoin') {
-    //   const path = compiled({ index: `${index}'` });
-    // }
-
     throw new Error('Invalid chain type');
   }
 
@@ -78,7 +74,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
     const { encryptedPrivateKey } = account;
     const decryptedPrivateKey = aesDecrypt(encryptedPrivateKey, password);
 
-    if (chainType === 'cosmos' || chainType === 'evm') {
+    if (chainType === 'cosmos' || chainType === 'evm' || chainType === 'bitcoin') {
       const ecpair = ECPair.fromPrivateKey(Buffer.from(decryptedPrivateKey, 'hex'), {
         compressed: true,
       });
@@ -89,9 +85,6 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
       const publicKey = Buffer.from(getPublicKey(Buffer.from(decryptedPrivateKey, 'hex'), false)).toString('hex');
       return { privateKey: decryptedPrivateKey, publicKey };
     }
-
-    // if (chainType === 'bitcoin') {
-    // }
 
     throw new Error('Invalid chain type');
   }
@@ -140,6 +133,27 @@ export function getAddress(chain: Chain, publicKey: string) {
     const uncompressedPublicKey = Buffer.from(ecc.pointCompress(Buffer.from(publicKey, 'hex'), false).slice(1));
     const address = Address.fromPublicKey(uncompressedPublicKey).toString();
     return toChecksumAddress(address);
+  }
+
+  if (chainType === 'bitcoin') {
+    const { pubkeyStyle } = accountType;
+    if (pubkeyStyle === 'p2wpkh') {
+      const p2wpkh = payments.p2wpkh({ pubkey: Buffer.from(publicKey, 'hex'), network: networks.bitcoin });
+      return p2wpkh.address!;
+    }
+    if (pubkeyStyle === 'p2pkh') {
+      const p2pkh = payments.p2pkh({ pubkey: Buffer.from(publicKey, 'hex'), network: networks.bitcoin });
+      return p2pkh.address!;
+    }
+    if (pubkeyStyle === 'p2wpkhSh') {
+      const p2wpkhSh = payments.p2sh({
+        redeem: payments.p2wpkh({
+          pubkey: Buffer.from(publicKey, 'hex'),
+          network: networks.bitcoin,
+        }),
+      });
+      return p2wpkhSh.address!;
+    }
   }
 
   throw new Error('Invalid chain type');

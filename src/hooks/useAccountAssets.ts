@@ -17,12 +17,11 @@ type UseAccountAssetsResponse = AccountAssets & {
 type UseAccountAssets =
   | {
       accountId?: string;
-      isOrign?: boolean;
       config?: UseQueryOptions<AccountAssets | null>;
     }
   | undefined;
 
-export function useAccountAssets({ accountId, isOrign = false, config }: UseAccountAssets = {}) {
+export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
   const { currentAccount } = useCurrentAccount();
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
   const { data: currentAccountAllAssets } = useAccountAllAssets();
@@ -56,25 +55,22 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
   const returnData = useMemo(() => {
     if (!data) return null;
 
-    if (isOrign) {
-      const flatAccountAssets = Object.values(data).flat();
-
-      const returnData: UseAccountAssetsResponse = {
-        ...data,
-        flatAccountAssets: flatAccountAssets,
-      };
-      return returnData;
-    }
-
     const filteredCosmos = data.cosmosAccountAssets
       .filter((item) => {
         const selectedChainAccountType = accountType[item.chain.id];
 
         if (selectedChainAccountType) {
+          const isSamePubkeyType = (() => {
+            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+            }
+            return true;
+          })();
+
           return (
             selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
             selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
+            isSamePubkeyType
           );
         }
         return true;
@@ -104,10 +100,17 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
       const selectedChainAccountType = accountType[item.chain.id];
 
       if (selectedChainAccountType) {
+        const isSamePubkeyType = (() => {
+          if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+            return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+          }
+          return true;
+        })();
+
         return (
           selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
           selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
+          isSamePubkeyType
         );
       }
       return true;
@@ -117,19 +120,48 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
       const selectedChainAccountType = accountType[item.chain.id];
 
       if (selectedChainAccountType) {
+        const isSamePubkeyType = (() => {
+          if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+            return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+          }
+          return true;
+        })();
         return (
           selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
           selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
+          isSamePubkeyType
         );
       }
       return true;
     });
 
+    const filteredBitcoin = data.bitcoinAccountAssets.filter((item) => {
+      const selectedChainAccountType = accountType[item.chain.id];
+
+      if (selectedChainAccountType) {
+        const isSamePubkeyType = (() => {
+          if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+            return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+          }
+          return true;
+        })();
+
+        return (
+          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+          isSamePubkeyType
+        );
+      }
+      return true;
+    });
+
+    // TODO Bitcoin도 preferAccountType별 필터링 필요.
+
     const filteredAccountAssets = produce(data, (draft) => {
       draft.cosmosAccountAssets = filteredCosmos;
       draft.cw20AccountAssets = filteredCW20;
       draft.evmAccountAssets = filteredEVM;
+      draft.bitcoinAccountAssets = filteredBitcoin;
     });
 
     const flatAccountAssets = Object.values(filteredAccountAssets).flat();
@@ -140,7 +172,7 @@ export function useAccountAssets({ accountId, isOrign = false, config }: UseAcco
     };
 
     return returnData;
-  }, [accountType, currentAccountAllAssets?.evmAccountAssets, data, isOrign]);
+  }, [accountType, currentAccountAllAssets?.evmAccountAssets, data]);
 
   return { data: returnData, isLoading, error, refetch };
 }

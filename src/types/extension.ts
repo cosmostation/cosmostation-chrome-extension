@@ -2,6 +2,7 @@ import type {
   Account,
   AccountAddress,
   AccountAddressBalanceAptos,
+  AccountAddressBalanceBitcoin,
   AccountAddressBalanceCosmos,
   AccountAddressBalanceCw20,
   AccountAddressBalanceErc20,
@@ -39,6 +40,7 @@ export interface ExtensionStorage {
   [key: `${string}-balance-evm`]: AccountAddressBalanceEvm[];
   [key: `${string}-balance-aptos`]: AccountAddressBalanceAptos[];
   [key: `${string}-balance-sui`]: AccountAddressBalanceSui[];
+  [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-hidden-assetIds`]: AssetId[];

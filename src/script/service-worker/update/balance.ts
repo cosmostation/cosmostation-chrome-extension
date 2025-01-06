@@ -6,8 +6,15 @@ import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
-import type { AccountAddressBalanceAptos, AccountAddressBalanceCosmos, AccountAddressBalanceEvm, AccountAddressBalanceSui } from '@/types/account';
+import type {
+  AccountAddressBalanceAptos,
+  AccountAddressBalanceBitcoin,
+  AccountAddressBalanceCosmos,
+  AccountAddressBalanceEvm,
+  AccountAddressBalanceSui,
+} from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
+import type { AccountDetail } from '@/types/bitcoin/balance';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { ExtensionStorage } from '@/types/extension';
@@ -30,6 +37,7 @@ export async function updateDefaultAssetsBalance(id: string) {
       evmBalances(id, {
         isMinimal: true,
       }),
+      bitcoinBalances(id),
     ]);
 
     await updateHiddenAssetsExcludingDefault(id);
@@ -80,9 +88,10 @@ export async function updateBalance(id: string) {
       evmBalances(id),
       aptosBalances(id),
       suiBalances(id),
+      bitcoinBalances(id),
       erc20Balance(id),
-      customErc20Balance(id),
       cw20Balance(id),
+      customErc20Balance(id),
       customCw20Balance(id),
     ]);
   } catch (error) {
@@ -467,6 +476,42 @@ async function customEvmBalances(id: string) {
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${id}-custom-balance-evm`]: results });
+}
+
+async function bitcoinBalances(id: string) {
+  const address = await getAccountAddress(id);
+  const { bitcoinChains } = await getChains();
+
+  const addressWithChain = address
+
+    .map((addr) => {
+      const chain = bitcoinChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { mempoolURL } = chain;
+
+      const url = `${mempoolURL}/address/${address}`;
+
+      const response = await axios.get<AccountDetail>(url);
+
+      const balance = {
+        chainStats: response.data?.chain_stats || undefined,
+        mempoolStats: response.data?.mempool_stats || undefined,
+      };
+
+      const result: AccountAddressBalanceBitcoin = { id, chainId, chainType, address, balance };
+
+      return result;
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${id}-balance-bitcoin`]: results });
 }
 
 async function aptosBalances(id: string) {

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import Layout from './-layout';
 import Entry from './-Entry';
+import Layout from './-layout';
 
 export const Route = createFileRoute('/wallet/send/$coinId/')({
   component: Send,

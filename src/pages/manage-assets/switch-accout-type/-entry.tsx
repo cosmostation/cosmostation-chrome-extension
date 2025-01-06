@@ -54,7 +54,7 @@ export default function Entry() {
         <EdgeAligner>
           {mappedAccountTypes.map((item) => {
             const hdPathParts = item.accountType.hdPath.split('/');
-            const coinTypeLevel = hdPathParts[2];
+            const coinTypeLevel = item.chain?.chainType === 'bitcoin' ? hdPathParts[1] : hdPathParts[2];
 
             return <CoinTypeButton key={item.chain?.id} chain={item.chain!} coinTypeLevel={coinTypeLevel} />;
           })}

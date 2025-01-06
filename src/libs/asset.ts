@@ -2,6 +2,7 @@ import PromisePool from '@supercharge/promise-pool';
 
 import type {
   AccountAptosAsset,
+  AccountBitcoinAsset,
   AccountCosmosAsset,
   AccountCustomCosmosAsset,
   AccountCustomEvmAsset,
@@ -10,8 +11,9 @@ import type {
   AccountEvmAsset,
   AccountSuiAsset,
 } from '@/types/account';
-import type { AptosAsset, AssetSingleGroup, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
+import type { AptosAsset, Asset, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
+import { minus } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 
 import { getAllAccountAddress } from './account';
@@ -54,15 +56,11 @@ export async function getAssets() {
   const aptosChainIds = aptosChains.map((chain) => chain.id);
   const bitcoinChainIds = bitcoinChains.map((chain) => chain.id);
 
-  const filteredEvmAssets = assets.filter((asset) =>
-    // FIXME Optimism, Arbitrum의 경우 main_asset_denom이 0xeee가 아니어서 리스트에서 제외되는 문제가 발생.
-    {
-      const gasCoinDenom =
-        chains?.[asset.chain]?.params?.chainlist_params?.gas_asset_denom || chains?.[asset.chain]?.params?.chainlist_params?.main_asset_denom;
+  const filteredEvmAssets = assets.filter((asset) => {
+    const gasCoinDenom = chains?.[asset.chain]?.params?.chainlist_params?.gas_asset_denom || chains?.[asset.chain]?.params?.chainlist_params?.main_asset_denom;
 
-      return evmChainIds.includes(asset.chain) && asset.type === 'native' && gasCoinDenom === asset.denom;
-    },
-  );
+    return evmChainIds.includes(asset.chain) && asset.type === 'native' && gasCoinDenom === asset.denom;
+  });
 
   const evmAssets: EvmAsset[] = filteredEvmAssets.map((asset) => {
     return {
@@ -132,57 +130,11 @@ export async function getAssets() {
   };
 }
 
-export async function getGroupAssets() {
-  const { aptosAssets, bitcoinAssets, cosmosAssets, cw20Assets, erc20Assets, evmAssets, suiAssets } = await getAssets();
+type GetAccountAssetsOption = {
+  disableFilterHidden?: boolean;
+};
 
-  const supportedAssets = [...evmAssets, ...cosmosAssets, ...suiAssets, ...aptosAssets, ...bitcoinAssets, ...erc20Assets, ...cw20Assets];
-
-  const assetToSingleOrGroup = supportedAssets.reduce<AssetSingleGroup>(
-    (acc, asset) => {
-      if (!asset.coinGeckoId) {
-        acc.singles.push(asset);
-        return acc;
-      }
-
-      if (!acc.groups[asset.coinGeckoId]) {
-        acc.groups[asset.coinGeckoId] = [asset];
-      } else {
-        acc.groups[asset.coinGeckoId].push(asset);
-      }
-      return acc;
-    },
-    { singles: [], groups: {} },
-  );
-
-  const singles = assetToSingleOrGroup.singles;
-
-  const groups = assetToSingleOrGroup.groups;
-
-  const trueGroup = Object.fromEntries(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Object.entries(groups).filter(([_, value]) => {
-      return value.length > 1;
-    }),
-  );
-
-  const fakeGroup = Object.values(
-    Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(groups).filter(([_, value]) => {
-        return value.length === 1;
-      }),
-    ),
-  );
-
-  const aa = [...singles, ...fakeGroup.flat()];
-
-  console.log('🚀 ~ getGroupAssets ~ trueSingle:', aa);
-  console.log('🚀 ~ getGroupAssets ~ trueGroup:', trueGroup);
-
-  return { singles: aa, groups: trueGroup };
-}
-
-export async function getAccountAssets(id: string) {
+export async function getAccountAssets(id: string, option?: GetAccountAssetsOption) {
   console.time('getAccountAssets');
   const concurrency = 10;
   const storage = await chrome.storage.local.get<ExtensionStorage>([
@@ -191,6 +143,7 @@ export async function getAccountAssets(id: string) {
     `${id}-balance-evm`,
     `${id}-balance-aptos`,
     `${id}-balance-sui`,
+    `${id}-balance-bitcoin`,
     `${id}-balance-erc20`,
     `${id}-balance-cw20`,
     `${id}-custom-balance-erc20`,
@@ -199,32 +152,30 @@ export async function getAccountAssets(id: string) {
 
   const hiddenAssetIds = await getHiddenAssets(id);
 
-  const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
+  const { aptosChains, cosmosChains, evmChains, suiChains, bitcoinChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
 
   const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
   const allCosmosChains = [...cosmosChains, ...addedCustomChains.filter((chain) => chain.chainType === 'cosmos')];
 
-  const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets } = await getAssets();
+  const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets, bitcoinAssets } = await getAssets();
 
-  const aptosAssetsWithoutHidden = aptosAssets.filter(
-    (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-  );
-  const cosmosAssetsWithoutHidden = cosmosAssets.filter(
-    (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-  );
-  const cw20AssetsWithoutHidden = cw20Assets.filter(
-    (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-  );
-  const erc20AssetsWithoutHidden = erc20Assets.filter(
-    (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-  );
-  const evmAssetsWithoutHidden = evmAssets.filter(
-    (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-  );
-  const suiAssetsWithoutHidden = suiAssets.filter(
-    (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-  );
+  const filterHiddenAssets = <T extends Asset>(assets: T[]): T[] => {
+    if (option?.disableFilterHidden) {
+      return assets;
+    }
+    return assets.filter(
+      (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
+    );
+  };
+
+  const aptosAssetsWithoutHidden = filterHiddenAssets(aptosAssets);
+  const cosmosAssetsWithoutHidden = filterHiddenAssets(cosmosAssets);
+  const cw20AssetsWithoutHidden = filterHiddenAssets(cw20Assets);
+  const erc20AssetsWithoutHidden = filterHiddenAssets(erc20Assets);
+  const evmAssetsWithoutHidden = filterHiddenAssets(evmAssets);
+  const suiAssetsWithoutHidden = filterHiddenAssets(suiAssets);
+  const bitcoinAssetsWithoutHidden = filterHiddenAssets(bitcoinAssets);
 
   const accountAddress = storage[`${id}-address`];
   const allAccountAddress = await getAllAccountAddress(id);
@@ -233,6 +184,7 @@ export async function getAccountAssets(id: string) {
   const evmBalances = storage[`${id}-balance-evm`];
   const aptosBalances = storage[`${id}-balance-aptos`];
   const suiBalances = storage[`${id}-balance-sui`];
+  const bitcoinBalances = storage[`${id}-balance-bitcoin`];
   const erc20Balances = storage[`${id}-balance-erc20`];
   const customErc20Balances = storage[`${id}-custom-balance-erc20`];
   const cw20Balances = storage[`${id}-balance-cw20`];
@@ -460,7 +412,51 @@ export async function getAccountAssets(id: string) {
       return results;
     });
 
-  const results = await Promise.all([cosmosPromise, evmPromise, aptosPromise, suiPromise, cw20Promise, erc20Promise, customErc20Promise, customCW20Promise]);
+  const bitcoinPromise = PromisePool.withConcurrency(concurrency)
+    .for(bitcoinAssetsWithoutHidden)
+    .process(async (asset) => {
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = bitcoinChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const balanceInfo = bitcoinBalances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const balance =
+            balanceInfo?.balance.chainStats && balanceInfo?.balance.mempoolStats
+              ? minus(
+                  minus(balanceInfo?.balance.chainStats?.funded_txo_sum, balanceInfo?.balance.chainStats?.spent_txo_sum),
+                  balanceInfo?.balance.mempoolStats?.spent_txo_sum,
+                )
+              : '0';
+
+          const result: AccountBitcoinAsset = {
+            chain,
+            asset,
+            address,
+            balance: balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
+  const results = await Promise.all([
+    cosmosPromise,
+    evmPromise,
+    aptosPromise,
+    suiPromise,
+    cw20Promise,
+    erc20Promise,
+    customErc20Promise,
+    customCW20Promise,
+    bitcoinPromise,
+  ]);
 
   const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
   const evmAccountAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
@@ -470,6 +466,7 @@ export async function getAccountAssets(id: string) {
   const erc20AccountAssets = results[5].results.flat().filter((asset) => asset.chain && asset.address);
   const customErc20AccountAssets = results[6].results.flat().filter((asset) => asset.chain && asset.address);
   const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
+  const bitcoinAccountAssets = results[8].results.flat().filter((asset) => asset.chain && asset.address);
 
   console.timeEnd('getAccountAssets');
 
@@ -482,17 +479,15 @@ export async function getAccountAssets(id: string) {
     erc20AccountAssets,
     customErc20AccountAssets,
     customCw20AccountAssets,
+    bitcoinAccountAssets,
   };
 }
 
-export async function getAccountCustomAssets(
-  id: string,
-  {
-    filterHidden = true,
-  }: {
-    filterHidden?: boolean;
-  } = {},
-) {
+type GetAccountCustomAssetsOption = {
+  disableFilterHidden?: boolean;
+};
+
+export async function getAccountCustomAssets(id: string, option?: GetAccountCustomAssetsOption) {
   console.time('getAccountCustomAssets');
   const concurrency = 10;
   const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
@@ -506,9 +501,9 @@ export async function getAccountCustomAssets(
 
   const { customAssets } = await chrome.storage.local.get<ExtensionStorage>(['customAssets']);
 
-  const visibleCustomAssets = filterHidden
-    ? customAssets.filter((asset) => !hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset)))
-    : customAssets;
+  const visibleCustomAssets = option?.disableFilterHidden
+    ? customAssets
+    : customAssets.filter((asset) => !hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset)));
 
   const customCosmosAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'cosmos');
   const customEvmAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'evm');

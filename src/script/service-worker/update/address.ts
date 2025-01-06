@@ -12,11 +12,11 @@ export async function address(id: string) {
   console.time(`address-${id}`);
   try {
     const account = await getAccount(id);
-    const { cosmosChains, evmChains, suiChains, aptosChains } = await getChains();
+    const { cosmosChains, evmChains, suiChains, aptosChains, bitcoinChains } = await getChains();
 
     const password = await getPassword();
 
-    const chains = [...cosmosChains, ...evmChains, ...suiChains, ...aptosChains];
+    const chains = [...cosmosChains, ...evmChains, ...suiChains, ...aptosChains, ...bitcoinChains];
 
     const storedAccountAddresses = await getAccountAddress(id);
 
@@ -35,13 +35,21 @@ export async function address(id: string) {
           })
           .process(async (accountType) => {
             if (storedAccountAddresses && storedAccountAddresses.length > 0) {
-              const existingAddress = storedAccountAddresses.find(
-                (storedAddress) =>
+              const existingAddress = storedAccountAddresses.find((storedAddress) => {
+                const isSamePubkeyType = (() => {
+                  if (storedAddress.accountType.pubkeyType && accountType.pubkeyType) {
+                    return storedAddress.accountType.pubkeyType === accountType.pubkeyType;
+                  }
+                  return true;
+                })();
+
+                return (
                   storedAddress.chainId === etc.id &&
                   storedAddress.chainType === etc.chainType &&
                   storedAddress.accountType.hdPath === accountType.hdPath &&
-                  storedAddress.accountType.pubkeyType === accountType.pubkeyType,
-              );
+                  isSamePubkeyType
+                );
+              });
 
               if (existingAddress) {
                 return existingAddress;

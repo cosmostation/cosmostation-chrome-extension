@@ -220,14 +220,21 @@ export async function getChains() {
   const remappedBitcoinChains: BitcoinChain[] = bitcoinChains.map((chain) => {
     const id = chain.id;
     const chainType = 'bitcoin';
-    const chainId = chain.params.chainlist_params.chain_id!;
+    const chainId = chain.params.chainlist_params.chain_id || chain.id;
 
     const name = chain.params.chainlist_params.chain_name;
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
 
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
+    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [
+      {
+        provider: 'Cosmostation',
+        url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet',
+      },
+    ];
+
+    const mempoolURL = 'https://mempool.space/api';
 
     const explorer = chain.params.chainlist_params?.explorer ?? null;
 
@@ -250,6 +257,7 @@ export async function getChains() {
       chainType,
       mainAssetDenom,
       rpcUrls,
+      mempoolURL,
       explorer,
       accountTypes,
     };

@@ -1,9 +1,10 @@
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { getCoinId } from '@/utils/queryParamGenerator';
+
+import Aptos from './Aptos';
 import Cosmos from './Cosmos';
 import EVM from './EVM';
 import Sui from './Sui';
-import Aptos from './Aptos';
 
 type EntryProps = {
   coinId: string;

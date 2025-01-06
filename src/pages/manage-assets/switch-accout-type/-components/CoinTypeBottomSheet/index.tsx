@@ -73,6 +73,24 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
                 totalAssetValue,
               };
             }
+
+            if (chain.chainType === 'bitcoin') {
+              const filteredBitcoinAssets = accountAllAssets?.bitcoinAccountAssets.filter((asset) => asset.address.address === address);
+
+              const totalAssetValue =
+                filteredBitcoinAssets?.reduce((totalValue, cur) => {
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+                  return plus(totalValue, assetValue);
+                }, '0') || '0';
+
+              return {
+                accountType: i.accountType,
+                address: i.address,
+                totalAssetValue,
+              };
+            }
+
             return {
               accountType: i.accountType,
               address: i.address,

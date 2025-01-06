@@ -117,6 +117,7 @@ export interface BitcoinChain extends ChainBase {
   chainId: string | number;
   mainAssetDenom: string;
   rpcUrls: ChainEndpoint[];
+  mempoolURL: string;
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
 }

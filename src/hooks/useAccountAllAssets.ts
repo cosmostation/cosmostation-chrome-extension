@@ -1,317 +1,39 @@
-import PromisePool from '@supercharge/promise-pool';
+import { useMemo } from 'react';
+import { produce } from 'immer';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { getAllAccountAddress } from '@/libs/account';
-import { getAccountCustomAssets, getAssets } from '@/libs/asset';
-import { getAddedCustomChains, getChains } from '@/libs/chain';
-import type { AccountAptosAsset, AccountCosmosAsset, AccountCw20Asset, AccountErc20Asset, AccountEvmAsset, AccountSuiAsset } from '@/types/account';
-import type { AccountAssets as AccountAllAssets } from '@/types/accountAssets';
-import type { ExtensionStorage } from '@/types/extension';
+import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
+import type { AccountAssets as AccountAllAssets, FlatAccountAssets } from '@/types/accountAssets';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useCurrentAccount } from './useCurrentAccount';
+
+type UseAccountAssetsResponse = AccountAllAssets & {
+  flatAccountAssets: FlatAccountAssets[];
+};
 
 type UseAccountAllAssets =
   | {
       accountId?: string;
+      filterByPreferAccountType?: boolean;
       config?: UseQueryOptions<AccountAllAssets | null>;
     }
   | undefined;
 
-export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets = {}) {
+export function useAccountAllAssets({ accountId, filterByPreferAccountType = false, config }: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
+  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
 
   const param = accountId || currentAccount.id;
+  const accountType = preferAccountType[param];
 
   const fetcher = async () => {
     try {
-      const concurrency = 10;
-      const storage = await chrome.storage.local.get<ExtensionStorage>([
-        `${param}-address`,
-        `${param}-balance-cosmos`,
-        `${param}-balance-evm`,
-        `${param}-balance-aptos`,
-        `${param}-balance-sui`,
-        `${param}-balance-erc20`,
-        `${param}-balance-cw20`,
-        `${param}-custom-balance-erc20`,
-        `${param}-custom-balance-cw20`,
-      ]);
-      const { aptosChains, cosmosChains, evmChains, suiChains } = await getChains();
-      const addedCustomChains = await getAddedCustomChains();
-
-      const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
-      const allCosmosChains = [...cosmosChains, ...addedCustomChains.filter((chain) => chain.chainType === 'cosmos')];
-
-      const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets } = await getAssets();
-
-      const accountAddress = storage[`${param}-address`];
-      const allAccountAddress = await getAllAccountAddress(param);
-
-      const cosmosBalances = storage[`${param}-balance-cosmos`];
-      const evmBalances = storage[`${param}-balance-evm`];
-      const aptosBalances = storage[`${param}-balance-aptos`];
-      const suiBalances = storage[`${param}-balance-sui`];
-      const erc20Balances = storage[`${param}-balance-erc20`];
-      const customErc20Balances = storage[`${param}-custom-balance-erc20`];
-      const cw20Balances = storage[`${param}-balance-cw20`];
-      const customCw20Balances = storage[`${param}-custom-balance-cw20`];
-
-      const cosmosPromise = PromisePool.withConcurrency(concurrency)
-        .for(cosmosAssets)
-        .process(async (asset) => {
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = asset.id;
-              const balanceInfo = cosmosBalances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.denom === type)?.amount || '0';
-
-              const result: AccountCosmosAsset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const cw20Promise = PromisePool.withConcurrency(concurrency)
-        .for(cw20Assets)
-        .process(async (asset) => {
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = cosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = asset.id;
-              const balanceInfo = cw20Balances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
-
-              const result: AccountCw20Asset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const evmPromise = PromisePool.withConcurrency(concurrency)
-        .for(evmAssets)
-        .process(async (asset) => {
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const balanceInfo = evmBalances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-
-              const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
-
-              const result: AccountEvmAsset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const erc20Promise = PromisePool.withConcurrency(concurrency)
-        .for(erc20Assets)
-        .process(async (asset) => {
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = evmChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = asset.id;
-              const balanceInfo = erc20Balances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
-
-              const result: AccountErc20Asset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const customErc20Promise = PromisePool.withConcurrency(concurrency)
-        .for(customErc20Assets)
-        .process(async (asset) => {
-          const addresses = allAccountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = allEVMChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = asset.id;
-              const balanceInfo = customErc20Balances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
-
-              const result: AccountErc20Asset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const customCW20Promise = PromisePool.withConcurrency(concurrency)
-        .for(customCw20Assets)
-        .process(async (asset) => {
-          const addresses = allAccountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = allCosmosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = asset.id;
-              const balanceInfo = customCw20Balances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
-
-              const result: AccountCw20Asset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const aptosPromise = PromisePool.withConcurrency(concurrency)
-        .for(aptosAssets)
-        .process(async (asset) => {
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = aptosChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = `0x1::coin::CoinStore<${asset.id}>`;
-              const balanceInfo = aptosBalances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.type === type)?.data?.coin?.value || '0';
-              const result: AccountAptosAsset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const suiPromise = PromisePool.withConcurrency(concurrency)
-        .for(suiAssets)
-        .process(async (asset) => {
-          const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
-          const chain = suiChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
-
-          const { results } = await PromisePool.withConcurrency(concurrency)
-            .for(addresses)
-            .process((address) => {
-              const type = asset.id;
-              const balanceInfo = suiBalances?.find(
-                (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-              );
-              const balance = balanceInfo?.balances?.find((balance) => balance.coinType === type)?.totalBalance || '0';
-              const result: AccountSuiAsset = {
-                chain,
-                asset,
-                address,
-                balance: balance,
-              };
-
-              return result;
-            });
-
-          return results;
-        });
-
-      const results = await Promise.all([
-        cosmosPromise,
-        evmPromise,
-        aptosPromise,
-        suiPromise,
-        cw20Promise,
-        erc20Promise,
-        customErc20Promise,
-        customCW20Promise,
-      ]);
-
-      const accountCustomAssets = await getAccountCustomAssets(param, { filterHidden: false });
-
-      const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
-      const evmAccountAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
-      const aptosAccountAssets = results[2].results.flat().filter((asset) => asset.chain && asset.address);
-      const suiAccountAssets = results[3].results.flat().filter((asset) => asset.chain && asset.address);
-      const cw20AccountAssets = results[4].results.flat().filter((asset) => asset.chain && asset.address);
-      const erc20AccountAssets = results[5].results.flat().filter((asset) => asset.chain && asset.address);
-      const customErc20AccountAssets = results[6].results.flat().filter((asset) => asset.chain && asset.address);
-      const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
-
-      console.timeEnd('getAccountAssets');
-
+      const accountAssets = await getAccountAssets(param, { disableFilterHidden: true });
+      const accountCustomAssets = await getAccountCustomAssets(param, { disableFilterHidden: true });
       return {
-        cosmosAccountAssets,
-        evmAccountAssets,
-        aptosAccountAssets,
-        suiAccountAssets,
-        cw20AccountAssets,
-        erc20AccountAssets,
-        customErc20AccountAssets,
-        customCw20AccountAssets,
+        ...accountAssets,
         ...accountCustomAssets,
       };
     } catch {
@@ -327,5 +49,135 @@ export function useAccountAllAssets({ accountId, config }: UseAccountAllAssets =
     ...config,
   });
 
-  return { data, isLoading, error, refetch };
+  const returnData = useMemo(() => {
+    if (!data) return null;
+    if (filterByPreferAccountType) {
+      const filteredCosmos = data.cosmosAccountAssets
+        .filter((item) => {
+          const selectedChainAccountType = accountType[item.chain.id];
+
+          if (selectedChainAccountType) {
+            const isSamePubkeyType = (() => {
+              if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+                return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+              }
+              return true;
+            })();
+            return (
+              selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+              selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+              isSamePubkeyType
+            );
+          }
+          return true;
+        })
+        .filter((item) => {
+          const isDuplicatedEVMAsset =
+            item.chain.chainType === 'cosmos' &&
+            item.chain.isEvm &&
+            item.chain.mainAssetDenom === item.asset.id &&
+            data.evmAccountAssets.some((evmAsset) => {
+              const isSameAssetChain = evmAsset.chain.id === item.chain.id;
+
+              const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
+              const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubkeyType: comparePubkeyType } = item.address.accountType;
+              const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubkeyType === comparePubkeyType;
+
+              return isSameAssetChain && isSameAccountType;
+            });
+          if (isDuplicatedEVMAsset) {
+            return false;
+          }
+
+          return true;
+        });
+
+      const filteredCW20 = data.cw20AccountAssets.filter((item) => {
+        const selectedChainAccountType = accountType[item.chain.id];
+
+        if (selectedChainAccountType) {
+          const isSamePubkeyType = (() => {
+            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+            }
+            return true;
+          })();
+
+          return (
+            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            isSamePubkeyType
+          );
+        }
+        return true;
+      });
+
+      const filteredEVM = data.evmAccountAssets.filter((item) => {
+        const selectedChainAccountType = accountType[item.chain.id];
+
+        if (selectedChainAccountType) {
+          const isSamePubkeyType = (() => {
+            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+            }
+            return true;
+          })();
+
+          return (
+            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            isSamePubkeyType
+          );
+        }
+        return true;
+      });
+
+      const filteredBitcoin = data.bitcoinAccountAssets.filter((item) => {
+        const selectedChainAccountType = accountType[item.chain.id];
+
+        if (selectedChainAccountType) {
+          const isSamePubkeyType = (() => {
+            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+            }
+            return true;
+          })();
+
+          return (
+            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            isSamePubkeyType
+          );
+        }
+        return true;
+      });
+
+      const filteredAccountAssets = produce(data, (draft) => {
+        draft.cosmosAccountAssets = filteredCosmos;
+        draft.cw20AccountAssets = filteredCW20;
+        draft.evmAccountAssets = filteredEVM;
+        draft.bitcoinAccountAssets = filteredBitcoin;
+      });
+
+      const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];
+
+      const returnData: UseAccountAssetsResponse = {
+        ...filteredAccountAssets,
+        flatAccountAssets: flatAccountAssets,
+      };
+
+      return returnData;
+    } else {
+      const flatAccountAssets = Object.values(data).flat();
+
+      const returnData: UseAccountAssetsResponse = {
+        ...data,
+        flatAccountAssets: flatAccountAssets,
+      };
+
+      return returnData;
+    }
+  }, [accountType, data, filterByPreferAccountType]);
+
+  return { data: returnData, isLoading, error, refetch };
 }

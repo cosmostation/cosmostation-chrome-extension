@@ -9,9 +9,17 @@ export async function getMultipleAccountTypesChain(id: string) {
   const addresses = await getAccountAddress(id);
   const params = await getExtensionLocalStorage('paramsV11');
 
-  const paramsValues = Object.values(params);
+  const chainIds = Object.keys(params);
+  const chainInfos = chainIds.map((chainId) => {
+    const chainInfo = params[chainId];
 
-  const multiAccountTypesChainlistParam = paramsValues.filter((item) => {
+    return {
+      id: chainId,
+      ...chainInfo,
+    };
+  });
+
+  const multiAccountTypesChainlistParam = chainInfos.filter((item) => {
     if (item.params.chainlist_params?.account_type) {
       if (item.params.chainlist_params.account_type.length > 1) {
         return true;
@@ -22,9 +30,7 @@ export async function getMultipleAccountTypesChain(id: string) {
   });
 
   const multipleAccountTypesSupportAddresses = addresses.filter((item) =>
-    multiAccountTypesChainlistParam.some(
-      (i) => i.params.chainlist_params.api_name === item.chainId && i.params.chainlist_params.chain_type.includes(item.chainType),
-    ),
+    multiAccountTypesChainlistParam.some((i) => i.id === item.chainId && i.params.chainlist_params.chain_type.includes(item.chainType)),
   );
 
   const groupedAccountAddressesByChainId = multipleAccountTypesSupportAddresses.reduce(
@@ -44,7 +50,7 @@ export async function getMultipleAccountTypesChain(id: string) {
 
   const mutlipleAccountTypesWithAddress = Object.entries(groupedAccountAddressesByChainId).reduce(
     (acc, [key, value]) => {
-      const filteredCosmosAccountAddress = value.filter((item) => item.chainType === 'cosmos');
+      const filteredCosmosAccountAddress = value.filter((item) => item.chainType === 'cosmos' || item.chainType === 'bitcoin');
       acc[key] = filteredCosmosAccountAddress.map((item) => {
         return produce(item, (draft) => {
           draft.accountType.hdPath = draft.accountType.hdPath.replace('X', '${index}');
@@ -61,9 +67,17 @@ export async function getMultipleAccountTypesChain(id: string) {
 export async function getDefaultAccountTypes() {
   const params = await getExtensionLocalStorage('paramsV11');
 
-  const paramsValues = Object.values(params);
+  const chainIds = Object.keys(params);
+  const chainInfos = chainIds.map((chainId) => {
+    const chainInfo = params[chainId];
 
-  const multiAccountTypesChainlistParam = paramsValues.filter((item) => {
+    return {
+      id: chainId,
+      ...chainInfo,
+    };
+  });
+
+  const multiAccountTypesChainlistParam = chainInfos.filter((item) => {
     if (item.params.chainlist_params?.account_type) {
       if (item.params.chainlist_params.account_type.length > 1) {
         return true;
@@ -74,7 +88,8 @@ export async function getDefaultAccountTypes() {
   });
 
   const defaultAccountTypes = multiAccountTypesChainlistParam.reduce((acc: ChainToAccountTypeMap, item) => {
-    const { api_name, account_type } = item.params.chainlist_params;
+    const id = item.id;
+    const { account_type } = item.params.chainlist_params;
 
     const defaultAccount = account_type?.find((item) => item.is_default !== false);
 
@@ -87,7 +102,7 @@ export async function getDefaultAccountTypes() {
       pubkeyType: defaultAccount.pubkey_type,
     };
 
-    acc[api_name] = defaultAccountType;
+    acc[id] = defaultAccountType;
     return acc;
   }, {});
 

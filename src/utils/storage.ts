@@ -81,6 +81,14 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('customHiddenAssetIds', []);
   }
 
+  if (!originStorage.customErc20Assets) {
+    await setExtensionLocalStorage('customErc20Assets', []);
+  }
+
+  if (!originStorage.customCw20Assets) {
+    await setExtensionLocalStorage('customCw20Assets', []);
+  }
+
   if (originStorage.accountNamesById) {
     const accountMissingNames = (() => {
       const storedAccounts = originStorage.accounts;
@@ -127,11 +135,21 @@ export async function initExtensionLocalStorage() {
 
   // NOTE 이미 저장된 상태. 새 체인파람에 멀티 어카운트 타입이 감지가 됐는데 이게 스토리지에는 저장이 안되어있을때
   if (originStorage.preferAccountType && Object.keys(originStorage.preferAccountType).length > 0) {
-    const filteredAccountTypes = Object.values(originStorage.paramsV11).filter(
+    const chainIds = Object.keys(originStorage.paramsV11);
+    const chainInfos = chainIds.map((chainId) => {
+      const chainInfo = originStorage.paramsV11[chainId];
+
+      return {
+        id: chainId,
+        ...chainInfo,
+      };
+    });
+
+    const filteredAccountTypes = chainInfos.filter(
       (item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1,
     );
 
-    const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.params.chainlist_params.api_name);
+    const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.id);
 
     const notStoredNewMultiAccountTypes = freshMultiAccountChainNames
       .filter((item) => !Object.keys(Object.values(originStorage.preferAccountType)[0]).includes(item))

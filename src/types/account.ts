@@ -1,6 +1,7 @@
 import type { AptosResourceResponse } from './aptos/api';
-import type { AptosAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
-import type { AptosChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, CustomEvmChain, EvmChain, SuiChain } from './chain';
+import type { AptosAsset, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
+import type { BitcoinBalance } from './bitcoin/balance';
+import type { AptosChain, BitcoinChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, CustomEvmChain, EvmChain, SuiChain } from './chain';
 import type { CosmosBalance } from './cosmos/api';
 import type { Cw20Balance } from './cosmos/balance';
 import type { Erc20Balance } from './evm/balance';
@@ -19,7 +20,6 @@ export interface PrivateAccount extends AccountBase {
 
 export interface MnemonicAccount extends AccountBase {
   type: Extract<AccountType, 'MNEMONIC'>;
-  // NOTE encryptedMnemonic로 이름 변경 필요
   encryptedMnemonic: string;
   index: string;
   encryptedRestoreString: string;
@@ -67,6 +67,13 @@ export interface AccountAddressBalanceSui {
   chainType: ChainType;
   address: string;
   balances: SuiGetBalance[];
+}
+export interface AccountAddressBalanceBitcoin {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balance: BitcoinBalance;
 }
 
 export interface AccountAddressBalanceErc20 {
@@ -136,6 +143,12 @@ export interface AccountAptosAsset {
 export interface AccountSuiAsset {
   chain: SuiChain;
   asset: SuiAsset;
+  address: AccountAddress;
+  balance: string;
+}
+export interface AccountBitcoinAsset {
+  chain: BitcoinChain;
+  asset: BitcoinAsset;
   address: AccountAddress;
   balance: string;
 }

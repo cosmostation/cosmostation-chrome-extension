@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { produce } from 'immer';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -21,7 +20,6 @@ import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentCustomCW20Tokens } from '@/hooks/useCurrentCustomCW20Tokens';
 import { useCurrentCustomERC20Tokens } from '@/hooks/useCurrentCustomERC20Tokens';
 import { useCurrentHiddenAssetIds } from '@/hooks/useCurrentHiddenAssetIds';
@@ -63,9 +61,7 @@ export default function Entry() {
 
   const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency, preferAccountType } = useExtensionStorageStore((state) => state);
-
-  const { currentAccount } = useCurrentAccount();
+  const { currency } = useExtensionStorageStore((state) => state);
 
   const { currentHiddenAssetIds, hideAsset, showAsset } = useCurrentHiddenAssetIds();
   const { customHiddenAssetIds, hideCustomAsset, showCustomAsset } = useCustomAssets();
@@ -75,7 +71,9 @@ export default function Entry() {
 
   const currentCustomTokens = [...currentCustomERC20Tokens, ...currentCustomCW20Tokens];
 
-  const { data: currentAccountAllAssets } = useAccountAllAssets();
+  const { data: currentAccountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
 
   const { customAssets } = useCustomAssets();
 
@@ -97,80 +95,7 @@ export default function Entry() {
   const hiddenAssetCoinIds = useMemo(() => currentHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [currentHiddenAssetIds]);
   const hiddenCustomAssetCoinIds = useMemo(() => customHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [customHiddenAssetIds]);
 
-  const currentPreferAccountType = useMemo(() => preferAccountType[currentAccount.id], [currentAccount.id, preferAccountType]);
-
-  const baseCoinList = useMemo(() => {
-    if (!currentAccountAllAssets) return [];
-
-    const filteredCosmos = currentAccountAllAssets.cosmosAccountAssets
-      .filter((item) => {
-        const selectedChainAccountType = currentPreferAccountType[item.chain.id];
-
-        if (selectedChainAccountType) {
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
-          );
-        }
-        return true;
-      })
-      .filter((item) => {
-        const isDuplicatedEVMAsset =
-          item.chain.chainType === 'cosmos' &&
-          item.chain.isEvm &&
-          item.chain.mainAssetDenom === item.asset.id &&
-          currentAccountAllAssets.evmAccountAssets.some((evmAsset) => {
-            const isSameAssetChain = evmAsset.chain.id === item.chain.id;
-
-            const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
-            const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubkeyType: comparePubkeyType } = item.address.accountType;
-            const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubkeyType === comparePubkeyType;
-            return isSameAssetChain && isSameAccountType;
-          });
-        if (isDuplicatedEVMAsset) {
-          return false;
-        }
-
-        return true;
-      });
-
-    const filteredCW20 = currentAccountAllAssets.cw20AccountAssets.filter((item) => {
-      const selectedChainAccountType = currentPreferAccountType[item.chain.id];
-
-      if (selectedChainAccountType) {
-        return (
-          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
-        );
-      }
-      return true;
-    });
-
-    const filteredEVM = currentAccountAllAssets.evmAccountAssets.filter((item) => {
-      const selectedChainAccountType = currentPreferAccountType[item.chain.id];
-
-      if (selectedChainAccountType) {
-        return (
-          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-          selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType
-        );
-      }
-      return true;
-    });
-
-    const filteredAccountAssets = produce(currentAccountAllAssets, (draft) => {
-      draft.cosmosAccountAssets = filteredCosmos;
-      draft.cw20AccountAssets = filteredCW20;
-      draft.evmAccountAssets = filteredEVM;
-    });
-
-    const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];
-
-    return flatAccountAssets;
-  }, [currentAccountAllAssets, currentPreferAccountType]);
+  const baseCoinList = useMemo(() => currentAccountAllAssets?.flatAccountAssets || [], [currentAccountAllAssets?.flatAccountAssets]);
 
   const chainList = useMemo(
     () =>

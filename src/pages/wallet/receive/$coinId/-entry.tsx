@@ -8,7 +8,7 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab/index.tsx';
-import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
 import { shorterAddress } from '@/utils/string.ts';
 import { toastSuccess } from '@/utils/toast.tsx';
@@ -51,9 +51,8 @@ export default function Entry({ coinId }: EntryProps) {
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['EVM Style', 'COSMOS Style'];
 
-  const { data: currentAccountAssets } = useAccountAssets({
-    accountId: undefined,
-    isOrign: true,
+  const { data: currentAccountAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
   });
 
   const selectedCoin = currentAccountAssets?.flatAccountAssets && currentAccountAssets.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
