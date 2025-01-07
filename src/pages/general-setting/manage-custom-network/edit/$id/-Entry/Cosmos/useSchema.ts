@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 
-import { useChainList } from '@/hooks/useChainList';
 import Joi from '@/utils/joi';
 
 export type AddChainForm = {
@@ -27,23 +26,12 @@ export type AddChainForm = {
 export function useSchema() {
   const { t } = useTranslation();
 
-  const { chainList } = useChainList();
-
-  const cosmosChains = [...(chainList?.cosmosChains || []), ...chainList.customCosmosChains];
-
-  const invalidChainNames = cosmosChains.map((chain) => chain.name);
-
-  const invalidLcdUrl = cosmosChains.map((chain) => chain.lcdUrls.flat()).flat();
-
   const addChainForm = Joi.object<AddChainForm>({
     chainName: Joi.string()
       .required()
-      .invalid(...invalidChainNames)
-      .insensitive()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
-        'any.invalid': t('schema.addChainForm.chainName.any.invalid'),
       }),
     chainImage: Joi.string()
       .optional()
@@ -66,11 +54,9 @@ export function useSchema() {
       }),
     lcdUrl: Joi.string()
       .required()
-      .invalid(...invalidLcdUrl)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
-        'any.invalid': t('schema.addChainForm.restUrl.any.invalid'),
       }),
     explorerURL: Joi.string()
       .optional()

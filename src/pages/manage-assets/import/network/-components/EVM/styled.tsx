@@ -17,6 +17,9 @@ export const FormContainer = styled('form')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
+  // width: '100%',
+  // flex: '1',
+  // position: 'relative',
 });
 
 export const AdvancedContainer = styled('div')({
@@ -55,3 +58,18 @@ export const ItemLeftContainer = styled('div')({
   justifyContent: 'flex-start',
   alignItems: 'center',
 });
+
+export const Footer = styled('div')(({ theme }) => ({
+  height: 'fit-content',
+
+  boxSizing: 'border-box',
+
+  position: 'sticky',
+  bottom: 0,
+  zIndex: 1000,
+
+  margin: 'auto 0 -1.2rem',
+  padding: '1.2rem 0',
+
+  backgroundColor: theme.palette.color.base50,
+}));

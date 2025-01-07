@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useRouter } from '@tanstack/react-router';
 
-import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Base1000Text from '@/components/common/Base1000Text';
 import Button from '@/components/common/Button/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
@@ -21,7 +20,16 @@ import { requestRPC } from '@/utils/ethereum';
 import { toHex } from '@/utils/string';
 import { toastError, toastSuccess } from '@/utils/toast';
 
-import { AdvancedContainer, FormContainer, InputWrapper, ItemLeftContainer, StyledAccordion, StyledAccordionDetails, StyledAccordionSummary } from './styled';
+import {
+  AdvancedContainer,
+  Footer,
+  FormContainer,
+  InputWrapper,
+  ItemLeftContainer,
+  StyledAccordion,
+  StyledAccordionDetails,
+  StyledAccordionSummary,
+} from './styled';
 import type { AddNetworkForm } from './useSchema';
 import { useSchema } from './useSchema';
 
@@ -131,14 +139,14 @@ export default function EVM() {
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status) {
-          toastError('pages.manage-assets.import.network.components.EVM.index.restURLError');
+          toastError(t('pages.manage-assets.import.network.components.EVM.index.restURLError'));
         }
       } else {
-        const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
+        const message = (e as { message?: string }).message
+          ? (e as { message: string }).message
+          : t('pages.manage-assets.import.network.components.EVM.index.error');
         toastError(message);
       }
-
-      toastError(t('pages.manage-assets.import.network.components.EVM.index.error'));
     } finally {
       setIsProcessing(false);
       reset();
@@ -234,11 +242,11 @@ export default function EVM() {
           </StyledAccordion>
         </AdvancedContainer>
       </InputWrapper>
-      <BaseFooter>
+      <Footer>
         <Button type="submit" disabled={!isButtonEnabled} isProgress={isProcessing}>
           {t('pages.manage-assets.import.network.components.EVM.index.addCustomNetwork')}
         </Button>
-      </BaseFooter>
+      </Footer>
     </FormContainer>
   );
 }

@@ -10,6 +10,7 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import { Route as About } from '@/pages/general-setting/about';
 import { Route as AddressBook } from '@/pages/general-setting/address-book';
 import { Route as ChangePassword } from '@/pages/general-setting/change-password';
+import { Route as ManageCustomNetwork } from '@/pages/general-setting/manage-custom-network';
 import { extension } from '@/utils/browser';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -110,7 +111,7 @@ export default function Entry() {
                 <BaseOptionButton
                   onClick={() => {
                     navigate({
-                      to: AddressBook.to,
+                      to: ManageCustomNetwork.to,
                     });
                   }}
                   leftContent={

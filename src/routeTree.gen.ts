@@ -25,6 +25,7 @@ import { Route as ManageAssetsSwitchAccoutTypeIndexImport } from './pages/manage
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
+import { Route as GeneralSettingManageCustomNetworkIndexImport } from './pages/general-setting/manage-custom-network/index'
 import { Route as GeneralSettingChangePasswordIndexImport } from './pages/general-setting/change-password/index'
 import { Route as GeneralSettingAddressBookIndexImport } from './pages/general-setting/address-book/index'
 import { Route as GeneralSettingAboutIndexImport } from './pages/general-setting/about/index'
@@ -61,6 +62,7 @@ import { Route as ManageAccountViewMnemonicMnemonicIdIndexImport } from './pages
 import { Route as ManageAccountDetailMnemonicMnemonicIdIndexImport } from './pages/manage-account/detail/mnemonic/$mnemonicId/index'
 import { Route as ManageAccountBackupWalletStep2AccountIdIndexImport } from './pages/manage-account/backup-wallet/step2/$accountId/index'
 import { Route as ManageAccountBackupWalletStep1AccountIdIndexImport } from './pages/manage-account/backup-wallet/step1/$accountId/index'
+import { Route as GeneralSettingManageCustomNetworkEditIdIndexImport } from './pages/general-setting/manage-custom-network/edit/$id/index'
 import { Route as GeneralSettingAddressBookEditAddressIdIndexImport } from './pages/general-setting/address-book/edit-address/$id/index'
 import { Route as ManageAccountDetailPrivateKeyAccountAccountIdIndexImport } from './pages/manage-account/detail/privateKey/account/$accountId/index'
 import { Route as ManageAccountDetailMnemonicAccountAccountIdIndexImport } from './pages/manage-account/detail/mnemonic/account/$accountId/index'
@@ -152,6 +154,13 @@ const ManageAccountManageWalletAndAccountIndexRoute =
   ManageAccountManageWalletAndAccountIndexImport.update({
     id: '/manage-account/manage-wallet-and-account/',
     path: '/manage-account/manage-wallet-and-account/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const GeneralSettingManageCustomNetworkIndexRoute =
+  GeneralSettingManageCustomNetworkIndexImport.update({
+    id: '/general-setting/manage-custom-network/',
+    path: '/general-setting/manage-custom-network/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -396,6 +405,13 @@ const ManageAccountBackupWalletStep1AccountIdIndexRoute =
     getParentRoute: () => rootRoute,
   } as any)
 
+const GeneralSettingManageCustomNetworkEditIdIndexRoute =
+  GeneralSettingManageCustomNetworkEditIdIndexImport.update({
+    id: '/general-setting/manage-custom-network/edit/$id/',
+    path: '/general-setting/manage-custom-network/edit/$id/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const GeneralSettingAddressBookEditAddressIdIndexRoute =
   GeneralSettingAddressBookEditAddressIdIndexImport.update({
     id: '/general-setting/address-book/edit-address/$id/',
@@ -510,6 +526,13 @@ declare module '@tanstack/react-router' {
       path: '/general-setting/change-password'
       fullPath: '/general-setting/change-password'
       preLoaderRoute: typeof GeneralSettingChangePasswordIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/general-setting/manage-custom-network/': {
+      id: '/general-setting/manage-custom-network/'
+      path: '/general-setting/manage-custom-network'
+      fullPath: '/general-setting/manage-custom-network'
+      preLoaderRoute: typeof GeneralSettingManageCustomNetworkIndexImport
       parentRoute: typeof rootRoute
     }
     '/manage-account/manage-wallet-and-account/': {
@@ -708,6 +731,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeneralSettingAddressBookEditAddressIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/general-setting/manage-custom-network/edit/$id/': {
+      id: '/general-setting/manage-custom-network/edit/$id/'
+      path: '/general-setting/manage-custom-network/edit/$id'
+      fullPath: '/general-setting/manage-custom-network/edit/$id'
+      preLoaderRoute: typeof GeneralSettingManageCustomNetworkEditIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/backup-wallet/step1/$accountId/': {
       id: '/manage-account/backup-wallet/step1/$accountId/'
       path: '/manage-account/backup-wallet/step1/$accountId'
@@ -811,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/general-setting/about': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
+  '/general-setting/manage-custom-network': typeof GeneralSettingManageCustomNetworkIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
@@ -839,6 +870,7 @@ export interface FileRoutesByFullPath {
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId': typeof WalletSwapCoinIdIndexRoute
   '/general-setting/address-book/edit-address/$id': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
+  '/general-setting/manage-custom-network/edit/$id': typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   '/manage-account/backup-wallet/step2/$accountId': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -867,6 +899,7 @@ export interface FileRoutesByTo {
   '/general-setting/about': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
+  '/general-setting/manage-custom-network': typeof GeneralSettingManageCustomNetworkIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
@@ -895,6 +928,7 @@ export interface FileRoutesByTo {
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId': typeof WalletSwapCoinIdIndexRoute
   '/general-setting/address-book/edit-address/$id': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
+  '/general-setting/manage-custom-network/edit/$id': typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   '/manage-account/backup-wallet/step2/$accountId': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -924,6 +958,7 @@ export interface FileRoutesById {
   '/general-setting/about/': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book/': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password/': typeof GeneralSettingChangePasswordIndexRoute
+  '/general-setting/manage-custom-network/': typeof GeneralSettingManageCustomNetworkIndexRoute
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
@@ -952,6 +987,7 @@ export interface FileRoutesById {
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId/': typeof WalletSwapCoinIdIndexRoute
   '/general-setting/address-book/edit-address/$id/': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
+  '/general-setting/manage-custom-network/edit/$id/': typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId/': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   '/manage-account/backup-wallet/step2/$accountId/': typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   '/manage-account/detail/mnemonic/$mnemonicId/': typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -982,6 +1018,7 @@ export interface FileRouteTypes {
     | '/general-setting/about'
     | '/general-setting/address-book'
     | '/general-setting/change-password'
+    | '/general-setting/manage-custom-network'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
@@ -1010,6 +1047,7 @@ export interface FileRouteTypes {
     | '/wallet/stake/$coinId'
     | '/wallet/swap/$coinId'
     | '/general-setting/address-book/edit-address/$id'
+    | '/general-setting/manage-custom-network/edit/$id'
     | '/manage-account/backup-wallet/step1/$accountId'
     | '/manage-account/backup-wallet/step2/$accountId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
@@ -1037,6 +1075,7 @@ export interface FileRouteTypes {
     | '/general-setting/about'
     | '/general-setting/address-book'
     | '/general-setting/change-password'
+    | '/general-setting/manage-custom-network'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
@@ -1065,6 +1104,7 @@ export interface FileRouteTypes {
     | '/wallet/stake/$coinId'
     | '/wallet/swap/$coinId'
     | '/general-setting/address-book/edit-address/$id'
+    | '/general-setting/manage-custom-network/edit/$id'
     | '/manage-account/backup-wallet/step1/$accountId'
     | '/manage-account/backup-wallet/step2/$accountId'
     | '/manage-account/detail/mnemonic/$mnemonicId'
@@ -1092,6 +1132,7 @@ export interface FileRouteTypes {
     | '/general-setting/about/'
     | '/general-setting/address-book/'
     | '/general-setting/change-password/'
+    | '/general-setting/manage-custom-network/'
     | '/manage-account/manage-wallet-and-account/'
     | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
@@ -1120,6 +1161,7 @@ export interface FileRouteTypes {
     | '/wallet/stake/$coinId/'
     | '/wallet/swap/$coinId/'
     | '/general-setting/address-book/edit-address/$id/'
+    | '/general-setting/manage-custom-network/edit/$id/'
     | '/manage-account/backup-wallet/step1/$accountId/'
     | '/manage-account/backup-wallet/step2/$accountId/'
     | '/manage-account/detail/mnemonic/$mnemonicId/'
@@ -1149,6 +1191,7 @@ export interface RootRouteChildren {
   GeneralSettingAboutIndexRoute: typeof GeneralSettingAboutIndexRoute
   GeneralSettingAddressBookIndexRoute: typeof GeneralSettingAddressBookIndexRoute
   GeneralSettingChangePasswordIndexRoute: typeof GeneralSettingChangePasswordIndexRoute
+  GeneralSettingManageCustomNetworkIndexRoute: typeof GeneralSettingManageCustomNetworkIndexRoute
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
@@ -1177,6 +1220,7 @@ export interface RootRouteChildren {
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
   WalletSwapCoinIdIndexRoute: typeof WalletSwapCoinIdIndexRoute
   GeneralSettingAddressBookEditAddressIdIndexRoute: typeof GeneralSettingAddressBookEditAddressIdIndexRoute
+  GeneralSettingManageCustomNetworkEditIdIndexRoute: typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   ManageAccountBackupWalletStep1AccountIdIndexRoute: typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
   ManageAccountBackupWalletStep2AccountIdIndexRoute: typeof ManageAccountBackupWalletStep2AccountIdIndexRoute
   ManageAccountDetailMnemonicMnemonicIdIndexRoute: typeof ManageAccountDetailMnemonicMnemonicIdIndexRoute
@@ -1206,6 +1250,8 @@ const rootRouteChildren: RootRouteChildren = {
   GeneralSettingAddressBookIndexRoute: GeneralSettingAddressBookIndexRoute,
   GeneralSettingChangePasswordIndexRoute:
     GeneralSettingChangePasswordIndexRoute,
+  GeneralSettingManageCustomNetworkIndexRoute:
+    GeneralSettingManageCustomNetworkIndexRoute,
   ManageAccountManageWalletAndAccountIndexRoute:
     ManageAccountManageWalletAndAccountIndexRoute,
   ManageAccountResetWalletIndexRoute: ManageAccountResetWalletIndexRoute,
@@ -1244,6 +1290,8 @@ const rootRouteChildren: RootRouteChildren = {
   WalletSwapCoinIdIndexRoute: WalletSwapCoinIdIndexRoute,
   GeneralSettingAddressBookEditAddressIdIndexRoute:
     GeneralSettingAddressBookEditAddressIdIndexRoute,
+  GeneralSettingManageCustomNetworkEditIdIndexRoute:
+    GeneralSettingManageCustomNetworkEditIdIndexRoute,
   ManageAccountBackupWalletStep1AccountIdIndexRoute:
     ManageAccountBackupWalletStep1AccountIdIndexRoute,
   ManageAccountBackupWalletStep2AccountIdIndexRoute:
@@ -1292,6 +1340,7 @@ export const routeTree = rootRoute
         "/general-setting/about/",
         "/general-setting/address-book/",
         "/general-setting/change-password/",
+        "/general-setting/manage-custom-network/",
         "/manage-account/manage-wallet-and-account/",
         "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
@@ -1320,6 +1369,7 @@ export const routeTree = rootRoute
         "/wallet/stake/$coinId/",
         "/wallet/swap/$coinId/",
         "/general-setting/address-book/edit-address/$id/",
+        "/general-setting/manage-custom-network/edit/$id/",
         "/manage-account/backup-wallet/step1/$accountId/",
         "/manage-account/backup-wallet/step2/$accountId/",
         "/manage-account/detail/mnemonic/$mnemonicId/",
@@ -1372,6 +1422,9 @@ export const routeTree = rootRoute
     },
     "/general-setting/change-password/": {
       "filePath": "general-setting/change-password/index.tsx"
+    },
+    "/general-setting/manage-custom-network/": {
+      "filePath": "general-setting/manage-custom-network/index.tsx"
     },
     "/manage-account/manage-wallet-and-account/": {
       "filePath": "manage-account/manage-wallet-and-account/index.tsx"
@@ -1456,6 +1509,9 @@ export const routeTree = rootRoute
     },
     "/general-setting/address-book/edit-address/$id/": {
       "filePath": "general-setting/address-book/edit-address/$id/index.tsx"
+    },
+    "/general-setting/manage-custom-network/edit/$id/": {
+      "filePath": "general-setting/manage-custom-network/edit/$id/index.tsx"
     },
     "/manage-account/backup-wallet/step1/$accountId/": {
       "filePath": "manage-account/backup-wallet/step1/$accountId/index.tsx"

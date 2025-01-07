@@ -51,7 +51,7 @@ export async function getCustomAccountAddress(id: string) {
 
   const address = storage[`${id}-custom-address`];
 
-  return address;
+  return address || [];
 }
 
 export async function getAllAccountAddress(id: string) {

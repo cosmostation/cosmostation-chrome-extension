@@ -5,6 +5,10 @@ import Accordion, { AccordionDetails, AccordionSummary } from '@/components/comm
 
 import BottomChevronIcon from '@/assets/images/icons/BottomChevron18.svg';
 
+export const Container = styled('div')({
+  padding: '1.8rem 0',
+});
+
 export const InputWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -16,6 +20,7 @@ export const InputWrapper = styled('div')({
 export const FormContainer = styled('form')({
   display: 'flex',
   flexDirection: 'column',
+  width: '100%',
   height: '100%',
 });
 
@@ -47,7 +52,7 @@ export const StyledAccordionSummary = styled((props: AccordionSummaryProps) => <
 );
 
 export const StyledAccordionDetails = styled(AccordionDetails)({
-  paddingBottom: '1.6rem',
+  paddingBottom: '1.2rem',
 });
 
 export const ItemLeftContainer = styled('div')({
@@ -65,8 +70,8 @@ export const Footer = styled('div')(({ theme }) => ({
   bottom: 0,
   zIndex: 1000,
 
-  margin: 'auto 0 -1.2rem',
-  padding: '1.2rem 0',
+  margin: '0 0 -1.2rem',
+  paddingBottom: '1.2rem',
 
   backgroundColor: theme.palette.color.base50,
 }));

@@ -57,7 +57,7 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
 
     const filteredCosmos = data.cosmosAccountAssets
       .filter((item) => {
-        const selectedChainAccountType = accountType[item.chain.id];
+        const selectedChainAccountType = accountType?.[item.chain.id];
 
         if (selectedChainAccountType) {
           const isSamePubkeyType = (() => {
@@ -97,7 +97,7 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
       });
 
     const filteredCW20 = data.cw20AccountAssets.filter((item) => {
-      const selectedChainAccountType = accountType[item.chain.id];
+      const selectedChainAccountType = accountType?.[item.chain.id];
 
       if (selectedChainAccountType) {
         const isSamePubkeyType = (() => {
@@ -117,7 +117,7 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
     });
 
     const filteredEVM = data.evmAccountAssets.filter((item) => {
-      const selectedChainAccountType = accountType[item.chain.id];
+      const selectedChainAccountType = accountType?.[item.chain.id] || {};
 
       if (selectedChainAccountType) {
         const isSamePubkeyType = (() => {
@@ -136,7 +136,7 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
     });
 
     const filteredBitcoin = data.bitcoinAccountAssets.filter((item) => {
-      const selectedChainAccountType = accountType[item.chain.id];
+      const selectedChainAccountType = accountType?.[item.chain.id] || {};
 
       if (selectedChainAccountType) {
         const isSamePubkeyType = (() => {

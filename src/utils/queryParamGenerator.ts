@@ -35,7 +35,7 @@ export function getUniqueChainId(chain: ChainId): UniqueChainId {
   return `${chain.id}__${chain.chainType}`;
 }
 
-export function getUniqueChainIdWithManual(id: string, chainType: ChainType) {
+export function getUniqueChainIdWithManual(id: string, chainType: ChainType): UniqueChainId {
   return `${id}__${chainType}`;
 }
 

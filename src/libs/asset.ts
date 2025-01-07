@@ -508,10 +508,10 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
   const customCosmosAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'cosmos');
   const customEvmAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'evm');
 
-  const accountAddress = storage[`${id}-custom-address`];
+  const accountAddress = storage[`${id}-custom-address`] || [];
 
-  const customCosmosBalances = storage[`${id}-custom-balance-cosmos`];
-  const customEvmBalances = storage[`${id}-custom-balance-evm`];
+  const customCosmosBalances = storage[`${id}-custom-balance-cosmos`] || [];
+  const customEvmBalances = storage[`${id}-custom-balance-evm`] || [];
 
   const cosmosPromise = PromisePool.withConcurrency(concurrency)
     .for(customCosmosAssets)

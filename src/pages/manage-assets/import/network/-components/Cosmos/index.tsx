@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useRouter } from '@tanstack/react-router';
 
-import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Base1000Text from '@/components/common/Base1000Text';
 import BaseSelectBox from '@/components/common/BaseSelectBox';
 import Button from '@/components/common/Button/index.tsx';
@@ -20,7 +19,16 @@ import { get, isAxiosError } from '@/utils/axios';
 import { isNumber } from '@/utils/string';
 import { toastError, toastSuccess } from '@/utils/toast';
 
-import { AdvancedContainer, FormContainer, InputWrapper, ItemLeftContainer, StyledAccordion, StyledAccordionDetails, StyledAccordionSummary } from './styled';
+import {
+  AdvancedContainer,
+  Footer,
+  FormContainer,
+  InputWrapper,
+  ItemLeftContainer,
+  StyledAccordion,
+  StyledAccordionDetails,
+  StyledAccordionSummary,
+} from './styled';
 import TextBottomSheet from './TextBottomSheet';
 import type { AddChainForm } from './useSchema';
 import { useSchema } from './useSchema';
@@ -69,6 +77,7 @@ export default function Cosmos() {
     reValidateMode: 'onSubmit',
   });
 
+  // FIXME 현재 가스레이트값 입력 정상처리 안됨. 수정필요.
   const gasRateError = useMemo(() => {
     const error = errors[''];
     if (error?.type === 'object.and') {
@@ -161,14 +170,14 @@ export default function Cosmos() {
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status) {
-          toastError('pages.manage-assets.import.network.components.Cosmos.index.restURLError');
+          toastError(t('pages.manage-assets.import.network.components.Cosmos.index.restURLError'));
         }
       } else {
-        const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
+        const message = (e as { message?: string }).message
+          ? (e as { message: string }).message
+          : t('pages.manage-assets.import.network.components.Cosmos.index.error');
         toastError(message);
       }
-
-      toastError(t('pages.manage-assets.import.network.components.Cosmos.index.error'));
     } finally {
       setIsProcessing(false);
       reset();
@@ -359,11 +368,11 @@ export default function Cosmos() {
           </StyledAccordion>
         </AdvancedContainer>
       </InputWrapper>
-      <BaseFooter>
+      <Footer>
         <Button type="submit" disabled={!isButtonEnabled} isProgress={isProcessing}>
           {t('pages.manage-assets.import.network.components.Cosmos.index.addCustomNetwork')}
         </Button>
-      </BaseFooter>
+      </Footer>
       <TextBottomSheet
         open={isOpenCosmwasmBottomSheet}
         onClose={() => setIsOpenCosmwasmBottomSheet(false)}

@@ -1072,6 +1072,78 @@
           "xDescription": "Explore our latest updates on X"
         },
         "header": "About"
+      },
+      "manage-custom-network": {
+        "entry": {
+          "search": "Search Network (Ex. Bitcoin)",
+          "network": "Network"
+        },
+        "header": "Manage Custom Network",
+        "edit": {
+          "$id": {
+            "header": "Edit Network",
+            "delete": "Delete",
+            "components": {
+              "DeleteBottomSheet": {
+                "index": {
+                  "title": "Delete Confirmation",
+                  "description": "Do you want to delete the registered custom network? Once deleted, the network will no longer be displayed, and you will need to re-enter the information to register it again.",
+                  "cancel": "Cancel",
+                  "delete": "Delete"
+                }
+              }
+            },
+            "Entry": {
+              "EVM": {
+                "success": "Successfully edited the network",
+                "error": "Failed to edit the network",
+                "network": "Network",
+                "selectNetwork": "Select Network",
+                "searchNetwork": "Search Network (Ex. Bitcoin)",
+                "networkName": "Network Name",
+                "rpcURL": "RPC URL",
+                "chainId": "Chain ID (e.g., 1 or 0x1)",
+                "symbol": "Symbol (e.g., ETH)",
+                "advanced": "Advanced (Optional)",
+                "chainImage": "Chain Image URL (Optional)",
+                "tokenImageURL": "Token Image URL (Optional)",
+                "exploreURL": "Block explorer URL (Optional)",
+                "confirm": "Confirm",
+                "restURLError": "Failed to get chain information, please check the REST URL"
+              },
+              "Cosmos": {
+                "restURLError": "Failed to get chain information, please check the REST URL",
+                "chainIdError": "This chain is already supported",
+                "success": "Successfully edited the network",
+                "error": "Failed to edit the network",
+                "network": "Network",
+                "selectNetwork": "Select Network",
+                "searchNetwork": "Search Network (Ex. Bitcoin)",
+                "chainName": "Chain Name",
+                "restURL": "REST URL",
+                "denom": "Native Denom (e.g., uatom)",
+                "symbol": "Symbol (e.g., ATOM)",
+                "accountPrefix": "Account Prefix (e.g., cosmos)",
+                "advanced": "Advanced (Optional)",
+                "decimals": "Decimals (e.g., 6 by default)",
+                "coinTypePath": "Coin Type (e.g., 118 by default)",
+                "chainImage": "Chain Image URL (Optional)",
+                "tokenImageURL": "Token Image URL (Optional)",
+                "exploreURL": "Block explorer URL (Optional)",
+                "defaultGasLimit": "Default Gas Limit (e.g., 300000 by default)",
+                "gasRateLow": "Low Gas Rate (e.g., 0.00025 by default)",
+                "gasRateAverage": "Average Gas Rate (e.g., 0.0025 by default)",
+                "gasRateHigh": "High Gas Rate (e.g., 0.025 by default)",
+                "confirm": "Confirm",
+                "selectCosmwasm": "Enable CosmWasm",
+                "selectPubkeyStyle": "Select Pubkey Style"
+              }
+            },
+            "layout": {
+              "deleteSuccess": "Successfully deleted the network"
+            }
+          }
+        }
       }
     },
     "manage-assets": {
@@ -1209,7 +1281,8 @@
                 "chainImage": "Chain Image URL (Optional)",
                 "tokenImageURL": "Token Image URL (Optional)",
                 "exploreURL": "Block explorer URL (Optional)",
-                "addCustomNetwork": "Add Custom Network"
+                "addCustomNetwork": "Add Custom Network",
+                "restURLError": "Failed to get chain information, please check the REST URL"
               }
             }
           },

@@ -4,16 +4,14 @@ import { getCoinChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/u
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
-import { useAccountAssets } from './useAccountAssets';
+import { useRefreshAccountAssets } from './useRefreshAccountAssets';
 
 export function useCustomChain() {
   const { accounts, addedCustomChainList, customAssets, customErc20Assets, customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore(
     (state) => state,
   );
 
-  const { refetch: refetchAccountAssets } = useAccountAssets();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refreshAccountAssets } = useRefreshAccountAssets();
 
   const addCustomChain = async (newChain: CustomChain) => {
     const storedAddedCustomChainList = await getExtensionLocalStorage('addedCustomChainList');
@@ -44,8 +42,7 @@ export function useCustomChain() {
 
     // TODO 추가적으로 해당 체인의 기본 코인도 추가해주어야함.
 
-    await refetchAccountAssets();
-    await refetchAccountAllAssets();
+    await refreshAccountAssets();
   };
 
   const removeCustomChain = async (chainId: UniqueChainId) => {
@@ -71,9 +68,24 @@ export function useCustomChain() {
 
     await updateExtensionStorageStore('addedCustomChainList', updatedAddedCustomChainList);
 
-    await refetchAccountAssets();
-    await refetchAccountAllAssets();
+    await refreshAccountAssets();
   };
 
-  return { addedCustomChainList, addCustomChain, removeCustomChain };
+  const editCustomChain = async (chainId: UniqueChainId, newChain: CustomChain) => {
+    const storedAddedCustomChainList = await getExtensionLocalStorage('addedCustomChainList');
+
+    const updatedAddedCustomChainList = storedAddedCustomChainList.map((item) => {
+      if (isMatchingUniqueChainId(item, chainId)) {
+        return newChain;
+      }
+
+      return item;
+    });
+
+    await updateExtensionStorageStore('addedCustomChainList', updatedAddedCustomChainList);
+
+    await refreshAccountAssets();
+  };
+
+  return { addedCustomChainList, addCustomChain, removeCustomChain, editCustomChain };
 }
