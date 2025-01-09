@@ -7,7 +7,7 @@ export const IXO: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'ixo-5',
-  chainName: 'IXO',
+  chainName: 'IMPACT',
   restURL: 'https://lcd-ixo.cosmostation.io',
   tokenImageURL: ixoTokenImg,
   imageURL: ixoChainImg,
