@@ -84,7 +84,7 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
   const { decimals } = chain;
 
-  const network = useMemo(() => (chain.isTestnet ? networks.testnet : networks.bitcoin), [chain.isTestnet]);
+  const network = useMemo(() => (chain.isTestnet || chain.isSignet ? networks.testnet : networks.bitcoin), [chain.isSignet, chain.isTestnet]);
 
   const estimatesmartfee = useEstimatesmartfeeSWR(chain);
 
