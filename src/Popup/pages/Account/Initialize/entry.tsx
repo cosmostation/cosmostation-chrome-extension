@@ -53,6 +53,7 @@ export default function Entry() {
     void setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
     void setExtensionStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
     void setExtensionStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
+    void setExtensionStorage('selectedBitcoinChainId', BITCOIN.id);
     void setExtensionStorage('encryptedPassword', null);
 
     void setCurrentPassword(null);

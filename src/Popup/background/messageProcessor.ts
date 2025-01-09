@@ -1,3 +1,5 @@
+import validate from 'bitcoin-address-validation';
+import { Transaction } from 'bitcoinjs-lib';
 import encHex from 'crypto-js/enc-hex';
 import sha256 from 'crypto-js/sha256';
 import { debounce } from 'lodash';
@@ -9,6 +11,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 import type { MessageTypes } from '@metamask/eth-sig-util';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 
+import { Network } from '~/constants/bitcoin';
 import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -16,6 +19,7 @@ import { SUI } from '~/constants/chain/sui/sui';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
 import {
   APTOS_RPC_ERROR_MESSAGE,
+  BITCOIN_RPC_ERROR_MESSAGE,
   COSMOS_RPC_ERROR_MESSAGE,
   ETHEREUM_RPC_ERROR_MESSAGE,
   RPC_ERROR,
@@ -25,12 +29,13 @@ import {
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { APTOS_METHOD_TYPE, APTOS_NO_POPUP_METHOD_TYPE, APTOS_POPUP_METHOD_TYPE } from '~/constants/message/aptos';
+import { BITCOIN_METHOD_TYPE, BITCOIN_NO_POPUP_METHOD_TYPE, BITCOIN_POPUP_METHOD_TYPE } from '~/constants/message/bitcoin';
 import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/message/common';
 import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import { SUI_METHOD_TYPE, SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
+import { AptosRPCError, BitcoinRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
 import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { extensionSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 import { extensionStorage, getStorage, setStorage } from '~/Popup/utils/extensionStorage';
@@ -38,6 +43,8 @@ import { openWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import { requestRPC as suiRequestRPC } from '~/Popup/utils/sui';
+import type { AccountDetail } from '~/types/bitcoin/balance';
+import type { SendRawTransaction } from '~/types/bitcoin/transaction';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { CW20BalanceResponse, CW20TokenInfoResponse } from '~/types/cosmos/contract';
@@ -45,6 +52,7 @@ import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { Queue } from '~/types/extensionStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { AptosConnectResponse, AptosIsConnectedResponse, AptosNetworkResponse, AptosSignMessage, AptosSignTransaction } from '~/types/message/aptos';
+import type { BitGetAddressResponse, BitGetBalanceResponse, BitRequestAccountResponse } from '~/types/message/bitcoin';
 import type { ComProvidersResponse } from '~/types/message/common';
 import type {
   CosAccountResponse,
@@ -1917,6 +1925,317 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
           },
           jsonrpc: '2.0',
+        },
+        message,
+        messageId,
+        origin,
+      });
+    }
+  }
+
+  if (request.line === 'BITCOIN') {
+    const bitcoinMethods = Object.values(BITCOIN_METHOD_TYPE) as string[];
+    const bitcoinPopupMethods = Object.values(BITCOIN_POPUP_METHOD_TYPE) as string[];
+    const bitcoinNoPopupMethods = Object.values(BITCOIN_NO_POPUP_METHOD_TYPE) as string[];
+
+    const { currentAccountAllowedOrigins, currentAccount, currentBitcoinNetwork } = await extensionStorage();
+
+    const { currentPassword } = await extensionSessionStorage();
+
+    const { message, messageId, origin } = request;
+
+    const chain = currentBitcoinNetwork;
+
+    try {
+      if (!message?.method || !bitcoinMethods.includes(message.method)) {
+        throw new BitcoinRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+      }
+
+      const { method } = message;
+
+      if (bitcoinPopupMethods.includes(method)) {
+        if (method === 'bit_requestAccount') {
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword && currentAccount.type !== 'LEDGER') {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+
+            const result: BitRequestAccountResponse = [address];
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            localQueues.push({ ...request });
+            void setQueues();
+          }
+        }
+        if (method === 'bit_switchNetwork') {
+          const { params } = message;
+
+          try {
+            const network = params[0];
+            const currentNetwork = chain.isTestnet ? Network.TESTNET : Network.MAINNET;
+            const supportedNetworks = ['mainnet', 'testnet'];
+
+            if (!supportedNetworks.includes(network)) {
+              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'the network is invalid, supported networks: mainnet,testnet', message.id);
+            }
+
+            if (network === currentNetwork) {
+              const result = currentNetwork;
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
+
+              return;
+            }
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method: 'bitc_switchNetwork', params: [network] },
+            });
+            void setQueues();
+          } catch (err) {
+            if (err instanceof BitcoinRPCError) {
+              throw err;
+            }
+
+            throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'error', message.id);
+          }
+        }
+        if (method === 'bitc_switchNetwork') {
+          const { params } = message;
+
+          try {
+            const network = params[0];
+            const currentNetwork = chain.isTestnet ? Network.TESTNET : Network.MAINNET;
+            const supportedNetworks = ['mainnet', 'testnet'];
+
+            if (!supportedNetworks.includes(network)) {
+              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'the network is invalid, supported networks: mainnet,testnet', message.id);
+            }
+
+            if (network === currentNetwork) {
+              const result = String(currentNetwork);
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
+
+              return;
+            }
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message },
+            });
+            void setQueues();
+          } catch (err) {
+            if (err instanceof BitcoinRPCError) {
+              throw err;
+            }
+
+            throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          }
+        }
+        // if (method === 'bit_signMessage') {
+        //   throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+        // localQueues.push({ ...request });
+        // void setQueues();
+        // }
+        if (method === 'bit_sendBitcoin') {
+          const { params } = message;
+          try {
+            const { to } = params;
+            if (!validate(to)) {
+              throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+            }
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message },
+            });
+            void setQueues();
+          } catch (err) {
+            if (err instanceof BitcoinRPCError) {
+              throw err;
+            }
+
+            throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'error', message.id);
+          }
+        }
+      } else if (bitcoinNoPopupMethods.includes(method)) {
+        if (method === 'bit_getAddress') {
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword && currentAccount.type !== 'LEDGER') {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+
+            const result: BitGetAddressResponse = address || '';
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            const result: BitRequestAccountResponse = [];
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          }
+        }
+        if (method === 'bit_getBalance') {
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword && currentAccount.type !== 'LEDGER') {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+
+            const response = await get<AccountDetail>(`${chain.mempoolURL}/address/${address}`);
+
+            const availableBalance = response.chain_stats.funded_txo_sum - response.chain_stats.spent_txo_sum - response.mempool_stats.spent_txo_sum;
+
+            const result: BitGetBalanceResponse = availableBalance;
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            const result = '';
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          }
+        }
+        if (method === 'bit_getPublicKeyHex') {
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword && currentAccount.type !== 'LEDGER') {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+            const result: string = keyPair?.publicKey.toString('hex') || '';
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            const result = '';
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          }
+        }
+        if (method === 'bit_getNetwork') {
+          const result = chain.isTestnet ? Network.TESTNET : Network.MAINNET;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+        if (method === 'bit_pushTx') {
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword && currentAccount.type !== 'LEDGER') {
+            try {
+              const { params } = message;
+              const tx = params[0];
+
+              const decodedTransaction = Transaction.fromHex(tx);
+
+              if (!decodedTransaction) {
+                throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid transaction', message.id);
+              }
+              const response = await post<SendRawTransaction>(chain.rpcURL, {
+                jsonrpc: '2.0',
+                id: '1',
+                method: 'sendrawtransaction',
+                params: [tx],
+              });
+
+              const { result } = response;
+
+              if (response.error || !result) {
+                throw new BitcoinRPCError(response.error?.code || RPC_ERROR.INTERNAL, response.error?.message || 'Fail to post tx', message.id);
+              }
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } catch (e) {
+              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'error', message.id);
+            }
+          } else {
+            throw new BitcoinRPCError(RPC_ERROR.UNAUTHORIZED, BITCOIN_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], message.id);
+          }
+        }
+      } else {
+        throw new BitcoinRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.id);
+      }
+    } catch (e) {
+      if (e instanceof BitcoinRPCError) {
+        responseToWeb({
+          response: e.rpcMessage,
+          message,
+          messageId,
+          origin,
+        });
+        return;
+      }
+
+      responseToWeb({
+        response: {
+          error: {
+            code: RPC_ERROR.INTERNAL,
+            message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+          },
         },
         message,
         messageId,

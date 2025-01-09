@@ -1,4 +1,4 @@
-import { APTOS_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, SUI_LISTENER_TYPE } from '~/constants/message';
+import { APTOS_LISTENER_TYPE, BITCOIN_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, SUI_LISTENER_TYPE } from '~/constants/message';
 import { extension } from '~/Popup/utils/extension';
 import type {
   BackgroundToContentScriptEventMessage,
@@ -59,6 +59,7 @@ extension.runtime.onMessage.addListener((request: ListenerMessage<ResponseMessag
     if (request.line === 'ETHEREUM') return Object.values(ETHEREUM_LISTENER_TYPE);
     if (request.line === 'APTOS') return Object.values(APTOS_LISTENER_TYPE);
     if (request.line === 'SUI') return Object.values(SUI_LISTENER_TYPE);
+    if (request.line === 'BITCOIN') return Object.values(BITCOIN_LISTENER_TYPE);
 
     return [];
   })() as ListenerType[];

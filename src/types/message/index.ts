@@ -1,4 +1,4 @@
-import type { APTOS_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import type { APTOS_LISTENER_TYPE, BITCOIN_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
 import type {
@@ -11,7 +11,21 @@ import type {
   AptosSignMessage,
   AptosSignTransaction,
 } from './aptos';
-import type { BitSignAndSendTransaction } from './bitcoin';
+import type {
+  BitcSwitchNetwork,
+  BitGetAddress,
+  BitGetBalance,
+  BitGetNetwork,
+  BitGetPublicKeyHex,
+  BitPushTx,
+  BitRequestAccount,
+  BitSendBitcoin,
+  BitSignAndSendTransaction,
+  BitSignMessage,
+  BitSignPsbt,
+  BitSignPsbts,
+  BitSwitchNetwork,
+} from './bitcoin';
 import type { ComProviders } from './common';
 import type {
   CosAccount,
@@ -70,7 +84,8 @@ export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
 export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
 export type AptosListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
 export type SuiListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
-export type ListenerType = CosmosListenerType | EthereumListenerType | AptosListenerType;
+export type BitcoinListenerType = ValueOf<typeof BITCOIN_LISTENER_TYPE>;
+export type ListenerType = CosmosListenerType | EthereumListenerType | AptosListenerType | BitcoinListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
 export type ResponseMessage = {
@@ -139,7 +154,20 @@ export type SuiRequestMessage =
   | SuiDisconnect
   | SuiGetChain;
 
-export type BitcoinRequestMessage = BitSignAndSendTransaction;
+export type BitcoinRequestMessage =
+  | BitSignAndSendTransaction
+  | BitRequestAccount
+  | BitGetAddress
+  | BitSwitchNetwork
+  | BitcSwitchNetwork
+  | BitGetNetwork
+  | BitGetPublicKeyHex
+  | BitGetBalance
+  | BitPushTx
+  | BitSendBitcoin
+  | BitSignMessage
+  | BitSignPsbt
+  | BitSignPsbts;
 
 export type CommonRequestMessage = ComProviders;
 

@@ -6,6 +6,7 @@ import { APTOS_CHAINS, BITCOIN_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, SUI_CHAIN
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
+import { useCurrentBitcoinNetwork } from '~/Popup/hooks/useCurrent/useCurrentBitcoinNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
@@ -43,6 +44,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
   const { setCurrentChain } = useCurrentChain();
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork } = useCurrentEthereumNetwork();
+  const { currentBitcoinNetwork, setCurrentBitcoinNetwork } = useCurrentBitcoinNetwork();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
 
   const { currentAptosNetwork, setCurrentAptosNetwork, removeAptosNetwork } = useCurrentAptosNetwork();
@@ -150,8 +152,10 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                   <ChainItemButton
                     key={chain.id}
                     isActive={currentChain.id === chain.id}
+                    isBackgroundActive={currentBitcoinNetwork.id === chain.id}
                     imgSrc={chain.imageURL}
-                    onClick={() => {
+                    onClick={async () => {
+                      await setCurrentBitcoinNetwork(chain);
                       onClickChain?.(chain);
                       onClose?.({}, 'backdropClick');
                     }}

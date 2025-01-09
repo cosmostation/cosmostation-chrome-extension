@@ -1,5 +1,6 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ELYS } from '~/constants/chain/cosmos/elys';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -135,6 +136,7 @@ function background() {
         await setStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
         await setStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
         await setStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
+        await setStorage('selectedBitcoinChainId', BITCOIN.id);
 
         await setStorage('address', {});
 
