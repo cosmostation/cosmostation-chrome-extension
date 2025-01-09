@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import { Network } from '~/constants/bitcoin';
 import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
-import { TESTNET4 } from '~/constants/chain/bitcoin/testnet4';
+import { SIGNET } from '~/constants/chain/bitcoin/signet';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -48,7 +48,7 @@ export default function Entry({ queue }: EntryProps) {
       return item.id === BITCOIN.id;
     }
 
-    return item.id === TESTNET4.id;
+    return item.id === SIGNET.id;
   });
 
   return (
@@ -96,7 +96,7 @@ export default function Entry({ queue }: EntryProps) {
                 await setCurrentBitcoinNetwork(requestNetwork);
               }
 
-              const currentNetwork: Network = requestNetwork?.isTestnet ? Network.TESTNET : Network.MAINNET;
+              const currentNetwork: Network = requestNetwork?.isSignet ? Network.SIGNET : Network.MAINNET;
 
               const result = currentNetwork;
 

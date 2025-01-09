@@ -1979,11 +1979,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           try {
             const network = params[0];
-            const currentNetwork = chain.isTestnet ? Network.TESTNET : Network.MAINNET;
-            const supportedNetworks = ['mainnet', 'testnet'];
+            const currentNetwork = chain.isSignet ? Network.SIGNET : Network.MAINNET;
+            const supportedNetworks = ['mainnet', 'signet'];
 
             if (!supportedNetworks.includes(network)) {
-              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'the network is invalid, supported networks: mainnet,testnet', message.id);
+              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'the network is invalid, supported networks: mainnet,signet', message.id);
             }
 
             if (network === currentNetwork) {
@@ -2019,11 +2019,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           try {
             const network = params[0];
-            const currentNetwork = chain.isTestnet ? Network.TESTNET : Network.MAINNET;
-            const supportedNetworks = ['mainnet', 'testnet'];
+            const currentNetwork = chain.isSignet ? Network.SIGNET : Network.MAINNET;
+            const supportedNetworks = ['mainnet', 'signet'];
 
             if (!supportedNetworks.includes(network)) {
-              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'the network is invalid, supported networks: mainnet,testnet', message.id);
+              throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'the network is invalid, supported networks: mainnet,signet', message.id);
             }
 
             if (network === currentNetwork) {
@@ -2166,7 +2166,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
         if (method === 'bit_getNetwork') {
-          const result = chain.isTestnet ? Network.TESTNET : Network.MAINNET;
+          const result = chain.isSignet ? Network.SIGNET : Network.MAINNET;
 
           responseToWeb({
             response: {

@@ -108,7 +108,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const symbol = useMemo(() => currentBitcoinNetwork.displayDenom || 'BTC', [currentBitcoinNetwork.displayDenom]);
 
-  const network = useMemo(() => (currentBitcoinNetwork.isTestnet ? networks.testnet : networks.bitcoin), [currentBitcoinNetwork.isTestnet]);
+  const network = useMemo(() => (currentBitcoinNetwork.isSignet ? networks.testnet : networks.bitcoin), [currentBitcoinNetwork.isSignet]);
 
   const { to, satAmount } = params;
 
