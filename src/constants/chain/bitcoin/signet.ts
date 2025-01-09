@@ -12,7 +12,7 @@ export const SIGNET: BitcoinChain = {
   imageURL: signetChainImg,
   bip44: {
     purpose: "84'",
-    coinType: "0'",
+    coinType: "1'",
     account: "0'",
     change: '0',
   },
