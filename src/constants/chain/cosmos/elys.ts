@@ -8,7 +8,7 @@ export const ELYS: CosmosChain = {
   type: '',
   chainId: 'elys-1',
   chainName: 'ELYS',
-  restURL: 'https://lcd-elys.cosmostation.io',
+  restURL: 'https://elys-api.polkachu.com',
   tokenImageURL: elysTokenImg,
   imageURL: elysChainImg,
   baseDenom: 'uelys',
