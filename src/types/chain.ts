@@ -173,6 +173,7 @@ export type BitcoinChain = {
   mempoolURL: string;
   network?: Network;
   isTestnet?: boolean;
+  isSignet?: boolean;
 } & CommonChain;
 
 export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain | BitcoinChain;
