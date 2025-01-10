@@ -12,6 +12,7 @@ import type {
   BitRequestAccountResponse,
   BitSendBitcoinResponse,
   BitSignPsbtResposne,
+  BitSignPsbtsResposne,
 } from '~/types/message/bitcoin';
 
 const request = (message: BitcoinRequestMessage) =>
@@ -80,10 +81,12 @@ const signPsbt = async (psbtHex: string) => {
   return signedPsbt;
 };
 
-// const signPsbts = async (psbtsHexes: string[]) => {
-//   const signedPsbts = (await request({ method: 'bit_signPsbts', params: psbtsHexes })) as BitSignPsbtsResposne;
-//   return signedPsbts;
-// };
+const signPsbts = async (psbtsHexes: string[]) => {
+  const formattedPsbts = psbtsHexes.map((psbtHex) => formatPsbtHex(psbtHex));
+
+  const signedPsbts = (await request({ method: 'bit_signPsbts', params: formattedPsbts })) as BitSignPsbtsResposne;
+  return signedPsbts;
+};
 
 // const signMessage = async (message: string, type?: 'ecdsa' | 'bip322-simple') => {
 //   const signedMessage = (await request({ method: 'bit_signMessage', params: { message, type } })) as string;
@@ -161,7 +164,7 @@ export const bitcoin = {
   getPublicKeyHex,
   getPublicKey,
   signPsbt,
-  // signPsbts,
+  signPsbts,
   getNetwork,
   // signMessageBIP322,
   // signMessage,
