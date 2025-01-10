@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -12,6 +13,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
 import type { AptosAccountResponse } from '~/types/message/aptos';
+import type { BitRequestAccountResponse } from '~/types/message/bitcoin';
 import type { CosRequestAccountResponse } from '~/types/message/cosmos';
 import type { EthRequestAccountsResponse } from '~/types/message/ethereum';
 import type { SuiConnectResponse, SuiGetAccountResponse } from '~/types/message/sui';
@@ -143,6 +145,30 @@ export default function Entry() {
       });
 
       void deQueue();
+    }
+
+    if (currentQueue?.message.method === 'bit_requestAccount' && currentPassword) {
+      const { message, messageId, origin } = currentQueue;
+
+      const chain = BITCOIN;
+
+      if (chain) {
+        const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+        const address = getAddress(chain, keyPair?.publicKey);
+
+        const result: BitRequestAccountResponse = [address];
+
+        responseToWeb({
+          response: {
+            result,
+          },
+          message,
+          messageId,
+          origin,
+        });
+
+        void deQueue();
+      }
     }
   }, [additionalChains, currentAccount, currentPassword, currentQueue, deQueue]);
   return null;

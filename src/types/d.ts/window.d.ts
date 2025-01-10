@@ -25,6 +25,7 @@ interface Window {
     cosmos: Cosmos;
     aptos: Aptos;
     sui: Sui;
+    bitcoin: Bitcoin;
     tendermint: {
       request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
       on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
@@ -135,3 +136,24 @@ type Sui = {
 };
 
 type MetaMask = Ethereum;
+
+type Bitcoin = {
+  connectWallet: () => Promise<import('~/types/message/bitcoin').BitRequestAccountResponse>;
+  getWalletProviderName: () => Promise<string>;
+  getWalletProviderIcon: () => Promise<string>;
+  getAddress: () => Promise<import('~/types/message/bitcoin').BitGetAddressResponse>;
+  getAccounts: () => Promise<string[]>;
+  getBalance: () => Promise<import('~/types/message/bitcoin').BitGetBalanceResponse>;
+  getPublicKey: () => Promise<string>;
+  getPublicKeyHex: () => Promise<string>;
+  signPsbt: (psbtHex: string) => Promise<import('~/types/message/bitcoin').BitSignPsbtResposne>;
+  // signPsbts: (psbtHexs: string[]) => Promise<import('~/types/message/bitcoin').BitSignPsbtsResposne>;
+  getNetwork: () => Promise<import('~/constants/bitcoin').Network>;
+  // signMessage: (message: string, type?: 'ecdsa' | 'bip322-simple') => Promise<string>;
+  // signMessageBIP322: (message: string) => Promise<string>;
+  switchNetwork: (network: import('~/constants/bitcoin').Network) => Promise<import('~/constants/bitcoin').Network>;
+  sendBitcoin: (to: string, satAmount: number) => Promise<import('~/types/message/bitcoin').BitSendBitcoinResponse>;
+  pushTx: (txHex: string) => Promise<string>;
+  on: (eventName: import('~/types/message').BitcoinListenerType, callBack: () => void) => void;
+  off: (eventName: import('~/types/message').BitcoinListenerType, callBack: () => void) => void;
+};

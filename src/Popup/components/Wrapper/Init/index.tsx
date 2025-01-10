@@ -5,6 +5,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { APTOS_NETWORKS, CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
+import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { MAINNET as SUI_NETWORK_MAINNET } from '~/constants/chain/sui/network/mainnet';
@@ -198,6 +199,10 @@ export default function Init({ children }: InitType) {
 
       if (!originExtensionStorage.selectedSuiNetworkId) {
         await setStorage('selectedSuiNetworkId', SUI_NETWORK_MAINNET.id);
+      }
+
+      if (!originExtensionStorage.selectedBitcoinChainId) {
+        await setStorage('selectedBitcoinChainId', BITCOIN.id);
       }
 
       if (!originExtensionStorage.address) {

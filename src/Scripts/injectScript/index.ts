@@ -5,6 +5,7 @@ import type { ListenerMessage } from '~/types/message';
 import type { ComProvidersResponse } from '~/types/message/common';
 
 import { aptos } from './aptos';
+import { bitcoin } from './bitcoin';
 import { common } from './common';
 import { cosmos, cosmosWallet, keplr, tendermint } from './cosmos';
 import { announceEip6963Provider, ethereum } from './ethereum';
@@ -18,6 +19,7 @@ void (() => {
     common,
     ethereum,
     cosmos,
+    bitcoin,
     aptos,
     tendermint,
     sui,

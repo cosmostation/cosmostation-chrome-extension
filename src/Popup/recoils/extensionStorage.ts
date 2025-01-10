@@ -43,6 +43,7 @@ export const extensionStorageDefault: ExtensionStorage = {
   selectedEthereumNetworkId: '',
   selectedAptosNetworkId: '',
   selectedSuiNetworkId: '',
+  selectedBitcoinChainId: '',
 
   suiPermissions: [],
 

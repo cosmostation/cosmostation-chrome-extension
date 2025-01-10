@@ -90,6 +90,8 @@ export function useCurrentAccount() {
       { line: 'SUI', type: 'accountChange', message: { result: '' } },
       currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
     );
+
+    emitToWeb({ line: 'BITCOIN', type: 'accountChanged' }, origins);
   };
 
   const addAccount = async (accountInfo: AccountWithName) => {

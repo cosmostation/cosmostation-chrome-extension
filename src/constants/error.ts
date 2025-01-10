@@ -75,6 +75,10 @@ export const SUI_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
 } as const;
 
+export const BITCOIN_RPC_ERROR_MESSAGE = {
+  [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
+} as const;
+
 export const ETHEREUM_ADD_NFT_ERROR = {
   INVALID_CONTRACT_ADDRESS: 1,
   INVALID_TOKEN_ID: 2,

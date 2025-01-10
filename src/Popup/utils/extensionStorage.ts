@@ -1,4 +1,4 @@
-import { APTOS_NETWORKS, CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, BITCOIN_CHAINS, CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { extensionStorageDefault } from '~/Popup/recoils/extensionStorage';
 import type { ExtensionStorage, ExtensionStorageKeys } from '~/types/extensionStorage';
 
@@ -66,6 +66,7 @@ export async function extensionStorage() {
     additionalSuiNetworks,
     selectedAptosNetworkId,
     selectedSuiNetworkId,
+    selectedBitcoinChainId,
   } = storageWithDefault;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
@@ -95,6 +96,14 @@ export async function extensionStorage() {
     return suiNetworks.find((network) => network.id === networkId) ?? suiNetworks[0];
   })();
 
+  const currentBitcoinNetwork = (() => {
+    const bitcoinNetworks = [...BITCOIN_CHAINS];
+
+    const networkId = selectedBitcoinChainId ?? BITCOIN_CHAINS[0].id;
+
+    return bitcoinNetworks.find((network) => network.id === networkId) ?? bitcoinNetworks[0];
+  })();
+
   const currentAllowedChains = CHAINS.filter((chain) => allowedChainIds.includes(chain.id));
 
   const currentAccountAllowedOrigins = allowedOrigins
@@ -108,6 +117,7 @@ export async function extensionStorage() {
     currentEthereumNetwork,
     currentAptosNetwork,
     currentSuiNetwork,
+    currentBitcoinNetwork,
     currentAllowedChains,
     currentAccountAllowedOrigins,
   };

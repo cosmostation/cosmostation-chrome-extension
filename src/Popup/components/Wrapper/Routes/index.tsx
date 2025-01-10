@@ -35,7 +35,8 @@ export default function Routes({ children }: RoutesType) {
         extensionStorage.queues[0].message.method === 'aptos_account' ||
         extensionStorage.queues[0].message.method === 'aptos_connect' ||
         extensionStorage.queues[0].message.method === 'sui_connect' ||
-        extensionStorage.queues[0].message.method === 'sui_getAccount'
+        extensionStorage.queues[0].message.method === 'sui_getAccount' ||
+        extensionStorage.queues[0].message.method === 'bit_requestAccount'
       ) {
         navigate('/popup/request-account');
       }
@@ -125,6 +126,16 @@ export default function Routes({ children }: RoutesType) {
 
       if (extensionStorage.queues[0].message.method === 'sui_signMessage' || extensionStorage.queues[0].message.method === 'sui_signPersonalMessage') {
         navigate('/popup/sui/sign-message');
+      }
+
+      if (extensionStorage.queues[0].message.method === 'bitc_switchNetwork') {
+        navigate('/popup/bitcoin/switch-network');
+      }
+      if (extensionStorage.queues[0].message.method === 'bit_sendBitcoin') {
+        navigate('/popup/bitcoin/send');
+      }
+      if (extensionStorage.queues[0].message.method === 'bit_signPsbt') {
+        navigate('/popup/bitcoin/sign-psbt');
       }
     }
 

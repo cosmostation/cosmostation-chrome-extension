@@ -694,6 +694,45 @@
           }
         }
       },
+      "Bitcoin": {
+        "Send": {
+          "entry": {
+            "cancel": "Cancel",
+            "expectedFee": "Expected fee",
+            "failedCreateTxHex": "Failed to create transaction hex",
+            "failedLoadFee": "Failed to load fee",
+            "input": "Input",
+            "invalidAddress": "Invalid address",
+            "noAmount": "Invalid send amount",
+            "noAvailableAmount": "No available amount",
+            "output": "Output",
+            "sign": "Sign"
+          }
+        },
+        "SignPsbt": {
+          "entry": {
+            "cancel": "Cancel",
+            "expectedFee": "Expected fee",
+            "failedCreateTxHex": "Failed to create transaction hex",
+            "failedLoadFee": "Failed to load fee",
+            "input": "Input",
+            "invalidAddress": "Invalid address",
+            "invalidSender": "Invalid sender",
+            "noAmount": "Invalid send amount",
+            "noAvailableAmount": "No available amount",
+            "output": "Output",
+            "sign": "Sign"
+          }
+        },
+        "SwitchNetwork": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "description": "Switching to a different network will disconnect your current network. Are you sure you want to switch networks?",
+            "question": "Switch network",
+            "switchButton": "Switch"
+          }
+        }
+      },
       "Cosmos": {
         "AddChain": {
           "entry": {
