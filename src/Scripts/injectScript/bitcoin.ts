@@ -4,8 +4,15 @@ import type { Network } from '~/constants/bitcoin';
 import { LINE_TYPE } from '~/constants/chain';
 import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { MESSAGE_TYPE } from '~/constants/message';
+import { formatPsbtHex } from '~/Popup/utils/bitcoin';
 import type { BitcoinListenerType, BitcoinRequestMessage, ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage } from '~/types/message';
-import type { BitGetAddressResponse, BitGetBalanceResponse, BitRequestAccountResponse, BitSendBitcoinResponse } from '~/types/message/bitcoin';
+import type {
+  BitGetAddressResponse,
+  BitGetBalanceResponse,
+  BitRequestAccountResponse,
+  BitSendBitcoinResponse,
+  BitSignPsbtResposne,
+} from '~/types/message/bitcoin';
 
 const request = (message: BitcoinRequestMessage) =>
   new Promise((res, rej) => {
@@ -66,10 +73,12 @@ const getPublicKey = async () => {
   return publicKeyHex;
 };
 
-// const signPsbt = async (psbtHex: string) => {
-//   const signedPsbt = (await request({ method: 'bit_signPsbt', params: psbtHex })) as BitSignPsbtResposne;
-//   return signedPsbt;
-// };
+const signPsbt = async (psbtHex: string) => {
+  const formattedPsbt = formatPsbtHex(psbtHex);
+
+  const signedPsbt = (await request({ method: 'bit_signPsbt', params: formattedPsbt })) as BitSignPsbtResposne;
+  return signedPsbt;
+};
 
 // const signPsbts = async (psbtsHexes: string[]) => {
 //   const signedPsbts = (await request({ method: 'bit_signPsbts', params: psbtsHexes })) as BitSignPsbtsResposne;
@@ -151,7 +160,7 @@ export const bitcoin = {
   getBalance,
   getPublicKeyHex,
   getPublicKey,
-  // signPsbt,
+  signPsbt,
   // signPsbts,
   getNetwork,
   // signMessageBIP322,

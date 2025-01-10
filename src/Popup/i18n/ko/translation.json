@@ -709,6 +709,21 @@
             "sign": "서명"
           }
         },
+        "SignPsbt": {
+          "entry": {
+            "cancel": "취소",
+            "expectedFee": "예상 수수료",
+            "failedCreateTxHex": "트랜잭션 생성에 실패했습니다.",
+            "failedLoadFee": "수수료 로딩에 실패했습니다.",
+            "input": "Input",
+            "invalidAddress": "유효하지 않은 주소입니다.",
+            "invalidSender": "보내는 주소가 잘못되었습니다.",
+            "noAmount": "보낼 수량이 없습니다.",
+            "noAvailableAmount": "잔액이 부족합니다.",
+            "output": "Output",
+            "sign": "서명"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "취소",

@@ -146,7 +146,7 @@ type Bitcoin = {
   getBalance: () => Promise<import('~/types/message/bitcoin').BitGetBalanceResponse>;
   getPublicKey: () => Promise<string>;
   getPublicKeyHex: () => Promise<string>;
-  // signPsbt: (psbtHex: string) => Promise<import('~/types/message/bitcoin').BitSignPsbtResposne>;
+  signPsbt: (psbtHex: string) => Promise<import('~/types/message/bitcoin').BitSignPsbtResposne>;
   // signPsbts: (psbtHexs: string[]) => Promise<import('~/types/message/bitcoin').BitSignPsbtsResposne>;
   getNetwork: () => Promise<import('~/constants/bitcoin').Network>;
   // signMessage: (message: string, type?: 'ecdsa' | 'bip322-simple') => Promise<string>;
@@ -157,5 +157,3 @@ type Bitcoin = {
   on: (eventName: import('~/types/message').BitcoinListenerType, callBack: () => void) => void;
   off: (eventName: import('~/types/message').BitcoinListenerType, callBack: () => void) => void;
 };
-
-// data: import('@tomo-inc/tomo-wallet-provider').SuiSignAndExecuteTransactionInput,

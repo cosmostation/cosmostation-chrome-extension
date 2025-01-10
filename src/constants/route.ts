@@ -101,6 +101,7 @@ export const PATH = {
   POPUP__BITCOIN__SIGN_MESSAGE: '/popup/bitcoin/sign-message',
   POPUP__BITCOIN__SWITCH_NETWORK: '/popup/bitcoin/switch-network',
   POPUP__BITCOIN__SEND_BITCOIN: '/popup/bitcoin/send',
+  POPUP__BITCOIN__SIGN_PSBT: '/popup/bitcoin/sign-psbt',
 
   POPUP__TX_RECEIPT: '/popup/tx-receipt',
 } as const;

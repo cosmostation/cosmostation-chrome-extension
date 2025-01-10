@@ -2080,6 +2080,22 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'error', message.id);
           }
         }
+
+        if (method === 'bit_signPsbt') {
+          try {
+            localQueues.push({
+              ...request,
+              message: { ...request.message },
+            });
+            void setQueues();
+          } catch (err) {
+            if (err instanceof BitcoinRPCError) {
+              throw err;
+            }
+
+            throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'error', message.id);
+          }
+        }
       } else if (bitcoinNoPopupMethods.includes(method)) {
         if (method === 'bit_getAddress') {
           if (currentAccountAllowedOrigins.includes(origin) && currentPassword && currentAccount.type !== 'LEDGER') {

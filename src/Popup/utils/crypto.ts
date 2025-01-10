@@ -16,6 +16,10 @@ export function ecpairFromPrivateKey(privateKey: Buffer) {
   return ECPair.fromPrivateKey(privateKey);
 }
 
+export function ecpairFromPublicKey(publicKey: Buffer) {
+  return ECPair.fromPublicKey(publicKey);
+}
+
 export function sha512(message: string) {
   return baseSha512(message).toString(encHex);
 }
