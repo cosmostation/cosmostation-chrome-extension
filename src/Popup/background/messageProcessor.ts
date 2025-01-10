@@ -2054,11 +2054,28 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
           }
         }
-        // if (method === 'bit_signMessage') {
-        //   throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
-        // localQueues.push({ ...request });
-        // void setQueues();
-        // }
+        if (method === 'bit_signMessage') {
+          const { params } = message;
+
+          try {
+            const { type } = params;
+            if (type !== 'ecdsa' && type !== 'bip322-simple') {
+              throw new BitcoinRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS], message.id);
+            }
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message },
+            });
+            void setQueues();
+          } catch (err) {
+            if (err instanceof BitcoinRPCError) {
+              throw err;
+            }
+
+            throw new BitcoinRPCError(RPC_ERROR.INTERNAL, 'error', message.id);
+          }
+        }
         if (method === 'bit_sendBitcoin') {
           const { params } = message;
           try {

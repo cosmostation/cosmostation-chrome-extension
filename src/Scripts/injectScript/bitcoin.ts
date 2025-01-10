@@ -88,15 +88,21 @@ const signPsbts = async (psbtsHexes: string[]) => {
   return signedPsbts;
 };
 
-// const signMessage = async (message: string, type?: 'ecdsa' | 'bip322-simple') => {
-//   const signedMessage = (await request({ method: 'bit_signMessage', params: { message, type } })) as string;
-//   return signedMessage;
-// };
+const signMessage = async (message: string, type?: 'ecdsa' | 'bip322-simple') => {
+  const typeParam = type || 'ecdsa';
 
-// const signMessageBIP322 = async (message: string) => {
-//   const signedMessage = (await request({ method: 'bit_signMessage', params: { message, type: 'bip322-simple' } })) as string;
-//   return signedMessage;
-// };
+  if (typeParam !== 'ecdsa' && typeParam !== 'bip322-simple') {
+    throw new Error('Invalid type');
+  }
+
+  const signedMessage = (await request({ method: 'bit_signMessage', params: { message, type: typeParam } })) as string;
+  return signedMessage;
+};
+
+const signMessageBIP322 = async (message: string) => {
+  const signedMessage = (await request({ method: 'bit_signMessage', params: { message, type: 'bip322-simple' } })) as string;
+  return signedMessage;
+};
 
 const switchNetwork = async (network: Network) => {
   const response = (await request({ method: 'bit_switchNetwork', params: [network] })) as Network;
@@ -166,8 +172,8 @@ export const bitcoin = {
   signPsbt,
   signPsbts,
   getNetwork,
-  // signMessageBIP322,
-  // signMessage,
+  signMessageBIP322,
+  signMessage,
   on,
   off,
   switchNetwork,
