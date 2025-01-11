@@ -40,8 +40,9 @@ import Home from '~/Popup/pages/Home';
 import PopupAptosSignMessage from '~/Popup/pages/Popup/Aptos/SignMessage';
 import PopupAptosTransaction from '~/Popup/pages/Popup/Aptos/Transaction';
 import PopupBitcoinSend from '~/Popup/pages/Popup/Bitcoin/Send';
+import PopupBitcoinSignMessage from '~/Popup/pages/Popup/Bitcoin/SignMessage';
 import PopupBitcoinSignPsbt from '~/Popup/pages/Popup/Bitcoin/SignPsbt';
-// import PopupBitcoinSignMessage from '~/Popup/pages/Popup/Bitcoin/SignMessage';
+import PopupBitcoinSignPsbts from '~/Popup/pages/Popup/Bitcoin/SignPsbts';
 import PopupBitcoinSwitchNetwork from '~/Popup/pages/Popup/Bitcoin/SwitchNetwork';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
 import PopupCosmosAddNFTs from '~/Popup/pages/Popup/Cosmos/AddNFTs';
@@ -179,7 +180,8 @@ export default function Routes() {
           <Route path={PATH.POPUP__BITCOIN__SWITCH_NETWORK} element={<PopupBitcoinSwitchNetwork />} />
           <Route path={PATH.POPUP__BITCOIN__SEND_BITCOIN} element={<PopupBitcoinSend />} />
           <Route path={PATH.POPUP__BITCOIN__SIGN_PSBT} element={<PopupBitcoinSignPsbt />} />
-          {/* <Route path={PATH.POPUP__BITCOIN__SIGN_MESSAGE} element={<PopupBitcoinSignMessage />} /> */}
+          <Route path={PATH.POPUP__BITCOIN__SIGN_PSBTS} element={<PopupBitcoinSignPsbts />} />
+          <Route path={PATH.POPUP__BITCOIN__SIGN_MESSAGE} element={<PopupBitcoinSignMessage />} />
 
           <Route path={PATH.POPUP__TX_RECEIPT} element={<PopupTxReceipt />}>
             <Route path=":txhash" element={<PopupTxReceipt />} />

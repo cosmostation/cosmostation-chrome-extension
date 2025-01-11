@@ -137,6 +137,12 @@ export default function Routes({ children }: RoutesType) {
       if (extensionStorage.queues[0].message.method === 'bit_signPsbt') {
         navigate('/popup/bitcoin/sign-psbt');
       }
+      if (extensionStorage.queues[0].message.method === 'bit_signPsbts') {
+        navigate('/popup/bitcoin/sign-psbts');
+      }
+      if (extensionStorage.queues[0].message.method === 'bit_signMessage') {
+        navigate('/popup/bitcoin/sign-message');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
