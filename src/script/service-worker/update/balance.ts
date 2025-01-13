@@ -22,8 +22,9 @@ import type { SuiRpcGetBalanceResponse } from '@/types/sui/api';
 
 const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
 const defaultEvmCoinList = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
+const defaultBitcoinCoinList = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
 
-const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList];
+const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
 
 export async function updateDefaultAssetsBalance(id: string) {
   console.time(`default-balance-${id}`);
@@ -128,7 +129,8 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets } = await getAccountAssets(id);
+    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets, bitcoinAccountAssets } =
+      await getAccountAssets(id);
 
     const mergedAccountAssets = [
       ...aptosAccountAssets,
@@ -137,6 +139,7 @@ export async function initAccount(id: string) {
       ...erc20AccountAssets,
       ...evmAccountAssets,
       ...suiAccountAssets,
+      ...bitcoinAccountAssets,
     ];
 
     const availableAccountAssets = mergedAccountAssets
@@ -190,7 +193,8 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets } = await getAccountAssets(id);
+    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets, bitcoinAccountAssets } =
+      await getAccountAssets(id);
 
     const mergedAccountAssets = [
       ...aptosAccountAssets,
@@ -199,6 +203,7 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
       ...erc20AccountAssets,
       ...evmAccountAssets,
       ...suiAccountAssets,
+      ...bitcoinAccountAssets,
     ];
 
     const hiddenAssetIds = mergedAccountAssets
