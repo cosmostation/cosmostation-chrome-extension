@@ -30,7 +30,7 @@ export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, l
       <RightContainer>
         <RightTextContainer>
           <RightDisplayAmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R">
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {displayAmount}
             </NumberTypo>
           </RightDisplayAmountContainer>
