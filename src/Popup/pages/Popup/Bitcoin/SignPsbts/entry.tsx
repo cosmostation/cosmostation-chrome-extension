@@ -24,14 +24,12 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { post } from '~/Popup/utils/axios';
 import { gte, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { formatPsbtHex } from '~/Popup/utils/bitcoin';
 import { getKeyPair } from '~/Popup/utils/common';
 import { ecpairFromPrivateKey, ecpairFromPublicKey } from '~/Popup/utils/crypto';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
-import type { SendRawTransaction } from '~/types/bitcoin/transaction';
 import type { Queue } from '~/types/extensionStorage';
 import type { BitSignPsbts, BitSignPsbtsResposne } from '~/types/message/bitcoin';
 
@@ -424,39 +422,24 @@ export default function Entry({ queue }: EntryProps) {
                       throw new Error('key does not exist');
                     }
 
-                    const responses: BitSignPsbtsResposne = await Promise.all(
-                      parsedPsbts.map(async (parsedPsbt) => {
-                        const signedPsbt = parsedPsbt.signAllInputs(ecpairFromPrivateKey(keyPair.privateKey));
-                        const validatePsbtSignatures = signedPsbt.validateSignaturesOfAllInputs((pubkey, msghash, signature) =>
-                          ecpairFromPublicKey(pubkey).verify(msghash, signature),
-                        );
+                    const responses: BitSignPsbtsResposne = parsedPsbts.map((parsedPsbt) => {
+                      const signedPsbt = parsedPsbt.signAllInputs(ecpairFromPrivateKey(keyPair.privateKey));
+                      const validatePsbtSignatures = signedPsbt.validateSignaturesOfAllInputs((pubkey, msghash, signature) =>
+                        ecpairFromPublicKey(pubkey).verify(msghash, signature),
+                      );
 
-                        if (!validatePsbtSignatures) {
-                          throw new Error('Failed to sign transaction');
-                        }
+                      if (!validatePsbtSignatures) {
+                        throw new Error('Failed to sign transaction');
+                      }
 
-                        const txHex = signedPsbt.finalizeAllInputs().extractTransaction().toHex();
+                      const txHex = signedPsbt.finalizeAllInputs().extractTransaction().toHex();
 
-                        const response = await post<SendRawTransaction>(
-                          currentBitcoinNetwork.rpcURL,
-                          {
-                            jsonrpc: '2.0',
-                            id: '1',
-                            method: 'sendrawtransaction',
-                            params: [txHex],
-                          },
-                          { headers: { 'Content-Type': 'application/json' } },
-                        );
+                      if (!txHex) {
+                        throw new Error('Failed to sign transaction');
+                      }
 
-                        if (!response.result) {
-                          throw new Error('Failed to sign transaction');
-                        }
-
-                        const { result } = response;
-                        return result;
-                      }),
-                    );
-
+                      return txHex;
+                    });
                     responseToWeb({
                       response: {
                         result: responses,
