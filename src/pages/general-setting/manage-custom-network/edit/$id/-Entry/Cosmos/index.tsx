@@ -39,11 +39,11 @@ import CosmosImage from '@/assets/images/chain/cosmos.png';
 
 export const UNIVERSAL_NETWORK_ID = 'universal';
 
-type EVMProps = {
+type CosmosProps = {
   id: string;
 };
 
-export default function EVM({ id }: EVMProps) {
+export default function Cosmos({ id }: CosmosProps) {
   const { t } = useTranslation();
 
   const { addedCustomChainList, editCustomChain } = useCustomChain();
@@ -136,7 +136,7 @@ export default function EVM({ id }: EVMProps) {
 
   const submit = async (data: AddChainForm) => {
     try {
-      if (!matchingCustomChain) {
+      if (!matchingCustomChain || !matchingCustomAsset) {
         throw Error('Failed to find matching custom chain');
       }
       setIsProcessing(true);
@@ -200,7 +200,7 @@ export default function EVM({ id }: EVMProps) {
       };
 
       const mainCoin: CustomAsset = {
-        id: data.mainAssetDenom,
+        id: updatedChain.mainAssetDenom,
         chainId: updatedChain.id,
         chainType: 'cosmos',
         type: 'native',
@@ -213,7 +213,7 @@ export default function EVM({ id }: EVMProps) {
 
       await editCustomChain(getUniqueChainId(matchingCustomChain), updatedChain);
 
-      await editCustomAsset(getCoinId(mainCoin), mainCoin);
+      await editCustomAsset(getCoinId(matchingCustomAsset), mainCoin);
 
       toastSuccess(t('pages.general-setting.manage-custom-network.edit.$id.Entry.Cosmos.success'));
       history.back();

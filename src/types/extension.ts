@@ -46,6 +46,7 @@ export interface ExtensionStorage {
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
+  [key: `${string}-visible-assetIds`]: AssetId[];
   [key: `${string}-custom-address`]: AccountAddress[];
   [key: `${string}-custom-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-custom-balance-cw20`]: AccountAddressBalanceCw20[];

@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
+import { updateHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
 import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
 import type { CosmosCw20Asset, EvmErc20Asset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 // params, assets, erc20, cw20
 export async function v11() {
@@ -86,6 +88,8 @@ export async function v11() {
 
     const cw20Assets = cw20AssetsResponse.flat();
 
+    await hideNewContractTokens(erc20Assets, cw20Assets);
+
     await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets'>>({
       erc20Assets,
       cw20Assets,
@@ -98,5 +102,42 @@ export async function v11() {
     }
   } finally {
     console.timeEnd('chainsAndAsset');
+  }
+}
+
+async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[]) {
+  const {
+    accounts: storedAccounts,
+    erc20Assets: storedERC20AssetsV11,
+    cw20Assets: storedCW20Assets,
+  } = await chrome.storage.local.get<ExtensionStorage>(['accounts', 'erc20Assets', 'cw20Assets']);
+
+  const storedAccountsList = storedAccounts || [];
+  const storedAccountsIds = storedAccountsList.map((account) => account.id);
+
+  const storedERC20Data = storedERC20AssetsV11 || [];
+  const storedCW20Data = storedCW20Assets || [];
+
+  const storedERC20Set = new Set(storedERC20Data.map((asset) => getCoinId(asset)));
+  const storedCW20Set = new Set(storedCW20Data.map((asset) => getCoinId(asset)));
+
+  const newERC20Assets =
+    storedERC20Set.size === 0 ? [] : erc20Assets.filter((asset) => !storedERC20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
+
+  const newCW20Assets =
+    storedCW20Set.size === 0 ? [] : cw20Assets.filter((asset) => !storedCW20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
+
+  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets];
+
+  if (mergedNewContractAssets.length > 0) {
+    const hiddenAssetIds = mergedNewContractAssets.map((asset) => ({
+      id: asset.id,
+      chainId: asset.chainId,
+      chainType: asset.chainType,
+    }));
+
+    const updatedHiddenAssetsPromises = storedAccountsIds.map((id) => updateHiddenAssets(id, hiddenAssetIds));
+
+    await Promise.all(updatedHiddenAssetsPromises);
   }
 }

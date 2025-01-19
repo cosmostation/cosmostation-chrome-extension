@@ -81,7 +81,16 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
     });
   })();
 
-  const chainList = totalVisibleAssets.map((item) => item.chain).filter((chain, idx, arr) => arr.findIndex((item) => isSameChain(chain, item)) === idx);
+  // FIXME 엣지 케이스 있는지 체크 필요.
+  const chainList = (() => {
+    if ((groupAccountAssets?.groupMap && !Object.values(groupAccountAssets?.groupMap)) || !groupAccountAssets?.singleAccountAssets) {
+      return [];
+    }
+
+    const coinList = [...Object.values(groupAccountAssets.groupMap).flat(), ...groupAccountAssets.singleAccountAssets];
+
+    return coinList.map((item) => item.chain).filter((chain, idx, arr) => arr.findIndex((item) => isSameChain(chain, item)) === idx);
+  })();
 
   useEffect(() => {
     setIsProcessing(true);

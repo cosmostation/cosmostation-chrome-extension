@@ -21,6 +21,7 @@ type UseAccountAssets =
     }
   | undefined;
 
+// FIXME props에 옵션 열고 useAccountAllAssets훅 삭제
 export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
   const { currentAccount } = useCurrentAccount();
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
@@ -135,6 +136,25 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
       return true;
     });
 
+    const filteredERC20Assets = data.erc20AccountAssets.filter((item) => {
+      const selectedChainAccountType = accountType?.[item.chain.id];
+
+      if (selectedChainAccountType) {
+        const isSamePubkeyType = (() => {
+          if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+            return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+          }
+          return true;
+        })();
+        return (
+          selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+          selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+          isSamePubkeyType
+        );
+      }
+      return true;
+    });
+
     const filteredBitcoin = data.bitcoinAccountAssets.filter((item) => {
       const selectedChainAccountType = accountType?.[item.chain.id];
 
@@ -161,6 +181,7 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
       draft.cosmosAccountAssets = filteredCosmos;
       draft.cw20AccountAssets = filteredCW20;
       draft.evmAccountAssets = filteredEVM;
+      draft.erc20AccountAssets = filteredERC20Assets;
       draft.bitcoinAccountAssets = filteredBitcoin;
     });
 

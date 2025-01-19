@@ -11,9 +11,9 @@ import type {
   AccountEvmAsset,
   AccountSuiAsset,
 } from '@/types/account';
-import type { AptosAsset, Asset, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
+import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
-import { minus } from '@/utils/numbers';
+import { gt, minus } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 
 import { getAllAccountAddress } from './account';
@@ -27,12 +27,32 @@ export async function getHiddenAssets(id: string) {
   return hiddenAssetIds ?? [];
 }
 
+export async function updateHiddenAssets(id: string, hiddenAssetIds: AssetId[]) {
+  const storedHiddenAssetIds = await getHiddenAssets(id);
+
+  const filteredStoredHiddenAssetIds = storedHiddenAssetIds.filter(
+    (storedHiddenAssetId) => !hiddenAssetIds.find((hiddenAssetId) => getCoinIdWithManual(storedHiddenAssetId) === getCoinIdWithManual(hiddenAssetId)),
+  );
+
+  const updatedHiddenAssetIds = [...filteredStoredHiddenAssetIds, ...hiddenAssetIds];
+
+  await chrome.storage.local.set({ [`${id}-hidden-assetIds`]: updatedHiddenAssetIds });
+}
+
 export async function getHiddenCustomAssets() {
   const storage = await chrome.storage.local.get<ExtensionStorage>('customHiddenAssetIds');
 
   const hiddenCustomAssetIds = storage['customHiddenAssetIds'];
 
   return hiddenCustomAssetIds ?? [];
+}
+
+export async function getVisibleAssets(id: string) {
+  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-visible-assetIds`);
+
+  const visibleAssetIds = storage[`${id}-visible-assetIds`];
+
+  return visibleAssetIds ?? [];
 }
 
 export async function getAssets() {
@@ -132,6 +152,7 @@ export async function getAssets() {
 
 type GetAccountAssetsOption = {
   disableFilterHidden?: boolean;
+  disableBalanceFilter?: boolean;
 };
 
 export async function getAccountAssets(id: string, option?: GetAccountAssetsOption) {
@@ -151,6 +172,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   ]);
 
   const hiddenAssetIds = await getHiddenAssets(id);
+  const visibleAssetIds = await getVisibleAssets(id);
 
   const { aptosChains, cosmosChains, evmChains, suiChains, bitcoinChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
@@ -163,10 +185,26 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const filterHiddenAssets = <T extends Asset>(assets: T[]): T[] => {
     if (option?.disableFilterHidden) {
       return assets;
+    } else {
+      return assets.filter((asset) => {
+        const isVisible = visibleAssetIds.find(
+          (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
+        );
+        if (isVisible) {
+          return true;
+        }
+
+        const isHidden = hiddenAssetIds.find(
+          (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
+        );
+
+        if (isHidden) {
+          return false;
+        }
+
+        return true;
+      });
     }
-    return assets.filter(
-      (asset) => !hiddenAssetIds.find((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType),
-    );
   };
 
   const aptosAssetsWithoutHidden = filterHiddenAssets(aptosAssets);
@@ -468,23 +506,59 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
   const bitcoinAccountAssets = results[8].results.flat().filter((asset) => asset.chain && asset.address);
 
+  type AssetWithBalance = {
+    balance: string;
+    asset: AssetBase;
+  };
+
+  const filterHiddenAssetsByBalance = <T extends AssetWithBalance>(assets: T[]): T[] => {
+    if (option?.disableBalanceFilter) {
+      return assets;
+    } else {
+      return assets.filter((asset) => {
+        const isVisible = visibleAssetIds.find(
+          (assetId) => assetId.chainId === asset.asset.chainId && assetId.id === asset.asset.id && assetId.chainType === asset.asset.chainType,
+        );
+        if (isVisible) {
+          return true;
+        }
+
+        const isBalanceGreaterThanZero = gt(asset.balance, '0');
+
+        return isBalanceGreaterThanZero;
+      });
+    }
+  };
+
+  const filteredCosmosAccountAssets = filterHiddenAssetsByBalance(cosmosAccountAssets);
+  const filteredEVMAccountAssets = filterHiddenAssetsByBalance(evmAccountAssets);
+  const filteredAptosAccountAssets = filterHiddenAssetsByBalance(aptosAccountAssets);
+  const filteredSuiAccountAssets = filterHiddenAssetsByBalance(suiAccountAssets);
+  const filteredCW20AccountAssets = filterHiddenAssetsByBalance(cw20AccountAssets);
+  const filteredERC20AccountAssets = filterHiddenAssetsByBalance(erc20AccountAssets);
+  const filteredCustomERC20AccountAssets = filterHiddenAssetsByBalance(customErc20AccountAssets);
+  const filteredCustomCW20AccountAssets = filterHiddenAssetsByBalance(customCw20AccountAssets);
+
+  const filteredBitcoinAccountAssets = filterHiddenAssetsByBalance(bitcoinAccountAssets);
+
   console.timeEnd('getAccountAssets');
 
   return {
-    cosmosAccountAssets,
-    evmAccountAssets,
-    aptosAccountAssets,
-    suiAccountAssets,
-    cw20AccountAssets,
-    erc20AccountAssets,
-    customErc20AccountAssets,
-    customCw20AccountAssets,
-    bitcoinAccountAssets,
+    cosmosAccountAssets: filteredCosmosAccountAssets,
+    evmAccountAssets: filteredEVMAccountAssets,
+    aptosAccountAssets: filteredAptosAccountAssets,
+    suiAccountAssets: filteredSuiAccountAssets,
+    cw20AccountAssets: filteredCW20AccountAssets,
+    erc20AccountAssets: filteredERC20AccountAssets,
+    customErc20AccountAssets: filteredCustomERC20AccountAssets,
+    customCw20AccountAssets: filteredCustomCW20AccountAssets,
+    bitcoinAccountAssets: filteredBitcoinAccountAssets,
   };
 }
 
 type GetAccountCustomAssetsOption = {
   disableFilterHidden?: boolean;
+  disableBalanceFilter?: boolean;
 };
 
 export async function getAccountCustomAssets(id: string, option?: GetAccountCustomAssetsOption) {
@@ -493,6 +567,7 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
   const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
 
   const hiddenAssetIds = await getHiddenCustomAssets();
+  const visibleAssetIds = await getVisibleAssets(id);
 
   const customChains = await getAddedCustomChains();
 
@@ -503,7 +578,22 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
 
   const visibleCustomAssets = option?.disableFilterHidden
     ? customAssets
-    : customAssets.filter((asset) => !hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset)));
+    : customAssets.filter((asset) => {
+        const isVisible = visibleAssetIds.find(
+          (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
+        );
+        if (isVisible) {
+          return true;
+        }
+
+        const isHidden = hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset));
+
+        if (isHidden) {
+          return false;
+        }
+
+        return true;
+      });
 
   const customCosmosAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'cosmos');
   const customEvmAssets = visibleCustomAssets.filter((asset) => asset.chainType === 'evm');
@@ -573,10 +663,38 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
 
   const cosmosAccountCustomAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
   const evmAccountCustomAssets = results[1].results.flat().filter((asset) => asset.chain && asset.address);
+
+  type AssetWithBalance = {
+    balance: string;
+    asset: AssetBase;
+  };
+
+  const filterHiddenAssetsByBalance = <T extends AssetWithBalance>(assets: T[]): T[] => {
+    if (option?.disableBalanceFilter) {
+      return assets;
+    } else {
+      return assets.filter((asset) => {
+        const isVisible = visibleAssetIds.find(
+          (assetId) => assetId.chainId === asset.asset.chainId && assetId.id === asset.asset.id && assetId.chainType === asset.asset.chainType,
+        );
+        if (isVisible) {
+          return true;
+        }
+
+        const isBalanceGreaterThanZero = gt(asset.balance, '0');
+
+        return isBalanceGreaterThanZero;
+      });
+    }
+  };
+
+  const filteredCosmosAccountCustomAssets = filterHiddenAssetsByBalance(cosmosAccountCustomAssets);
+  const filteredEVMAccountCustomAssets = filterHiddenAssetsByBalance(evmAccountCustomAssets);
+
   console.timeEnd('getAccountCustomAssets');
 
   return {
-    cosmosAccountCustomAssets,
-    evmAccountCustomAssets,
+    cosmosAccountCustomAssets: filteredCosmosAccountCustomAssets,
+    evmAccountCustomAssets: filteredEVMAccountCustomAssets,
   };
 }

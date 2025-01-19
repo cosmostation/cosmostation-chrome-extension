@@ -17,11 +17,19 @@ type UseAccountAllAssets =
   | {
       accountId?: string;
       filterByPreferAccountType?: boolean;
+      disableHiddenFilter?: boolean;
+      disableBalanceFilter?: boolean;
       config?: UseQueryOptions<AccountAllAssets | null>;
     }
   | undefined;
 
-export function useAccountAllAssets({ accountId, filterByPreferAccountType = false, config }: UseAccountAllAssets = {}) {
+export function useAccountAllAssets({
+  accountId,
+  filterByPreferAccountType = false,
+  disableHiddenFilter = true,
+  disableBalanceFilter = true,
+  config,
+}: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
 
@@ -30,8 +38,8 @@ export function useAccountAllAssets({ accountId, filterByPreferAccountType = fal
 
   const fetcher = async () => {
     try {
-      const accountAssets = await getAccountAssets(param, { disableFilterHidden: true });
-      const accountCustomAssets = await getAccountCustomAssets(param, { disableFilterHidden: true });
+      const accountAssets = await getAccountAssets(param, { disableFilterHidden: disableHiddenFilter, disableBalanceFilter: disableBalanceFilter });
+      const accountCustomAssets = await getAccountCustomAssets(param, { disableFilterHidden: disableHiddenFilter, disableBalanceFilter: disableBalanceFilter });
       return {
         ...accountAssets,
         ...accountCustomAssets,
@@ -42,7 +50,7 @@ export function useAccountAllAssets({ accountId, filterByPreferAccountType = fal
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['accountAllAssets', param],
+    queryKey: ['accountAllAssets', param, disableHiddenFilter, disableBalanceFilter],
     queryFn: fetcher,
     enabled: !!param,
     refetchInterval: 1000 * 15,
@@ -51,6 +59,7 @@ export function useAccountAllAssets({ accountId, filterByPreferAccountType = fal
 
   const returnData = useMemo(() => {
     if (!data) return null;
+
     if (filterByPreferAccountType) {
       const filteredCosmos = data.cosmosAccountAssets
         .filter((item) => {
@@ -132,6 +141,25 @@ export function useAccountAllAssets({ accountId, filterByPreferAccountType = fal
         return true;
       });
 
+      const filteredERC20Assets = data.erc20AccountAssets.filter((item) => {
+        const selectedChainAccountType = accountType?.[item.chain.id];
+
+        if (selectedChainAccountType) {
+          const isSamePubkeyType = (() => {
+            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+            }
+            return true;
+          })();
+          return (
+            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            isSamePubkeyType
+          );
+        }
+        return true;
+      });
+
       const filteredBitcoin = data.bitcoinAccountAssets.filter((item) => {
         const selectedChainAccountType = accountType[item.chain.id];
 
@@ -156,6 +184,7 @@ export function useAccountAllAssets({ accountId, filterByPreferAccountType = fal
         draft.cosmosAccountAssets = filteredCosmos;
         draft.cw20AccountAssets = filteredCW20;
         draft.evmAccountAssets = filteredEVM;
+        draft.erc20AccountAssets = filteredERC20Assets;
         draft.bitcoinAccountAssets = filteredBitcoin;
       });
 

@@ -15,6 +15,7 @@ import type {
 } from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { AccountDetail } from '@/types/bitcoin/balance';
+import type { ChainType } from '@/types/chain';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { ExtensionStorage } from '@/types/extension';
@@ -24,6 +25,7 @@ const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cos
 const defaultEvmCoinList = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
 const defaultBitcoinCoinList = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
 
+// FIXME 체인리스트에 별도의 키를 설정해서 디폴트 코인을 설정하도록 변경.
 const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
 
 export async function updateDefaultAssetsBalance(id: string) {
@@ -129,41 +131,12 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets, bitcoinAccountAssets } =
-      await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [
-      ...aptosAccountAssets,
-      ...cosmosAccountAssets,
-      ...cw20AccountAssets,
-      ...erc20AccountAssets,
-      ...evmAccountAssets,
-      ...suiAccountAssets,
-      ...bitcoinAccountAssets,
-    ];
-
-    const availableAccountAssets = mergedAccountAssets
-      .filter((asset) => asset.balance !== '0')
-      .map((asset) => {
-        return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
-      });
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
-      .filter(
-        (asset) =>
-          asset.balance === '0' &&
-          !defaultCoinList.find(
-            (defaultCoin) =>
-              defaultCoin.id === asset.asset.id && defaultCoin.chainId === asset.asset.chainId && defaultCoin.chainType === asset.asset.chainType,
-          ) &&
-          // NOTE 서로 다른 타입에서 같은 코인의 밸런스가 있다면 언 히든 처리.(카바 케이스)
-          !availableAccountAssets.some(
-            (availableAccountAsset) =>
-              availableAccountAsset.id === asset.asset.id &&
-              availableAccountAsset.chainId === asset.asset.chainId &&
-              availableAccountAsset.chainType === asset.asset.chainType,
-          ),
-      )
+      .filter((asset) => asset.balance === '0')
       .map((asset) => {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
       });
@@ -172,6 +145,12 @@ export async function initAccount(id: string) {
     const uniqueHiddenAssetIds = [...storedHiddenAssetIds, ...hiddenAssetIds].filter(
       (v, i, a) => a.findIndex((t) => t.id === v.id && t.chainId === v.chainId && t.chainType === v.chainType) === i,
     );
+
+    const defaultVisibleAssetIds = defaultCoinList.map((coin) => ({
+      id: coin.id,
+      chainId: coin.chainId,
+      chainType: coin.chainType as ChainType,
+    }));
 
     if (initAccountIds?.length > 0) {
       await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
@@ -183,6 +162,7 @@ export async function initAccount(id: string) {
     // NOTE 1. preload기준
     // NOTE 히든처리 제외 나머지 전체 밸런스 페칭 후 밸런스 0인 애들 히든 처리.
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
 }
 
