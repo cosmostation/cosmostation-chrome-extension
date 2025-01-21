@@ -1,7 +1,7 @@
 import { networks } from 'bitcoinjs-lib';
 
 import signetChainImg from '~/images/chainImgs/signet.png';
-import signetTokenImg from '~/images/symbols/btc.png';
+import signetTokenImg from '~/images/symbols/sbtc.png';
 import type { BitcoinChain } from '~/types/chain';
 
 export const SIGNET: BitcoinChain = {

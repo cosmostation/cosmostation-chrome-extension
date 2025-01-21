@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import validate from 'bitcoin-address-validation';
-import { address as addressConverter, networks, opcodes, Psbt, script } from 'bitcoinjs-lib';
+import { networks, Psbt } from 'bitcoinjs-lib';
+import { ECPairFactory } from 'ecpair';
 import { useSnackbar } from 'notistack';
+import * as ecc from '@bitcoinerlab/secp256k1';
 import { Typography } from '@mui/material';
 
-import { P2WPKH__V_BYTES } from '~/constants/bitcoin';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
@@ -13,9 +14,6 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/bitcoin/useBalanceSWR';
-import { useEstimatesmartfeeSWR } from '~/Popup/hooks/SWR/bitcoin/useEstimatesmartfeeSWR';
-import { useUtxoSWR } from '~/Popup/hooks/SWR/bitcoin/useUtxoSWR';
-import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentBitcoinNetwork } from '~/Popup/hooks/useCurrent/useCurrentBitcoinNetwork';
@@ -25,11 +23,10 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gte, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { formatPsbtHex } from '~/Popup/utils/bitcoin';
+import { decodedPsbt, formatPsbtHex } from '~/Popup/utils/bitcoin';
 import { getKeyPair } from '~/Popup/utils/common';
-import { ecpairFromPrivateKey, ecpairFromPublicKey } from '~/Popup/utils/crypto';
 import { responseToWeb } from '~/Popup/utils/message';
-import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
+import { shorterAddress } from '~/Popup/utils/string';
 import type { Queue } from '~/types/extensionStorage';
 import type { BitSignPsbt } from '~/types/message/bitcoin';
 
@@ -81,7 +78,6 @@ export default function Entry({ queue }: EntryProps) {
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
 
   const balance = useBalanceSWR(currentBitcoinNetwork);
-  const utxo = useUtxoSWR(currentBitcoinNetwork);
 
   const { coinGeckoId } = currentBitcoinNetwork;
 
@@ -93,12 +89,6 @@ export default function Entry({ queue }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const [isProgress, setIsProgress] = useState(false);
 
-  const accounts = useAccounts(true);
-
-  const address = useMemo(
-    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[currentBitcoinNetwork.id] || '',
-    [accounts.data, currentAccount.id, currentBitcoinNetwork.id],
-  );
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(0);
@@ -113,20 +103,13 @@ export default function Entry({ queue }: EntryProps) {
 
   const parsedPsbt = useMemo(() => {
     const formattedPsbtHex = formatPsbtHex(psbtHex);
-    const psbt = Psbt.fromHex(formattedPsbtHex);
+
+    const psbt = Psbt.fromHex(formattedPsbtHex, {
+      network,
+    });
 
     return psbt;
-  }, [psbtHex]);
-
-  const estimatesmartfee = useEstimatesmartfeeSWR(currentBitcoinNetwork);
-
-  const gasRate = useMemo(() => {
-    if (!estimatesmartfee.data?.result?.feerate) {
-      return null;
-    }
-
-    return estimatesmartfee.data?.result?.feerate;
-  }, [estimatesmartfee.data?.result?.feerate]);
+  }, [network, psbtHex]);
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, currentBitcoinNetwork, currentPassword), [currentAccount, currentBitcoinNetwork, currentPassword]);
 
@@ -138,101 +121,39 @@ export default function Entry({ queue }: EntryProps) {
     return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
   }, [balance.data]);
 
-  const memoBytes = useMemo(() => {
-    if (!parsedPsbt) {
-      return 0;
-    }
+  const decodedPsbtData = useMemo(
+    () =>
+      decodedPsbt({
+        psbt: parsedPsbt,
+        psbtNetwork: network,
+      }),
+    [network, parsedPsbt],
+  );
 
-    const opReturnOutput = parsedPsbt.txOutputs.find((output) => {
-      try {
-        const chunks = script.decompile(output.script);
-        return chunks && chunks[0] === opcodes.OP_RETURN;
-      } catch (e) {
-        return false;
-      }
-    });
+  const totalInputAmount = useMemo(
+    () => decodedPsbtData.inputInfos.reduce((totalVal, cur) => plus(totalVal, cur?.value || '0'), '0'),
+    [decodedPsbtData.inputInfos],
+  );
+  const totalOutputAmount = useMemo(
+    () => decodedPsbtData.outputInfos.reduce((totalVal, cur) => plus(totalVal, cur.value || '0'), '0'),
+    [decodedPsbtData.outputInfos],
+  );
 
-    if (opReturnOutput) {
-      return opReturnOutput.script.length;
-    }
-
-    return 0;
-  }, [parsedPsbt]);
-
-  const currentVbytes = useMemo(() => {
-    if (!utxo.data?.length) {
-      return 0;
-    }
-
-    const isMemo = memoBytes > 0;
-
-    return (utxo.data.length || 0) * P2WPKH__V_BYTES.INPUT + 2 * P2WPKH__V_BYTES.OUTPUT + P2WPKH__V_BYTES.OVERHEAD + (isMemo ? 3 : 0) + memoBytes;
-  }, [memoBytes, utxo.data?.length]);
-
-  const fee = useMemo(() => {
-    if (!gasRate) {
-      return 0;
-    }
-
-    return Math.ceil(currentVbytes * gasRate * 100000);
-  }, [gasRate, currentVbytes]);
+  const fee = useMemo(() => decodedPsbtData.fee, [decodedPsbtData.fee]);
 
   const displayFee = useMemo(() => toDisplayDenomAmount(fee, decimals), [fee, decimals]);
 
   const displayFeePrice = useMemo(() => times(displayFee, price), [displayFee, price]);
 
-  const currentInputs = useMemo(() => {
-    const witnessUtxoMapedList = parsedPsbt.data.inputs.map((item) => {
-      if (!item.witnessUtxo) {
-        return undefined;
-      }
-
-      const scriptBuffer = item.witnessUtxo.script;
-      const addressFromScript = addressConverter.fromOutputScript(scriptBuffer, network);
-
-      return {
-        address: addressFromScript,
-        value: item.witnessUtxo?.value,
-      };
-    });
-
-    return witnessUtxoMapedList.filter((item) => !!item) as {
-      address: string;
-      value: number;
-    }[];
-  }, [network, parsedPsbt.data.inputs]);
-
-  const currentOutputs = useMemo(() => {
-    const mappedOutputs = parsedPsbt.txOutputs.map((item) => {
-      const addressFromScript = addressConverter.fromOutputScript(item.script, network);
-
-      return {
-        address: addressFromScript,
-        value: item.value,
-      };
-    });
-
-    return mappedOutputs;
-  }, [network, parsedPsbt.txOutputs]);
-
-  const totalInputAmount = useMemo(() => currentInputs.reduce((totalVal, cur) => plus(totalVal, cur?.value || '0'), '0'), [currentInputs]);
-  const totalOutputAmount = useMemo(() => currentOutputs.reduce((totalVal, cur) => plus(totalVal, cur?.value || '0'), '0'), [currentOutputs]);
-
-  const canSendTx = useMemo(() => gte(availableAmount, plus(totalOutputAmount, fee)), [availableAmount, fee, totalOutputAmount]);
+  const canSendTx = useMemo(
+    () => gte(availableAmount, plus(totalOutputAmount, decodedPsbtData.fee)),
+    [decodedPsbtData.fee, availableAmount, totalOutputAmount],
+  );
 
   const errorMessage = useMemo(() => {
-    if (!currentInputs.some((item) => isEqualsIgnoringCase(item?.address, address))) {
-      return t('pages.Popup.Bitcoin.SignPsbt.entry.invalidSender');
-    }
-
-    if (currentOutputs.some((item) => !validate(item.address))) {
+    if (decodedPsbtData.outputInfos.some((item) => !validate(item.address))) {
       return t('pages.Popup.Bitcoin.SignPsbt.entry.invalidAddress');
     }
-
-    if (gasRate === null) {
-      return t('pages.Popup.Bitcoin.SignPsbt.entry.failedLoadFee');
-    }
-
     if (availableAmount === 0 || !canSendTx) {
       return t('pages.Popup.Bitcoin.SignPsbt.entry.noAvailableAmount');
     }
@@ -246,7 +167,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '';
-  }, [address, availableAmount, canSendTx, currentInputs, currentOutputs, gasRate, psbtHex, t, totalInputAmount]);
+  }, [availableAmount, canSendTx, decodedPsbtData.outputInfos, psbtHex, t, totalInputAmount]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -267,11 +188,11 @@ export default function Entry({ queue }: EntryProps) {
                 <LabelContainer>
                   <Typography variant="h5">{t('pages.Popup.Bitcoin.SignPsbt.entry.input')}</Typography>
                 </LabelContainer>
-                {currentInputs.map((item) => {
-                  const displayValue = toDisplayDenomAmount(item.value, decimals);
+                {decodedPsbtData.inputInfos.map((item) => {
+                  const displayValue = toDisplayDenomAmount(item.value || '0', decimals);
 
                   return (
-                    <InOutputContainer key={`${item.address}-${item.value}`}>
+                    <InOutputContainer key={`${item.address}-${item.value || '0'}`}>
                       <AddressContainer>
                         <Typography variant="h5">{shorterAddress(item.address, 14)}</Typography>
                       </AddressContainer>
@@ -292,7 +213,7 @@ export default function Entry({ queue }: EntryProps) {
                 <LabelContainer>
                   <Typography variant="h5">{t('pages.Popup.Bitcoin.SignPsbt.entry.output')}</Typography>
                 </LabelContainer>
-                {currentOutputs.map((item) => {
+                {decodedPsbtData.outputInfos.map((item) => {
                   const displayValue = toDisplayDenomAmount(item.value, decimals);
 
                   return (
@@ -387,16 +308,15 @@ export default function Entry({ queue }: EntryProps) {
                       throw new Error('key does not exist');
                     }
 
-                    const signedPsbt = parsedPsbt.signAllInputs(ecpairFromPrivateKey(keyPair.privateKey));
-                    const validatePsbtSignatures = signedPsbt.validateSignaturesOfAllInputs((pubkey, msghash, signature) =>
-                      ecpairFromPublicKey(pubkey).verify(msghash, signature),
-                    );
+                    const ECPair = ECPairFactory(ecc);
 
-                    if (!validatePsbtSignatures) {
-                      throw new Error('Failed to sign transaction');
-                    }
+                    const signer = ECPair.fromPrivateKey(keyPair.privateKey, {
+                      network,
+                    });
 
-                    const txHex = signedPsbt.finalizeAllInputs().extractTransaction().toHex();
+                    const signedPsbt = parsedPsbt.signAllInputs(signer);
+
+                    const txHex = signedPsbt.finalizeAllInputs().toHex();
 
                     if (!txHex) {
                       throw new Error('Failed to sign transaction');

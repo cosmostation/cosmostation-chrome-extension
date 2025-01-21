@@ -12,7 +12,7 @@ type HeaderProps = {
 };
 
 export default function Header({ network, origin, className }: HeaderProps) {
-  const chain = BITCOIN;
+  const chain = network || BITCOIN;
   const { currentAccount } = useCurrentAccount();
 
   const { currentPassword } = useCurrentPassword();
