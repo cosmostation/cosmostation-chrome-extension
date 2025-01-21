@@ -14,7 +14,6 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/bitcoin/useBalanceSWR';
-import { useEstimatesmartfeeSWR } from '~/Popup/hooks/SWR/bitcoin/useEstimatesmartfeeSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentBitcoinNetwork } from '~/Popup/hooks/useCurrent/useCurrentBitcoinNetwork';
@@ -119,16 +118,6 @@ export default function Entry({ queue }: EntryProps) {
     [network, psbtHexes],
   );
 
-  const estimatesmartfee = useEstimatesmartfeeSWR(currentBitcoinNetwork);
-
-  const gasRate = useMemo(() => {
-    if (!estimatesmartfee.data?.result?.feerate) {
-      return null;
-    }
-
-    return estimatesmartfee.data?.result?.feerate;
-  }, [estimatesmartfee.data?.result?.feerate]);
-
   const keyPair = useMemo(() => getKeyPair(currentAccount, currentBitcoinNetwork, currentPassword), [currentAccount, currentBitcoinNetwork, currentPassword]);
 
   const availableAmount = useMemo(() => {
@@ -171,10 +160,6 @@ export default function Entry({ queue }: EntryProps) {
       return t('pages.Popup.Bitcoin.SignPsbt.entry.invalidAddress');
     }
 
-    if (gasRate === null) {
-      return t('pages.Popup.Bitcoin.SignPsbt.entry.failedLoadFee');
-    }
-
     if (availableAmount === 0 || !canSend) {
       return t('pages.Popup.Bitcoin.SignPsbt.entry.noAvailableAmount');
     }
@@ -184,7 +169,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '';
-  }, [availableAmount, canSend, decodedPsbtDatas, gasRate, t]);
+  }, [availableAmount, canSend, decodedPsbtDatas, t]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
