@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { Signer } from 'bip322-js';
-import type { SignatureOptions } from 'bitcoinjs-message';
 import * as bitcoinMessage from 'bitcoinjs-message';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -116,10 +115,7 @@ export default function Entry({ queue }: EntryProps) {
                 if (signType === 'ecdsa') {
                   const ecPairInterface = ecpairFromPrivateKey(keyPair.privateKey);
 
-                  const sigOptions: SignatureOptions = {
-                    segwitType: 'p2wpkh',
-                  };
-                  const signedMessage = bitcoinMessage.sign(messageToSign, ecPairInterface.privateKey!, ecPairInterface.compressed, sigOptions);
+                  const signedMessage = bitcoinMessage.sign(messageToSign, ecPairInterface.privateKey!, ecPairInterface.compressed);
 
                   const result: BitSignMessageResposne = signedMessage.toString('base64');
 
