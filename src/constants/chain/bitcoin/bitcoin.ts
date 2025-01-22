@@ -7,7 +7,7 @@ import type { BitcoinChain } from '~/types/chain';
 export const BITCOIN: BitcoinChain = {
   id: 'b0c2453d-1cf2-4a54-877d-cf2352e9b801',
   line: 'BITCOIN',
-  chainName: 'BITCOIN',
+  chainName: 'BITCOIN NATIVE SEGWIT',
   tokenImageURL: bitcoinTokenImg,
   imageURL: bitcoinChainImg,
   bip44: {

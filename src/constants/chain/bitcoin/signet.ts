@@ -7,7 +7,7 @@ import type { BitcoinChain } from '~/types/chain';
 export const SIGNET: BitcoinChain = {
   id: '4556f03d-fdfd-49ee-85a1-54e67747f5ed',
   line: 'BITCOIN',
-  chainName: 'SIGNET',
+  chainName: 'SIGNET NATIVE SEGWIT',
   tokenImageURL: signetTokenImg,
   imageURL: signetChainImg,
   bip44: {
