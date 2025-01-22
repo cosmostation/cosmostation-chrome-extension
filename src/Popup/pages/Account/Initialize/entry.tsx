@@ -5,6 +5,8 @@ import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/cha
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { SIGNET } from '~/constants/chain/bitcoin/signet';
+import { SIGNET_TAPROOT } from '~/constants/chain/bitcoin/signetTaproot';
+import { BITCOIN_TAPROOT } from '~/constants/chain/bitcoin/taproot';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -44,7 +46,7 @@ export default function Entry() {
     void setExtensionStorage('encryptedPassword', null);
     void setExtensionStorage('selectedAccountId', '');
 
-    void setExtensionStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id, SUI.id, BITCOIN.id, SIGNET.id]);
+    void setExtensionStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id, SUI.id, BITCOIN.id, BITCOIN_TAPROOT.id, SIGNET.id, SIGNET_TAPROOT.id]);
     void setExtensionStorage('shownEthereumNetworkIds', [...ETHEREUM_NETWORKS.map((network) => network.id)]);
     void setExtensionStorage('shownAptosNetworkIds', [...APTOS_NETWORKS.map((network) => network.id)]);
     void setExtensionStorage('shownSuiNetworkIds', [...SUI_NETWORKS.map((network) => network.id)]);

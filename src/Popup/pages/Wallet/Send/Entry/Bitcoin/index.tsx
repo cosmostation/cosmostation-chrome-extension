@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { validate } from 'bitcoin-address-validation';
 import { networks, payments, Psbt } from 'bitcoinjs-lib';
+import { isTaprootInput, toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
@@ -22,8 +23,9 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { post } from '~/Popup/utils/axios';
 import { isDecimal, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getAddressType, initBitcoinEcc } from '~/Popup/utils/bitcoin';
 import { getKeyPair } from '~/Popup/utils/common';
-import { ecpairFromPrivateKey } from '~/Popup/utils/crypto';
+import { ecpairFromPrivateKey, getTweakSigner } from '~/Popup/utils/crypto';
 import type { SendRawTransaction } from '~/types/bitcoin/transaction';
 import type { BitcoinChain } from '~/types/chain';
 
@@ -98,7 +100,34 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
-  const p2wpkh = useMemo(() => payments.p2wpkh({ pubkey: keyPair!.publicKey, network }), [keyPair, network]);
+  const addressType = useMemo(() => getAddressType(chain), [chain]);
+
+  const payment = useMemo(() => {
+    try {
+      if (!keyPair) {
+        return undefined;
+      }
+
+      initBitcoinEcc();
+
+      if (addressType === 'p2wpkh') {
+        return payments.p2wpkh({ pubkey: keyPair.publicKey, network });
+      }
+
+      if (addressType === 'p2tr') {
+        const tapInternalKey = toXOnly(keyPair.publicKey);
+
+        return payments.p2tr({
+          internalPubkey: tapInternalKey,
+          network,
+        });
+      }
+
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }, [addressType, keyPair, network]);
 
   const availableAmount = useMemo(() => {
     if (!balance.data) {
@@ -138,18 +167,30 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
   const displayFeePrice = useMemo(() => times(displayFee, price), [displayFee, price]);
 
-  const currentInputs = useMemo(
-    () =>
-      utxo.data?.map((u) => ({
+  const currentInputs = useMemo(() => {
+    if (!payment) return undefined;
+
+    if (addressType === 'p2tr') {
+      return utxo.data?.map((u) => ({
         hash: u.txid,
         index: u.vout,
         witnessUtxo: {
-          script: p2wpkh.output!,
+          script: payment.output!,
           value: u.value,
         },
-      })),
-    [p2wpkh.output, utxo.data],
-  );
+        tapInternalKey: payment.internalPubkey,
+      }));
+    }
+
+    return utxo.data?.map((u) => ({
+      hash: u.txid,
+      index: u.vout,
+      witnessUtxo: {
+        script: payment.output!,
+        value: u.value,
+      },
+    }));
+  }, [addressType, payment, utxo.data]);
 
   const currentOutputs = useMemo(
     () => [
@@ -158,15 +199,16 @@ export default function Bitcoin({ chain }: BitcoinProps) {
         value: currentAmount,
       },
       {
-        address: p2wpkh.address!,
+        address: payment?.address || '',
         value: change,
       },
     ],
-    [change, currentAddress, currentAmount, p2wpkh.address],
+    [change, currentAddress, currentAmount, payment?.address],
   );
 
   const txHex = useMemo(() => {
     try {
+      initBitcoinEcc();
       const psbt = new Psbt({ network });
 
       if (currentInputs) {
@@ -180,11 +222,26 @@ export default function Bitcoin({ chain }: BitcoinProps) {
         psbt.addOutput({ script: payments.embed({ data: [memo] }).output!, value: 0 });
       }
 
-      return psbt.signAllInputs(ecpairFromPrivateKey(keyPair!.privateKey!)).finalizeAllInputs().extractTransaction().toHex();
+      const tweakSigner = getTweakSigner(currentAccount, chain, currentPassword, {
+        tweakHash: null,
+        network: chain.isSignet ? 'testnet' : 'mainnet',
+      });
+
+      const signer = ecpairFromPrivateKey(keyPair!.privateKey!);
+
+      psbt.data.inputs.forEach((input, index) => {
+        if (isTaprootInput(input)) {
+          psbt.signInput(index, tweakSigner!);
+        } else {
+          psbt.signInput(index, signer);
+        }
+      });
+
+      return psbt.finalizeAllInputs().extractTransaction().toHex();
     } catch {
       return null;
     }
-  }, [currentInputs, currentMemo, currentMemoBytes, currentOutputs, keyPair, network]);
+  }, [chain, currentAccount, currentInputs, currentMemo, currentMemoBytes, currentOutputs, currentPassword, keyPair, network]);
 
   const handleOnClickMax = () => {
     setCurrentDisplayAmount(toDisplayDenomAmount(availableAmount - fee, chain.decimals));

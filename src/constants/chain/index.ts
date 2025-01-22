@@ -6,6 +6,8 @@ import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { BITCOIN as BITCOIN__BITCOIN } from './bitcoin/bitcoin';
 import { SIGNET as BITCOIN__SIGNET } from './bitcoin/signet';
+import { SIGNET_TAPROOT as BITCOIN__SIGNET_TAPROOT } from './bitcoin/signetTaproot';
+import { BITCOIN_TAPROOT as BITCOIN__BITCOIN_TAPROOT } from './bitcoin/taproot';
 import { AGORIC } from './cosmos/agoric';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
@@ -246,6 +248,6 @@ export const SUI_CHAINS: SuiChain[] = [SUI];
 
 export const SUI_NETWORKS: SuiNetwork[] = [SUI_NETWORK__MAINNET, SUI_NETWORK__TESTNET, SUI_NETWORK__DEVNET];
 
-export const BITCOIN_CHAINS: BitcoinChain[] = [BITCOIN__BITCOIN, BITCOIN__SIGNET];
+export const BITCOIN_CHAINS: BitcoinChain[] = [BITCOIN__BITCOIN, BITCOIN__BITCOIN_TAPROOT, BITCOIN__SIGNET, BITCOIN__SIGNET_TAPROOT];
 
 export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS, ...SUI_CHAINS, ...BITCOIN_CHAINS];
