@@ -88,6 +88,6 @@ export const InfoContainer = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    minHeight: '60%',
+    minHeight: '80%',
   },
 });
