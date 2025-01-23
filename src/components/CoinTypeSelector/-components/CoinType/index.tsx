@@ -75,12 +75,11 @@ export default function CoinTypeSelector({
 
           const isDefaultAccountType = item.accountType.isDefault !== false;
 
-          // FIXME "m/44'/60'/0'/X", 케이스 핸들링 필요.
           const [rootLevel, purposeLevel, coinTypeLevel, accountLevel, changeLevel, indexLevel] = fullHdPath.split('/');
 
           const highlightedLeftText = `${rootLevel} / ${isBitcoin ? '' : `${purposeLevel} / `}`;
           const highlightedText = isBitcoin ? purposeLevel : coinTypeLevel;
-          const highlightedRightText = ` / ${isBitcoin ? `${coinTypeLevel} / ` : ''}${accountLevel} / ${changeLevel} / ${indexLevel}`;
+          const highlightedRightText = ` / ${isBitcoin ? `${coinTypeLevel} / ` : ''}${accountLevel} / ${changeLevel} ${indexLevel ? `/ ${indexLevel}` : ''}`;
 
           return (
             <OutlinedButton key={item.address} isSelected={isSelected} onClick={() => onClickChainType(chain.id, item.accountType)}>

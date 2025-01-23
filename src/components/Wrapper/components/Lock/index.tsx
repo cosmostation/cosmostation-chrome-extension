@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { Route as ResetWallet } from '@/pages/manage-account/reset-wallet';
 import { sha512 } from '@/utils/crypto/password';
+import { removeTrailingSlash } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { FormContainer, RecoverPasswordTextButton, StyledInput, StyledInputContainer } from './styled';
@@ -23,6 +24,7 @@ type LockProps = {
 export default function Lock({ children }: LockProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { currentPassword, setCurrentPassword } = useCurrentPassword();
 
@@ -59,10 +61,16 @@ export default function Lock({ children }: LockProps) {
     reset();
   };
 
+  const isDisableLock = useMemo(() => {
+    if (location.pathname === removeTrailingSlash(ResetWallet.to)) {
+      return true;
+    }
+  }, [location.pathname]);
+
   // FIXME 계정을 다 지운 상태로 완전 새로고침을 했을 때 Lock페이지로 안가고 이니셜 페이지로 가서 비밀번호를 입력하는과정이 패싱됨.
-  // if (accounts.length < 1) {
-  //   return children;
-  // }
+  if (isDisableLock) {
+    return children;
+  }
 
   if (!currentPassword && comparisonPasswordHash) {
     return (

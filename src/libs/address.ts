@@ -137,19 +137,22 @@ export function getAddress(chain: Chain, publicKey: string) {
 
   if (chainType === 'bitcoin') {
     const { pubkeyStyle } = accountType;
+
+    const network = chain.isTestnet ? networks.testnet : networks.bitcoin;
+
     if (pubkeyStyle === 'p2wpkh') {
-      const p2wpkh = payments.p2wpkh({ pubkey: Buffer.from(publicKey, 'hex'), network: networks.bitcoin });
+      const p2wpkh = payments.p2wpkh({ pubkey: Buffer.from(publicKey, 'hex'), network });
       return p2wpkh.address!;
     }
     if (pubkeyStyle === 'p2pkh') {
-      const p2pkh = payments.p2pkh({ pubkey: Buffer.from(publicKey, 'hex'), network: networks.bitcoin });
+      const p2pkh = payments.p2pkh({ pubkey: Buffer.from(publicKey, 'hex'), network });
       return p2pkh.address!;
     }
     if (pubkeyStyle === 'p2wpkhSh') {
       const p2wpkhSh = payments.p2sh({
         redeem: payments.p2wpkh({
           pubkey: Buffer.from(publicKey, 'hex'),
-          network: networks.bitcoin,
+          network,
         }),
       });
       return p2wpkhSh.address!;

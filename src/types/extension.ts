@@ -53,6 +53,7 @@ export interface ExtensionStorage {
   [key: `${string}-custom-balance-cosmos`]: AccountAddressBalanceCosmos[];
   [key: `${string}-custom-balance-evm`]: AccountAddressBalanceEvm[];
   initAccountIds: Account['id'][];
+  initCheckLegacyBalanceAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;
   dappListSortKey: DappListSortKeyType;
   language: string;

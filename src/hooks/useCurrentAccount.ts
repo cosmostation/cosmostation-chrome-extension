@@ -4,6 +4,7 @@ import { deleteKeysContainingString } from '@/utils/storage';
 import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
 import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
 import { removeInitAccountId, removeInitAccountIds } from '@/utils/zustand/initAccountIds';
+import { removeInitCheckLegacyBalanceAccountId, removeInitCheckLegacyBalanceAccountIds } from '@/utils/zustand/initCheckLegacyBalanceAccountId';
 import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -49,6 +50,7 @@ export function useCurrentAccount() {
     await removeAccountFromNotBackedupList(id);
     await removePreferAccountType(id);
     await removeInitAccountId(id);
+    await removeInitCheckLegacyBalanceAccountId(id);
 
     if (encryptedRestoreString && !newAccounts.some((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === encryptedRestoreString)) {
       await removeMnemonicName(encryptedRestoreString);
@@ -73,6 +75,7 @@ export function useCurrentAccount() {
     await removeAccountFromNotBackedupLists(targetAccountsIds);
     await removePreferAccountTypes(targetAccountsIds);
     await removeInitAccountIds(targetAccountsIds);
+    await removeInitCheckLegacyBalanceAccountIds(targetAccountsIds);
 
     const removePromises = targetAccounts.map(({ id }) => deleteKeysContainingString(id));
 

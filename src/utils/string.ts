@@ -73,3 +73,20 @@ export function hexOrDecimalToDecimal(datum?: number | string) {
 
   return hexToDecimal(hexValue);
 }
+
+export function removeTrailingSlash(path: string) {
+  return path.endsWith('/') ? path.slice(0, -1) : path;
+}
+
+export function parsingHdPath(hdPath: string) {
+  const [rootLevel, purposeLevel, coinTypeLevel, accountLevel, changeLevel, indexLevel] = hdPath.split('/');
+
+  return {
+    rootLevel,
+    purposeLevel,
+    coinTypeLevel,
+    accountLevel,
+    changeLevel,
+    indexLevel,
+  };
+}

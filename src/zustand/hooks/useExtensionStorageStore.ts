@@ -17,6 +17,7 @@ const initialState: ExtensionStorageState = {
   cw20Assets: [],
   customCw20Assets: [],
   initAccountIds: [],
+  initCheckLegacyBalanceAccountIds: [],
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
   dappListSortKey: DefaultSortKey.dappListSortKey,
   language: 'en',
@@ -49,6 +50,7 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
     },
     resetExtensionStorageStore: async () => {
       const accounts = await getExtensionLocalStorage('accounts');
+      // FIXME 자동으로 키 가져와서 삭제하도록 변경 필요.
       await setExtensionLocalStorage('accounts', []);
       await setExtensionLocalStorage('initAccountIds', []);
       await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
@@ -66,6 +68,7 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('customErc20Assets', []);
       await setExtensionLocalStorage('customAssets', []);
       await setExtensionLocalStorage('customHiddenAssetIds', []);
+      await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
       await Promise.all(removePromises);

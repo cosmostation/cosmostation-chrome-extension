@@ -173,27 +173,12 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { aptosAccountAssets, cosmosAccountAssets, cw20AccountAssets, erc20AccountAssets, evmAccountAssets, suiAccountAssets, bitcoinAccountAssets } =
-      await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [
-      ...aptosAccountAssets,
-      ...cosmosAccountAssets,
-      ...cw20AccountAssets,
-      ...erc20AccountAssets,
-      ...evmAccountAssets,
-      ...suiAccountAssets,
-      ...bitcoinAccountAssets,
-    ];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
-      .filter(
-        (asset) =>
-          !defaultCoinList.find(
-            (defaultCoin) =>
-              defaultCoin.id === asset.asset.id && defaultCoin.chainId === asset.asset.chainId && defaultCoin.chainType === asset.asset.chainType,
-          ),
-      )
+      .filter((asset) => asset.balance === '0')
       .map((asset) => {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
       });
@@ -202,6 +187,12 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
       (v, i, a) => a.findIndex((t) => t.id === v.id && t.chainId === v.chainId && t.chainType === v.chainType) === i,
     );
 
+    const defaultVisibleAssetIds = defaultCoinList.map((coin) => ({
+      id: coin.id,
+      chainId: coin.chainId,
+      chainType: coin.chainType as ChainType,
+    }));
+
     if (initAccountIds?.length > 0) {
       await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
     } else {
@@ -209,6 +200,7 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
     }
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
 }
 

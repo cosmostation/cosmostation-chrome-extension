@@ -11,6 +11,7 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import OutlinedInput from '@/components/common/OutlinedInput';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
@@ -18,9 +19,10 @@ import { Route as Dashboard } from '@/pages/index';
 import type { Account, AccountWithName, PrivateAccount } from '@/types/account';
 import { aesEncrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
-import { toastError, toastSuccess } from '@/utils/toast';
+import { toastError } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useLoadingOverlayStore } from '@/zustand/hooks/useLoadingOverlayStore';
 
 import {
   Body,
@@ -48,6 +50,10 @@ import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { updateLoadingOverlay } = useLoadingOverlayStore((state) => state);
+
+  const { refetch: refetchAccountAssets } = useAccountAssets();
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
   const [isLoadingSetUp, setIsLoadingSetUp] = useState(false);
@@ -128,32 +134,36 @@ export default function Entry() {
         name: accountName,
       };
 
-      await addAccountWithName(newAccount);
-
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
-
-      await addPreferAccountType(newAccount.id);
-
       if (!comparisonPasswordHash) {
         const comparisonPasswordHash = sha512(currentPassword!);
         await updateExtensionStorageStore('comparisonPasswordHash', comparisonPasswordHash);
       }
 
+      await addAccountWithName(newAccount);
+
+      await addPreferAccountType(newAccount.id);
+
       await setCurrentAccount(newAccount.id);
-
-      reset();
-      toastSuccess(t('pages.account.restore-wallet.privatekey.index.setUpSuccess'));
-
-      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: Dashboard.to,
       });
+
+      updateLoadingOverlay(true);
+
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
+
+      await loadExtensionStorageStoreFromStorage();
+
+      await refetchAccountAssets();
+
+      reset();
     } catch {
       toastError(t('pages.account.restore-wallet.privatekey.index.setUpError'));
     } finally {
       setIsLoadingSetUp(false);
+      updateLoadingOverlay(false);
     }
   };
 

@@ -93,6 +93,10 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('customCw20Assets', []);
   }
 
+  if (!originStorage.initCheckLegacyBalanceAccountIds) {
+    await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
+  }
+
   if (originStorage.accountNamesById) {
     const accountMissingNames = (() => {
       const storedAccounts = originStorage.accounts;

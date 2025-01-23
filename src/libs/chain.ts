@@ -1,5 +1,6 @@
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
+import { parsingHdPath } from '@/utils/string';
 
 export async function getChains() {
   const { paramsV11: chains } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
@@ -227,14 +228,27 @@ export async function getChains() {
 
     const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
 
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [
-      {
-        provider: 'Cosmostation',
-        url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet',
-      },
-    ];
+    const { coinTypeLevel } = parsingHdPath(chain.params?.chainlist_params?.account_type?.[0].hd_path || '');
 
-    const mempoolURL = 'https://mempool.space/api';
+    const isTestnet = coinTypeLevel.replace(/[^0-9]/g, '') === `1`;
+
+    const rpcUrls =
+      chain.params.chainlist_params.rpc_endpoint ??
+      (isTestnet
+        ? [
+            {
+              provider: 'Cosmostation',
+              url: 'https://rpc-office.cosmostation.io/bitcoin-testnet',
+            },
+          ]
+        : [
+            {
+              provider: 'Cosmostation',
+              url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet',
+            },
+          ]);
+
+    const mempoolURL = isTestnet ? 'https://mempool.space/signet/api' : 'https://mempool.space/api';
 
     const explorer = chain.params.chainlist_params?.explorer ?? null;
 
@@ -260,6 +274,7 @@ export async function getChains() {
       mempoolURL,
       explorer,
       accountTypes,
+      isTestnet,
     };
   });
 

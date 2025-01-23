@@ -11,16 +11,18 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { sendMessage } from '@/libs/extension';
-import { Route as SwitchAccount } from '@/pages/manage-account/switch-account';
+import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import { isNumber } from '@/utils/string';
-import { toastError, toastSuccess } from '@/utils/toast';
+import { toastError } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useLoadingOverlayStore } from '@/zustand/hooks/useLoadingOverlayStore';
 
 import {
   Body,
@@ -48,8 +50,12 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { updateLoadingOverlay } = useLoadingOverlayStore((state) => state);
+
   const { accounts } = useExtensionStorageStore((state) => state);
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
+
+  const { refetch: refetchAccountAssets } = useAccountAssets();
 
   const { flatChainList } = useChainList();
 
@@ -105,24 +111,28 @@ export default function Entry({ mnemonicId }: EntryProps) {
 
         await addPreferAccountType(newAccount.id);
 
-        await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
-        await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
-
         await setCurrentAccount(newAccount.id);
+
+        navigate({
+          to: Dashboard.to,
+        });
+
+        updateLoadingOverlay(true);
+
+        await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+        await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
+
+        await loadExtensionStorageStoreFromStorage();
+
+        await refetchAccountAssets();
+
+        reset();
       }
-
-      await loadExtensionStorageStoreFromStorage();
-
-      navigate({
-        to: SwitchAccount.to,
-      });
-
-      toastSuccess(t('pages.manage-account.create-account.entry.setupSuccess'));
-      reset();
     } catch {
       toastError(t('pages.manage-account.create-account.entry.setupFail'));
     } finally {
       setIsLoadingSetup(false);
+      updateLoadingOverlay(false);
     }
   };
 

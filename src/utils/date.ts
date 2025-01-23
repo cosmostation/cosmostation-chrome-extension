@@ -81,3 +81,26 @@ export function getDDay(dateString: string) {
 
   return diffDays;
 }
+
+export function isDialogStillBlocked(lastClosed: string, blockDays: number): boolean {
+  const lastClosedDate = new Date(lastClosed);
+
+  if (isNaN(lastClosedDate.getTime())) {
+    throw new Error('Invalid ISO date string provided');
+  }
+
+  const currentDate = new Date();
+  const diffInDays = (currentDate.getTime() - lastClosedDate.getTime()) / (1000 * 60 * 60 * 24);
+  return diffInDays < blockDays;
+}
+
+export function isDateAfter(date1: string, date2: string): boolean {
+  const firstDate = new Date(date1);
+  const secondDate = new Date(date2);
+
+  if (isNaN(firstDate.getTime()) || isNaN(secondDate.getTime())) {
+    throw new Error('Invalid ISO date string provided');
+  }
+
+  return firstDate.getTime() > secondDate.getTime();
+}

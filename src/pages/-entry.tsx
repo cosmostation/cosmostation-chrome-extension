@@ -6,6 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
+import CheckLegacyAddressBalanceBottomSheet from '@/components/CheckLegacyAddressBalanceBottomSheet';
 import CoinWithMarketTrendButton from '@/components/CoinWithMarketTrendButton';
 import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
@@ -156,131 +157,134 @@ export default function Entry() {
   }, [scrollToTop, search.length]);
 
   return (
-    <BaseBody>
-      <EdgeAligner>
-        <Container>
-          <PortFolio
-            selectedChainId={currentSelectedChainId}
-            onChangeChaindId={(chainId) => {
-              setCurrentSelectedChainId(chainId);
-            }}
-          />
+    <>
+      <BaseBody>
+        <EdgeAligner>
+          <Container>
+            <PortFolio
+              selectedChainId={currentSelectedChainId}
+              onChangeChaindId={(chainId) => {
+                setCurrentSelectedChainId(chainId);
+              }}
+            />
 
-          <StickyTabContainer>
-            <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-              {tabLabels.map((item) => (
-                <Tab key={item} label={item} />
-              ))}
-            </Tabs>
-          </StickyTabContainer>
-          <StyledTabPanel value={tabValue} index={0}>
-            <StickyTabPanelContentsContainer>
-              <FilterContaienr>
-                <Search
-                  value={search}
-                  onChange={(event) => {
-                    setSearch(event.currentTarget.value);
-                  }}
-                  isPending={isDebouncing}
-                  onClickFilter={() => {
-                    setIsOpenSortBottomSheet(true);
-                  }}
-                  onClear={() => {
-                    setSearch('');
-                    setViewLimit(30);
-                    cancel();
-                  }}
-                />
-              </FilterContaienr>
-              <AdCarouselContainer>
-                <Carousel>
-                  <CarouselImg src={testAdImg} />
-                  <CarouselImg src={testAdImg} />
-                </Carousel>
-              </AdCarouselContainer>
-              <ManageCryptoContainer>
-                <CheckBoxTextButton
-                  onClick={() => {
-                    setIsHideSmallValue(!isHideSmallValue);
-                  }}
-                >
-                  <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
-                </CheckBoxTextButton>
-                <IconTextButton
-                  onClick={() => [
-                    navigate({
-                      to: ManageAssets.to,
-                    }),
-                  ]}
-                  leadingIcon={<PlusIcon />}
-                >
-                  <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
-                </IconTextButton>
-              </ManageCryptoContainer>
-            </StickyTabPanelContentsContainer>
-            <CoinButtonWrapper>
-              {filteredAssetsBySearch.map((coin) => {
-                const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
-
-                const isGroupToken = gt(coin.counts || '0', '1');
-                const isNativeToken = coin.asset.type === 'native';
-                return (
-                  <CoinWithMarketTrendButton
-                    key={getCoinId(coin.asset)}
-                    onClick={() => {
-                      navigate({
-                        to: destinationRoute,
-                        params: {
-                          coinId: getCoinId(coin.asset),
-                        },
-                      });
+            <StickyTabContainer>
+              <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+                {tabLabels.map((item) => (
+                  <Tab key={item} label={item} />
+                ))}
+              </Tabs>
+            </StickyTabContainer>
+            <StyledTabPanel value={tabValue} index={0}>
+              <StickyTabPanelContentsContainer>
+                <FilterContaienr>
+                  <Search
+                    value={search}
+                    onChange={(event) => {
+                      setSearch(event.currentTarget.value);
                     }}
-                    displayAmount={coin.totalDisplayAmount || '0'}
-                    symbol={coin.asset.symbol}
-                    coinGeckoId={coin.asset.coinGeckoId}
-                    coinImageProps={{
-                      imageURL: coin.asset.image,
-                      isAggregatedCoin: gt(coin.counts || '0', '1'),
-                      badgeImageURL: isGroupToken || isNativeToken ? undefined : coin.chain.image || undefined,
+                    isPending={isDebouncing}
+                    onClickFilter={() => {
+                      setIsOpenSortBottomSheet(true);
+                    }}
+                    onClear={() => {
+                      setSearch('');
+                      setViewLimit(30);
+                      cancel();
                     }}
                   />
-                );
-              })}
-              {filteredAssetsBySearch?.length > viewLimit - 1 && (
-                <IntersectionObserver
-                  onIntersect={() => {
-                    setViewLimit((limit) => limit + 30);
-                  }}
-                />
-              )}
-            </CoinButtonWrapper>
-          </StyledTabPanel>
-          <StyledTabPanel value={tabValue} index={1}>
-            <IconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              {/* TODO i18n 적용 필요 */}
-              <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
-            </IconTextButton>
-          </StyledTabPanel>
-          <SortBottomSheet
-            optionButtonProps={[
-              {
-                sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
-                children: <Typography variant="b2_M">{t('pages.index.valueHighOrder')}</Typography>,
-              },
-              {
-                sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
-                children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
-              },
-            ]}
-            currentSortOption={dashboardCoinSortKey}
-            open={isOpenSortBottomSheet}
-            onClose={() => setIsOpenSortBottomSheet(false)}
-            onSelectSortOption={(val) => {
-              updateExtensionStorageStore('dashboardCoinSortKey', val as DashboardCoinSortKeyType);
-            }}
-          />
-        </Container>
-      </EdgeAligner>
-    </BaseBody>
+                </FilterContaienr>
+                <AdCarouselContainer>
+                  <Carousel>
+                    <CarouselImg src={testAdImg} />
+                    <CarouselImg src={testAdImg} />
+                  </Carousel>
+                </AdCarouselContainer>
+                <ManageCryptoContainer>
+                  <CheckBoxTextButton
+                    onClick={() => {
+                      setIsHideSmallValue(!isHideSmallValue);
+                    }}
+                  >
+                    <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
+                  </CheckBoxTextButton>
+                  <IconTextButton
+                    onClick={() => [
+                      navigate({
+                        to: ManageAssets.to,
+                      }),
+                    ]}
+                    leadingIcon={<PlusIcon />}
+                  >
+                    <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
+                  </IconTextButton>
+                </ManageCryptoContainer>
+              </StickyTabPanelContentsContainer>
+              <CoinButtonWrapper>
+                {filteredAssetsBySearch.map((coin) => {
+                  const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
+
+                  const isGroupToken = gt(coin.counts || '0', '1');
+                  const isNativeToken = coin.asset.type === 'native';
+                  return (
+                    <CoinWithMarketTrendButton
+                      key={getCoinId(coin.asset)}
+                      onClick={() => {
+                        navigate({
+                          to: destinationRoute,
+                          params: {
+                            coinId: getCoinId(coin.asset),
+                          },
+                        });
+                      }}
+                      displayAmount={coin.totalDisplayAmount || '0'}
+                      symbol={coin.asset.symbol}
+                      coinGeckoId={coin.asset.coinGeckoId}
+                      coinImageProps={{
+                        imageURL: coin.asset.image,
+                        isAggregatedCoin: gt(coin.counts || '0', '1'),
+                        badgeImageURL: isGroupToken || isNativeToken ? undefined : coin.chain.image || undefined,
+                      }}
+                    />
+                  );
+                })}
+                {filteredAssetsBySearch?.length > viewLimit - 1 && (
+                  <IntersectionObserver
+                    onIntersect={() => {
+                      setViewLimit((limit) => limit + 30);
+                    }}
+                  />
+                )}
+              </CoinButtonWrapper>
+            </StyledTabPanel>
+            <StyledTabPanel value={tabValue} index={1}>
+              <IconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+                {/* TODO i18n 적용 필요 */}
+                <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
+              </IconTextButton>
+            </StyledTabPanel>
+            <SortBottomSheet
+              optionButtonProps={[
+                {
+                  sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
+                  children: <Typography variant="b2_M">{t('pages.index.valueHighOrder')}</Typography>,
+                },
+                {
+                  sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
+                  children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
+                },
+              ]}
+              currentSortOption={dashboardCoinSortKey}
+              open={isOpenSortBottomSheet}
+              onClose={() => setIsOpenSortBottomSheet(false)}
+              onSelectSortOption={(val) => {
+                updateExtensionStorageStore('dashboardCoinSortKey', val as DashboardCoinSortKeyType);
+              }}
+            />
+          </Container>
+        </EdgeAligner>
+      </BaseBody>
+      <CheckLegacyAddressBalanceBottomSheet />
+    </>
   );
 }

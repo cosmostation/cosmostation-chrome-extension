@@ -65,6 +65,26 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
                 totalAssetValue,
               };
             }
+
+            if (chain?.chainType === 'bitcoin') {
+              const filteredBitcoinAssets = accountAllAssets?.bitcoinAccountAssets.filter((asset) => asset.address.address === address);
+
+              const bitcoinValueSum =
+                filteredBitcoinAssets?.reduce((totalValue, cur) => {
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+                  return plus(totalValue, assetValue);
+                }, '0') || '0';
+
+              const totalAssetValue = bitcoinValueSum;
+
+              return {
+                accountType: i.accountType,
+                address: i.address,
+                totalAssetValue,
+              };
+            }
+
             return {
               accountType: i.accountType,
               address: i.address,
@@ -76,11 +96,23 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
       return mappedAccountTypes;
     }
     return [];
-  }, [accountAllAssets?.cosmosAccountAssets, accountAllAssets?.cw20AccountAssets, coinGeckoData, currency, flatChainList, multipleAccountTypeWithAddress]);
+  }, [
+    accountAllAssets?.bitcoinAccountAssets,
+    accountAllAssets?.cosmosAccountAssets,
+    accountAllAssets?.cw20AccountAssets,
+    coinGeckoData,
+    currency,
+    flatChainList,
+    multipleAccountTypeWithAddress,
+  ]);
+
+  console.log(mappedMultipleAccountTypes);
 
   const filteredAccountTypes = useMemo(() => {
     if (variant === 'filtered') {
-      return mappedMultipleAccountTypes.filter((item) => item.accountTypes.some((account) => account.totalAssetValue !== '0'));
+      return mappedMultipleAccountTypes.filter((item) =>
+        item.accountTypes.some((account) => account.accountType.isDefault === false && account.totalAssetValue !== '0'),
+      );
     }
 
     return mappedMultipleAccountTypes;

@@ -120,6 +120,7 @@ export interface BitcoinChain extends ChainBase {
   mempoolURL: string;
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
+  isTestnet: boolean;
 }
 
 export type CustomChain = CustomCosmosChain | CustomEvmChain;

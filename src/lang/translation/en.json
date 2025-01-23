@@ -212,6 +212,26 @@
       "index": {
         "memo": "Memo :"
       }
+    },
+    "CheckLegacyAddressBalanceBottomSheet": {
+      "index": {
+        "title": "Set Coin Type",
+        "contentTitle": "Assets found in Legacy",
+        "contentBody": "Assets are detected in the legacy address.\nThe selected type of coins will be displayed in the portfolio, and if not selected, the default path will be applied.",
+        "infoTitle": "The default coin type is recommended.",
+        "infoBody": "You can later change the coin type again via **Portfolio > Network Filter > Switch Coin Type**.",
+        "later": "Later",
+        "goToSetUp": "Go to Set Up"
+      }
+    },
+    "Overlay": {
+      "components": {
+        "EventDialog": {
+          "index": {
+            "hideDescription": "Hide for the next {{duration}} days"
+          }
+        }
+      }
     }
   },
   "pages": {
