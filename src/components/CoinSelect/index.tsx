@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, Typography } from '@mui/material';
+import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
 import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
+import IntersectionObserver from '@/components/common/IntersectionObserver';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
@@ -15,10 +17,9 @@ import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { CoinButtonWrapper, Container, FilterContaienr, FilterIconButton, StickyContentsContainer, StyledInput } from './styled';
-
-import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
-import SearchIcon from '@/assets/images/icons/Search18.svg';
+import { CoinButtonWrapper, Container, FilterContaienr, StickyContentsContainer } from './styled';
+import Search from '../Search';
+import { useScroll } from '../Wrapper/components/ScrollProvider';
 
 type CoinSelectProps = {
   currentCoinId?: string;
@@ -26,7 +27,7 @@ type CoinSelectProps = {
   coinList?: FlatAccountAssets[];
   isBottomSheet?: boolean;
   searchPlaceholder?: string;
-  variant?: 'default' | 'stake';
+  variant?: 'default' | 'stake' | 'all';
   onSelectCoin: (coinId: string) => void;
 };
 
@@ -44,16 +45,22 @@ export default function CoinSelect({
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
-  // FIXME 60패스의 이더민트 계열 네이티브 코인들에서 중복되는 코인들이 있음.
   const { data } = useAccountAssets();
+  const { scrollToTop } = useScroll();
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
+
+  const [viewLimit, setViewLimit] = useState(30);
+
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
-  const baseCoinList = (() => {
+  const baseCoinList = useMemo(() => {
     if (coinList) return coinList;
 
     if (variant === 'stake') {
@@ -66,14 +73,19 @@ export default function CoinSelect({
     }
 
     return data?.flatAccountAssets;
-  })();
+  }, [coinList, data?.flatAccountAssets, variant]);
 
-  const baseChainList =
-    chainList || baseCoinList?.map((item) => item.chain).filter((chain, index, self) => self.findIndex((t) => isSameChain(t, chain)) === index);
+  const baseChainList = useMemo(
+    () => chainList || baseCoinList?.map((item) => item.chain).filter((chain, index, self) => self.findIndex((t) => isSameChain(t, chain)) === index),
+    [baseCoinList, chainList],
+  );
 
-  const currentSelectedChain = baseChainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId));
+  const currentSelectedChain = useMemo(
+    () => baseChainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),
+    [baseChainList, currentSelectedChainId],
+  );
 
-  const isShowAssetId = !!currentSelectedChain || !!search;
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
   // FIXME apr가져오는 비즈니스 로직 필요.
 
@@ -98,23 +110,27 @@ export default function CoinSelect({
     );
   }, [baseCoinList, coinGeckoPrice, currency, variant]);
 
-  const sortedAssets = computedAssetValues.sort((a, b) => {
-    if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-      return Number(minus(b.value, a.value));
-    }
+  const sortedAssets = useMemo(
+    () =>
+      computedAssetValues.sort((a, b) => {
+        if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+          return Number(minus(b.value, a.value));
+        }
 
-    if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-      return a.asset.symbol.localeCompare(b.asset.symbol);
-    }
+        if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+          return a.asset.symbol.localeCompare(b.asset.symbol);
+        }
 
-    if (variant === 'stake') {
-      if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
-        return Number(minus(b.apr || 0, a.apr || 0));
-      }
-    }
+        if (variant === 'stake') {
+          if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
+            return Number(minus(b.apr || 0, a.apr || 0));
+          }
+        }
 
-    return 0;
-  });
+        return 0;
+      }),
+    [computedAssetValues, sortOption, variant],
+  );
 
   const filteredCoinList = useMemo(() => {
     const filteredAssetsByChain = currentSelectedChain
@@ -122,44 +138,50 @@ export default function CoinSelect({
       : sortedAssets || [];
 
     const filteredAssetsBySearch = (() => {
-      if (search.length > 1) {
+      if (!!search && debouncedSearch.length > 1) {
         return (
-          filteredAssetsByChain.filter((asset) => {
-            const condition = [asset.asset.symbol, asset.asset.id];
+          filteredAssetsByChain
+            .filter((asset) => {
+              const condition = [asset.asset.symbol, asset.asset.id];
 
-            return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
-          }) || []
+              return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+            })
+            .slice(0, viewLimit) || []
         );
       }
-      return filteredAssetsByChain;
+      return filteredAssetsByChain.slice(0, viewLimit);
     })();
 
     return filteredAssetsBySearch;
-  }, [currentSelectedChain, search, sortedAssets]);
+  }, [currentSelectedChain, debouncedSearch, search, sortedAssets, viewLimit]);
+
+  useEffect(() => {
+    if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
+      scrollToTop();
+      setViewLimit(30);
+    }
+  }, [currentSelectedChainId, scrollToTop, search.length]);
 
   return (
     <Container>
       <StickyContentsContainer data-is-bottom-sheet={isBottomSheet}>
         <FilterContaienr>
-          <StyledInput
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-            placeholder={searchPlaceholder || t('components.CoinSelect.index.searchPlaceholder')}
+          <Search
             value={search}
             onChange={(event) => {
               setSearch(event.currentTarget.value);
             }}
-          />
-          <FilterIconButton
-            onClick={() => {
+            isPending={isDebouncing}
+            placeholder={searchPlaceholder || t('components.CoinSelect.index.searchPlaceholder')}
+            onClickFilter={() => {
               setIsOpenSortBottomSheet(true);
             }}
-          >
-            <FilterSettingIcon />
-          </FilterIconButton>
+            onClear={() => {
+              setSearch('');
+              setViewLimit(30);
+              cancel();
+            }}
+          />
         </FilterContaienr>
 
         <AllNetworkButton
@@ -198,6 +220,13 @@ export default function CoinSelect({
             />
           );
         })}
+        {filteredCoinList?.length > viewLimit - 1 && (
+          <IntersectionObserver
+            onIntersect={() => {
+              setViewLimit((limit) => limit + 30);
+            }}
+          />
+        )}
       </CoinButtonWrapper>
 
       <SortBottomSheet

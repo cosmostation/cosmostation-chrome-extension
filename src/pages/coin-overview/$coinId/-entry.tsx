@@ -1,13 +1,16 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, Typography } from '@mui/material';
+import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
+import IntersectionObserver from '@/components/common/IntersectionObserver';
 import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
+import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -19,10 +22,7 @@ import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { CoinButtonWrapper, Container, FilterContaienr, FilterIconButton, StickyContentsContainer, StyledInput } from './-styled';
-
-import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
-import SearchIcon from '@/assets/images/icons/Search18.svg';
+import { CoinButtonWrapper, Container, FilterContaienr, StickyContentsContainer } from './-styled';
 
 type EntryProps = {
   coinId: string;
@@ -36,6 +36,12 @@ export default function Entry({ coinId }: EntryProps) {
   const { currency } = useExtensionStorageStore((state) => state);
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
+
+  const [viewLimit, setViewLimit] = useState(30);
+
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
@@ -83,19 +89,29 @@ export default function Entry({ coinId }: EntryProps) {
       return 0;
     });
 
-    if (search.length > 1) {
+    if (!!search && debouncedSearch.length > 1) {
       return (
-        sortedAssets?.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
+        sortedAssets
+          ?.filter((asset) => {
+            const condition = [asset.asset.symbol, asset.asset.id];
 
-          return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
-        }) || []
+            return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
+          })
+          .slice(0, viewLimit) || []
       );
     }
-    return sortedAssets;
-  }, [baseCoinList, coinGeckoPrice, currency, currentSelectedChainId, search, sortOption]);
+    return sortedAssets?.slice(0, viewLimit) || [];
+  }, [baseCoinList, coinGeckoPrice, currency, currentSelectedChainId, debouncedSearch.length, search, sortOption, viewLimit]);
 
   const chainList = baseCoinList?.map((item) => item.chain);
+
+  const currentSelectedChain = useMemo(
+    () => chainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),
+    [chainList, currentSelectedChainId],
+  );
+
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
+
   return (
     <BaseBody>
       <EdgeAligner>
@@ -104,25 +120,22 @@ export default function Entry({ coinId }: EntryProps) {
 
           <StickyContentsContainer>
             <FilterContaienr>
-              <StyledInput
-                startAdornment={
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                }
-                placeholder={'Search'}
+              <Search
                 value={search}
                 onChange={(event) => {
                   setSearch(event.currentTarget.value);
                 }}
-              />
-              <FilterIconButton
-                onClick={() => {
+                isPending={isDebouncing}
+                placeholder={t('pages.coin-overview.$coinId.entry.search')}
+                onClickFilter={() => {
                   setIsOpenSortBottomSheet(true);
                 }}
-              >
-                <FilterSettingIcon />
-              </FilterIconButton>
+                onClear={() => {
+                  setSearch('');
+                  setViewLimit(30);
+                  cancel();
+                }}
+              />
             </FilterContaienr>
 
             <AllNetworkButton
@@ -147,10 +160,12 @@ export default function Entry({ coinId }: EntryProps) {
                   symbol={item.asset.symbol}
                   chainName={item.chain.name}
                   coinGeckoId={item.asset.coinGeckoId}
+                  assetId={item.asset.id}
                   coinImageProps={{
                     imageURL: item.asset.image,
                     badgeImageURL: item.asset.type === 'native' ? '' : item.chain.image || '',
                   }}
+                  displayAssetId={isShowAssetId}
                   onClick={() => {
                     navigate({
                       to: CoinDetail.to,
@@ -162,6 +177,13 @@ export default function Entry({ coinId }: EntryProps) {
                 />
               );
             })}
+            {filteredAssetsBySearch?.length > viewLimit - 1 && (
+              <IntersectionObserver
+                onIntersect={() => {
+                  setViewLimit((limit) => limit + 30);
+                }}
+              />
+            )}
           </CoinButtonWrapper>
 
           <SortBottomSheet
@@ -175,7 +197,7 @@ export default function Entry({ coinId }: EntryProps) {
                 children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
               },
             ]}
-            // currentSortOption={dashboardCoinSortKey}
+            currentSortOption={sortOption}
             open={isOpenSortBottomSheet}
             onClose={() => setIsOpenSortBottomSheet(false)}
             onSelectSortOption={(val) => {

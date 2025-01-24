@@ -1432,6 +1432,13 @@
           }
         }
       }
+    },
+    "coin-overview": {
+      "$coinId": {
+        "entry": {
+          "search": "Search Crypto (Ex. BTC)"
+        }
+      }
     }
   },
   "schema": {
