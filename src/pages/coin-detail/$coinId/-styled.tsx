@@ -40,3 +40,13 @@ export const HistoryContainer = styled('div')({
   rowGap: '1.2rem',
   boxSizing: 'border-box',
 });
+
+export const FooterContainer = styled('div')({
+  position: 'relative',
+});
+
+export const FloatingButtonContainer = styled('div')({
+  position: 'absolute',
+  right: '2rem',
+  bottom: '7rem',
+});

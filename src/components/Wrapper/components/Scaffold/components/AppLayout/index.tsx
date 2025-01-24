@@ -1,3 +1,7 @@
+import { useRef } from 'react';
+
+import { useScrollThreshold } from '@/hooks/useScrollThreshold';
+
 import { PopupLayout } from './styled';
 
 type AppLayoutProps = {
@@ -5,5 +9,8 @@ type AppLayoutProps = {
 };
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  return <PopupLayout>{children}</PopupLayout>;
+  const scaffoldRef = useRef<HTMLDivElement>(null);
+  useScrollThreshold(scaffoldRef, 100);
+
+  return <PopupLayout ref={scaffoldRef}>{children}</PopupLayout>;
 }

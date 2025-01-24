@@ -29,6 +29,12 @@ export type AddressInfo = {
 
 export type ApprovedOrigin = { accountId: Account['id']; origin: string };
 
+export type AdPopoverState = {
+  isVisiable: boolean;
+  lastClosed?: string;
+};
+export type AdPopoverStateMap = Record<string, AdPopoverState>;
+
 export interface ExtensionStorage {
   accounts: Account[];
   paramsV11: Record<string, V11Param>;
@@ -69,6 +75,7 @@ export interface ExtensionStorage {
   customAssets: CustomAsset[];
   customHiddenAssetIds: AssetId[];
   approvedOrigins: ApprovedOrigin[];
+  adPopoverState: AdPopoverStateMap;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

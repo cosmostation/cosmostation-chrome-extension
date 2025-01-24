@@ -1,10 +1,11 @@
 import { produce } from 'immer';
 import { create } from 'zustand';
 
+import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import type { CurrencyType } from '@/types/currency';
-import type { ExtensionStorage } from '@/types/extension';
+import type { AdPopoverStateMap, ExtensionStorage } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
 import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
@@ -34,6 +35,12 @@ const initialState: ExtensionStorageState = {
   customAssets: [],
   customHiddenAssetIds: [],
   approvedOrigins: [],
+  adPopoverState: AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
+    acc[cur] = {
+      isVisiable: false,
+    };
+    return acc;
+  }, {}),
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
@@ -69,6 +76,8 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('customAssets', []);
       await setExtensionLocalStorage('customHiddenAssetIds', []);
       await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
+      await setExtensionLocalStorage('approvedOrigins', []);
+      await setExtensionLocalStorage('adPopoverState', initialState.adPopoverState);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
       await Promise.all(removePromises);

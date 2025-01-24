@@ -4,6 +4,7 @@ import NavigationGate from './components/NavigationGate';
 import RefetchController from './components/RefetchController';
 import Scaffold from './components/Scaffold';
 import ScrollProvider from './components/ScrollProvider';
+import AdPopoverIndex from '../Overlay/AdPopoverIndex';
 import LoadingOverlay from '../Overlay/Loading';
 
 type WrapperProps = {
@@ -20,6 +21,7 @@ export default function Wrapper({ children }: WrapperProps) {
               <>
                 <ScrollProvider>{children}</ScrollProvider>
                 <LoadingOverlay />
+                <AdPopoverIndex />
               </>
             </NavigationGate>
           </RefetchController>

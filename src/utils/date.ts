@@ -82,7 +82,7 @@ export function getDDay(dateString: string) {
   return diffDays;
 }
 
-export function isDialogStillBlocked(lastClosed: string, blockDays: number): boolean {
+export function isStillBlocked(lastClosed: string, blockDays: number): boolean {
   const lastClosedDate = new Date(lastClosed);
 
   if (isNaN(lastClosedDate.getTime())) {
@@ -91,6 +91,7 @@ export function isDialogStillBlocked(lastClosed: string, blockDays: number): boo
 
   const currentDate = new Date();
   const diffInDays = (currentDate.getTime() - lastClosedDate.getTime()) / (1000 * 60 * 60 * 24);
+
   return diffInDays < blockDays;
 }
 
@@ -103,4 +104,8 @@ export function isDateAfter(date1: string, date2: string): boolean {
   }
 
   return firstDate.getTime() > secondDate.getTime();
+}
+
+export function getFutureDateIso(day: number) {
+  return new Date(Date.now() + day * 24 * 60 * 60 * 1000).toISOString();
 }

@@ -1,8 +1,11 @@
+import { produce } from 'immer';
+
+import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
-import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
+import type { AdPopoverStateMap, ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 
 import { extension } from './browser';
 import { aesDecrypt } from './crypto';
@@ -95,6 +98,47 @@ export async function initExtensionLocalStorage() {
 
   if (!originStorage.initCheckLegacyBalanceAccountIds) {
     await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
+  }
+
+  if (!originStorage.adPopoverState) {
+    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
+      acc[cur] = {
+        isVisiable: false,
+        lastClosed: '',
+      };
+      return acc;
+    }, {});
+
+    await setExtensionLocalStorage('adPopoverState', defaultState);
+  }
+
+  if (originStorage.adPopoverState) {
+    const adPopoverState = originStorage.adPopoverState;
+
+    AD_POPOVER_IDS.forEach(async (id) => {
+      if (adPopoverState[id]) {
+        const dropPopoverState = adPopoverState[id];
+
+        if (dropPopoverState.isVisiable) {
+          const newState = produce(adPopoverState, (draft) => {
+            draft[id].isVisiable = false;
+          });
+
+          await setExtensionLocalStorage('adPopoverState', newState);
+        }
+      }
+
+      if (!adPopoverState[id]) {
+        const newState = produce(adPopoverState, (draft) => {
+          draft[id] = {
+            isVisiable: false,
+            lastClosed: '',
+          };
+        });
+
+        await setExtensionLocalStorage('adPopoverState', newState);
+      }
+    });
   }
 
   if (originStorage.accountNamesById) {

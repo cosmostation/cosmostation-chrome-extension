@@ -231,6 +231,15 @@
             "hideDescription": "Hide for the next {{duration}} days"
           }
         }
+      },
+      "EventDialog": {
+        "components": {
+          "DropDialog": {
+            "index": {
+              "launch": "Launch App"
+            }
+          }
+        }
       }
     }
   },
