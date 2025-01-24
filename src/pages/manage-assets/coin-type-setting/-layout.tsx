@@ -17,7 +17,7 @@ export default function Layout({ children }: LayoutProps) {
       header={
         <Header
           leftContent={<NavigationPanel isHideHomeButton />}
-          middleContent={<Base1300Text variant="h4_B">{t('pages.account.restore-wallet.coin-type-setting.layout.header')}</Base1300Text>}
+          middleContent={<Base1300Text variant="h4_B">{t('pages.manage-assets.coin-type-setting.layout.header')}</Base1300Text>}
         />
       }
     >

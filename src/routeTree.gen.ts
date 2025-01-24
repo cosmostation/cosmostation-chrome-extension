@@ -22,6 +22,7 @@ import { Route as WalletSendIndexImport } from './pages/wallet/send/index'
 import { Route as WalletReceiveIndexImport } from './pages/wallet/receive/index'
 import { Route as PopupRequestAccountIndexImport } from './pages/popup/request-account/index'
 import { Route as ManageAssetsSwitchAccoutTypeIndexImport } from './pages/manage-assets/switch-accout-type/index'
+import { Route as ManageAssetsCoinTypeSettingIndexImport } from './pages/manage-assets/coin-type-setting/index'
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
@@ -49,7 +50,6 @@ import { Route as GeneralSettingAddressBookAddAddressIndexImport } from './pages
 import { Route as CoinDetailCoinIdManageStakeIndexImport } from './pages/coin-detail/$coinId/manage-stake/index'
 import { Route as AccountRestoreWalletPrivatekeyIndexImport } from './pages/account/restore-wallet/privatekey/index'
 import { Route as AccountRestoreWalletMnemonicIndexImport } from './pages/account/restore-wallet/mnemonic/index'
-import { Route as AccountRestoreWalletCoinTypeSettingIndexImport } from './pages/account/restore-wallet/coin-type-setting/index'
 import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account/create-wallet/mnemonic/index'
 import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account/backup-check/$accountId/index'
 import { Route as WalletUnstakeCoinIdValidatorAddressIndexImport } from './pages/wallet/unstake/$coinId/$validatorAddress/index'
@@ -133,6 +133,13 @@ const ManageAssetsSwitchAccoutTypeIndexRoute =
   ManageAssetsSwitchAccoutTypeIndexImport.update({
     id: '/manage-assets/switch-accout-type/',
     path: '/manage-assets/switch-accout-type/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const ManageAssetsCoinTypeSettingIndexRoute =
+  ManageAssetsCoinTypeSettingIndexImport.update({
+    id: '/manage-assets/coin-type-setting/',
+    path: '/manage-assets/coin-type-setting/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -311,13 +318,6 @@ const AccountRestoreWalletMnemonicIndexRoute =
   AccountRestoreWalletMnemonicIndexImport.update({
     id: '/account/restore-wallet/mnemonic/',
     path: '/account/restore-wallet/mnemonic/',
-    getParentRoute: () => rootRoute,
-  } as any)
-
-const AccountRestoreWalletCoinTypeSettingIndexRoute =
-  AccountRestoreWalletCoinTypeSettingIndexImport.update({
-    id: '/account/restore-wallet/coin-type-setting/',
-    path: '/account/restore-wallet/coin-type-setting/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -556,6 +556,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAccountSwitchAccountIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-assets/coin-type-setting/': {
+      id: '/manage-assets/coin-type-setting/'
+      path: '/manage-assets/coin-type-setting'
+      fullPath: '/manage-assets/coin-type-setting'
+      preLoaderRoute: typeof ManageAssetsCoinTypeSettingIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-assets/switch-accout-type/': {
       id: '/manage-assets/switch-accout-type/'
       path: '/manage-assets/switch-accout-type'
@@ -610,13 +617,6 @@ declare module '@tanstack/react-router' {
       path: '/account/create-wallet/mnemonic'
       fullPath: '/account/create-wallet/mnemonic'
       preLoaderRoute: typeof AccountCreateWalletMnemonicIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/account/restore-wallet/coin-type-setting/': {
-      id: '/account/restore-wallet/coin-type-setting/'
-      path: '/account/restore-wallet/coin-type-setting'
-      fullPath: '/account/restore-wallet/coin-type-setting'
-      preLoaderRoute: typeof AccountRestoreWalletCoinTypeSettingIndexImport
       parentRoute: typeof rootRoute
     }
     '/account/restore-wallet/mnemonic/': {
@@ -845,6 +845,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
+  '/manage-assets/coin-type-setting': typeof ManageAssetsCoinTypeSettingIndexRoute
   '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
   '/popup/request-account': typeof PopupRequestAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
@@ -853,7 +854,6 @@ export interface FileRoutesByFullPath {
   '/wallet/swap': typeof WalletSwapIndexRoute
   '/account/backup-check/$accountId': typeof AccountBackupCheckAccountIdIndexRoute
   '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
-  '/account/restore-wallet/coin-type-setting': typeof AccountRestoreWalletCoinTypeSettingIndexRoute
   '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
@@ -903,6 +903,7 @@ export interface FileRoutesByTo {
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
+  '/manage-assets/coin-type-setting': typeof ManageAssetsCoinTypeSettingIndexRoute
   '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
   '/popup/request-account': typeof PopupRequestAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
@@ -911,7 +912,6 @@ export interface FileRoutesByTo {
   '/wallet/swap': typeof WalletSwapIndexRoute
   '/account/backup-check/$accountId': typeof AccountBackupCheckAccountIdIndexRoute
   '/account/create-wallet/mnemonic': typeof AccountCreateWalletMnemonicIndexRoute
-  '/account/restore-wallet/coin-type-setting': typeof AccountRestoreWalletCoinTypeSettingIndexRoute
   '/account/restore-wallet/mnemonic': typeof AccountRestoreWalletMnemonicIndexRoute
   '/account/restore-wallet/privatekey': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake': typeof CoinDetailCoinIdManageStakeIndexRoute
@@ -962,6 +962,7 @@ export interface FileRoutesById {
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
+  '/manage-assets/coin-type-setting/': typeof ManageAssetsCoinTypeSettingIndexRoute
   '/manage-assets/switch-accout-type/': typeof ManageAssetsSwitchAccoutTypeIndexRoute
   '/popup/request-account/': typeof PopupRequestAccountIndexRoute
   '/wallet/receive/': typeof WalletReceiveIndexRoute
@@ -970,7 +971,6 @@ export interface FileRoutesById {
   '/wallet/swap/': typeof WalletSwapIndexRoute
   '/account/backup-check/$accountId/': typeof AccountBackupCheckAccountIdIndexRoute
   '/account/create-wallet/mnemonic/': typeof AccountCreateWalletMnemonicIndexRoute
-  '/account/restore-wallet/coin-type-setting/': typeof AccountRestoreWalletCoinTypeSettingIndexRoute
   '/account/restore-wallet/mnemonic/': typeof AccountRestoreWalletMnemonicIndexRoute
   '/account/restore-wallet/privatekey/': typeof AccountRestoreWalletPrivatekeyIndexRoute
   '/coin-detail/$coinId/manage-stake/': typeof CoinDetailCoinIdManageStakeIndexRoute
@@ -1022,6 +1022,7 @@ export interface FileRouteTypes {
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
+    | '/manage-assets/coin-type-setting'
     | '/manage-assets/switch-accout-type'
     | '/popup/request-account'
     | '/wallet/receive'
@@ -1030,7 +1031,6 @@ export interface FileRouteTypes {
     | '/wallet/swap'
     | '/account/backup-check/$accountId'
     | '/account/create-wallet/mnemonic'
-    | '/account/restore-wallet/coin-type-setting'
     | '/account/restore-wallet/mnemonic'
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
@@ -1079,6 +1079,7 @@ export interface FileRouteTypes {
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
+    | '/manage-assets/coin-type-setting'
     | '/manage-assets/switch-accout-type'
     | '/popup/request-account'
     | '/wallet/receive'
@@ -1087,7 +1088,6 @@ export interface FileRouteTypes {
     | '/wallet/swap'
     | '/account/backup-check/$accountId'
     | '/account/create-wallet/mnemonic'
-    | '/account/restore-wallet/coin-type-setting'
     | '/account/restore-wallet/mnemonic'
     | '/account/restore-wallet/privatekey'
     | '/coin-detail/$coinId/manage-stake'
@@ -1136,6 +1136,7 @@ export interface FileRouteTypes {
     | '/manage-account/manage-wallet-and-account/'
     | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
+    | '/manage-assets/coin-type-setting/'
     | '/manage-assets/switch-accout-type/'
     | '/popup/request-account/'
     | '/wallet/receive/'
@@ -1144,7 +1145,6 @@ export interface FileRouteTypes {
     | '/wallet/swap/'
     | '/account/backup-check/$accountId/'
     | '/account/create-wallet/mnemonic/'
-    | '/account/restore-wallet/coin-type-setting/'
     | '/account/restore-wallet/mnemonic/'
     | '/account/restore-wallet/privatekey/'
     | '/coin-detail/$coinId/manage-stake/'
@@ -1195,6 +1195,7 @@ export interface RootRouteChildren {
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
+  ManageAssetsCoinTypeSettingIndexRoute: typeof ManageAssetsCoinTypeSettingIndexRoute
   ManageAssetsSwitchAccoutTypeIndexRoute: typeof ManageAssetsSwitchAccoutTypeIndexRoute
   PopupRequestAccountIndexRoute: typeof PopupRequestAccountIndexRoute
   WalletReceiveIndexRoute: typeof WalletReceiveIndexRoute
@@ -1203,7 +1204,6 @@ export interface RootRouteChildren {
   WalletSwapIndexRoute: typeof WalletSwapIndexRoute
   AccountBackupCheckAccountIdIndexRoute: typeof AccountBackupCheckAccountIdIndexRoute
   AccountCreateWalletMnemonicIndexRoute: typeof AccountCreateWalletMnemonicIndexRoute
-  AccountRestoreWalletCoinTypeSettingIndexRoute: typeof AccountRestoreWalletCoinTypeSettingIndexRoute
   AccountRestoreWalletMnemonicIndexRoute: typeof AccountRestoreWalletMnemonicIndexRoute
   AccountRestoreWalletPrivatekeyIndexRoute: typeof AccountRestoreWalletPrivatekeyIndexRoute
   CoinDetailCoinIdManageStakeIndexRoute: typeof CoinDetailCoinIdManageStakeIndexRoute
@@ -1256,6 +1256,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAccountManageWalletAndAccountIndexRoute,
   ManageAccountResetWalletIndexRoute: ManageAccountResetWalletIndexRoute,
   ManageAccountSwitchAccountIndexRoute: ManageAccountSwitchAccountIndexRoute,
+  ManageAssetsCoinTypeSettingIndexRoute: ManageAssetsCoinTypeSettingIndexRoute,
   ManageAssetsSwitchAccoutTypeIndexRoute:
     ManageAssetsSwitchAccoutTypeIndexRoute,
   PopupRequestAccountIndexRoute: PopupRequestAccountIndexRoute,
@@ -1265,8 +1266,6 @@ const rootRouteChildren: RootRouteChildren = {
   WalletSwapIndexRoute: WalletSwapIndexRoute,
   AccountBackupCheckAccountIdIndexRoute: AccountBackupCheckAccountIdIndexRoute,
   AccountCreateWalletMnemonicIndexRoute: AccountCreateWalletMnemonicIndexRoute,
-  AccountRestoreWalletCoinTypeSettingIndexRoute:
-    AccountRestoreWalletCoinTypeSettingIndexRoute,
   AccountRestoreWalletMnemonicIndexRoute:
     AccountRestoreWalletMnemonicIndexRoute,
   AccountRestoreWalletPrivatekeyIndexRoute:
@@ -1344,6 +1343,7 @@ export const routeTree = rootRoute
         "/manage-account/manage-wallet-and-account/",
         "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
+        "/manage-assets/coin-type-setting/",
         "/manage-assets/switch-accout-type/",
         "/popup/request-account/",
         "/wallet/receive/",
@@ -1352,7 +1352,6 @@ export const routeTree = rootRoute
         "/wallet/swap/",
         "/account/backup-check/$accountId/",
         "/account/create-wallet/mnemonic/",
-        "/account/restore-wallet/coin-type-setting/",
         "/account/restore-wallet/mnemonic/",
         "/account/restore-wallet/privatekey/",
         "/coin-detail/$coinId/manage-stake/",
@@ -1435,6 +1434,9 @@ export const routeTree = rootRoute
     "/manage-account/switch-account/": {
       "filePath": "manage-account/switch-account/index.tsx"
     },
+    "/manage-assets/coin-type-setting/": {
+      "filePath": "manage-assets/coin-type-setting/index.tsx"
+    },
     "/manage-assets/switch-accout-type/": {
       "filePath": "manage-assets/switch-accout-type/index.tsx"
     },
@@ -1458,9 +1460,6 @@ export const routeTree = rootRoute
     },
     "/account/create-wallet/mnemonic/": {
       "filePath": "account/create-wallet/mnemonic/index.tsx"
-    },
-    "/account/restore-wallet/coin-type-setting/": {
-      "filePath": "account/restore-wallet/coin-type-setting/index.tsx"
     },
     "/account/restore-wallet/mnemonic/": {
       "filePath": "account/restore-wallet/mnemonic/index.tsx"

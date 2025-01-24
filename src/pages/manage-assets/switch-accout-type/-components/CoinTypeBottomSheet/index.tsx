@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import CoinType from '@/components/CoinTypeSelector/-components/CoinType';
+import CoinType from '@/components/CoinTypeSelector/components/CoinType';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -102,7 +102,15 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
       return mappedAccountTypes;
     }
     return [];
-  }, [accountAllAssets?.cosmosAccountAssets, accountAllAssets?.cw20AccountAssets, coinGeckoData, currency, flatChainList, multipleAccountTypeWithAddress]);
+  }, [
+    accountAllAssets?.bitcoinAccountAssets,
+    accountAllAssets?.cosmosAccountAssets,
+    accountAllAssets?.cw20AccountAssets,
+    coinGeckoData,
+    currency,
+    flatChainList,
+    multipleAccountTypeWithAddress,
+  ]);
 
   const matchedAccountType = mappedMultipleAccountTypes.find((item) => item.chain.id === chain?.id);
 

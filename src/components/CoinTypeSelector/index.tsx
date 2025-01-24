@@ -9,7 +9,7 @@ import type { ChainAccountType } from '@/types/chain';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import CoinType from './-components/CoinType';
+import CoinType from './components/CoinType';
 import { CoinTypeSelectorContainer } from './styled';
 
 type CoinTypeSelectorProps = {

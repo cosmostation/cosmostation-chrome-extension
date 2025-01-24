@@ -34,9 +34,9 @@ export default function Entry() {
         to: Dashboard.to,
       });
 
-      toastSuccess(t('pages.account.restore-wallet.coin-type-setting.entry.setupSuccess'));
+      toastSuccess(t('pages.manage-assets.coin-type-setting.entry.setupSuccess'));
     } catch {
-      toastError(t('pages.account.restore-wallet.coin-type-setting.entry.setupError'));
+      toastError(t('pages.manage-assets.coin-type-setting.entry.setupError'));
     }
   };
 
@@ -64,8 +64,8 @@ export default function Entry() {
         <Body>
           <InformationPanel
             varitant="info"
-            title={<Typography variant="b3_M">{t('pages.account.restore-wallet.coin-type-setting.entry.infoTitle')}</Typography>}
-            body={<Typography variant="b4_R_Multiline">{t('pages.account.restore-wallet.coin-type-setting.entry.infoBody')}</Typography>}
+            title={<Typography variant="b3_M">{t('pages.manage-assets.coin-type-setting.entry.infoTitle')}</Typography>}
+            body={<Typography variant="b4_R_Multiline">{t('pages.manage-assets.coin-type-setting.entry.infoBody')}</Typography>}
           />
           <CoinTypeSelector
             accountId={currentAccount.id}
@@ -83,7 +83,7 @@ export default function Entry() {
             await setUp();
           }}
         >
-          {t('pages.account.restore-wallet.coin-type-setting.entry.next')}
+          {t('pages.manage-assets.coin-type-setting.entry.complete')}
         </Button>
       </Footer>
     </>

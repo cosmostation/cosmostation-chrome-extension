@@ -6,7 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useMultipleAccountTypes } from '@/hooks/useMultipleAccountTypes';
-import { Route as CoinTypeSetting } from '@/pages/account/restore-wallet/coin-type-setting';
+import { Route as CoinTypeSetting } from '@/pages/manage-assets/coin-type-setting';
 import { gt } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 

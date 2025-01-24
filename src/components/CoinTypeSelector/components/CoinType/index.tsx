@@ -60,9 +60,7 @@ export default function CoinTypeSelector({
       {!isDisableTopContents && (
         <TopContainer>
           <ChainImage src={chain.image} />
-          <Base1300Text variant="h3_B">
-            {t('pages.account.restore-wallet.coin-type-setting.components.CoinTypeSelector.index.coinType').replace('${chain}', chain.name)}
-          </Base1300Text>
+          <Base1300Text variant="h3_B">{t('components.CoinTypeSelector.components.CoinType.coinType').replace('${chain}', chain.name)}</Base1300Text>
         </TopContainer>
       )}
       <ButtonWrapper>

@@ -241,6 +241,13 @@
           }
         }
       }
+    },
+    "CoinTypeSelector": {
+      "components": {
+        "CoinType": {
+          "coinType": "${chain} Coin Type"
+        }
+      }
     }
   },
   "pages": {
@@ -345,25 +352,6 @@
           },
           "layout": {
             "header": "Restore With Private Key"
-          }
-        },
-        "coin-type-setting": {
-          "components": {
-            "CoinTypeSelector": {
-              "index": {
-                "coinType": "${chain} Coin Type"
-              }
-            }
-          },
-          "entry": {
-            "infoTitle": "The default coin type is recommended.",
-            "infoBody": "You can later change the coin type again via **Portfolio > Network Filter > Switch Coin Type**.",
-            "next": "Next",
-            "setupSuccess": "Add Wallet Success",
-            "setupError": "Add Wallet Failed"
-          },
-          "layout": {
-            "header": "Coin Type Setting"
           }
         }
       },
@@ -1337,6 +1325,18 @@
             "headerTitle": "Token Listing Information",
             "contentsSubTitle": "All asset and token information is being developed together with the community. If your token is not displayed, please share the GitHub link below with the token issuer or community. Once registered, the information will be automatically reflected in the wallet and Mintscan."
           }
+        }
+      },
+      "coin-type-setting": {
+        "entry": {
+          "setupSuccess": "Set up success",
+          "setupError": "Set up error",
+          "infoTitle": "The default coin type is recommended.",
+          "infoBody": "You can later change the coin type again via **Portfolio > Network Filter > Switch Coin Type**.",
+          "complete": "Complete"
+        },
+        "layout": {
+          "header": "Coin Type Setting"
         }
       }
     },
