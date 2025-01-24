@@ -4,14 +4,14 @@ import signetChainImg from '~/images/chainImgs/signet.png';
 import signetTokenImg from '~/images/symbols/sbtc.png';
 import type { BitcoinChain } from '~/types/chain';
 
-export const SIGNET: BitcoinChain = {
-  id: '4556f03d-fdfd-49ee-85a1-54e67747f5ed',
+export const SIGNET_TAPROOT: BitcoinChain = {
+  id: '1936b747-6ca9-42ce-9040-597b353978e4',
   line: 'BITCOIN',
-  chainName: 'SIGNET NATIVE SEGWIT',
+  chainName: 'SIGNET TAPROOT',
   tokenImageURL: signetTokenImg,
   imageURL: signetChainImg,
   bip44: {
-    purpose: "84'",
+    purpose: "86'",
     coinType: "1'",
     account: "0'",
     change: '0',

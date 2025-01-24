@@ -3,11 +3,62 @@ import type { Network, networks } from 'bitcoinjs-lib';
 import { address as addressConverter, initEccLib, payments, Psbt, Transaction } from 'bitcoinjs-lib';
 import * as ecc from '@bitcoinerlab/secp256k1';
 
+import { BITCOIN_ADDRESS_TYPES } from '~/constants/bitcoin';
+import type { BitcoinChain } from '~/types/chain';
+
 import { minus, plus } from './big';
 
-export function getAddress(publicKey: Buffer, network?: Network) {
-  const p2wpkh = payments.p2wpkh({ pubkey: publicKey, network });
-  return p2wpkh.address!;
+export function getAddress(publicKey: Buffer, addressType: 'p2tr' | 'p2pkh' | 'p2sh' | 'p2wpkh', network?: Network) {
+  initBitcoinEcc();
+
+  const toXOnly = (pubKey: Buffer) => (pubKey.length === 32 ? pubKey : pubKey.subarray(1, 33));
+  const tapInternalKey = toXOnly(publicKey);
+
+  if (addressType === 'p2tr') {
+    return payments.p2tr({
+      internalPubkey: tapInternalKey,
+      network,
+    }).address!;
+  }
+
+  if (addressType === 'p2pkh') {
+    return payments.p2pkh({ pubkey: publicKey, network }).address!;
+  }
+
+  if (addressType === 'p2sh') {
+    return payments.p2sh({
+      redeem: payments.p2wpkh({
+        pubkey: publicKey,
+        network,
+      }),
+    }).address!;
+  }
+
+  if (addressType === 'p2wpkh') {
+    return payments.p2wpkh({ pubkey: publicKey, network }).address!;
+  }
+
+  return payments.p2wpkh({ pubkey: publicKey, network }).address!;
+}
+
+export function getAddressType(chain: BitcoinChain) {
+  if (chain.bip44.purpose === BITCOIN_ADDRESS_TYPES.P2TR) {
+    return 'p2tr';
+  }
+
+  if (chain.bip44.purpose === BITCOIN_ADDRESS_TYPES.P2PKH) {
+    return 'p2pkh';
+  }
+
+  if (chain.bip44.purpose === BITCOIN_ADDRESS_TYPES.P2SH) {
+    return 'p2sh';
+  }
+
+  if (chain.bip44.purpose === BITCOIN_ADDRESS_TYPES.P2WPKH) {
+    return 'p2wpkh';
+  }
+
+  return 'p2wpkh';
 }
 
 export function formatPsbtHex(psbtHex: string) {

@@ -4,14 +4,14 @@ import bitcoinChainImg from '~/images/chainImgs/bitcoin.png';
 import bitcoinTokenImg from '~/images/symbols/btc.png';
 import type { BitcoinChain } from '~/types/chain';
 
-export const BITCOIN: BitcoinChain = {
-  id: 'b0c2453d-1cf2-4a54-877d-cf2352e9b801',
+export const BITCOIN_TAPROOT: BitcoinChain = {
+  id: 'c61ee508-1eac-4487-86f8-fd8f426e7e98',
   line: 'BITCOIN',
-  chainName: 'BITCOIN NATIVE SEGWIT',
+  chainName: 'BITCOIN TAPROOT',
   tokenImageURL: bitcoinTokenImg,
   imageURL: bitcoinChainImg,
   bip44: {
-    purpose: "84'",
+    purpose: "86'",
     coinType: "0'",
     account: "0'",
     change: '0',

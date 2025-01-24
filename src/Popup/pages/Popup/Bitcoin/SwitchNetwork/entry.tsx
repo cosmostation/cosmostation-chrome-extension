@@ -1,8 +1,8 @@
 import { Typography } from '@mui/material';
 
 import { Network } from '~/constants/bitcoin';
-import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
-import { SIGNET } from '~/constants/chain/bitcoin/signet';
+import { SIGNET_TAPROOT } from '~/constants/chain/bitcoin/signetTaproot';
+import { BITCOIN_TAPROOT } from '~/constants/chain/bitcoin/taproot';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -45,10 +45,10 @@ export default function Entry({ queue }: EntryProps) {
     const requestedNetworkType = message.params[0];
 
     if (requestedNetworkType === 'mainnet') {
-      return item.id === BITCOIN.id;
+      return item.id === BITCOIN_TAPROOT.id;
     }
 
-    return item.id === SIGNET.id;
+    return item.id === SIGNET_TAPROOT.id;
   });
 
   return (

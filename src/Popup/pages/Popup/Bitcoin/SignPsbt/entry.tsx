@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import validate from 'bitcoin-address-validation';
 import { networks, Psbt } from 'bitcoinjs-lib';
+import { isTaprootInput } from 'bitcoinjs-lib/src/psbt/bip371';
 import { ECPairFactory } from 'ecpair';
 import { useSnackbar } from 'notistack';
 import * as ecc from '@bitcoinerlab/secp256k1';
@@ -25,6 +26,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gte, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { decodedPsbt, formatPsbtHex } from '~/Popup/utils/bitcoin';
 import { getKeyPair } from '~/Popup/utils/common';
+import { getTweakSigner } from '~/Popup/utils/crypto';
 import { responseToWeb } from '~/Popup/utils/message';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Queue } from '~/types/extensionStorage';
@@ -314,9 +316,24 @@ export default function Entry({ queue }: EntryProps) {
                       network,
                     });
 
-                    const signedPsbt = parsedPsbt.signAllInputs(signer);
+                    const tweakSigner = getTweakSigner(currentAccount, currentBitcoinNetwork, currentPassword, {
+                      tweakHash: null,
+                      network: currentBitcoinNetwork.isSignet ? 'testnet' : 'mainnet',
+                    });
 
-                    const txHex = signedPsbt.finalizeAllInputs().toHex();
+                    parsedPsbt.data.inputs.forEach((input, index) => {
+                      if (isTaprootInput(input)) {
+                        if (input.tapLeafScript && input.tapLeafScript?.length > 0 && !input.tapMerkleRoot) {
+                          parsedPsbt.signInput(index, signer);
+                        } else {
+                          parsedPsbt.signInput(index, tweakSigner!);
+                        }
+                      } else {
+                        parsedPsbt.signInput(index, signer);
+                      }
+                    });
+
+                    const txHex = parsedPsbt.finalizeAllInputs().toHex();
 
                     if (!txHex) {
                       throw new Error('Failed to sign transaction');
