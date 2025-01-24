@@ -50,7 +50,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { updateLoadingOverlay } = useLoadingOverlayStore((state) => state);
+  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
   const { accounts } = useExtensionStorageStore((state) => state);
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
@@ -117,7 +117,12 @@ export default function Entry({ mnemonicId }: EntryProps) {
           to: Dashboard.to,
         });
 
-        updateLoadingOverlay(true);
+        console.log(t('pages.manage-account.create-account.entry.loadingOverlayTitle'));
+
+        startLoadingOverlay(
+          t('pages.manage-account.create-account.entry.loadingOverlayTitle'),
+          t('pages.manage-account.create-account.entry.loadingOverlayMessage'),
+        );
 
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
@@ -132,7 +137,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
       toastError(t('pages.manage-account.create-account.entry.setupFail'));
     } finally {
       setIsLoadingSetup(false);
-      updateLoadingOverlay(false);
+      stopLoadingOverlay();
     }
   };
 

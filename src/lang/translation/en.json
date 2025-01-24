@@ -311,7 +311,9 @@
             "importBottmSheetContentsTitle": "Find My Coins",
             "importBottmSheetContentsSubTitle": "Would you like to load all your assets? \nIt may take some time if you have many coins.",
             "no": "No",
-            "import": "Import"
+            "import": "Import",
+            "loadingOverlayTitle": "Syncing your wallet assets...",
+            "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
           },
           "layout": {
             "header": "Restore With Mnemonic"
@@ -328,7 +330,9 @@
             "enterPrivateKey": "Enter Private Key",
             "setUpError": "Failed to set up",
             "alreadyExist": "Already exists ",
-            "setUpSuccess": "Set up success"
+            "setUpSuccess": "Set up success",
+            "loadingOverlayTitle": "Syncing your wallet assets...",
+            "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
           },
           "layout": {
             "header": "Restore With Private Key"
@@ -364,7 +368,9 @@
             "success": "Success",
             "failed": "Failed",
             "setUpLater": "Set Up Later",
-            "backup": "Back Up Now"
+            "backup": "Back Up Now",
+            "loadingOverlayTitle": "Syncing your wallet assets...",
+            "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
           },
           "components": {
             "MnemonicBitPopover": {
@@ -642,7 +648,9 @@
           "accountName": "Account Name",
           "lastHdPathIndex": "Last HD Path",
           "majorNetwork": "Major Network",
-          "setUpComplete": "Setup Complete"
+          "setUpComplete": "Setup Complete",
+          "loadingOverlayTitle": "Syncing your wallet assets...",
+          "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
         },
         "layout": {
           "header": "Create New Account"

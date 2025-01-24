@@ -59,7 +59,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { updateLoadingOverlay } = useLoadingOverlayStore((state) => state);
+  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
   const { currentPassword } = useCurrentPassword();
   const { mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
@@ -199,7 +199,10 @@ export default function Entry() {
         to: Dashboard.to,
       });
 
-      updateLoadingOverlay(true);
+      startLoadingOverlay(
+        t('pages.account.restore-wallet.mnemonic.index.loadingOverlayTitle'),
+        t('pages.account.restore-wallet.mnemonic.index.loadingOverlayMessage'),
+      );
 
       if (!isMnemonicAlreadyRegistered) {
         await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
@@ -220,7 +223,7 @@ export default function Entry() {
       toastError(t('pages.account.restore-wallet.mnemonic.index.addressAndBalanceFetchingError'));
     } finally {
       setIsLoadingBalance(false);
-      updateLoadingOverlay(false);
+      stopLoadingOverlay();
     }
   };
 

@@ -40,7 +40,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { updateLoadingOverlay } = useLoadingOverlayStore((state) => state);
+  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
   const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { updateNewAccount } = useNewAccountStore();
@@ -106,7 +106,10 @@ export default function Entry() {
         to: Dashboard.to,
       });
 
-      updateLoadingOverlay(true);
+      startLoadingOverlay(
+        t('pages.account.create-mnemonic.mnemonic.index.loadingOverlayTitle'),
+        t('pages.account.create-mnemonic.mnemonic.index.loadingOverlayMessage'),
+      );
 
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
@@ -118,7 +121,7 @@ export default function Entry() {
       toastError(t('pages.account.create-mnemonic.mnemonic.index.failed'));
     } finally {
       setIsLoadingWithoutBackup(false);
-      updateLoadingOverlay(false);
+      stopLoadingOverlay();
     }
   };
 

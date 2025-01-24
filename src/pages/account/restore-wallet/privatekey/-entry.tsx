@@ -51,7 +51,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { updateLoadingOverlay } = useLoadingOverlayStore((state) => state);
+  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
 
@@ -149,7 +149,10 @@ export default function Entry() {
         to: Dashboard.to,
       });
 
-      updateLoadingOverlay(true);
+      startLoadingOverlay(
+        t('pages.account.restore-wallet.privatekey.index.loadingOverlayTitle'),
+        t('pages.account.restore-wallet.privatekey.index.loadingOverlayMessage'),
+      );
 
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
@@ -163,7 +166,7 @@ export default function Entry() {
       toastError(t('pages.account.restore-wallet.privatekey.index.setUpError'));
     } finally {
       setIsLoadingSetUp(false);
-      updateLoadingOverlay(false);
+      stopLoadingOverlay();
     }
   };
 
