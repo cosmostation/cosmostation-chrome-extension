@@ -44,3 +44,11 @@ export const StyledTabPanel = styled(FilledTabPanel)({
   display: 'flex',
   flexDirection: 'column',
 });
+
+export const EmptyAssetContainer = styled('div')({
+  position: 'absolute',
+
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+});

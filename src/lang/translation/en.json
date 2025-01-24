@@ -599,7 +599,9 @@
         },
         "entry": {
           "importPrivateKey": "Import Private Key",
-          "importPrivateKeyDescription": "Account will be displayed after importing with a private key"
+          "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
+          "importMnemonic": "Import Mnemonic",
+          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
         }
       },
       "mange-wallet-and-account": {
@@ -633,6 +635,12 @@
               "backUpNow": "Back Up Now"
             }
           }
+        },
+        "entry": {
+          "importMnemonic": "Import Mnemonic",
+          "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
+          "importPrivateKey": "Import Private Key",
+          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
         }
       },
       "create-account": {

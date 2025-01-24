@@ -23,7 +23,7 @@ export const TopContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  margin: '1.2rem 0 0.8rem',
+  height: '4.1rem',
 
   padding: '0 1.6rem',
 

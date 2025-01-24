@@ -12,6 +12,7 @@ import MnemonicAccount from './-components/MnemonicAccount';
 import PrivateKeyAccount from './-components/PrivateKeyAccount';
 import { EmptyAssetContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
 
+import ImportMnemonicIcon from '@/assets/images/icons/ImportMnemonic70.svg';
 import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
 
 export default function Entry() {
@@ -52,9 +53,9 @@ export default function Entry() {
             ) : (
               <EmptyAssetContainer>
                 <EmptyAsset
-                  icon={<ImportPrivateKeyIcon />}
-                  title={t('pages.manage-account.switch-account.entry.importPrivateKey')}
-                  subTitle={t('pages.manage-account.switch-account.entry.importPrivateKeyDescription')}
+                  icon={<ImportMnemonicIcon />}
+                  title={t('pages.manage-account.switch-account.entry.importMnemonic')}
+                  subTitle={t('pages.manage-account.switch-account.entry.importMnemonicDescription')}
                 />
               </EmptyAssetContainer>
             )}

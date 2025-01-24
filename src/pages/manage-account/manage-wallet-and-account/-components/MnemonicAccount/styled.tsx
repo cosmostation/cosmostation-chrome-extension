@@ -3,14 +3,18 @@ import { styled } from '@mui/material/styles';
 
 import OutlinedButton from '@/components/common/OutlinedButton';
 
-export const Container = styled('div')({
+export const Container = styled('div')(({ theme }) => ({
   width: '100%',
 
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-});
+
+  paddingBottom: '1.2rem',
+
+  borderBottom: `0.06rem solid ${theme.palette.color.base200}`,
+}));
 
 export const TopButton = styled('button')(({ theme }) => ({
   width: '100%',
@@ -19,7 +23,9 @@ export const TopButton = styled('button')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  padding: '1rem 1.6rem 0.8rem',
+  height: '4.1rem',
+
+  padding: '0 1.6rem',
 
   boxSizing: 'border-box',
 
