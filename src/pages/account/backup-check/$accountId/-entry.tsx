@@ -12,6 +12,7 @@ import MnemnicBackupChecker from '@/components/MnemnicBackupChecker';
 import type { MnemonicCheckForm } from '@/components/MnemnicBackupChecker/useSchema';
 import { useSchema } from '@/components/MnemnicBackupChecker/useSchema';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
@@ -19,10 +20,10 @@ import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
 import { aesDecrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
-import { toastError, toastSuccess } from '@/utils/toast';
-import { addAccountName } from '@/utils/zustand/accountNames';
+import { toastError } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
 import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useLoadingOverlayStore } from '@/zustand/hooks/useLoadingOverlayStore';
 import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 
 import { DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer } from './-styled';
@@ -31,9 +32,14 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
+
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
-  const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+
+  const { mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+
   const { setCurrentAccount, addAccountWithName } = useCurrentAccount();
+  const { refetch: refetchAccountAssets } = useAccountAssets();
   const { account } = useNewAccountStore();
 
   const { currentPassword } = useCurrentPassword();
@@ -83,7 +89,7 @@ export default function Entry() {
   const submit = async () => {
     setIsOpenSetAccountNameBottomSheet(true);
   };
-  // TODO 어카운트롤 추가하는건 일반 니모닉 백업 과정에서는 필요없는 로직임으로 추후 수정 필요.
+
   const setUp = async (newAccountName: string) => {
     try {
       setIsLoadingBackup(true);
@@ -102,34 +108,35 @@ export default function Entry() {
 
       await addPreferAccountType(newAccount.id);
 
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [newAccount.id] });
-
       await setCurrentAccount(newAccount.id);
-
-      // TODO
-      // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
-      await addAccountName(account.id, newAccountName);
-
-      const totalMnemonicAccountsCount = accounts.filter((account) => account.type === 'MNEMONIC').length;
 
       await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
         ...mnemonicNamesByHashedMnemonic,
-        [newAccount.encryptedRestoreString]: `Mnemonic ${totalMnemonicAccountsCount}`,
+        [newAccount.encryptedRestoreString]: `Mnemonic ${Object.keys(mnemonicNamesByHashedMnemonic).length + 1}`,
       });
-
-      await loadExtensionStorageStoreFromStorage();
 
       navigate({
         to: Dashboard.to,
       });
 
-      toastSuccess(t('pages.account.backup-check.entry.setUpComplete'));
+      startLoadingOverlay(t('pages.account.backup-check.entry.loadingOverlayTitle'), t('pages.account.backup-check.entry.loadingOverlayMessage'));
+
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
+
+      // TODO
+      // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+
+      await loadExtensionStorageStoreFromStorage();
+
+      await refetchAccountAssets();
+
       reset();
     } catch {
       toastError(t('pages.account.backup-check.entry.setupError'));
     } finally {
       setIsLoadingBackup(false);
+      stopLoadingOverlay();
     }
   };
 

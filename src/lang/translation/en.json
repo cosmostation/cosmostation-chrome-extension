@@ -393,7 +393,9 @@
           "title": "Complete the quiz in order",
           "subTitle": "Check the backed-up mnemonic and select the correct phrase in order for each number.",
           "incorrect": "Mnemonic does not match",
-          "setupError": "Fail to set up"
+          "setupError": "Fail to set up",
+          "loadingOverlayTitle": "Syncing your wallet assets...",
+          "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
         },
         "layout": {
           "header": "Back Up Wallet"
