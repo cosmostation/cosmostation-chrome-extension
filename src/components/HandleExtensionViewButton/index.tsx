@@ -7,9 +7,8 @@ import { isInTabView } from '@/utils/view/tab';
 
 import { StyledIconButton } from './styled';
 
-// TODO: Replace with actual icons
-import SidePanelView from '@/assets/images/icons/BottomFilledChevron14.svg';
-import PopupViewIcon from '@/assets/images/icons/ExpandView14.svg';
+import PopupViewIcon from '@/assets/images/icons/Popup24.svg';
+import SidePanelView from '@/assets/images/icons/SidePanel24.svg';
 
 type HandleExtensionViewButtonProps = IconButtonProps;
 

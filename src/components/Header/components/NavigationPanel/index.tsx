@@ -26,7 +26,6 @@ export default function NavigationPanel({ isHideBackButton, isHideHomeButton }: 
         <StyledIconButton
           disabled={isDisableBackButton}
           onClick={() => {
-            // history.go(-1);
             history.back();
           }}
         >

@@ -2,7 +2,6 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
-import IconButton from '@/components/common/IconButton';
 import IconTextButton from '@/components/common/IconTextButton';
 
 export const TopContainer = styled('div')({
@@ -48,14 +47,18 @@ export const BodyTopContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const TotalBalanceContainer = styled('div')({
+export const TotalBalanceContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'baseline',
-});
 
-export const StyledIconButton = styled(IconButton)({
+  color: theme.palette.color.base1300,
+}));
+
+export const StyledIconContainer = styled('div')({
   width: '1.2rem',
   height: '1.2rem',
+
+  marginLeft: '0.2rem',
 
   '& > svg': {
     width: '1.2rem',

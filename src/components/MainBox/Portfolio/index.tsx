@@ -9,6 +9,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
+import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
@@ -26,7 +27,7 @@ import {
   BottomButtonContainer,
   HistoryButtonTypo,
   SpacedTypography,
-  StyledIconButton,
+  StyledIconContainer,
   StyledIconTextButton,
   TopContainer,
   TopLeftContainer,
@@ -59,6 +60,8 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   const [isProcessing, setIsProcessing] = useState(true);
   const [aggregatedTotalValue, setAggregatedTotalValue] = useState('0');
+
+  const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
 
   const totalVisibleAssets = (() => {
     if (!groupAccountAssets?.groupAccountAssets || !groupAccountAssets?.singleAccountAssets) {
@@ -137,20 +140,28 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
         body={
           <BodyContainer>
             <BodyTopContainer>
-              <TotalBalanceContainer>
-                {isProcessing ? (
-                  <Typography variant="h1n_B">{'--'}</Typography>
-                ) : (
-                  <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={currency} isDisableLeadingCurreny>
-                    {aggregatedTotalValue}
-                  </NumberTypo>
-                )}
-                &nbsp;
-                <Typography variant="h2_M">{currency.toLocaleUpperCase()}</Typography>
-              </TotalBalanceContainer>
-              <StyledIconButton>
-                <BottomFilledChevronIcon />
-              </StyledIconButton>
+              <IconTextButton
+                onClick={() => {
+                  setIsOpenCurrencyBottomSheet(true);
+                }}
+                trailingIcon={
+                  <StyledIconContainer>
+                    <BottomFilledChevronIcon />
+                  </StyledIconContainer>
+                }
+              >
+                <TotalBalanceContainer>
+                  {isProcessing ? (
+                    <Typography variant="h1n_B">{'--'}</Typography>
+                  ) : (
+                    <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={currency} isDisableLeadingCurreny>
+                      {aggregatedTotalValue}
+                    </NumberTypo>
+                  )}
+                  &nbsp;
+                  <Typography variant="h2_M">{currency.toLocaleUpperCase()}</Typography>
+                </TotalBalanceContainer>
+              </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
               <IconTextButton leadingIcon={<HistoryIcon />}>
@@ -216,6 +227,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
         className="portfoiloBackground"
         backgroundImage={CosmostationLogoImg}
       />
+      <CurrencyBottomSheet open={isOpenCurrencyBottomSheet} onClose={() => setIsOpenCurrencyBottomSheet(false)} />
     </>
   );
 }

@@ -25,7 +25,7 @@ export const FormContainer = styled('form')(({ theme }) => ({
 export const StyledInputContainer = styled('div')({
   position: 'absolute',
   height: '7.5rem',
-  top: '57%',
+  top: '60%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 'calc(100% - 2.4rem)',
