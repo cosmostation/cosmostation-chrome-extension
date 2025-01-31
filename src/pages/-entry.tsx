@@ -55,7 +55,7 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { dashboardCoinSortKey, currency, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { dashboardCoinSortKey, currency, isBalanceVisible, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -66,7 +66,6 @@ export default function Entry() {
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const [isHideSmallValue, setIsHideSmallValue] = useState(false);
 
   const tabLabels = ['Crypto', 'NFTs'];
 
@@ -106,7 +105,7 @@ export default function Entry() {
   })();
 
   const hideSmallValueAssets = (() => {
-    if (isHideSmallValue) {
+    if (!isBalanceVisible) {
       return computedAssetValues.filter((coin) => {
         return gte(coin.value, '0.001');
       });
@@ -183,6 +182,7 @@ export default function Entry() {
                     onChange={(event) => {
                       setSearch(event.currentTarget.value);
                     }}
+                    placeholder={t('pages.index.searchPlaceholder')}
                     isPending={isDebouncing}
                     onClickFilter={() => {
                       setIsOpenSortBottomSheet(true);
@@ -202,8 +202,9 @@ export default function Entry() {
                 </AdCarouselContainer>
                 <ManageCryptoContainer>
                   <CheckBoxTextButton
+                    isChecked={!isBalanceVisible}
                     onClick={() => {
-                      setIsHideSmallValue(!isHideSmallValue);
+                      updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
                     }}
                   >
                     <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>

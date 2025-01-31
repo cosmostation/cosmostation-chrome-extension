@@ -255,7 +255,8 @@
       "hideSmallBalance": "Hide Small Balance",
       "manageCrypto": "Manage Crypto",
       "valueHighOrder": "Value High Order",
-      "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
+      "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
+      "searchPlaceholder": "Search Crypto (Ex. BTC)"
     },
     "account": {
       "initial": {

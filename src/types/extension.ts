@@ -76,6 +76,7 @@ export interface ExtensionStorage {
   customHiddenAssetIds: AssetId[];
   approvedOrigins: ApprovedOrigin[];
   adPopoverState: AdPopoverStateMap;
+  isBalanceVisible: boolean;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

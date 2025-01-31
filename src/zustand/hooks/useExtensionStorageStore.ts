@@ -41,6 +41,7 @@ const initialState: ExtensionStorageState = {
     };
     return acc;
   }, {}),
+  isBalanceVisible: true,
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
@@ -78,6 +79,7 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
       await setExtensionLocalStorage('approvedOrigins', []);
       await setExtensionLocalStorage('adPopoverState', initialState.adPopoverState);
+      await setExtensionLocalStorage('isBalanceVisible', true);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
       await Promise.all(removePromises);

@@ -100,6 +100,10 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
   }
 
+  if (originStorage.isBalanceVisible === undefined) {
+    await setExtensionLocalStorage('isBalanceVisible', true);
+  }
+
   if (!originStorage.adPopoverState) {
     const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
       acc[cur] = {
