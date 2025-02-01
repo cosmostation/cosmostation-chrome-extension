@@ -28,7 +28,7 @@ export default function DropPopover() {
 
   const handleClose = async (isHide: boolean) => {
     if (isHide) {
-      const lastClosed = new Date().toISOString();
+      const lastClosed = new Date().getTime();
 
       await turnOffAdPopover(DROP_POPOVER_ID, lastClosed);
     } else {
