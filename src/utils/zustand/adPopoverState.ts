@@ -33,7 +33,7 @@ export const turnOnAdPopover = async (popoverId: string) => {
   await updateAdPopover(popoverId, newState);
 };
 
-export const turnOffAdPopover = async (popoverId: string, lastClosed?: string) => {
+export const turnOffAdPopover = async (popoverId: string, lastClosed?: number) => {
   const storedAdPopoverState = await getExtensionLocalStorage('adPopoverState');
 
   const selected = storedAdPopoverState[popoverId];

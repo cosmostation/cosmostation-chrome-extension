@@ -159,7 +159,6 @@ export async function initExtensionLocalStorage() {
     const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
       acc[cur] = {
         isVisiable: false,
-        lastClosed: '',
       };
       return acc;
     }, {});
@@ -187,7 +186,6 @@ export async function initExtensionLocalStorage() {
         const newState = produce(adPopoverState, (draft) => {
           draft[id] = {
             isVisiable: false,
-            lastClosed: '',
           };
         });
 
@@ -208,7 +206,6 @@ export async function initExtensionLocalStorage() {
     const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
       acc[cur] = {
         isVisiable: false,
-        lastClosed: '',
       };
       return acc;
     }, {});
@@ -236,7 +233,6 @@ export async function initExtensionLocalStorage() {
         const newState = produce(adPopoverState, (draft) => {
           draft[id] = {
             isVisiable: false,
-            lastClosed: '',
           };
         });
 

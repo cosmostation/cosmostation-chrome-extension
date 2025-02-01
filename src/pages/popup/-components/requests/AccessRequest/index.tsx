@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -11,10 +10,11 @@ import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import InformationPanel from '@/components/InformationPanel';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { sendMessage } from '@/libs/extension';
-import { getSiteIconURL, getSiteTitle } from '@/utils/website';
+import { getSiteTitle } from '@/utils/website';
 
 import Layout from './layout';
 import {
@@ -44,8 +44,8 @@ export default function AccessRequest({ children }: AccessRequestProps) {
 
   const { addApprovedOrigin, currentAccountApporvedOrigins } = useCurrentAccount();
 
-  const [siteIconURL, setSiteIconURL] = useState<string | undefined>(undefined);
-  const [siteTitle, setSiteTitle] = useState<string | undefined>(undefined);
+  const { siteIconURL } = useSiteIconURL(currentRequestQueue?.origin);
+  const siteTitle = getSiteTitle(currentRequestQueue?.origin);
 
   //   const currentAccountSuiPermissionTypes = currentAccountApprovedSuiPermissions
   //     .filter((permission) => permission.origin === currentQueue?.origin)
@@ -56,26 +56,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
   // currentQueue.method === 'sui_connect' &&
   // !currentQueue.message.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission))
 
-  useEffect(() => {
-    const fetchSiteDetails = async () => {
-      try {
-        if (currentRequestQueue?.origin) {
-          const siteTitle = getSiteTitle(currentRequestQueue.origin);
-          setSiteTitle(siteTitle);
-
-          const siteIconURL = await getSiteIconURL(currentRequestQueue.origin);
-          setSiteIconURL(siteIconURL);
-        }
-      } catch {
-        setSiteIconURL('');
-        setSiteTitle('');
-      }
-    };
-
-    fetchSiteDetails();
-  }, [currentRequestQueue?.origin]);
-
-  if (currentRequestQueue?.origin && !currentAccountApporvedOrigins.includes(currentRequestQueue.origin)) {
+  if (currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) {
     return (
       <Layout>
         <>

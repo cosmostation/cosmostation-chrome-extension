@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Image from '@/components/common/Image';
+import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 
 import {
   Container,
@@ -17,21 +18,25 @@ import {
 
 import DeleteIcon from '@/assets/images/icons/TrashBin20.svg';
 
+import WebsiteDefaultImg from 'assets/images/default/websiteDefault.png';
+
 type DappItemProps = {
+  origin: string;
   websiteName: string;
-  websiteImage: string;
   totalTxCount: string;
 };
 
-export default function DappItem({ websiteName, websiteImage, totalTxCount }: DappItemProps) {
+export default function DappItem({ origin, websiteName, totalTxCount }: DappItemProps) {
   const { t } = useTranslation();
+
+  const { siteIconURL } = useSiteIconURL(origin);
 
   return (
     <Container>
       <ContentsContainer>
         <ContentsLeftContainer>
           <WebsiteImageContainer>
-            <Image src={websiteImage} />
+            <Image src={siteIconURL} defaultImgSrc={WebsiteDefaultImg} />
           </WebsiteImageContainer>
           <ContentsInfoContainer>
             <Base1300Text variant="b2_M">{websiteName}</Base1300Text>

@@ -89,12 +89,14 @@ export function useCurrentAccount() {
   };
 
   const currentAccountApporvedOrigins = useMemo(
-    () => approvedOrigins.filter((approvedOrigin) => approvedOrigin.accountId === selectedAccountId).map((allowedOrigin) => allowedOrigin.origin),
+    () => approvedOrigins.filter((approvedOrigin) => approvedOrigin.accountId === selectedAccountId),
     [approvedOrigins, selectedAccountId],
   );
 
   const addApprovedOrigin = async (origin: string) => {
-    const newApporvedOrigins = [...approvedOrigins, { origin, accountId: currentAccount?.id }];
+    const lastConnectedAt = new Date().getTime();
+
+    const newApporvedOrigins = [...approvedOrigins, { origin, accountId: currentAccount?.id, lastConnectedAt }];
     await updateExtensionStorageStore('approvedOrigins', newApporvedOrigins);
   };
 
@@ -115,9 +117,11 @@ export function useCurrentAccount() {
   );
 
   const addSuiPermissions = async (permissions: ApprovedSuiPermissionType[], origin: string) => {
+    const lastConnectedAt = new Date().getTime();
+
     const newSuiPermissions = [
       ...approvedSuiPermissions.filter((permission) => permission.accountId !== currentAccount?.id),
-      ...permissions.map((permission) => ({ id: uuidv4(), accountId: currentAccount?.id, permission, origin })),
+      ...permissions.map((permission) => ({ id: uuidv4(), accountId: currentAccount?.id, permission, origin, lastConnectedAt })),
     ];
 
     await updateExtensionStorageStore('approvedSuiPermissions', newSuiPermissions);

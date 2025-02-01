@@ -82,7 +82,7 @@ export function getDDay(dateString: string) {
   return diffDays;
 }
 
-export function isStillBlocked(lastClosed: string, blockDays: number): boolean {
+export function isStillBlocked(lastClosed: number, blockDays: number): boolean {
   const lastClosedDate = new Date(lastClosed);
 
   if (isNaN(lastClosedDate.getTime())) {

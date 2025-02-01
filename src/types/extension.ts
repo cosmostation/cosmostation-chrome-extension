@@ -32,11 +32,11 @@ export type AddressInfo = {
   memo?: string;
 };
 
-export type ApprovedOrigin = { accountId: Account['id']; origin: string };
+export type ApprovedOrigin = { accountId: Account['id']; origin: string; lastConnectedAt: number };
 
 export type AdPopoverState = {
   isVisiable: boolean;
-  lastClosed?: string;
+  lastClosed?: number;
 };
 export type AdPopoverStateMap = Record<string, AdPopoverState>;
 
@@ -45,6 +45,7 @@ export type ApprovedSuiPermission = {
   origin: ApprovedOrigin['origin'];
   accountId: Account['id'];
   permission: ApprovedSuiPermissionType;
+  lastConnectedAt: number;
 };
 
 export type RequestQueue = Request;
