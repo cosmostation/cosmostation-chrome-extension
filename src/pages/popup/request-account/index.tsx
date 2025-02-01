@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
+import Entry from './-entry';
 import Layout from './-layout';
 import AccessRequest from '../-components/requests/AccessRequest';
 
@@ -11,7 +12,7 @@ function RequestAccount() {
   return (
     <AccessRequest>
       <Layout>
-        <></>
+        <Entry />
       </Layout>
     </AccessRequest>
   );

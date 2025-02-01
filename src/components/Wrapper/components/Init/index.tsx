@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import type { ExtensionStorageKeys } from '@/types/extension';
 import { extension } from '@/utils/browser';
 import { initExtensionLocalStorage } from '@/utils/storage';
 import { loadExtensionSessionStorageStoreFromStorage } from '@/zustand/hooks/useExtensionSessionStorageStore';
@@ -14,8 +15,19 @@ type InitProps = {
 export default function Init({ children }: InitProps) {
   const [isHydrated, setIsHydrated] = useState(false);
 
-  const handleOnStorageChange = (_: unknown, areaName: string) => {
+  // const handleOnStorageChange = <T extends ExtensionStorageKeys>(_: Record<T, ExtensionStorage[T]>, areaName: string) => {
+  const handleOnStorageChange = (changes: browser.storage.StorageChange, areaName: string) => {
     void (async () => {
+      if (areaName === 'local') {
+        const keys = Object.keys(changes) as ExtensionStorageKeys[];
+
+        for (const key of keys) {
+          if (key === 'requestQueue') {
+            await loadAllStoreFromStorage();
+          }
+        }
+      }
+
       if (areaName === 'session') {
         await loadExtensionSessionStorageStoreFromStorage();
       }

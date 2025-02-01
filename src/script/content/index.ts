@@ -23,6 +23,18 @@ chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendRespo
         window.dispatchEvent(event);
         sendResponse(null);
       }
+
+      if (message.method === 'openSidePanel') {
+        sendMessage({
+          target: 'SERVICE_WORKER',
+          method: 'openSidePanel',
+          params: undefined,
+          origin: message.origin,
+          requestId: message.requestId,
+          tabId: message.tabId,
+        });
+        sendResponse(null);
+      }
     }
   })();
   return true;

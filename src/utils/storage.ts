@@ -3,12 +3,15 @@ import { produce } from 'immer';
 import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
+import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
 import type { AdPopoverStateMap, ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
+import { initialState } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { extension } from './browser';
 import { aesDecrypt } from './crypto';
+import { getUniqueChainId, isMatchingUniqueChainId } from './queryParamGenerator';
 
 export async function initExtensionLocalStorage() {
   const originStorage = await getAllExtensionLocalStorage();
@@ -93,7 +96,104 @@ export async function initExtensionLocalStorage() {
   }
 
   if (!originStorage.approvedOrigins) {
-    await setExtensionLocalStorage('customCw20Assets', []);
+    await setExtensionLocalStorage('approvedOrigins', []);
+  }
+
+  if (!originStorage.requestQueue) {
+    await setExtensionLocalStorage('requestQueue', []);
+  }
+
+  if (!originStorage.approvedSuiPermissions) {
+    await setExtensionLocalStorage('approvedSuiPermissions', []);
+  }
+
+  if (!originStorage.chosenEthereumNetworkId) {
+    const { evmChains } = await getChains();
+
+    const defaultEVMNetwork = evmChains.find((item) => item.id === 'ethereum') || evmChains[0];
+
+    const defaultEVMNetworkId = getUniqueChainId(defaultEVMNetwork);
+
+    await setExtensionLocalStorage('chosenEthereumNetworkId', defaultEVMNetworkId);
+  }
+
+  if (!originStorage.chosenAptosNetworkId) {
+    const { aptosChains } = await getChains();
+
+    const defaultAptosNetwork = aptosChains.find((item) => item.id === 'aptos') || aptosChains[0];
+
+    const defaultAptosNetworkId = getUniqueChainId(defaultAptosNetwork);
+
+    await setExtensionLocalStorage('chosenAptosNetworkId', defaultAptosNetworkId);
+  }
+
+  if (!originStorage.chosenSuiNetworkId) {
+    const { suiChains } = await getChains();
+
+    const defaultSuiNetwork = suiChains.find((item) => item.id === 'sui') || suiChains[0];
+
+    const defaultSuiNetworkId = getUniqueChainId(defaultSuiNetwork);
+
+    await setExtensionLocalStorage('chosenSuiNetworkId', defaultSuiNetworkId);
+  }
+
+  if (!originStorage.chosenBitcoinNetworkId) {
+    const { bitcoinChains } = await getChains();
+
+    const defaultBitcoinNetwork = bitcoinChains.find((item) => item.id === 'bitcoin') || bitcoinChains[0];
+
+    const defaultBitcoinNetworkId = getUniqueChainId(defaultBitcoinNetwork);
+
+    await setExtensionLocalStorage('chosenBitcoinNetworkId', defaultBitcoinNetworkId);
+  }
+
+  if (!originStorage.initCheckLegacyBalanceAccountIds) {
+    await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
+  }
+
+  if (originStorage.isBalanceVisible === undefined) {
+    await setExtensionLocalStorage('isBalanceVisible', true);
+  }
+
+  if (!originStorage.adPopoverState) {
+    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
+      acc[cur] = {
+        isVisiable: false,
+        lastClosed: '',
+      };
+      return acc;
+    }, {});
+
+    await setExtensionLocalStorage('adPopoverState', defaultState);
+  }
+
+  if (originStorage.adPopoverState) {
+    const adPopoverState = originStorage.adPopoverState;
+
+    AD_POPOVER_IDS.forEach(async (id) => {
+      if (adPopoverState[id]) {
+        const dropPopoverState = adPopoverState[id];
+
+        if (dropPopoverState.isVisiable) {
+          const newState = produce(adPopoverState, (draft) => {
+            draft[id].isVisiable = false;
+          });
+
+          await setExtensionLocalStorage('adPopoverState', newState);
+        }
+      }
+
+      if (!adPopoverState[id]) {
+        const newState = produce(adPopoverState, (draft) => {
+          draft[id] = {
+            isVisiable: false,
+            lastClosed: '',
+          };
+        });
+
+        await setExtensionLocalStorage('adPopoverState', newState);
+      }
+    });
   }
 
   if (!originStorage.initCheckLegacyBalanceAccountIds) {
@@ -323,6 +423,76 @@ export async function getAllExtensionSessionStorage(): Promise<ExtensionSessionS
   const sessionStorage = await extension.storage.session.get();
 
   return sessionStorage as ExtensionSessionStorage;
+}
+
+export async function extensionLocalStorage() {
+  const storage = await getAllExtensionLocalStorage();
+
+  const storageWithDefault = { ...initialState, ...storage };
+
+  const {
+    accounts,
+    selectedAccountId,
+    accountNamesById,
+    approvedOrigins,
+    chosenAptosNetworkId,
+    chosenSuiNetworkId,
+    chosenBitcoinNetworkId,
+    chosenEthereumNetworkId,
+  } = storageWithDefault;
+
+  const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
+  const currentAccountName = accountNamesById[selectedAccountId];
+
+  const { evmChains, aptosChains, suiChains, bitcoinChains } = await getChains();
+  const addedCustomChains = await getAddedCustomChains();
+
+  const currentEthereumNetwork = (() => {
+    const ethereumNetworks = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
+
+    const networkId = chosenEthereumNetworkId ?? getUniqueChainId(ethereumNetworks[0]);
+
+    return ethereumNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? ethereumNetworks[0];
+  })();
+
+  const currentAptosNetwork = (() => {
+    const aptosNetworks = [...aptosChains];
+
+    const networkId = chosenAptosNetworkId ?? getUniqueChainId(aptosNetworks[0]);
+
+    return aptosNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? aptosNetworks[0];
+  })();
+
+  const currentSuiNetwork = (() => {
+    const suiNetworks = [...suiChains];
+
+    const networkId = chosenSuiNetworkId ?? getUniqueChainId(suiNetworks[0]);
+
+    return suiNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? suiNetworks[0];
+  })();
+
+  const currentBitcoinNetwork = (() => {
+    const bitcoinNetworks = [...bitcoinChains];
+
+    const networkId = chosenBitcoinNetworkId ?? getUniqueChainId(bitcoinNetworks[0]);
+
+    return bitcoinNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? bitcoinNetworks[0];
+  })();
+
+  const currentAccountAllowedOrigins = approvedOrigins
+    .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
+    .map((allowedOrigin) => allowedOrigin.origin);
+
+  return {
+    ...storageWithDefault,
+    currentAccount,
+    currentAccountName,
+    currentEthereumNetwork,
+    currentAptosNetwork,
+    currentSuiNetwork,
+    currentBitcoinNetwork,
+    currentAccountAllowedOrigins,
+  };
 }
 
 export async function extensionSessionStorage() {

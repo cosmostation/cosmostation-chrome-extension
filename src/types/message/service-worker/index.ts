@@ -27,7 +27,13 @@ export interface RequestAppMessage extends MessageBase {
   params: Request;
 }
 
-export type ServiceWorkerMessage = UpdateBalanceMessage | UpdateAddressMessage | UpdateDefaultBalanceMessage | RequestAppMessage;
+export interface RequestSidePanelOpenMessage extends MessageBase {
+  target: Extract<TargetType, 'SERVICE_WORKER'>;
+  method: 'openSidePanel';
+  params: undefined;
+}
+
+export type ServiceWorkerMessage = UpdateBalanceMessage | UpdateAddressMessage | UpdateDefaultBalanceMessage | RequestAppMessage | RequestSidePanelOpenMessage;
 
 export interface ServiceWorkerResponse {
   updateBalance: null;

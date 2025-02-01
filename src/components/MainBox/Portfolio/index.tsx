@@ -54,7 +54,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const navigate = useNavigate();
 
   const { currency } = useExtensionStorageStore((state) => state);
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
+  const { data: coinGeckoPrice, isLoading } = useCoinGeckoPrice();
 
   const { groupAccountAssets } = useGroupAccountAssets();
 
@@ -111,8 +111,10 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
     }, '0');
 
     setAggregatedTotalValue(aggregateValue);
-    setIsProcessing(false);
-  }, [selectedChainId, totalVisibleAssets]);
+    if (!isLoading) {
+      setIsProcessing(false);
+    }
+  }, [isLoading, selectedChainId, totalVisibleAssets]);
 
   return (
     <>

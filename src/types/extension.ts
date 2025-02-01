@@ -1,3 +1,5 @@
+import type { PERMISSION } from '@/constants/sui';
+
 import type {
   Account,
   AccountAddress,
@@ -16,8 +18,11 @@ import type { V11Asset, V11Param } from './apiV11';
 import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './asset';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
+import type { Request } from './message/inject';
 import type { Password } from './password';
 import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
+
+export type ApprovedSuiPermissionType = ValueOf<typeof PERMISSION>;
 
 export type AddressInfo = {
   id: string;
@@ -34,6 +39,15 @@ export type AdPopoverState = {
   lastClosed?: string;
 };
 export type AdPopoverStateMap = Record<string, AdPopoverState>;
+
+export type ApprovedSuiPermission = {
+  id: string;
+  origin: ApprovedOrigin['origin'];
+  accountId: Account['id'];
+  permission: ApprovedSuiPermissionType;
+};
+
+export type RequestQueue = Request;
 
 export interface ExtensionStorage {
   accounts: Account[];
@@ -77,6 +91,12 @@ export interface ExtensionStorage {
   approvedOrigins: ApprovedOrigin[];
   adPopoverState: AdPopoverStateMap;
   isBalanceVisible: boolean;
+  approvedSuiPermissions: ApprovedSuiPermission[];
+  requestQueue: RequestQueue[];
+  chosenEthereumNetworkId: string;
+  chosenAptosNetworkId: string;
+  chosenSuiNetworkId: string;
+  chosenBitcoinNetworkId: string;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

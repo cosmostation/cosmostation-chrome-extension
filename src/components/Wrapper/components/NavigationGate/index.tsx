@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as Initial } from '@/pages/account/initial';
+import { Route as RequestAccount } from '@/pages/popup/request-account';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 type NavigationGateProps = {
@@ -11,7 +12,7 @@ type NavigationGateProps = {
 export default function NavigationGate({ children }: NavigationGateProps) {
   const navigate = useNavigate();
 
-  const { accounts } = useExtensionStorageStore((state) => state);
+  const { accounts, requestQueue } = useExtensionStorageStore((state) => state);
 
   useEffect(() => {
     void (async () => {
@@ -21,8 +22,14 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         });
         return;
       }
+
+      if (requestQueue.length > 0) {
+        navigate({
+          to: RequestAccount.to,
+        });
+      }
     })();
-  }, [accounts.length, navigate]);
+  }, [accounts.length, navigate, requestQueue.length]);
 
   return <>{children}</>;
 }

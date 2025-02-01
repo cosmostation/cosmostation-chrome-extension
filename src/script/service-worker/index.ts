@@ -47,6 +47,31 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         await process({ ...params, tabId: sender.tab?.id });
         sendResponse(null);
       }
+
+      if (message.method === 'openSidePanel') {
+        if (sender.tab?.id && typeof chrome !== 'undefined' && typeof chrome.sidePanel !== 'undefined') {
+          if (__APP_BROWSER__ === 'chrome') {
+            if (!chrome.sidePanel) {
+              return;
+            }
+
+            await chrome.sidePanel.open({ tabId: sender.tab.id });
+            await chrome.sidePanel.setOptions({
+              tabId: sender.tab.id,
+              path: 'sidepanel.html',
+              enabled: true,
+            });
+          } else {
+            browser.sidebarAction.setPanel({
+              panel: 'sidepanel.html',
+            });
+
+            browser.sidebarAction.open();
+          }
+        }
+
+        sendResponse(null);
+      }
     }
   })();
   return true;

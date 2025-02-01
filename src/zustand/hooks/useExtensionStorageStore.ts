@@ -9,7 +9,7 @@ import type { AdPopoverStateMap, ExtensionStorage } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
 import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
-const initialState: ExtensionStorageState = {
+export const initialState: ExtensionStorageState = {
   accounts: [],
   paramsV11: {},
   assetsV11: [],
@@ -34,6 +34,7 @@ const initialState: ExtensionStorageState = {
   addedCustomChainList: [],
   customAssets: [],
   customHiddenAssetIds: [],
+  requestQueue: [],
   approvedOrigins: [],
   adPopoverState: AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
     acc[cur] = {
@@ -42,6 +43,11 @@ const initialState: ExtensionStorageState = {
     return acc;
   }, {}),
   isBalanceVisible: true,
+  approvedSuiPermissions: [],
+  chosenEthereumNetworkId: '',
+  chosenSuiNetworkId: '',
+  chosenAptosNetworkId: '',
+  chosenBitcoinNetworkId: '',
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
@@ -80,6 +86,8 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('approvedOrigins', []);
       await setExtensionLocalStorage('adPopoverState', initialState.adPopoverState);
       await setExtensionLocalStorage('isBalanceVisible', true);
+      await setExtensionLocalStorage('approvedSuiPermissions', []);
+      await setExtensionLocalStorage('requestQueue', []);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
       await Promise.all(removePromises);

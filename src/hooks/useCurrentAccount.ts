@@ -1,4 +1,8 @@
+import { useMemo } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
 import type { Account, AccountWithName } from '@/types/account';
+import type { ApprovedSuiPermissionType } from '@/types/extension';
 import { removeMnemonicName } from '@/utils/mnemonicNames';
 import { deleteKeysContainingString } from '@/utils/storage';
 import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
@@ -9,7 +13,9 @@ import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zusta
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentAccount() {
-  const { accounts, accountNamesById, selectedAccountId, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { accounts, accountNamesById, selectedAccountId, approvedOrigins, approvedSuiPermissions, updateExtensionStorageStore } = useExtensionStorageStore(
+    (state) => state,
+  );
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -82,12 +88,62 @@ export function useCurrentAccount() {
     await Promise.all(removePromises);
   };
 
+  const currentAccountApporvedOrigins = useMemo(
+    () => approvedOrigins.filter((approvedOrigin) => approvedOrigin.accountId === selectedAccountId).map((allowedOrigin) => allowedOrigin.origin),
+    [approvedOrigins, selectedAccountId],
+  );
+
+  const addApprovedOrigin = async (origin: string) => {
+    const newApporvedOrigins = [...approvedOrigins, { origin, accountId: currentAccount?.id }];
+    await updateExtensionStorageStore('approvedOrigins', newApporvedOrigins);
+  };
+
+  const removeApprovedOrigin = async (origin: string) => {
+    const newApprovedOrigins = approvedOrigins.filter(
+      (approvedOrigin) => !(approvedOrigin.accountId === selectedAccountId && approvedOrigin.origin === origin),
+    );
+
+    // TODO
+    // emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin]);
+
+    await updateExtensionStorageStore('approvedOrigins', newApprovedOrigins);
+  };
+
+  const currentAccountApprovedSuiPermissions = useMemo(
+    () => approvedSuiPermissions.filter((permission) => permission.accountId === currentAccount?.id),
+    [approvedSuiPermissions, currentAccount?.id],
+  );
+
+  const addSuiPermissions = async (permissions: ApprovedSuiPermissionType[], origin: string) => {
+    const newSuiPermissions = [
+      ...approvedSuiPermissions.filter((permission) => permission.accountId !== currentAccount?.id),
+      ...permissions.map((permission) => ({ id: uuidv4(), accountId: currentAccount?.id, permission, origin })),
+    ];
+
+    await updateExtensionStorageStore('approvedSuiPermissions', newSuiPermissions);
+  };
+
+  const removeSuiPermissions = async (permissions: ApprovedSuiPermissionType[], origin: string) => {
+    const newSuiPermissions = approvedSuiPermissions.filter(
+      (permission) =>
+        !(permission.accountId === currentAccount?.id && permission.origin === origin && permissions.some((item) => item === permission.permission)),
+    );
+
+    await updateExtensionStorageStore('approvedSuiPermissions', newSuiPermissions);
+  };
+
   return {
     currentAccount: currentAccountWithName,
+    currentAccountApporvedOrigins,
+    currentAccountApprovedSuiPermissions,
     setCurrentAccount,
     addAccount,
     removeMnemonic,
     addAccountWithName,
     removeAccount,
+    addApprovedOrigin,
+    removeApprovedOrigin,
+    addSuiPermissions,
+    removeSuiPermissions,
   };
 }
