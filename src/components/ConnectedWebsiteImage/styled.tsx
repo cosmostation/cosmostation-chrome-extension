@@ -1,4 +1,16 @@
-import { styled } from '@mui/material/styles';
+import { keyframes, styled } from '@mui/material/styles';
+
+const dropShadowAnimation = keyframes`
+  0% {
+    filter: drop-shadow( 0 0 0.3rem  #3BCE98);
+  }
+  50% {
+    filter: drop-shadow(0 0 0.3rem transparent);
+  }
+  100% {
+    filter: drop-shadow(0 0 0.3rem  #3BCE98);
+    }
+`;
 
 export const WebsiteImageWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -8,7 +20,9 @@ export const WebsiteImageWrapper = styled('div')(({ theme }) => ({
   height: '4rem',
   borderRadius: '50%',
   backgroundColor: '#181A1F',
-  border: `0.24rem solid ${theme.palette.accentColor.green500}`,
+  border: `0.22rem solid ${theme.palette.accentColor.green500}`,
+
+  animation: `${dropShadowAnimation} 2.4s infinite ease-in-out`,
 }));
 
 export const WebsiteImageContainer = styled('div')({
