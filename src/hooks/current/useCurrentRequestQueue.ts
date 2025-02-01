@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 
-import { Route as Home } from '@/pages/index';
+// import { Route as Home } from '@/pages/index';
 import type { RequestQueue } from '@/types/extension';
 import { closePopupWindow, closeSidePanel } from '@/utils/view/controlView';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -30,10 +30,6 @@ export function useCurrentRequestQueue() {
       if (path) {
         navigate({
           to: path,
-        });
-      } else {
-        navigate({
-          to: Home.to,
         });
       }
     }
