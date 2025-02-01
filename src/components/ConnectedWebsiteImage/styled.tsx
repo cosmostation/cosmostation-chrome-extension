@@ -8,20 +8,19 @@ export const WebsiteImageWrapper = styled('div')(({ theme }) => ({
   height: '4rem',
   borderRadius: '50%',
   backgroundColor: '#181A1F',
-  border: `0.18rem solid ${theme.palette.accentColor.green500}`,
+  border: `0.24rem solid ${theme.palette.accentColor.green500}`,
 }));
 
-export const WebsiteImageContainer = styled('div')(({ theme }) => ({
+export const WebsiteImageContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  width: '95%',
-  height: '95%',
+  width: '80%',
+  height: '80%',
   borderRadius: '50%',
-  backgroundColor: theme.palette.color.base1300,
   '& > img': {
-    width: '3rem',
-    height: '3rem',
+    width: '80%',
+    height: '80%',
     borderRadius: '50%',
   },
-}));
+});
