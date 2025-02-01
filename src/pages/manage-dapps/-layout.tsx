@@ -6,6 +6,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 
 import DisconnectBottomSheet from './-components/DisconnectBottomSheet';
 import { FooterContainer } from './-styled';
@@ -19,6 +20,10 @@ export default function Layout({ children }: LayoutProps) {
 
   const [isOpenDisconnectBottomSheet, setIsOpenDisconnectBottomSheet] = useState(false);
 
+  const { currentAccountApporvedOrigins, removeAllApprovedOrigin } = useCurrentAccount();
+
+  const hasApprovedOrigins = currentAccountApporvedOrigins.length > 0;
+
   return (
     <>
       <BaseLayout
@@ -28,6 +33,7 @@ export default function Layout({ children }: LayoutProps) {
         footer={
           <FooterContainer>
             <Button
+              disabled={!hasApprovedOrigins}
               onClick={async () => {
                 setIsOpenDisconnectBottomSheet(true);
               }}
@@ -44,7 +50,8 @@ export default function Layout({ children }: LayoutProps) {
         open={isOpenDisconnectBottomSheet}
         onClose={() => setIsOpenDisconnectBottomSheet(false)}
         onClickConfirm={() => {
-          console.log('disconnect');
+          removeAllApprovedOrigin();
+          setIsOpenDisconnectBottomSheet(false);
         }}
       />
     </>

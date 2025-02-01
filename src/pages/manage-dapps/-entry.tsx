@@ -24,7 +24,7 @@ export default function Entry() {
 
   const { scrollToTop } = useScroll();
 
-  const { currentAccountApporvedOrigins } = useCurrentAccount();
+  const { currentAccountApporvedOrigins, removeApprovedOrigin } = useCurrentAccount();
 
   const [viewLimit, setViewLimit] = useState(30);
 
@@ -112,7 +112,15 @@ export default function Entry() {
             </StickyContainer>
             <DappItemContainer>
               {filteredOriginssBySearch.map((item) => {
-                return <DappItem key={item.origin} origin={item.origin} websiteName={item.title} totalTxCount={'10'} />;
+                return (
+                  <DappItem
+                    key={item.origin}
+                    origin={item.origin}
+                    websiteName={item.title}
+                    totalTxCount={'10'}
+                    onClickDelete={() => removeApprovedOrigin(item.origin)}
+                  />
+                );
               })}
               {filteredOriginssBySearch?.length > viewLimit - 1 && (
                 <IntersectionObserver

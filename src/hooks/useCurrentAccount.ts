@@ -111,6 +111,14 @@ export function useCurrentAccount() {
     await updateExtensionStorageStore('approvedOrigins', newApprovedOrigins);
   };
 
+  const removeAllApprovedOrigin = async () => {
+    // TODO
+    // emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin]);
+
+    await updateExtensionStorageStore('approvedOrigins', []);
+    await updateExtensionStorageStore('approvedSuiPermissions', []);
+  };
+
   const currentAccountApprovedSuiPermissions = useMemo(
     () => approvedSuiPermissions.filter((permission) => permission.accountId === currentAccount?.id),
     [approvedSuiPermissions, currentAccount?.id],
@@ -147,6 +155,7 @@ export function useCurrentAccount() {
     removeAccount,
     addApprovedOrigin,
     removeApprovedOrigin,
+    removeAllApprovedOrigin,
     addSuiPermissions,
     removeSuiPermissions,
   };

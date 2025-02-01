@@ -24,9 +24,10 @@ type DappItemProps = {
   origin: string;
   websiteName: string;
   totalTxCount: string;
+  onClickDelete: () => void;
 };
 
-export default function DappItem({ origin, websiteName, totalTxCount }: DappItemProps) {
+export default function DappItem({ origin, websiteName, totalTxCount, onClickDelete }: DappItemProps) {
   const { t } = useTranslation();
 
   const { siteIconURL } = useSiteIconURL(origin);
@@ -53,7 +54,7 @@ export default function DappItem({ origin, websiteName, totalTxCount }: DappItem
         </ContentsLeftContainer>
 
         <ContentsRightContainer>
-          <DeleteIconButton>
+          <DeleteIconButton onClick={onClickDelete}>
             <DeleteIcon />
           </DeleteIconButton>
         </ContentsRightContainer>

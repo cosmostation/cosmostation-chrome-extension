@@ -14,7 +14,7 @@ import DisconnectIcon from '@/assets/images/icons/Disconnect20.svg';
 export default function ConnectedDapp() {
   const { data: activeTabInfo } = useActiveTabInfo();
 
-  const { currentAccountApporvedOrigins } = useCurrentAccount();
+  const { currentAccountApporvedOrigins, removeApprovedOrigin } = useCurrentAccount();
 
   const origin = activeTabInfo?.origin || '';
 
@@ -44,7 +44,7 @@ export default function ConnectedDapp() {
         </ContentsContainer>
       }
       rightContent={
-        <StyledIconButton>
+        <StyledIconButton onClick={() => removeApprovedOrigin(origin)}>
           <DisconnectIcon />
         </StyledIconButton>
       }
