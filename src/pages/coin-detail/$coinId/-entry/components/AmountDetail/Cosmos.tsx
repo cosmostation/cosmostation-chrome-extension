@@ -1,25 +1,41 @@
 import { useTranslation } from 'react-i18next';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { toDisplayDenomAmount } from '@/utils/numbers';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { AmountDetailWrapper, Container, DetailRow, LabelText, TitleText, ValueText } from './styled';
 
 type CosmosProps = {
-  uniqueCoinId: string;
+  coinId: string;
 };
 
-export default function Cosmos({ uniqueCoinId }: CosmosProps) {
-  console.log('🚀 ~ AmountDetail ~ uniqueCoinId:', uniqueCoinId);
-
+export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
 
-  const availableDisplayAmount = '1000';
+  const { data } = useAccountAssets();
+
+  const selectedCoin = (() => {
+    if (!data) return undefined;
+
+    const aggregatedCosmosAccountAssets = [
+      ...data.cosmosAccountAssets,
+      ...data.cosmosAccountCustomAssets,
+      ...data.cw20AccountAssets,
+      ...data.customCw20AccountAssets,
+    ];
+
+    return aggregatedCosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  })();
+
+  const decimal = selectedCoin?.asset.decimals || 0;
+
+  const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
   const stakedDisplayAmount = '500';
   const unstakingDisplayAmount = '20';
   const rewardsDisplayAmount = '20';
   const rewardsCoinCounts = '3';
-
-  const decimal = 6;
 
   return (
     <Container>

@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { toDisplayDenomAmount } from '@/utils/numbers';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 import {
   AmountDetailAttributeWrapper,
@@ -18,20 +21,26 @@ import {
 import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
 
 type SuiProps = {
-  uniqueCoinId: string;
+  coinId: string;
 };
 
-export default function Sui({ uniqueCoinId }: SuiProps) {
-  console.log('🚀 ~ AmountDetail ~ uniqueCoinId:', uniqueCoinId);
-
+export default function Sui({ coinId }: SuiProps) {
   const { t } = useTranslation();
 
-  const availableDisplayAmount = '1000';
+  const { data } = useAccountAssets();
+
+  const selectedCoin = (() => {
+    if (!data) return undefined;
+
+    return data.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  })();
+
+  const decimal = selectedCoin?.asset.decimals || 0;
+
+  const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
   const totalStakedDisplayAmount = '500';
   const stakedDisplayAmount = '500';
   const earnedDisplayAmount = '500';
-
-  const decimal = 9;
 
   return (
     <Container>

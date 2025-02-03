@@ -2,22 +2,31 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { toDisplayDenomAmount } from '@/utils/numbers';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { AmountDetailWrapper, Container, DetailRow, LabelText, PendingAmountContainer, TitleText, ValueText } from './styled';
 
 type BitcoinProps = {
-  uniqueCoinId: string;
+  coinId: string;
 };
 
-export default function Bitcoin({ uniqueCoinId }: BitcoinProps) {
-  console.log('🚀 ~ AmountDetail ~ uniqueCoinId:', uniqueCoinId);
-
+export default function Bitcoin({ coinId }: BitcoinProps) {
   const { t } = useTranslation();
 
-  const availableDisplayAmount = '1000';
-  const pendingReceiveDisplayAmount = '90';
+  const { data } = useAccountAssets();
 
-  const decimal = 6;
+  const selectedCoin = (() => {
+    if (!data) return undefined;
+
+    return data.bitcoinAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  })();
+
+  const decimal = selectedCoin?.asset.decimals || 0;
+
+  const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
+  const pendingReceiveDisplayAmount = '90';
 
   return (
     <Container>
