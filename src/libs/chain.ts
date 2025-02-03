@@ -1,6 +1,6 @@
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
-import { parsingHdPath } from '@/utils/string';
+import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
 
 export async function getChains() {
   const { paramsV11: chains } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
@@ -40,7 +40,11 @@ export async function getChains() {
     const isCosmwasm = chain.params.chainlist_params?.is_support_cw20 ?? false;
     const isEvm = chain.params.chainlist_params?.chain_type?.includes('evm') ?? false;
 
-    const lcdUrls = chain.params.chainlist_params.lcd_endpoint ?? [];
+    const lcdUrls =
+      chain.params.chainlist_params.lcd_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer ?? null;
 
@@ -99,7 +103,11 @@ export async function getChains() {
       gasCoefficient: chain.params.chainlist_params?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
     };
 
-    const rpcUrls = chain.params.chainlist_params.evm_rpc_endpoint ?? [];
+    const rpcUrls =
+      chain.params.chainlist_params.evm_rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
 
     const filteredAccountTypes = chain.params.chainlist_params?.account_type
       ?.filter((item) => {
@@ -152,7 +160,11 @@ export async function getChains() {
 
     const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
 
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
+    const rpcUrls =
+      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer ?? null;
 
@@ -190,7 +202,11 @@ export async function getChains() {
 
     const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
 
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
+    const rpcUrls =
+      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer ?? null;
 

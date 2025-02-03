@@ -423,7 +423,8 @@
             "available": "Available",
             "staked": "Staked",
             "unstaking": "Unstaking",
-            "rewards": "Rewards"
+            "rewards": "Rewards",
+            "incentive": "Incentive"
           },
           "Sui": {
             "title": "Coin Details",

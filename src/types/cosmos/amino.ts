@@ -1,12 +1,4 @@
-export type Amount = {
-  denom: string;
-  amount: string;
-};
-
-export type Height = {
-  revision_height: number;
-  revision_number: number;
-};
+import type { Amount, Height } from './common';
 
 // osmosis
 export type SwapAmountInRoute = {

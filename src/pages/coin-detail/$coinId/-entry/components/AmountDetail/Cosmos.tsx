@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { useAmount } from '@/hooks/cosmos/useAmount';
+import { useReward } from '@/hooks/cosmos/useReward';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -15,6 +18,12 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
 
   const { data } = useAccountAssets();
+
+  const { delegationAmount, unbondingAmount, rewardAmount, incentiveAmount } = useAmount(coinId);
+
+  const reward = useReward({
+    coinId,
+  });
 
   const selectedCoin = (() => {
     if (!data) return undefined;
@@ -32,10 +41,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const decimal = selectedCoin?.asset.decimals || 0;
 
   const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
-  const stakedDisplayAmount = '500';
-  const unstakingDisplayAmount = '20';
-  const rewardsDisplayAmount = '20';
-  const rewardsCoinCounts = '3';
+  const stakedDisplayAmount = toDisplayDenomAmount(delegationAmount, decimal);
+  const unstakingDisplayAmount = toDisplayDenomAmount(unbondingAmount, decimal);
+  const rewardsDisplayAmount = toDisplayDenomAmount(rewardAmount, decimal);
+  const rewardsCoinCounts = reward?.data?.total?.length || 0;
+  const incentiveDisplayAmount = toDisplayDenomAmount(incentiveAmount, decimal);
 
   return (
     <Container>
@@ -73,6 +83,17 @@ export default function Cosmos({ coinId }: CosmosProps) {
             </NumberTypo>
           </ValueText>
         </DetailRow>
+        {/* FIXME 현재는 60패스에서 코스모스쪽 코인을 디리스팅하고 있어서 카바 60이면 얘 안나옴 */}
+        {selectedCoin?.chain.id === KAVA_CHAINLIST_ID && (
+          <DetailRow>
+            <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.incentive')}</LabelText>
+            <ValueText>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+                {incentiveDisplayAmount}
+              </NumberTypo>
+            </ValueText>
+          </DetailRow>
+        )}
       </AmountDetailWrapper>
     </Container>
   );
