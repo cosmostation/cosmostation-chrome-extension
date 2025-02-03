@@ -9,7 +9,7 @@ export const TERITORI: CosmosChain = {
   type: '',
   chainId: 'teritori-1',
   chainName: 'TERITORI',
-  restURL: 'https://lcd-teritori.cosmostation.io',
+  restURL: 'https://teritori-api.polkachu.com',
   tokenImageURL: teritoriTokenImg,
   imageURL: teritoriChainImg,
   baseDenom: 'utori',

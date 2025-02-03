@@ -9,7 +9,7 @@ export const UX: CosmosChain = {
   type: '',
   chainId: 'umee-1',
   chainName: 'UX',
-  restURL: 'https://lcd-umee.cosmostation.io',
+  restURL: 'https://umee-api.polkachu.com',
   tokenImageURL: uxTokenImg,
   imageURL: uxChainImg,
   baseDenom: 'uumee',

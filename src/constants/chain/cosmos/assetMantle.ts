@@ -9,7 +9,7 @@ export const ASSET_MANTLE: CosmosChain = {
   type: '',
   chainId: 'mantle-1',
   chainName: 'ASSETMANTLE',
-  restURL: 'https://lcd-asset-mantle.cosmostation.io',
+  restURL: 'https://assetmantle-api.polkachu.com',
   tokenImageURL: assetmantleTokenImg,
   imageURL: assetmantleChainImg,
   baseDenom: 'umntl',

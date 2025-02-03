@@ -9,7 +9,7 @@ export const NYX: CosmosChain = {
   type: '',
   chainId: 'nyx',
   chainName: 'NYM',
-  restURL: 'https://lcd-nyx.cosmostation.io',
+  restURL: 'https://nym-api.polkachu.com',
   tokenImageURL: nyxTokenImg,
   imageURL: nyxChainImg,
   baseDenom: 'unyx',

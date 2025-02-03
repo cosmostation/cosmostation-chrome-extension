@@ -9,7 +9,7 @@ export const KYVE: CosmosChain = {
   type: '',
   chainId: 'kyve-1',
   chainName: 'KYVE',
-  restURL: 'https://lcd-kyve.cosmostation.io',
+  restURL: 'https://api-eu-1.kyve.network',
   tokenImageURL: kyveTokenImg,
   imageURL: kyveChainImg,
   baseDenom: 'ukyve',
