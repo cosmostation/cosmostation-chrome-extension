@@ -9,7 +9,7 @@ export const EVMOS: CosmosChain = {
   type: 'ETHERMINT',
   chainId: 'evmos_9001-2',
   chainName: 'EVMOS',
-  restURL: 'https://lcd-evmos.cosmostation.io',
+  restURL: 'https://evmos-api.polkachu.com',
   tokenImageURL: evmosTokenImg,
   imageURL: evmosChainImg,
   baseDenom: 'aevmos',

@@ -62,6 +62,16 @@ export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
   marginLeft: '0.4rem',
+
+  maxWidth: '9rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const ItemRightContainer = styled('div')({

@@ -9,7 +9,7 @@ export const PASSAGE: CosmosChain = {
   type: '',
   chainId: 'passage-2',
   chainName: 'PASSAGE',
-  restURL: 'https://lcd-passage.cosmostation.io',
+  restURL: 'https://rest-passage.ecostake.com',
   tokenImageURL: passageTokenImg,
   imageURL: passageChainImg,
   baseDenom: 'upasg',

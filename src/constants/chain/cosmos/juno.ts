@@ -9,7 +9,7 @@ export const JUNO: CosmosChain = {
   type: '',
   chainId: 'juno-1',
   chainName: 'JUNO',
-  restURL: 'https://lcd-juno.cosmostation.io',
+  restURL: 'https://juno-api.lavenderfive.com',
   tokenImageURL: junoTokenImg,
   imageURL: junoChainImg,
   baseDenom: 'ujuno',
