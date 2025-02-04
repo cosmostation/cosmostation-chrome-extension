@@ -7,7 +7,7 @@ import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 import { getCoinId } from '@/utils/queryParamGenerator';
-import { shorterAddress } from '@/utils/string';
+import { shorterAddress, toPercentages } from '@/utils/string';
 
 import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
 import AmountDetail from '../components/AmountDetail';
@@ -47,6 +47,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const isSupportHistory = selectedCoin?.chain.isSupportHistory;
 
+  const apr = selectedCoin?.chain.apr && toPercentages(selectedCoin?.chain.apr);
+
   return (
     <BaseBody>
       <StyledEdgeAligner>
@@ -62,6 +64,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <SectionContainer>
               <StakePromotion
                 symbol={symbol}
+                apr={apr}
                 onClick={() => {
                   navigate({
                     to: ManageStake.to,

@@ -71,6 +71,8 @@ export async function getChains() {
     const isSupportStaking = chain.params.chainlist_params?.is_stake_enabled !== false;
     const isSupportHistory = !!chain.params.chainlist_params?.is_support_mintscan;
 
+    const apr = chain.params.apr;
+
     return {
       id,
       chainId,
@@ -87,6 +89,7 @@ export async function getChains() {
       accountTypes,
       isSupportStaking,
       isSupportHistory,
+      apr,
     };
   });
 

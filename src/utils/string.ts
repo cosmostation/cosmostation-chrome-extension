@@ -1,3 +1,5 @@
+import { fix, times } from './numbers';
+
 export function shorterAddress(address?: string, maxLength = 25) {
   const length = Math.floor(maxLength / 2);
 
@@ -93,4 +95,8 @@ export function parsingHdPath(hdPath: string) {
 
 export function toBase64(str: string) {
   return Buffer.from(str).toString('base64');
+}
+
+export function toPercentages(value: string) {
+  return fix(times(value, '100'), 2) + '%';
 }

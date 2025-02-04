@@ -584,8 +584,9 @@
         },
         "StakePromotion": {
           "index": {
-            "title": "Earn $ ${symbol} and make a profit",
-            "stake": "Go to Manage Stake"
+            "title": "Earn ${{symbol}} and make a profit",
+            "stake": "Go to Manage Stake",
+            "titleWithApr": "Earn ${{symbol}} up to {{apr}} APR"
           }
         },
         "AmountDetail": {

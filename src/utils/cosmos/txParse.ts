@@ -569,7 +569,6 @@ export function getDpCoin(tx: AccountTx, mainAssetDenom: string, address: string
 
         if (transferEvent) {
           transferEvent.attributes?.forEach((attribute) => {
-            // if (isValidCosmosAddress(attribute.value) && attribute.value === address) {
             if (attribute.value === address) {
               const amountAttribute = transferEvent.attributes?.find((a) => a.key === 'amount');
 
