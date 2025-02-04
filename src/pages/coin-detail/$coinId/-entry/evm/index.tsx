@@ -1,15 +1,12 @@
 import { useTranslation } from 'react-i18next';
 
-// import { useNavigate } from '@tanstack/react-router';
+import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
-import History from '@/components/History';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
-// import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
-import { Container, HistoryContainer, HistorySectionTitle } from './styled';
+import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
 import ContractAddress from '../components/ContractAddress';
 import SectionContainer from '../components/SectionContainer';
 import SectionStickyContainer from '../components/SectionStickyContainer';
@@ -21,7 +18,6 @@ type EVMProps = {
 
 export default function EVM({ coinId }: EVMProps) {
   const { t } = useTranslation();
-  // const navigate = useNavigate();
 
   const { data } = useAccountAssets();
 
@@ -37,33 +33,29 @@ export default function EVM({ coinId }: EVMProps) {
 
   return (
     <BaseBody>
-      <EdgeAligner>
-        <Container>
-          <CoinDetailBox coinId={coinId} />
+      <StyledEdgeAligner>
+        <CoinDetailBox coinId={coinId} />
 
-          <SectionWrapper>
-            {contractAddress && (
-              <SectionContainer>
-                <ContractAddress contractAddress={contractAddress} />
-              </SectionContainer>
-            )}
+        <SectionWrapper>
+          {contractAddress && (
             <SectionContainer>
-              <SectionStickyContainer>
-                <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
-              </SectionStickyContainer>
-              <HistoryContainer>
-                <History />
-                <History />
-                <History />
-                <History />
-                <History />
-                <History />
-                <History />
-              </HistoryContainer>
+              <ContractAddress contractAddress={contractAddress} />
             </SectionContainer>
-          </SectionWrapper>
-        </Container>
-      </EdgeAligner>
+          )}
+          <SectionContainer
+            style={{
+              flex: 1,
+            }}
+          >
+            <SectionStickyContainer>
+              <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
+            </SectionStickyContainer>
+            <HistoryContainer>
+              <AccountTxHistory coinId={coinId} />
+            </HistoryContainer>
+          </SectionContainer>
+        </SectionWrapper>
+      </StyledEdgeAligner>
     </BaseBody>
   );
 }

@@ -11,7 +11,7 @@ export const Container = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '0.2rem 1.6rem',
+  padding: '0.3rem 1.6rem',
 }));
 
 export const LeftContentContainer = styled('div')({});

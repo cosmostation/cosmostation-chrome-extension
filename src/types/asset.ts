@@ -43,6 +43,7 @@ export interface CosmosAsset extends AssetBase {
       denom: string;
     };
   };
+  color?: string;
 }
 
 export interface CosmosCw20Asset extends AssetBase {

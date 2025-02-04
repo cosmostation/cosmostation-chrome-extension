@@ -1,9 +1,12 @@
 import { styled } from '@mui/material/styles';
 
+import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1300Text from '@/components/common/Base1300Text';
 
-export const Container = styled('div')({
-  width: '100%',
+export const StyledEdgeAligner = styled(EdgeAligner)({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
 });
 
 export const HistorySectionTitle = styled(Base1300Text)({

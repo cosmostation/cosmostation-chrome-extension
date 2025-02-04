@@ -1,16 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
+import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
-import History from '@/components/History';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 
-import { Container, HistoryContainer, HistorySectionTitle } from './styled';
+import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
 import AmountDetail from '../components/AmountDetail';
 import ContractAddress from '../components/ContractAddress';
 import SectionContainer from '../components/SectionContainer';
@@ -46,53 +45,53 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const isStakeable = selectedCoin?.chain.isSupportStaking && selectedCoin.asset.id === selectedCoin.chain.mainAssetDenom;
 
+  const isSupportHistory = selectedCoin?.chain.isSupportHistory;
+
   return (
     <BaseBody>
-      <EdgeAligner>
-        <Container>
-          <CoinDetailBox coinId={coinId} />
+      <StyledEdgeAligner>
+        <CoinDetailBox coinId={coinId} />
 
-          <SectionWrapper>
-            {contractAddress && (
-              <SectionContainer>
-                <ContractAddress contractAddress={contractAddress} />
-              </SectionContainer>
-            )}
-            {isStakeable && (
-              <SectionContainer>
-                <StakePromotion
-                  symbol={symbol}
-                  onClick={() => {
-                    navigate({
-                      to: ManageStake.to,
-                      params: {
-                        coinId: coinId,
-                      },
-                    });
-                  }}
-                />
-              </SectionContainer>
-            )}
+        <SectionWrapper>
+          {contractAddress && (
             <SectionContainer>
-              <AmountDetail coinId={coinId} />
+              <ContractAddress contractAddress={contractAddress} />
             </SectionContainer>
+          )}
+          {isStakeable && (
             <SectionContainer>
+              <StakePromotion
+                symbol={symbol}
+                onClick={() => {
+                  navigate({
+                    to: ManageStake.to,
+                    params: {
+                      coinId: coinId,
+                    },
+                  });
+                }}
+              />
+            </SectionContainer>
+          )}
+          <SectionContainer>
+            <AmountDetail coinId={coinId} />
+          </SectionContainer>
+          {isSupportHistory && (
+            <SectionContainer
+              style={{
+                flex: 1,
+              }}
+            >
               <SectionStickyContainer>
                 <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
               </SectionStickyContainer>
               <HistoryContainer>
-                <History />
-                <History />
-                <History />
-                <History />
-                <History />
-                <History />
-                <History />
+                <AccountTxHistory coinId={coinId} />
               </HistoryContainer>
             </SectionContainer>
-          </SectionWrapper>
-        </Container>
-      </EdgeAligner>
+          )}
+        </SectionWrapper>
+      </StyledEdgeAligner>
     </BaseBody>
   );
 }

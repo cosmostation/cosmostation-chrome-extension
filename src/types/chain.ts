@@ -51,6 +51,7 @@ export interface CosmosChain extends ChainBase {
   feeInfo: CosmosFeeInfo;
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;
+  isSupportHistory?: boolean;
 }
 
 export interface CustomCosmosChain extends ChainBase {
@@ -65,6 +66,7 @@ export interface CustomCosmosChain extends ChainBase {
   feeInfo: CosmosFeeInfo;
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;
+  isSupportHistory?: boolean;
 }
 
 export interface EvmFeeInfo {
