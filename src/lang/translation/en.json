@@ -23,11 +23,7 @@
         "index": {
           "Overview": "Overview",
           "in": "In",
-          "networks": "Networks",
-          "send": "Send",
-          "receive": "Receive",
-          "swap": "Swap",
-          "vote": "Vote"
+          "networks": "Networks"
         }
       },
       "StakeDetailBox": {
@@ -47,6 +43,15 @@
             "available": "Available",
             "suiStake": "Sui Stake"
           }
+        }
+      },
+      "CoinDetailBox": {
+        "index": {
+          "copied": "Copied to Clipboard",
+          "send": "Send",
+          "receive": "Receive",
+          "swap": "Swap",
+          "vote": "Vote"
         }
       }
     },

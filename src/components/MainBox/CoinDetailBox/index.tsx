@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import copy from 'copy-to-clipboard';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -11,6 +12,7 @@ import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { BodyBottomContainer, BodyContainer, BodyTopContainer, BottomButtonContainer, SpacedTypography, StyledIconTextButton, TopContainer } from './styled';
@@ -45,12 +47,17 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const totalValue = times(totalDisplayAmount, chainPrice);
   const address = currentCoin?.address.address || '';
 
+  const copyToClipboard = () => {
+    copy(address);
+    toastSuccess(t('components.MainBox.CoinDetailBox.index.copied'));
+  };
+
   return (
     <>
       <MainBox
         top={
           <TopContainer>
-            <TextButton variant="underline" typoVarient="h6n_M">
+            <TextButton onClick={copyToClipboard} variant="underline" typoVarient="h6n_M">
               {shorterAddress(address)}
             </TextButton>
           </TopContainer>
@@ -59,7 +66,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
           <BodyContainer>
             <BodyTopContainer>
               <Base1300Text variant="h1_B">{symbol}</Base1300Text>
-              <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M">
+              <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
               </NumberTypo>
             </BodyTopContainer>
@@ -83,16 +90,16 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
               leadingIcon={<StakeIcon />}
               direction="vertical"
             >
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.send')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.send')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.receive')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.receive')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.swap')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinOverview.index.vote')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.vote')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>
         }
