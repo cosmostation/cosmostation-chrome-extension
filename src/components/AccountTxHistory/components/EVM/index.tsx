@@ -15,7 +15,7 @@ import {
   StyledCircularProgressContainer,
   TxDetailContainer,
 } from './styled';
-import DateLine from '../DateLine';
+import DateLine from '../Common/DateLine';
 
 import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
@@ -81,13 +81,15 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
               <StyledCircularProgress size={20} />
             </StyledCircularProgressContainer>
           )}
-          <IntersectionObserver
-            onIntersect={async () => {
-              if (hasNextPage) {
-                fetchNextPage();
-              }
-            }}
-          />
+          {!isFetchingNextPage && hasNextPage && (
+            <IntersectionObserver
+              onIntersect={async () => {
+                if (hasNextPage) {
+                  fetchNextPage();
+                }
+              }}
+            />
+          )}
         </ContentsContainer>
       ) : (
         <EmptyAssetContainer>

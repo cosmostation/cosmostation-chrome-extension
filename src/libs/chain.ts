@@ -1,4 +1,4 @@
-import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
 
@@ -46,7 +46,18 @@ export async function getChains() {
         url: removeTrailingSlash(endpoint.url),
       })) ?? [];
 
-    const explorer = chain.params.chainlist_params?.explorer ?? null;
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
 
     const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
 
@@ -138,7 +149,18 @@ export async function getChains() {
             },
           ];
 
-    const explorer = chain.params.chainlist_params?.explorer ?? null;
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
 
     return {
       id,
@@ -171,7 +193,18 @@ export async function getChains() {
         url: removeTrailingSlash(endpoint.url),
       })) ?? [];
 
-    const explorer = chain.params.chainlist_params?.explorer ?? null;
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {
@@ -213,7 +246,18 @@ export async function getChains() {
         url: removeTrailingSlash(endpoint.url),
       })) ?? [];
 
-    const explorer = chain.params.chainlist_params?.explorer ?? null;
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {
@@ -271,7 +315,18 @@ export async function getChains() {
 
     const mempoolURL = isTestnet ? 'https://mempool.space/signet/api' : 'https://mempool.space/api';
 
-    const explorer = chain.params.chainlist_params?.explorer ?? null;
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {

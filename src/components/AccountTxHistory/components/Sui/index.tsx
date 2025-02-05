@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next';
 
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import EmptyAsset from '@/components/EmptyAsset';
-import { useAccountTxs } from '@/hooks/cosmos/useAccountTxs';
+import { useAccountTxs } from '@/hooks/sui/useAccountTxs';
 import { formatDateForHistory } from '@/utils/date';
 
-import CosmosTxItem from './components/CosmosTxItem';
+import SuiTxItem from './components/SuiTxItem';
 import {
   Container,
   ContentsContainer,
@@ -19,36 +19,31 @@ import DateLine from '../Common/DateLine';
 
 import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
-type CosmosAccountTxHistory = {
+type SuiAccountTxHistory = {
   coinId: string;
 };
 
-export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistory) {
+export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
   const { t } = useTranslation();
 
-  const {
-    data: accountTxData,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useAccountTxs({
+  const { formattedTxBlocks, isFetchingNextPage, hasNextPage, fetchNextPage } = useAccountTxs({
     coinId: coinId,
   });
 
-  const flattenedTxs = accountTxData?.pages?.flatMap((item) => item).filter((item) => item) || [];
-
   const txsGroupedByDate = (() => {
-    const formattedDates = flattenedTxs.map((item) => (item?.data?.timestamp ? formatDateForHistory(item?.data?.timestamp) : '')).filter((item) => !!item);
+    const formattedDates = formattedTxBlocks
+      .map((item) => (item.analyzedTransaction.timestampMs ? formatDateForHistory(item.analyzedTransaction.timestampMs) : ''))
+      .filter((item) => !!item);
 
     const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
 
     return uniqueFormattedDates.map((uniqueFormattedDate) => {
-      const filteredActivites = flattenedTxs.filter((tx) => {
-        if (!tx?.data?.timestamp) {
+      const filteredActivites = formattedTxBlocks.filter((tx) => {
+        if (!tx.analyzedTransaction.timestampMs) {
           return false;
         }
 
-        return formatDateForHistory(tx.data.timestamp) === uniqueFormattedDate;
+        return formatDateForHistory(tx.analyzedTransaction.timestampMs) === uniqueFormattedDate;
       });
 
       return {
@@ -72,7 +67,9 @@ export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistor
                 <DateLineContainer>
                   <DateLine date={date} />
                 </DateLineContainer>
-                <TxDetailContainer>{txsByDate.map((tx) => tx && <CosmosTxItem key={tx.data?.txhash} coinId={coinId} tx={tx} />)}</TxDetailContainer>
+                <TxDetailContainer>
+                  {txsByDate.map((tx) => tx && <SuiTxItem key={tx.analyzedTransaction.digest} coinId={coinId} tx={tx.analyzedTransaction} />)}
+                </TxDetailContainer>
               </ContentsContainer>
             );
           })}
@@ -95,8 +92,8 @@ export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistor
         <EmptyAssetContainer>
           <EmptyAsset
             icon={<NoSearchIcon />}
-            title={t('components.AccountTxHistory.components.Cosmos.index.NoHistoryTitle')}
-            subTitle={t('components.AccountTxHistory.components.Cosmos.index.NoHistorySubTitle')}
+            title={t('components.AccountTxHistory.components.Sui.index.NoHistoryTitle')}
+            subTitle={t('components.AccountTxHistory.components.Sui.index.NoHistorySubTitle')}
           />
         </EmptyAssetContainer>
       )}

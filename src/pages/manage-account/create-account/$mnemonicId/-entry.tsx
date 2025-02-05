@@ -117,8 +117,6 @@ export default function Entry({ mnemonicId }: EntryProps) {
           to: Dashboard.to,
         });
 
-        console.log(t('pages.manage-account.create-account.entry.loadingOverlayTitle'));
-
         startLoadingOverlay(
           t('pages.manage-account.create-account.entry.loadingOverlayTitle'),
           t('pages.manage-account.create-account.entry.loadingOverlayMessage'),

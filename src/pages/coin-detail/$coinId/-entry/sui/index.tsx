@@ -56,7 +56,11 @@ export default function Sui({ coinId }: SuiProps) {
           <SectionContainer>
             <AmountDetail coinId={coinId} />
           </SectionContainer>
-          <SectionContainer>
+          <SectionContainer
+            style={{
+              flex: 1,
+            }}
+          >
             <SectionStickyContainer>
               <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
             </SectionStickyContainer>

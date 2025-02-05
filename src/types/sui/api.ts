@@ -1,3 +1,5 @@
+import type { CoinMetadata, PaginatedTransactionResponse, SuiSystemStateSummary } from '@mysten/sui/client';
+
 export interface SuiRpc<T> {
   jsonrpc: '2.0';
   id: number;
@@ -17,3 +19,9 @@ export interface SuiGetBalance {
 }
 
 export interface SuiRpcGetBalanceResponse extends SuiRpc<SuiGetBalance[]> {}
+
+export interface SuiRpcGetTransactionBlocksResponse extends SuiRpc<PaginatedTransactionResponse> {}
+
+export interface SuiRpcGetCoinMetaDataResponse extends SuiRpc<CoinMetadata> {}
+
+export interface SuiRpcGetLatestSuiSystemState extends SuiRpc<SuiSystemStateSummary> {}

@@ -11,7 +11,7 @@ import { gt, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { AmountContainer, SymbolText } from './styled';
-import TxDetail from '../../../TxDetail';
+import TxDetail from '../../../Common/TxDetail';
 
 type CosmosTxItemProps = {
   tx: AccountTx;

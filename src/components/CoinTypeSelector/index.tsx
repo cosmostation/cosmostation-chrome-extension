@@ -106,8 +106,6 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
     multipleAccountTypeWithAddress,
   ]);
 
-  console.log(mappedMultipleAccountTypes);
-
   const filteredAccountTypes = useMemo(() => {
     if (variant === 'filtered') {
       return mappedMultipleAccountTypes.filter((item) =>

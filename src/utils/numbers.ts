@@ -68,7 +68,11 @@ export function ceil(num: string | number) {
 }
 
 export function fix(number: string, decimal?: number, optional: RoundingMode = 0) {
-  return Big(number).toFixed(decimal, optional);
+  try {
+    return Big(number).toFixed(decimal, optional);
+  } catch {
+    return number;
+  }
 }
 
 export function toDisplayDenomAmount(number: string | number, decimal: number) {

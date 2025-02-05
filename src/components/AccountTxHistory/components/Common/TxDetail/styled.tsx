@@ -12,6 +12,9 @@ export const TxButton = styled('button')(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.color.base200,
   },
+  '&:disabled': {
+    backgroundColor: 'transparent',
+  },
 }));
 
 export const RowContainer = styled('div')({

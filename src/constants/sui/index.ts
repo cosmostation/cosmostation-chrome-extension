@@ -3,7 +3,7 @@ export const PERMISSION = {
   SUGGEST_TRANSACTIONS: 'suggestTransactions',
 } as const;
 
-export const SUI_COIN = '0x2::sui::SUI';
+export const SUI_COIN_TYPE = '0x2::sui::SUI';
 
 export const SUI_TOKEN_TEMPORARY_DECIMALS = 9;
 

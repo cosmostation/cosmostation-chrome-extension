@@ -437,6 +437,48 @@
             "NoHistoryTitle": "No History",
             "NoHistorySubTitle": "Your transaction history will be displayed here"
           }
+        },
+        "Sui": {
+          "components": {
+            "SuiTxItem": {
+              "components": {
+                "SuiSendingTxItem": {
+                  "index": {
+                    "sent": "Sent {{object}}",
+                    "received": "Received {{object}}",
+                    "to": "To: {{address}}",
+                    "from": "From: {{address}}"
+                  }
+                },
+                "SuiFaucetTxItem": {
+                  "index": {
+                    "faucet": "Faucet"
+                  }
+                },
+                "SuiStakingTxItem": {
+                  "index": {
+                    "failedStaking": "Failed Staking",
+                    "staking": "Staking",
+                    "unstaking": "Unstaking"
+                  }
+                },
+                "SuiFailedTxItem": {
+                  "index": {
+                    "failed": "Failed Transaction"
+                  }
+                },
+                "SuiDefaultTxItem": {
+                  "index": {
+                    "transaction": "Transaction"
+                  }
+                }
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here"
+          }
         }
       }
     }

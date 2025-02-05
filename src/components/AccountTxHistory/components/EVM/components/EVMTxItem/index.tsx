@@ -11,7 +11,7 @@ import { getCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { AmountContainer, SymbolText } from './styled';
-import TxDetail from '../../../TxDetail';
+import TxDetail from '../../../Common/TxDetail';
 
 type EVMTxItemProps = {
   tx: AccountTx;

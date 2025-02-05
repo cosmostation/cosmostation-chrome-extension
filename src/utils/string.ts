@@ -104,3 +104,11 @@ export function toBase64(str: string) {
 export function toPercentages(value: string) {
   return fix(times(value, '100'), 2) + '%';
 }
+
+const capitalize = (str?: string) => {
+  if (!str) return;
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export default capitalize;
