@@ -11,7 +11,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
-import { shorterAddress } from '@/utils/string';
+import { removeTemplateLiteral, removeTrailingSlash, shorterAddress } from '@/utils/string';
 import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -46,6 +46,9 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   const totalValue = times(totalDisplayAmount, chainPrice);
   const address = currentCoin?.address.address || '';
+
+  const voteURL = currentCoin?.chain.explorer?.proposal;
+  const formattedVoteURL = voteURL && removeTrailingSlash(removeTemplateLiteral(voteURL));
 
   const copyToClipboard = () => {
     copy(address);
@@ -98,9 +101,17 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.vote')}</SpacedTypography>
-            </StyledIconTextButton>
+            {formattedVoteURL && (
+              <StyledIconTextButton
+                onClick={() => {
+                  window.open(formattedVoteURL, '_blank');
+                }}
+                leadingIcon={<StakeIcon />}
+                direction="vertical"
+              >
+                <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.vote')}</SpacedTypography>
+              </StyledIconTextButton>
+            )}
           </BottomButtonContainer>
         }
         className="circleGradient"

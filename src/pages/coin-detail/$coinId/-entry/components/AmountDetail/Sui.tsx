@@ -49,7 +49,7 @@ export default function Sui({ coinId }: SuiProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Sui.available')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {availableDisplayAmount}
             </NumberTypo>
           </ValueText>
@@ -57,7 +57,7 @@ export default function Sui({ coinId }: SuiProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Sui.totalStaked')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {totalStakedDisplayAmount}
             </NumberTypo>
           </ValueText>

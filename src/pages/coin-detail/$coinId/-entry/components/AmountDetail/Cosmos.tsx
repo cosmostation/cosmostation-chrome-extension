@@ -54,7 +54,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.available')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {availableDisplayAmount}
             </NumberTypo>
           </ValueText>
@@ -62,7 +62,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.staked')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {stakedDisplayAmount}
             </NumberTypo>
           </ValueText>
@@ -70,7 +70,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.unstaking')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {unstakingDisplayAmount}
             </NumberTypo>
           </ValueText>
@@ -78,7 +78,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <DetailRow>
           <LabelText variant="b3_R">{`${t('pages.coin-detail.components.AmountDetail.Cosmos.rewards')} + ${rewardsCoinCounts}`}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {rewardsDisplayAmount}
             </NumberTypo>
           </ValueText>
@@ -88,7 +88,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
           <DetailRow>
             <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.incentive')}</LabelText>
             <ValueText>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                 {incentiveDisplayAmount}
               </NumberTypo>
             </ValueText>

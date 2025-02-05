@@ -64,7 +64,7 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
 
     const additionalMessagesCount = String(getTxMsgs(tx).length - 1);
 
-    return `${t(mainTitle)} ${subMsgtype || ''}${gt(additionalMessagesCount, '0') ? ` + ${additionalMessagesCount}` : ''}`;
+    return `${mainTitle} ${subMsgtype || ''}${gt(additionalMessagesCount, '0') ? ` + ${additionalMessagesCount}` : ''}`;
   })();
 
   const txDetail = getMsgDetail(tx, address) || '-';
@@ -80,7 +80,7 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
 
   return (
     <TxDetail
-      onClick={() => window.open(txDetailExplorerURL)}
+      onClick={() => window.open(txDetailExplorerURL, '_blank')}
       disabled={!txDetailExplorerURL}
       leftTop={<Base1300Text variant="b2_M">{title}</Base1300Text>}
       rightTop={

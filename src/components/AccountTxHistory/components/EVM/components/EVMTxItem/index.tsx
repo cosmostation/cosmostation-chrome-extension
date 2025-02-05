@@ -62,6 +62,14 @@ export default function EVMTxItem({ tx, coinId }: EVMTxItemProps) {
     return t('components.AccountTxHistory.components.EVM.components.EVMTxItem.index.transaction');
   })();
 
+  const formattedSymbol = (() => {
+    if (!symbol) return undefined;
+
+    if (symbol.length > 10) return `${symbol.slice(0, 10)}...`;
+
+    return symbol;
+  })();
+
   return (
     <TxDetail
       onClick={() => window.open(txDetailExplorerURL)}
@@ -74,7 +82,7 @@ export default function EVMTxItem({ tx, coinId }: EVMTxItemProps) {
               {amount}
             </NumberTypo>
             &nbsp;
-            <SymbolText variant="b4_M">{symbol}</SymbolText>
+            <SymbolText variant="b4_M">{formattedSymbol}</SymbolText>
           </AmountContainer>
         ) : (
           <Base1000Text variant="h5n_M">-</Base1000Text>

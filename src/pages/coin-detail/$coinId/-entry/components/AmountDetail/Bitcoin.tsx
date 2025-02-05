@@ -36,7 +36,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Bitcoin.available')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {availableDisplayAmount}
             </NumberTypo>
           </ValueText>
@@ -46,7 +46,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
             <Typography variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Bitcoin.pendingReceive')}</Typography>
           </PendingAmountContainer>
           <PendingAmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {pendingReceiveDisplayAmount}
             </NumberTypo>
           </PendingAmountContainer>
