@@ -2,6 +2,7 @@ import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import CosmosAccountTxHistory from './components/Cosmos';
+import EVMAccountTxHistory from './components/EVM';
 
 type AccountTxHistoryProps = {
   coinId?: string;
@@ -18,9 +19,9 @@ export default function AccountTxHistory({ coinId }: AccountTxHistoryProps) {
     return <CosmosAccountTxHistory coinId={coinId} />;
   }
 
-  //   if (currentCoin?.asset.chainType === 'evm') {
-  //     return <EVM coinId={coinId} />;
-  //   }
+  if (currentCoin?.asset.chainType === 'evm') {
+    return <EVMAccountTxHistory coinId={coinId} />;
+  }
 
   //   if (currentCoin?.asset.chainType === 'sui') {
   //     return <Sui coinId={coinId} />;

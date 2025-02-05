@@ -1,31 +1,41 @@
+export function isUnixTimestamp(dateString: string) {
+  return /^\d{13}$/.test(dateString) && !isNaN(Number(dateString));
+}
+
 export function formatDateForHistory(dateString: string) {
-  const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  };
+  try {
+    const dateValue = isUnixTimestamp(dateString) ? Number(dateString) : dateString;
+    const date = new Date(dateValue);
 
-  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    };
 
-  const day = date.getDate();
-  const daySuffix = (day: number) => {
-    if (day > 3 && day < 21) return 'th';
-    switch (day % 10) {
-      case 1:
-        return 'st';
-      case 2:
-        return 'nd';
-      case 3:
-        return 'rd';
-      default:
-        return 'th';
-    }
-  };
+    const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
 
-  const [month, dayNumber, year] = formattedDate.split(' ');
+    const day = date.getDate();
+    const daySuffix = (day: number) => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1:
+          return 'st';
+        case 2:
+          return 'nd';
+        case 3:
+          return 'rd';
+        default:
+          return 'th';
+      }
+    };
 
-  return `${month} ${dayNumber.replace(',', '')}${daySuffix(day)}, ${year}`;
+    const [month, dayNumber, year] = formattedDate.split(' ');
+
+    return `${month} ${dayNumber.replace(',', '')}${daySuffix(day)}, ${year}`;
+  } catch {
+    return '';
+  }
 }
 
 export function formatToYearMonthDay(dateString: string): string {

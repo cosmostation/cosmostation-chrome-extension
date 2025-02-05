@@ -14,9 +14,9 @@ export const HistorySectionTitle = styled(Base1300Text)({
 });
 
 export const HistoryContainer = styled('div')({
+  flex: 1,
   display: 'flex',
   flexDirection: 'column',
-  rowGap: '1.2rem',
   boxSizing: 'border-box',
 });
 

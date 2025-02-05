@@ -417,6 +417,21 @@
             "NoHistoryTitle": "No History",
             "NoHistorySubTitle": "Your transaction history will be displayed here"
           }
+        },
+        "EVM": {
+          "components": {
+            "EVMTxItem": {
+              "index": {
+                "sent": "Sent",
+                "received": "Received",
+                "transaction": "Transaction"
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here"
+          }
         }
       }
     }
