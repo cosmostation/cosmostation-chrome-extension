@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import EmptyAsset from '@/components/EmptyAsset';
-import { useAccountTxs } from '@/hooks/bitcoin/useAccountTx';
+import { useAccountTxs } from '@/hooks/bitcoin/useAccountTxs';
 import { formatDateForHistory, sortByLatestDate } from '@/utils/date';
 
 import BitcoinMempoolTxItem from './components/BitcoinMempoolTxItem';
