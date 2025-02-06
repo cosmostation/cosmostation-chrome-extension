@@ -24,7 +24,33 @@ export const RowContainer = styled('div')({
 
 export const RowLeftContainer = styled('div')({
   marginRight: 'auto',
+
+  display: 'flex',
+
+  maxWidth: '10rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 });
+
+export const BottomRowLeftContainer = styled('div')({
+  marginRight: 'auto',
+  display: 'flex',
+
+  maxWidth: '20rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const RowRightContainer = styled('div')({
   marginLeft: 'auto',
 });

@@ -2,6 +2,7 @@ import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import Aptos from './aptos';
+import Bitcoin from './bitcoin';
 import Cosmos from './cosmos';
 import EVM from './evm';
 import Sui from './sui';
@@ -31,7 +32,7 @@ export default function Entry({ coinId }: EntryProps) {
   }
 
   if (currentCoin?.asset.chainType === 'bitcoin') {
-    return <Cosmos coinId={coinId} />;
+    return <Bitcoin coinId={coinId} />;
   }
 
   return null;

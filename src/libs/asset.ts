@@ -1,6 +1,7 @@
 import PromisePool from '@supercharge/promise-pool';
 
 import type {
+  AccountAddress,
   AccountAptosAsset,
   AccountBitcoinAsset,
   AccountCosmosAsset,
@@ -509,6 +510,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   type AssetWithBalance = {
     balance: string;
     asset: AssetBase;
+    address: AccountAddress;
   };
 
   const filterHiddenAssetsByBalance = <T extends AssetWithBalance>(assets: T[]): T[] => {
@@ -523,9 +525,23 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           return true;
         }
 
-        const isBalanceGreaterThanZero = gt(asset.balance, '0');
+        if (asset.asset.chainType === 'bitcoin') {
+          const balanceInfo = bitcoinBalances?.find(
+            (balance) =>
+              balance.chainId === asset.address.chainId && balance.chainType === asset.address.chainType && balance.address === asset.address.address,
+          );
 
-        return isBalanceGreaterThanZero;
+          const pendingFundedAmount = balanceInfo?.balance.chainStats?.funded_txo_sum || '0';
+          const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
+
+          const isBalanceGreaterThanZero = gt(asset.balance, '0');
+
+          return isBalanceGreaterThanZero || isPendingReceiveBalanceGreaterThanZero;
+        } else {
+          const isBalanceGreaterThanZero = gt(asset.balance, '0');
+
+          return isBalanceGreaterThanZero;
+        }
       });
     }
   };

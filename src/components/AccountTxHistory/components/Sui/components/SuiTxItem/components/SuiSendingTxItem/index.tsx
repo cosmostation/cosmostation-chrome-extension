@@ -4,7 +4,7 @@ import TxDetail from '@/components/AccountTxHistory/components/Common/TxDetail';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
-import { SUI_TOKEN_TEMPORARY_DECIMALS } from '@/constants/sui';
+import { SUI_COIN_TYPE, SUI_TOKEN_TEMPORARY_DECIMALS } from '@/constants/sui';
 import { useGetCoinMetadata } from '@/hooks/sui/useGetCoinMetadata';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import type { SendTransactionInfo } from '@/types/sui/parseTx';
@@ -33,7 +33,7 @@ export default function SuiSendingTxItem({ tx, digest, timestampMs, coinId }: Su
 
   const { isSender, sender, recipient, coinAmount, coinType } = sendingTransactionInfo;
 
-  const { data: coinMetaData } = useGetCoinMetadata({ coinType: coinType || '', coinId });
+  const { data: coinMetaData } = useGetCoinMetadata({ coinType: coinType === SUI_COIN_TYPE ? '' : coinType || '', coinId });
 
   const decimals = coinMetaData?.result?.decimals || SUI_TOKEN_TEMPORARY_DECIMALS;
   const symbol = coinMetaData?.result?.symbol || coinType?.split('::')[2] || '';

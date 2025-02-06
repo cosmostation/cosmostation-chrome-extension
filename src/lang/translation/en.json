@@ -479,6 +479,27 @@
             "NoHistoryTitle": "No History",
             "NoHistorySubTitle": "Your transaction history will be displayed here"
           }
+        },
+        "Bitcoin": {
+          "components": {
+            "BitcoinTxItem": {
+              "index": {
+                "sent": "Sent",
+                "received": "Received"
+              }
+            },
+            "BitcoinMempoolTxItem": {
+              "index": {
+                "sent": "Sent",
+                "received": "Received",
+                "pending": "(Pending)"
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here"
+          }
         }
       }
     }

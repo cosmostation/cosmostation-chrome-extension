@@ -39,5 +39,6 @@ export const EmptyAssetContainer = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
+
   padding: '2rem 0',
 });

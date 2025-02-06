@@ -1,4 +1,4 @@
-import { RowContainer, RowLeftContainer, RowRightContainer, TxButton } from './styled';
+import { BottomRowLeftContainer, RowContainer, RowLeftContainer, RowRightContainer, TxButton } from './styled';
 
 type TxDetailProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   leftTop?: JSX.Element;
@@ -15,7 +15,7 @@ export default function TxDetail({ leftTop, leftBottom, rightTop, rightBottom, .
         <RowRightContainer>{rightTop}</RowRightContainer>
       </RowContainer>
       <RowContainer>
-        <RowLeftContainer>{leftBottom}</RowLeftContainer>
+        <BottomRowLeftContainer>{leftBottom}</BottomRowLeftContainer>
         <RowRightContainer>{rightBottom}</RowRightContainer>
       </RowContainer>
     </TxButton>
