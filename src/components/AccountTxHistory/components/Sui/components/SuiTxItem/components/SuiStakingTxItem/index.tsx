@@ -45,7 +45,7 @@ export default function SuiStakingTxItem({ tx: stakingTransactionInfo, digest, t
   const symbol = coinMetaData?.result?.symbol || coinType?.split('::')[2] || '';
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', digest || '');
     }
 

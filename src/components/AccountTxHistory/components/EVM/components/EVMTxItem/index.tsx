@@ -29,7 +29,7 @@ export default function EVMTxItem({ tx, coinId }: EVMTxItemProps) {
   const { txHash, txTime, symbol, amount, from, to } = tx;
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', txHash || '');
     }
 

@@ -1,6 +1,7 @@
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
+import AptosAccountTxHistory from './components/Aptos';
 import BitcoinAccountTxHistory from './components/Bitcoin';
 import CosmosAccountTxHistory from './components/Cosmos';
 import EVMAccountTxHistory from './components/EVM';
@@ -29,9 +30,9 @@ export default function AccountTxHistory({ coinId }: AccountTxHistoryProps) {
     return <SuiAccountTxHistory coinId={coinId} />;
   }
 
-  //   if (currentCoin?.asset.chainType === 'aptos') {
-  //     return <Aptos coinId={coinId} />;
-  //   }
+  if (currentCoin?.asset.chainType === 'aptos') {
+    return <AptosAccountTxHistory coinId={coinId} />;
+  }
 
   if (currentCoin?.asset.chainType === 'bitcoin') {
     return <BitcoinAccountTxHistory coinId={coinId} />;

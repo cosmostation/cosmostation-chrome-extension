@@ -500,6 +500,25 @@
             "NoHistoryTitle": "No History",
             "NoHistorySubTitle": "Your transaction history will be displayed here"
           }
+        },
+        "Aptos": {
+          "components": {
+            "AptosTxItem": {
+              "index": {
+                "transaction": "Transaction"
+              }
+            },
+            "AptosPendingTxItem": {
+              "index": {
+                "transaction": "Transaction",
+                "pending": "(Pending)"
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here"
+          }
         }
       }
     }

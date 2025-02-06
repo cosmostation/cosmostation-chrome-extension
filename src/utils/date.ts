@@ -1,9 +1,5 @@
 export function isUnixTimestamp(dateString: string) {
-  return /^\d{10,13}$/.test(dateString) && !isNaN(Number(dateString));
-}
-
-export function isUnixTimestampInSecond(dateString: string) {
-  return /^\d{10}$/.test(dateString) && !isNaN(Number(dateString));
+  return /^\d{10,16}$/.test(dateString) && !isNaN(Number(dateString));
 }
 
 export function getTimestampValue(timestamp: string) {
@@ -12,7 +8,15 @@ export function getTimestampValue(timestamp: string) {
   const numericTimestamp = Number(timestamp);
   if (isNaN(numericTimestamp)) return timestamp;
 
-  return numericTimestamp < 1e12 ? numericTimestamp * 1000 : numericTimestamp;
+  if (numericTimestamp < 1e12) {
+    return numericTimestamp * 1000;
+  }
+
+  if (numericTimestamp < 1e16) {
+    return numericTimestamp / 1000;
+  }
+
+  return timestamp;
 }
 
 export function sortByLatestDate(a?: string | number, b?: string | number) {
@@ -59,9 +63,7 @@ export function formatDateForHistory(dateString: string) {
     const [month, dayNumber, year] = formattedDate.split(' ');
 
     return `${month} ${dayNumber.replace(',', '')}${daySuffix(day)}, ${year}`;
-  } catch (e) {
-    console.log('🚀 ~ formatDateForHistory ~ e:', e);
-
+  } catch {
     return '';
   }
 }

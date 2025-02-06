@@ -28,7 +28,7 @@ export default function BitcoinMempoolTxItem({ tx, coinId }: BitcoinMempoolTxIte
   const { txid, status } = tx;
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', txid || '');
     }
 

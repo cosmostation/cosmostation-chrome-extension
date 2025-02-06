@@ -23,7 +23,7 @@ export default function SuiMoveCallsTxItem({ tx: moveCallTransactionInfo, digest
   const { moduleName, functionName } = moveCallTransactionInfo;
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', digest || '');
     }
 

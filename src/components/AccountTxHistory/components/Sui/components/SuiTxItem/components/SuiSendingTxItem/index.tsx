@@ -39,7 +39,7 @@ export default function SuiSendingTxItem({ tx, digest, timestampMs, coinId }: Su
   const symbol = coinMetaData?.result?.symbol || coinType?.split('::')[2] || '';
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', digest || '');
     }
 

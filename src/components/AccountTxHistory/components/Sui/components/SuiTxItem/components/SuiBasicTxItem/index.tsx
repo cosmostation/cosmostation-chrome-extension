@@ -22,7 +22,7 @@ export default function SuiBasicTxItem({ tx: basicTransactionInfo, digest, times
   const { commands, type } = basicTransactionInfo;
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', digest || '');
     }
 

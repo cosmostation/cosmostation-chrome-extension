@@ -32,7 +32,7 @@ export default function SuiFaucetTxItem({ tx: faucetTransactionInfo, digest, tim
   const symbol = currentAsset?.asset.symbol || '';
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', digest || '');
     }
 

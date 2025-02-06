@@ -33,7 +33,7 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
   const { data } = tx;
 
   const txDetailExplorerURL = (() => {
-    if (!currentAsset?.chain.explorer?.tx) {
+    if (currentAsset?.chain.explorer?.tx) {
       return currentAsset?.chain.explorer?.tx.replace('${hash}', data?.txhash || '');
     }
 

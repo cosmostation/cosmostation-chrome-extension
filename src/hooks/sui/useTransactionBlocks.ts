@@ -91,16 +91,15 @@ export function useTransactionBlocks({ coinId, queryOptions, config }: UseTransa
       config: {
         enabled: !!coinId && !!address && !!rpcURLs.length,
         refetchInterval: 1000 * 15,
-        retry: 3,
-        retryDelay(_, error) {
+        retry: (failureCount, error) => {
           if (isAxiosError(error)) {
             if (error.response?.status === 404) {
-              return 1000 * 15;
+              return false;
             }
           }
-
-          return 1000 * 5;
+          return failureCount < 4;
         },
+        retryDelay: 1000 * 5,
         ...config,
       },
     });

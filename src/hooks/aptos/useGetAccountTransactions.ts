@@ -1,0 +1,95 @@
+import type { TransactionResponse } from '@aptos-labs/ts-sdk';
+import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
+
+import { isAxiosError } from '@/utils/axios';
+import { times } from '@/utils/numbers';
+import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+
+import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
+import { useInfiniteFetch } from '../common/useInfiniteFetch';
+import { useAccountAssets } from '../useAccountAssets';
+
+type UseGetAccountTransactionsProps = {
+  coinId: string;
+  config?: UseInfiniteFetchConfig;
+};
+
+const limit = 25;
+
+export function useGetAccountTransactions({ coinId, config }: UseGetAccountTransactionsProps) {
+  const { data: accountAssets } = useAccountAssets();
+
+  const accountAsset = accountAssets?.aptosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+
+  const address = accountAsset?.address.address || '';
+
+  const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
+
+  const fetcher = async (pageParam: string, address: string, index = 0) => {
+    try {
+      if (index >= rpcURLs.length) {
+        throw new Error('All endpoints failed');
+      }
+
+      const requestURL = rpcURLs[index] + '/v1';
+
+      const aptosClientConfig = new AptosConfig({
+        fullnode: requestURL,
+      });
+
+      const aptosClient = new Aptos(aptosClientConfig);
+
+      const respose = await aptosClient.getAccountTransactions({
+        accountAddress: address,
+        options: {
+          offset: Number(pageParam),
+          limit: limit,
+        },
+      });
+
+      return respose;
+    } catch (e) {
+      if (index >= rpcURLs.length) {
+        throw new Error('All endpoints failed');
+      }
+
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+
+      return fetcher(pageParam, address, index + 1);
+    }
+  };
+
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } = useInfiniteFetch<TransactionResponse[] | null>({
+    queryKey: ['useGetAccountTransaction', address, coinId],
+    fetchFunction: ({ pageParam }) => fetcher(pageParam, address),
+    initialPageParam: '0',
+    getNextPageParam: (lastPage, allPages) => {
+      const isLastPageEmpty = lastPage?.length === 0 || !lastPage;
+      const isLastPageLessThanLimit = (lastPage?.length || 0) < limit;
+
+      if (isLastPageEmpty || isLastPageLessThanLimit) return undefined;
+
+      return times(String(allPages.length), limit) || undefined;
+    },
+    config: {
+      enabled: !!coinId && !!address && !!rpcURLs.length,
+      refetchInterval: 1000 * 15,
+      retry: (failureCount, error) => {
+        if (isAxiosError(error)) {
+          if (error.response?.status === 404) {
+            return false;
+          }
+        }
+        return failureCount < 4;
+      },
+      retryDelay: 1000 * 5,
+      ...config,
+    },
+  });
+
+  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending };
+}
