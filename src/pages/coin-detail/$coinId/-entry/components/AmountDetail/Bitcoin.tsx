@@ -2,9 +2,11 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { AmountDetailWrapper, Container, DetailRow, LabelText, PendingAmountContainer, TitleText, ValueText } from './styled';
 
@@ -16,6 +18,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   const { t } = useTranslation();
 
   const { data } = useAccountAssets();
+  const { data: currentAccountBalance } = useBalance();
 
   const selectedCoin = (() => {
     if (!data) return undefined;
@@ -23,14 +26,19 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
     return data.bitcoinAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
   })();
 
+  const address = selectedCoin?.address.address || '';
+
   const decimal = selectedCoin?.asset.decimals || 0;
 
   const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
-  const pendingReceiveDisplayAmount = '90';
+
+  const currentBitcoinTypeBalance = currentAccountBalance?.find((item) => isEqualsIgnoringCase(item.address, address));
+
+  const pendingReceiveDisplayAmount = toDisplayDenomAmount(currentBitcoinTypeBalance?.balance?.mempoolStats?.funded_txo_sum || '0', decimal);
+  const pedningSendDisplayAmount = toDisplayDenomAmount(currentBitcoinTypeBalance?.balance?.mempoolStats?.spent_txo_sum || '0', decimal);
 
   return (
     <Container>
-      {/* TODO Coin Details말고 다른 텍스트 변경 고려필요 */}
       <TitleText variant="h3_B">{t('pages.coin-detail.components.AmountDetail.Bitcoin.title')}</TitleText>
       <AmountDetailWrapper>
         <DetailRow>
@@ -40,6 +48,16 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
               {availableDisplayAmount}
             </NumberTypo>
           </ValueText>
+        </DetailRow>
+        <DetailRow>
+          <PendingAmountContainer>
+            <Typography variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Bitcoin.pendingSent')}</Typography>
+          </PendingAmountContainer>
+          <PendingAmountContainer>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+              {pedningSendDisplayAmount}
+            </NumberTypo>
+          </PendingAmountContainer>
         </DetailRow>
         <DetailRow>
           <PendingAmountContainer>

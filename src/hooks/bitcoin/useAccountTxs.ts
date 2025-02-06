@@ -40,6 +40,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     },
     config: {
       enabled: !!coinId && !!address && !!requestURL,
+      staleTime: 1000 * 14,
       refetchInterval: 1000 * 15,
       retry: 3,
       retryDelay: 1000 * 5,

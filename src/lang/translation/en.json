@@ -691,7 +691,8 @@
           "Bitcoin": {
             "title": "Coin Details",
             "available": "Available",
-            "pendingReceive": "Pending Receive"
+            "pendingReceive": "Pending Receive",
+            "pendingSent": "Pending Sent"
           }
         }
       },
