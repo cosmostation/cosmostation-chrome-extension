@@ -16,6 +16,7 @@ export const useFetch = <TData>({
   return useQuery<TData>({
     queryKey,
     queryFn: fetchFunction,
+    staleTime: 1000 * 14,
     ...config,
   });
 };

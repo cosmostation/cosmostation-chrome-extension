@@ -23,6 +23,7 @@ export const useInfiniteFetch = <TData>({
     queryFn: fetchFunction,
     initialPageParam,
     getNextPageParam,
+    staleTime: 1000 * 14,
     ...config,
   });
 };
