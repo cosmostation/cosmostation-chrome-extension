@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinList } from '@/hooks/useCoinList';
 import type { AccountTx } from '@/types/cosmos/txs';
 import { getDpCoin, getMsgDetail, getMsgType, getTxMsgs } from '@/utils/cosmos/txParse';
@@ -23,8 +23,11 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
 
   const { data: coinList } = useCoinList();
 
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.cosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { data: accountAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
+
+  const currentAsset = accountAssets?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 
   const address = currentAsset?.address.address || '';
 

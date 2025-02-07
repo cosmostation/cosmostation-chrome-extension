@@ -31,6 +31,7 @@ export default function AptosAccountTxHistory({ coinId }: AptosAccountTxHistory)
 
   const {
     data: accountTxData,
+    error,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -97,7 +98,7 @@ export default function AptosAccountTxHistory({ coinId }: AptosAccountTxHistory)
               <StyledCircularProgress size={20} />
             </StyledCircularProgressContainer>
           )}
-          {!isFetchingNextPage && hasNextPage && (
+          {!isFetchingNextPage && hasNextPage && !error && (
             <IntersectionObserver
               onIntersect={async () => {
                 if (hasNextPage) {

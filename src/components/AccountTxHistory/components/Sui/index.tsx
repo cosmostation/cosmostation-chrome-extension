@@ -26,7 +26,7 @@ type SuiAccountTxHistory = {
 export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
   const { t } = useTranslation();
 
-  const { formattedTxBlocks, isFetchingNextPage, hasNextPage, fetchNextPage } = useAccountTxs({
+  const { formattedTxBlocks, error, isFetchingNextPage, hasNextPage, fetchNextPage } = useAccountTxs({
     coinId: coinId,
   });
 
@@ -78,7 +78,7 @@ export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
               <StyledCircularProgress size={20} />
             </StyledCircularProgressContainer>
           )}
-          {!isFetchingNextPage && hasNextPage && (
+          {!isFetchingNextPage && hasNextPage && !error && (
             <IntersectionObserver
               onIntersect={async () => {
                 if (hasNextPage) {

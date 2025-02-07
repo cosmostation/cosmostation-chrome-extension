@@ -28,6 +28,7 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
 
   const {
     data: accountTxData,
+    error,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -81,7 +82,7 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
               <StyledCircularProgress size={20} />
             </StyledCircularProgressContainer>
           )}
-          {!isFetchingNextPage && hasNextPage && (
+          {!isFetchingNextPage && hasNextPage && !error && (
             <IntersectionObserver
               onIntersect={async () => {
                 if (hasNextPage) {

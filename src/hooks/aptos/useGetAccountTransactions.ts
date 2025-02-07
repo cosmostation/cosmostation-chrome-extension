@@ -77,16 +77,6 @@ export function useGetAccountTransactions({ coinId, config }: UseGetAccountTrans
     },
     config: {
       enabled: !!coinId && !!address && !!rpcURLs.length,
-      refetchInterval: 1000 * 15,
-      retry: (failureCount, error) => {
-        if (isAxiosError(error)) {
-          if (error.response?.status === 404) {
-            return false;
-          }
-        }
-        return failureCount < 4;
-      },
-      retryDelay: 1000 * 5,
       ...config,
     },
   });

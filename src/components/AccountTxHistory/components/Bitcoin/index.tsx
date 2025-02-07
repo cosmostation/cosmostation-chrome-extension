@@ -30,6 +30,7 @@ export default function BitcoinAccountTxHistory({ coinId }: BitcoinAccountTxHist
 
   const {
     data: accountTxData,
+    error,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -101,7 +102,7 @@ export default function BitcoinAccountTxHistory({ coinId }: BitcoinAccountTxHist
               <StyledCircularProgress size={20} />
             </StyledCircularProgressContainer>
           )}
-          {!isFetchingNextPage && hasNextPage && (
+          {!isFetchingNextPage && hasNextPage && !error && (
             <IntersectionObserver
               onIntersect={async () => {
                 if (hasNextPage) {

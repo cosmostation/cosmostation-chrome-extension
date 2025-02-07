@@ -1,56 +1,64 @@
-import type { InfiniteData, QueryKey, UseInfiniteQueryOptions } from '@tanstack/react-query';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { AccountTx as AccountTxsPayload } from '@/types/cosmos/txs';
 import { get } from '@/utils/axios';
 import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
+import { useInfiniteFetch } from '../common/useInfiniteFetch';
+import { useAccountAllAssets } from '../useAccountAllAssets';
 
 type UseAccountTxsProps = {
   coinId: string;
-  config?: UseInfiniteQueryOptions<
-    AccountTxsPayload[] | null,
-    Error,
-    InfiniteData<AccountTxsPayload[] | null, unknown>,
-    AccountTxsPayload[] | null,
-    QueryKey,
-    string
-  >;
+  config?: UseInfiniteFetchConfig;
 };
 
 export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { data: accountAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
 
-  const accountAsset = accountAssets?.cosmosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const cosmosAccountAsset = useMemo(() => {
+    const evmAsset = accountAssets?.evmAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+    const isEthermint = !!evmAsset && evmAsset.chain.isCosmos;
 
-  const isSupportHistory = accountAsset?.chain.isSupportHistory || false;
+    if (isEthermint) {
+      return accountAssets?.cosmosAccountAssets.find(
+        (item) =>
+          item.chain.id === evmAsset?.chain.id &&
+          item.address.chainId === evmAsset.address.chainId &&
+          item.address.accountType.hdPath === evmAsset.address.accountType.hdPath,
+      );
+    }
 
-  const chainId = accountAsset?.chain.id || '';
+    return accountAssets?.cosmosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  }, [accountAssets?.cosmosAccountAssets, accountAssets?.evmAccountAssets, coinId]);
 
-  const address = accountAsset?.address.address || '';
+  const isSupportHistory = cosmosAccountAsset?.chain.isSupportHistory;
+
+  const chainId = cosmosAccountAsset?.chain.id || '';
+
+  const address = cosmosAccountAsset?.address.address || '';
 
   const fetcher = async (pageParam: string, address: string, chainId: string) => {
-    try {
-      const baseRequestURL = `${MINTSCAN_FRONT_API_V10_URL}/${chainId}/account/${address}/txs?limit=30`;
+    const baseRequestURL = `${MINTSCAN_FRONT_API_V10_URL}/${chainId}/account/${address}/txs?limit=30`;
 
-      const requestURL = pageParam ? `${baseRequestURL}&search_after=${pageParam}` : baseRequestURL;
+    const requestURL = pageParam ? `${baseRequestURL}&search_after=${pageParam}` : baseRequestURL;
 
-      const response = await get<AccountTxsPayload[]>(requestURL);
-      return response;
-    } catch {
-      return null;
-    }
+    const response = await get<AccountTxsPayload[]>(requestURL);
+    return response;
   };
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } = useInfiniteQuery({
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } = useInfiniteFetch<AccountTxsPayload[]>({
     queryKey: ['cosmosAccountTxs', address, chainId],
-    queryFn: ({ pageParam }) => fetcher(pageParam, address, chainId),
+    fetchFunction: ({ pageParam }) => fetcher(pageParam, address, chainId),
     initialPageParam: '',
-    enabled: !!address && !!chainId && isSupportHistory,
     getNextPageParam: (lastPage) => lastPage?.[lastPage.length - 1]?.search_after,
-    ...config,
+    config: {
+      enabled: !!address && !!chainId && isSupportHistory,
+      ...config,
+    },
   });
 
   return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending };

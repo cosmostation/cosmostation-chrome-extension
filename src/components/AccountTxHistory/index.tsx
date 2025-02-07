@@ -18,7 +18,7 @@ export default function AccountTxHistory({ coinId }: AccountTxHistoryProps) {
   // NOTE Full History
   if (!coinId) return null;
 
-  if (currentCoin?.asset.chainType === 'cosmos') {
+  if (currentCoin?.asset.chainType === 'cosmos' || (currentCoin?.chain.chainType === 'evm' && currentCoin.chain.isCosmos)) {
     return <CosmosAccountTxHistory coinId={coinId} />;
   }
 

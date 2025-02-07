@@ -28,6 +28,7 @@ export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistor
 
   const {
     data: accountTxData,
+    error,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -81,7 +82,7 @@ export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistor
               <StyledCircularProgress size={20} />
             </StyledCircularProgressContainer>
           )}
-          {!isFetchingNextPage && hasNextPage && (
+          {!isFetchingNextPage && hasNextPage && !error && (
             <IntersectionObserver
               onIntersect={async () => {
                 if (hasNextPage) {
