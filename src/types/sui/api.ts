@@ -1,4 +1,4 @@
-import type { CoinMetadata, PaginatedTransactionResponse, SuiSystemStateSummary } from '@mysten/sui/client';
+import type { CoinMetadata, DelegatedStake, PaginatedTransactionResponse, SuiSystemStateSummary } from '@mysten/sui/client';
 
 export interface SuiRpc<T> {
   jsonrpc: '2.0';
@@ -25,3 +25,5 @@ export interface SuiRpcGetTransactionBlocksResponse extends SuiRpc<PaginatedTran
 export interface SuiRpcGetCoinMetaDataResponse extends SuiRpc<CoinMetadata> {}
 
 export interface SuiRpcGetLatestSuiSystemState extends SuiRpc<SuiSystemStateSummary> {}
+
+export interface SuiRpcGetDelegatedStakeResponse extends SuiRpc<DelegatedStake[]> {}

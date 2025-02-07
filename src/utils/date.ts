@@ -2,21 +2,29 @@ export function isUnixTimestamp(dateString: string) {
   return /^\d{10,16}$/.test(dateString) && !isNaN(Number(dateString));
 }
 
+export function isUnixTimestampInSec(dateString: string) {
+  return /^\d{10}$/.test(dateString) && !isNaN(Number(dateString));
+}
+
+export function isUnixTimestampInMicroSec(dateString: string) {
+  return /^\d{16}$/.test(dateString) && !isNaN(Number(dateString));
+}
+
 export function getTimestampValue(timestamp: string) {
   if (!timestamp) return 0;
 
   const numericTimestamp = Number(timestamp);
   if (isNaN(numericTimestamp)) return timestamp;
 
-  if (numericTimestamp < 1e12) {
+  if (isUnixTimestampInSec(timestamp)) {
     return numericTimestamp * 1000;
   }
 
-  if (numericTimestamp < 1e16) {
+  if (isUnixTimestampInMicroSec(timestamp)) {
     return numericTimestamp / 1000;
   }
 
-  return timestamp;
+  return numericTimestamp;
 }
 
 export function sortByLatestDate(a?: string | number, b?: string | number) {

@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import NumberTypo from '@/components/common/NumberTypo';
+import { useDelegations } from '@/hooks/sui/useDelegations';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { toDisplayDenomAmount } from '@/utils/numbers';
+import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import {
@@ -29,6 +30,8 @@ export default function Sui({ coinId }: SuiProps) {
 
   const { data } = useAccountAssets();
 
+  const { delegation } = useDelegations({ coinId });
+
   const selectedCoin = (() => {
     if (!data) return undefined;
 
@@ -38,10 +41,10 @@ export default function Sui({ coinId }: SuiProps) {
   const decimal = selectedCoin?.asset.decimals || 0;
 
   const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
-  const totalStakedDisplayAmount = '500';
-  const stakedDisplayAmount = '500';
-  const earnedDisplayAmount = '500';
+  const stakedDisplayAmount = toDisplayDenomAmount(delegation.totalStakedAmount, decimal);
+  const earnedDisplayAmount = toDisplayDenomAmount(delegation.totalEstimatedRewards, decimal);
 
+  const totalStakedDisplayAmount = plus(stakedDisplayAmount, earnedDisplayAmount);
   return (
     <Container>
       <TitleText variant="h3_B">{t('pages.coin-detail.components.AmountDetail.Sui.title')}</TitleText>
@@ -71,7 +74,7 @@ export default function Sui({ coinId }: SuiProps) {
           </LabelLeftContainer>
 
           <ValueAttributeText>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={6}>
               {stakedDisplayAmount}
             </NumberTypo>
           </ValueAttributeText>
@@ -83,7 +86,7 @@ export default function Sui({ coinId }: SuiProps) {
           </LabelLeftContainer>
 
           <ValueAttributeText>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={6}>
               {earnedDisplayAmount}
             </NumberTypo>
           </ValueAttributeText>
