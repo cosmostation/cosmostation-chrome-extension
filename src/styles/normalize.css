@@ -366,3 +366,8 @@ template {
 [hidden] {
   display: none;
 }
+
+.Toastify__toast-container {
+  max-width: 500px !important;
+  width: 100% !important;
+}

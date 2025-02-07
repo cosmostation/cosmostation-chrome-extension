@@ -6,6 +6,9 @@ export const StyledToastContainer = styled(ToastContainer)<ToastContainerProps>(
   '.Toastify__toast': {
     padding: '1.2rem',
     minHeight: '0',
+    margin: '0 2rem 4rem',
+    boxSizing: 'border-box',
+    borderRadius: '0.6rem !important',
   },
   '.Toastify__toast-body': {
     padding: '0',

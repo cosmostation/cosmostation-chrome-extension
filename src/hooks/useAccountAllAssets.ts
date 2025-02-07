@@ -53,6 +53,7 @@ export function useAccountAllAssets({
     queryKey: ['accountAllAssets', param, disableHiddenFilter, disableBalanceFilter],
     queryFn: fetcher,
     enabled: !!param,
+    staleTime: 1000 * 14,
     refetchInterval: 1000 * 15,
     ...config,
   });
