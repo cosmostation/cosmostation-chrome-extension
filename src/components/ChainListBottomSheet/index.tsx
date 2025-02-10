@@ -39,6 +39,7 @@ type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSh
   chainList: ChainBase[];
   currentChainId?: UniqueChainId;
   disableAllNetwork?: boolean;
+  disableSort?: boolean;
   title?: string;
   searchPlaceholder?: string;
   customType?: 'normal' | 'manageAssets';
@@ -51,6 +52,7 @@ export default function ChainListBottomSheet({
   onClose,
   onClickChain,
   disableAllNetwork = false,
+  disableSort = false,
   title,
   searchPlaceholder,
   customType = 'normal',
@@ -67,9 +69,11 @@ export default function ChainListBottomSheet({
 
   const AllNetworkOptionId = undefined;
 
-  const sortedChainList = chainList?.sort((a, b) => {
-    return a.name.localeCompare(b.name);
-  });
+  const sortedChainList = disableSort
+    ? chainList
+    : chainList?.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
 
   const filteredChainList = (() => {
     if (!!search && debouncedSearch.length > 1) {

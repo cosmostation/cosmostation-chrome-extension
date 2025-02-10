@@ -25,6 +25,7 @@ type ChainSelectBoxProps = TextFieldProps & {
   rightAdornmentComponent?: JSX.Element;
   bottomSheetTitle?: string;
   bottomSheetSearchPlaceholder?: string;
+  disableSortChain?: boolean;
   onClickChain?: (id?: UniqueChainId) => void;
 };
 
@@ -36,6 +37,7 @@ export default function ChainSelectBox({
   rightAdornmentComponent,
   bottomSheetTitle,
   bottomSheetSearchPlaceholder,
+  disableSortChain = false,
   onClickChain,
   ...remainder
 }: ChainSelectBoxProps) {
@@ -107,6 +109,7 @@ export default function ChainSelectBox({
         disableAllNetwork
         title={bottomSheetTitle}
         searchPlaceholder={bottomSheetSearchPlaceholder}
+        disableSort={disableSortChain}
         open={isOpenChainListBottomSheet}
         onClose={() => setIsOpenChainListBottomSheet(false)}
         onClickChain={(id) => {
