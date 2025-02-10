@@ -8,7 +8,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.ts
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
-import Fee from '@/components/Fee';
+// import Fee from '@/components/Fee';
 import InformationPanel from '@/components/InformationPanel/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
@@ -223,11 +223,11 @@ export default function Entry({ coinId }: EntryProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          <Fee
+          {/* <Fee
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          />
+          /> */}
         </>
       </BaseFooter>
       <ReviewBottomSheet

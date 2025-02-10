@@ -12,10 +12,10 @@ import NumberTypo from '@/components/common/NumberTypo';
 import StandardInput from '@/components/common/StandardInput';
 import Header from '@/components/Header';
 import InformationPanel from '@/components/InformationPanel';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as Home } from '@/pages/index';
-import { isDecimal, times } from '@/utils/numbers';
+import type { CosmosFeeAsset } from '@/types/cosmos/fee';
+import { isDecimal, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -39,35 +39,44 @@ type FeeCustomOverlayProps = {
   baseGasAmount: string;
   open?: boolean;
   feeCoinId?: string;
+  feeAssets: CosmosFeeAsset[];
+  currentSelectedFeeOptionKey?: number;
   onClose: () => void;
   onConfirm: (feeCoinId: string, gasAmount: string) => void;
 };
 
-export default function FeeCustomOverlay({ open = false, baseGasAmount, feeCoinId, onClose, onConfirm }: FeeCustomOverlayProps) {
+export default function FeeCustomOverlay({
+  open = false,
+  baseGasAmount,
+  feeAssets,
+  currentSelectedFeeOptionKey,
+  feeCoinId,
+  onClose,
+  onConfirm,
+}: FeeCustomOverlayProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { currency } = useExtensionStorageStore((state) => state);
-  const { data } = useAccountAssets();
-
-  // TODO fee 코인 리스트 필터링 로직 필요
-  const feeCoinList = data?.cosmosAccountAssets || [];
 
   const [inputGasAmount, setInputGasAmount] = useState('');
   const [selectedFeeCoinId, setSelectedFeeCoinId] = useState(feeCoinId);
 
-  const selectedFeeCoin = feeCoinList.find(({ asset }) => getCoinId(asset) === selectedFeeCoinId);
+  const selectedFeeCoin = feeAssets.find(({ asset }) => getCoinId(asset) === selectedFeeCoinId);
 
-  const displayFeeAmount = '0.000013';
+  const coinSymbol = selectedFeeCoin?.asset.symbol;
+  const decimals = selectedFeeCoin?.asset.decimals || 0;
+
+  const currentGasRate = selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey || 0] || 0;
+  const currentGas = inputGasAmount || baseGasAmount;
+
+  const displayFeeAmount = toDisplayDenomAmount(times(currentGasRate, currentGas), decimals);
 
   const chainPrice = (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[currency]) || 0;
 
   const value = times(displayFeeAmount, chainPrice);
-
-  const coinSymbol = selectedFeeCoin?.asset.symbol;
-  const decimals = selectedFeeCoin?.asset.decimals;
 
   const reset = () => {
     setInputGasAmount('');
@@ -76,11 +85,11 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, feeCoinI
 
   const onHandleConfirm = () => {
     if (!inputGasAmount && selectedFeeCoinId) {
-      onConfirm(baseGasAmount, selectedFeeCoinId);
+      onConfirm(selectedFeeCoinId, baseGasAmount);
     }
 
     if (inputGasAmount && selectedFeeCoinId) {
-      onConfirm(inputGasAmount, selectedFeeCoinId);
+      onConfirm(selectedFeeCoinId, inputGasAmount);
     }
     reset();
   };
@@ -134,7 +143,7 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, feeCoinI
         </FeeContainer>
         <InputContainer>
           <CoinSelectBox
-            coinList={feeCoinList}
+            coinList={feeAssets}
             currentCoinId={selectedFeeCoinId}
             onClickCoin={(chainId) => {
               setSelectedFeeCoinId(chainId);

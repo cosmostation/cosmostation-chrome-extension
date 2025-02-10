@@ -8,7 +8,7 @@ import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import Fee from '@/components/Fee';
+// import Fee from '@/components/Fee';
 import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
@@ -240,11 +240,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          <Fee
+          {/* <Fee
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          />
+          /> */}
         </>
       </BaseFooter>
       <ReviewBottomSheet

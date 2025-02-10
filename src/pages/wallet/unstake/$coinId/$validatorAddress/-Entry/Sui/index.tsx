@@ -6,7 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
-import Fee from '@/components/Fee';
+// import Fee from '@/components/Fee';
 import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
@@ -119,11 +119,11 @@ export default function Sui({ coinId }: SuiProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          <Fee
+          {/* <Fee
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          />
+          /> */}
         </>
       </BaseFooter>
       <ReviewBottomSheet

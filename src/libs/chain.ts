@@ -63,6 +63,8 @@ export async function getChains() {
 
     const feeInfo = {
       isSimulable: chain.params.chainlist_params?.cosmos_fee_info?.is_simulable ?? false,
+      isFeemarketEnabled: chain.params.chainlist_params?.cosmos_fee_info?.is_feemarket ?? false,
+      defaultFeeRateKey: chain.params.chainlist_params?.cosmos_fee_info?.base ?? '0',
       gasRate: chain.params.chainlist_params?.cosmos_fee_info?.rate ?? [],
       defaultGasLimit: chain.params.chainlist_params?.cosmos_fee_info?.init_gas_limit ?? 200000,
       gasCoefficient: chain.params.chainlist_params?.cosmos_fee_info?.simulated_gas_multiply ?? 1.2,
@@ -81,6 +83,7 @@ export async function getChains() {
 
     const isSupportStaking = chain.params.chainlist_params?.is_stake_enabled !== false;
     const isSupportHistory = !!chain.params.chainlist_params?.is_support_mintscan;
+    const isDiableSend = chain.params.chainlist_params?.is_send_enabled === false;
 
     const apr = chain.params.apr;
 
@@ -100,6 +103,7 @@ export async function getChains() {
       accountTypes,
       isSupportStaking,
       isSupportHistory,
+      isDiableSend,
       apr,
     };
   });
@@ -162,6 +166,8 @@ export async function getChains() {
           proposal: '',
         };
 
+    const isDiableSend = chain.params.chainlist_params?.is_send_enabled === false;
+
     return {
       id,
       chainId,
@@ -173,6 +179,7 @@ export async function getChains() {
       feeInfo,
       rpcUrls,
       accountTypes,
+      isDiableSend,
       explorer,
     };
   });

@@ -42,6 +42,7 @@ export type V11Param = {
       origin_genesis_time: string;
       api_name: string;
       is_stake_enabled?: boolean;
+      is_send_enabled?: boolean;
       is_support_mintscan?: boolean;
       is_support_cw20?: boolean;
       is_support_mobile_wallet?: boolean;
@@ -61,6 +62,7 @@ export type V11Param = {
         simulated_gas_multiply: number;
         init_gas_limit: number;
         fee_threshold: string;
+        is_feemarket?: boolean;
       };
       evm_fee_info?: {
         is_eip1559: boolean;

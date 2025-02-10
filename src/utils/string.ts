@@ -101,8 +101,10 @@ export function toBase64(str: string) {
   return Buffer.from(str).toString('base64');
 }
 
-export function toPercentages(value: string) {
-  return fix(times(value, '100'), 2) + '%';
+export function toPercentages(value: string, options: { fixed?: number; disableMark?: boolean } = { fixed: 2, disableMark: false }) {
+  const formattedValue = fix(times(value, '100'), options.fixed);
+
+  return options.disableMark ? formattedValue : formattedValue + '%';
 }
 
 const capitalize = (str?: string) => {

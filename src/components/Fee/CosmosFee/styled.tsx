@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import Button from '../common/Button';
+import Button from '../../common/Button';
 
 export const Container = styled('div')({
   display: 'flex',

@@ -38,6 +38,7 @@ export interface CustomChainParam {
     base: string;
     rate: string[];
     is_simulable: boolean;
+    is_feemarket?: boolean;
     simulated_gas_multiply: number;
     init_gas_limit: number;
     fee_threshold: string;

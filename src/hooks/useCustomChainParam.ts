@@ -40,6 +40,8 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const feeInfo = {
         isSimulable: chain?.cosmos_fee_info?.is_simulable ?? false,
         gasRate: chain?.cosmos_fee_info?.rate ?? [],
+        isFeemarketEnabled: chain?.cosmos_fee_info?.is_feemarket ?? false,
+        defaultFeeRateKey: chain?.cosmos_fee_info?.base ?? '0',
         defaultGasLimit: chain?.cosmos_fee_info?.init_gas_limit ?? 200000,
         gasCoefficient: chain?.cosmos_fee_info?.simulated_gas_multiply ?? 1.2,
       };

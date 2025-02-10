@@ -43,6 +43,13 @@ export interface CosmosAsset extends AssetBase {
       denom: string;
     };
   };
+  bridge_info?: {
+    path?: string;
+    counterparty?: {
+      chain?: string;
+      contract?: string;
+    };
+  };
   color?: string;
 }
 

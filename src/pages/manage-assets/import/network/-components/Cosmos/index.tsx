@@ -133,6 +133,8 @@ export default function Cosmos() {
         },
         feeInfo: {
           isSimulable: false,
+          isFeemarketEnabled: false,
+          defaultFeeRateKey: '0',
           gasRate: [
             `${data.gasRateLow || 0.00025}${data.mainAssetDenom}`,
             `${data.gasRateAverage || 0.0025}${data.mainAssetDenom}`,

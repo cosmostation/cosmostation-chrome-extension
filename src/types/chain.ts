@@ -20,7 +20,9 @@ export interface ChainExplorer {
 
 export interface CosmosFeeInfo {
   isSimulable: boolean;
+  isFeemarketEnabled: boolean;
   gasRate: string[];
+  defaultFeeRateKey?: string;
   defaultGasLimit: string | number;
   gasCoefficient: number;
 }
@@ -52,6 +54,7 @@ export interface CosmosChain extends ChainBase {
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;
   isSupportHistory?: boolean;
+  isDiableSend?: boolean;
   apr?: string;
 }
 
@@ -68,6 +71,7 @@ export interface CustomCosmosChain extends ChainBase {
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;
   isSupportHistory?: boolean;
+  isDiableSend?: boolean;
   apr?: string;
 }
 
@@ -84,6 +88,7 @@ export interface EvmChain extends ChainBase {
   feeInfo: EvmFeeInfo;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
+  isDiableSend?: boolean;
   explorer: ChainExplorer;
 }
 

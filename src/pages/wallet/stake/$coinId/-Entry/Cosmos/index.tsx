@@ -11,7 +11,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import Fee from '@/components/Fee';
+// import Fee from '@/components/Fee';
 import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
@@ -254,11 +254,11 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          <Fee
+          {/* <Fee
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          />
+          /> */}
         </>
       </BaseFooter>
       <ReviewBottomSheet

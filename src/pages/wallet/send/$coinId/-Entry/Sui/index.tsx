@@ -11,7 +11,7 @@ import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import Fee from '@/components/Fee';
+// import Fee from '@/components/Fee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useChainList } from '@/hooks/useChainList.ts';
@@ -212,11 +212,11 @@ export default function Sui({ coinId }: SuiProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          <Fee
+          {/* <Fee
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          />
+          /> */}
         </>
       </BaseFooter>
 

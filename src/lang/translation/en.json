@@ -1011,7 +1011,26 @@
             "sendReview": "Confirm Send",
             "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
             "denom": "Denom",
-            "chooseRecipientAddress": "Choose Recipient"
+            "chooseRecipientAddress": "Choose Recipient",
+            "cosmos": {
+              "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "insufficientAmount": "Insufficient amount",
+              "insufficientFeeAmount": "Insufficient fee",
+              "send": "Send",
+              "recipientNetwork": "Recipient Network",
+              "ibcSend": "IBC Send",
+              "selectRecipientNetwork": "Select Recipient Network",
+              "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
+              "recipientAddress": "Recipient Address",
+              "amount": "Amount",
+              "memo": "Memo (Option)",
+              "chooseRecipientAddress": "Choose Recipient",
+              "sendReview": "Confirm Send",
+              "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+              "timeoutHeightError": "Network Error"
+            }
           }
         },
         "layout": {

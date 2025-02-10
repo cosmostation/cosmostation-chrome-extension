@@ -4,45 +4,52 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import NumberTypo from '@/components/common/NumberTypo';
-import type { Fee } from '@/types/fee';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AmountContainer, LeftBottomContainer, LeftContainer, RightContainer, ValueContainer } from './styled';
 
-type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
-  fee: Fee;
-  isActive?: boolean;
-  onSelectOption?: (id: string) => void;
+type FeeOption = {
+  id: number;
+  title: string;
+  amount: string;
+  symbol: string;
+  value: string;
 };
 
-export default function OptionButton({ fee, isActive, onSelectOption, ...remainder }: OptionButtonProps) {
+type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+  fee: FeeOption;
+  isActive?: boolean;
+};
+
+export default function OptionButton({ fee, isActive, ...remainder }: OptionButtonProps) {
   const { t } = useTranslation();
   const { currency } = useExtensionStorageStore((state) => state);
 
-  const amount = '0.000013';
-  const value = '0.0006';
-  const decimal = 6;
+  const amount = fee.amount;
+  const value = fee.value;
+  const symbol = fee.symbol;
+  const title = fee.title;
 
   return (
     <BaseOptionButton
       leftContent={
         <LeftContainer>
-          <Base1300Text variant="b2_M">Default</Base1300Text>
+          <Base1300Text variant="b2_M">{title}</Base1300Text>
           <LeftBottomContainer>
             <Base1000Text variant="b3_R">{`${t('components.FeeSettingBottomSheet.components.OptionButton.index.feeToken')}`}</Base1000Text>
             &nbsp;
-            <Base1000Text variant="b3_M">Atom</Base1000Text>
+            <Base1000Text variant="b3_M">{symbol}</Base1000Text>
           </LeftBottomContainer>
         </LeftContainer>
       }
       rightContent={
         <RightContainer>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimal}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {amount}
             </NumberTypo>
             &nbsp;
-            <Base1300Text variant="b4_M">ATOM</Base1300Text>
+            <Base1300Text variant="b4_M">{symbol}</Base1300Text>
           </AmountContainer>
           <ValueContainer>
             <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency}>
@@ -53,9 +60,6 @@ export default function OptionButton({ fee, isActive, onSelectOption, ...remaind
       }
       isActive={isActive}
       disableRightChevron
-      onClick={() => {
-        onSelectOption?.(fee.id);
-      }}
       {...remainder}
     />
   );
