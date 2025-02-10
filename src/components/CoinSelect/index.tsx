@@ -15,6 +15,7 @@ import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, StickyContentsContainer } from './styled';
@@ -99,7 +100,12 @@ export default function CoinSelect({
         const value = times(displayAmount, chainPrice);
 
         // FIXME 비즈니스 로직 처리 필요. 10 부터 30까지의 랜덤값으로 처리함.
-        const apr = variant === 'stake' ? Math.floor(Math.random() * 30) + 10 : undefined;
+        const apr =
+          variant === 'stake' && item.chain.chainType === 'cosmos' && item.chain.apr
+            ? toPercentages(item.chain.apr, {
+                disableMark: true,
+              })
+            : undefined;
 
         return {
           ...item,
@@ -110,50 +116,46 @@ export default function CoinSelect({
     );
   }, [baseCoinList, coinGeckoPrice, currency, variant]);
 
-  const sortedAssets = useMemo(
-    () =>
-      computedAssetValues.sort((a, b) => {
-        if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-          return Number(minus(b.value, a.value));
-        }
+  const sortedAssets = useMemo(() => {
+    const sortedValues = [...computedAssetValues].sort((a, b) => {
+      if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+        return Number(minus(b.value, a.value));
+      }
 
-        if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-          return a.asset.symbol.localeCompare(b.asset.symbol);
-        }
+      if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+        return a.asset.symbol.localeCompare(b.asset.symbol);
+      }
 
-        if (variant === 'stake') {
-          if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
-            return Number(minus(b.apr || 0, a.apr || 0));
-          }
+      if (variant === 'stake') {
+        if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
+          return Number(minus(b.apr || 0, a.apr || 0));
         }
+      }
 
-        return 0;
-      }),
-    [computedAssetValues, sortOption, variant],
-  );
+      return 0;
+    });
+
+    return sortedValues;
+  }, [computedAssetValues, sortOption, variant]);
 
   const filteredCoinList = useMemo(() => {
-    const filteredAssetsByChain = currentSelectedChain
-      ? sortedAssets.filter((item) => currentSelectedChain?.id === item.chain.id && currentSelectedChain.chainId === item.chain.chainId) || []
+    const filteredAssetsByChain = currentSelectedChainId
+      ? sortedAssets.filter((item) => isMatchingUniqueChainId(item.chain, currentSelectedChainId)) || []
       : sortedAssets || [];
 
-    const filteredAssetsBySearch = (() => {
-      if (!!search && debouncedSearch.length > 1) {
-        return (
-          filteredAssetsByChain
-            .filter((asset) => {
-              const condition = [asset.asset.symbol, asset.asset.id];
+    if (!!search && debouncedSearch.length > 1) {
+      return (
+        filteredAssetsByChain
+          .filter((asset) => {
+            const condition = [asset.asset.symbol, asset.asset.id];
 
-              return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-            })
-            .slice(0, viewLimit) || []
-        );
-      }
-      return filteredAssetsByChain.slice(0, viewLimit);
-    })();
-
-    return filteredAssetsBySearch;
-  }, [currentSelectedChain, debouncedSearch, search, sortedAssets, viewLimit]);
+            return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+          })
+          .slice(0, viewLimit) || []
+      );
+    }
+    return filteredAssetsByChain.slice(0, viewLimit);
+  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets, viewLimit]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
@@ -204,7 +206,7 @@ export default function CoinSelect({
               key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
               isActive={currentCoinId === getCoinId(coin.asset)}
               displayAmount={displayAmount}
-              apr={coin.apr ? coin.apr.toString() : undefined}
+              apr={coin.apr ? coin.apr : undefined}
               symbol={coin.asset.symbol}
               chainName={coin.chain.name}
               assetId={coin.asset.id}

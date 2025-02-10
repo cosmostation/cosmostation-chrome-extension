@@ -44,9 +44,13 @@ export default function CoinWithChainNameButton({
                 <Base1000Text variant="b4_R">{`APR : `}</Base1000Text>
                 &nbsp;
                 <APRText data-is-high-apr={gt(apr, '14')}>
-                  <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>
-                    {apr}
-                  </NumberTypo>
+                  {gt(apr, '0') ? (
+                    <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>
+                      {apr}
+                    </NumberTypo>
+                  ) : (
+                    <Base1000Text variant="h6n_M">{`-`}</Base1000Text>
+                  )}
                   &nbsp;
                   <Typography variant="b4_R">{`%`}</Typography>
                 </APRText>
