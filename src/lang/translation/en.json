@@ -869,7 +869,9 @@
         "components": {
           "lastHdPath": "Last HD Path",
           "createNewWallet": "Create New Wallet",
-          "backUpNow": "Back Up Now"
+          "backUpNow": "Back Up Now",
+          "switchAccountSuccess": "Switched to Account {{accountName}}",
+          "notBackedUp": "(Not Backed Up)"
         },
         "layout": {
           "header": "Switch Account",

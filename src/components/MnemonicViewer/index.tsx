@@ -44,7 +44,7 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
 
   const displayMnemonic = (() => {
     if (!isViewMnemonic) {
-      return splitedMnemonic.map((word) => '•'.repeat(word.length));
+      return splitedMnemonic.map(() => '•'.repeat(4));
     }
     return splitedMnemonic;
   })();

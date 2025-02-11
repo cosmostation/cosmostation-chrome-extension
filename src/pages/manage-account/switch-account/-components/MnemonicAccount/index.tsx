@@ -5,8 +5,10 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { Route as Home } from '@/pages/index';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as CreateAccountWithExistMnemonic } from '@/pages/manage-account/create-account/$mnemonicId';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -24,6 +26,7 @@ import {
   LastHdPathTextContainer,
   OutlinedButtonContainer,
   PlusIconContainer,
+  Red400Text,
   RightArrowIconContainer,
   StyledOutlinedButton,
   TopContainer,
@@ -60,25 +63,28 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
         <TopLeftContainer>
           <MnemonicIcon />
           <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
+          {isNotBackedUp && <Red400Text variant="b4_M">{t('pages.manage-account.switch-account.components.notBackedUp')}</Red400Text>}
         </TopLeftContainer>
         <TopRightContainer>
-          <IconTextButton
-            onClick={() => {
-              navigate({
-                to: CreateAccountWithExistMnemonic.to,
-                params: {
-                  mnemonicId: mnemonicRestoreString,
-                },
-              });
-            }}
-            leadingIcon={
-              <PlusIconContainer>
-                <PlusIcon />
-              </PlusIconContainer>
-            }
-          >
-            <IconButtonText variant="b4_M">{t('pages.manage-account.switch-account.components.createNewWallet')}</IconButtonText>
-          </IconTextButton>
+          {!isNotBackedUp && (
+            <IconTextButton
+              onClick={() => {
+                navigate({
+                  to: CreateAccountWithExistMnemonic.to,
+                  params: {
+                    mnemonicId: mnemonicRestoreString,
+                  },
+                });
+              }}
+              leadingIcon={
+                <PlusIconContainer>
+                  <PlusIcon />
+                </PlusIconContainer>
+              }
+            >
+              <IconButtonText variant="b4_M">{t('pages.manage-account.switch-account.components.createNewWallet')}</IconButtonText>
+            </IconTextButton>
+          )}
         </TopRightContainer>
       </TopContainer>
       <BodyContainer>
@@ -92,6 +98,16 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               key={i}
               onClick={() => {
                 setCurrentAccount(item.id);
+
+                navigate({
+                  to: Home.to,
+                });
+
+                toastSuccess(
+                  t('pages.manage-account.switch-account.components.switchAccountSuccess', {
+                    accountName,
+                  }),
+                );
               }}
             >
               <AccountLeftContainer>

@@ -39,6 +39,11 @@ export const TopLeftContainer = styled('div')({
 
 export const TopRightContainer = styled('div')({});
 
+export const Red400Text = styled(Typography)(({ theme }) => ({
+  marginLeft: '0.4rem',
+  color: theme.palette.accentColor.red400,
+}));
+
 export const PlusIconContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
