@@ -30,7 +30,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     return response;
   };
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } = useInfiniteFetch<AccountTxsPayload>({
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending } = useInfiniteFetch<AccountTxsPayload>({
     queryKey: ['evmAccountTxs', address, chainId],
     fetchFunction: ({ pageParam }) => fetcher(pageParam, address, chainId),
     initialPageParam: '',
@@ -45,5 +45,5 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     },
   });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending };
+  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
 }

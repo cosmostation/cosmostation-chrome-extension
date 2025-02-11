@@ -45,8 +45,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const isStakeable = selectedCoin?.chain.isSupportStaking && selectedCoin.asset.id === selectedCoin.chain.mainAssetDenom;
 
-  const isSupportHistory = selectedCoin?.chain.isSupportHistory;
-
   const apr = selectedCoin?.chain.apr && toPercentages(selectedCoin?.chain.apr);
 
   return (
@@ -79,20 +77,18 @@ export default function Cosmos({ coinId }: CosmosProps) {
           <SectionContainer>
             <AmountDetail coinId={coinId} />
           </SectionContainer>
-          {isSupportHistory && (
-            <SectionContainer
-              style={{
-                flex: 1,
-              }}
-            >
-              <SectionStickyContainer>
-                <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
-              </SectionStickyContainer>
-              <HistoryContainer>
-                <AccountTxHistory coinId={coinId} />
-              </HistoryContainer>
-            </SectionContainer>
-          )}
+          <SectionContainer
+            style={{
+              flex: 1,
+            }}
+          >
+            <SectionStickyContainer>
+              <HistorySectionTitle variant="h3_B">{t('pages.coin-detail.entry.history')}</HistorySectionTitle>
+            </SectionStickyContainer>
+            <HistoryContainer>
+              <AccountTxHistory coinId={coinId} />
+            </HistoryContainer>
+          </SectionContainer>
         </SectionWrapper>
       </StyledEdgeAligner>
     </BaseBody>

@@ -420,7 +420,10 @@
           },
           "index": {
             "NoHistoryTitle": "No History",
-            "NoHistorySubTitle": "Your transaction history will be displayed here"
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
           }
         },
         "EVM": {
@@ -435,7 +438,10 @@
           },
           "index": {
             "NoHistoryTitle": "No History",
-            "NoHistorySubTitle": "Your transaction history will be displayed here"
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
           }
         },
         "Sui": {
@@ -477,7 +483,10 @@
           },
           "index": {
             "NoHistoryTitle": "No History",
-            "NoHistorySubTitle": "Your transaction history will be displayed here"
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
           }
         },
         "Bitcoin": {
@@ -498,7 +507,10 @@
           },
           "index": {
             "NoHistoryTitle": "No History",
-            "NoHistorySubTitle": "Your transaction history will be displayed here"
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
           }
         },
         "Aptos": {
@@ -517,7 +529,10 @@
           },
           "index": {
             "NoHistoryTitle": "No History",
-            "NoHistorySubTitle": "Your transaction history will be displayed here"
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
           }
         }
       }

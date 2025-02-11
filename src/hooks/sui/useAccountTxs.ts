@@ -24,6 +24,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     error: fromError,
     fetchNextPage: fetchFromNextPage,
     isFetchingNextPage: isFetchingFromNextPage,
+    isLoading: isFromLoading,
     hasNextPage: hasFromNextPage,
     isPending: isFromPending,
   } = useTransactionBlocks({
@@ -40,6 +41,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     error: toError,
     fetchNextPage: fetchToNextPage,
     isFetchingNextPage: isFetchingToNextPage,
+    isLoading: isToLoading,
     hasNextPage: hasToNextPage,
     isPending: isToPending,
   } = useTransactionBlocks({
@@ -67,6 +69,8 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
 
   const isPending = isFromPending || isToPending;
 
+  const isLoading = isFromLoading || isToLoading;
+
   const error = fromError || toError;
 
   const flattenedFromTxBlocks = (fromTxBlocks?.pages.flatMap((page) => page?.result?.data).filter((tx) => !!tx) as SuiTransactionBlockResponse[]) ?? [];
@@ -86,5 +90,5 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     };
   });
 
-  return { formattedTxBlocks, error, fetchNextPage, isFetchingNextPage, hasNextPage, isPending };
+  return { formattedTxBlocks, error, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading, isPending };
 }

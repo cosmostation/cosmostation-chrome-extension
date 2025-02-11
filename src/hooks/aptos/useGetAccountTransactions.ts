@@ -63,7 +63,9 @@ export function useGetAccountTransactions({ coinId, config }: UseGetAccountTrans
     }
   };
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } = useInfiniteFetch<TransactionResponse[] | null>({
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isLoading, isPending } = useInfiniteFetch<
+    TransactionResponse[] | null
+  >({
     queryKey: ['useGetAccountTransaction', address, coinId],
     fetchFunction: ({ pageParam }) => fetcher(pageParam, address),
     initialPageParam: '0',
@@ -81,5 +83,5 @@ export function useGetAccountTransactions({ coinId, config }: UseGetAccountTrans
     },
   });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending };
+  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isLoading, isPending };
 }

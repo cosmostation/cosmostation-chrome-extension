@@ -1,9 +1,13 @@
 import { useTranslation } from 'react-i18next';
 
+import Base1300Text from '@/components/common/Base1300Text';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import EmptyAsset from '@/components/EmptyAsset';
+import ListLoading from '@/components/Loading/ListLoading';
 import { useAccountTxs } from '@/hooks/evm/useAccountTxs';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { formatDateForHistory } from '@/utils/date';
+import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import EVMTxItem from './components/EVMTxItem';
 import {
@@ -11,12 +15,14 @@ import {
   ContentsContainer,
   DateLineContainer,
   EmptyAssetContainer,
+  IconContainer,
   StyledCircularProgress,
   StyledCircularProgressContainer,
   TxDetailContainer,
 } from './styled';
 import DateLine from '../Common/DateLine';
 
+import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
 type EVMAccountTxHistory = {
@@ -26,15 +32,26 @@ type EVMAccountTxHistory = {
 export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
   const { t } = useTranslation();
 
+  const { data: accountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
+
   const {
     data: accountTxData,
     error,
     fetchNextPage,
     isFetchingNextPage,
+    isLoading,
     hasNextPage,
   } = useAccountTxs({
     coinId: coinId,
   });
+
+  const selectedAsset = accountAllAssets?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+
+  const accountExplorerUrl = selectedAsset?.chain.explorer?.account
+    ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
+    : '';
 
   const flattenedTxs = accountTxData?.pages?.flatMap((item) => item?.txs).filter((item) => item) || [];
 
@@ -94,11 +111,35 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
         </ContentsContainer>
       ) : (
         <EmptyAssetContainer>
-          <EmptyAsset
-            icon={<NoSearchIcon />}
-            title={t('components.AccountTxHistory.components.EVM.index.NoHistoryTitle')}
-            subTitle={t('components.AccountTxHistory.components.EVM.index.NoHistorySubTitle')}
-          />
+          {isLoading ? (
+            <ListLoading
+              title={t('components.AccountTxHistory.components.EVM.index.LoadingTitle')}
+              subTitle={t('components.AccountTxHistory.components.EVM.index.LoadingSubTitle')}
+            />
+          ) : (
+            <EmptyAsset
+              icon={<NoSearchIcon />}
+              title={t('components.AccountTxHistory.components.EVM.index.NoHistoryTitle')}
+              subTitle={t('components.AccountTxHistory.components.EVM.index.NoHistorySubTitle')}
+              chipButtonProps={
+                accountExplorerUrl
+                  ? {
+                      onClick: () => {
+                        window.open(accountExplorerUrl, '_blank');
+                      },
+                      children: (
+                        <>
+                          <IconContainer>
+                            <ExplorerIcon />
+                          </IconContainer>
+                          <Base1300Text variant="b3_M">{t('components.AccountTxHistory.components.EVM.index.goToExplorer')}</Base1300Text>
+                        </>
+                      ),
+                    }
+                  : undefined
+              }
+            />
+          )}
         </EmptyAssetContainer>
       )}
     </Container>

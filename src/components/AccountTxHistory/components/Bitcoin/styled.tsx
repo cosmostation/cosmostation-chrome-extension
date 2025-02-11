@@ -42,3 +42,20 @@ export const EmptyAssetContainer = styled('div')({
 
   padding: '2rem 0',
 });
+
+export const IconContainer = styled('div')(({ theme }) => ({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  marginRight: '0.2rem',
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+
+    fill: theme.palette.color.base1000,
+
+    '& > path': {
+      fill: theme.palette.color.base1000,
+    },
+  },
+}));

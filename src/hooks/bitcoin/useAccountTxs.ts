@@ -29,7 +29,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     return respose;
   };
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } = useInfiniteFetch<AccountTxPayload>({
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending } = useInfiniteFetch<AccountTxPayload>({
     queryKey: ['bitcoinAccountTxs', address, coinId, requestURL],
     fetchFunction: ({ pageParam }) => fetcher(pageParam, requestURL),
     initialPageParam: '',
@@ -44,5 +44,5 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     },
   });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending };
+  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
 }

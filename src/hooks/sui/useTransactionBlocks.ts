@@ -78,7 +78,7 @@ export function useTransactionBlocks({ coinId, queryOptions, config }: UseTransa
     }
   };
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending } =
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending } =
     useInfiniteFetch<SuiRpcGetTransactionBlocksResponse | null>({
       queryKey: ['useTransactionBlock', address, coinId, queryOptions],
       fetchFunction: ({ pageParam }) => fetcher(pageParam, address, queryOptions),
@@ -94,5 +94,5 @@ export function useTransactionBlocks({ coinId, queryOptions, config }: UseTransa
       },
     });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isPending };
+  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
 }

@@ -23,6 +23,7 @@ export interface AccountAssets {
   cosmosAccountCustomAssets: AccountCustomCosmosAsset[];
   evmAccountCustomAssets: AccountCustomEvmAsset[];
 }
+
 export type FlatAccountAssets =
   | AccountCosmosAsset
   | AccountCw20Asset
@@ -33,6 +34,10 @@ export type FlatAccountAssets =
   | AccountAptosAsset
   | AccountCustomCosmosAsset
   | AccountCustomEvmAsset;
+
+export type AllCosmosAccountAssets = AccountCosmosAsset | AccountCustomCosmosAsset | AccountCw20Asset;
+
+export type AllEVMAccountAssets = AccountEvmAsset | AccountCustomEvmAsset | AccountErc20Asset;
 
 export interface AccountCustomAssets {
   cosmosAccountCustomAssets: AccountCustomCosmosAsset[];

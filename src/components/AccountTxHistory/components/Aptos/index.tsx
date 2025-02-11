@@ -1,11 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { isPendingTransactionResponse } from '@aptos-labs/ts-sdk';
 
+import Base1300Text from '@/components/common/Base1300Text';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import EmptyAsset from '@/components/EmptyAsset';
+import ListLoading from '@/components/Loading/ListLoading';
 import { useGetAccountTransactions } from '@/hooks/aptos/useGetAccountTransactions';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { formatAptosTxTimestamp, getTimestamp } from '@/utils/aptos/tx';
 import { sortByLatestDate } from '@/utils/date';
+import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import AptosPendingTxItem from './components/AptosPendingTxItem';
 import AptosTxItem from './components/AptosTxItem';
@@ -14,12 +18,14 @@ import {
   ContentsContainer,
   DateLineContainer,
   EmptyAssetContainer,
+  IconContainer,
   StyledCircularProgress,
   StyledCircularProgressContainer,
   TxDetailContainer,
 } from './styled';
 import DateLine from '../Common/DateLine';
 
+import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
 type AptosAccountTxHistory = {
@@ -28,16 +34,26 @@ type AptosAccountTxHistory = {
 
 export default function AptosAccountTxHistory({ coinId }: AptosAccountTxHistory) {
   const { t } = useTranslation();
+  const { data: accountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
 
   const {
     data: accountTxData,
     error,
     fetchNextPage,
     isFetchingNextPage,
+    isLoading,
     hasNextPage,
   } = useGetAccountTransactions({
     coinId: coinId,
   });
+
+  const selectedAsset = accountAllAssets?.aptosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+
+  const accountExplorerUrl = selectedAsset?.chain.explorer.account
+    ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
+    : '';
 
   const flattenedTxs = accountTxData?.pages?.flatMap((item) => item).filter((item) => !!item) || [];
 
@@ -110,11 +126,37 @@ export default function AptosAccountTxHistory({ coinId }: AptosAccountTxHistory)
         </ContentsContainer>
       ) : (
         <EmptyAssetContainer>
-          <EmptyAsset
-            icon={<NoSearchIcon />}
-            title={t('components.AccountTxHistory.components.Aptos.index.NoHistoryTitle')}
-            subTitle={t('components.AccountTxHistory.components.Aptos.index.NoHistorySubTitle')}
-          />
+          {isLoading ? (
+            <ListLoading
+              title={t('components.AccountTxHistory.components.Aptos.index.LoadingTitle')}
+              subTitle={t('components.AccountTxHistory.components.Aptos.index.LoadingSubTitle')}
+            />
+          ) : (
+            <>
+              <EmptyAsset
+                icon={<NoSearchIcon />}
+                title={t('components.AccountTxHistory.components.Aptos.index.NoHistoryTitle')}
+                subTitle={t('components.AccountTxHistory.components.Aptos.index.NoHistorySubTitle')}
+                chipButtonProps={
+                  accountExplorerUrl
+                    ? {
+                        onClick: () => {
+                          window.open(accountExplorerUrl, '_blank');
+                        },
+                        children: (
+                          <>
+                            <IconContainer>
+                              <ExplorerIcon />
+                            </IconContainer>
+                            <Base1300Text variant="b3_M">{t('components.AccountTxHistory.components.Aptos.index.goToExplorer')}</Base1300Text>
+                          </>
+                        ),
+                      }
+                    : undefined
+                }
+              />
+            </>
+          )}
         </EmptyAssetContainer>
       )}
     </Container>

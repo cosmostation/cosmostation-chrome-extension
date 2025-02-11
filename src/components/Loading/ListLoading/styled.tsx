@@ -1,8 +1,6 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import OutlinedChipButton from '../OutlinedChipButton';
-
 export const Container = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -13,14 +11,8 @@ export const Container = styled('div')({
   flex: 1,
 });
 
-export const IconContainer = styled('div')({
-  width: '7rem',
-  height: '7rem',
+export const LottieContainer = styled('div')({
   marginBottom: '0.8rem',
-  '& > svg': {
-    width: '100%',
-    height: '100%',
-  },
 });
 
 export const TextContainer = styled('div')({
@@ -42,7 +34,3 @@ export const SubTitleText = styled(Typography)(({ theme }) => ({
   wordBreak: 'break-word',
   textAlign: 'center',
 }));
-
-export const StyledOutlinedChipButton = styled(OutlinedChipButton)({
-  marginTop: '1.2rem',
-});

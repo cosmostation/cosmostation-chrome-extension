@@ -4,13 +4,15 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
-import type { AccountAssets as AccountAllAssets, FlatAccountAssets } from '@/types/accountAssets';
+import type { AccountAssets as AccountAllAssets, AllCosmosAccountAssets, AllEVMAccountAssets, FlatAccountAssets } from '@/types/accountAssets';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useCurrentAccount } from './useCurrentAccount';
 
 type UseAccountAssetsResponse = AccountAllAssets & {
   flatAccountAssets: FlatAccountAssets[];
+  allCosmosAccountAssets: AllCosmosAccountAssets[];
+  allEVMAccountAssets: AllEVMAccountAssets[];
 };
 
 type UseAccountAllAssets =
@@ -194,6 +196,18 @@ export function useAccountAllAssets({
       const returnData: UseAccountAssetsResponse = {
         ...filteredAccountAssets,
         flatAccountAssets: flatAccountAssets,
+        allCosmosAccountAssets: [
+          ...filteredAccountAssets.cosmosAccountAssets,
+          ...filteredAccountAssets.cosmosAccountCustomAssets,
+          ...filteredAccountAssets.cw20AccountAssets,
+          ...filteredAccountAssets.customCw20AccountAssets,
+        ],
+        allEVMAccountAssets: [
+          ...filteredAccountAssets.evmAccountAssets,
+          ...filteredAccountAssets.evmAccountCustomAssets,
+          ...filteredAccountAssets.erc20AccountAssets,
+          ...filteredAccountAssets.customErc20AccountAssets,
+        ],
       };
 
       return returnData;
@@ -203,6 +217,8 @@ export function useAccountAllAssets({
       const returnData: UseAccountAssetsResponse = {
         ...data,
         flatAccountAssets: flatAccountAssets,
+        allCosmosAccountAssets: [...data.cosmosAccountAssets, ...data.cosmosAccountCustomAssets, ...data.cw20AccountAssets, ...data.customCw20AccountAssets],
+        allEVMAccountAssets: [...data.evmAccountAssets, ...data.evmAccountCustomAssets, ...data.erc20AccountAssets, ...data.customErc20AccountAssets],
       };
 
       return returnData;

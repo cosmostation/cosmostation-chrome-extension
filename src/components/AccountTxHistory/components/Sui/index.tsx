@@ -1,9 +1,13 @@
 import { useTranslation } from 'react-i18next';
 
+import Base1300Text from '@/components/common/Base1300Text';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import EmptyAsset from '@/components/EmptyAsset';
+import ListLoading from '@/components/Loading/ListLoading';
 import { useAccountTxs } from '@/hooks/sui/useAccountTxs';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { formatDateForHistory } from '@/utils/date';
+import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import SuiTxItem from './components/SuiTxItem';
 import {
@@ -11,12 +15,14 @@ import {
   ContentsContainer,
   DateLineContainer,
   EmptyAssetContainer,
+  IconContainer,
   StyledCircularProgress,
   StyledCircularProgressContainer,
   TxDetailContainer,
 } from './styled';
 import DateLine from '../Common/DateLine';
 
+import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
 type SuiAccountTxHistory = {
@@ -26,9 +32,19 @@ type SuiAccountTxHistory = {
 export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
   const { t } = useTranslation();
 
-  const { formattedTxBlocks, error, isFetchingNextPage, hasNextPage, fetchNextPage } = useAccountTxs({
+  const { data: accountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
+
+  const { formattedTxBlocks, error, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useAccountTxs({
     coinId: coinId,
   });
+
+  const selectedAsset = accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+
+  const accountExplorerUrl = selectedAsset?.chain.explorer?.account
+    ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
+    : '';
 
   const txsGroupedByDate = (() => {
     const formattedDates = formattedTxBlocks
@@ -90,11 +106,35 @@ export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
         </ContentsContainer>
       ) : (
         <EmptyAssetContainer>
-          <EmptyAsset
-            icon={<NoSearchIcon />}
-            title={t('components.AccountTxHistory.components.Sui.index.NoHistoryTitle')}
-            subTitle={t('components.AccountTxHistory.components.Sui.index.NoHistorySubTitle')}
-          />
+          {isLoading ? (
+            <ListLoading
+              title={t('components.AccountTxHistory.components.Sui.index.LoadingTitle')}
+              subTitle={t('components.AccountTxHistory.components.Sui.index.LoadingSubTitle')}
+            />
+          ) : (
+            <EmptyAsset
+              icon={<NoSearchIcon />}
+              title={t('components.AccountTxHistory.components.Sui.index.NoHistoryTitle')}
+              subTitle={t('components.AccountTxHistory.components.Sui.index.NoHistorySubTitle')}
+              chipButtonProps={
+                accountExplorerUrl
+                  ? {
+                      onClick: () => {
+                        window.open(accountExplorerUrl, '_blank');
+                      },
+                      children: (
+                        <>
+                          <IconContainer>
+                            <ExplorerIcon />
+                          </IconContainer>
+                          <Base1300Text variant="b3_M">{t('components.AccountTxHistory.components.Sui.index.goToExplorer')}</Base1300Text>
+                        </>
+                      ),
+                    }
+                  : undefined
+              }
+            />
+          )}
         </EmptyAssetContainer>
       )}
     </Container>
