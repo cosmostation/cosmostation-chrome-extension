@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import type { UniqueChainId } from '@/types/chain';
+import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import Badge from './components/Badge';
@@ -28,6 +29,8 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
       {filteredAddress.map((item) => {
         const { label, address, memo } = item;
         const isBadge = !!memo;
+
+        const shortAddress = shorterAddress(address, 20);
 
         const badgeContent = (() => {
           if (isBadge) {
@@ -59,7 +62,7 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
                   {badgeContent && <Badge name={badgeContent.name} image={badgeContent.image} colorHex={badgeContent.color} />}
                 </LabelContainer>
                 <AddressContainer>
-                  <Typography variant="b4_M">{address}</Typography>
+                  <Typography variant="b4_M">{shortAddress}</Typography>
                 </AddressContainer>
 
                 {memo && (

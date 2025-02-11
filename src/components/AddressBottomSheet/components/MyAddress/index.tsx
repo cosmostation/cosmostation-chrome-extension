@@ -4,6 +4,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import type { Account, AccountAddress } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
+import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -122,6 +123,8 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
             </TopContainer>
             <BodyContainer>
               {item.accounts.map((item, i) => {
+                const shortAddress = shorterAddress(item.address.address, 20);
+
                 return (
                   <AccountButton
                     key={i}
@@ -134,7 +137,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
                       <AccountInfoContainer>
                         <Base1300Text variant="b2_M">{item.name}</Base1300Text>
-                        <AddressText variant="b4_M">{item.address.address}</AddressText>
+                        <AddressText variant="b4_M">{shortAddress}</AddressText>
                       </AccountInfoContainer>
                     </AccountLeftContainer>
                   </AccountButton>
