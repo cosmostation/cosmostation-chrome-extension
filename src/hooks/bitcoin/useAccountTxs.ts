@@ -4,6 +4,7 @@ import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import { useInfiniteFetch, type UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useAccountAssets } from '../useAccountAssets';
+import { sortByLatestDate } from '@/utils/date';
 
 type UseAccountTxsProps = {
   coinId: string;
@@ -35,8 +36,9 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     initialPageParam: '',
     getNextPageParam: (lastPage) => {
       if (lastPage.length === 0) return undefined;
+      const sortedLastPage = [...lastPage].sort((a, b) => sortByLatestDate(a?.status?.block_time, b?.status?.block_time));
 
-      return lastPage[lastPage.length - 1].txid || undefined;
+      return sortedLastPage[sortedLastPage.length - 1].txid || undefined;
     },
     config: {
       enabled: !!coinId && !!address && !!requestURL,
