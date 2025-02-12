@@ -16,7 +16,7 @@ import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useFees } from '@/hooks/cosmos/useFees.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
-import { Route as TxResult } from '@/pages/wallet/tx-result/$txHash/$coinId';
+import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { ceil, gt, gte, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator.ts';
@@ -422,7 +422,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
         onClickConfirm={() => {
           navigate({
             to: TxResult.to,
-            params: {
+            search: {
+              address: '',
               coinId,
               txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
             },

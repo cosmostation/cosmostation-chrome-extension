@@ -16,7 +16,7 @@ import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useChainList } from '@/hooks/useChainList.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
-import { Route as TxResult } from '@/pages/wallet/tx-result/$txHash/$coinId';
+import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
@@ -249,7 +249,8 @@ export default function EVM({ coinId }: EVMProps) {
         onClickConfirm={() => {
           navigate({
             to: TxResult.to,
-            params: {
+            search: {
+              address: '',
               coinId,
               txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
             },

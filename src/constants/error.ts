@@ -44,3 +44,7 @@ export const ETHEREUM_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
   [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
 } as const;
+
+export const TRASACTION_RECEIPT_ERROR_MESSAGE = {
+  PENDING: 'Pending State',
+} as const;

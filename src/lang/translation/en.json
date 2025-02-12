@@ -1154,6 +1154,20 @@
               "header": "Transaction Result"
             }
           }
+        },
+        "entry": {
+          "txFailTitle": "Transaction Failed",
+          "txSuccessTitle": "Transaction Success",
+          "txFailSubTitle": "The transaction failed. Please check the details and try again.",
+          "goToExplorer": "Go to Explorer",
+          "addAddresstoBook": "Is this a frequently used address?",
+          "addToAddress": "Add to address",
+          "confirm": "Confirm",
+          "txPendingTitle": "Checking Transaction Status...",
+          "txPendingSubTitle": "Please wait a moment while the transaction status is being checked."
+        },
+        "layout": {
+          "header": "Transaction Result"
         }
       },
       "stake": {

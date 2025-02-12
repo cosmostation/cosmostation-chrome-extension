@@ -25,20 +25,18 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
 import { getKeypair } from '@/libs/address.ts';
-import { Route as TxResult } from '@/pages/wallet/tx-result/$txHash/$coinId';
-
+import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { getCoinType } from '@/utils/sui/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign.ts';
-import { toastError } from '@/utils/toast.tsx';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import { AddressBookButton, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper } from './styled.tsx';
+import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
-import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 type SuiProps = {
   coinId: string;
@@ -265,13 +263,19 @@ export default function Sui({ coinId }: SuiProps) {
 
       navigate({
         to: TxResult.to,
-        params: {
+        search: {
+          address: recipientAddress,
           coinId,
           txHash: response.digest,
         },
       });
     } catch {
-      toastError(t('pages.wallet.send.$coinId.Entry.Sui.index.failedToSend'));
+      navigate({
+        to: TxResult.to,
+        search: {
+          coinId,
+        },
+      });
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }

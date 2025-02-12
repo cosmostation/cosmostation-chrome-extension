@@ -16,7 +16,7 @@ import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
-import { Route as TxResult } from '@/pages/wallet/tx-result/$txHash/$coinId';
+import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal } from '@/utils/string.ts';
@@ -230,7 +230,8 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         onClickConfirm={() => {
           navigate({
             to: TxResult.to,
-            params: {
+            search: {
+              address: '',
               coinId,
               txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
             },

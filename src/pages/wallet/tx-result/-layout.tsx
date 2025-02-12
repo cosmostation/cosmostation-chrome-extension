@@ -15,10 +15,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <BaseLayout
       header={
-        <Header
-          leftContent={<NavigationPanel />}
-          middleContent={<Base1300Text variant="h4_B">{t('pages.wallet.tx-result.$tx-hash.$coin-id.layout.header')}</Base1300Text>}
-        />
+        <Header leftContent={<NavigationPanel />} middleContent={<Base1300Text variant="h4_B">{t('pages.wallet.tx-result.layout.header')}</Base1300Text>} />
       }
     >
       {children}

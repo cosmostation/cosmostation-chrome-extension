@@ -1,5 +1,6 @@
-import OutlinedChipButton from '@/components/OutlinedChipButton';
 import { styled } from '@mui/material/styles';
+
+import OutlinedChipButton from '@/components/OutlinedChipButton';
 
 export const Container = styled('div')({
   display: 'flex',
