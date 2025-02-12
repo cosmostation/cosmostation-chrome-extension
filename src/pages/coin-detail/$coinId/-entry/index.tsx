@@ -1,5 +1,4 @@
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import Aptos from './aptos';
 import Bitcoin from './bitcoin';
@@ -12,26 +11,25 @@ type EntryProps = {
 };
 
 export default function Entry({ coinId }: EntryProps) {
-  const { data } = useAccountAssets();
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const currentAccountAsset = useGetAccountAsset({ coinId });
 
-  if (currentCoin?.asset.chainType === 'cosmos') {
+  if (currentAccountAsset?.asset.chainType === 'cosmos') {
     return <Cosmos coinId={coinId} />;
   }
 
-  if (currentCoin?.asset.chainType === 'evm') {
+  if (currentAccountAsset?.asset.chainType === 'evm') {
     return <EVM coinId={coinId} />;
   }
 
-  if (currentCoin?.asset.chainType === 'sui') {
+  if (currentAccountAsset?.asset.chainType === 'sui') {
     return <Sui coinId={coinId} />;
   }
 
-  if (currentCoin?.asset.chainType === 'aptos') {
+  if (currentAccountAsset?.asset.chainType === 'aptos') {
     return <Aptos coinId={coinId} />;
   }
 
-  if (currentCoin?.asset.chainType === 'bitcoin') {
+  if (currentAccountAsset?.asset.chainType === 'bitcoin') {
     return <Bitcoin coinId={coinId} />;
   }
 
