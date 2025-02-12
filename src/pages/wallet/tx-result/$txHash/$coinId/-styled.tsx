@@ -1,3 +1,4 @@
+import OutlinedChipButton from '@/components/OutlinedChipButton';
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
@@ -9,16 +10,22 @@ export const Container = styled('div')({
 });
 
 export const TxResultContainer = styled('div')({
+  position: 'relative',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   rowGap: '0.6rem',
-  marginBottom: '1.6rem',
+});
+
+export const StyledOutlinedChipButton = styled(OutlinedChipButton)({
+  position: 'absolute',
+  bottom: '-4.2rem',
 });
 
 export const TxHashTextContainer = styled('div')({
-  width: '70%',
-  wordBreak: 'break-all',
+  maxWidth: '33rem',
+  wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
   textAlign: 'center',
 });
 

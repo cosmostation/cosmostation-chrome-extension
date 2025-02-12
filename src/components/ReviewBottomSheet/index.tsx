@@ -16,7 +16,7 @@ type ReviewBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet
   contentsSubTitle?: string;
   cancleButtonText?: string;
   confirmButtonText?: string;
-  onClickCancel: () => void;
+  onClickCancel?: () => void;
   onClickConfirm: () => void;
 };
 
@@ -40,7 +40,7 @@ export default function ReviewBottomSheet({
   };
 
   const handleCancel = () => {
-    onClickCancel();
+    onClickCancel?.();
     onClose?.({}, 'backdropClick');
   };
 

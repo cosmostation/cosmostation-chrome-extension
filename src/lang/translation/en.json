@@ -139,6 +139,12 @@
             }
           }
         }
+      },
+      "SuiFee": {
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -1047,6 +1053,32 @@
               "sendReview": "Confirm Send",
               "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
               "timeoutHeightError": "Network Error"
+            }
+          },
+          "Entry": {
+            "Sui": {
+              "index": {
+                "invalidAddress": "Invalid address",
+                "invalidAmount": "Invalid amount",
+                "insufficientAmount": "Insufficient amount",
+                "failedToDryRun": "Transaction simulation failed",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "failedToSend": "Failed to send",
+                "failedToBuildTransaction": "Failed to build transaction",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+              }
+            },
+            "components": {
+              "TxProcessingOverlay": {
+                "header": "Transaction Result",
+                "confirm": "Confirm"
+              }
             }
           }
         },

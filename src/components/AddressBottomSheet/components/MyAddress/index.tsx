@@ -4,7 +4,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import type { Account, AccountAddress } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
-import { shorterAddress } from '@/utils/string';
+import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -68,7 +68,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
           const matchingAddress = addressList?.find((address) => getUniqueChainIdWithManual(address.chainId, address.chainType) === chainId);
 
           if (filterAddress && matchingAddress?.address) {
-            if (matchingAddress.address === filterAddress) return null;
+            if (isEqualsIgnoringCase(matchingAddress.address, filterAddress)) return null;
           }
 
           return {
