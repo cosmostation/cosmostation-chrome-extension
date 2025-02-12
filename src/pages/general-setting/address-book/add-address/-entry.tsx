@@ -28,7 +28,13 @@ import EVMImage from '@/assets/images/chain/evm.png';
 
 export const UNIVERSAL_EVM_NETWORK_ID = 'universal';
 
-export default function Entry() {
+type EntryProps = {
+  chainId?: UniqueChainId;
+  address?: string;
+  memo?: string;
+};
+
+export default function Entry({ chainId, address: inputAddress, memo }: EntryProps) {
   const { t } = useTranslation();
   const { history } = useRouter();
 
@@ -47,7 +53,7 @@ export default function Entry() {
   ];
 
   const defaultChain = baseChainList[0] || undefined;
-  const defaultChainId = defaultChain ? getUniqueChainId(defaultChain) : undefined;
+  const defaultChainId = chainId || (defaultChain ? getUniqueChainId(defaultChain) : undefined);
 
   const [currentChainId, setCurrentChainId] = useState<UniqueChainId | undefined>(defaultChainId);
   const currentChain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, currentChainId));
@@ -93,6 +99,10 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     shouldFocusError: true,
+    defaultValues: {
+      address: inputAddress,
+      memo,
+    },
   });
 
   const { address, label } = watch();

@@ -16,7 +16,7 @@ import { useTxInfo } from '@/hooks/sui/useTxInfo.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { Route as Dashboard } from '@/pages';
 import { Route as AddAddress } from '@/pages/general-setting/address-book/add-address';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId, isMatchingCoinId } from '@/utils/queryParamGenerator.ts';
 
 import { Container, ExplorerIconContainer, FooterContainer, StyledOutlinedChipButton, TxHashTextContainer, TxResultContainer } from './styled.tsx';
 
@@ -128,9 +128,12 @@ export default function Sui({ coinId, txHash, address }: SuiProps) {
             <Base1300Text variant="b3_R">{t('pages.wallet.tx-result.entry.addAddresstoBook')}</Base1300Text>
             <TextButton
               onClick={() => {
-                // FIXME 쿼리스트링으로 어드레스랑 코인 체인 타입 받을 수 있도록 작업필요.
                 navigate({
                   to: AddAddress.to,
+                  search: {
+                    address: address,
+                    chainId: selectedAsset?.chain && getUniqueChainId(selectedAsset?.chain),
+                  },
                 });
               }}
               variant="hyperlink"
