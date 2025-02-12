@@ -24,7 +24,7 @@ export function getCoinType(type?: string | null) {
   }
 
   const startIndex = type.indexOf('<');
-  const endIndex = type.indexOf('>');
+  const endIndex = type.lastIndexOf('>');
 
   if (startIndex > -1 && endIndex > -1) {
     return type.substring(startIndex + 1, endIndex);
