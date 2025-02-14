@@ -7,6 +7,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 export const TopContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
+  alignItems: 'center',
 });
 
 export const TopLeftContainer = styled('div')(({ theme }) => ({
@@ -14,6 +15,7 @@ export const TopLeftContainer = styled('div')(({ theme }) => ({
   columnGap: '0.2rem',
 
   color: theme.palette.color.base1300,
+  height: 'fit-content',
 }));
 
 export const ViewTotalValueText = styled(Base1300Text)({
@@ -40,7 +42,7 @@ export const BodyTopContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
 
-  margin: '1rem 0 0.2rem',
+  margin: '0.7rem 0 0.2rem',
 
   columnGap: '0.4rem',
 
