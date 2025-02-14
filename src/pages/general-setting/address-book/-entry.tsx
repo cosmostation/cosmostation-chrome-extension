@@ -32,6 +32,7 @@ export default function Entry() {
 
   const { flatChainList } = useChainList();
 
+  // FIXME 카바의 어드레스북 컴포넌트 구조에 따라서 dupeEthermint를 필터링해야하는지 결정필요.
   const baseChainList = [
     {
       id: UNIVERSAL_EVM_NETWORK_ID,

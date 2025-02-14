@@ -18,6 +18,7 @@ import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
+import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -57,12 +58,7 @@ export default function Entry({ coinId }: EntryProps) {
   }, [coinId, groupAccountAssets?.groupAccountAssets, groupAccountAssets?.groupMap]);
 
   const filteredAssetsBySearch = useMemo(() => {
-    const filteredByChain = baseCoinList?.filter((item) => {
-      if (currentSelectedChainId) {
-        return isMatchingUniqueChainId(item.chain, currentSelectedChainId);
-      }
-      return true;
-    });
+    const filteredByChain = getFilteredAssetsByChainId(baseCoinList, currentSelectedChainId);
 
     const computedAssetValues = filteredByChain?.map((item) => {
       const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals);
@@ -103,7 +99,7 @@ export default function Entry({ coinId }: EntryProps) {
     return sortedAssets?.slice(0, viewLimit) || [];
   }, [baseCoinList, coinGeckoPrice, currency, currentSelectedChainId, debouncedSearch.length, search, sortOption, viewLimit]);
 
-  const chainList = baseCoinList?.map((item) => item.chain);
+  const chainList = useMemo(() => getfilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
   const currentSelectedChain = useMemo(
     () => chainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),

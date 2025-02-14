@@ -8,13 +8,14 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
+import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -46,7 +47,15 @@ export default function CoinSelect({
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
-  const { data } = useAccountAssets();
+  const isDisableDupeEthermint = variant === 'stake';
+
+  const { data } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+    disableBalanceFilter: false,
+    disableHiddenFilter: false,
+    disableDupeEthermint: isDisableDupeEthermint,
+  });
+
   const { scrollToTop } = useScroll();
 
   const [search, setSearch] = useState('');
@@ -77,8 +86,8 @@ export default function CoinSelect({
   }, [coinList, data?.flatAccountAssets, variant]);
 
   const baseChainList = useMemo(
-    () => chainList || baseCoinList?.map((item) => item.chain).filter((chain, index, self) => self.findIndex((t) => isSameChain(t, chain)) === index),
-    [baseCoinList, chainList],
+    () => chainList || getfilteredChainsByChainId(baseCoinList, { disableDupeEthermint: isDisableDupeEthermint }),
+    [baseCoinList, chainList, isDisableDupeEthermint],
   );
 
   const currentSelectedChain = useMemo(
@@ -89,7 +98,6 @@ export default function CoinSelect({
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
   // FIXME apr가져오는 비즈니스 로직 필요.
-
   const computedAssetValues = useMemo(() => {
     return (
       baseCoinList?.map((item) => {
@@ -139,9 +147,9 @@ export default function CoinSelect({
   }, [computedAssetValues, sortOption, variant]);
 
   const filteredCoinList = useMemo(() => {
-    const filteredAssetsByChain = currentSelectedChainId
-      ? sortedAssets.filter((item) => isMatchingUniqueChainId(item.chain, currentSelectedChainId)) || []
-      : sortedAssets || [];
+    const filteredAssetsByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId, {
+      disableDupeEthermint: isDisableDupeEthermint,
+    });
 
     if (!!search && debouncedSearch.length > 1) {
       return (
@@ -155,7 +163,7 @@ export default function CoinSelect({
       );
     }
     return filteredAssetsByChain.slice(0, viewLimit);
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets, viewLimit]);
+  }, [currentSelectedChainId, debouncedSearch, isDisableDupeEthermint, search, sortedAssets, viewLimit]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {

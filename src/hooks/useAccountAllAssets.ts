@@ -21,6 +21,7 @@ type UseAccountAllAssets =
       filterByPreferAccountType?: boolean;
       disableHiddenFilter?: boolean;
       disableBalanceFilter?: boolean;
+      disableDupeEthermint?: boolean;
       config?: UseQueryOptions<AccountAllAssets | null>;
     }
   | undefined;
@@ -30,6 +31,7 @@ export function useAccountAllAssets({
   filterByPreferAccountType = false,
   disableHiddenFilter = true,
   disableBalanceFilter = true,
+  disableDupeEthermint = false,
   config,
 }: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
@@ -84,6 +86,10 @@ export function useAccountAllAssets({
           return true;
         })
         .filter((item) => {
+          if (disableDupeEthermint) {
+            return true;
+          }
+
           const isDuplicatedEVMAsset =
             item.chain.chainType === 'cosmos' &&
             item.chain.isEvm &&

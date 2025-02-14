@@ -25,8 +25,9 @@ import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { UniqueChainId } from '@/types/chain';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import { getFilteredAssetsByChainId } from '@/utils/asset';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -104,7 +105,7 @@ export default function Entry() {
     });
   })();
 
-  const hideSmallValueAssets = (() => {
+  const hideSmallValueAssets = useMemo(() => {
     if (!isBalanceVisible) {
       return computedAssetValues.filter((coin) => {
         return gte(coin.value, '0.001');
@@ -112,23 +113,26 @@ export default function Entry() {
     }
 
     return computedAssetValues;
-  })();
+  }, [computedAssetValues, isBalanceVisible]);
 
-  const sortedAssets = (() =>
-    hideSmallValueAssets.sort((a, b) => {
-      if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-        return Number(minus(b.value, a.value));
-      }
+  const sortedAssets = useMemo(
+    () =>
+      hideSmallValueAssets.sort((a, b) => {
+        if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+          return Number(minus(b.value, a.value));
+        }
 
-      if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-        return a.asset.symbol.localeCompare(b.asset.symbol);
-      }
+        if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+          return a.asset.symbol.localeCompare(b.asset.symbol);
+        }
 
-      return 0;
-    }))();
+        return 0;
+      }),
+    [dashboardCoinSortKey, hideSmallValueAssets],
+  );
 
   const filteredAssetsBySearch = useMemo(() => {
-    const filterdByChain = currentSelectedChainId ? sortedAssets.filter((asset) => isMatchingUniqueChainId(asset.chain, currentSelectedChainId)) : sortedAssets;
+    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
 
     if (!!search && debouncedSearch.length > 1) {
       return (

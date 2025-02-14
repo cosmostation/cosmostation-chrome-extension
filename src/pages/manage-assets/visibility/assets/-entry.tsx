@@ -18,7 +18,6 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentCustomCW20Tokens } from '@/hooks/useCurrentCustomCW20Tokens';
 import { useCurrentCustomERC20Tokens } from '@/hooks/useCurrentCustomERC20Tokens';
@@ -29,6 +28,7 @@ import { Route as ImportToken } from '@/pages/manage-assets/import/assets';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
+import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
 import { gt, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
@@ -83,8 +83,6 @@ export default function Entry() {
 
   const { customAssets } = useCustomAssets();
 
-  const { flatChainList } = useChainList();
-
   const [viewLimit, setViewLimit] = useState(30);
 
   const [search, setSearch] = useState('');
@@ -130,13 +128,7 @@ export default function Entry() {
 
   const baseCoinList = useMemo(() => currentAccountAllAssets?.flatAccountAssets || [], [currentAccountAllAssets?.flatAccountAssets]);
 
-  const chainList = useMemo(
-    () =>
-      flatChainList.filter((item) =>
-        baseCoinList.some((coin) => coin.chain.id === item.id && coin.chain.chainType === item.chainType && coin.chain.chainId === item.chainId),
-      ),
-    [baseCoinList, flatChainList],
-  );
+  const chainList = useMemo(() => getfilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
   const currentSelectedChain = useMemo(
     () => chainList.find((item) => isMatchingUniqueChainId(item, currentSelectedChainId)),
@@ -162,25 +154,23 @@ export default function Entry() {
     );
   }, [baseCoinList, coinGeckoPrice, currency]);
 
-  const sortedAssets = computedAssetValues.sort((a, b) => {
-    if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-      return Number(minus(b.value, a.value));
-    }
-
-    if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-      return a.asset.symbol.localeCompare(b.asset.symbol);
-    }
-
-    return 0;
-  });
-
-  const filteredCoinListWithChain = useMemo(
+  const sortedAssets = useMemo(
     () =>
-      currentSelectedChain
-        ? sortedAssets.filter((item) => currentSelectedChain?.id === item.chain.id && currentSelectedChain.chainId === item.chain.chainId) || []
-        : sortedAssets || [],
-    [currentSelectedChain, sortedAssets],
+      computedAssetValues.sort((a, b) => {
+        if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+          return Number(minus(b.value, a.value));
+        }
+
+        if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+          return a.asset.symbol.localeCompare(b.asset.symbol);
+        }
+
+        return 0;
+      }),
+    [computedAssetValues, sortOption],
   );
+
+  const filteredCoinListWithChain = useMemo(() => getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId), [currentSelectedChainId, sortedAssets]);
 
   const filteredCoinListBySearch = useMemo(() => {
     const filteredAssetsByChain = filteredCoinListWithChain;

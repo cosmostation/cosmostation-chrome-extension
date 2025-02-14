@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -7,16 +7,16 @@ import AllNetworkButton from '@/components/AllNetworkButton';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import { Route as SelectSwapCoin } from '@/pages/wallet/swap';
 import type { UniqueChainId } from '@/types/chain';
-import { plus, times } from '@/utils/numbers';
-import { isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
+import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -56,65 +56,40 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice, isLoading } = useCoinGeckoPrice();
 
-  const { groupAccountAssets } = useGroupAccountAssets();
+  const { data: accountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
 
   const [isProcessing, setIsProcessing] = useState(true);
   const [aggregatedTotalValue, setAggregatedTotalValue] = useState('0');
 
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
 
-  const totalVisibleAssets = (() => {
-    if (!groupAccountAssets?.groupAccountAssets || !groupAccountAssets?.singleAccountAssets) {
-      return [];
-    }
-
-    const baseCoinList = [...groupAccountAssets.groupAccountAssets, ...groupAccountAssets.singleAccountAssets];
-
-    return baseCoinList.map((item) => {
-      const displayAmount = item.totalDisplayAmount || '0';
-
-      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
-
-      const value = times(displayAmount, coinPrice);
-
-      return {
-        ...item,
-        value,
-      };
-    });
-  })();
-
-  // FIXME 엣지 케이스 있는지 체크 필요.
-  const chainList = (() => {
-    if ((groupAccountAssets?.groupMap && !Object.values(groupAccountAssets?.groupMap)) || !groupAccountAssets?.singleAccountAssets) {
-      return [];
-    }
-
-    const coinList = [...Object.values(groupAccountAssets.groupMap).flat(), ...groupAccountAssets.singleAccountAssets];
-
-    return coinList.map((item) => item.chain).filter((chain, idx, arr) => arr.findIndex((item) => isSameChain(chain, item)) === idx);
-  })();
+  const chainList = useMemo(() => getfilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
 
   useEffect(() => {
     setIsProcessing(true);
 
-    if (totalVisibleAssets.length === 0) {
+    if (!accountAllAssets?.flatAccountAssets || accountAllAssets.flatAccountAssets.length === 0) {
       return;
     }
 
-    const filteredAssetsByChainId = selectedChainId
-      ? totalVisibleAssets.filter((item) => isMatchingUniqueChainId(item.chain, selectedChainId))
-      : totalVisibleAssets;
+    const filteredAssetsByChainId = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, selectedChainId);
 
     const aggregateValue = filteredAssetsByChainId.reduce((acc, item) => {
-      return plus(acc, item.value);
+      const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals || 0);
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+
+      const value = times(displayAmount, coinPrice);
+
+      return plus(acc, value);
     }, '0');
 
     setAggregatedTotalValue(aggregateValue);
     if (!isLoading) {
       setIsProcessing(false);
     }
-  }, [isLoading, selectedChainId, totalVisibleAssets]);
+  }, [accountAllAssets?.flatAccountAssets, coinGeckoPrice, currency, isLoading, selectedChainId]);
 
   return (
     <>

@@ -52,7 +52,10 @@ export default function Entry({ coinId }: EntryProps) {
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['EVM Style', 'COSMOS Style'];
 
-  const { data: currentAccountAssets } = useAccountAllAssets();
+  const { data: currentAccountAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+    disableDupeEthermint: true,
+  });
 
   const selectedCoin = currentAccountAssets?.flatAccountAssets && currentAccountAssets.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 
