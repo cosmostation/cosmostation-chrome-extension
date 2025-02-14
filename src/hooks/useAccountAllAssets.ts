@@ -229,7 +229,7 @@ export function useAccountAllAssets({
 
       return returnData;
     }
-  }, [accountType, data, filterByPreferAccountType]);
+  }, [accountType, data, disableDupeEthermint, filterByPreferAccountType]);
 
   return { data: returnData, isLoading, error, refetch };
 }

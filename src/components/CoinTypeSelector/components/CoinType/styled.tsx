@@ -77,7 +77,9 @@ export const Badge = styled('div')(({ theme }) => ({
 export const AddressTextContainer = styled('div')({
   width: '100%',
   display: 'flex',
-  justifyContent: 'flex-start',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  rowGap: '0.4rem',
 });
 
 export const AddressText = styled(Typography)(({ theme }) => ({

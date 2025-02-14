@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -19,19 +20,26 @@ export default function Entry() {
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList, flatChainList } = useChainList();
 
-  const customChains = [...chainList.customCosmosChains, ...chainList.customEvmChains];
-  const managedChains = flatChainList.filter((chain) => !customChains.some((customChain) => isSameChain(chain, customChain)));
+  const managedChains = useMemo(
+    () =>
+      flatChainList.filter((chain) => ![...chainList.customCosmosChains, ...chainList.customEvmChains].some((customChain) => isSameChain(chain, customChain))),
+    [chainList.customCosmosChains, chainList.customEvmChains, flatChainList],
+  );
 
-  const mappedAccountTypes = Object.keys(currentPreferAccountType)
-    .map((item) => {
-      const chain = managedChains.find((chain) => chain.id === item);
+  const mappedAccountTypes = useMemo(
+    () =>
+      Object.keys(currentPreferAccountType)
+        .map((item) => {
+          const chain = managedChains.find((chain) => chain.id === item);
 
-      return {
-        chain,
-        accountType: currentPreferAccountType[item],
-      };
-    })
-    .filter((item) => !!item.chain);
+          return {
+            chain,
+            accountType: currentPreferAccountType[item],
+          };
+        })
+        .filter((item) => !!item.chain),
+    [currentPreferAccountType, managedChains],
+  );
 
   const networkCount = mappedAccountTypes.length;
 

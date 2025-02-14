@@ -33,7 +33,8 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
   const { data: multipleAccountTypeWithAddress } = useMultipleAccountTypes();
   const { data: accountAllAssets } = useAccountAllAssets();
   const { data: coinGeckoData } = useCoinGeckoPrice();
-  const selectedAccountType = currentPreferAccountType[chain?.id || ''];
+
+  const selectedAccountType = useMemo(() => currentPreferAccountType[chain?.id || ''], [chain?.id, currentPreferAccountType]);
 
   const mappedMultipleAccountTypes = useMemo(() => {
     if (multipleAccountTypeWithAddress && flatChainList) {
@@ -49,6 +50,11 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
             if (chain?.chainType === 'cosmos') {
               const filteredCosmosAssets = accountAllAssets?.cosmosAccountAssets.filter((asset) => asset.address.address === address);
               const filteredCW20Assets = accountAllAssets?.cw20AccountAssets.filter((asset) => asset.address.address === address);
+
+              const evmAddress =
+                i.accountType.pubkeyStyle === 'keccak256' && chain.isEvm
+                  ? accountAllAssets?.evmAccountAssets.find((evmAsset) => evmAsset.chain.id === i.chainId)?.address.address
+                  : undefined;
 
               const cosmosValueSum =
                 filteredCosmosAssets?.reduce((totalValue, cur) => {
@@ -70,6 +76,7 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
               return {
                 accountType: i.accountType,
                 address: i.address,
+                evmAddress,
                 totalAssetValue,
               };
             }
@@ -106,13 +113,14 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
     accountAllAssets?.bitcoinAccountAssets,
     accountAllAssets?.cosmosAccountAssets,
     accountAllAssets?.cw20AccountAssets,
+    accountAllAssets?.evmAccountAssets,
     coinGeckoData,
     currency,
     flatChainList,
     multipleAccountTypeWithAddress,
   ]);
 
-  const matchedAccountType = mappedMultipleAccountTypes.find((item) => item.chain.id === chain?.id);
+  const matchedAccountType = useMemo(() => mappedMultipleAccountTypes.find((item) => item.chain.id === chain?.id), [chain?.id, mappedMultipleAccountTypes]);
 
   return (
     <StyledBottomSheet

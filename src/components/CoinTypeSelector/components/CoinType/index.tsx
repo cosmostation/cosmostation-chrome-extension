@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -30,6 +31,7 @@ type CoinTypeSelectorProps = {
   accountId: string;
   accountTypeDetails: {
     address: string;
+    evmAddress?: string;
     accountType: ChainAccountType;
     totalAssetValue: string;
   }[];
@@ -50,10 +52,10 @@ export default function CoinTypeSelector({
   const { t } = useTranslation();
   const { accounts, currency } = useExtensionStorageStore((state) => state);
 
-  const isBitcoin = chain.chainType === 'bitcoin';
+  const isBitcoin = useMemo(() => chain.chainType === 'bitcoin', [chain.chainType]);
 
-  const currentAccount = accounts.find((account) => account.id === accountId);
-  const currentAccountIndex = currentAccount?.type === 'MNEMONIC' ? currentAccount.index : '0';
+  const currentAccount = useMemo(() => accounts.find((account) => account.id === accountId), [accountId, accounts]);
+  const currentAccountIndex = useMemo(() => (currentAccount?.type === 'MNEMONIC' ? currentAccount.index : '0'), [currentAccount]);
 
   return (
     <Container>
@@ -96,8 +98,8 @@ export default function CoinTypeSelector({
                   )}
                 </CoinTypeNameContainer>
                 <AddressTextContainer>
-                  {/* FIXME 60패스일때 코스모스, 이더리움 주소 같이 표시되도록 */}
                   <AddressText variant="b4_R">{item.address}</AddressText>
+                  {item.evmAddress && <AddressText variant="b4_R">{item.evmAddress}</AddressText>}
                 </AddressTextContainer>
               </ButtonBodyContainer>
               <ButtonBottomContainer>
