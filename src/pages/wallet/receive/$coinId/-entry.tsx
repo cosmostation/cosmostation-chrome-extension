@@ -8,9 +8,10 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab/index.tsx';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
-import { shorterAddress } from '@/utils/string.ts';
+import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { toastSuccess } from '@/utils/toast.tsx';
 
 import {
@@ -51,17 +52,20 @@ export default function Entry({ coinId }: EntryProps) {
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['EVM Style', 'COSMOS Style'];
 
-  const { data: currentAccountAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
+  const { data: currentAccountAssets } = useAccountAllAssets();
 
   const selectedCoin = currentAccountAssets?.flatAccountAssets && currentAccountAssets.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 
   const isEthermint = selectedCoin?.chain.chainType === 'evm' && selectedCoin.chain.isCosmos;
 
-  const cosmosStyleCoin = isEthermint
+  const isMainCoin = isEqualsIgnoringCase(selectedCoin?.asset.id, NATIVE_EVM_COIN_ADDRESS);
+
+  const isShowCosmosStyle = isEthermint && isMainCoin;
+
+  const cosmosStyleCoin = isShowCosmosStyle
     ? currentAccountAssets?.cosmosAccountAssets.find(
         (item) =>
+          item.asset.id === selectedCoin.chain.mainAssetDenom &&
           item.chain.id === selectedCoin.chain.id &&
           item.address.chainId === selectedCoin.address.chainId &&
           item.address.accountType.hdPath === selectedCoin.address.accountType.hdPath,
@@ -69,7 +73,7 @@ export default function Entry({ coinId }: EntryProps) {
     : undefined;
 
   const coinDenom = (() => {
-    if (isEthermint) {
+    if (isShowCosmosStyle) {
       if (tabValue === 0) {
         return selectedCoin?.asset.id;
       }
@@ -88,7 +92,7 @@ export default function Entry({ coinId }: EntryProps) {
   const symbol = selectedCoin?.asset.symbol || '';
 
   const chainAddress = (() => {
-    if (isEthermint) {
+    if (isShowCosmosStyle) {
       if (tabValue === 0) {
         return selectedCoin.address.address;
       }
@@ -103,7 +107,7 @@ export default function Entry({ coinId }: EntryProps) {
   const chainName = selectedCoin?.chain.name || '';
 
   const coinTypeText = (() => {
-    if (isEthermint) {
+    if (isShowCosmosStyle) {
       if (tabValue === 0) {
         return `${t('pages.wallet.receive.$coinId.entry.contract')} : `;
       }
@@ -139,7 +143,7 @@ export default function Entry({ coinId }: EntryProps) {
   return (
     <BaseBody>
       <Container>
-        {isEthermint && (
+        {isShowCosmosStyle && (
           <FilledTabContainer>
             <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
               {tabLabels.map((item) => (
@@ -190,7 +194,7 @@ export default function Entry({ coinId }: EntryProps) {
           <AddressTopContainer>
             <AddressTopTitleContainer>
               <Base1000Text variant="b3_M">{`${t('pages.wallet.receive.$coinId.entry.myAddress')}
-              ${tabValue === 1 && isEthermint ? ' (Cosmos Style)' : ''}`}</Base1000Text>
+              ${tabValue === 1 && isShowCosmosStyle ? ' (Cosmos Style)' : ''}`}</Base1000Text>
             </AddressTopTitleContainer>
 
             <AddressBodyContainer>
