@@ -71,7 +71,7 @@ export default function CoinSelectBox({
                 <CoinImageContainer src={currentSelectedCoin.asset.image} />
               </InputAdornment>
             ) : null,
-            endAdornment: (
+            endAdornment: remainder.disabled ? null : (
               <InputAdornment position="end">
                 <RightAdormentConatiner>
                   {rightAdornmentComponent}

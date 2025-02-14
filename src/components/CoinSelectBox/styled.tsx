@@ -51,6 +51,13 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
       borderBottom: `0.2rem solid ${theme.palette.color.base600}`,
       transition: 'none',
     },
+
+    '&:hover': {
+      ':hover:not(.Mui-focused):before': {
+        borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+        transition: 'none',
+      },
+    },
   },
 
   '& .MuiInputLabel-standard': {
