@@ -9,7 +9,7 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import { useCurrentAccount } from './useCurrentAccount';
 
-type UseAccountAssetsResponse = AccountAllAssets & {
+export type UseAccountAssetsResponse = AccountAllAssets & {
   flatAccountAssets: FlatAccountAssets[];
   allCosmosAccountAssets: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];

@@ -100,6 +100,7 @@ export interface CustomEvmChain extends ChainBase {
   feeInfo: EvmFeeInfo;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
+  isDiableSend?: boolean;
   explorer: ChainExplorer;
 }
 

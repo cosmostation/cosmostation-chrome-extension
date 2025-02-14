@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isValidAddress } from 'ethereumjs-util';
+import { ethers } from 'ethers';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -7,20 +10,28 @@ import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
-import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-// import Fee from '@/components/Fee';
+import EVMFee from '@/components/Fee/EVMFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
-import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
-import { useChainList } from '@/hooks/useChainList.ts';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
+import { ERC20_ABI } from '@/constants/evm/abi.ts';
+import { DEFAULT_GAS_MULTIPLY } from '@/constants/evm/fee.ts';
+import { useENS } from '@/hooks/evm/useENS.ts';
+import { useEstimateGas } from '@/hooks/evm/useEstimateGas.ts';
+import { useFee } from '@/hooks/evm/useFee.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
+import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import type { UniqueChainId } from '@/types/chain.ts';
-import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, shorterAddress } from '@/utils/string.ts';
+import { ethersProvider } from '@/utils/ethereum/ethers.ts';
+import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign.ts';
+import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { isDecimal, isEqualsIgnoringCase, shorterAddress, toHex } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import {
@@ -31,9 +42,9 @@ import {
   CoinSymbolText,
   Divider,
   EstimatedValueTextContainer,
-  IBCSendText,
   InputWrapper,
 } from './styled.tsx';
+import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
@@ -48,26 +59,26 @@ export default function EVM({ coinId }: EVMProps) {
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { flatChainList } = useChainList();
-  const { data } = useAccountAssets();
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
 
-  const parsedCoinId = parseCoinId(coinId);
+  const [isDisabled, setIsDisabled] = useState(false);
 
-  const selectedCoinToSend = (() => {
-    if (!data) return undefined;
+  const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
-    if (parsedCoinId.chainType === 'evm') {
-      const aggregatedEVMAccountAssets = [
-        ...data.evmAccountAssets,
-        ...data.evmAccountCustomAssets,
-        ...data.erc20AccountAssets,
-        ...data.customErc20AccountAssets,
-      ];
+  const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
+  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
-      return aggregatedEVMAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
+  const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
 
-    return undefined;
+  const selectedCoinToSend = getEVMAccountAsset();
+  const selectedChainId = (() => {
+    const { chainId, chainType } = parseCoinId(coinId);
+
+    return getUniqueChainId({
+      id: chainId,
+      chainType: chainType,
+    });
   })();
 
   const coinImageURL = selectedCoinToSend?.asset.image || '';
@@ -76,11 +87,11 @@ export default function EVM({ coinId }: EVMProps) {
   const coinSymbol = selectedCoinToSend?.asset.symbol || '';
   const coinDenom = selectedCoinToSend?.asset.id || '';
   const shortCoinDenom = shorterAddress(coinDenom, 16);
-  const coinDecimal = selectedCoinToSend?.asset.decimals || 0;
+  const coinDecimals = selectedCoinToSend?.asset.decimals || 0;
 
   const coinType = (() => {
     if (selectedCoinToSend?.asset.type === 'erc20') {
-      return t('pages.wallet.send.$coinId.entry.contract');
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.contract');
     }
 
     return '';
@@ -90,29 +101,305 @@ export default function EVM({ coinId }: EVMProps) {
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
-  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
+  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
 
-  console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
+  const [inputRecipientAddress, setInputRecipientAddress] = useState('');
+  const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
 
-  // FIXME: 밸런스 그대로를 입력할 지 예상 가스비를 제외한 값을 맥스값으로 설정할 지 결정 필요.
-  const maxAmount = '1000000000000';
+  const ens = useENS({ coinId, domain: debouncedInputRecipientAddress });
 
-  const [recipientAddress, setRecipientAddress] = useState('');
+  const nameResolvedAddress = ens.data;
+  const recipientAddress = useMemo(() => nameResolvedAddress || debouncedInputRecipientAddress, [debouncedInputRecipientAddress, nameResolvedAddress]);
+
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
 
-  const displaySendAmountPrice = sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0';
+  const displaySendAmountPrice = useMemo(() => (sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0'), [coinPrice, sendDisplayAmount]);
 
-  const [inputMemo, setInputMemo] = useState('');
+  const baseSendAmount = useMemo(() => toBaseDenomAmount(sendDisplayAmount || '0', coinDecimals), [coinDecimals, sendDisplayAmount]);
 
-  const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
-  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
+  const sendTx = useMemo(() => {
+    if (!gt(sendDisplayAmount || '0', '0') || !recipientAddress) return undefined;
 
-  // TODO
-  // const recipientChainList =
-  const [currentRecipientChainId, setCurrentRecipientChainId] = useState<UniqueChainId>();
-  const currentRecipientChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, currentRecipientChainId));
+    const amount = toHex(toBaseDenomAmount(sendDisplayAmount || '0', coinDecimals), { addPrefix: true, isStringNumber: true });
 
-  console.log('🚀 ~ Entry ~ currentRecipientChain:', currentRecipientChain);
+    const senderAddress = selectedCoinToSend?.address.address || '';
+
+    if (selectedCoinToSend?.asset.type !== 'erc20') {
+      return {
+        from: senderAddress,
+        to: recipientAddress,
+        value: amount,
+      };
+    }
+    const rpcURLs = selectedCoinToSend?.chain.rpcUrls.map((item) => item.url) || [];
+
+    const provider = ethersProvider(rpcURLs[0]);
+
+    const tokenAddress = selectedCoinToSend?.asset.id;
+
+    const erc20Contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+
+    const data = isValidAddress(recipientAddress) ? erc20Contract.interface.encodeFunctionData('transfer', [recipientAddress, amount]) : undefined;
+
+    return {
+      from: senderAddress,
+      to: tokenAddress,
+      data,
+    };
+  }, [
+    coinDecimals,
+    recipientAddress,
+    selectedCoinToSend?.address.address,
+    selectedCoinToSend?.asset.id,
+    selectedCoinToSend?.asset.type,
+    selectedCoinToSend?.chain.rpcUrls,
+    sendDisplayAmount,
+  ]);
+  const [debouncedSendTx] = useDebounce(sendTx, 500);
+
+  const fee = useFee({ coinId });
+
+  const estimateGas = useEstimateGas({ coinId, bodyParams: debouncedSendTx && [debouncedSendTx] });
+
+  const [currentFeeStepKey, setCurrentFeeStepKey] = useState(1);
+
+  const [customGasPrice, setCustomGasPrice] = useState('');
+
+  const [customMaxBaseFeeAmount, setCustomMaxBaseFeeAmount] = useState('');
+  const [customPriorityFeeAmount, setCustomPriorityFeeAmount] = useState('');
+
+  const currentEIP1559Fee = useMemo(() => {
+    if (fee.type === 'EIP-1559') {
+      const customFeeStep = {
+        maxBaseFeePerGas: customMaxBaseFeeAmount,
+        maxPriorityFeePerGas: customPriorityFeeAmount,
+      };
+
+      return [...(fee?.currentFee || []), customFeeStep][currentFeeStepKey];
+    }
+
+    return undefined;
+  }, [currentFeeStepKey, customMaxBaseFeeAmount, customPriorityFeeAmount, fee?.currentFee, fee.type]);
+
+  const gasRateList = useMemo(() => {
+    if (fee.type === 'BASIC') {
+      const baseGasPrice = fee.currentGasPrice || '0';
+
+      return [baseGasPrice, times(baseGasPrice, '1.2'), times(baseGasPrice, '2'), customGasPrice];
+    }
+
+    if (fee.type === 'EIP-1559') {
+      const defaultMaxBaseFeePerGasList = fee.currentFee?.map((item) => item.maxBaseFeePerGas) || [];
+
+      return [...defaultMaxBaseFeePerGasList, customMaxBaseFeeAmount];
+    }
+
+    return undefined;
+  }, [customGasPrice, customMaxBaseFeeAmount, fee.currentFee, fee.currentGasPrice, fee.type]);
+
+  const currentGasRate = (() => {
+    return gasRateList?.[currentFeeStepKey] || '0';
+  })();
+
+  const [customGasAmount, setGasAmount] = useState('');
+
+  const gasMultiplier = selectedCoinToSend?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
+
+  const baseEstimateGas = useMemo(
+    () => times(BigInt(estimateGas.data?.result || '21000').toString(10) || '0', gasMultiplier),
+    [estimateGas.data?.result, gasMultiplier],
+  );
+
+  const gasList = useMemo(() => [...Array(3).fill(baseEstimateGas), customGasAmount], [baseEstimateGas, customGasAmount]);
+
+  const currentGas = useMemo(() => gasList[currentFeeStepKey] || '0', [currentFeeStepKey, gasList]);
+
+  const defaultFeeOption = useMemo(
+    () => ({
+      maxBaseFeePerGas: customMaxBaseFeeAmount || fee.currentFee?.[0].maxBaseFeePerGas,
+      maxPriorityFeePerGas: customPriorityFeeAmount || fee.currentFee?.[0].maxPriorityFeePerGas,
+      gasPrice: customGasPrice || gasRateList?.[0],
+      gas: customGasAmount || gasList?.[0],
+    }),
+    [customGasAmount, customGasPrice, customMaxBaseFeeAmount, customPriorityFeeAmount, fee.currentFee, gasList, gasRateList],
+  );
+
+  const estimatedFeeBaseAmount = useMemo(() => times(currentGasRate, currentGas), [currentGas, currentGasRate]);
+
+  const finalizedTransaction = useMemo(() => {
+    if (!debouncedSendTx || !gt(currentGas, '0') || !gt(currentGasRate, '0') || !fee.type || !selectedCoinToSend?.chain.chainId) {
+      return null;
+    }
+
+    if (fee.type === 'EIP-1559' && (!currentEIP1559Fee || !currentEIP1559Fee.maxBaseFeePerGas || !currentEIP1559Fee.maxPriorityFeePerGas)) {
+      return null;
+    }
+
+    return {
+      from: debouncedSendTx.from,
+      to: debouncedSendTx.to,
+      data: debouncedSendTx.data,
+      value: BigInt(debouncedSendTx.value || '0').toString(10),
+      gasLimit: currentGas,
+      chainId: BigInt(selectedCoinToSend.chain.chainId).toString(10),
+      type: fee.type === 'EIP-1559' ? 2 : undefined,
+      gasPrice: fee.type === 'BASIC' ? BigInt(currentGasRate).toString(10) : undefined,
+      maxFeePerGas: fee.type === 'EIP-1559' ? BigInt(currentEIP1559Fee?.maxBaseFeePerGas || '0').toString(10) : undefined,
+      maxPriorityFeePerGas: fee.type === 'EIP-1559' ? BigInt(currentEIP1559Fee?.maxPriorityFeePerGas || '0').toString(10) : undefined,
+    };
+  }, [currentEIP1559Fee, currentGas, currentGasRate, debouncedSendTx, fee.type, selectedCoinToSend?.chain.chainId]);
+
+  const addressInputErrorMessage = useMemo(() => {
+    if (recipientAddress) {
+      if (
+        (recipientAddress.startsWith('0x') && !isValidAddress(recipientAddress)) ||
+        isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)
+      ) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidAddress');
+      }
+
+      if (recipientAddress.endsWith('.eth') && !nameResolvedAddress && !ens.isLoading) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidENSAddress');
+      }
+
+      if (!recipientAddress.endsWith('.eth') && !recipientAddress.startsWith('0x')) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidENSFormat');
+      }
+    }
+
+    return '';
+  }, [ens.isLoading, nameResolvedAddress, recipientAddress, selectedCoinToSend?.address.address, t]);
+
+  const sendAmountInputErrorMessage = useMemo(() => {
+    if (sendDisplayAmount && !gt(sendDisplayAmount || '0', '0')) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidAmount');
+    }
+
+    if (sendDisplayAmount && gt(sendDisplayAmount || '0', displayAvailableAmount)) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
+    }
+
+    return '';
+  }, [displayAvailableAmount, sendDisplayAmount, t]);
+
+  const errorMessages = useMemo(() => {
+    if (selectedCoinToSend?.chain.isDiableSend) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.bankLocked');
+    }
+
+    if (addressInputErrorMessage) {
+      return addressInputErrorMessage;
+    }
+
+    if (baseAvailableAmount === '0') {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidAmount');
+    }
+
+    if (sendAmountInputErrorMessage) {
+      return sendAmountInputErrorMessage;
+    }
+
+    if (isEqualsIgnoringCase(selectedCoinToSend?.asset.id, NATIVE_EVM_COIN_ADDRESS)) {
+      const totalCostAmount = plus(baseSendAmount, estimatedFeeBaseAmount);
+
+      if (gt(totalCostAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
+      }
+    } else {
+      if (gt(estimatedFeeBaseAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientFee');
+      }
+
+      if (gt(baseSendAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
+      }
+    }
+
+    if (!sendTx) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.noTransaction');
+    }
+
+    return '';
+  }, [
+    addressInputErrorMessage,
+    baseAvailableAmount,
+    baseSendAmount,
+    estimatedFeeBaseAmount,
+    selectedCoinToSend?.asset.id,
+    selectedCoinToSend?.chain.isDiableSend,
+    sendAmountInputErrorMessage,
+    sendTx,
+    t,
+  ]);
+
+  const handleOnClickMax = () => {
+    if (selectedCoinToSend?.asset.type !== 'erc20') {
+      const maxAmount = minus(baseAvailableAmount, estimatedFeeBaseAmount);
+
+      setSendDisplayAmount(gt(maxAmount, '0') ? toDisplayDenomAmount(maxAmount, coinDecimals) : '0');
+    } else {
+      setSendDisplayAmount(displayAvailableAmount);
+    }
+  };
+
+  const handleOnClickConfirm = useCallback(async () => {
+    try {
+      setIsOpenTxProcessingOverlay(true);
+
+      if (!selectedCoinToSend?.chain) {
+        throw new Error('Chain not found');
+      }
+
+      if (!finalizedTransaction) {
+        throw new Error('Failed to calculate final transaction');
+      }
+
+      const keyPair = getKeypair(selectedCoinToSend.chain, currentAccount, currentPassword);
+      const privateKey = keyPair.privateKey;
+
+      const rpcURLs = selectedCoinToSend?.chain.rpcUrls.map((item) => item.url) || [];
+
+      if (!rpcURLs.length) {
+        throw new Error('RPC URLs not found');
+      }
+
+      const response = await signAndExecuteTxSequentially(privateKey, finalizedTransaction, rpcURLs);
+
+      if (!response) {
+        throw new Error('Failed to send transaction');
+      }
+
+      navigate({
+        to: TxResult.to,
+        search: {
+          address: recipientAddress,
+          coinId,
+          txHash: response.hash,
+        },
+      });
+    } catch {
+      navigate({
+        to: TxResult.to,
+        search: {
+          coinId,
+        },
+      });
+    } finally {
+      setIsOpenTxProcessingOverlay(false);
+    }
+  }, [coinId, currentAccount, currentPassword, finalizedTransaction, navigate, recipientAddress, selectedCoinToSend?.chain]);
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
+  useEffect(() => {
+    setIsDisabled(true);
+
+    debouncedEnabled();
+  }, [debouncedEnabled, sendTx, estimateGas.isFetching]);
 
   return (
     <>
@@ -120,7 +407,7 @@ export default function EVM({ coinId }: EVMProps) {
         <>
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.entry.send')}`}</CoinSymbolText>
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.EVM.index.send')}`}</CoinSymbolText>
             {coinType && (
               <CoinDenomContainer>
                 <Typography variant="b4_R">{`${coinType} :`}</Typography>
@@ -131,28 +418,18 @@ export default function EVM({ coinId }: EVMProps) {
           </CoinContainer>
 
           <InputWrapper>
-            <ChainSelectBox
-              chainList={flatChainList}
-              currentChainId={currentRecipientChainId}
-              onClickChain={(chainId) => {
-                setCurrentRecipientChainId(chainId);
-              }}
-              label={t('pages.wallet.send.$coinId.entry.recipientNetwork')}
-              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.entry.ibcSend')}</IBCSendText>}
-              bottomSheetTitle={t('pages.wallet.send.$coinId.entry.selectRecipientNetwork')}
-              bottomSheetSearchPlaceholder={t('pages.wallet.send.$coinId.entry.searchRecipientNetwork')}
-            />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.entry.recipientAddress')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
+              label={t('pages.wallet.send.$coinId.Entry.EVM.index.recipientAddress')}
+              error={!!addressInputErrorMessage}
+              helperText={addressInputErrorMessage || nameResolvedAddress || ''}
+              isLoadingHelperText={ens.isLoading}
+              value={inputRecipientAddress}
+              onChange={(e) => setInputRecipientAddress(e.target.value)}
               slotProps={{
                 input: {
                   endAdornment: (
                     <InputAdornment position="end">
-                      <AddressBookButton disabled={!currentRecipientChainId} onClick={() => setIsOpenAddressBottomSheet(true)}>
+                      <AddressBookButton onClick={() => setIsOpenAddressBottomSheet(true)}>
                         <AddressBookIcon />
                       </AddressBookButton>
                     </InputAdornment>
@@ -161,12 +438,12 @@ export default function EVM({ coinId }: EVMProps) {
               }}
             />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.entry.amount')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
+              label={t('pages.wallet.send.$coinId.Entry.EVM.index.amount')}
+              error={!!sendAmountInputErrorMessage}
+              helperText={sendAmountInputErrorMessage}
               value={sendDisplayAmount}
               onChange={(e) => {
-                if (!isDecimal(e.currentTarget.value, coinDecimal || 0) && e.currentTarget.value) {
+                if (!isDecimal(e.currentTarget.value, coinDecimals || 0) && e.currentTarget.value) {
                   return;
                 }
 
@@ -186,26 +463,8 @@ export default function EVM({ coinId }: EVMProps) {
                 },
               }}
               rightBottomAdornment={
-                selectedCoinToSend && (
-                  <BalanceButton
-                    onClick={() => {
-                      setSendDisplayAmount(maxAmount);
-                    }}
-                    coin={selectedCoinToSend?.asset}
-                    balance={baseAvailableAmount}
-                  />
-                )
+                selectedCoinToSend && <BalanceButton onClick={handleOnClickMax} coin={selectedCoinToSend?.asset} balance={baseAvailableAmount} />
               }
-            />
-            <StandardInput
-              multiline
-              maxRows={3}
-              label={t('pages.wallet.send.$coinId.entry.memo')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
-              value={inputMemo}
-              // TODO 숫자만 입력할 수 있도록 처리 필요.
-              onChange={(e) => setInputMemo(e.target.value)}
             />
           </InputWrapper>
         </>
@@ -215,47 +474,62 @@ export default function EVM({ coinId }: EVMProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          {/* <Fee
+          <EVMFee
+            feeStepKey={currentFeeStepKey}
+            gasRate={gasRateList}
+            gas={currentGas}
+            defaultFeeOption={defaultFeeOption}
+            chainId={selectedChainId}
+            feeType={fee.type}
+            disableConfirm={!!errorMessages || isDisabled || !finalizedTransaction}
+            isLoading={isDisabled}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          /> */}
+            onClickFeeStep={(index) => {
+              setCurrentFeeStepKey(index);
+            }}
+            onChangeGas={(gas) => {
+              setGasAmount(gas);
+            }}
+            onChangeGasPrice={(gasPrice) => {
+              setCustomGasPrice(gasPrice);
+            }}
+            onChangeMaxBaseFee={(maxBaseFee) => {
+              setCustomMaxBaseFeeAmount(maxBaseFee);
+            }}
+            onChangePriorityFee={(priorityFee) => {
+              setCustomPriorityFeeAmount(priorityFee);
+            }}
+          />
         </>
       </BaseFooter>
 
-      {currentRecipientChainId && (
+      {selectedCoinToSend?.chain && (
         <AddressBottomSheet
           open={isOpenAddressBottomSheet}
           onClose={() => setIsOpenAddressBottomSheet(false)}
-          chainId={currentRecipientChainId}
-          headerTitle={t('pages.wallet.send.$coinId.entry.chooseRecipientAddress')}
-          onClickAddress={(address, memo) => {
-            setRecipientAddress(address);
-            if (memo) {
-              setInputMemo(memo);
-            }
+          filterAddress={selectedCoinToSend?.address.address}
+          chainId={getUniqueChainId(selectedCoinToSend.chain)}
+          headerTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.chooseRecipientAddress')}
+          onClickAddress={(address) => {
+            setInputRecipientAddress(address);
           }}
         />
       )}
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.entry.sendReview')}
-        contentsSubTitle={t('pages.wallet.send.$coinId.entry.sendReviewSub')}
-        confirmButtonText={t('pages.wallet.send.$coinId.entry.send')}
-        onClickCancel={() => {
-          console.log('onClickCancel');
-        }}
-        onClickConfirm={() => {
-          navigate({
-            to: TxResult.to,
-            search: {
-              address: '',
-              coinId,
-              txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
-            },
-          });
-        }}
+        contentsTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.sendReview')}
+        contentsSubTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.sendReviewSub')}
+        confirmButtonText={t('pages.wallet.send.$coinId.Entry.EVM.index.send')}
+        onClickConfirm={handleOnClickConfirm}
+      />
+
+      <TxProcessingOverlay
+        open={isOpenTxProcessingOverlay}
+        title={t('pages.wallet.send.$coinId.Entry.EVM.index.txProcessing')}
+        message={t('pages.wallet.send.$coinId.Entry.EVM.index.txProcessingSub')}
       />
     </>
   );

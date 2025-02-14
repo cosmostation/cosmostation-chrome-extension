@@ -11,25 +11,27 @@ type EntryProps = {
 };
 
 export default function Entry({ coinId }: EntryProps) {
-  const currentAccountAsset = useGetAccountAsset({ coinId });
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
 
-  if (currentAccountAsset?.asset.chainType === 'cosmos') {
+  const selectedAccountAsset = getAccountAsset();
+
+  if (selectedAccountAsset?.asset.chainType === 'cosmos') {
     return <Cosmos coinId={coinId} />;
   }
 
-  if (currentAccountAsset?.asset.chainType === 'evm') {
+  if (selectedAccountAsset?.asset.chainType === 'evm') {
     return <EVM coinId={coinId} />;
   }
 
-  if (currentAccountAsset?.asset.chainType === 'sui') {
+  if (selectedAccountAsset?.asset.chainType === 'sui') {
     return <Sui coinId={coinId} />;
   }
 
-  if (currentAccountAsset?.asset.chainType === 'aptos') {
+  if (selectedAccountAsset?.asset.chainType === 'aptos') {
     return <Aptos coinId={coinId} />;
   }
 
-  if (currentAccountAsset?.asset.chainType === 'bitcoin') {
+  if (selectedAccountAsset?.asset.chainType === 'bitcoin') {
     return <Bitcoin coinId={coinId} />;
   }
 

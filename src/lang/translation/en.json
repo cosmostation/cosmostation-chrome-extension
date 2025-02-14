@@ -145,6 +145,57 @@
           "networkFee": "Network Fee",
           "continue": "Continue"
         }
+      },
+      "EVMFee": {
+        "Components": {
+          "FeeSettingBottomSheet": {
+            "components": {
+              "EIP1559FeeCustomOverlay": {
+                "index": {
+                  "inputGasAmountError": "invalid gas amount",
+                  "inputMaxBaseFeeAmountError": "invalid max base fee amount",
+                  "inputPriorityFeeAmountError": "priority fee should be smaller than max base fee",
+                  "networkFee": "Network Fee",
+                  "feeToken": "Fee Token",
+                  "gasAmount": "Gas Amount",
+                  "maxbaseFee": "Max Base Fee",
+                  "priorityFee": "Priority Fee",
+                  "inform": "How Network Fees are paid",
+                  "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
+                  "done": "Setup Complete"
+                }
+              },
+              "GasPriceCustomOverlay": {
+                "index": {
+                  "inputGasAmountError": "invalid gas amount",
+                  "inputMaxBaseFeeAmountError": "invalid max base fee amount",
+                  "networkFee": "Network Fee",
+                  "feeToken": "Fee Token",
+                  "gasAmount": "Gas Amount",
+                  "maxbaseFee": "Max Base Fee",
+                  "inform": "How Network Fees are paid",
+                  "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
+                  "done": "Setup Complete"
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "FeeSettingBottomSheet": {
+            "components": {
+              "OptionButton": {
+                "index": {
+                  "feeToken": "Fee Token"
+                }
+              }
+            }
+          }
+        },
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -1078,6 +1129,27 @@
               "TxProcessingOverlay": {
                 "header": "Transaction Result",
                 "confirm": "Confirm"
+              }
+            },
+            "EVM": {
+              "index": {
+                "contract": "Contract",
+                "invalidAddress": "Invalid address",
+                "invalidENSAddress": "Failed to resolve ENS address",
+                "invalidENSFormat": "Invalid ENS format",
+                "invalidAmount": "Invalid amount",
+                "insufficientAmount": "Insufficient amount",
+                "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
+                "insufficientFee": "Insufficient fee",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "noTransaction": "Failed to create transaction"
               }
             }
           }

@@ -5,7 +5,7 @@ export async function get<T>(path: string, config?: AxiosRequestConfig): Promise
   const { data } = await axios.get<T>(path, {
     ...config,
     headers: {
-      Cosmostation: `extension/${String(process.env.VERSION)}`,
+      Cosmostation: `extension/${__APP_VERSION__}`,
       ...config?.headers,
     },
   });
@@ -16,7 +16,7 @@ export async function post<T>(path: string, body?: unknown, config?: AxiosReques
   const { data } = await axios.post<T>(path, body, {
     ...config,
     headers: {
-      Cosmostation: `extension/${String(process.env.VERSION)}`,
+      Cosmostation: `extension/${__APP_VERSION__}`,
       ...config?.headers,
     },
   });

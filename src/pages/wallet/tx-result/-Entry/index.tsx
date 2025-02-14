@@ -1,6 +1,6 @@
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
+import EVM from './EVM';
 import Sui from './Sui';
 
 type EntryProps = {
@@ -10,27 +10,27 @@ type EntryProps = {
 };
 
 export default function Entry({ coinId, txHash, address }: EntryProps) {
-  // NOTE 아예 코인을 찾아주는 훅을 만들어 버리자.
-  const { data } = useAccountAllAssets();
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
 
-  //   if (currentCoin?.asset.chainType === 'cosmos') {
+  const selectedAccountAsset = getAccountAsset();
+
+  //   if (selectedAccountAsset?.asset.chainType === 'cosmos') {
   //     return <Cosmos coinId={coinId} />;
   //   }
 
-  //   if (currentCoin?.asset.chainType === 'evm') {
-  //     return <EVM coinId={coinId} />;
-  //   }
+  if (selectedAccountAsset?.asset.chainType === 'evm') {
+    return <EVM coinId={coinId} txHash={txHash} address={address} />;
+  }
 
-  if (currentCoin?.asset.chainType === 'sui') {
+  if (selectedAccountAsset?.asset.chainType === 'sui') {
     return <Sui coinId={coinId} txHash={txHash} address={address} />;
   }
 
-  //   if (currentCoin?.asset.chainType === 'aptos') {
+  //   if (selectedAccountAsset?.asset.chainType === 'aptos') {
   //     return <Aptos coinId={coinId} />;
   //   }
 
-  //   if (currentCoin?.asset.chainType === 'bitcoin') {
+  //   if (selectedAccountAsset?.asset.chainType === 'bitcoin') {
   //     return <Cosmos coinId={coinId} />;
   //   }
 

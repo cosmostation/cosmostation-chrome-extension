@@ -113,3 +113,16 @@ export function isDecimal(number: string, decimal: number) {
 
   return true;
 }
+
+export function calculatePercentiles(numbers: number[], percentiles: number[]) {
+  if (numbers.length === 0) {
+    return [];
+  }
+
+  const sortedNumbers = numbers.slice().sort((a, b) => a - b);
+
+  return percentiles.map((percentile) => {
+    const index = Number(minus(ceil(times(divide(percentile, '100'), sortedNumbers.length)), '1'));
+    return sortedNumbers[index];
+  });
+}

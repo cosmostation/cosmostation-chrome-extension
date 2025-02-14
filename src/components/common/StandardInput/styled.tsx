@@ -1,5 +1,5 @@
 import type { TextFieldProps } from '@mui/material';
-import { TextField } from '@mui/material';
+import { CircularProgress, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import IconButton from '../IconButton';
@@ -150,6 +150,12 @@ export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ th
   width: '100%',
 
   color: props['data-is-error'] ? 'red' : theme.palette.color.base1300,
+}));
+
+export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
+  '&.MuiCircularProgress-root': {
+    color: theme.palette.accentColor.purple200,
+  },
 }));
 
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({

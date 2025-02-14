@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from 'react';
+
 import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 
 import { useAccountAllAssets } from './useAccountAllAssets';
@@ -18,28 +20,36 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
     disableBalanceFilter: options?.disableBalanceFilter || true,
   });
 
-  const selectedAsset = (() => {
+  const assetFinders = useMemo(() => {
+    return {
+      cosmos: () => accountAllAssets?.allCosmosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      evm: () => accountAllAssets?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      aptos: () => accountAllAssets?.aptosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      sui: () => accountAllAssets?.suiAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      bitcoin: () => accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+    };
+  }, [
+    accountAllAssets?.allCosmosAccountAssets,
+    accountAllAssets?.allEVMAccountAssets,
+    accountAllAssets?.aptosAccountAssets,
+    accountAllAssets?.bitcoinAccountAssets,
+    accountAllAssets?.suiAccountAssets,
+    coinId,
+  ]);
+
+  const getAccountAsset = useCallback(() => {
     const parsedCoinId = parseCoinId(coinId);
     const { chainType } = parsedCoinId;
 
-    if (chainType === 'cosmos') {
-      return accountAllAssets?.allCosmosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-    }
-    if (chainType === 'evm') {
-      return accountAllAssets?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-    }
-    if (chainType === 'aptos') {
-      return accountAllAssets?.aptosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-    }
-    if (chainType === 'sui') {
-      return accountAllAssets?.suiAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-    }
-    if (chainType === 'bitcoin') {
-      return accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-    }
+    return assetFinders[chainType]?.();
+  }, [assetFinders, coinId]);
 
-    return undefined;
-  })();
-
-  return selectedAsset;
+  return {
+    getAccountAsset,
+    getCosmosAccountAsset: () => assetFinders.cosmos(),
+    getEVMAccountAsset: () => assetFinders.evm(),
+    getAptosAccountAsset: () => assetFinders.aptos(),
+    getSuiAccountAsset: () => assetFinders.sui(),
+    getBitcoinAccountAsset: () => assetFinders.bitcoin(),
+  };
 }

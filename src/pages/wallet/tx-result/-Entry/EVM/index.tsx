@@ -10,13 +10,13 @@ import Button from '@/components/common/Button/index.tsx';
 import Image from '@/components/common/Image/index.tsx';
 import TextButton from '@/components/common/TextButton/index.tsx';
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error.ts';
-import { TRANSACTION_RESULT } from '@/constants/sui/index.ts';
+import { TRANSACTION_RESULT } from '@/constants/evm/tx.ts';
 import { TX_CONFIRMED_STATUS } from '@/constants/txStatus.ts';
-import { useTxInfo } from '@/hooks/sui/useTxInfo.ts';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
+import { useTxInfo } from '@/hooks/evm/useTxInfo.ts';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { Route as Dashboard } from '@/pages';
 import { Route as AddAddress } from '@/pages/general-setting/address-book/add-address';
-import { getUniqueChainId, isMatchingCoinId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
 
 import { Container, ExplorerIconContainer, FooterContainer, StyledOutlinedChipButton, TxHashTextContainer, TxResultContainer } from './styled.tsx';
 
@@ -26,36 +26,34 @@ import TxSuccessImage from '@/assets/images/tx/TxSuccess.png';
 
 import animationData from '@/assets/animation/loading.json';
 
-type SuiProps = {
+type EVMProps = {
   coinId: string;
   txHash?: string;
   address?: string;
 };
 
-export default function Sui({ coinId, txHash, address }: SuiProps) {
+export default function EVM({ coinId, txHash, address }: EVMProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
+  const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
 
   const txInfo = useTxInfo({
     coinId,
-    digest: txHash,
+    txHash,
   });
 
-  const selectedAsset = accountAllAssets?.suiAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+  const selectedAsset = getEVMAccountAsset();
 
   const txExplorerUrl = selectedAsset?.chain.explorer.account && txHash ? selectedAsset.chain.explorer.tx.replace('${hash}', txHash) : '';
 
   const txConfirmedStatus = (() => {
     if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;
 
-    if (txInfo.data?.result?.effects?.status.status) {
-      if (txInfo.data.result.effects.status.status === TRANSACTION_RESULT.FAILURE) return TX_CONFIRMED_STATUS.FAILED;
+    if (txInfo.data?.result?.status) {
+      if (BigInt(txInfo.data.result.status).toString(10) !== TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.FAILED;
 
-      if (txInfo.data.result.effects.status.status === TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.CONFIRMED;
+      if (BigInt(txInfo.data.result.status).toString(10) === TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.CONFIRMED;
     }
 
     return undefined;
