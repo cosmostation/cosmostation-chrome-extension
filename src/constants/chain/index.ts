@@ -16,6 +16,7 @@ import { ASI_ALLIANCE } from './cosmos/asiAlliance';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { ATOM_ONE } from './cosmos/atomOne';
 import { AXELAR } from './cosmos/axelar';
+import { BABYLON_TESTNET } from './cosmos/babylonTestnet';
 import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
@@ -143,6 +144,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   ASSET_MANTLE,
   ATOM_ONE,
   AXELAR,
+  BABYLON_TESTNET,
   BAND,
   BITCANNA,
   BITSONG,

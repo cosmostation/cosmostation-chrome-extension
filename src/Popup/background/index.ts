@@ -1,8 +1,7 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
-import { SIGNET_TAPROOT } from '~/constants/chain/bitcoin/signetTaproot';
-import { BITCOIN_TAPROOT } from '~/constants/chain/bitcoin/taproot';
+import { BABYLON_TESTNET } from '~/constants/chain/cosmos/babylonTestnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -96,9 +95,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.35') {
+        if (extensionManifest.version === '0.8.37') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BITCOIN_TAPROOT.id, SIGNET_TAPROOT.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BABYLON_TESTNET.id]);
           })();
         }
       }
