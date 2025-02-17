@@ -69,7 +69,7 @@ export function useDryRunTransaction({ coinId, transaction, config }: UseDryRunT
     }
   };
 
-  const { data, isLoading, error } = useFetch({
+  const { data, isLoading, isFetching, error } = useFetch({
     queryKey: ['useDryRunTransactionBlock', coinId, txObject, transaction],
     fetchFunction: () => fetcher(),
     config: {
@@ -78,5 +78,5 @@ export function useDryRunTransaction({ coinId, transaction, config }: UseDryRunT
     },
   });
 
-  return { data, isLoading, error };
+  return { data, isLoading, isFetching, error };
 }

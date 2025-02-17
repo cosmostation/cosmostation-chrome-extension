@@ -135,9 +135,14 @@ export default function Sui({ coinId }: SuiProps) {
     return tx;
   }, [address, currentCoinType, ownedEqualCoins, recipientAddress, sendBaseAmount]);
 
-  const [debouncedTx] = useDebounce(sendTx, 700);
+  const [debouncedTx] = useDebounce(sendTx, 500);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransaction({
+  const {
+    data: dryRunTransaction,
+    error: dryRunTransactionError,
+    isLoading: isDryRunTransactionLoading,
+    isFetching: isDryRunTransactionFetching,
+  } = useDryRunTransaction({
     coinId,
     transaction: debouncedTx,
   });
@@ -291,7 +296,7 @@ export default function Sui({ coinId }: SuiProps) {
     setIsDisabled(true);
 
     debouncedEnabled();
-  }, [debouncedEnabled, sendTx]);
+  }, [debouncedEnabled, sendTx, isDryRunTransactionLoading, isDryRunTransactionFetching]);
 
   return (
     <>
@@ -359,8 +364,9 @@ export default function Sui({ coinId }: SuiProps) {
             <Divider />
           </EdgeAligner>
           <SuiFee
-            disableConfirm={!!errorMessage || isDisabled}
             displayFeeAmount={displayExpectedBaseFeeAmount}
+            disableConfirm={!!errorMessage || isDisabled}
+            isLoading={isDisabled}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}

@@ -13,10 +13,11 @@ import NumberTypo from '../../common/NumberTypo';
 type SuiFeeProps = {
   displayFeeAmount?: string;
   disableConfirm?: boolean;
+  isLoading?: boolean;
   onClickConfirm: () => void;
 };
 
-export default function SuiFee({ displayFeeAmount, disableConfirm, onClickConfirm }: SuiFeeProps) {
+export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: SuiFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
@@ -56,7 +57,7 @@ export default function SuiFee({ displayFeeAmount, disableConfirm, onClickConfir
       </LeftContentContainer>
       <RightContentContainer>
         {
-          <StyledButton disabled={disableConfirm} onClick={onClickConfirm}>
+          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
             {t('components.Fee.SuiFee.index.continue')}
           </StyledButton>
         }
