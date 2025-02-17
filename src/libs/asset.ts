@@ -13,6 +13,7 @@ import type {
   AccountSuiAsset,
 } from '@/types/account';
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
+import type { BitcoinChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { gt, minus } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
@@ -464,6 +465,11 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
 
+          const specificAccountTypeChain: BitcoinChain = {
+            ...chain,
+            accountTypes: chain.accountTypes.filter((accountType) => accountType.hdPath === address.accountType.hdPath),
+          };
+
           const balance =
             balanceInfo?.balance.chainStats && balanceInfo?.balance.mempoolStats
               ? minus(
@@ -473,7 +479,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               : '0';
 
           const result: AccountBitcoinAsset = {
-            chain,
+            chain: specificAccountTypeChain,
             asset,
             address,
             balance: balance,

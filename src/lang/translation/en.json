@@ -196,6 +196,12 @@
           "networkFee": "Network Fee",
           "continue": "Continue"
         }
+      },
+      "BitcoinFee": {
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -1150,6 +1156,25 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "noTransaction": "Failed to create transaction"
+              }
+            },
+            "Bitcoin": {
+              "index": {
+                "invalidAddress": "Invalid address",
+                "noAvailableAmount": "No available amount",
+                "noAmount": "Please enter the amount",
+                "memoMaxLength": "OP_RETURN cannot exceed 80 characters",
+                "failedLoadFee": "Failed to load fee",
+                "failedCreateTxHex": "Failed to create transaction hex",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "memo": "OP_RETURN (option)"
               }
             }
           }

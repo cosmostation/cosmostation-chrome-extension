@@ -98,6 +98,28 @@ export const AccountInfoContainer = styled('div')({
   rowGap: '0.4rem',
 });
 
+export const TitleContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.4rem',
+});
+
+type BadgeProps = {
+  colorHex?: string;
+};
+
+export const Badge = styled('div')<BadgeProps>(({ theme, ...props }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  columnGap: '0.1rem',
+  backgroundColor: props['colorHex'] || theme.palette.color.base400,
+  color: props['colorHex'] ? theme.palette.color.base1300 : theme.palette.color.base1200,
+
+  padding: '0.2rem 0.6rem',
+  borderRadius: '2rem',
+}));
+
 export const AddressText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1200,
 }));

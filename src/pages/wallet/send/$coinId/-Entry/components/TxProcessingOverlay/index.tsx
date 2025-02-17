@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import Lottie from 'lottie-react';
 import { useNavigate } from '@tanstack/react-router';
 
+import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import IconButton from '@/components/common/IconButton';
@@ -10,6 +11,7 @@ import { Route as Home } from '@/pages/index';
 
 import {
   Container,
+  ContentsContainer,
   HeaderContainer,
   HeaderLeftContainer,
   IconContainer,
@@ -18,14 +20,12 @@ import {
   Overlay,
   StyledBaseFooter,
   TitleText,
-  ContentsContainer,
 } from './styled';
 
 import HomeIcon from '@/assets/images/icons/Home14.svg';
 import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
 
 import animationData from '@/assets/animation/loading.json';
-import BaseBody from '@/components/BaseLayout/components/BaseBody';
 
 type TxProcessingOverlayProps = {
   title?: string;

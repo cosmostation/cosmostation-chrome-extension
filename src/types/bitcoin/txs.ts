@@ -38,3 +38,13 @@ export interface Vout {
   scriptpubkey_address?: string;
   value?: number;
 }
+
+export interface SendRawTransaction {
+  jsonrpc: string;
+  result?: string;
+  error?: {
+    code: number;
+    message: string;
+  };
+  id: string | number;
+}

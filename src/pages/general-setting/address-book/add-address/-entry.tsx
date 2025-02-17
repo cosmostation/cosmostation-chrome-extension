@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import validate, { Network } from 'bitcoin-address-validation';
+import { isValidAddress } from 'ethereumjs-util';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
+import { isValidSuiAddress } from '@mysten/sui/utils';
 import { useRouter } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -16,8 +19,9 @@ import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList.ts';
 import type { ChainType, CosmosChain, UniqueChainId } from '@/types/chain.ts';
 import type { AddressInfo } from '@/types/extension';
+import { isBitcoinChain } from '@/utils/chain';
 import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
-import { aptosAddressRegex, bitcoinAddressRegex, ethereumAddressRegex, getCosmosAddressRegex, suiAddressRegex } from '@/utils/regex';
+import { aptosAddressRegex, getCosmosAddressRegex } from '@/utils/regex';
 import { toastError, toastSuccess } from '@/utils/toast';
 
 import { Container, FormContainer, InformationPanelContainer, InputWrapper, UniversalContainer } from './-styled';
@@ -61,32 +65,32 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
   const isDisplayMemo = currentChain?.chainType === 'cosmos';
   const isUniversalChain = currentChainId === `${UNIVERSAL_EVM_NETWORK_ID}__evm`;
 
-  const regex = (() => {
+  const checkIsValidAddress = (address: string) => {
     if (currentChain?.chainType === 'cosmos') {
       const chainCasted = currentChain as CosmosChain;
-      return getCosmosAddressRegex(chainCasted.accountPrefix, [39]);
+      return getCosmosAddressRegex(chainCasted.accountPrefix, [39]).test(address);
     }
 
     if (currentChain?.chainType === 'evm') {
-      return ethereumAddressRegex;
+      return isValidAddress(address);
     }
 
     if (currentChain?.chainType === 'aptos') {
-      return aptosAddressRegex;
+      return aptosAddressRegex.test(address);
     }
 
     if (currentChain?.chainType === 'sui') {
-      return suiAddressRegex;
+      return isValidSuiAddress(address);
     }
 
-    if (currentChain?.chainType === 'bitcoin') {
-      return bitcoinAddressRegex;
+    if (isBitcoinChain(currentChain)) {
+      const network = currentChain.isTestnet ? Network.testnet : Network.mainnet;
+      return validate(address, network);
     }
+    return false;
+  };
 
-    return /^.*$/;
-  })();
-
-  const { addressBookForm } = useSchema({ regex });
+  const { addressBookForm } = useSchema({ checkIsValidAddress });
 
   const {
     register,

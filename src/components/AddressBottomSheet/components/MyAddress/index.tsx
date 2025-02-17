@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
@@ -13,8 +14,10 @@ import {
   AccountInfoContainer,
   AccountLeftContainer,
   AddressText,
+  Badge,
   BodyContainer,
   Container,
+  TitleContainer,
   TopContainer,
   TopLeftContainer,
   WrapperContainer,
@@ -29,9 +32,16 @@ type MnemonicAccountProps = {
   onClickAddress: (address: string) => void;
 };
 
-interface AccountAddressInfo {
+type AccountAddressDetails = AccountAddress & {
   name: string;
-  address: AccountAddress;
+  badge?: {
+    text: string;
+    color: string;
+  };
+};
+
+interface AccountAddressInfo {
+  addressDetails: AccountAddressDetails[];
   account: Account;
 }
 
@@ -40,71 +50,92 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
   const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
 
-  const accountIds = accounts.map((account) => account.id);
+  const accountIds = useMemo(() => accounts.map((account) => account.id), [accounts]);
 
-  const addressesMap = accountIds.reduce(
-    (acc, id) => {
-      const accountAddresses = useExtensionStorageStore.getState()[`${id}-address`];
+  const addressesMap = useMemo(
+    () =>
+      accountIds.reduce(
+        (acc, id) => {
+          const accountAddresses = useExtensionStorageStore.getState()[`${id}-address`];
 
-      return { ...acc, [id]: accountAddresses };
-    },
-    {} as Record<string, AccountAddress[]>,
+          return { ...acc, [id]: accountAddresses };
+        },
+        {} as Record<string, AccountAddress[]>,
+      ),
+    [accountIds],
   );
 
-  const uniqueMnemonicRestoreString = accounts
-    .filter((item) => item.type === 'MNEMONIC')
-    .map((account) => account.encryptedRestoreString)
-    .filter((value, index, self) => self.indexOf(value) === index);
+  const uniqueMnemonicRestoreString = useMemo(
+    () =>
+      accounts
+        .filter((item) => item.type === 'MNEMONIC')
+        .map((account) => account.encryptedRestoreString)
+        .filter((value, index, self) => self.indexOf(value) === index),
+    [accounts],
+  );
 
-  const privatekeyAccounts = accounts.filter((item) => item.type === 'PRIVATE_KEY');
+  const privatekeyAccounts = useMemo(() => accounts.filter((item) => item.type === 'PRIVATE_KEY'), [accounts]);
 
-  const filteredMnemonicAccounts = uniqueMnemonicRestoreString
-    .map((restoreString) => {
-      const filteredMnemonicAccounts = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === restoreString);
+  const filteredMnemonicAccounts = useMemo(
+    () =>
+      uniqueMnemonicRestoreString
+        .map((restoreString) => {
+          const filteredMnemonicAccounts = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === restoreString);
 
-      const filteredAccountAddresses = filteredMnemonicAccounts
-        .map((item) => {
-          const addressList = addressesMap[item.id];
-          const matchingAddress = addressList?.find((address) => getUniqueChainIdWithManual(address.chainId, address.chainType) === chainId);
+          const filteredAccountAddresses = filteredMnemonicAccounts
+            .map((item) => {
+              const addressList = addressesMap[item.id];
 
-          if (filterAddress && matchingAddress?.address) {
-            if (isEqualsIgnoringCase(matchingAddress.address, filterAddress)) return null;
-          }
+              const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress);
+
+              const matchingAddressesWithBadge = matchingAddresses.map((addressInfo) => ({
+                ...addressInfo,
+                name: accountNamesById[item.id],
+                badge: getBadgeDetail(addressInfo),
+              }));
+
+              return {
+                addressDetails: matchingAddressesWithBadge,
+                account: item,
+              };
+            })
+            .filter((item) => item !== null) as AccountAddressInfo[];
 
           return {
+            id: restoreString,
+            accounts: filteredAccountAddresses,
+          };
+        })
+        .filter((item) => item.accounts.length > 0),
+    [accountNamesById, accounts, addressesMap, chainId, filterAddress, uniqueMnemonicRestoreString],
+  );
+
+  const filteredPrivatekeyAccounts = useMemo(
+    () =>
+      privatekeyAccounts
+        .map((item) => {
+          const addressList = addressesMap[item.id];
+
+          const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress);
+
+          const matchingAddressesWithBadge = matchingAddresses.map((addressInfo) => ({
+            ...addressInfo,
             name: accountNamesById[item.id],
-            address: matchingAddress,
+            badge: getBadgeDetail(addressInfo),
+          }));
+
+          return {
+            addressDetails: matchingAddressesWithBadge,
             account: item,
           };
         })
-        .filter((item) => item !== null) as AccountAddressInfo[];
+        .filter((item) => item !== null) as AccountAddressInfo[],
+    [accountNamesById, addressesMap, chainId, filterAddress, privatekeyAccounts],
+  );
 
-      return {
-        id: restoreString,
-        accounts: filteredAccountAddresses,
-      };
-    })
-    .filter((item) => item.accounts.length > 0);
+  const privateKeyAddresses = useMemo(() => filteredPrivatekeyAccounts.map((item) => item.addressDetails).flat(), [filteredPrivatekeyAccounts]);
 
-  const filteredPrivatekeyAccounts = privatekeyAccounts
-    .map((item) => {
-      const addressList = addressesMap[item.id];
-
-      const matchingAddress = addressList?.find((address) => getUniqueChainIdWithManual(address.chainId, address.chainType) === chainId);
-
-      if (filterAddress && matchingAddress?.address) {
-        if (matchingAddress.address === filterAddress) return null;
-      }
-
-      return {
-        name: accountNamesById[item.id],
-        address: matchingAddress,
-        account: item,
-      };
-    })
-    .filter((item) => item !== null) as AccountAddressInfo[];
-
-  if (filteredMnemonicAccounts.length === 0 && filteredPrivatekeyAccounts.length === 0) {
+  if (filteredMnemonicAccounts.length === 0 && privateKeyAddresses.length === 0) {
     return null;
   }
 
@@ -112,6 +143,8 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
     <WrapperContainer>
       {filteredMnemonicAccounts.map((item) => {
         const mnemonicName = mnemonicNamesByHashedMnemonic[item.id];
+
+        const flatAddressDetails = item.accounts.map((item) => item.addressDetails.map((addressDetail) => addressDetail)).flat();
 
         return (
           <Container key={item.id}>
@@ -122,21 +155,35 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
               </TopLeftContainer>
             </TopContainer>
             <BodyContainer>
-              {item.accounts.map((item, i) => {
-                const shortAddress = shorterAddress(item.address.address, 20);
+              {flatAddressDetails.map((addressDetail, i) => {
+                const shortAddress = shorterAddress(addressDetail.address, 20);
 
                 return (
                   <AccountButton
                     key={i}
                     onClick={() => {
-                      onClickAddress?.(item.address.address);
+                      onClickAddress?.(addressDetail.address);
                     }}
                   >
                     <AccountLeftContainer>
                       <AccountImgContainer />
 
                       <AccountInfoContainer>
-                        <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+                        <TitleContainer>
+                          <Base1300Text
+                            variant="b2_M"
+                            sx={{
+                              height: 'fit-content',
+                            }}
+                          >
+                            {addressDetail.name}
+                          </Base1300Text>
+                          {addressDetail.badge && (
+                            <Badge colorHex={addressDetail.badge.color}>
+                              <Base1300Text variant="b4_M">{addressDetail.badge.text}</Base1300Text>
+                            </Badge>
+                          )}
+                        </TitleContainer>
                         <AddressText variant="b4_M">{shortAddress}</AddressText>
                       </AccountInfoContainer>
                     </AccountLeftContainer>
@@ -147,7 +194,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
           </Container>
         );
       })}
-      {filteredPrivatekeyAccounts.length > 0 && (
+      {privateKeyAddresses.length > 0 && (
         <>
           <TopContainer>
             <TopLeftContainer>
@@ -156,20 +203,35 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
             </TopLeftContainer>
           </TopContainer>
           <BodyContainer>
-            {filteredPrivatekeyAccounts.map((item, i) => {
+            {privateKeyAddresses.map((item, i) => {
               return (
                 <AccountButton
                   key={i}
                   onClick={() => {
-                    onClickAddress?.(item.address.address);
+                    onClickAddress?.(item.address);
                   }}
                 >
                   <AccountLeftContainer>
                     <AccountImgContainer />
 
                     <AccountInfoContainer>
-                      <Base1300Text variant="b2_M">{item.name}</Base1300Text>
-                      <AddressText variant="b4_M">{item.address.address}</AddressText>
+                      <TitleContainer>
+                        <Base1300Text
+                          variant="b2_M"
+                          sx={{
+                            height: 'fit-content',
+                          }}
+                        >
+                          {item.name}
+                        </Base1300Text>
+                        {item.badge && (
+                          <Badge colorHex={item.badge.color}>
+                            <Base1300Text variant="b4_M">{item.badge.text}</Base1300Text>
+                          </Badge>
+                        )}
+                      </TitleContainer>
+
+                      <AddressText variant="b4_M">{shorterAddress(item.address, 20)}</AddressText>
                     </AccountInfoContainer>
                   </AccountLeftContainer>
                 </AccountButton>
@@ -180,4 +242,50 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
       )}
     </WrapperContainer>
   );
+}
+
+function filterMatchingAddresses(addressList: AccountAddress[], chainId: UniqueChainId, filterAddress?: string) {
+  const matchingAddresses = addressList
+    ?.filter((address) => getUniqueChainIdWithManual(address.chainId, address.chainType) === chainId)
+    .filter((item) => {
+      const isFilterCurrentAddress = isEqualsIgnoringCase(item.address || '', filterAddress);
+
+      if (isFilterCurrentAddress) {
+        return null;
+      }
+
+      return true;
+    });
+
+  return matchingAddresses;
+}
+
+function getBadgeDetail(accountAddress: AccountAddress) {
+  if (accountAddress.chainType === 'bitcoin') {
+    const pubkeyStyle = accountAddress.accountType.pubkeyStyle;
+    if (pubkeyStyle === 'p2tr') {
+      return {
+        text: 'Taproot',
+        color: '#F2C94C',
+      };
+    }
+    if (pubkeyStyle === 'p2wpkh') {
+      return {
+        text: 'Native Segwit',
+        color: '#2D9CDB',
+      };
+    }
+    if (pubkeyStyle === 'p2pkh')
+      return {
+        text: 'Legacy',
+        color: '#EB5757',
+      };
+    if (pubkeyStyle === 'p2wpkhSh')
+      return {
+        text: 'Segwit',
+        color: '#27AE60',
+      };
+  }
+
+  return null;
 }

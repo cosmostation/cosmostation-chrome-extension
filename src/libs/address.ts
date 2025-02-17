@@ -2,6 +2,7 @@ import { bech32 } from 'bech32';
 import BIP32Factory from 'bip32';
 import * as bip39 from 'bip39';
 import { networks, payments } from 'bitcoinjs-lib';
+import { toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
 import encHex from 'crypto-js/enc-hex';
 import ripemd160 from 'crypto-js/ripemd160';
 import sha256 from 'crypto-js/sha256';
@@ -14,6 +15,7 @@ import { Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
 
 import type { Account } from '@/types/account';
 import type { Chain } from '@/types/chain';
+import { initBitcoinEcc } from '@/utils/bitcoin.ts/tx';
 import { aesDecrypt } from '@/utils/crypto';
 
 const bip32 = BIP32Factory(ecc);
@@ -136,10 +138,20 @@ export function getAddress(chain: Chain, publicKey: string) {
   }
 
   if (chainType === 'bitcoin') {
+    initBitcoinEcc();
+
     const { pubkeyStyle } = accountType;
 
     const network = chain.isTestnet ? networks.testnet : networks.bitcoin;
 
+    const tapInternalKey = toXOnly(Buffer.from(publicKey, 'hex'));
+
+    if (pubkeyStyle === 'p2tr') {
+      return payments.p2tr({
+        internalPubkey: tapInternalKey,
+        network,
+      }).address!;
+    }
     if (pubkeyStyle === 'p2wpkh') {
       const p2wpkh = payments.p2wpkh({ pubkey: Buffer.from(publicKey, 'hex'), network });
       return p2wpkh.address!;
