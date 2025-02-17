@@ -22,6 +22,7 @@ import { Container, ExplorerIconContainer, FooterContainer, StyledOutlinedChipBu
 
 import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 
+import TxFailedImage from '@/assets/images/tx/TxFailed.png';
 import TxSuccessImage from '@/assets/images/tx/TxSuccess.png';
 
 import animationData from '@/assets/animation/loading.json';
@@ -85,7 +86,7 @@ export default function Sui({ coinId, txHash, address }: SuiProps) {
       return <Image src={TxSuccessImage} />;
     }
     if (isTxFailed) {
-      return <Image src={TxSuccessImage} />;
+      return <Image src={TxFailedImage} />;
     }
 
     return (
