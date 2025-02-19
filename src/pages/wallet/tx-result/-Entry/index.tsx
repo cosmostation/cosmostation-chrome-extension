@@ -1,5 +1,6 @@
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
+import Aptos from './Aptos';
 import Bitcoin from './Bitcoin';
 import EVM from './EVM';
 import Sui from './Sui';
@@ -27,9 +28,9 @@ export default function Entry({ coinId, txHash, address }: EntryProps) {
     return <Sui coinId={coinId} txHash={txHash} address={address} />;
   }
 
-  //   if (selectedAccountAsset?.asset.chainType === 'aptos') {
-  //     return <Aptos coinId={coinId} />;
-  //   }
+  if (selectedAccountAsset?.asset.chainType === 'aptos') {
+    return <Aptos coinId={coinId} txHash={txHash} address={address} />;
+  }
 
   if (selectedAccountAsset?.asset.chainType === 'bitcoin') {
     return <Bitcoin coinId={coinId} txHash={txHash} address={address} />;

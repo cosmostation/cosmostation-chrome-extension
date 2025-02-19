@@ -1,39 +1,40 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, Typography } from '@mui/material';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
+import { Account, Ed25519PrivateKey, PrivateKey, PrivateKeyVariants } from '@aptos-labs/ts-sdk';
+import { InputAdornment } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
-import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-// import Fee from '@/components/Fee';
+import AptosFee from '@/components/Fee/AptosFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
-import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
-import { useChainList } from '@/hooks/useChainList.ts';
+import { APTOS_COIN_TYPE } from '@/constants/aptos/coin.ts';
+import { DEFAULT_GAS_BUDGET_MULTIPLY } from '@/constants/sui/gas.ts';
+import { useEstimateGasPrice } from '@/hooks/aptos/useEstimateGasPrice.ts';
+import { useGenerateTx } from '@/hooks/aptos/useGenerateTx.ts';
+import { useSimulateTx } from '@/hooks/aptos/useSimulateTx.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
+import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import type { UniqueChainId } from '@/types/chain.ts';
-import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, shorterAddress } from '@/utils/string.ts';
+import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
+import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
+import { gt, lte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
+import { aptosAddressRegex } from '@/utils/regex.ts';
+import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import {
-  AddressBookButton,
-  CoinContainer,
-  CoinDenomContainer,
-  CoinImage,
-  CoinSymbolText,
-  Divider,
-  EstimatedValueTextContainer,
-  IBCSendText,
-  InputWrapper,
-} from './styled.tsx';
+import { AddressBookButton, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper } from './styled.tsx';
+import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
@@ -48,68 +49,303 @@ export default function Aptos({ coinId }: AptosProps) {
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { flatChainList } = useChainList();
-  const { data } = useAccountAssets();
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
 
-  const parsedCoinId = parseCoinId(coinId);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
-  const selectedCoinToSend = (() => {
-    if (!data) return undefined;
+  const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
+  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
-    if (parsedCoinId.chainType === 'aptos') {
-      return data?.aptosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-    return undefined;
-  })();
+  const { getAptosAccountAsset } = useGetAccountAsset({ coinId });
+
+  const selectedCoinToSend = getAptosAccountAsset();
 
   const coinImageURL = selectedCoinToSend?.asset.image || '';
   const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
 
   const coinSymbol = selectedCoinToSend?.asset.symbol || '';
-  const coinDenom = selectedCoinToSend?.asset.id || '';
-  const shortCoinDenom = shorterAddress(coinDenom, 16);
-  const coinDecimal = selectedCoinToSend?.asset.decimals || 0;
-
-  // NOTE aptos에 적절한 단어 선정필요.
-  const coinType = (() => {
-    if (selectedCoinToSend?.asset.type === 'erc20' || selectedCoinToSend?.asset.type === 'cw20') {
-      return t('pages.wallet.send.$coinId.entry.contract');
-    }
-
-    if (selectedCoinToSend?.asset.type === 'ibc') {
-      return t('pages.wallet.send.$coinId.entry.denom');
-    }
-
-    return '';
-  })();
+  const coinDecimals = selectedCoinToSend?.asset.decimals || 0;
 
   const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
-  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
-
-  console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
-
-  // FIXME: 밸런스 그대로를 입력할 지 예상 가스비를 제외한 값을 맥스값으로 설정할 지 결정 필요.
-  const maxAmount = '1000000000000';
+  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
 
-  const displaySendAmountPrice = sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0';
+  const displaySendAmountPrice = times(sendDisplayAmount || '0', coinPrice);
 
-  const [inputMemo, setInputMemo] = useState('');
+  const sendBaseAmount = toBaseDenomAmount(sendDisplayAmount || '0', coinDecimals);
 
-  const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
-  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
+  const aptosAccount = useMemo(() => {
+    const keyPair = selectedCoinToSend && getKeypair(selectedCoinToSend.chain, currentAccount, currentPassword);
 
-  // TODO
-  // const recipientChainList =
-  const [currentRecipientChainId, setCurrentRecipientChainId] = useState<UniqueChainId>();
-  const currentRecipientChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, currentRecipientChainId));
+    if (!keyPair?.privateKey) return undefined;
+    const pk = PrivateKey.formatPrivateKey(keyPair.privateKey, PrivateKeyVariants.Ed25519);
 
-  console.log('🚀 ~ Entry ~ currentRecipientChain:', currentRecipientChain);
+    return Account.fromPrivateKey({ privateKey: new Ed25519PrivateKey(pk) });
+  }, [currentAccount, currentPassword, selectedCoinToSend]);
+
+  const estimateGasPrice = useEstimateGasPrice({ coinId });
+
+  const currentGasPrice = useMemo(() => {
+    if (!estimateGasPrice.data) {
+      return null;
+    }
+
+    const averageGasPrice = estimateGasPrice.data.gas_estimate || estimateGasPrice.data.prioritized_gas_estimate;
+
+    if (typeof averageGasPrice !== 'number') {
+      return null;
+    }
+
+    return averageGasPrice;
+  }, [estimateGasPrice.data]);
+
+  const memoizedSendTxPayload = useMemo<AptosSignPayload | undefined>(() => {
+    if (!selectedCoinToSend?.address.address || !aptosAddressRegex.test(recipientAddress) || !gt(sendBaseAmount, '0')) return undefined;
+
+    if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
+      return {
+        sender: selectedCoinToSend?.address.address,
+        data: {
+          function: '0x1::aptos_account::transfer',
+          functionArguments: [recipientAddress, sendBaseAmount],
+          typeArguments: [],
+        },
+        options: {
+          gasUnitPrice: currentGasPrice ? currentGasPrice : undefined,
+        },
+      };
+    }
+    return {
+      sender: selectedCoinToSend?.address.address,
+      data: {
+        function: '0x1::coin::transfer',
+        functionArguments: [recipientAddress, sendBaseAmount],
+        typeArguments: [selectedCoinToSend?.asset.id],
+      },
+      options: {
+        gasUnitPrice: currentGasPrice ? currentGasPrice : undefined,
+      },
+    };
+  }, [currentGasPrice, recipientAddress, selectedCoinToSend?.address.address, selectedCoinToSend?.asset.id, sendBaseAmount]);
+
+  const [sendTxPayload] = useDebounce(memoizedSendTxPayload, 500);
+
+  const generateTransaction = useGenerateTx({ coinId, payload: sendTxPayload });
+
+  const simulationPayload = useMemo<AptosSimulationPayload | undefined>(() => {
+    if (!generateTransaction.data || !aptosAccount?.publicKey) return undefined;
+
+    return {
+      signerPublicKey: aptosAccount.publicKey,
+      transaction: generateTransaction.data,
+    };
+  }, [aptosAccount?.publicKey, generateTransaction.data]);
+
+  const simulateTransaction = useSimulateTx({ coinId, payload: simulationPayload });
+
+  const estimatedGasAmount = useMemo(() => times(simulateTransaction.data?.[0]?.gas_used || '0', DEFAULT_GAS_BUDGET_MULTIPLY, 0), [simulateTransaction.data]);
+
+  const estimatedBaseFeeAmount = useMemo(() => {
+    if (!estimatedGasAmount) {
+      return '0';
+    }
+
+    if (currentGasPrice === null) {
+      return '0';
+    }
+
+    return times(currentGasPrice, estimatedGasAmount, 0);
+  }, [currentGasPrice, estimatedGasAmount]);
+
+  const estimatedDisplayFeeAmount = useMemo(() => {
+    if (!gt(estimatedBaseFeeAmount, '0')) {
+      return '0';
+    }
+
+    return toDisplayDenomAmount(estimatedBaseFeeAmount, coinDecimals);
+  }, [coinDecimals, estimatedBaseFeeAmount]);
+
+  const handleOnClickMax = () => {
+    if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
+      const displayAmount = minus(displayAvailableAmount, estimatedDisplayFeeAmount);
+      setSendDisplayAmount(gt(displayAmount, '0') ? displayAmount : '0');
+    } else {
+      setSendDisplayAmount(displayAvailableAmount);
+    }
+  };
+
+  const addressInputErrorMessage = useMemo(() => {
+    if (recipientAddress) {
+      if (isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)) {
+        return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAddress');
+      }
+
+      if (!aptosAddressRegex.test(recipientAddress)) {
+        return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAddress');
+      }
+    }
+
+    return '';
+  }, [recipientAddress, selectedCoinToSend?.address.address, t]);
+
+  const sendAmountInputErrorMessage = useMemo(() => {
+    if (!gt(baseAvailableAmount, '0')) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.noAvailableAmount');
+    }
+
+    if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
+      const totalCoastAmount = plus(sendBaseAmount, estimatedBaseFeeAmount);
+
+      if (gt(totalCoastAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
+      }
+    } else {
+      if (gt(estimatedBaseFeeAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientFee');
+      }
+
+      if (gt(sendBaseAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
+      }
+    }
+
+    if (sendDisplayAmount && !gt(sendDisplayAmount, '0')) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.noAmount');
+    }
+    return '';
+  }, [baseAvailableAmount, estimatedBaseFeeAmount, selectedCoinToSend?.asset.id, sendBaseAmount, sendDisplayAmount, t]);
+
+  const errorMessage = useMemo(() => {
+    if (addressInputErrorMessage) {
+      return addressInputErrorMessage;
+    }
+
+    if (!gt(baseAvailableAmount, '0')) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAmount');
+    }
+
+    if (sendAmountInputErrorMessage) {
+      return sendAmountInputErrorMessage;
+    }
+
+    if (lte(sendDisplayAmount || '0', '0')) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAmount');
+    }
+
+    if (gt(sendDisplayAmount || '0', displayAvailableAmount)) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
+    }
+
+    if (!generateTransaction) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
+    }
+
+    if (!simulateTransaction.data?.[0]?.success && !generateTransaction.data) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
+    }
+
+    return '';
+  }, [
+    addressInputErrorMessage,
+    baseAvailableAmount,
+    sendDisplayAmount,
+    displayAvailableAmount,
+    generateTransaction,
+    sendAmountInputErrorMessage,
+    simulateTransaction.data,
+    t,
+  ]);
+
+  const handleOnClickConfirm = useCallback(async () => {
+    try {
+      setIsOpenTxProcessingOverlay(true);
+
+      if (!selectedCoinToSend?.chain) {
+        throw new Error('Chain not found');
+      }
+
+      if (!aptosAccount) {
+        throw new Error('Account not found');
+      }
+
+      if (!generateTransaction.data) {
+        throw new Error('Transaction not found');
+      }
+
+      const rpcURLs = selectedCoinToSend?.chain.rpcUrls.map((item) => item.url) || [];
+
+      if (!rpcURLs.length) {
+        throw new Error('RPC URLs not found');
+      }
+
+      const response = await signAndExecuteTxSequentially(aptosAccount, generateTransaction.data, rpcURLs);
+      if (!response) {
+        throw new Error('Failed to send transaction');
+      }
+
+      navigate({
+        to: TxResult.to,
+        search: {
+          address: recipientAddress,
+          coinId,
+          txHash: response.hash,
+        },
+      });
+    } catch {
+      navigate({
+        to: TxResult.to,
+        search: {
+          coinId,
+        },
+      });
+    } finally {
+      setIsOpenTxProcessingOverlay(false);
+    }
+  }, [aptosAccount, coinId, generateTransaction.data, navigate, recipientAddress, selectedCoinToSend?.chain]);
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
+  useEffect(() => {
+    setIsDisabled(true);
+
+    debouncedEnabled();
+  }, [debouncedEnabled, currentGasPrice, memoizedSendTxPayload, generateTransaction.isFetching, simulateTransaction.isFetching]);
+
+  const [isReloading, setIsReloading] = useState(false);
+
+  useEffect(() => {
+    if (simulateTransaction.data?.[0]?.success) {
+      const currentDate = new Date();
+      const endDate = new Date(parseInt(simulateTransaction.data[0].expiration_timestamp_secs || '0', 10) * 1000);
+
+      if (endDate > currentDate) {
+        const betweenTime = +endDate - +currentDate;
+
+        if (betweenTime - 500 > 0 && !isReloading) {
+          setIsReloading(true);
+          setTimeout(() => {
+            void (async () => {
+              await estimateGasPrice.refetch();
+              await generateTransaction.refetch();
+              setIsReloading(false);
+            })();
+          }, betweenTime - 500);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulateTransaction.data]);
 
   return (
     <>
@@ -117,39 +353,21 @@ export default function Aptos({ coinId }: AptosProps) {
         <>
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.entry.send')}`}</CoinSymbolText>
-            {coinType && (
-              <CoinDenomContainer>
-                <Typography variant="b4_R">{`${coinType} :`}</Typography>
-                &nbsp;
-                <Typography variant="b3_M">{shortCoinDenom}</Typography>
-              </CoinDenomContainer>
-            )}
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}`}</CoinSymbolText>
           </CoinContainer>
 
           <InputWrapper>
-            <ChainSelectBox
-              chainList={flatChainList}
-              currentChainId={currentRecipientChainId}
-              onClickChain={(chainId) => {
-                setCurrentRecipientChainId(chainId);
-              }}
-              label={t('pages.wallet.send.$coinId.entry.recipientNetwork')}
-              rightAdornmentComponent={<IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.entry.ibcSend')}</IBCSendText>}
-              bottomSheetTitle={t('pages.wallet.send.$coinId.entry.selectRecipientNetwork')}
-              bottomSheetSearchPlaceholder={t('pages.wallet.send.$coinId.entry.searchRecipientNetwork')}
-            />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.entry.recipientAddress')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
+              label={t('pages.wallet.send.$coinId.Entry.Aptos.index.recipientAddress')}
+              error={!!addressInputErrorMessage}
+              helperText={addressInputErrorMessage}
               value={recipientAddress}
               onChange={(e) => setRecipientAddress(e.target.value)}
               slotProps={{
                 input: {
                   endAdornment: (
                     <InputAdornment position="end">
-                      <AddressBookButton disabled={!currentRecipientChainId} onClick={() => setIsOpenAddressBottomSheet(true)}>
+                      <AddressBookButton onClick={() => setIsOpenAddressBottomSheet(true)}>
                         <AddressBookIcon />
                       </AddressBookButton>
                     </InputAdornment>
@@ -158,12 +376,12 @@ export default function Aptos({ coinId }: AptosProps) {
               }}
             />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.entry.amount')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
+              label={t('pages.wallet.send.$coinId.Entry.Aptos.index.amount')}
+              error={!!sendAmountInputErrorMessage}
+              helperText={sendAmountInputErrorMessage}
               value={sendDisplayAmount}
               onChange={(e) => {
-                if (!isDecimal(e.currentTarget.value, coinDecimal || 0) && e.currentTarget.value) {
+                if (!isDecimal(e.currentTarget.value, coinDecimals || 0) && e.currentTarget.value) {
                   return;
                 }
 
@@ -183,26 +401,8 @@ export default function Aptos({ coinId }: AptosProps) {
                 },
               }}
               rightBottomAdornment={
-                selectedCoinToSend && (
-                  <BalanceButton
-                    onClick={() => {
-                      setSendDisplayAmount(maxAmount);
-                    }}
-                    coin={selectedCoinToSend?.asset}
-                    balance={baseAvailableAmount}
-                  />
-                )
+                selectedCoinToSend && <BalanceButton onClick={handleOnClickMax} coin={selectedCoinToSend?.asset} balance={baseAvailableAmount} />
               }
-            />
-            <StandardInput
-              multiline
-              maxRows={3}
-              label={t('pages.wallet.send.$coinId.entry.memo')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
-              value={inputMemo}
-              // TODO 숫자만 입력할 수 있도록 처리 필요.
-              onChange={(e) => setInputMemo(e.target.value)}
             />
           </InputWrapper>
         </>
@@ -212,47 +412,42 @@ export default function Aptos({ coinId }: AptosProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          {/* <Fee
+          <AptosFee
+            displayFeeAmount={estimatedDisplayFeeAmount}
+            disableConfirm={isDisabled || !!errorMessage}
+            isLoading={isDisabled}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          /> */}
+          />
         </>
       </BaseFooter>
 
-      {currentRecipientChainId && (
+      {selectedCoinToSend?.chain && (
         <AddressBottomSheet
           open={isOpenAddressBottomSheet}
           onClose={() => setIsOpenAddressBottomSheet(false)}
-          chainId={currentRecipientChainId}
-          headerTitle={t('pages.wallet.send.$coinId.entry.chooseRecipientAddress')}
-          onClickAddress={(address, memo) => {
+          filterAddress={selectedCoinToSend?.address.address}
+          chainId={getUniqueChainId(selectedCoinToSend.chain)}
+          headerTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.chooseRecipientAddress')}
+          onClickAddress={(address) => {
             setRecipientAddress(address);
-            if (memo) {
-              setInputMemo(memo);
-            }
           }}
         />
       )}
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.entry.sendReview')}
-        contentsSubTitle={t('pages.wallet.send.$coinId.entry.sendReviewSub')}
-        confirmButtonText={t('pages.wallet.send.$coinId.entry.send')}
-        onClickCancel={() => {
-          console.log('onClickCancel');
-        }}
-        onClickConfirm={() => {
-          navigate({
-            to: TxResult.to,
-            search: {
-              address: '',
-              coinId,
-              txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
-            },
-          });
-        }}
+        contentsTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')}
+        contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewSub')}
+        confirmButtonText={t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}
+        onClickConfirm={handleOnClickConfirm}
+      />
+
+      <TxProcessingOverlay
+        open={isOpenTxProcessingOverlay}
+        title={t('pages.wallet.send.$coinId.Entry.Aptos.index.txProcessing')}
+        message={t('pages.wallet.send.$coinId.Entry.Aptos.index.txProcessingSub')}
       />
     </>
   );

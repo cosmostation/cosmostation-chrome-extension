@@ -202,6 +202,12 @@
           "networkFee": "Network Fee",
           "continue": "Continue"
         }
+      },
+      "AptosFee": {
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -1175,6 +1181,25 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "memo": "OP_RETURN (option)"
+              }
+            },
+            "Aptos": {
+              "index": {
+                "invalidAddress": "Invalid address",
+                "noAvailableAmount": "No available amount",
+                "insufficientAmount": "Insufficient amount",
+                "insufficientFee": "Insufficient fee",
+                "noAmount": "Please enter the amount",
+                "invalidAmount": "Invalid amount",
+                "failedGenerateTransaction": "Failed to generate transaction",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
               }
             }
           }

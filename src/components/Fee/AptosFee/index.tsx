@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { SUI_COIN_TYPE } from '@/constants/sui';
+import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { times } from '@/utils/numbers';
@@ -10,21 +10,21 @@ import { Container, EstimatedFeeTextContainer, FeeCustomButton, LeftContentConta
 import Base1300Text from '../../common/Base1300Text';
 import NumberTypo from '../../common/NumberTypo';
 
-type SuiFeeProps = {
+type AptosFeeProps = {
   displayFeeAmount?: string;
   disableConfirm?: boolean;
   isLoading?: boolean;
   onClickConfirm: () => void;
 };
 
-export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: SuiFeeProps) {
+export default function AptosFee({ displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: AptosFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
 
   const { data: accountAsset } = useAccountAllAssets();
 
-  const selectedFeeAsset = accountAsset?.suiAccountAssets.find((item) => item.asset.id === SUI_COIN_TYPE)?.asset;
+  const selectedFeeAsset = accountAsset?.aptosAccountAssets.find((item) => item.asset.id === APTOS_COIN_TYPE)?.asset;
 
   const coinPrice = (selectedFeeAsset?.coinGeckoId && coinGeckoPrice?.[selectedFeeAsset.coinGeckoId]?.[currency]) || 0;
   const coinSymbol = selectedFeeAsset?.symbol || '';
@@ -34,7 +34,7 @@ export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, on
   return (
     <Container>
       <LeftContentContainer>
-        <NetworkFeeText variant="b3_R">{t('components.Fee.SuiFee.index.networkFee')}</NetworkFeeText>
+        <NetworkFeeText variant="b3_R">{t('components.Fee.AptosFee.index.networkFee')}</NetworkFeeText>
         <FeeCustomButton disabled>
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
@@ -58,7 +58,7 @@ export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, on
       <RightContentContainer>
         {
           <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.SuiFee.index.continue')}
+            {t('components.Fee.AptosFee.index.continue')}
           </StyledButton>
         }
       </RightContentContainer>
