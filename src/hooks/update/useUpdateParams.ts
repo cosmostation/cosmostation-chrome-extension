@@ -10,6 +10,7 @@ export function useUpdateBaseData() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['updateBaseData'],
     queryFn: fetcher,
+    staleTime: 1000 * 60 * 29,
     refetchInterval: 1000 * 60 * 30,
   });
 

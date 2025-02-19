@@ -9,9 +9,9 @@ import type { IncentiveClaims, IncentiveHardLiquidityProviderClaims, IncentivePa
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { plus } from '@/utils/numbers';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseIncentiveProps = {
   coinId: string;
@@ -19,24 +19,26 @@ type UseIncentiveProps = {
 };
 
 export function useIncentive({ coinId, config }: UseIncentiveProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const chain = accountAssets?.cosmosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const asset = getCosmosAccountAsset();
 
   const requestURLs = useMemo(() => {
-    if (!chain?.address.address) return [];
+    if (!asset?.address.address) return [];
 
-    const cosmosEndpoints = chain?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, coinId));
-    const incentiveEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getIncentive(chain?.address.address));
+    const { chainId } = parseCoinId(coinId);
+
+    const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
+    const incentiveEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getIncentive(asset?.address.address));
 
     return incentiveEndpoints;
-  }, [chain?.address.address, chain?.chain.lcdUrls, coinId]);
+  }, [asset?.address.address, asset?.chain.lcdUrls, coinId]);
 
   const fetcher = async (index = 0) => {
     try {
-      if (chain?.chain.id !== KAVA_CHAINLIST_ID) return null;
+      if (asset?.chain.id !== KAVA_CHAINLIST_ID) return null;
 
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
@@ -61,13 +63,13 @@ export function useIncentive({ coinId, config }: UseIncentiveProps) {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['cosmosIncentive', chain?.address.address],
+    queryKey: ['cosmosIncentive', asset?.address.address],
     queryFn: () => fetcher(),
     refetchOnWindowFocus: false,
     staleTime: 1000 * 14,
     refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
     retry: false,
-    enabled: !!coinId && !!chain?.address.address && !!requestURLs.length && !isAllRequestsFailed,
+    enabled: !!coinId && !!asset?.address.address && !!requestURLs.length && !isAllRequestsFailed,
     ...config,
   });
 

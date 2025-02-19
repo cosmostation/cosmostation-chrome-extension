@@ -35,6 +35,6 @@ export type SendTransaction = {
   timestamp?: unknown;
 };
 
-export type SendTransactionPayload = {
+export interface SendTransactionPayload {
   tx_response: SendTransaction;
-};
+}

@@ -208,6 +208,51 @@
           "networkFee": "Network Fee",
           "continue": "Continue"
         }
+      },
+      "CosmosFee": {
+        "CosmosFee": {
+          "components": {
+            "FeeSettingBottomSheet": {
+              "components": {
+                "FeeCustomOverlay": {
+                  "index": {
+                    "inputGasAmountError": "invalid gas amount",
+                    "inputGasRateError": "invalid gas rate"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "FeeSettingBottomSheet": {
+            "components": {
+              "FeeCustomOverlay": {
+                "index": {
+                  "networkFee": "Network Fee",
+                  "feeToken": "Fee Token",
+                  "selectFeeToken": "Select Fee Token",
+                  "gasAmount": "Gas Amount",
+                  "gasRate": "Gas Rate",
+                  "inform": "How Network Fees are paid",
+                  "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
+                  "done": "Setup Complete"
+                }
+              }
+            }
+          }
+        },
+        "FeeSettingBottomSheet": {
+          "index": {
+            "title": "Select Fee Option",
+            "customDescription": "Do you want a advanced setting?",
+            "custom": "Custom"
+          }
+        },
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -1195,6 +1240,34 @@
                 "send": "Send",
                 "recipientAddress": "Recipient Address",
                 "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+              }
+            },
+            "Cosmos": {
+              "index": {
+                "contract": "Contract",
+                "denom": "Denom",
+                "invalidAddress": "Invalid address",
+                "insufficientAmount": "Insufficient amount",
+                "noAmount": "Please enter the amount",
+                "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
+                "timeoutHeightError": "Network Error",
+                "noAvailableAmount": "No available amount",
+                "invalidAmount": "Invalid amount",
+                "insufficientFeeAmount": "Insufficient fee",
+                "failedToCalculateTransaction": "Failed to build transaction",
+                "send": "Send",
+                "recipientNetwork": "Recipient Network",
+                "ibcSend": "IBC Send",
+                "selectRecipientNetwork": "Select Recipient Network",
+                "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "memo": "Memo (Option)",
                 "chooseRecipientAddress": "Choose Recipient",
                 "sendReview": "Confirm Send",
                 "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",

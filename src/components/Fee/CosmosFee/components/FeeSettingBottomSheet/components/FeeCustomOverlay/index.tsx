@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -15,7 +15,7 @@ import InformationPanel from '@/components/InformationPanel';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as Home } from '@/pages/index';
 import type { CosmosFeeAsset } from '@/types/cosmos/fee';
-import { isDecimal, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, isDecimal, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -37,23 +37,15 @@ import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
 
 type FeeCustomOverlayProps = {
   baseGasAmount: string;
-  open?: boolean;
-  feeCoinId?: string;
+  baseGasRate: string;
+  feeCoinId: string;
   feeAssets: CosmosFeeAsset[];
-  currentSelectedFeeOptionKey?: number;
+  open?: boolean;
   onClose: () => void;
-  onConfirm: (feeCoinId: string, gasAmount: string) => void;
+  onConfirm: (feeCoinId: string, gasAmount: string, gasRate: string) => void;
 };
 
-export default function FeeCustomOverlay({
-  open = false,
-  baseGasAmount,
-  feeAssets,
-  currentSelectedFeeOptionKey,
-  feeCoinId,
-  onClose,
-  onConfirm,
-}: FeeCustomOverlayProps) {
+export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasRate, feeAssets, feeCoinId, onClose, onConfirm }: FeeCustomOverlayProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -62,21 +54,37 @@ export default function FeeCustomOverlay({
   const { currency } = useExtensionStorageStore((state) => state);
 
   const [inputGasAmount, setInputGasAmount] = useState('');
+  const [inputGasRate, setInputGasRate] = useState('');
   const [selectedFeeCoinId, setSelectedFeeCoinId] = useState(feeCoinId);
 
-  const selectedFeeCoin = feeAssets.find(({ asset }) => getCoinId(asset) === selectedFeeCoinId);
+  const selectedFeeCoin = useMemo(() => feeAssets.find(({ asset }) => getCoinId(asset) === selectedFeeCoinId), [feeAssets, selectedFeeCoinId]);
 
   const coinSymbol = selectedFeeCoin?.asset.symbol;
   const decimals = selectedFeeCoin?.asset.decimals || 0;
 
-  const currentGasRate = selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey || 0] || 0;
+  const currentGasRate = inputGasRate || baseGasRate;
   const currentGas = inputGasAmount || baseGasAmount;
 
-  const displayFeeAmount = toDisplayDenomAmount(times(currentGasRate, currentGas), decimals);
+  const displayFeeAmount = useMemo(() => toDisplayDenomAmount(times(currentGasRate, currentGas), decimals), [currentGas, currentGasRate, decimals]);
 
-  const chainPrice = (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[currency]) || 0;
+  const coinPrice = useMemo(
+    () => (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[currency]) || 0,
+    [coinGeckoPrice, currency, selectedFeeCoin?.asset.coinGeckoId],
+  );
 
-  const value = times(displayFeeAmount, chainPrice);
+  const value = useMemo(() => times(displayFeeAmount, coinPrice), [coinPrice, displayFeeAmount]);
+
+  const inputGasAmountErrorMsg = useMemo(() => {
+    if (inputGasAmount && (!isDecimal(inputGasAmount, decimals) || !gt(inputGasAmount, '0'))) {
+      return t('components.Fee.CosmosFee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inputGasAmountError');
+    }
+  }, [decimals, inputGasAmount, t]);
+
+  const inputGasRateErrorMsg = useMemo(() => {
+    if (inputGasRate && (!isDecimal(inputGasRate, decimals) || !gt(inputGasRate, '0'))) {
+      return t('components.Fee.CosmosFee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inputGasRateError');
+    }
+  }, [decimals, inputGasRate, t]);
 
   const reset = () => {
     setInputGasAmount('');
@@ -84,13 +92,7 @@ export default function FeeCustomOverlay({
   };
 
   const onHandleConfirm = () => {
-    if (!inputGasAmount && selectedFeeCoinId) {
-      onConfirm(selectedFeeCoinId, baseGasAmount);
-    }
-
-    if (inputGasAmount && selectedFeeCoinId) {
-      onConfirm(selectedFeeCoinId, inputGasAmount);
-    }
+    onConfirm(selectedFeeCoinId, currentGas, currentGasRate);
     reset();
   };
 
@@ -126,7 +128,9 @@ export default function FeeCustomOverlay({
       </HeaderContainer>
       <ContentsContainer>
         <FeeContainer>
-          <Base1000Text variant="h3_M">{t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.networkFee')}</Base1000Text>
+          <Base1000Text variant="h3_M">
+            {t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.networkFee')}
+          </Base1000Text>
           <EstimatedFeeTextContainer>
             <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={currency} fixed={decimals} isDisableLeadingCurreny>
               {displayFeeAmount}
@@ -148,14 +152,14 @@ export default function FeeCustomOverlay({
             onClickCoin={(chainId) => {
               setSelectedFeeCoinId(chainId);
             }}
-            label={t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.feeToken')}
-            bottomSheetTitle={t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.selectFeeToken')}
+            label={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.feeToken')}
+            bottomSheetTitle={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.selectFeeToken')}
           />
           <StandardInput
-            label={t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.gasAmount')}
+            label={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.gasAmount')}
             placeholder={baseGasAmount}
-            // error={!!errors.password}
-            // helperText={errors.password?.message}
+            error={!!inputGasAmountErrorMsg}
+            helperText={inputGasAmountErrorMsg}
             value={inputGasAmount}
             onChange={(e) => {
               if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
@@ -170,21 +174,44 @@ export default function FeeCustomOverlay({
               },
             }}
           />
+          <StandardInput
+            label={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.gasRate')}
+            placeholder={baseGasRate}
+            error={!!inputGasRateErrorMsg}
+            helperText={inputGasRateErrorMsg}
+            value={inputGasRate}
+            onChange={(e) => {
+              if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
+                return;
+              }
+
+              setInputGasRate(e.currentTarget.value);
+            }}
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
         </InputContainer>
 
         <BottomContainer>
           <InformationContainer>
             <InformationPanel
               varitant="info"
-              title={<Typography variant="b3_M">{t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inform')}</Typography>}
+              title={
+                <Typography variant="b3_M">
+                  {t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inform')}
+                </Typography>
+              }
               body={
                 <Typography variant="b4_R_Multiline">
-                  {t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.informDescription')}
+                  {t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.informDescription')}
                 </Typography>
               }
             />
           </InformationContainer>
-          <Button onClick={onHandleConfirm}>{t('components.Fee.Components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.done')}</Button>
+          <Button onClick={onHandleConfirm}>{t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.done')}</Button>
         </BottomContainer>
       </ContentsContainer>
     </Overlay>

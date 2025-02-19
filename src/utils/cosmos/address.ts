@@ -7,3 +7,12 @@ export function isValidCosmosAddress(address: string, addressPrefix: string): bo
     return false;
   }
 }
+
+export function convertToValidatorAddress(address?: string, validatorPrefix?: string) {
+  if (!address || !validatorPrefix) {
+    return undefined;
+  }
+
+  const { words } = bech32.decode(address);
+  return bech32.encode(validatorPrefix, words);
+}

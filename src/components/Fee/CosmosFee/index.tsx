@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -13,28 +13,32 @@ import Base1300Text from '../../common/Base1300Text';
 import NumberTypo from '../../common/NumberTypo';
 
 type FeeProps = {
-  gasRateKey: number;
-  gasRate: string[];
-  selectedFeeCoinId: string;
-  gas: string;
   feeAssets: CosmosFeeAsset[];
+  feeStepKey: number;
+  selectedFeeCoinId: string;
+  gases: string[];
+  gasRates: string[];
   disableConfirm?: boolean;
+  isLoading?: boolean;
   onClickConfirm: () => void;
-  onClickGasRate: (gasRateKey: number) => void;
+  onClickFeeStep: (gasRateKey: number) => void;
   onChangeGas: (gas: string) => void;
+  onChangeGasRate: (gasRate: string) => void;
   onChangeFeeCoinId?: (feeCoinId: string) => void;
 };
 
 export default function Fee({
-  gasRateKey,
-  gasRate,
-  gas,
-  selectedFeeCoinId,
   feeAssets,
+  feeStepKey,
+  selectedFeeCoinId,
+  gases,
+  gasRates,
   disableConfirm,
+  isLoading,
   onClickConfirm,
-  onClickGasRate,
+  onClickFeeStep,
   onChangeGas,
+  onChangeGasRate,
   onChangeFeeCoinId,
 }: FeeProps) {
   const { t } = useTranslation();
@@ -43,7 +47,7 @@ export default function Fee({
 
   const [isOpenFeeCustomBottomSheet, setIsOpenFeeCustomBottomSheet] = useState(false);
 
-  const selectedFeeCoin = feeAssets.find((item) => isMatchingCoinId(item.asset, selectedFeeCoinId));
+  const selectedFeeCoin = useMemo(() => feeAssets.find((item) => isMatchingCoinId(item.asset, selectedFeeCoinId)), [feeAssets, selectedFeeCoinId]);
 
   const decimals = selectedFeeCoin?.asset.decimals || 0;
   const coinGeckoId = selectedFeeCoin?.asset.coinGeckoId || '';
@@ -51,17 +55,18 @@ export default function Fee({
 
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
-  const feeGasRate = gasRate[gasRateKey];
+  const currentGas = gases?.[feeStepKey] || '0';
+  const currnetGasRate = gasRates?.[feeStepKey] || '0';
 
-  const baseFeeAmount = times(feeGasRate, gas);
-  const displayFeeAmount = toDisplayDenomAmount(baseFeeAmount, decimals);
+  const baseFeeAmount = useMemo(() => times(currnetGasRate, currentGas), [currentGas, currnetGasRate]);
+  const displayFeeAmount = useMemo(() => toDisplayDenomAmount(baseFeeAmount, decimals), [baseFeeAmount, decimals]);
 
-  const value = times(displayFeeAmount, coinPrice);
+  const value = useMemo(() => times(displayFeeAmount, coinPrice), [coinPrice, displayFeeAmount]);
 
   return (
     <Container>
       <LeftContentContainer>
-        <NetworkFeeText variant="b3_R">{t('components.Fee.index.networkFee')}</NetworkFeeText>
+        <NetworkFeeText variant="b3_R">{t('components.Fee.CosmosFee.index.networkFee')}</NetworkFeeText>
         <FeeCustomButton
           onClick={() => {
             setIsOpenFeeCustomBottomSheet(true);
@@ -88,26 +93,30 @@ export default function Fee({
       </LeftContentContainer>
       <RightContentContainer>
         {
-          <StyledButton disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.index.continue')}
+          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+            {t('components.Fee.CosmosFee.index.continue')}
           </StyledButton>
         }
       </RightContentContainer>
       <FeeSettingBottomSheet
         feeAssets={feeAssets}
         selectedFeeCoinId={selectedFeeCoinId}
-        gas={gas}
-        currentSelectedFeeOptionKey={gasRateKey}
+        gases={gases}
+        gasRates={gasRates}
+        currentSelectedFeeOptionKey={feeStepKey}
         open={isOpenFeeCustomBottomSheet}
         onClose={() => setIsOpenFeeCustomBottomSheet(false)}
         onChangeGas={(gas) => {
-          onChangeGas?.(gas);
+          onChangeGas(gas);
+        }}
+        onChangeGasRate={(gasRate) => {
+          onChangeGasRate(gasRate);
         }}
         onChangeFeeCoinId={(feeCoinId) => {
           onChangeFeeCoinId?.(feeCoinId);
         }}
         onSelectOption={(val) => {
-          onClickGasRate(val);
+          onClickFeeStep(val);
         }}
       />
     </Container>

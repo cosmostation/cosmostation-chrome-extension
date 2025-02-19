@@ -13,7 +13,6 @@ import NumberTypo from '@/components/common/NumberTypo';
 import StandardInput from '@/components/common/StandardInput';
 import Header from '@/components/Header';
 import InformationPanel from '@/components/InformationPanel';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as Home } from '@/pages/index';
@@ -40,8 +39,8 @@ type EIP1559FeeCustomOverlayProps = {
   baseGasAmount: string;
   baseMaxBaseFeeAmount: string;
   basePriorityFeeAmount: string;
+  feeCoinId: string;
   open?: boolean;
-  feeCoinId?: string;
   onClose: () => void;
   onConfirm: (gasAmount: string, maxBaseFeeAmount: string, priorityFeeAmount: string) => void;
 };
@@ -65,10 +64,6 @@ export default function EIP1559FeeCustomOverlay({
   const [inputGasAmount, setInputGasAmount] = useState('');
   const [inputMaxBaseFeeAmount, setInputMaxBaseFeeAmount] = useState('');
   const [inputPriorityFeeAmount, setInputPriorityFeeAmount] = useState('');
-
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
 
   const { getEVMAccountAsset } = useGetAccountAsset({ coinId: feeCoinId || '' });
 
@@ -176,10 +171,9 @@ export default function EIP1559FeeCustomOverlay({
         </FeeContainer>
         <InputContainer>
           <CoinSelectBox
-            coinList={accountAllAssets?.allEVMAccountAssets || []}
+            coinList={selectedFeeCoin ? [selectedFeeCoin] : []}
             currentCoinId={feeCoinId}
             label={t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.EIP1559FeeCustomOverlay.index.feeToken')}
-            disabled
           />
           <StandardInput
             label={t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.EIP1559FeeCustomOverlay.index.gasAmount')}

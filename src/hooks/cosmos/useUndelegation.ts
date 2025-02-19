@@ -6,9 +6,9 @@ import type {} from '@/types/cosmos/delegation';
 import type { UnbondingPayload } from '@/types/cosmos/undelegation';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseUndelegationProps = {
   coinId: string;
@@ -16,24 +16,26 @@ type UseUndelegationProps = {
 };
 
 export function useUndelegation({ coinId, config }: UseUndelegationProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const chain = accountAssets?.cosmosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const asset = getCosmosAccountAsset();
 
   const requestURLs = useMemo(() => {
-    if (!chain?.address.address) return [];
+    if (!asset?.address.address) return [];
 
-    const cosmosEndpoints = chain?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, coinId));
-    const undelegationEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getUndelegations(chain?.address.address));
+    const { chainId } = parseCoinId(coinId);
+
+    const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
+    const undelegationEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getUndelegations(asset?.address.address));
 
     return undelegationEndpoints;
-  }, [chain?.address.address, chain?.chain.lcdUrls, coinId]);
+  }, [asset?.address.address, asset?.chain.lcdUrls, coinId]);
 
   const fetcher = async (index = 0) => {
     try {
-      if (!chain?.chain.isSupportStaking) return null;
+      if (!asset?.chain.isSupportStaking) return null;
 
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
@@ -58,13 +60,13 @@ export function useUndelegation({ coinId, config }: UseUndelegationProps) {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['cosmosUndelegation', chain?.address.address],
+    queryKey: ['cosmosUndelegation', asset?.address.address],
     queryFn: () => fetcher(),
     refetchOnWindowFocus: false,
     staleTime: 1000 * 14,
     refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
     retry: false,
-    enabled: !!coinId && !!chain?.address.address && !!requestURLs.length && !isAllRequestsFailed,
+    enabled: !!coinId && !!asset?.address.address && !!requestURLs.length && !isAllRequestsFailed,
     ...config,
   });
 

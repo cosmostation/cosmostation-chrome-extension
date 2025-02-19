@@ -207,10 +207,6 @@ export default function Aptos({ coinId }: AptosProps) {
         return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
       }
     } else {
-      if (gt(estimatedBaseFeeAmount, baseAvailableAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientFee');
-      }
-
       if (gt(sendBaseAmount, baseAvailableAmount)) {
         return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
       }
@@ -243,6 +239,10 @@ export default function Aptos({ coinId }: AptosProps) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
     }
 
+    if (gt(estimatedBaseFeeAmount, baseAvailableAmount)) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientFee');
+    }
+
     if (!generateTransaction) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
     }
@@ -255,10 +255,11 @@ export default function Aptos({ coinId }: AptosProps) {
   }, [
     addressInputErrorMessage,
     baseAvailableAmount,
-    sendDisplayAmount,
     displayAvailableAmount,
+    estimatedBaseFeeAmount,
     generateTransaction,
     sendAmountInputErrorMessage,
+    sendDisplayAmount,
     simulateTransaction.data,
     t,
   ]);

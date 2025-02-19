@@ -1,11 +1,8 @@
 import { GRAVITY_BRDIGE_CHAINLIST_ID, KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
 
-import { parseCoinId } from '../queryParamGenerator';
 import { toBase64 } from '../string';
 
-export function cosmosURL(lcdURL: string, coinId: string) {
-  const { chainId } = parseCoinId(coinId);
-
+export function cosmosURL(lcdURL: string, chainId: string) {
   return {
     getNodeInfo: () => `${lcdURL}/cosmos/base/tendermint/v1beta1/node_info`,
     getBalance: (address: string) => `${lcdURL}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=10000`,

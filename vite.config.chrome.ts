@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
     ? null
     : {
         include: ['src/**', 'browser/**'],
+        exclude: ['src/proto/**'],
       };
 
   const manifestPath = resolve(__dirname, 'browser/chrome/manifest.json');
@@ -54,7 +55,6 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: false,
       minify: isProduction,
       watch,
-      sourcemap: !isProduction,
       rollupOptions: {
         input: {
           popup: resolve(__dirname, 'popup.html'),

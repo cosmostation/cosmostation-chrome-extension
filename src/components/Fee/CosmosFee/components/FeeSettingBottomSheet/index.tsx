@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -19,22 +19,26 @@ import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type FeeSettingBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   selectedFeeCoinId: string;
-  gas: string;
+  gases: string[];
+  gasRates: string[];
   feeAssets: CosmosFeeAsset[];
-  currentSelectedFeeOptionKey?: number;
+  currentSelectedFeeOptionKey: number;
   onSelectOption?: (id: number) => void;
   onChangeGas?: (gas: string) => void;
+  onChangeGasRate?: (gasRate: string) => void;
   onChangeFeeCoinId?: (feeCoinId: string) => void;
 };
 
 export default function FeeSettingBottomSheet({
   feeAssets,
   selectedFeeCoinId,
-  gas,
+  gases,
+  gasRates,
   currentSelectedFeeOptionKey,
   onClose,
   onSelectOption,
   onChangeGas,
+  onChangeGasRate,
   onChangeFeeCoinId,
   ...remainder
 }: FeeSettingBottomSheetProps) {
@@ -50,20 +54,45 @@ export default function FeeSettingBottomSheet({
 
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
-  const feeOptions =
-    selectedFeeCoin?.gasRate.map((item, index) => {
-      const displayFeeAmount = toDisplayDenomAmount(times(item, gas), selectedFeeCoin.asset.decimals);
-      const value = times(displayFeeAmount, coinPrice);
+  const customFeeStepKey = gasRates ? gasRates.length - 1 : 0;
 
-      return {
-        id: index,
-        // TODO 정책 설정 필요.
-        title: 'Default',
-        amount: displayFeeAmount,
-        symbol: selectedFeeCoin.asset.symbol,
-        value: value,
-      };
-    }) || [];
+  const feeOptions = useMemo(
+    () =>
+      gasRates
+        .map((gasRate, index) => {
+          if (!gasRate) return null;
+
+          const gas = gases?.[index] || '0';
+
+          const displayFeeAmount = toDisplayDenomAmount(times(gasRate || '0', gas), selectedFeeCoin?.asset.decimals || 0);
+          const value = times(displayFeeAmount, coinPrice);
+
+          // TODO 정책 설정 필요.
+          const title = index === customFeeStepKey ? 'Custom' : 'Default';
+
+          return {
+            id: index,
+            title,
+            amount: displayFeeAmount,
+            symbol: selectedFeeCoin?.asset.symbol || '',
+            value: value,
+          };
+        })
+        .filter((item) => !!item),
+    [coinPrice, customFeeStepKey, gasRates, gases, selectedFeeCoin?.asset.decimals, selectedFeeCoin?.asset.symbol],
+  );
+
+  const defaultCustomGasAmount = useMemo(() => {
+    const customGasAmount = gases?.[customFeeStepKey];
+
+    return customGasAmount || gases?.[0] || '0';
+  }, [customFeeStepKey, gases]);
+
+  const defatulCustomGasRate = useMemo(() => {
+    const customGasRate = gasRates?.[customFeeStepKey];
+
+    return customGasRate || gasRates?.[0] || '0';
+  }, [customFeeStepKey, gasRates]);
 
   const onHandelClose = () => {
     setIsOpenFeeCustomOverlay(false);
@@ -81,7 +110,7 @@ export default function FeeSettingBottomSheet({
         <Container>
           <Header>
             <HeaderTitle>
-              <Typography variant="h3_B">{t('components.FeeSettingBottomSheet.index.title')}</Typography>
+              <Typography variant="h3_B">{t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.title')}</Typography>
             </HeaderTitle>
 
             <IconTextButton onClick={onHandelClose}>
@@ -102,14 +131,14 @@ export default function FeeSettingBottomSheet({
           </Body>
 
           <FeeCustomContainer>
-            <Base1300Text variant="b3_R">{t('components.FeeSettingBottomSheet.index.customDescription')}</Base1300Text>
+            <Base1300Text variant="b3_R">{t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.customDescription')}</Base1300Text>
             <TextButton
               variant="hyperlink"
               onClick={() => {
                 setIsOpenFeeCustomOverlay(true);
               }}
             >
-              {t('components.FeeSettingBottomSheet.index.custom')}
+              {t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.custom')}
             </TextButton>
           </FeeCustomContainer>
         </Container>
@@ -118,12 +147,17 @@ export default function FeeSettingBottomSheet({
           onClose={() => {
             setIsOpenFeeCustomOverlay(false);
           }}
-          baseGasAmount={gas}
+          baseGasAmount={defaultCustomGasAmount}
+          baseGasRate={defatulCustomGasRate}
           feeAssets={feeAssets}
           feeCoinId={selectedFeeCoinId}
-          onConfirm={(feeCoinId, gasAmount) => {
+          onConfirm={(feeCoinId, gasAmount, gasRate) => {
             onChangeFeeCoinId?.(feeCoinId);
             onChangeGas?.(gasAmount);
+            onChangeGasRate?.(gasRate);
+            onSelectOption?.(customFeeStepKey);
+
+            onHandelClose();
           }}
         />
       </StyledBottomSheet>

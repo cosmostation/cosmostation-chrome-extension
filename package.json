@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "predev:chrome": "rimraf dist-dev",
-    "dev:chrome": "concurrently \"npm run dev:chrome:main\" \"npm run dev:chrome:inject\" \"npm run dev:chrome:content\" \"npm run dev:chrome:service-worker\"",
+    "dev:chrome": "NODE_OPTIONS=--max-old-space-size=8192 concurrently \"npm run dev:chrome:main\" \"npm run dev:chrome:inject\" \"npm run dev:chrome:content\" \"npm run dev:chrome:service-worker\"",
     "dev:chrome:main": "tsc -b && vite build --config vite.config.chrome.ts --mode development",
     "dev:chrome:inject": "tsc -b && vite build --config vite.config.chrome.inject.ts --mode development",
     "dev:chrome:content": "tsc -b && vite build --config vite.config.chrome.content.ts --mode development",
@@ -50,6 +50,7 @@
     "lodash": "^4.17.21",
     "long": "^5.2.3",
     "lottie-react": "^2.4.0",
+    "protobufjs": "^6.11.2",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -58,6 +59,7 @@
     "react-toastify": "^10.0.6",
     "recharts": "^2.13.3",
     "sha3": "^2.1.4",
+    "sort-keys": "^5.1.0",
     "use-debounce": "^10.0.4",
     "uuid": "^11.0.3",
     "zustand": "^5.0.0"

@@ -8,6 +8,7 @@ module.exports = {
     // Use ! to filter out files or directories
     '!src/**/*.spec.{ts,tsx}',
     '!src/lang/**',
+    '!src/proto/**',
     '!**/node_modules/**',
   ],
   output: './',

@@ -4,6 +4,7 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
+import type { AccountCosmosAsset, AccountCustomCosmosAsset, AccountCw20Asset } from '@/types/account';
 import type { AccountAssets, FlatAccountAssets } from '@/types/accountAssets';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -12,6 +13,7 @@ import { useCurrentAccount } from './useCurrentAccount';
 
 type UseAccountAssetsResponse = AccountAssets & {
   flatAccountAssets: FlatAccountAssets[];
+  allCosmosAccountAssets: (AccountCosmosAsset | AccountCustomCosmosAsset | AccountCw20Asset)[];
 };
 
 type UseAccountAssets =
@@ -191,6 +193,12 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
     const returnData: UseAccountAssetsResponse = {
       ...filteredAccountAssets,
       flatAccountAssets: flatAccountAssets,
+      allCosmosAccountAssets: [
+        ...filteredAccountAssets.cosmosAccountAssets,
+        ...filteredAccountAssets.cosmosAccountCustomAssets,
+        ...filteredAccountAssets.cw20AccountAssets,
+        ...filteredAccountAssets.customCw20AccountAssets,
+      ],
     };
 
     return returnData;

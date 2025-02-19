@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
-import type { FeemarketResponse } from '@/types/cosmos/feemarket';
-import { get } from '@/utils/axios';
+import type { ClientStateResonse } from '@/types/cosmos/clientState';
+import { get, isAxiosError } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 
@@ -9,19 +9,19 @@ import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
-type UseFeemarketProps = {
+type UseClientStateProps = {
   coinId: string;
+  channelId: string;
+  port?: string;
   config?: UseFetchConfig;
 };
 
-export function useFeemarket({ coinId, config }: UseFeemarketProps) {
+export function useClientState({ coinId, channelId, port, config }: UseClientStateProps) {
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
   const asset = getCosmosAccountAsset();
-
-  const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
 
   const requestURLs = useMemo(() => {
     if (!asset?.chain.lcdUrls) return [];
@@ -29,31 +29,35 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
     const { chainId } = parseCoinId(coinId);
 
     const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
-    const feemarketEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getFeemarket());
+    const clientStateEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getClientState(channelId, port));
 
-    return feemarketEndpoints;
-  }, [asset?.chain.lcdUrls, coinId]);
+    return clientStateEndpoints;
+  }, [asset?.chain.lcdUrls, channelId, coinId, port]);
 
   const fetcher = async (index = 0) => {
     try {
-      if (!isEnabledFeemarket) return null;
-
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
 
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<FeemarketResponse>(requestURLs[index]);
+      const response = await get<ClientStateResonse>(requestURLs[index]);
 
       setIsAllRequestsFailed(false);
 
       return response;
-    } catch {
+    } catch (e) {
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
 
         return null;
+      }
+
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
       }
 
       return fetcher(index + 1);
@@ -61,12 +65,12 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
   };
 
   const { data, isLoading, error, refetch } = useFetch({
-    queryKey: ['cosmosFeemarket', coinId],
+    queryKey: ['cosmosClientState', coinId, channelId, port],
     fetchFunction: () => fetcher(),
     config: {
       refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
       retry: false,
-      enabled: !!coinId && !!requestURLs.length && !isAllRequestsFailed,
+      enabled: !!coinId && !!requestURLs.length && !!channelId && !!port && !isAllRequestsFailed,
       ...config,
     },
   });

@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { Delegation, DelegationPayload, KavaDelegationPayload } from '@/types/cosmos/delegation';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
-import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseDelegationProps = {
   coinId: string;
@@ -15,25 +15,27 @@ type UseDelegationProps = {
 };
 
 export function useDelegation({ coinId, config }: UseDelegationProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const chain = accountAssets?.cosmosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const asset = getCosmosAccountAsset();
 
   const requestURLs = useMemo(() => {
-    if (!chain?.address.address) return [];
+    if (!asset?.address.address) return [];
 
-    const cosmosEndpoints = chain?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, coinId));
-    const delegationEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getDelegations(chain?.address.address));
+    const { chainId } = parseCoinId(coinId);
+
+    const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
+    const delegationEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getDelegations(asset?.address.address));
 
     return delegationEndpoints;
-  }, [chain?.address.address, chain?.chain.lcdUrls, coinId]);
+  }, [asset?.address.address, asset?.chain.lcdUrls, coinId]);
 
   // FIXME 이 방법은 매 요청마다 불필요한 요청이 포함되긴 함.  -> 성공하기 전 엔드포인트 모두에 불필요하게 요청하고있으니꼐
   const fetcher = async (index = 0) => {
     try {
-      if (!chain?.chain.isSupportStaking) return null;
+      if (!asset?.chain.isSupportStaking) return null;
 
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
@@ -58,13 +60,13 @@ export function useDelegation({ coinId, config }: UseDelegationProps) {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['cosmosDelegation', chain?.address.address],
+    queryKey: ['cosmosDelegation', asset?.address.address],
     queryFn: () => fetcher(),
     refetchOnWindowFocus: false,
     staleTime: 1000 * 14,
     refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
     retry: false,
-    enabled: !!coinId && !!chain?.address.address && !!requestURLs.length && !isAllRequestsFailed,
+    enabled: !!coinId && !!asset?.address.address && !!requestURLs.length && !isAllRequestsFailed,
     ...config,
   });
 
@@ -96,7 +98,7 @@ export function useDelegation({ coinId, config }: UseDelegationProps) {
       if (data.result) {
         return data.result.map((delegation) => {
           const amount = typeof delegation.balance === 'string' ? delegation.balance : delegation.balance.amount;
-          const denom = typeof delegation.balance === 'string' ? chain?.asset.id || parseCoinId(coinId).id : delegation.balance.denom;
+          const denom = typeof delegation.balance === 'string' ? asset?.asset.id || parseCoinId(coinId).id : delegation.balance.denom;
 
           return {
             delegatorAddress: delegation.delegator_address,
@@ -110,7 +112,7 @@ export function useDelegation({ coinId, config }: UseDelegationProps) {
       }
     }
     return [];
-  }, [chain?.asset.id, coinId, data]);
+  }, [asset?.asset.id, coinId, data]);
 
   return { data: returnData, error, refetch, isLoading };
 }

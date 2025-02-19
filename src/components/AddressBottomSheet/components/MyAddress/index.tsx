@@ -287,5 +287,13 @@ function getBadgeDetail(accountAddress: AccountAddress) {
       };
   }
 
+  if (accountAddress.chainType === 'cosmos') {
+    if (accountAddress.accountType.isDefault === false) {
+      return {
+        text: 'Old',
+        color: '#6d5b5b',
+      };
+    }
+  }
   return null;
 }

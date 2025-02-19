@@ -17,9 +17,9 @@ import type {
 } from '@/types/cosmos/account';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseAccountProps = {
   coinId: string;
@@ -27,22 +27,22 @@ type UseAccountProps = {
 };
 
 export function useAccount({ coinId, config }: UseAccountProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const chain = [...(accountAssets?.cosmosAccountAssets || []), ...(accountAssets?.cosmosAccountCustomAssets || [])].find((asset) =>
-    isMatchingCoinId(asset.asset, coinId),
-  );
+  const asset = getCosmosAccountAsset();
 
   const requestURLs = useMemo(() => {
-    if (!chain?.address.address) return [];
+    if (!asset?.address.address) return [];
 
-    const cosmosEndpoints = chain?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, coinId));
-    const accountEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getAccount(chain?.address.address));
+    const { chainId } = parseCoinId(coinId);
+
+    const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
+    const accountEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getAccount(asset?.address.address));
 
     return accountEndpoints;
-  }, [chain?.address.address, chain?.chain.lcdUrls, coinId]);
+  }, [asset?.address.address, asset?.chain.lcdUrls, coinId]);
 
   const fetcher = async (index = 0) => {
     try {
@@ -69,13 +69,13 @@ export function useAccount({ coinId, config }: UseAccountProps) {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['cosmosAccount', chain?.address.address],
+    queryKey: ['cosmosAccount', asset?.address.address],
     queryFn: () => fetcher(),
     refetchOnWindowFocus: false,
     staleTime: 1000 * 14,
     refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
     retry: false,
-    enabled: !!coinId && !!chain?.address.address && !!requestURLs.length && !isAllRequestsFailed,
+    enabled: !!coinId && !!asset?.address.address && !!requestURLs.length && !isAllRequestsFailed,
     ...config,
   });
 
