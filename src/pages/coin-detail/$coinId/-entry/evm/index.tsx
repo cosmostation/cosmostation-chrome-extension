@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
 import ContractAddress from '../components/ContractAddress';
@@ -19,15 +18,9 @@ type EVMProps = {
 export default function EVM({ coinId }: EVMProps) {
   const { t } = useTranslation();
 
-  const { data } = useAccountAssets();
+  const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
 
-  const selectedCoin = (() => {
-    if (!data) return undefined;
-
-    const aggregatedEVMAccountAssets = [...data.evmAccountAssets, ...data.evmAccountCustomAssets, ...data.erc20AccountAssets, ...data.customErc20AccountAssets];
-
-    return aggregatedEVMAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-  })();
+  const selectedCoin = getEVMAccountAsset();
 
   const contractAddress = selectedCoin?.asset.type === 'erc20' ? selectedCoin.asset.id : undefined;
 

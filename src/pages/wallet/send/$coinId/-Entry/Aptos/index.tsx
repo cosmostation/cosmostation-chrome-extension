@@ -27,7 +27,7 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
 import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
-import { gt, lte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex } from '@/utils/regex.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
@@ -196,31 +196,37 @@ export default function Aptos({ coinId }: AptosProps) {
   }, [recipientAddress, selectedCoinToSend?.address.address, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
-    if (!gt(baseAvailableAmount, '0')) {
-      return t('pages.wallet.send.$coinId.Entry.Aptos.index.noAvailableAmount');
-    }
+    if (sendDisplayAmount) {
+      if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
+        const totalCostAmount = plus(sendBaseAmount, estimatedBaseFeeAmount);
 
-    if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
-      const totalCoastAmount = plus(sendBaseAmount, estimatedBaseFeeAmount);
-
-      if (gt(totalCoastAmount, baseAvailableAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
+        if (gt(totalCostAmount, baseAvailableAmount)) {
+          return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
+        }
+      } else {
+        if (gt(sendBaseAmount, baseAvailableAmount)) {
+          return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
+        }
       }
-    } else {
-      if (gt(sendBaseAmount, baseAvailableAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
-      }
-    }
 
-    if (sendDisplayAmount && !gt(sendDisplayAmount, '0')) {
-      return t('pages.wallet.send.$coinId.Entry.Aptos.index.noAmount');
+      if (!gt(sendDisplayAmount, '0')) {
+        return t('pages.wallet.send.$coinId.Entry.Aptos.index.tooLowAmount');
+      }
     }
     return '';
   }, [baseAvailableAmount, estimatedBaseFeeAmount, selectedCoinToSend?.asset.id, sendBaseAmount, sendDisplayAmount, t]);
 
   const errorMessage = useMemo(() => {
+    if (!recipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.noRecipientAddress');
+    }
+
     if (addressInputErrorMessage) {
       return addressInputErrorMessage;
+    }
+
+    if (!sendDisplayAmount) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.noAmount');
     }
 
     if (!gt(baseAvailableAmount, '0')) {
@@ -229,18 +235,6 @@ export default function Aptos({ coinId }: AptosProps) {
 
     if (sendAmountInputErrorMessage) {
       return sendAmountInputErrorMessage;
-    }
-
-    if (lte(sendDisplayAmount || '0', '0')) {
-      return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAmount');
-    }
-
-    if (gt(sendDisplayAmount || '0', displayAvailableAmount)) {
-      return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientAmount');
-    }
-
-    if (gt(estimatedBaseFeeAmount, baseAvailableAmount)) {
-      return t('pages.wallet.send.$coinId.Entry.Aptos.index.insufficientFee');
     }
 
     if (!generateTransaction) {
@@ -255,9 +249,8 @@ export default function Aptos({ coinId }: AptosProps) {
   }, [
     addressInputErrorMessage,
     baseAvailableAmount,
-    displayAvailableAmount,
-    estimatedBaseFeeAmount,
     generateTransaction,
+    recipientAddress,
     sendAmountInputErrorMessage,
     sendDisplayAmount,
     simulateTransaction.data,

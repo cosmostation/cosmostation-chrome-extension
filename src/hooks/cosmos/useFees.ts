@@ -13,17 +13,9 @@ type UseFeesProps = {
 };
 
 export function useFees({ coinId, config }: UseFeesProps) {
-  const { data: accountAssets } = useAccountAllAssets();
+  const { data: accountAssets } = useAccountAllAssets({ disableDupeEthermint: true });
 
-  const baseCoinList = useMemo(
-    () => [
-      ...(accountAssets?.cosmosAccountAssets || []),
-      ...(accountAssets?.cosmosAccountCustomAssets || []),
-      ...(accountAssets?.cw20AccountAssets || []),
-      ...(accountAssets?.customCw20AccountAssets || []),
-    ],
-    [accountAssets?.cosmosAccountAssets, accountAssets?.cosmosAccountCustomAssets, accountAssets?.customCw20AccountAssets, accountAssets?.cw20AccountAssets],
-  );
+  const baseCoinList = useMemo(() => [...(accountAssets?.allCosmosAccountAssets || [])], [accountAssets?.allCosmosAccountAssets]);
 
   const chain = baseCoinList.find((asset) => isMatchingCoinId(asset.asset, coinId))?.chain;
 

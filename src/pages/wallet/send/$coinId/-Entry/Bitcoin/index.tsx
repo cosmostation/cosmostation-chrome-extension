@@ -27,7 +27,7 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { executeTransactionSequentially } from '@/utils/bitcoin.ts/sign.ts';
 import { ecpairFromPrivateKey, getTweakSigner, initBitcoinEcc } from '@/utils/bitcoin.ts/tx.ts';
-import { gt, minus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
@@ -72,12 +72,11 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
+  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
-
-  const sendBaseAmount = useMemo(() => (sendDisplayAmount ? toBaseDenomAmount(sendDisplayAmount, coinDecimals) : '0'), [coinDecimals, sendDisplayAmount]);
 
   const displaySendAmountPrice = useMemo(() => (sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0'), [coinPrice, sendDisplayAmount]);
 
@@ -313,15 +312,19 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   }, [recipientAddress, selectedChain?.isTestnet, selectedCoinToSend?.address.address, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
-    if (!gt(baseAvailableAmount, '0') || gt('0', minus(minus(baseAvailableAmount, sendBaseAmount), fee))) {
-      return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noAvailableAmount');
-    }
+    if (sendDisplayAmount) {
+      const totalCostAmount = plus(sendDisplayAmount, displayFee);
 
-    if (sendDisplayAmount && !gt(sendDisplayAmount, '0')) {
-      return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noAmount');
+      if (gt(totalCostAmount, displayAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noAvailableAmount');
+      }
+
+      if (!gt(sendDisplayAmount, '0')) {
+        return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.tooLowAmount');
+      }
     }
     return '';
-  }, [baseAvailableAmount, fee, sendBaseAmount, sendDisplayAmount, t]);
+  }, [displayAvailableAmount, displayFee, sendDisplayAmount, t]);
 
   const inputMemoErrorMessage = useMemo(() => {
     if (currentMemoBytes > 80) {
@@ -331,6 +334,10 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   }, [currentMemoBytes, t]);
 
   const errorMessage = useMemo(() => {
+    if (!recipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noRecipientAddress');
+    }
+
     if (addressInputErrorMessage) {
       return addressInputErrorMessage;
     }
@@ -339,12 +346,16 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
       return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.failedLoadFee');
     }
 
-    if (sendAmountInputErrorMessage) {
-      return sendAmountInputErrorMessage;
+    if (!gt(baseAvailableAmount, '0')) {
+      return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noAvailableAmount');
     }
 
-    if (!gt(sendBaseAmount, '0')) {
+    if (!sendDisplayAmount) {
       return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noAmount');
+    }
+
+    if (sendAmountInputErrorMessage) {
+      return sendAmountInputErrorMessage;
     }
 
     if (inputMemoErrorMessage) {
@@ -356,7 +367,17 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
     }
 
     return '';
-  }, [addressInputErrorMessage, gasRate, inputMemoErrorMessage, sendAmountInputErrorMessage, sendBaseAmount, t, txHex]);
+  }, [
+    addressInputErrorMessage,
+    baseAvailableAmount,
+    gasRate,
+    inputMemoErrorMessage,
+    recipientAddress,
+    sendAmountInputErrorMessage,
+    sendDisplayAmount,
+    t,
+    txHex,
+  ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {

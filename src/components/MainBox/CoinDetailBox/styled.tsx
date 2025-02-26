@@ -6,6 +6,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 export const TopContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
+  alignItems: 'center',
 });
 
 export const BodyContainer = styled('div')({});
@@ -58,4 +59,8 @@ export const StyledIconTextButton = styled(IconTextButton)({
 
 export const SpacedTypography = styled(Base1300Text)({
   marginTop: '0.4rem',
+});
+
+export const ChangeAddressIconButtonContainer = styled('div')({
+  marginLeft: '0.4rem',
 });

@@ -4,9 +4,8 @@ import { useNavigate } from '@tanstack/react-router';
 import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { shorterAddress, toPercentages } from '@/utils/string';
 
 import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
@@ -25,20 +24,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
-  const selectedCoin = (() => {
-    if (!data) return undefined;
-
-    const aggregatedCosmosAccountAssets = [
-      ...data.cosmosAccountAssets,
-      ...data.cosmosAccountCustomAssets,
-      ...data.cw20AccountAssets,
-      ...data.customCw20AccountAssets,
-    ];
-
-    return aggregatedCosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-  })();
+  const selectedCoin = getCosmosAccountAsset();
 
   const contractAddress = selectedCoin?.asset.type === 'cw20' ? selectedCoin.asset.id : undefined;
   const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';

@@ -650,6 +650,15 @@
           }
         }
       }
+    },
+    "EthermintSendBottomSheet": {
+      "index": {
+        "cosmosTitle": "Send to COSMOS Style Address",
+        "evmTitle": "Send to EVM Style Address",
+        "cosmosSubtitle": "Use this option for {{bech32Prefix}} address or IBC Send",
+        "evmSubtitle": "Use this option for 0x address",
+        "title": "Select Send Type"
+      }
     }
   },
   "pages": {
@@ -1179,7 +1188,10 @@
                 "failedToSend": "Failed to send",
                 "failedToBuildTransaction": "Failed to build transaction",
                 "txProcessing": "Transaction Processing",
-                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "noRecipientAddress": "Please enter the recipient address",
+                "noAmount": "Please enter the amount"
               }
             },
             "components": {
@@ -1206,7 +1218,11 @@
                 "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                "noTransaction": "Failed to create transaction"
+                "noTransaction": "Failed to create transaction",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "noAvailableAmount": "No available amount",
+                "noAmount": "Please enter the amount",
+                "noRecipientAddress": "Please enter the recipient address"
               }
             },
             "Bitcoin": {
@@ -1225,7 +1241,9 @@
                 "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                "memo": "OP_RETURN (option)"
+                "memo": "OP_RETURN (option)",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "noRecipientAddress": "Please enter the recipient address"
               }
             },
             "Aptos": {
@@ -1244,7 +1262,9 @@
                 "sendReview": "Confirm Send",
                 "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
                 "txProcessing": "Transaction Processing",
-                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "noRecipientAddress": "Please enter the recipient address"
               }
             },
             "Cosmos": {
@@ -1272,7 +1292,9 @@
                 "sendReview": "Confirm Send",
                 "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
                 "txProcessing": "Transaction Processing",
-                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "noRecipientAddress": "Please enter the recipient address"
               }
             }
           }

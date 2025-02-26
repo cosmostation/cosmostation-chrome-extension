@@ -4,9 +4,8 @@ import { useNavigate } from '@tanstack/react-router';
 import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 
 import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
@@ -24,13 +23,9 @@ export default function Sui({ coinId }: SuiProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
-  const selectedCoin = (() => {
-    if (!data) return undefined;
-
-    return data.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-  })();
+  const selectedCoin = getSuiAccountAsset();
 
   const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
 

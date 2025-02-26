@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 
 import { gt, times } from '@/utils/numbers';
-import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
 import { useFeemarket } from './useFeemarket';
 import type { UseFetchConfig } from '../common/useFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseSimulateProps = {
   coinId: string;
@@ -13,7 +13,7 @@ type UseSimulateProps = {
 };
 
 export function useGasRate({ coinId, config }: UseSimulateProps) {
-  const { data: accountAssets, error } = useAccountAssets();
+  const { getCosmosAccountAsset, error } = useGetAccountAsset({ coinId });
 
   const feemarketData = useFeemarket({
     coinId,
@@ -22,14 +22,7 @@ export function useGasRate({ coinId, config }: UseSimulateProps) {
     },
   });
 
-  const baseCoinList = [
-    ...(accountAssets?.cosmosAccountAssets || []),
-    ...(accountAssets?.cosmosAccountCustomAssets || []),
-    ...(accountAssets?.cw20AccountAssets || []),
-    ...(accountAssets?.customCw20AccountAssets || []),
-  ];
-
-  const asset = baseCoinList.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const asset = getCosmosAccountAsset();
 
   const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
 

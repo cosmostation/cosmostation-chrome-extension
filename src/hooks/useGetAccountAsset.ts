@@ -14,10 +14,11 @@ type UseGetAccountAsset = {
 };
 
 export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
-  const { data: accountAllAssets } = useAccountAllAssets({
+  const { data: accountAllAssets, error } = useAccountAllAssets({
     filterByPreferAccountType: options?.filterByPreferAccountType || true,
     disableHiddenFilter: options?.disableHiddenFilter || true,
     disableBalanceFilter: options?.disableBalanceFilter || true,
+    disableDupeEthermint: true,
   });
 
   const assetFinders = useMemo(() => {
@@ -51,5 +52,6 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
     getAptosAccountAsset: () => assetFinders.aptos(),
     getSuiAccountAsset: () => assetFinders.sui(),
     getBitcoinAccountAsset: () => assetFinders.bitcoin(),
+    error,
   };
 }

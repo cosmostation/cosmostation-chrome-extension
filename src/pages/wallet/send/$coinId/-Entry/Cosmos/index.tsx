@@ -33,7 +33,7 @@ import type { UniqueChainId } from '@/types/chain.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
-import { ceil, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
 import { isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
@@ -528,7 +528,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
       }
 
       if (!gt(displaySendAmount, '0')) {
-        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.noAmount');
+        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.tooLowAmount');
       }
     }
     return '';
@@ -551,6 +551,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.timeoutHeightError');
     }
 
+    if (!recipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.Cosmos.index.noRecipientAddress');
+    }
+
     if (addressInputErrorMessage) {
       return addressInputErrorMessage;
     }
@@ -559,22 +563,16 @@ export default function Cosmos({ coinId }: CosmosProps) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.noAvailableAmount');
     }
 
+    if (!displaySendAmount) {
+      return t('pages.wallet.send.$coinId.Entry.Cosmos.index.noAmount');
+    }
+
     if (sendAmountInputErrorMessage) {
       return sendAmountInputErrorMessage;
     }
 
-    if (!displaySendAmount || !gt(displaySendAmount, '0')) {
+    if (!gt(displaySendAmount, '0')) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.invalidAmount');
-    }
-
-    if (!!selectedCoinToSend?.asset && !!currentFeeAsset?.asset && !isSameCoin(selectedCoinToSend.asset, currentFeeAsset.asset)) {
-      if (!gte(displayAvailableAmount, displaySendAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.insufficientAmount');
-      }
-
-      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.insufficientFeeAmount');
-      }
     }
 
     if (!sendAminoTx) {
@@ -585,13 +583,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
   }, [
     addressInputErrorMessage,
     baseAvailableAmount,
-    currentDisplayFeeAmount,
-    currentFeeAsset?.asset,
-    currentFeeCoinDisplayAvailableAmount,
-    displayAvailableAmount,
     displaySendAmount,
     latestHeight,
-    selectedCoinToSend?.asset,
+    recipientAddress,
     selectedCoinToSend?.chain.isDiableSend,
     sendAminoTx,
     sendAmountInputErrorMessage,

@@ -271,16 +271,26 @@ export default function EVM({ coinId }: EVMProps) {
   }, [ens.isLoading, nameResolvedAddress, recipientAddress, selectedCoinToSend?.address.address, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
-    if (sendDisplayAmount && !gt(sendDisplayAmount || '0', '0')) {
-      return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidAmount');
-    }
+    if (sendDisplayAmount) {
+      if (isEqualsIgnoringCase(selectedCoinToSend?.asset.id, NATIVE_EVM_COIN_ADDRESS)) {
+        const totalCostAmount = plus(baseSendAmount, estimatedFeeBaseAmount);
 
-    if (sendDisplayAmount && gt(sendDisplayAmount || '0', displayAvailableAmount)) {
-      return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
+        if (gt(totalCostAmount, baseAvailableAmount)) {
+          return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
+        }
+      } else {
+        if (gt(baseSendAmount, baseAvailableAmount)) {
+          return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
+        }
+      }
+
+      if (!gt(sendDisplayAmount, '0')) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.tooLowAmount');
+      }
     }
 
     return '';
-  }, [displayAvailableAmount, sendDisplayAmount, t]);
+  }, [baseAvailableAmount, baseSendAmount, estimatedFeeBaseAmount, selectedCoinToSend?.asset.id, sendDisplayAmount, t]);
 
   const errorMessages = useMemo(() => {
     if (selectedCoinToSend?.chain.isDiableSend) {
@@ -291,28 +301,20 @@ export default function EVM({ coinId }: EVMProps) {
       return addressInputErrorMessage;
     }
 
+    if (!recipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.noRecipientAddress');
+    }
+
     if (baseAvailableAmount === '0') {
-      return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidAmount');
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.noAvailableAmount');
+    }
+
+    if (!sendDisplayAmount) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.noAmount');
     }
 
     if (sendAmountInputErrorMessage) {
       return sendAmountInputErrorMessage;
-    }
-
-    if (isEqualsIgnoringCase(selectedCoinToSend?.asset.id, NATIVE_EVM_COIN_ADDRESS)) {
-      const totalCostAmount = plus(baseSendAmount, estimatedFeeBaseAmount);
-
-      if (gt(totalCostAmount, baseAvailableAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
-      }
-    } else {
-      if (gt(estimatedFeeBaseAmount, baseAvailableAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientFee');
-      }
-
-      if (gt(baseSendAmount, baseAvailableAmount)) {
-        return t('pages.wallet.send.$coinId.Entry.EVM.index.insufficientAmount');
-      }
     }
 
     if (!sendTx) {
@@ -323,11 +325,10 @@ export default function EVM({ coinId }: EVMProps) {
   }, [
     addressInputErrorMessage,
     baseAvailableAmount,
-    baseSendAmount,
-    estimatedFeeBaseAmount,
-    selectedCoinToSend?.asset.id,
+    recipientAddress,
     selectedCoinToSend?.chain.isDiableSend,
     sendAmountInputErrorMessage,
+    sendDisplayAmount,
     sendTx,
     t,
   ]);

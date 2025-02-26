@@ -171,28 +171,42 @@ export default function Sui({ coinId }: SuiProps) {
   })();
 
   const sendAmountInputErrorMessage = (() => {
-    if (sendDisplayAmount && !gt(sendDisplayAmount || '0', '0')) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAmount');
-    }
+    if (sendDisplayAmount) {
+      if (currentCoinType === SUI_COIN_TYPE) {
+        const totalCostAmount = plus(sendDisplayAmount, displayExpectedBaseFeeAmount);
 
-    if (sendDisplayAmount && gt(sendDisplayAmount || '0', displayAvailableAmount)) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.insufficientAmount');
+        if (gt(totalCostAmount, displayAvailableAmount)) {
+          return t('pages.wallet.send.$coinId.Entry.Sui.index.insufficientAmount');
+        }
+      } else {
+        if (gt(sendBaseAmount, baseAvailableAmount)) {
+          return t('pages.wallet.send.$coinId.Entry.Sui.index.insufficientAmount');
+        }
+      }
+
+      if (!gt(sendDisplayAmount, '0')) {
+        return t('pages.wallet.send.$coinId.Entry.Sui.index.tooLowAmount');
+      }
     }
 
     return '';
   })();
 
   const errorMessage = useMemo(() => {
-    if (!isValidSuiAddress(recipientAddress)) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAddress');
+    if (!recipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.Sui.index.noRecipientAddress');
     }
 
-    if (isEqualsIgnoringCase(recipientAddress, address)) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAddress');
+    if (addressInputErrorMessage) {
+      return addressInputErrorMessage;
     }
 
-    if (!sendDisplayAmount || !gt(sendDisplayAmount || '0', '0')) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAmount');
+    if (!sendDisplayAmount) {
+      return t('pages.wallet.send.$coinId.Entry.Sui.index.noAmount');
+    }
+
+    if (sendAmountInputErrorMessage) {
+      return sendAmountInputErrorMessage;
     }
 
     if (gt(sendDisplayAmount || '0', displayAvailableAmount)) {
@@ -219,13 +233,14 @@ export default function Sui({ coinId }: SuiProps) {
 
     return '';
   }, [
-    address,
+    addressInputErrorMessage,
     debouncedTx,
     displayAvailableAmount,
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
     recipientAddress,
+    sendAmountInputErrorMessage,
     sendDisplayAmount,
     t,
   ]);
