@@ -2,12 +2,12 @@ import type { Request, Response } from '@/types/message/inject';
 
 declare global {
   interface CosmosProvider {
-    request: <T extends Request>(message: T) => Promise<Response>;
-    on: (eventName: import('@/types/').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
-    off: (
-      eventName: import('~/types/message').CosmosListenerType | ((event: MessageEvent<ListenerMessage>) => void),
-      eventHandler?: (data: unknown) => void,
-    ) => void;
+    request: <T extends Omit<Request, 'chainType'>>(message: T) => Promise<Unknown>;
+    // on: (eventName: import('@/types/').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
+    // off: (
+    //   eventName: import('~/types/message').CosmosListenerType | ((event: MessageEvent<ListenerMessage>) => void),
+    //   eventHandler?: (data: unknown) => void,
+    // ) => void;
   }
   interface Window {
     customProperty: boolean;
@@ -16,7 +16,9 @@ declare global {
 
     removeEventListener<K extends keyof CustomEventMap>(type: K, listener: (event: CustomEventMap[K]) => void, options?: boolean | EventListenerOptions): void;
     cosmostation: {
+      version: string;
       request: unknown;
+      cosmos: CosmosProvider;
     };
   }
 }
