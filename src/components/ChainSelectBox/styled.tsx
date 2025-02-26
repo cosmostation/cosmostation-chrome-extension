@@ -23,6 +23,8 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
     },
 
     '& .MuiInputBase-input': {
+      cursor: 'pointer !important',
+
       padding: '0 0.4rem 1.1rem',
 
       height: 'fit-content',
