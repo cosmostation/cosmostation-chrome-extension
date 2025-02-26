@@ -80,8 +80,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const { feeAssets, defaultGasRateKey } = useFees({ coinId });
 
-  const [currentFeeCoinId, setCurrentFeeCoinId] = useState(getCoinId(feeAssets[0].asset));
-  const currentFeeAsset = useMemo(() => feeAssets.find((item) => isMatchingCoinId(item.asset, currentFeeCoinId)), [currentFeeCoinId, feeAssets]);
+  const [cusotmFeeCoinId, setCustomFeeCoinId] = useState('');
+
+  const currentFeeAsset = useMemo(
+    () => (cusotmFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, cusotmFeeCoinId)) : feeAssets[0]),
+    [cusotmFeeCoinId, feeAssets],
+  );
+  const currentFeeCoinId = useMemo(() => (currentFeeAsset?.asset ? getCoinId(currentFeeAsset.asset) : ''), [currentFeeAsset?.asset]);
 
   const selectedCoinToSend = getCosmosAccountAsset();
 
@@ -166,6 +171,21 @@ export default function Cosmos({ coinId }: CosmosProps) {
         port: '',
       };
 
+      const originPrevChain = (() => {
+        if ('ibc_info' in selectedCoinToSend.asset) {
+          const originChainId = selectedCoinToSend.asset.ibc_info?.counterparty.chain;
+          const originPrevAsset = data?.cosmosAccountAssets.find((asset) => asset.chain.id === originChainId);
+          if (originPrevAsset) {
+            return {
+              address: originPrevAsset.address,
+              chain: originPrevAsset.chain,
+              channel: selectedCoinToSend.asset.ibc_info?.client.channel || '',
+              port: selectedCoinToSend.asset.ibc_info?.client.port || '',
+            };
+          }
+        }
+      })();
+
       const ibcSendPossibleChains =
         data?.cosmosAccountAssets
           .filter((asset) => {
@@ -184,14 +204,16 @@ export default function Cosmos({ coinId }: CosmosProps) {
             port: item.asset.ibc_info?.counterparty?.port || '',
           })) || [];
 
-      return [sendPossibleChain, ...ibcSendPossibleChains].filter(
+      const possibleChains = originPrevChain ? [sendPossibleChain, originPrevChain, ...ibcSendPossibleChains] : [sendPossibleChain, ...ibcSendPossibleChains];
+
+      return possibleChains.filter(
         (receiverIBC, idx, arr) =>
           arr.findIndex((item) => item.chain.id === receiverIBC.chain.id && item.channel === receiverIBC.channel && item.port === receiverIBC.port) === idx,
       );
     }
 
     return [];
-  }, [data?.cosmosAccountAssets, selectedCoinToSend?.address.address, selectedCoinToSend?.asset.id, selectedCoinToSend?.asset.type, selectedCoinToSend?.chain]);
+  }, [data?.cosmosAccountAssets, selectedCoinToSend?.address.address, selectedCoinToSend?.asset, selectedCoinToSend?.chain]);
 
   const availableRecipientChainList = useMemo(() => availableRecipientAsset?.map((item) => item.chain) || [], [availableRecipientAsset]);
 
@@ -241,90 +263,93 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const memoizedSendAminoTx = useMemo(() => {
     if (selectedCoinToSend) {
-      if (isIBCSend && revisionNumber && revisionHeight) {
-        if (account.data?.value.account_number && currentRecipientAsset && gt(displaySendAmount || '0', '0') && currentFeeAsset) {
-          const sequence = String(account.data?.value.sequence || '0');
+      if (isIBCSend) {
+        if (revisionNumber && revisionHeight) {
+          if (account.data?.value.account_number && currentRecipientAsset && gt(displaySendAmount || '0', '0') && currentFeeAsset) {
+            const sequence = String(account.data?.value.sequence || '0');
 
-          if (selectedCoinToSend?.asset.type === 'cw20') {
-            return {
-              account_number: String(account.data.value.account_number),
-              sequence,
-              chain_id: nodeInfo.data?.default_node_info?.network ?? selectedCoinToSend?.chain.chainId,
-              fee: {
-                amount: [
+            if (selectedCoinToSend?.asset.type === 'cw20') {
+              return {
+                account_number: String(account.data.value.account_number),
+                sequence,
+                chain_id: nodeInfo.data?.default_node_info?.network ?? selectedCoinToSend?.chain.chainId,
+                fee: {
+                  amount: [
+                    {
+                      denom: currentFeeAsset.asset.id,
+                      amount: selectedCoinToSend?.chain.isEvm
+                        ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                        : '1',
+                    },
+                  ],
+                  gas: String(selectedCoinToSend?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
+                },
+                memo: inputMemo,
+                msgs: [
                   {
-                    denom: currentFeeAsset.asset.id,
-                    amount: selectedCoinToSend?.chain.isEvm
-                      ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
-                      : '1',
+                    type: 'wasm/MsgExecuteContract',
+                    value: {
+                      sender: selectedCoinToSend.address.address,
+                      contract: selectedCoinToSend.asset.id,
+                      msg: {
+                        send: {
+                          amount: toBaseDenomAmount(displaySendAmount, selectedCoinToSend.asset.decimals || 0),
+                          contract: currentRecipientAsset.port?.split('.')?.[1],
+                          msg: Buffer.from(
+                            JSON.stringify({ channel: currentRecipientAsset.channel, remote_address: recipientAddress, timeout: 900 }),
+                            'utf8',
+                          ).toString('base64'),
+                        },
+                      },
+                      funds: [],
+                    },
                   },
                 ],
-                gas: String(selectedCoinToSend?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
-              },
-              memo: inputMemo,
-              msgs: [
-                {
-                  type: 'wasm/MsgExecuteContract',
-                  value: {
-                    sender: selectedCoinToSend.address.address,
-                    contract: selectedCoinToSend.asset.id,
-                    msg: {
-                      send: {
+              };
+            }
+
+            if (revisionNumber && revisionHeight) {
+              return {
+                account_number: String(account.data.value.account_number),
+                sequence,
+                chain_id: nodeInfo.data?.default_node_info?.network ?? selectedCoinToSend?.chain.chainId,
+                fee: {
+                  amount: [
+                    {
+                      denom: currentFeeAsset.asset.id,
+                      amount: selectedCoinToSend?.chain.isEvm
+                        ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                        : '1',
+                    },
+                  ],
+                  gas: String(selectedCoinToSend?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
+                },
+                memo: inputMemo,
+                msgs: [
+                  {
+                    type: 'cosmos-sdk/MsgTransfer',
+                    value: {
+                      receiver: recipientAddress,
+                      sender: selectedCoinToSend.address.address,
+                      source_channel: currentRecipientAsset.channel,
+                      source_port: currentRecipientAsset.port || 'transfer',
+                      timeout_height: {
+                        revision_height: revisionHeight,
+                        revision_number: revisionNumber === '0' ? undefined : revisionNumber,
+                      },
+                      timeout_timestamp: new Date().getTime() * 1000000 + 1000000 * 1000 * 120,
+                      token: {
                         amount: toBaseDenomAmount(displaySendAmount, selectedCoinToSend.asset.decimals || 0),
-                        contract: currentRecipientAsset.port?.split('.')?.[1],
-                        msg: Buffer.from(
-                          JSON.stringify({ channel: currentRecipientAsset.channel, remote_address: recipientAddress, timeout: 900 }),
-                          'utf8',
-                        ).toString('base64'),
+                        denom: selectedCoinToSend.asset.id,
                       },
                     },
-                    funds: [],
-                  },
-                },
-              ],
-            };
-          }
-
-          if (revisionNumber && revisionHeight) {
-            return {
-              account_number: String(account.data.value.account_number),
-              sequence,
-              chain_id: nodeInfo.data?.default_node_info?.network ?? selectedCoinToSend?.chain.chainId,
-              fee: {
-                amount: [
-                  {
-                    denom: currentFeeAsset.asset.id,
-                    amount: selectedCoinToSend?.chain.isEvm
-                      ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
-                      : '1',
                   },
                 ],
-                gas: String(selectedCoinToSend?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
-              },
-              memo: inputMemo,
-              msgs: [
-                {
-                  type: 'cosmos-sdk/MsgTransfer',
-                  value: {
-                    receiver: recipientAddress,
-                    sender: selectedCoinToSend.address.address,
-                    source_channel: currentRecipientAsset.channel,
-                    source_port: currentRecipientAsset.port || 'transfer',
-                    timeout_height: {
-                      revision_height: revisionHeight,
-                      revision_number: revisionNumber === '0' ? undefined : revisionNumber,
-                    },
-                    timeout_timestamp: new Date().getTime() * 1000000 + 1000000 * 1000 * 120,
-                    token: {
-                      amount: toBaseDenomAmount(displaySendAmount, selectedCoinToSend.asset.decimals || 0),
-                      denom: selectedCoinToSend.asset.id,
-                    },
-                  },
-                },
-              ],
-            };
+              };
+            }
           }
         }
+        return undefined;
       }
 
       if (account.data?.value.account_number && addressRegex.test(recipientAddress) && gt(displaySendAmount || '0', '0') && currentFeeAsset?.asset.id) {
@@ -795,7 +820,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
               setCustomGasRate(gasRate);
             }}
             onChangeFeeCoinId={(feeCoinId) => {
-              setCurrentFeeCoinId(feeCoinId);
+              setCustomFeeCoinId(feeCoinId);
             }}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
