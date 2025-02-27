@@ -366,6 +366,10 @@ export async function initExtensionLocalStorage() {
 
     await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
   }
+
+  if (!originStorage.currentWindowId) {
+    await setExtensionLocalStorage('currentWindowId', null);
+  }
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {

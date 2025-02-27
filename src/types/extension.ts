@@ -48,7 +48,9 @@ export type ApprovedSuiPermission = {
   lastConnectedAt: number;
 };
 
-export type RequestQueue = Request;
+export type RequestQueue = Request & {
+  windowId?: number;
+};
 
 export interface ExtensionStorage {
   accounts: Account[];
@@ -98,6 +100,7 @@ export interface ExtensionStorage {
   chosenAptosNetworkId: string;
   chosenSuiNetworkId: string;
   chosenBitcoinNetworkId: string;
+  currentWindowId: number | null;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

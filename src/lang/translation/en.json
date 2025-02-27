@@ -2008,6 +2008,18 @@
             "reject": "Reject",
             "sign": "Sign"
           }
+        },
+        "addChain": {
+          "entry": {
+            "addChain": "Add Chain",
+            "addCustomChain": "Add Custom Chain",
+            "networkToAdd": "Network to Add",
+            "currencySymbol": "Currency Symbol",
+            "networkURL": "Network URL",
+            "cautionTitle": "Not Validated",
+            "cautionDescription": "Cosmostation does not validate custom network",
+            "reject": "Reject"
+          }
         }
       }
     },

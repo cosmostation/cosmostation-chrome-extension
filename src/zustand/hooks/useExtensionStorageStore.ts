@@ -48,6 +48,7 @@ export const initialState: ExtensionStorageState = {
   chosenSuiNetworkId: '',
   chosenAptosNetworkId: '',
   chosenBitcoinNetworkId: '',
+  currentWindowId: null,
 };
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
@@ -88,6 +89,7 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       await setExtensionLocalStorage('isBalanceVisible', true);
       await setExtensionLocalStorage('approvedSuiPermissions', []);
       await setExtensionLocalStorage('requestQueue', []);
+      await setExtensionLocalStorage('currentWindowId', null);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
       await Promise.all(removePromises);

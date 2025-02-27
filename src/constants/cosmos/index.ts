@@ -13,3 +13,8 @@ export const PUBKEY_TYPE_MAP = {
   [PUBKEY_STYLE.secp256k1]: '/cosmos.crypto.secp256k1.PubKey',
   [PUBKEY_STYLE.ethsecp256k1]: '/ethermint.crypto.v1.ethsecp256k1.PubKey',
 };
+
+export const COSMOS_TYPE = {
+  BASIC: '',
+  ETHERMINT: 'ETHERMINT',
+} as const;

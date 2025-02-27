@@ -7,10 +7,10 @@ import FooterCoinPrice from '@/components/FooterCoinPrice';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 import { DROP_POPOVER_ID } from '@/constants/adPopover';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isStillBlocked } from '@/utils/date';
-import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 import { turnOnAdPopover } from '@/utils/zustand/adPopoverState';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -29,8 +29,8 @@ export default function Layout({ children, coinId }: LayoutProps) {
   const { currentAccount } = useCurrentAccount();
   const { adPopoverState } = useExtensionStorageStore((state) => state);
 
-  const { data } = useAccountAssets();
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
+  const currentCoin = getAccountAsset();
 
   const explorerUrl = currentCoin?.chain.explorer?.account.replace('${address}', currentCoin.address.address);
 
@@ -59,9 +59,11 @@ export default function Layout({ children, coinId }: LayoutProps) {
           leftContent={<NavigationPanel />}
           middleContent={<Base1300Text variant="h4_B">{currentAccount.name}</Base1300Text>}
           rightContent={
-            <IconButton onClick={() => window.open(explorerUrl, '_blank')}>
-              <ExplorerIcon />
-            </IconButton>
+            explorerUrl ? (
+              <IconButton onClick={() => window.open(explorerUrl, '_blank')}>
+                <ExplorerIcon />
+              </IconButton>
+            ) : undefined
           }
         />
       }

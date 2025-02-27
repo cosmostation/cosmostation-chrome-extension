@@ -1,3 +1,5 @@
+import type { COSMOS_TYPE } from '@/constants/cosmos';
+
 export interface ChainAccountType {
   hdPath: string;
   pubkeyStyle: string;
@@ -41,6 +43,8 @@ export interface ChainBase extends ChainId {
   image: string | null;
 }
 
+export type CosmosType = ValueOf<typeof COSMOS_TYPE>;
+
 export interface CosmosChain extends ChainBase {
   chainType: Extract<ChainType, 'cosmos'>;
   chainId: string;
@@ -66,7 +70,7 @@ export interface CustomCosmosChain extends ChainBase {
   isCosmwasm: boolean;
   isEvm: boolean;
   lcdUrls: ChainEndpoint[];
-  explorer: ChainExplorer;
+  explorer: ChainExplorer | null;
   feeInfo: CosmosFeeInfo;
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;

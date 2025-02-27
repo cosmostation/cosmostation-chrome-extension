@@ -42,6 +42,7 @@ import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinI
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
 import { Route as PopupCosmosSignIndexImport } from './pages/popup/cosmos/sign/index'
+import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/addChain/index'
 import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
 import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
 import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
@@ -261,6 +262,12 @@ const WalletClaimAllRewardsCoinIdIndexRoute =
 const PopupCosmosSignIndexRoute = PopupCosmosSignIndexImport.update({
   id: '/popup/cosmos/sign/',
   path: '/popup/cosmos/sign/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupCosmosAddChainIndexRoute = PopupCosmosAddChainIndexImport.update({
+  id: '/popup/cosmos/addChain/',
+  path: '/popup/cosmos/addChain/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -688,6 +695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsVisibilityNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/cosmos/addChain/': {
+      id: '/popup/cosmos/addChain/'
+      path: '/popup/cosmos/addChain'
+      fullPath: '/popup/cosmos/addChain'
+      preLoaderRoute: typeof PopupCosmosAddChainIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/cosmos/sign/': {
       id: '/popup/cosmos/sign/'
       path: '/popup/cosmos/sign'
@@ -863,6 +877,7 @@ export interface FileRoutesByFullPath {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/sign': typeof PopupCosmosSignIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
@@ -921,6 +936,7 @@ export interface FileRoutesByTo {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/sign': typeof PopupCosmosSignIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
@@ -980,6 +996,7 @@ export interface FileRoutesById {
   '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/cosmos/addChain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/sign/': typeof PopupCosmosSignIndexRoute
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
@@ -1040,6 +1057,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/popup/cosmos/addChain'
     | '/popup/cosmos/sign'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
@@ -1097,6 +1115,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/popup/cosmos/addChain'
     | '/popup/cosmos/sign'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
@@ -1154,6 +1173,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network/'
     | '/manage-assets/visibility/assets/'
     | '/manage-assets/visibility/network/'
+    | '/popup/cosmos/addChain/'
     | '/popup/cosmos/sign/'
     | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/receive/$coinId/'
@@ -1213,6 +1233,7 @@ export interface RootRouteChildren {
   ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
   ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
   ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
+  PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
   PopupCosmosSignIndexRoute: typeof PopupCosmosSignIndexRoute
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
@@ -1281,6 +1302,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAssetsVisibilityAssetsIndexRoute,
   ManageAssetsVisibilityNetworkIndexRoute:
     ManageAssetsVisibilityNetworkIndexRoute,
+  PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
   PopupCosmosSignIndexRoute: PopupCosmosSignIndexRoute,
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
@@ -1361,6 +1383,7 @@ export const routeTree = rootRoute
         "/manage-assets/import/network/",
         "/manage-assets/visibility/assets/",
         "/manage-assets/visibility/network/",
+        "/popup/cosmos/addChain/",
         "/popup/cosmos/sign/",
         "/wallet/claim-all-rewards/$coinId/",
         "/wallet/receive/$coinId/",
@@ -1489,6 +1512,9 @@ export const routeTree = rootRoute
     },
     "/manage-assets/visibility/network/": {
       "filePath": "manage-assets/visibility/network/index.tsx"
+    },
+    "/popup/cosmos/addChain/": {
+      "filePath": "popup/cosmos/addChain/index.tsx"
     },
     "/popup/cosmos/sign/": {
       "filePath": "popup/cosmos/sign/index.tsx"

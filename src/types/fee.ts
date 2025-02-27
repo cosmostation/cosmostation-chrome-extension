@@ -4,3 +4,9 @@ export type Fee = {
   amount: string;
   value: string;
 };
+
+export interface AddChainGasRate {
+  tiny: string;
+  low: string;
+  average: string;
+}

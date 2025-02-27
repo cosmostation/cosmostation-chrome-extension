@@ -14,6 +14,8 @@ export interface RequestBase {
 
 export type Request = CosmosRequest | EvmRequest;
 
+export type BaseRequest = Omit<Request, 'chainType' | 'origin' | 'requestId'>;
+
 export type ResponseMap = {
   [K in ChainType]: K extends 'cosmos' ? CosmosResponse : K extends 'evm' ? EvmResponse : never;
 };

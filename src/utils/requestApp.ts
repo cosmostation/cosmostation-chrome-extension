@@ -17,9 +17,11 @@ export const setQueues = debounce(
 
     const isSidePanelDefault = (await chrome.sidePanel.getPanelBehavior()).openPanelOnActionClick;
 
+    console.log('🚀 ~ isSidePanelDefault:', isSidePanelDefault);
+
     const lastQueueItem = queues[queues.length - 1];
     if (isSidePanelDefault) {
-      sendMessage({
+      await sendMessage({
         target: 'CONTENT',
         method: 'openSidePanel',
         origin: lastQueueItem.origin,
@@ -29,11 +31,15 @@ export const setQueues = debounce(
           id: lastQueueItem.id,
         },
       });
+      await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);
     } else {
-      await openPopupWindow();
-    }
+      const window = await openPopupWindow();
 
-    await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);
+      await setExtensionLocalStorage('requestQueue', [
+        ...currentRequestQueue.map((item) => ({ ...item, windowId: window?.id })),
+        ...queues.map((item) => ({ ...item, windowId: window?.id })),
+      ]);
+    }
   },
   500,
   { leading: true },

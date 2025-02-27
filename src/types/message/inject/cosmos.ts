@@ -1,8 +1,9 @@
 import type { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '@/constants/cosmos/message';
-import type { ChainType } from '@/types/chain';
+import type { ChainType, CosmosType } from '@/types/chain';
 import type { PubKey, PublicKeyType } from '@/types/cosmos';
 import type { SignAminoDoc } from '@/types/cosmos/amino';
 import type { SignDirectDoc } from '@/types/cosmos/direct';
+import type { AddChainGasRate } from '@/types/fee';
 import type { RequestBase } from '@/types/message/inject';
 
 export type CosmosRequest =
@@ -12,7 +13,8 @@ export type CosmosRequest =
   | CosAddTokensCW20
   | CosRequestAccount
   | CosSignAmino
-  | CosSupportedChainIds;
+  | CosSupportedChainIds
+  | CosRequestAddChain;
 
 export interface CosmosResponse {
   [COSMOS_METHOD_TYPE.COS__SUPPORTED_CHAIN_NAMES]: CosSupportedChainNamesResponse;
@@ -22,6 +24,7 @@ export interface CosmosResponse {
   [COSMOS_METHOD_TYPE.COS__ACCOUNT]: CosAccountResponse;
   [COSMOS_METHOD_TYPE.COS__SIGN_AMINO]: CosSignAminoResponse;
   [COSMOS_METHOD_TYPE.COS__REQUEST_ACCOUNT]: CosRequestAccountResponse;
+  [COSMOS_METHOD_TYPE.COS__ADD_CHAIN]: CosRequestAddChainResponse;
 }
 
 export interface CosSupportedChainNames extends RequestBase {
@@ -113,11 +116,35 @@ export interface CosRequestAccounts extends RequestBase {
   params: { chainIds: string[] };
 }
 
+export interface CosAddChainParams {
+  type?: CosmosType;
+  chainId: string;
+  chainName: string;
+  restURL: string;
+  imageURL?: string;
+  tokenImageURL?: string;
+  baseDenom: string;
+  displayDenom: string;
+  decimals?: number;
+  coinType?: string;
+  addressPrefix: string;
+  coinGeckoId?: string;
+  gasRate?: AddChainGasRate;
+  sendGas?: string;
+  cosmWasm?: boolean;
+}
+
+export interface CosRequestAddChain extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_CHAIN;
+  params: CosAddChainParams;
+}
+
 export type CosRequestAccountResponse = CosAccountResponse;
 
 export type CosRequestAccountsResponse = CosAccountsResponse;
 
-export type CosAddChainResponse = boolean;
+export type CosRequestAddChainResponse = boolean;
 
 export interface CosSignOptions {
   isEditMemo?: boolean;

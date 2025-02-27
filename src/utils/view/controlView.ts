@@ -1,7 +1,8 @@
 import { isSidePanelView } from './sidepanel';
 import { getCurrentExtensionTabInfo } from './tab';
-import { getCurrentWindowInfo } from './window';
+import { getCurrentWindowInfo, getWindow } from './window';
 import { extension } from '../browser';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
 export function setSidePanelWithDefaultView(path?: string) {
   openSidePanel(path);
@@ -27,6 +28,7 @@ export function setPopupAsDefaultView() {
   }
 }
 
+// NOTE 여기에도 팝업처럼 윈도우 id집어넣어야하는지 고려필요.
 export async function openSidePanel(path?: string) {
   const currentWindow = await getCurrentWindowInfo();
 
@@ -93,7 +95,36 @@ export async function closeTab(id?: number): Promise<void> {
 export async function openPopupWindow(): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
   const url = extension.runtime.getURL('popup.html');
 
+  const queues = await getExtensionLocalStorage('requestQueue');
+
+  const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
+
+  const currentWindowId = await getExtensionLocalStorage('currentWindowId');
+
+  if (typeof currentWindowId === 'number') {
+    currentWindowIds.push(currentWindowId);
+  }
+
+  const windowIds = Array.from(new Set(currentWindowIds));
+
+  const currentWindows = (
+    await Promise.all(
+      windowIds.map(async (item) => {
+        const window = await getWindow(item);
+        return window;
+      }),
+    )
+  ).filter((item) => item !== undefined);
+
   return new Promise((res, rej) => {
+    if (currentWindows.length > 0) {
+      res(currentWindows[0]);
+      if (currentWindows[0]?.id) {
+        void extension.windows.update(currentWindows[0].id, { focused: true });
+      }
+      return;
+    }
+
     const width = 375;
     const height = 640;
 
@@ -103,6 +134,7 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
           if (extension.runtime.lastError) {
             rej(extension.runtime.lastError);
           }
+          await setExtensionLocalStorage('currentWindowId', window?.id ?? null);
           res(window);
         })();
       });
@@ -112,6 +144,7 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
           if (extension.runtime.lastError) {
             rej(extension.runtime.lastError);
           }
+          await setExtensionLocalStorage('currentWindowId', window?.id ?? null);
           res(window);
         })();
       });
