@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import YAML from 'js-yaml';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
@@ -14,24 +15,25 @@ import {
   DetailWrapper,
   Divider,
   LabelContainer,
+  MemoContainer,
   MsgTitle,
   MsgTitleContainer,
   SymbolText,
 } from '@/pages/popup/-components/CommonTxMessageStyle';
 import type { CosmosChain } from '@/types/chain';
-import type { Msg, MsgSend } from '@/types/cosmos/amino';
+import type { Msg, MsgExecuteContract } from '@/types/cosmos/amino';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 import { isSameChain } from '@/utils/queryParamGenerator';
 
-type SendProps = {
-  msg: Msg<MsgSend>;
+type ContractProps = {
+  msg: Msg<MsgExecuteContract>;
   chain: CosmosChain;
   currentStep: number;
   totalSteps: number;
   onPageChange?: (page: number) => void;
 };
 
-export default function Send({ msg, chain, currentStep, totalSteps, onPageChange }: SendProps) {
+export default function Contract({ msg, chain, currentStep, totalSteps, onPageChange }: ContractProps) {
   const { t } = useTranslation();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -46,19 +48,21 @@ export default function Send({ msg, chain, currentStep, totalSteps, onPageChange
 
   const { value } = msg;
 
-  const { amount, from_address, to_address } = value;
+  const { funds, contract, msg: contractMsg } = value;
+
+  const msgData = useMemo(() => YAML.dump({ contractMsg }, { indent: 4 }), [contractMsg]);
 
   const isMultipleMsgs = totalSteps > 1;
 
   return (
     <Container>
       <MsgTitleContainer>
-        <MsgTitle variant="h3_B">{'# Send'}</MsgTitle>
+        <MsgTitle variant="h3_B">{'# Contract'}</MsgTitle>
         {isMultipleMsgs && onPageChange && <PaginationControls currentPage={currentStep} totalPages={totalSteps} onPageChange={onPageChange} />}
       </MsgTitleContainer>
       <Divider />
       <DetailWrapper>
-        {amount.length > 0 && (
+        {funds.length > 0 && (
           <LabelContainer>
             <Base1000Text
               variant="b3_R"
@@ -66,10 +70,10 @@ export default function Send({ msg, chain, currentStep, totalSteps, onPageChange
                 marginBottom: '0.6rem',
               }}
             >
-              {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Send.index.sendAmount')}
+              {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Contract.index.inputFunds')}
             </Base1000Text>
             <AmountWrapper>
-              {amount.map((amountItem, index) => {
+              {funds.map((amountItem, index) => {
                 const coinAsset = coinList?.find((coin) => coin.asset.id === amountItem.denom)?.asset;
 
                 const displayAmount = toDisplayDenomAmount(amountItem.amount || '0', coinAsset?.decimals || 0);
@@ -98,25 +102,28 @@ export default function Send({ msg, chain, currentStep, totalSteps, onPageChange
               marginBottom: '0.4rem',
             }}
           >
-            {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Send.index.from')}
+            {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Contract.index.contract')}
           </Base1000Text>
           <AddressContainer>
-            <Base1300Text variant="b3_M">{from_address}</Base1300Text>
+            <Base1300Text variant="b3_M">{contract}</Base1300Text>
           </AddressContainer>
         </LabelContainer>
-        <LabelContainer>
-          <Base1000Text
-            variant="b3_R"
-            sx={{
-              marginBottom: '0.4rem',
-            }}
-          >
-            {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Send.index.to')}
-          </Base1000Text>
-          <AddressContainer>
-            <Base1300Text variant="b3_M">{to_address}</Base1300Text>
-          </AddressContainer>
-        </LabelContainer>
+
+        {msgData && (
+          <LabelContainer>
+            <Base1000Text
+              variant="b3_R"
+              sx={{
+                marginBottom: '0.4rem',
+              }}
+            >
+              {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Contract.index.msg')}
+            </Base1000Text>
+            <MemoContainer>
+              <Base1300Text variant="b3_M">{msgData}</Base1300Text>
+            </MemoContainer>
+          </LabelContainer>
+        )}
       </DetailWrapper>
     </Container>
   );

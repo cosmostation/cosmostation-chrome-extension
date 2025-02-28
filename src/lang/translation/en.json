@@ -2023,6 +2023,46 @@
                       "from": "From Address",
                       "to": "To Address"
                     }
+                  },
+                  "IBCSend": {
+                    "index": {
+                      "sendAmount": "Send Amount",
+                      "from": "From Address",
+                      "to": "To Address",
+                      "channel": "Channel",
+                      "memo": "Memo"
+                    }
+                  },
+                  "Commisson": {
+                    "index": {
+                      "validator": "Validator"
+                    }
+                  },
+                  "Contract": {
+                    "index": {
+                      "inputFunds": "Input Funds",
+                      "contract": "Contract",
+                      "msg": "Message"
+                    }
+                  },
+                  "Custom": {
+                    "index": {
+                      "data": "Data"
+                    }
+                  },
+                  "Reward": {
+                    "index": {
+                      "delegator": "Delegator",
+                      "validator": "Validator"
+                    }
+                  },
+                  "Swap": {
+                    "index": {
+                      "input": "Input",
+                      "output": "Output",
+                      "routes": "Routes",
+                      "poolId": "Pool ID"
+                    }
                   }
                 }
               }

@@ -107,10 +107,16 @@ export function toPercentages(value: string, options: { fixed?: number; disableM
   return options.disableMark ? formattedValue : formattedValue + '%';
 }
 
-const capitalize = (str?: string) => {
+export function capitalize(str?: string) {
   if (!str) return;
 
   return str.charAt(0).toUpperCase() + str.slice(1);
-};
+}
 
-export default capitalize;
+export function isJsonString(str: string): boolean {
+  try {
+    return typeof JSON.parse(str) === 'object';
+  } catch {
+    return false;
+  }
+}

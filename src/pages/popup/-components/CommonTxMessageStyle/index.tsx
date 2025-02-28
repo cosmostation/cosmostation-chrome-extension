@@ -40,6 +40,12 @@ export const DetailWrapper = styled('div')({
   rowGap: '1.6rem',
 });
 
+export const AmountWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '1.2rem',
+});
+
 export const LabelContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -59,3 +65,8 @@ type SymbolTextProps = {
 export const SymbolText = styled(Typography)<SymbolTextProps>(({ theme, ...props }) => ({
   color: props['data-symbol-color'] ? props['data-symbol-color'] : theme.palette.color.base1300,
 }));
+
+export const MemoContainer = styled('div')({
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-all',
+});

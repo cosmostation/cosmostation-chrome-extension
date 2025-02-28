@@ -5,7 +5,7 @@ import { useAccountAssets } from '@/hooks/useAccountAssets';
 import type { MoveCallTransactionInfo } from '@/types/sui/parseTx';
 import { isUnixTimestamp } from '@/utils/date';
 import { getCoinId } from '@/utils/queryParamGenerator';
-import capitalize from '@/utils/string';
+import { capitalize } from '@/utils/string';
 
 import { TitleContainer } from '../../../../styled';
 

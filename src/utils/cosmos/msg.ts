@@ -10,7 +10,6 @@ import type { CosmosChain } from '@/types/chain';
 import type {
   Msg,
   MsgCommission,
-  // MsgCustom,
   MsgExecuteContract,
   MsgReward,
   MsgSend,
@@ -105,10 +104,6 @@ export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract>
 export function isAminoMsgSignData(msg: Msg): msg is Msg<MsgSignData> {
   return msg.type === 'sign/MsgSignData';
 }
-
-// export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
-//   return true;
-// }
 
 export function getMsgSignData(signer: string, message: string) {
   return {
