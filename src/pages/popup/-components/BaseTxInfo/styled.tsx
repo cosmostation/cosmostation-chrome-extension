@@ -46,11 +46,20 @@ export const FeeCustomButton = styled('button')(({ theme }) => ({
   '&:hover': {
     opacity: '0.8',
   },
+  '&:disabled': {
+    '&:hover': {
+      opacity: '1',
+    },
+  },
 }));
 
-export const EstimatedFeeTextContainer = styled('div')(({ theme }) => ({
+type EstimatedFeeTextContainerProps = {
+  'data-is-disabled'?: boolean;
+};
+
+export const EstimatedFeeTextContainer = styled('div')<EstimatedFeeTextContainerProps>(({ theme, ...props }) => ({
   display: 'flex',
   alignItems: 'baseline',
 
-  borderBottom: `0.1rem solid ${theme.palette.color.base1300}`,
+  borderBottom: props['data-is-disabled'] ? 'none' : `0.1rem solid ${theme.palette.color.base1300}`,
 }));

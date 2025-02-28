@@ -40,7 +40,7 @@ export const Body = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    height: '45%',
+    maxHeight: '75%',
   },
 });
 
@@ -61,6 +61,8 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
 export const DescriptionText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1100,
+
+  maxWidth: '90%',
 
   wordBreak: 'break-word',
 

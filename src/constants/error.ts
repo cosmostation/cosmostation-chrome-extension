@@ -45,6 +45,16 @@ export const ETHEREUM_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
 } as const;
 
+export const COSMOS_RPC_ERROR_MESSAGE = {
+  [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
+  [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported by this Ethereum provider.',
+  [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
+  [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
+
+  [RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]: 'The method is not supported by the ledger account.',
+  [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
+} as const;
+
 export const TRASACTION_RECEIPT_ERROR_MESSAGE = {
   PENDING: 'Pending State',
 } as const;

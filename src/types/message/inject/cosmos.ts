@@ -1,4 +1,5 @@
 import type { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '@/constants/cosmos/message';
+import type { CosmosCw20Asset } from '@/types/asset';
 import type { ChainType, CosmosType } from '@/types/chain';
 import type { PubKey, PublicKeyType } from '@/types/cosmos';
 import type { SignAminoDoc } from '@/types/cosmos/amino';
@@ -8,13 +9,26 @@ import type { RequestBase } from '@/types/message/inject';
 
 export type CosmosRequest =
   | CosSupportedChainNames
+  | CosSupportedChainIds
   | CosActivatedChainIds
   | CosAccount
   | CosAddTokensCW20
   | CosRequestAccount
+  | CosRequestAccounts
   | CosSignAmino
   | CosSupportedChainIds
-  | CosRequestAddChain;
+  | CosRequestAddChain
+  | CosSignDirect
+  | CosSendTransaction
+  | CosSignMessage
+  | CosVerifyMessage
+  | CosAddNFTsCW721
+  | CosGetBalanceCW20
+  | CosGetTokenInfoCW20
+  | CosAddTokensCW20
+  | CosAddTokensCW20Internal
+  | CosActivatedChainNames
+  | CosDisconnect;
 
 export interface CosmosResponse {
   [COSMOS_METHOD_TYPE.COS__SUPPORTED_CHAIN_NAMES]: CosSupportedChainNamesResponse;
@@ -24,7 +38,17 @@ export interface CosmosResponse {
   [COSMOS_METHOD_TYPE.COS__ACCOUNT]: CosAccountResponse;
   [COSMOS_METHOD_TYPE.COS__SIGN_AMINO]: CosSignAminoResponse;
   [COSMOS_METHOD_TYPE.COS__REQUEST_ACCOUNT]: CosRequestAccountResponse;
+  [COSMOS_METHOD_TYPE.COS__REQUEST_ACCOUNTS]: CosRequestAccountsResponse;
   [COSMOS_METHOD_TYPE.COS__ADD_CHAIN]: CosRequestAddChainResponse;
+  [COSMOS_METHOD_TYPE.COS__SIGN_DIRECT]: CosSignDirectResponse;
+  [COSMOS_METHOD_TYPE.COS__SEND_TRANSACTION]: CosSendTransactionResponse;
+  [COSMOS_METHOD_TYPE.COS__SIGN_MESSAGE]: CosSignMessageResponse;
+  [COSMOS_METHOD_TYPE.COS__VERIFY_MESSAGE]: CosVerifyMessageResponse;
+  [COSMOS_METHOD_TYPE.COS__ADD_NFTS_CW721]: CosAddNFTsCW721Response;
+  [COSMOS_METHOD_TYPE.COS__GET_BALANCE_CW20]: CosGetBalanceCW20Response;
+  [COSMOS_METHOD_TYPE.COS__GET_TOKEN_INFO_CW20]: CosGetTokenInfoCW20Response;
+  [COSMOS_METHOD_TYPE.COS__ADD_TOKENS_CW20]: CosAddTokensCW20Response;
+  [COSMOS_METHOD_TYPE.COS__ADD_TOKENS_CW20_INTERNAL]: CosAddTokensCW20Response;
 }
 
 export interface CosSupportedChainNames extends RequestBase {
@@ -173,9 +197,16 @@ export interface CosSignAminoResponse {
   signed_doc: SignAminoDoc;
 }
 
+export interface SignDirectDocWebToApp {
+  chain_id: string;
+  body_bytes: string;
+  auth_info_bytes: string;
+  account_number: string;
+}
+
 export interface CosSignDirectParams extends CosSignOptions {
   chainName: string;
-  doc: SignDirectDoc;
+  doc: SignDirectDocWebToApp;
 }
 
 export interface CosSignDirect extends RequestBase {
@@ -184,6 +215,14 @@ export interface CosSignDirect extends RequestBase {
   params: CosSignDirectParams;
 }
 
+export type CosSignDirectResponseWebToApp = {
+  signature: string;
+  pub_key: {
+    type: PublicKeyType;
+    value: string;
+  };
+  signed_doc: SignDirectDocWebToApp;
+};
 export interface CosSignDirectResponse {
   signature: string;
   pub_key: {
@@ -211,6 +250,48 @@ export interface CosAddTokensCW20 extends RequestBase {
 }
 
 export type CosAddTokensCW20Response = null;
+
+export interface CosAddTokensCW20InternalParams {
+  chainName: string;
+  tokens: CosmosCw20Asset[];
+}
+export interface CosAddTokensCW20Internal extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_TOKENS_CW20_INTERNAL;
+  params: CosAddTokensCW20InternalParams;
+}
+
+export interface CosGetBalanceCW20Params {
+  chainName: string;
+  contractAddress: string;
+  address: string;
+}
+
+export interface CosGetBalanceCW20 extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__GET_BALANCE_CW20;
+  params: CosGetBalanceCW20Params;
+}
+
+export type CosGetBalanceCW20Response = string;
+
+export interface CosGetTokenInfoCW20Params {
+  chainName: string;
+  contractAddress: string;
+}
+
+export interface CosGetTokenInfoCW20 extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__GET_TOKEN_INFO_CW20;
+  params: CosGetTokenInfoCW20Params;
+}
+
+export interface CosGetTokenInfoCW20Response {
+  name: string;
+  symbol: string;
+  decimals: number;
+  total_supply: string;
+}
 
 export interface CosAddNFTsCW721NFT {
   contractAddress: string;
@@ -245,6 +326,28 @@ export interface CosSignMessage extends RequestBase {
 export interface CosSignMessageResponse {
   signature: string;
   pub_key: PubKey;
+}
+
+export interface CosVerifyMessageParams {
+  chainName: string;
+  message: string;
+  signer: string;
+  publicKey: string;
+  signature: string;
+}
+
+export interface CosVerifyMessage extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__VERIFY_MESSAGE;
+  params: CosVerifyMessageParams;
+}
+
+export type CosVerifyMessageResponse = boolean;
+
+export interface CosDisconnect extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__DISCONNECT;
+  params: CosVerifyMessageParams;
 }
 
 export interface SendTransaction {

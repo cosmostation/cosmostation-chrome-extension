@@ -1,13 +1,12 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { useChainList } from '@/hooks/useChainList';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { isMatchingCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -22,28 +21,28 @@ import {
 } from './styled';
 
 type BaseTxInfoProps = {
-  chainId: string;
   feeBaseAmount: string;
   feeCoinId: string;
+  disableFee?: boolean;
   onClickFee?: () => void;
 };
 
-export default function BaseTxInfo({ chainId, feeBaseAmount, feeCoinId, onClickFee }: BaseTxInfoProps) {
+export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = false, onClickFee }: BaseTxInfoProps) {
   const { t } = useTranslation();
-  const { flatChainList } = useChainList();
 
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { data: accountAssets } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId: feeCoinId });
 
-  const chain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, chainId));
-
-  const feeCoin = accountAssets?.flatAccountAssets.find((asset) => isMatchingCoinId(asset.asset, feeCoinId));
+  const feeCoin = getCosmosAccountAsset();
 
   const coinPrice = (feeCoin?.asset.coinGeckoId && coinGeckoPrice?.[feeCoin.asset.coinGeckoId]?.[currency]) || 0;
 
-  const displayFeeAmount = feeBaseAmount ? toDisplayDenomAmount(feeBaseAmount, feeCoin?.asset.decimals || 0) : '0';
+  const displayFeeAmount = useMemo(
+    () => (feeBaseAmount ? toDisplayDenomAmount(feeBaseAmount, feeCoin?.asset.decimals || 0) : '0'),
+    [feeBaseAmount, feeCoin?.asset.decimals],
+  );
 
   const value = times(displayFeeAmount, coinPrice);
   return (
@@ -54,8 +53,8 @@ export default function BaseTxInfo({ chainId, feeBaseAmount, feeCoinId, onClickF
         </RowLeftContainer>
         <RowRightContainer>
           <ChainContainer>
-            <ChainImageContainer src={chain?.image} />
-            <Base1300Text variant="b3_M">{chain?.name}</Base1300Text>
+            <ChainImageContainer src={feeCoin?.chain.image} />
+            <Base1300Text variant="b3_M">{feeCoin?.chain.name || 'UNKNOWN'}</Base1300Text>
           </ChainContainer>
         </RowRightContainer>
       </RowContainer>
@@ -65,9 +64,9 @@ export default function BaseTxInfo({ chainId, feeBaseAmount, feeCoinId, onClickF
           <Base1000Text variant="b3_R">{t('pages.popup.components.BaseTxInfo.index.networkFee')}</Base1000Text>
         </RowLeftContainer>
         <RowRightContainer>
-          <FeeCustomButton onClick={onClickFee}>
+          <FeeCustomButton disabled={disableFee} onClick={onClickFee}>
             {displayFeeAmount ? (
-              <EstimatedFeeTextContainer>
+              <EstimatedFeeTextContainer data-is-disabled={disableFee}>
                 <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={feeCoin?.asset.decimals} isDisableLeadingCurreny>
                   {displayFeeAmount}
                 </NumberTypo>

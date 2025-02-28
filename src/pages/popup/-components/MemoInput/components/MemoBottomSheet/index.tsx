@@ -41,6 +41,9 @@ export default function MemoBottomSheet({ currentMemo, onChangeMemo, onClose, ..
             multiline
             maxRows={3}
             onChange={(e) => setInputMemo(e.target.value)}
+            sx={{
+              marginBottom: '1.2rem',
+            }}
           />
 
           <ConfirmButton

@@ -13,6 +13,7 @@ type UseFeesProps = {
 };
 
 export function useFees({ coinId, config }: UseFeesProps) {
+  // FIXME filterByPreferAccountType 이거 true로 해야 kava같은 케이스에서 459설정했는데 60으로 fee설정 안될듯?
   const { data: accountAssets } = useAccountAllAssets({ disableDupeEthermint: true });
 
   const baseCoinList = useMemo(() => [...(accountAssets?.allCosmosAccountAssets || [])], [accountAssets?.allCosmosAccountAssets]);

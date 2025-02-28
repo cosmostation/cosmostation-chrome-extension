@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { Route as Initial } from '@/pages/account/initial';
 import { Route as CosmosAddChain } from '@/pages/popup/cosmos/addChain';
+import { Route as CosmosSignAmino } from '@/pages/popup/cosmos/sign/amino';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -43,6 +44,9 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
       return RequestAccount.to;
     case 'cos_addChain':
       return CosmosAddChain.to;
+    case 'cos_signAmino':
+      return CosmosSignAmino.to;
+
     default:
       return '';
   }

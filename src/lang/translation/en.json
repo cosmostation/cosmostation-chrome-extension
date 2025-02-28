@@ -2007,6 +2007,26 @@
           "entry": {
             "reject": "Reject",
             "sign": "Sign"
+          },
+          "amino": {
+            "entry": {
+              "insufficientFeeAmount": "Insufficient fee",
+              "reject": "Reject",
+              "sign": "Sign"
+            },
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "sendAmount": "Send Amount",
+                      "from": "From Address",
+                      "to": "To Address"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "addChain": {

@@ -22,7 +22,7 @@ export default function Init({ children }: InitProps) {
         const keys = Object.keys(changes) as ExtensionStorageKeys[];
 
         for (const key of keys) {
-          if (key === 'requestQueue') {
+          if (key === 'requestQueue' || key === 'approvedOrigins' || key === 'approvedSuiPermissions') {
             await loadAllStoreFromStorage();
           }
         }
