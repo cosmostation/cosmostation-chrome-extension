@@ -2067,6 +2067,54 @@
                 }
               }
             }
+          },
+          "direct": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Commisson": {
+                    "index": {
+                      "validator": "Validator"
+                    }
+                  },
+                  "Contract": {
+                    "index": {
+                      "inputFunds": "Input Funds",
+                      "contract": "Contract",
+                      "msg": "Message"
+                    }
+                  },
+                  "Custom": {
+                    "index": {
+                      "data": "Data"
+                    }
+                  },
+                  "IBCSend": {
+                    "index": {
+                      "sendAmount": "Send Amount",
+                      "from": "From Address",
+                      "to": "To Address",
+                      "channel": "Channel",
+                      "memo": "Memo"
+                    }
+                  },
+                  "Send": {
+                    "index": {
+                      "sendAmount": "Send Amount",
+                      "from": "From Address",
+                      "to": "To Address"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "insufficientFeeAmount": "Insufficient fee",
+              "decodedTxInfoTitle": "Decoded Transaction Information",
+              "decodedTxInfoDescription": "Some transactions may not show data because of decryption failures, but this doesn't affect the transaction execution.",
+              "reject": "Reject",
+              "sign": "Sign"
+            }
           }
         },
         "addChain": {

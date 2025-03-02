@@ -1,4 +1,5 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import type { SignDirectDoc } from '@/types/cosmos/direct';
 import type { BaseRequest } from '@/types/message/inject';
 import type {
   CosRequestAccountResponse,
@@ -7,10 +8,9 @@ import type {
   CosSignDirect,
   CosSignDirectParams,
   CosSignDirectResponse,
-  CosSignDirectResponseWebToApp,
   CosSupportedChainIdsResponse,
-  SignDirectDocWebToApp,
 } from '@/types/message/inject/cosmos';
+import { toUint8Array } from '@/utils/crypto';
 import { CosmosRPCError } from '@/utils/error';
 
 import { requestApp } from '..';
@@ -101,25 +101,25 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
 
     const doc = params?.doc;
 
-    const newDoc: SignDirectDocWebToApp = doc
+    const newDoc: SignDirectDoc = doc
       ? {
           ...doc,
-          auth_info_bytes: Buffer.from(doc.auth_info_bytes).toString('hex'),
-          body_bytes: Buffer.from(doc.body_bytes).toString('hex'),
+          auth_info_bytes: doc.auth_info_bytes ? [...Array.from(toUint8Array(doc.auth_info_bytes))] : doc.auth_info_bytes,
+          body_bytes: doc.body_bytes ? [...Array.from(toUint8Array(doc.body_bytes))] : doc.body_bytes,
         }
       : doc;
 
     const newParams: CosSignDirectParams = params ? { ...params, doc: newDoc } : params;
     const newMessage = { ...message, params: newParams };
 
-    const result = (await cosmosRequestApp(newMessage)) as CosSignDirectResponseWebToApp;
+    const result = (await cosmosRequestApp(newMessage)) as CosSignDirectResponse;
 
     const response: CosSignDirectResponse = {
       ...result,
       signed_doc: {
         ...result.signed_doc,
-        auth_info_bytes: new Uint8Array(Buffer.from(result.signed_doc.auth_info_bytes, 'hex')).buffer,
-        body_bytes: new Uint8Array(Buffer.from(result.signed_doc.body_bytes, 'hex')).buffer,
+        auth_info_bytes: toUint8Array(result.signed_doc.auth_info_bytes).buffer,
+        body_bytes: toUint8Array(result.signed_doc.body_bytes).buffer,
       },
     };
 

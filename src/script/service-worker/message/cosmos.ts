@@ -254,7 +254,7 @@ export async function cosmosProcess(message: CosmosRequest) {
         }
 
         const schema = cosAddTokensCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
-
+        // FIXME 여기서 중복토큰을 거르지 않고, 팝업 페이지에서 중복은 강제활성화, 중복 아닌 토큰은 추가하는 로직으로 변경 필요.
         try {
           await schema.validateAsync({ ...params, chainName });
         } catch (err) {
