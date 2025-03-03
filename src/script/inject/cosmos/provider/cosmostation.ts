@@ -88,7 +88,7 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
   }
 
   if (isCosSignDirect(message)) {
-    const { params } = message;
+    const { params } = message as CosSignDirect;
 
     const doc = params?.doc;
 
@@ -118,7 +118,7 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
   }
 
   if (isCosSendTransaction(message)) {
-    const { params } = message;
+    const { params } = message as CosSendTransaction;
 
     const txBytes = params?.txBytes && typeof params.txBytes === 'object' ? Buffer.from(params.txBytes).toString('base64') : params.txBytes;
 

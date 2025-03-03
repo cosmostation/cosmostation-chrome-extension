@@ -1,17 +1,25 @@
+import { registerWallet } from '@mysten/wallet-standard';
+
 import type { ComProvidersResponse } from '@/types/message/inject/common';
 
 import { commonProvider } from './common/provider';
 import { cosmosProvider } from './cosmos/provider/cosmostation';
 import { keplrProvider } from './cosmos/provider/keplr';
+import { suiProvider, SuiStandard } from './sui/provider/sui';
 
 window.cosmostation = {
   version: __APP_VERSION__,
   common: commonProvider,
   cosmos: cosmosProvider,
+  sui: suiProvider,
   providers: {
     keplr: keplrProvider,
   },
 };
+
+window.cosmostationWallet = suiProvider;
+
+registerWallet(new SuiStandard());
 
 void (async () => {
   const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
