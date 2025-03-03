@@ -31,6 +31,8 @@ export interface CosmosFeeInfo {
 
 export type ChainType = 'cosmos' | 'evm' | 'sui' | 'aptos' | 'bitcoin';
 
+export type CommonChainType = 'common';
+
 export interface ChainId {
   id: string;
   chainType: ChainType;

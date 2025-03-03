@@ -5,7 +5,7 @@ import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import type { CurrencyType } from '@/types/currency';
-import type { AdPopoverStateMap, ExtensionStorage } from '@/types/extension';
+import type { AdPopoverStateMap, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
 import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
@@ -49,7 +49,14 @@ export const initialState: ExtensionStorageState = {
   chosenAptosNetworkId: '',
   chosenBitcoinNetworkId: '',
   currentWindowId: null,
+  prioritizedProvider: {
+    keplr: false,
+    metamask: false,
+    aptos: false,
+  },
 };
+
+const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {
@@ -66,30 +73,11 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
     resetExtensionStorageStore: async () => {
       const accounts = await getExtensionLocalStorage('accounts');
       // FIXME 자동으로 키 가져와서 삭제하도록 변경 필요.
-      await setExtensionLocalStorage('accounts', []);
-      await setExtensionLocalStorage('initAccountIds', []);
-      await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
-      await setExtensionLocalStorage('dappListSortKey', DefaultSortKey.dappListSortKey);
-      await setExtensionLocalStorage('language', 'en');
-      await setExtensionLocalStorage('comparisonPasswordHash', '');
-      await setExtensionLocalStorage('accountNamesById', {});
-      await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
-      await setExtensionLocalStorage('selectedAccountId', '');
-      await setExtensionLocalStorage('notBackedUpAccountIds', []);
-      await setExtensionLocalStorage('currency', CURRENCY_TYPE.USD as CurrencyType);
-      await setExtensionLocalStorage('preferAccountType', {});
-      await setExtensionLocalStorage('addressBookList', []);
-      await setExtensionLocalStorage('customCw20Assets', []);
-      await setExtensionLocalStorage('customErc20Assets', []);
-      await setExtensionLocalStorage('customAssets', []);
-      await setExtensionLocalStorage('customHiddenAssetIds', []);
-      await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
-      await setExtensionLocalStorage('approvedOrigins', []);
-      await setExtensionLocalStorage('adPopoverState', initialState.adPopoverState);
-      await setExtensionLocalStorage('isBalanceVisible', true);
-      await setExtensionLocalStorage('approvedSuiPermissions', []);
-      await setExtensionLocalStorage('requestQueue', []);
-      await setExtensionLocalStorage('currentWindowId', null);
+      const extensionStorageKeys = Object.keys(initialState);
+      const shouldDeleteKeys = extensionStorageKeys.filter((key) => !notDeleteKeys.includes(key));
+
+      const resetPromises = shouldDeleteKeys.map((key) => setExtensionLocalStorage(key as ExtensionStorageKeys, initialState[key as ExtensionStorageKeys]));
+      await Promise.all(resetPromises);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
       await Promise.all(removePromises);

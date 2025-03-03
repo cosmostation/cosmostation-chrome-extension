@@ -6,7 +6,14 @@ import { DefaultSortKey } from '@/constants/initialStorage';
 import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
-import type { AdPopoverStateMap, ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
+import type {
+  AdPopoverStateMap,
+  ExtensionSessionStorage,
+  ExtensionSessionStorageKeys,
+  ExtensionStorage,
+  ExtensionStorageKeys,
+  PrioritizedProvider,
+} from '@/types/extension';
 import { initialState } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { extension } from './browser';
@@ -369,6 +376,20 @@ export async function initExtensionLocalStorage() {
 
   if (!originStorage.currentWindowId) {
     await setExtensionLocalStorage('currentWindowId', null);
+  }
+
+  if (
+    originStorage.prioritizedProvider?.aptos === undefined ||
+    originStorage.prioritizedProvider?.metamask === undefined ||
+    originStorage.prioritizedProvider?.keplr === undefined
+  ) {
+    const newProviders: PrioritizedProvider = {
+      aptos: originStorage.prioritizedProvider?.aptos === undefined ? false : originStorage.prioritizedProvider?.aptos,
+      keplr: originStorage.prioritizedProvider?.keplr === undefined ? false : originStorage.prioritizedProvider?.keplr,
+      metamask: originStorage.prioritizedProvider?.metamask === undefined ? false : originStorage.prioritizedProvider?.metamask,
+    };
+
+    await setExtensionLocalStorage('prioritizedProvider', newProviders);
   }
 }
 

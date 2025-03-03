@@ -13,16 +13,7 @@ import type {
 import { toUint8Array } from '@/utils/crypto';
 import { CosmosRPCError } from '@/utils/error';
 
-import { requestApp } from '..';
-
-export const cosmosRequestApp = <T extends BaseRequest>(message: T) => {
-  const requestParam = {
-    ...message,
-    chainType: 'cosmos',
-  };
-
-  return requestApp(requestParam);
-};
+import { cosmosRequestApp } from '../request';
 
 function isCosRequestAccounts(message: BaseRequest): message is CosRequestAccounts {
   return message.method === 'cos_requestAccounts';

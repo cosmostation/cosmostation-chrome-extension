@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
+    "@keplr-wallet/types": "^0.12.190",
     "@tanstack/router-devtools": "^1.64.0",
     "@tanstack/router-plugin": "^1.64.0",
     "@types/big.js": "^6.2.2",

@@ -52,6 +52,12 @@ export type RequestQueue = Request & {
   windowId?: number;
 };
 
+export type PrioritizedProvider = {
+  keplr: boolean;
+  metamask: boolean;
+  aptos: boolean;
+};
+
 export interface ExtensionStorage {
   accounts: Account[];
   paramsV11: Record<string, V11Param>;
@@ -101,6 +107,7 @@ export interface ExtensionStorage {
   chosenSuiNetworkId: string;
   chosenBitcoinNetworkId: string;
   currentWindowId: number | null;
+  prioritizedProvider: PrioritizedProvider;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;
