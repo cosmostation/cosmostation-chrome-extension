@@ -170,7 +170,7 @@ export default function Entry({ request }: EntryProps) {
             {t('pages.popup.cosmos.addChain.entry.networkToAdd')}
           </Base1000Text>
           <AssetContainer
-            chainImageURL={imageURL}
+            chainImageURL={imageURL || 'unknown'}
             leftHeaderComponent={<Base1300Text variant="b2_M">{chainName}</Base1300Text>}
             leftSubHeaderComponent={<Base1000Text variant="b4_R">{`Chain ID : ${chainId}`}</Base1000Text>}
           />

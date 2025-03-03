@@ -2128,6 +2128,17 @@
             "cautionDescription": "Cosmostation does not validate custom network",
             "reject": "Reject"
           }
+        },
+        "add-token": {
+          "entry": {
+            "addCustomToken": "Add Custom Token",
+            "tokenToAdd": "Token to Add",
+            "contractAddress": "Contract Address",
+            "type": "Type",
+            "decimals": "Decimals",
+            "reject": "Reject",
+            "addToken": "Add Token"
+          }
         }
       }
     },

@@ -34,6 +34,30 @@ export function useCurrentCustomCW20Tokens() {
     await refetchAccountAllAssets();
   };
 
+  const addCustomCW20Tokens = async (assets: CosmosCw20Asset[]) => {
+    const storedCW20Assets = await getExtensionLocalStorage('cw20Assets');
+
+    const newlyUnstoredTokens = assets.filter(
+      (item) => !storedCW20Assets.some((storedItem) => storedItem.id.toLowerCase() === item.id.toLowerCase() && storedItem.chainId === item.chainId),
+    );
+
+    if (newlyUnstoredTokens.length === 0) {
+      return;
+    }
+
+    const storedCustomCW20 = await getExtensionLocalStorage('customCw20Assets');
+    const filteredExistingTokens = storedCustomCW20.filter(
+      (item) => !newlyUnstoredTokens.some((filteredItem) => filteredItem.id.toLowerCase() === item.id.toLowerCase() && filteredItem.chainId === item.chainId),
+    );
+
+    const updatedCustomTokens = [...filteredExistingTokens, ...newlyUnstoredTokens];
+
+    await updateExtensionStorageStore('customCw20Assets', updatedCustomTokens);
+
+    await refetchAccountAssets();
+    await refetchAccountAllAssets();
+  };
+
   const removeCustomCW20Token = async (coinId: string) => {
     const storedCustomCW20 = await getExtensionLocalStorage('customCw20Assets');
     const updatedCustomTokens = storedCustomCW20.filter((item) => getCoinId(item) !== coinId);
@@ -44,5 +68,5 @@ export function useCurrentCustomCW20Tokens() {
     await refetchAccountAllAssets();
   };
 
-  return { currentCustomCW20Tokens, addCustomCW20Token, removeCustomCW20Token };
+  return { currentCustomCW20Tokens, addCustomCW20Token, addCustomCW20Tokens, removeCustomCW20Token };
 }

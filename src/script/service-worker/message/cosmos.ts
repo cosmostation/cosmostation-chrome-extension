@@ -254,7 +254,6 @@ export async function cosmosProcess(message: CosmosRequest) {
         }
 
         const schema = cosAddTokensCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
-        // FIXME 여기서 중복토큰을 거르지 않고, 팝업 페이지에서 중복은 강제활성화, 중복 아닌 토큰은 추가하는 로직으로 변경 필요.
         try {
           await schema.validateAsync({ ...params, chainName });
         } catch (err) {
@@ -262,15 +261,15 @@ export async function cosmosProcess(message: CosmosRequest) {
         }
 
         try {
-          const { getCW20TokenInfo } = cosmosURL(chain.lcdUrls[0].url, chain.chainId);
-
           const uniqueTokens = params.tokens.filter((token, idx, arr) => arr.findIndex((item) => item.contractAddress === token.contractAddress) === idx);
+
+          const requestURLs = chain.lcdUrls.map((item) => cosmosURL(item.url, chain.chainId).getCW20TokenInfo);
 
           const cosmosTokens = (
             await Promise.all(
               uniqueTokens.map(async (token) => {
                 try {
-                  const response = await get<CW20TokenInfoResponse>(getCW20TokenInfo(token.contractAddress));
+                  const response = await Promise.any(requestURLs.map((url) => get<CW20TokenInfoResponse>(url(token.contractAddress))));
                   const result = response.data;
 
                   const cosmosToken: CosmosCw20Asset = {

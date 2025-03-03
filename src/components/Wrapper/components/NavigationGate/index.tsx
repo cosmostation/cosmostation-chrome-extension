@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as Initial } from '@/pages/account/initial';
+import { Route as CosmosAddToken } from '@/pages/popup/cosmos/add-token';
 import { Route as CosmosAddChain } from '@/pages/popup/cosmos/addChain';
 import { Route as CosmosSignAmino } from '@/pages/popup/cosmos/sign/amino';
 import { Route as CosmosSignDirect } from '@/pages/popup/cosmos/sign/direct';
@@ -49,6 +50,8 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
       return CosmosSignAmino.to;
     case 'cos_signDirect':
       return CosmosSignDirect.to;
+    case 'cos_addTokensCW20Internal':
+      return CosmosAddToken.to;
 
     default:
       return '';
