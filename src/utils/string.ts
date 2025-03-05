@@ -120,3 +120,7 @@ export function isJsonString(str: string): boolean {
     return false;
   }
 }
+
+export function addHexPrefix(str: string) {
+  return str.startsWith('0x') ? str : `0x${str}`;
+}

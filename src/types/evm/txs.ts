@@ -26,3 +26,18 @@ export interface AccountTx {
   tag?: string;
   itype?: string;
 }
+
+export interface EthereumTx {
+  value?: string | number;
+  gasPrice?: string | number;
+  maxPriorityFeePerGas?: string | number;
+  maxFeePerGas?: string | number;
+  from?: string;
+  to?: string;
+  gas?: number | string;
+  data?: string;
+  nonce?: number;
+  v?: string | number;
+  r?: string | number;
+  s?: string | number;
+}

@@ -3,7 +3,15 @@ export class EthereumRPCError extends Error {
 
   public id?: string | number;
 
-  public rpcMessage: unknown;
+  public rpcMessage: {
+    error: {
+      code: number;
+      message: string;
+      data?: unknown;
+    };
+    id?: string | number;
+    jsonrpc: string;
+  };
 
   constructor(code: number, message: string, id?: string | number, data?: unknown) {
     super(message);
@@ -80,7 +88,7 @@ export class SuiRPCError extends Error {
 
   public id?: string | number;
 
-  public rpcMessage: unknown;
+  public rpcMessage: Record<string, { code: number; message: string }>;
 
   constructor(code: number, message: string, id?: string | number) {
     super(message);

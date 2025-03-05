@@ -55,6 +55,30 @@ export const COSMOS_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
 } as const;
 
+export const APTOS_RPC_ERROR_MESSAGE = {
+  [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
+  [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported',
+  [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
+  [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
+
+  [RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]: 'The method is not supported by the ledger account.',
+  [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
+} as const;
+
+export const SUI_RPC_ERROR_MESSAGE = {
+  [RPC_ERROR.UNAUTHORIZED]: "The account needs 'viewAccount' or 'suggestTransaction' permission",
+  [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported',
+  [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
+  [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
+
+  [RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]: 'The method is not supported by the ledger account.',
+  [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
+} as const;
+
+export const BITCOIN_RPC_ERROR_MESSAGE = {
+  [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
+} as const;
+
 export const TRASACTION_RECEIPT_ERROR_MESSAGE = {
   PENDING: 'Pending State',
 } as const;

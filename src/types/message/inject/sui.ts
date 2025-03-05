@@ -47,10 +47,10 @@ export interface SuiResponse {
 export interface SuiRequestConnect extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__CONNECT;
-  params?: ApprovedSuiPermissionType[];
+  params: ApprovedSuiPermissionType[];
 }
 
-export type SuiRequestConnectResponse = boolean;
+export type SuiRequestConnectResponse = null;
 
 export interface SuiRequestAccount extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
@@ -77,7 +77,7 @@ export interface SuiRequestDisconnect extends RequestBase {
   params?: undefined;
 }
 
-export type SuiRequestDisconnectResponse = boolean;
+export type SuiRequestDisconnectResponse = null;
 
 export interface SuiRequestGetPermission extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
@@ -91,11 +91,11 @@ export type SuiSignTransactionBlockSerializedInput = Omit<SuiSignTransactionBloc
   transactionBlockSerialized: string;
 };
 
-export type SuiSignTransactionBlock = {
+export interface SuiSignTransactionBlock extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__SIGN_TRANSACTION_BLOCK;
   params: [SuiSignTransactionBlockSerializedInput];
-};
+}
 
 export type SuiSignTransactionBlockResponse = SuiSignTransactionBlockOutput;
 
@@ -103,11 +103,11 @@ export type SuiSignTransactionSerializedInput = Omit<SuiSignTransactionInput, 't
   transactionBlockSerialized: string;
 };
 
-export type SuiSignTransaction = {
+export interface SuiSignTransaction extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__SIGN_TRANSACTION;
   params: [SuiSignTransactionSerializedInput];
-};
+}
 
 export type SuiSignTransactionResponse = SignedTransaction;
 
@@ -115,12 +115,11 @@ export type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndEx
   transactionBlockSerialized: string;
 };
 
-export type SuiSignAndExecuteTransactionBlock = {
+export interface SuiSignAndExecuteTransactionBlock extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
   params: [SuiSignAndExecuteTransactionBlockSerializedInput];
-  id?: number | string;
-};
+}
 
 export type SuiSignAndExecuteTransactionBlockResponse = SuiSignAndExecuteTransactionBlockOutput;
 
@@ -129,12 +128,11 @@ export type SuiSignAndExecuteTransactionSerializedInput = Omit<SuiSignAndExecute
   options?: SuiTransactionBlockResponseOptions;
 };
 
-export type SuiSignAndExecuteTransaction = {
+export interface SuiSignAndExecuteTransaction extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
   params: [SuiSignAndExecuteTransactionSerializedInput];
-  id?: number | string;
-};
+}
 
 export type SuiSignAndExecuteTransactionResponse = SuiSignAndExecuteTransactionOutput;
 
@@ -143,11 +141,11 @@ export type SuiSignMessageInput = {
   accountAddress: string;
 };
 
-export type SuiSignMessage = {
+export interface SuiSignMessage extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__SIGN_MESSAGE;
   params: SuiSignMessageInput;
-};
+}
 
 export type SuiSignMessageResponse = SuiSignMessageOutput;
 
@@ -156,10 +154,10 @@ export type SuiSignPersonalMessageInput = {
   accountAddress: string;
 };
 
-export type SuiSignPersonalMessage = {
+export interface SuiSignPersonalMessage extends RequestBase {
   chainType: Extract<ChainType, 'sui'>;
   method: typeof SUI_METHOD_TYPE.SUI__SIGN_PERSONAL_MESSAGE;
   params: SuiSignPersonalMessageInput;
-};
+}
 
 export type SuiSignPersonalMessageResponse = SuiSignPersonalMessageOutput;

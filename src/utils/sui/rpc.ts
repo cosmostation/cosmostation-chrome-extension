@@ -1,25 +1,21 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 
-import { EthereumRPCError } from './error';
-import { extensionLocalStorage } from './storage';
+import { SuiRPCError } from '../error';
+import { extensionLocalStorage } from '../storage';
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentEthereumNetwork } = await extensionLocalStorage();
+  const { currentSuiNetwork } = await extensionLocalStorage();
 
-  const rpcURL = url || currentEthereumNetwork.rpcUrls[0].url;
+  const rpcURL = url ?? currentSuiNetwork.rpcUrls[0].url;
 
   const rpcId = id ?? new Date().getTime();
 
   try {
-    if (!rpcURL) {
-      throw new Error('RPC URL is not defined');
-    }
-
     const response = await fetch(rpcURL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cosmostation: `extension/${__APP_VERSION__}`,
+        Cosmostation: `extension/${String(process.env.VERSION)}`,
       },
       body: JSON.stringify({ method, params, jsonrpc: '2.0', id: rpcId }),
     });
@@ -32,6 +28,6 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
     return responseJSON as unknown as T;
   } catch {
-    throw new EthereumRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
+    throw new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
   }
 }

@@ -40,6 +40,49 @@ chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendRespo
   return true;
 });
 
+chrome.runtime.onMessage.addListener(
+  (
+    data: {
+      event: string;
+      chainType: string;
+      data: unknown;
+    },
+    sender,
+  ) => {
+    if (sender.id !== chrome.runtime.id) return;
+
+    if (data?.event === 'chainChanged') {
+      const customEvent = new CustomEvent('chainChanged', {
+        detail: {
+          chainType: data?.chainType,
+          data: data?.data,
+        },
+      });
+      window.dispatchEvent(customEvent);
+    }
+
+    if (data?.event === 'accountsChanged') {
+      const customEvent = new CustomEvent('accountsChanged', {
+        detail: {
+          chainType: data?.chainType,
+          data: data?.data,
+        },
+      });
+      window.dispatchEvent(customEvent);
+    }
+
+    if (data?.event === 'disconnect') {
+      const customEvent = new CustomEvent('disconnect', {
+        detail: {
+          chainType: data?.chainType,
+          data: data?.data,
+        },
+      });
+      window.dispatchEvent(customEvent);
+    }
+  },
+);
+
 const rootElement = document.head || document.documentElement;
 const scriptElement = document.createElement('script');
 

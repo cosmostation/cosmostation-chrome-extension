@@ -5,6 +5,8 @@ export const COSMOS_LISTENER_TYPE = {
 export const ETHEREUM_LISTENER_TYPE = {
   ACCOUNTS_CHANGED: 'accountsChanged',
   CHAIN_CHANGED: 'chainChanged',
+  DISCONNECT: 'disconnect',
+  CONNECT: 'connect',
 } as const;
 
 export const APTOS_LISTENER_TYPE = {

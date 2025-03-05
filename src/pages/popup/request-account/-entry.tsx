@@ -1,14 +1,20 @@
 import { useEffect } from 'react';
 
+import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getAddress, getKeypair } from '@/libs/address';
+import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
 import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { CosRequestAccount, CosRequestAccountResponse } from '@/types/message/inject/cosmos';
+import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
+import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
+import { EthereumRPCError, SuiRPCError } from '@/utils/error';
+import { addHexPrefix } from '@/utils/string';
 
 export default function Entry() {
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
@@ -22,7 +28,7 @@ export default function Entry() {
       try {
         // FIXME 락걸린 상태에서 + 오리진 없는 경우에서 계정 연결 요청 완료 후 팝업 내리는 시간이 오래걸림.
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
-          const { tabId, requestId, origin, params } = currentRequestQueue;
+          const { tabId, requestId, origin, params, id } = currentRequestQueue;
 
           const allCosmosChains = [...(chainList.cosmosChains || []), ...chainList.customCosmosChains];
 
@@ -53,7 +59,116 @@ export default function Entry() {
               requestId,
               tabId,
               params: {
+                id,
                 result,
+              },
+            });
+
+            void deQueue();
+          }
+        }
+
+        if ((currentRequestQueue?.method === 'eth_requestAccounts' || currentRequestQueue?.method === 'wallet_requestPermissions') && currentPassword) {
+          const { tabId, requestId, origin, id } = currentRequestQueue;
+          const evmChains = (await getChains()).evmChains;
+          const evmChain = evmChains?.find((item) => item.chainId === '0x1') || evmChains?.[0];
+
+          if (evmChain) {
+            const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
+            const address = getAddress(evmChain, keyPair.publicKey);
+
+            const result: EthRequestAccountsResponse = [address];
+
+            sendMessage<ResponseAppMessage<EthRequestAccounts>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id,
+                result,
+              },
+            });
+
+            void deQueue();
+          } else {
+            sendMessage<ResponseAppMessage<EthRequestAccounts>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id,
+                error: new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]),
+              },
+            });
+
+            void deQueue();
+          }
+        }
+
+        if (currentRequestQueue?.method === 'sui_connect') {
+          const { tabId, requestId, origin, id } = currentRequestQueue;
+
+          const result: SuiRequestConnectResponse = null;
+
+          sendMessage<ResponseAppMessage<SuiRequestConnect>>({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin,
+            requestId,
+            tabId,
+            params: {
+              id,
+              result,
+            },
+          });
+          void deQueue();
+        }
+
+        if (currentRequestQueue?.method === 'sui_getAccount' && currentPassword) {
+          const { tabId, requestId, origin, id } = currentRequestQueue;
+          const suiChains = (await getChains()).suiChains;
+          const suiChain = suiChains?.find((item) => item.id === 'sui') || suiChains?.[0];
+
+          if (suiChain) {
+            const keyPair = getKeypair(suiChain, currentAccount, currentPassword);
+            const address = getAddress(suiChain, keyPair.publicKey);
+
+            const publicKey = addHexPrefix(keyPair!.publicKey);
+
+            const result: SuiRequestAccountResponse = {
+              address,
+              publicKey,
+            };
+
+            sendMessage<ResponseAppMessage<SuiRequestAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id,
+                result,
+              },
+            });
+
+            void deQueue();
+          } else {
+            const { tabId, requestId, origin, id } = currentRequestQueue;
+
+            sendMessage<ResponseAppMessage<SuiRequestAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id,
+                error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], id),
               },
             });
 
@@ -66,27 +181,6 @@ export default function Entry() {
     };
 
     handleRequestAccount();
-
-    // if ((currentQueue?.message.method === 'eth_requestAccounts' || currentQueue?.message.method === 'wallet_requestPermissions') && currentPassword) {
-    //   const { message, messageId, origin } = currentQueue;
-    //   const chain = ETHEREUM;
-
-    //   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-    //   const address = getAddress(chain, keyPair?.publicKey);
-
-    //   const result: EthRequestAccountsResponse = [address];
-
-    //   responseToWeb({
-    //     response: {
-    //       result,
-    //     },
-    //     message,
-    //     messageId,
-    //     origin,
-    //   });
-
-    //   void deQueue();
-    // }
 
     // if ((currentQueue?.message.method === 'aptos_account' || currentQueue?.message.method === 'aptos_connect') && currentPassword) {
     //   const { message, messageId, origin } = currentQueue;
@@ -176,6 +270,15 @@ export default function Entry() {
     //     void deQueue();
     //   }
     // }
-  }, [chainList.cosmosChains, chainList.customCosmosChains, currentAccount, currentPassword, currentRequestQueue, deQueue]);
+  }, [
+    chainList.cosmosChains,
+    chainList.customCosmosChains,
+    chainList.evmChains,
+    chainList.suiChains,
+    currentAccount,
+    currentPassword,
+    currentRequestQueue,
+    deQueue,
+  ]);
   return null;
 }

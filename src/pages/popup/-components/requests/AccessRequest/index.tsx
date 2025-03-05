@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import InformationPanel from '@/components/InformationPanel';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { PERMISSION } from '@/constants/sui';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -42,21 +43,21 @@ export default function AccessRequest({ children }: AccessRequestProps) {
 
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
 
-  const { addApprovedOrigin, currentAccountApporvedOrigins } = useCurrentAccount();
+  const { addApprovedOrigin, addSuiPermissions, currentAccountApporvedOrigins, currentAccountApprovedSuiPermissions } = useCurrentAccount();
 
   const { siteIconURL } = useSiteIconURL(currentRequestQueue?.origin);
   const siteTitle = getSiteTitle(currentRequestQueue?.origin);
 
-  //   const currentAccountSuiPermissionTypes = currentAccountApprovedSuiPermissions
-  //     .filter((permission) => permission.origin === currentQueue?.origin)
-  //     .map((permission) => permission.permission);
+  const currentAccountSuiPermissionTypes = currentAccountApprovedSuiPermissions
+    .filter((permission) => permission.origin === currentRequestQueue?.origin)
+    .map((permission) => permission.permission);
 
-  // const isSuiApporved =
-  // currentQueue &&
-  // currentQueue.method === 'sui_connect' &&
-  // !currentQueue.message.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission))
+  const isSuiApporved =
+    currentRequestQueue &&
+    currentRequestQueue.method === 'sui_connect' &&
+    !currentRequestQueue.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission));
 
-  if (currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) {
+  if ((currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) || isSuiApporved) {
     return (
       <Layout>
         <>
@@ -74,20 +75,37 @@ export default function AccessRequest({ children }: AccessRequestProps) {
                 <CheckListTitleContainer>
                   <Base1000Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowOption')}</Base1000Text>
                 </CheckListTitleContainer>
-                <CheckListContentsContainer>
-                  <CheckListItemContainer>
-                    <SuccessIcon />
-                    <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowAddress')}</Base1300Text>
-                  </CheckListItemContainer>
-                  <CheckListItemContainer>
-                    <SuccessIcon />
-                    <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowRequestSign')}</Base1300Text>
-                  </CheckListItemContainer>
-                  <CheckListItemContainer>
-                    <SuccessIcon />
-                    <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.encryptMessage')}</Base1300Text>
-                  </CheckListItemContainer>
-                </CheckListContentsContainer>
+                {currentRequestQueue.method === 'sui_connect' ? (
+                  <CheckListContentsContainer>
+                    {currentRequestQueue.params.includes(PERMISSION.VIEW_ACCOUNT) && (
+                      <CheckListItemContainer>
+                        <SuccessIcon />
+                        <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowAddress')}</Base1300Text>
+                      </CheckListItemContainer>
+                    )}
+                    {currentRequestQueue.params.includes(PERMISSION.SUGGEST_TRANSACTIONS) && (
+                      <CheckListItemContainer>
+                        <SuccessIcon />
+                        <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowRequestSign')}</Base1300Text>
+                      </CheckListItemContainer>
+                    )}
+                  </CheckListContentsContainer>
+                ) : (
+                  <CheckListContentsContainer>
+                    <CheckListItemContainer>
+                      <SuccessIcon />
+                      <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowAddress')}</Base1300Text>
+                    </CheckListItemContainer>
+                    <CheckListItemContainer>
+                      <SuccessIcon />
+                      <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.allowRequestSign')}</Base1300Text>
+                    </CheckListItemContainer>
+                    <CheckListItemContainer>
+                      <SuccessIcon />
+                      <Base1300Text variant="b3_R">{t('pages.popup.components.requests.AccessRequest.index.encryptMessage')}</Base1300Text>
+                    </CheckListItemContainer>
+                  </CheckListContentsContainer>
+                )}
               </CheckListContainer>
             </EdgeAligner>
           </BaseBody>
@@ -130,9 +148,9 @@ export default function AccessRequest({ children }: AccessRequestProps) {
                   onClick={async () => {
                     await addApprovedOrigin(currentRequestQueue.origin);
 
-                    // if (currentQueue.method === 'sui_connect') {
-                    //   await addSuiPermissions(currentQueue.message.params, currentQueue.origin);
-                    // }
+                    if (currentRequestQueue.method === 'sui_connect') {
+                      await addSuiPermissions(currentRequestQueue.params, currentRequestQueue.origin);
+                    }
                   }}
                 >
                   {t('pages.popup.components.requests.AccessRequest.index.access')}

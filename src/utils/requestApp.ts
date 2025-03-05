@@ -1,6 +1,6 @@
 import { debounce } from 'lodash';
 
-import { sendMessage } from '@/libs/extension';
+// import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
 
 import { getExtensionLocalStorage, setExtensionLocalStorage } from './storage';
@@ -15,31 +15,32 @@ export const setQueues = debounce(
 
     const currentRequestQueue = await getExtensionLocalStorage('requestQueue');
 
-    const isSidePanelDefault = (await chrome.sidePanel.getPanelBehavior()).openPanelOnActionClick;
+    // FIXME 사이드패널 사인요청 팝업 오픈안되는 이슈 해결전까지 주석처리
+    // const isSidePanelDefault = (await chrome.sidePanel.getPanelBehavior()).openPanelOnActionClick;
 
-    console.log('🚀 ~ isSidePanelDefault:', isSidePanelDefault);
+    // const lastQueueItem = queues[queues.length - 1];
+    // if (isSidePanelDefault) {
+    //   await sendMessage({
+    //     target: 'CONTENT',
+    //     method: 'openSidePanel',
+    //     origin: lastQueueItem.origin,
+    //     requestId: lastQueueItem.requestId,
+    //     tabId: lastQueueItem.tabId,
+    //     params: {
+    //       id: lastQueueItem.id,
+    //     },
+    //   });
+    //   await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);
+    // } else {
 
-    const lastQueueItem = queues[queues.length - 1];
-    if (isSidePanelDefault) {
-      await sendMessage({
-        target: 'CONTENT',
-        method: 'openSidePanel',
-        origin: lastQueueItem.origin,
-        requestId: lastQueueItem.requestId,
-        tabId: lastQueueItem.tabId,
-        params: {
-          id: lastQueueItem.id,
-        },
-      });
-      await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);
-    } else {
-      const window = await openPopupWindow();
+    // }
 
-      await setExtensionLocalStorage('requestQueue', [
-        ...currentRequestQueue.map((item) => ({ ...item, windowId: window?.id })),
-        ...queues.map((item) => ({ ...item, windowId: window?.id })),
-      ]);
-    }
+    const window = await openPopupWindow();
+
+    await setExtensionLocalStorage('requestQueue', [
+      ...currentRequestQueue.map((item) => ({ ...item, windowId: window?.id })),
+      ...queues.map((item) => ({ ...item, windowId: window?.id })),
+    ]);
   },
   500,
   { leading: true },

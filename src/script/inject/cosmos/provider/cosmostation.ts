@@ -134,5 +134,5 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
 export const cosmosProvider: CosmosProvider = {
   // on,
   // off,
-  request: cosmosRequestApp,
+  request: wrappedCosmosRequestApp,
 };

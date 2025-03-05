@@ -9,7 +9,7 @@ import type {
 } from '@mysten/wallet-standard';
 
 import type { ApprovedSuiPermissionType } from '@/types/extension';
-import type { SuiListenerType } from '@/types/message';
+import type { EthereumListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
 import type { CommonRequest } from '@/types/message/inject/common';
 import type {
@@ -82,6 +82,18 @@ declare global {
     off: (eventName: SuiListenerType, eventHandler: (data: unknown) => void) => void;
   }
 
+  interface EthereumProvider {
+    request: <T extends Omit<Request, 'chainType' | 'origin' | 'requestId'>>(message: T) => Promise<Unknown>;
+    on: (eventName: EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
+    off: (eventName: EthereumListenerType, eventHandler?: (event?: unknown) => void) => void;
+    addListener: (eventName: EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
+    removeListener: (eventName: EthereumListenerType, eventHandler?: (event?: unknown) => void) => void;
+    enable: () => Promise<unknown>;
+    isMetaMask: boolean;
+    chainId?: string;
+    networkVersion?: string;
+  }
+
   interface Window {
     customProperty: boolean;
 
@@ -92,10 +104,11 @@ declare global {
       version: string;
       common: CommonProvider;
       cosmos: CosmosProvider;
+      ethereum: EthereumProvider;
       sui: SuiProvider;
       providers: {
         keplr: KeplrInterface;
-        // metamask: MetaMask;
+        metamask: EthereumProvider;
       };
     };
     cosmostationWallet?: SuiProvider;

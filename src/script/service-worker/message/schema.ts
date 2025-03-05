@@ -1,4 +1,6 @@
 import { COSMOS_TYPE } from '@/constants/cosmos';
+import { TOKEN_TYPE } from '@/constants/evm/token';
+import { PERMISSION } from '@/constants/sui';
 import type { CosmosChain } from '@/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '@/types/cosmos/amino';
 import type { Amount } from '@/types/cosmos/common';
@@ -16,10 +18,20 @@ import type {
   CosSignMessage,
   CosVerifyMessage,
 } from '@/types/message/inject/cosmos';
+import type {
+  EthcAddNetwork,
+  EthcAddTokens,
+  EthSignTransaction,
+  WalletAddEthereumChain,
+  WalletSwitchEthereumChain,
+  WalletWatchAsset,
+} from '@/types/message/inject/evm';
+import type { SuiSignMessageInput } from '@/types/message/inject/sui';
 import Joi from '@/utils/joi';
-import { getCosmosAddressRegex } from '@/utils/regex';
+import { ethereumAddressRegex, getCosmosAddressRegex, suiAddressRegex } from '@/utils/regex';
 
 const cosmosType = Object.values(COSMOS_TYPE);
+const suiPermissionType = Object.values(PERMISSION);
 
 function getChainIdRegex(chainId: string) {
   const splitedChainId = chainId.split('-');
@@ -243,3 +255,156 @@ export const cosAddNFTsCW721ParamsSchema = (chainNames: string[], chain: CosmosC
     .label('params')
     .required();
 };
+
+export const ethSignParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required(), Joi.optional());
+
+export const personalSignParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(Joi.string().label('dataToSign').required(), Joi.optional(), Joi.string().label('address').pattern(ethereumAddressRegex).required());
+
+export const ethSignTransactionParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<EthSignTransaction['params'][0]>({
+        from: Joi.string().optional(),
+        to: Joi.string().optional(),
+        nonce: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        data: Joi.string().optional(),
+        maxFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        maxPriorityFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        value: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        gas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        gasPrice: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        r: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        s: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        v: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+      })
+        .unknown()
+        .required(),
+    );
+
+export const ethcAddTokensParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<EthcAddTokens['params'][0]>({
+        type: Joi.string().valid('erc20'),
+        chainType: Joi.string().valid('evm'),
+        name: Joi.string().optional(),
+        symbol: Joi.string().required(),
+        decimals: Joi.number().required(),
+        image: Joi.string().optional(),
+        id: Joi.string().pattern(ethereumAddressRegex).required(),
+        coinGeckoId: Joi.string().optional(),
+      }).required(),
+    );
+
+export const walletAddEthereumChainParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .items(
+      Joi.object<WalletAddEthereumChain['params'][0]>({
+        chainId: Joi.string().label('chainId').trim().required(),
+        chainName: Joi.string().label('chainName').trim().required(),
+        rpcUrls: Joi.array().label('rpcUrls').items(Joi.string().required()).required(),
+        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().allow('').optional()).optional(),
+        iconUrls: Joi.array().label('iconUrls').items(Joi.string().allow('').optional()).optional(),
+        nativeCurrency: Joi.object<WalletAddEthereumChain['params'][0]['nativeCurrency']>({
+          name: Joi.string().required(),
+          symbol: Joi.string().required(),
+          decimals: Joi.number().required(),
+        })
+          .label('nativeCurrency')
+          .unknown(true)
+          .required(),
+        coinGeckoId: Joi.string().optional(),
+      }).required(),
+      Joi.optional(),
+    )
+    .required();
+
+export const ethcAddNetworkParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<EthcAddNetwork['params'][0]>({
+        displayDenom: Joi.string().trim().required(),
+        chainId: Joi.string().trim().required(),
+        decimals: Joi.number().required(),
+        networkName: Joi.string().trim().required(),
+        rpcURL: Joi.string().trim().required(),
+        tokenImageURL: Joi.string().trim().optional(),
+        imageURL: Joi.string().trim().optional(),
+        explorerURL: Joi.string().trim().optional(),
+        coinGeckoId: Joi.string().trim().optional(),
+      }).required(),
+    );
+
+export const WalletWatchAssetParamsSchema = () =>
+  Joi.object<WalletWatchAsset['params']>({
+    type: Joi.string().valid(TOKEN_TYPE.ERC20),
+    options: Joi.object<WalletWatchAsset['params']['options']>({
+      address: Joi.string().pattern(ethereumAddressRegex).required(),
+      decimals: Joi.number().required(),
+      symbol: Joi.string().required(),
+      image: Joi.string().empty('').optional(),
+      coinGeckoId: Joi.string().empty('').optional(),
+    }),
+  }).required();
+
+export const ethSignTypedDataParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required());
+
+export const ethcSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
+    );
+
+export const walletSwitchEthereumChainParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<WalletSwitchEthereumChain['params'][0]>({
+        chainId: Joi.string()
+          .valid(...chainIds)
+          .required(),
+      }),
+    );
+
+export const suiConnectSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .valid(...suiPermissionType)
+        .required(),
+    );
+
+export const suiSignMessageSchema = () =>
+  Joi.object<SuiSignMessageInput>({
+    message: Joi.string().base64(),
+    accountAddress: Joi.string().pattern(suiAddressRegex).optional(),
+  }).required();
+
+export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
