@@ -33,9 +33,9 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = fals
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId: feeCoinId });
+  const { getAccountAsset } = useGetAccountAsset({ coinId: feeCoinId });
 
-  const feeCoin = getCosmosAccountAsset();
+  const feeCoin = getAccountAsset();
 
   const coinPrice = (feeCoin?.asset.coinGeckoId && coinGeckoPrice?.[feeCoin.asset.coinGeckoId]?.[currency]) || 0;
 
@@ -67,7 +67,7 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = fals
           <FeeCustomButton disabled={disableFee} onClick={onClickFee}>
             {displayFeeAmount ? (
               <EstimatedFeeTextContainer data-is-disabled={disableFee}>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={feeCoin?.asset.decimals} isDisableLeadingCurreny>
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={6} isDisableLeadingCurreny>
                   {displayFeeAmount}
                 </NumberTypo>
                 &nbsp;

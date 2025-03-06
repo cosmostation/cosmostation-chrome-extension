@@ -7,6 +7,7 @@ import { Route as CosmosAddChain } from '@/pages/popup/cosmos/addChain';
 import { Route as CosmosSignAmino } from '@/pages/popup/cosmos/sign/amino';
 import { Route as CosmosSignDirect } from '@/pages/popup/cosmos/sign/direct';
 import { Route as EVMSwitchChain } from '@/pages/popup/evm/switch-network';
+import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
@@ -80,6 +81,10 @@ const getNavigationPathForEvmRequest = (requestQueue: EvmRequest) => {
       return RequestAccount.to;
     case 'ethc_switchNetwork':
       return EVMSwitchChain.to;
+    case 'eth_signTransaction':
+      return EVMTransaction.to;
+    case 'eth_sendTransaction':
+      return EVMTransaction.to;
 
     default:
       return '';

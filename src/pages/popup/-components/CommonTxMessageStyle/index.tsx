@@ -30,6 +30,19 @@ export const AddressContainer = styled('div')({
   },
 });
 
+export const LongAmountContainer = styled('div')({
+  display: 'flex',
+
+  maxWidth: '20rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const MsgTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.accentColor.purple400,
 }));

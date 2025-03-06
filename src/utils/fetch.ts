@@ -15,7 +15,7 @@ export async function post<T>(URL: string, params: unknown) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Cosmostation: `extension/${String(process.env.VERSION)}`,
+      Cosmostation: `extension/${String(__APP_VERSION__)}`,
     },
     body: JSON.stringify(params),
   });
@@ -34,7 +34,7 @@ export async function get<T>(URL: string) {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Cosmostation: `extension/${String(process.env.VERSION)}`,
+      Cosmostation: `extension/${String(__APP_VERSION__)}`,
     },
   });
 

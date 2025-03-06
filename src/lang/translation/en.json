@@ -2149,6 +2149,86 @@
             "infoDescription": "Upon authorization, the website will be allowed to access addresses within this network",
             "reject": "Reject"
           }
+        },
+        "transaction": {
+          "components": {
+            "TxMessage": {
+              "messages": {
+                "Send": {
+                  "index": {
+                    "sendAmount": "Send Amount",
+                    "from": "From Address",
+                    "to": "To Address"
+                  }
+                },
+                "Approve": {
+                  "index": {
+                    "grantAmount": "Grant Amount",
+                    "grantedAddress": "Granted Address",
+                    "tokenAddress": "Token Contract"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "Data"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "Contract",
+                    "data": "Data"
+                  }
+                },
+                "NFT": {
+                  "ERC1155": {
+                    "SafeTransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract",
+                        "from": "From Address",
+                        "to": "To Address"
+                      }
+                    }
+                  },
+                  "ERC721": {
+                    "TransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract",
+                        "from": "From Address",
+                        "to": "To Address"
+                      }
+                    }
+                  }
+                },
+                "OneInchSwap": {
+                  "index": {
+                    "contractAddress": "Contract",
+                    "data": "Data"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "sendAmount": "Send Amount",
+                    "from": "From Address",
+                    "to": "To Address",
+                    "contractAddress": "Contract"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "sendAmount": "Send Amount",
+                    "from": "From Address",
+                    "to": "To Address",
+                    "contractAddress": "Contract"
+                  }
+                }
+              }
+            }
+          },
+          "entry": {
+            "insufficientBalance": "Insufficient balance",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
         }
       }
     },

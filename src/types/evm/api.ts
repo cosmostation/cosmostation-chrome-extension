@@ -29,3 +29,5 @@ export interface EvmGasPriceResponse extends EvmRpc<string> {}
 export interface EvmEstimateGasResponse extends EvmRpc<string> {}
 
 export interface EvmTxInfoResponse extends EvmRpc<TransactionReceipt> {}
+
+export interface EvmTransactionCountResponse extends EvmRpc<string> {}

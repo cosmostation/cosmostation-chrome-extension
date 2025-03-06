@@ -24,6 +24,22 @@ export async function signAndExecuteTxSequentially(privateKey: string, transacti
   throw new Error('All RPC URLs failed');
 }
 
+export async function signTxSequentially(privateKey: string, transaction: TransactionRequest, urls: string[]) {
+  for (const url of urls) {
+    try {
+      const provider = ethersProvider(url);
+
+      const signer = new ethers.Wallet(privateKey, provider);
+
+      const response = await signer.signTransaction(transaction);
+
+      return response;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+    } catch (_) {}
+  }
+  throw new Error('All RPC URLs failed');
+}
+
 export function signTypedData<T extends MessageTypes>(
   privateKey: Buffer,
   data: CustomTypedMessage<T>,

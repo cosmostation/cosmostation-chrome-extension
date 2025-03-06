@@ -41,6 +41,7 @@ import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coi
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
+import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/transaction/index'
 import { Route as PopupEvmSwitchNetworkIndexImport } from './pages/popup/evm/switch-network/index'
 import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/addChain/index'
 import { Route as PopupCosmosAddTokenIndexImport } from './pages/popup/cosmos/add-token/index'
@@ -261,6 +262,12 @@ const WalletClaimAllRewardsCoinIdIndexRoute =
     path: '/wallet/claim-all-rewards/$coinId/',
     getParentRoute: () => rootRoute,
   } as any)
+
+const PopupEvmTransactionIndexRoute = PopupEvmTransactionIndexImport.update({
+  id: '/popup/evm/transaction/',
+  path: '/popup/evm/transaction/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const PopupEvmSwitchNetworkIndexRoute = PopupEvmSwitchNetworkIndexImport.update(
   {
@@ -741,6 +748,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupEvmSwitchNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/evm/transaction/': {
+      id: '/popup/evm/transaction/'
+      path: '/popup/evm/transaction'
+      fullPath: '/popup/evm/transaction'
+      preLoaderRoute: typeof PopupEvmTransactionIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/claim-all-rewards/$coinId/': {
       id: '/wallet/claim-all-rewards/$coinId/'
       path: '/wallet/claim-all-rewards/$coinId'
@@ -926,6 +940,7 @@ export interface FileRoutesByFullPath {
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
   '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
+  '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
@@ -988,6 +1003,7 @@ export interface FileRoutesByTo {
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
   '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
+  '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
@@ -1051,6 +1067,7 @@ export interface FileRoutesById {
   '/popup/cosmos/add-token/': typeof PopupCosmosAddTokenIndexRoute
   '/popup/cosmos/addChain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network/': typeof PopupEvmSwitchNetworkIndexRoute
+  '/popup/evm/transaction/': typeof PopupEvmTransactionIndexRoute
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
@@ -1115,6 +1132,7 @@ export interface FileRouteTypes {
     | '/popup/cosmos/add-token'
     | '/popup/cosmos/addChain'
     | '/popup/evm/switch-network'
+    | '/popup/evm/transaction'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
@@ -1176,6 +1194,7 @@ export interface FileRouteTypes {
     | '/popup/cosmos/add-token'
     | '/popup/cosmos/addChain'
     | '/popup/evm/switch-network'
+    | '/popup/evm/transaction'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
@@ -1237,6 +1256,7 @@ export interface FileRouteTypes {
     | '/popup/cosmos/add-token/'
     | '/popup/cosmos/addChain/'
     | '/popup/evm/switch-network/'
+    | '/popup/evm/transaction/'
     | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
@@ -1300,6 +1320,7 @@ export interface RootRouteChildren {
   PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
   PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
   PopupEvmSwitchNetworkIndexRoute: typeof PopupEvmSwitchNetworkIndexRoute
+  PopupEvmTransactionIndexRoute: typeof PopupEvmTransactionIndexRoute
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
@@ -1372,6 +1393,7 @@ const rootRouteChildren: RootRouteChildren = {
   PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
   PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
   PopupEvmSwitchNetworkIndexRoute: PopupEvmSwitchNetworkIndexRoute,
+  PopupEvmTransactionIndexRoute: PopupEvmTransactionIndexRoute,
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
@@ -1456,6 +1478,7 @@ export const routeTree = rootRoute
         "/popup/cosmos/add-token/",
         "/popup/cosmos/addChain/",
         "/popup/evm/switch-network/",
+        "/popup/evm/transaction/",
         "/wallet/claim-all-rewards/$coinId/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
@@ -1594,6 +1617,9 @@ export const routeTree = rootRoute
     },
     "/popup/evm/switch-network/": {
       "filePath": "popup/evm/switch-network/index.tsx"
+    },
+    "/popup/evm/transaction/": {
+      "filePath": "popup/evm/transaction/index.tsx"
     },
     "/wallet/claim-all-rewards/$coinId/": {
       "filePath": "wallet/claim-all-rewards/$coinId/index.tsx"

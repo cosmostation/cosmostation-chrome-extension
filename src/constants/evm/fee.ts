@@ -1,5 +1,7 @@
 export const DEFAULT_GAS_MULTIPLY = 1.3;
 
+export const EVM_DEFAULT_GAS = '21000';
+
 export const FEE_TYPE = {
   BASIC: 'BASIC',
   EIP_1559: 'EIP-1559',

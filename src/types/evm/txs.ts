@@ -1,3 +1,7 @@
+import type { TransactionDescription } from 'ethers/abi';
+
+import type { EthereumContractKind, EthereumTxType } from './common';
+
 export interface AccountTxsPayload {
   txs?: AccountTx[];
   search_after?: string;
@@ -41,3 +45,10 @@ export interface EthereumTx {
   r?: string | number;
   s?: string | number;
 }
+
+export type DetermineTxType = {
+  type: EthereumTxType;
+  txDescription: TransactionDescription | null;
+  contractKind?: EthereumContractKind;
+  getCodeResponse: string | null;
+};
