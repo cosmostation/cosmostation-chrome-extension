@@ -5,6 +5,8 @@ export const Container = styled('div')({
   padding: '1.6rem 1.2rem 1.2rem',
   display: 'flex',
   justifyContent: 'flex-start',
+
+  boxSizing: 'border-box',
 });
 
 export const TextContainer = styled('div')(({ theme }) => ({

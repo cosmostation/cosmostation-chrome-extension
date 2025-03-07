@@ -219,7 +219,7 @@ export async function suiProcess(message: SuiRequest) {
           },
         });
       } else if (method === 'sui_getChain') {
-        const getChainResult = currentSuiNetwork.id === 'sui' ? 'mainnet' : 'testnet';
+        const getChainResult = currentSuiNetwork.isTestnet ? 'testnet' : currentSuiNetwork.isDevnet ? 'devnet' : 'mainnet';
 
         await sendMessage<ResponseAppMessage<SuiRequestChain>>({
           target: 'CONTENT',

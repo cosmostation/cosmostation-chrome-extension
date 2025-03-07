@@ -9,6 +9,8 @@ import { Route as CosmosSignDirect } from '@/pages/popup/cosmos/sign/direct';
 import { Route as EVMSwitchChain } from '@/pages/popup/evm/switch-network';
 import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
+import { Route as SuiSignMessage } from '@/pages/popup/sui/sign-message';
+import { Route as SuiTransaction } from '@/pages/popup/sui/transaction';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
 import type { SuiRequest } from '@/types/message/inject/sui';
@@ -97,6 +99,18 @@ const getNavigationPathForSuiRequest = (requestQueue: SuiRequest) => {
       return RequestAccount.to;
     case 'sui_getAccount':
       return RequestAccount.to;
+    case 'sui_signTransaction':
+      return SuiTransaction.to;
+    case 'sui_signAndExecuteTransaction':
+      return SuiTransaction.to;
+    case 'sui_signTransactionBlock':
+      return SuiTransaction.to;
+    case 'sui_signAndExecuteTransactionBlock':
+      return SuiTransaction.to;
+    case 'sui_signMessage':
+      return SuiSignMessage.to;
+    case 'sui_signPersonalMessage':
+      return SuiSignMessage.to;
 
     default:
       return '';

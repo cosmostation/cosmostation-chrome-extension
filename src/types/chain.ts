@@ -117,6 +117,8 @@ export interface SuiChain extends ChainBase {
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
+  isTestnet?: boolean;
+  isDevnet?: boolean;
 }
 
 export interface AptosChain extends ChainBase {
