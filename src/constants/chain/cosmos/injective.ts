@@ -30,4 +30,5 @@ export const INJECTIVE: CosmosChain = {
     average: '600000000',
   },
   gas: { send: '150000' },
+  cosmWasm: true,
 };
