@@ -20,7 +20,12 @@ export default defineConfig(({ mode }) => {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __APP_MODE__: JSON.stringify(mode),
     },
-    plugins: [tsconfigPaths({ configNames: ['tsconfig.app.json'] }), nodePolyfills()],
+    plugins: [
+      tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
+      nodePolyfills({
+        include: ['stream', 'assert', 'os', 'url', 'http', 'https', 'crypto'],
+      }),
+    ],
     build: {
       outDir,
       emptyOutDir: false,
