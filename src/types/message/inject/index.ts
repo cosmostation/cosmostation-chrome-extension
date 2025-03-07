@@ -8,7 +8,6 @@ import type { SuiRequest, SuiResponse } from './sui';
 export type RequestChainType = ChainType | CommonChainType;
 
 export interface RequestBase {
-  id?: string | number;
   requestId: string;
   chainType: RequestChainType;
   origin: string;

@@ -28,7 +28,7 @@ export default function Entry() {
       try {
         // FIXME 락걸린 상태에서 + 오리진 없는 경우에서 계정 연결 요청 완료 후 팝업 내리는 시간이 오래걸림.
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
-          const { tabId, requestId, origin, params, id } = currentRequestQueue;
+          const { tabId, requestId, origin, params } = currentRequestQueue;
 
           const allCosmosChains = [...(chainList.cosmosChains || []), ...chainList.customCosmosChains];
 
@@ -59,7 +59,7 @@ export default function Entry() {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -69,7 +69,7 @@ export default function Entry() {
         }
 
         if ((currentRequestQueue?.method === 'eth_requestAccounts' || currentRequestQueue?.method === 'wallet_requestPermissions') && currentPassword) {
-          const { tabId, requestId, origin, id } = currentRequestQueue;
+          const { tabId, requestId, origin } = currentRequestQueue;
           const evmChains = (await getChains()).evmChains;
           const evmChain = evmChains?.find((item) => item.chainId === '0x1') || evmChains?.[0];
 
@@ -86,7 +86,7 @@ export default function Entry() {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -100,7 +100,7 @@ export default function Entry() {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]),
               },
             });
@@ -110,7 +110,7 @@ export default function Entry() {
         }
 
         if (currentRequestQueue?.method === 'sui_connect') {
-          const { tabId, requestId, origin, id } = currentRequestQueue;
+          const { tabId, requestId, origin } = currentRequestQueue;
 
           const result: SuiRequestConnectResponse = null;
 
@@ -121,7 +121,7 @@ export default function Entry() {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -129,7 +129,7 @@ export default function Entry() {
         }
 
         if (currentRequestQueue?.method === 'sui_getAccount' && currentPassword) {
-          const { tabId, requestId, origin, id } = currentRequestQueue;
+          const { tabId, requestId, origin } = currentRequestQueue;
           const suiChains = (await getChains()).suiChains;
           const suiChain = suiChains?.find((item) => item.id === 'sui') || suiChains?.[0];
 
@@ -151,14 +151,14 @@ export default function Entry() {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
 
             void deQueue();
           } else {
-            const { tabId, requestId, origin, id } = currentRequestQueue;
+            const { tabId, requestId, origin } = currentRequestQueue;
 
             sendMessage<ResponseAppMessage<SuiRequestAccount>>({
               target: 'CONTENT',
@@ -167,8 +167,8 @@ export default function Entry() {
               requestId,
               tabId,
               params: {
-                id,
-                error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], id),
+                id: requestId,
+                error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
               },
             });
 

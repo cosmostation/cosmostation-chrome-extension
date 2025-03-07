@@ -25,9 +25,7 @@ import { requestRPC as suiRequestRPC } from '@/utils/sui/rpc';
 import { suiConnectSchema, suiSignMessageSchema } from './schema';
 
 export async function suiProcess(message: SuiRequest) {
-  console.log('🚀 ~ suiProcess ~ message:', message);
-
-  const { method, requestId, tabId, id, origin } = message;
+  const { method, requestId, tabId, origin } = message;
 
   const { suiChains } = await getChains();
 
@@ -48,7 +46,7 @@ export async function suiProcess(message: SuiRequest) {
 
   try {
     if (!message?.method || !suiMethods.includes(message.method)) {
-      throw new SuiRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message?.id);
+      throw new SuiRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
     }
 
     if (suiPopupMethods.includes(method)) {
@@ -70,7 +68,7 @@ export async function suiProcess(message: SuiRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -82,7 +80,7 @@ export async function suiProcess(message: SuiRequest) {
             throw e;
           }
 
-          throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, requestId);
         }
       }
 
@@ -92,8 +90,6 @@ export async function suiProcess(message: SuiRequest) {
             if (currentPassword) {
               const keyPair = getKeypair(suiChain, currentAccount, currentPassword);
               const address = getAddress(suiChain, keyPair?.publicKey);
-
-              console.log('🚀 ~ suiProcess ~ address:', address);
 
               const publicKey = `0x${keyPair?.publicKey || ''}`;
 
@@ -109,7 +105,7 @@ export async function suiProcess(message: SuiRequest) {
                 requestId,
                 tabId,
                 params: {
-                  id,
+                  id: requestId,
                   result,
                 },
               });
@@ -117,14 +113,14 @@ export async function suiProcess(message: SuiRequest) {
               await processRequest({ ...message });
             }
           } else {
-            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], requestId);
           }
         } catch (e) {
           if (e instanceof SuiRPCError) {
             throw e;
           }
 
-          throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, requestId);
         }
       }
 
@@ -142,7 +138,7 @@ export async function suiProcess(message: SuiRequest) {
             const address = getAddress(suiChain, keyPair?.publicKey);
 
             if (!isEqualsIgnoringCase(address, params.accountAddress)) {
-              throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', id);
+              throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', requestId);
             }
 
             const schema = suiSignMessageSchema();
@@ -151,14 +147,14 @@ export async function suiProcess(message: SuiRequest) {
 
             void processRequest({ ...message, method: method, params: validatedParams });
           } else {
-            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], requestId);
           }
         } catch (e) {
           if (e instanceof SuiRPCError) {
             throw e;
           }
 
-          throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, requestId);
         }
       }
 
@@ -170,7 +166,7 @@ export async function suiProcess(message: SuiRequest) {
         ) {
           void processRequest({ ...message, method: method });
         } else {
-          throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+          throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], requestId);
         }
       }
 
@@ -182,7 +178,7 @@ export async function suiProcess(message: SuiRequest) {
         ) {
           void processRequest({ ...message, method: method });
         } else {
-          throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+          throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], requestId);
         }
       }
     } else if (suiNoPopupMethods.includes(method)) {
@@ -194,7 +190,7 @@ export async function suiProcess(message: SuiRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: currentAccountSuiPermissions,
           },
         });
@@ -214,7 +210,7 @@ export async function suiProcess(message: SuiRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result,
           },
         });
@@ -228,14 +224,14 @@ export async function suiProcess(message: SuiRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: getChainResult,
           },
         });
       } else {
         const { params } = message;
 
-        const response = await suiRequestRPC<SuiRpc<unknown>>(method, params, id);
+        const response = await suiRequestRPC<SuiRpc<unknown>>(method, params, requestId);
 
         sendMessage({
           target: 'CONTENT',
@@ -244,13 +240,13 @@ export async function suiProcess(message: SuiRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: response.result,
           },
         });
       }
     } else {
-      throw new SuiRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.id);
+      throw new SuiRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.requestId);
     }
   } catch (e) {
     if (e instanceof SuiRPCError) {
@@ -261,7 +257,7 @@ export async function suiProcess(message: SuiRequest) {
         requestId,
         tabId,
         params: {
-          id,
+          id: requestId,
           error: e.rpcMessage.error,
         },
       });
@@ -275,7 +271,7 @@ export async function suiProcess(message: SuiRequest) {
       requestId,
       tabId,
       params: {
-        id,
+        id: requestId,
         error: {
           code: RPC_ERROR.INTERNAL,
           message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,

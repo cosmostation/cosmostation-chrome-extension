@@ -57,7 +57,7 @@ import {
 } from './schema';
 
 export async function cosmosProcess(message: CosmosRequest) {
-  const { method, requestId, tabId, id, origin } = message;
+  const { method, requestId, tabId, origin } = message;
 
   // FIXME kava같은 경우에 459할수도 60할수도 있으니까 preferAccountType별로 필터링해야함.
   const { cosmosChains } = await getChains();
@@ -120,7 +120,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -204,7 +204,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result: true,
             },
           });
@@ -362,7 +362,7 @@ export async function cosmosProcess(message: CosmosRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: { official: offcial, unofficial: unofficial },
           },
         });
@@ -382,7 +382,7 @@ export async function cosmosProcess(message: CosmosRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: response,
           },
         });
@@ -398,7 +398,7 @@ export async function cosmosProcess(message: CosmosRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: response,
           },
         });
@@ -414,7 +414,7 @@ export async function cosmosProcess(message: CosmosRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result: response,
           },
         });
@@ -454,7 +454,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -505,7 +505,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result: response,
             },
           });
@@ -518,7 +518,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
@@ -534,7 +534,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
@@ -586,7 +586,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result: amount,
             },
           });
@@ -599,7 +599,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
@@ -615,7 +615,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
@@ -667,7 +667,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -680,7 +680,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
@@ -696,7 +696,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
@@ -745,7 +745,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -759,7 +759,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -780,7 +780,7 @@ export async function cosmosProcess(message: CosmosRequest) {
           requestId,
           tabId,
           params: {
-            id,
+            id: requestId,
             result,
           },
         });
@@ -797,7 +797,7 @@ export async function cosmosProcess(message: CosmosRequest) {
         requestId,
         tabId,
         params: {
-          id,
+          id: requestId,
           error: e.rpcMessage.error,
         },
       });
@@ -811,7 +811,7 @@ export async function cosmosProcess(message: CosmosRequest) {
       requestId,
       tabId,
       params: {
-        id,
+        id: requestId,
         error: {
           code: RPC_ERROR.INTERNAL,
           message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,

@@ -20,6 +20,7 @@ import type {
   EthcSwitchNetworkResponse,
   EthRequestAccounts,
   EthRequestAccountsResponse,
+  EthRequestChainId,
   EthSign,
   EthSignTransaction,
   EthSignTypedData,
@@ -52,7 +53,7 @@ import {
 } from './schema';
 
 export async function evmProcess(message: EvmRequest) {
-  const { method, requestId, tabId, id, origin } = message;
+  const { method, requestId, tabId, origin } = message;
 
   const { evmChains } = await getChains();
 
@@ -73,7 +74,7 @@ export async function evmProcess(message: EvmRequest) {
 
   try {
     if (!message?.method || !ethereumMethods.includes(message.method)) {
-      throw new EthereumRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message?.id);
+      throw new EthereumRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
     }
 
     if (ethereumMethods.includes(message.method)) {
@@ -90,7 +91,7 @@ export async function evmProcess(message: EvmRequest) {
             const address = getAddress(evmChain, keyPair?.publicKey);
 
             if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
-              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
             }
           }
 
@@ -103,7 +104,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -120,7 +121,7 @@ export async function evmProcess(message: EvmRequest) {
             const address = getAddress(evmChain, keyPair?.publicKey);
 
             if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
-              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
             }
           }
 
@@ -132,7 +133,7 @@ export async function evmProcess(message: EvmRequest) {
             const chainId = param2?.domain?.chainId;
 
             if (chainId && toHex(chainId, { addPrefix: true, isStringNumber: true }) !== currentNetwork.chainId) {
-              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid chainId', message.id);
+              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid chainId', message.requestId);
             }
 
             const version = method === 'eth_signTypedData_v3' ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
@@ -143,7 +144,7 @@ export async function evmProcess(message: EvmRequest) {
               throw err;
             }
 
-            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid data', message.id);
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid data', message.requestId);
           }
 
           void processRequest({
@@ -155,7 +156,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -173,7 +174,7 @@ export async function evmProcess(message: EvmRequest) {
               const updatedParams = params.some((item, index) => isEqualsIgnoringCase(item, address) && index !== 1) ? [params[1], params[0]] : params;
 
               if (address.toLowerCase() !== updatedParams[1].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
               }
 
               return updatedParams;
@@ -192,7 +193,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -209,7 +210,7 @@ export async function evmProcess(message: EvmRequest) {
             const address = getAddress(evmChain, keyPair?.publicKey);
 
             if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
-              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
             }
           }
 
@@ -228,7 +229,7 @@ export async function evmProcess(message: EvmRequest) {
               ? validatedParams[0].gas
               : await Promise.any(providers.map((provider) => provider.estimateGas(tx).then((gasLimit) => gasLimit.toString())));
           } catch (e) {
-            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.id);
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.requestId);
           }
 
           void processRequest({
@@ -240,7 +241,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -258,7 +259,7 @@ export async function evmProcess(message: EvmRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result,
             },
           });
@@ -275,19 +276,19 @@ export async function evmProcess(message: EvmRequest) {
         try {
           const validatedParams = (await schema.validateAsync(params)) as EthcAddNetwork['params'];
 
-          const response = await ethereumRequestRPC<EvmRpc<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
+          const response = await ethereumRequestRPC<EvmRpc<string>>('eth_chainId', [], message.requestId, validatedParams[0].rpcURL);
 
           if (validatedParams[0].chainId !== response.result) {
             throw new EthereumRPCError(
               RPC_ERROR.INVALID_PARAMS,
               `Chain ID returned by RPC URL ${validatedParams[0].rpcURL} does not match ${validatedParams[0].chainId}`,
-              message.id,
+              message.requestId,
               { chainId: response.result },
             );
           }
 
           if (allEVMChainIds.includes(validatedParams[0].chainId)) {
-            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.id, { chainId: response.result });
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.requestId, { chainId: response.result });
           }
 
           void processRequest({
@@ -299,7 +300,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -323,7 +324,7 @@ export async function evmProcess(message: EvmRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -340,7 +341,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -361,7 +362,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -407,7 +408,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -419,13 +420,13 @@ export async function evmProcess(message: EvmRequest) {
         try {
           const validatedParams = (await schema.validateAsync(params)) as WalletAddEthereumChain['params'];
 
-          const response = await ethereumRequestRPC<EvmRpc<string>>('eth_chainId', [], message.id, validatedParams[0].rpcUrls[0]);
+          const response = await ethereumRequestRPC<EvmRpc<string>>('eth_chainId', [], message.requestId, validatedParams[0].rpcUrls[0]);
 
           if (validatedParams[0].chainId !== response.result) {
             throw new EthereumRPCError(
               RPC_ERROR.UNRECOGNIZED_CHAIN,
               `Chain ID returned by RPC URL ${validatedParams[0].rpcUrls[0]} does not match ${validatedParams[0].chainId}`,
-              message.id,
+              message.requestId,
               { chainId: response.result },
             );
           }
@@ -463,7 +464,7 @@ export async function evmProcess(message: EvmRequest) {
             throw err;
           }
 
-          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+          throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.requestId);
         }
       }
 
@@ -480,26 +481,26 @@ export async function evmProcess(message: EvmRequest) {
           if (validatedParams[0].chainId === currentEthereumNetwork.chainId) {
             const result: WalletSwitchEthereumChainResponse = null;
 
-            sendMessage({
+            sendMessage<ResponseAppMessage<WalletSwitchEthereumChain>>({
               target: 'CONTENT',
               method: 'responseApp',
               origin,
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
 
             return;
+          } else {
+            void processRequest({
+              ...message,
+              method: 'ethc_switchNetwork',
+              params: [validatedParams[0].chainId] as EthcSwitchNetwork['params'],
+            });
           }
-
-          void processRequest({
-            ...message,
-            method: 'ethc_switchNetwork',
-            params: [validatedParams[0].chainId] as EthcSwitchNetwork['params'],
-          });
         } catch (err) {
           if (err instanceof EthereumRPCError) {
             throw err;
@@ -508,7 +509,7 @@ export async function evmProcess(message: EvmRequest) {
           throw new EthereumRPCError(
             RPC_ERROR.UNRECOGNIZED_CHAIN,
             `Unrecognized chain ID ${params?.[0]?.chainId}. Try adding the chain using wallet_addEthereumChain first.`,
-            message.id,
+            message.requestId,
           );
         }
       }
@@ -527,7 +528,7 @@ export async function evmProcess(message: EvmRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -541,7 +542,7 @@ export async function evmProcess(message: EvmRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -560,7 +561,7 @@ export async function evmProcess(message: EvmRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -574,7 +575,7 @@ export async function evmProcess(message: EvmRequest) {
               requestId,
               tabId,
               params: {
-                id,
+                id: requestId,
                 result,
               },
             });
@@ -587,26 +588,26 @@ export async function evmProcess(message: EvmRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result: [],
             },
           });
         } else if (method === 'eth_chainId') {
-          sendMessage({
+          sendMessage<ResponseAppMessage<EthRequestChainId>>({
             target: 'CONTENT',
             method: 'responseApp',
             origin,
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result: currentEthereumNetwork.chainId,
             },
           });
         } else {
           const params = method === EVM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
-          const response = await ethereumRequestRPC<EvmRpc<unknown>>(method, params, id);
+          const response = await ethereumRequestRPC<EvmRpc<unknown>>(method, params, requestId);
 
           sendMessage({
             target: 'CONTENT',
@@ -615,14 +616,14 @@ export async function evmProcess(message: EvmRequest) {
             requestId,
             tabId,
             params: {
-              id,
+              id: requestId,
               result: response.result,
             },
           });
         }
       }
     } else {
-      throw new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.id);
+      throw new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.requestId);
     }
   } catch (e) {
     if (e instanceof EthereumRPCError) {
@@ -633,7 +634,7 @@ export async function evmProcess(message: EvmRequest) {
         requestId,
         tabId,
         params: {
-          id,
+          id: requestId,
           error: e.rpcMessage.error,
         },
       });
@@ -647,7 +648,7 @@ export async function evmProcess(message: EvmRequest) {
       requestId,
       tabId,
       params: {
-        id,
+        id: requestId,
         error: {
           code: RPC_ERROR.INTERNAL,
           message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,

@@ -128,7 +128,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
                       requestId: currentRequestQueue.requestId,
                       tabId: currentRequestQueue.tabId,
                       params: {
-                        id: currentRequestQueue.id,
+                        id: currentRequestQueue.requestId,
                         error: {
                           code: RPC_ERROR.USER_REJECTED_REQUEST,
                           message: `${RPC_ERROR_MESSAGE[RPC_ERROR.USER_REJECTED_REQUEST]}`,

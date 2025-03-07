@@ -366,7 +366,7 @@ export default function Entry({ request }: EntryProps) {
           requestId: request.requestId,
           tabId: request.tabId,
           params: {
-            id: request.id,
+            id: request.requestId,
             result,
           },
         });
@@ -383,7 +383,7 @@ export default function Entry({ request }: EntryProps) {
           requestId: request.requestId,
           tabId: request.tabId,
           params: {
-            id: request.id,
+            id: request.requestId,
             result,
           },
         });
@@ -396,7 +396,7 @@ export default function Entry({ request }: EntryProps) {
         requestId: request.requestId,
         tabId: request.tabId,
         params: {
-          id: request.id,
+          id: request.requestId,
           error: {
             code: RPC_ERROR.INVALID_INPUT,
             message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]}`,
@@ -422,7 +422,7 @@ export default function Entry({ request }: EntryProps) {
           requestId: request.requestId,
           tabId: request.tabId,
           params: {
-            id: request.id,
+            id: request.requestId,
             error: {
               code: RPC_ERROR.INVALID_PARAMS,
               message: `Invalid address`,
@@ -486,7 +486,7 @@ export default function Entry({ request }: EntryProps) {
                   requestId: request.requestId,
                   tabId: request.tabId,
                   params: {
-                    id: request.id,
+                    id: request.requestId,
                     error: {
                       code: RPC_ERROR.USER_REJECTED_REQUEST,
                       message: `${RPC_ERROR_MESSAGE[RPC_ERROR.USER_REJECTED_REQUEST]}`,
