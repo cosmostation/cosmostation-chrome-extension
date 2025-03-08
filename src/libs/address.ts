@@ -96,6 +96,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
 
 export function getAddress(chain: Chain, publicKey: string) {
   const { chainType, accountTypes } = chain;
+  // FIXME 이 부분 getAccounts류 디앱 요청에서 에러날 가능성 있음.
   const accountType = accountTypes[0];
   if (chainType === 'cosmos') {
     const { accountPrefix } = chain;

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as Initial } from '@/pages/account/initial';
+import { Route as BitcoinSwitchChain } from '@/pages/popup/bitcoin/switch-network';
 import { Route as CosmosAddToken } from '@/pages/popup/cosmos/add-token';
 import { Route as CosmosAddChain } from '@/pages/popup/cosmos/addChain';
 import { Route as CosmosSignAmino } from '@/pages/popup/cosmos/sign/amino';
@@ -11,6 +12,7 @@ import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
 import { Route as SuiSignMessage } from '@/pages/popup/sui/sign-message';
 import { Route as SuiTransaction } from '@/pages/popup/sui/transaction';
+import type { BitcoinRequest } from '@/types/message/inject/bitcoin';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
 import type { SuiRequest } from '@/types/message/inject/sui';
@@ -48,6 +50,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         if (requestQueue[0].chainType === 'sui') {
           navigate({
             to: getNavigationPathForSuiRequest(requestQueue[0]),
+          });
+        }
+        if (requestQueue[0].chainType === 'bitcoin') {
+          navigate({
+            to: getNavigationPathForBitcoinRequest(requestQueue[0]),
           });
         }
       }
@@ -111,6 +118,18 @@ const getNavigationPathForSuiRequest = (requestQueue: SuiRequest) => {
       return SuiSignMessage.to;
     case 'sui_signPersonalMessage':
       return SuiSignMessage.to;
+
+    default:
+      return '';
+  }
+};
+
+const getNavigationPathForBitcoinRequest = (requestQueue: BitcoinRequest) => {
+  switch (requestQueue.method) {
+    case 'bit_requestAccount':
+      return RequestAccount.to;
+    case 'bitc_switchNetwork':
+      return BitcoinSwitchChain.to;
 
     default:
       return '';

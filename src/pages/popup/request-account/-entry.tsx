@@ -10,10 +10,12 @@ import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
 import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
+import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
 import type { CosRequestAccount, CosRequestAccountResponse } from '@/types/message/inject/cosmos';
 import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
 import { EthereumRPCError, SuiRPCError } from '@/utils/error';
+import { extensionLocalStorage } from '@/utils/storage';
 import { addHexPrefix } from '@/utils/string';
 
 export default function Entry() {
@@ -169,6 +171,33 @@ export default function Entry() {
               params: {
                 id: requestId,
                 error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+              },
+            });
+
+            void deQueue();
+          }
+        }
+
+        if (currentRequestQueue?.method === 'bit_requestAccount' && currentPassword) {
+          const { tabId, requestId, origin } = currentRequestQueue;
+
+          const { currentBitcoinNetwork } = await extensionLocalStorage();
+
+          if (currentBitcoinNetwork) {
+            const keyPair = getKeypair(currentBitcoinNetwork, currentAccount, currentPassword);
+            const address = getAddress(currentBitcoinNetwork, keyPair?.publicKey);
+
+            const result = [address];
+
+            sendMessage<ResponseAppMessage<BitRequestAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
               },
             });
 

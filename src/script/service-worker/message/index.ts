@@ -1,5 +1,6 @@
 import type { Request } from '@/types/message/inject';
 
+import { bitcoinProcess } from './bitcoin';
 import { commonProcess } from './common';
 import { cosmosProcess } from './cosmos';
 import { evmProcess } from './evm';
@@ -20,6 +21,9 @@ export async function process(message: Request) {
     }
     if (message.chainType === 'sui') {
       await suiProcess(message);
+    }
+    if (message.chainType === 'bitcoin') {
+      await bitcoinProcess(message);
     }
   } catch (e) {
     console.log('process error', e);

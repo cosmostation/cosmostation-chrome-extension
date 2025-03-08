@@ -8,9 +8,19 @@ import type {
   SuiSignTransactionInput,
 } from '@mysten/wallet-standard';
 
+import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedSuiPermissionType } from '@/types/extension';
-import type { EthereumListenerType, SuiListenerType } from '@/types/message';
+import type { BitcoinListenerType, EthereumListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
+import type {
+  BitGetAddressResponse,
+  BitGetBalanceResponse,
+  BitRequestAccountResponse,
+  BitSendBitcoinResponse,
+  BitSignPsbtResposne,
+  BitSignPsbtsResposne,
+  BitSignPsbtsResposne,
+} from '@/types/message/inject/bitcoin';
 import type { CommonRequest } from '@/types/message/inject/common';
 import type {
   SuiRequestDisconnectResponse,
@@ -94,6 +104,27 @@ declare global {
     networkVersion?: string;
   }
 
+  interface BitcoinProvider {
+    connectWallet: () => Promise<BitRequestAccountResponse>;
+    getWalletProviderName: () => Promise<string>;
+    getWalletProviderIcon: () => Promise<string>;
+    getAddress: () => Promise<BitGetAddressResponse>;
+    getAccounts: () => Promise<string[]>;
+    getBalance: () => Promise<BitGetBalanceResponse>;
+    getPublicKey: () => Promise<string>;
+    getPublicKeyHex: () => Promise<string>;
+    signPsbt: (psbtHex: string) => Promise<BitSignPsbtResposne>;
+    signPsbts: (psbtHexs: string[]) => Promise<BitSignPsbtsResposne>;
+    getNetwork: () => Promise<Network>;
+    signMessage: (message: string, type?: 'ecdsa' | 'bip322-simple') => Promise<string>;
+    signMessageBIP322: (message: string) => Promise<string>;
+    switchNetwork: (network: Network) => Promise<Network>;
+    sendBitcoin: (to: string, satAmount: number) => Promise<BitSendBitcoinResponse>;
+    pushTx: (txHex: string) => Promise<string>;
+    on: (eventName: BitcoinListenerType, callBack: () => void) => void;
+    off: (eventName: BitcoinListenerType, callBack: () => void) => void;
+  }
+
   interface Window {
     customProperty: boolean;
 
@@ -106,6 +137,7 @@ declare global {
       cosmos: CosmosProvider;
       ethereum: EthereumProvider;
       sui: SuiProvider;
+      bitcoin: BitcoinProvider;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;

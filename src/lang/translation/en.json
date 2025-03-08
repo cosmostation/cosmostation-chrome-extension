@@ -2262,6 +2262,16 @@
             "sign": "Sign"
           }
         }
+      },
+      "bitcoin": {
+        "switch-network": {
+          "entry": {
+            "switchNetwork": "Switch Network",
+            "infoTitle": "Authorize Network Access",
+            "infoDescription": "Upon authorization, the website will be allowed to access addresses within this network",
+            "reject": "Reject"
+          }
+        }
       }
     },
     "coin-overview": {

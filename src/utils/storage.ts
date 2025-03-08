@@ -456,6 +456,7 @@ export async function extensionLocalStorage() {
     selectedAccountId,
     accountNamesById,
     approvedOrigins,
+    preferAccountType,
     chosenAptosNetworkId,
     chosenSuiNetworkId,
     chosenBitcoinNetworkId,
@@ -497,7 +498,15 @@ export async function extensionLocalStorage() {
 
     const networkId = chosenBitcoinNetworkId ?? getUniqueChainId(bitcoinNetworks[0]);
 
-    return bitcoinNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? bitcoinNetworks[0];
+    const network = bitcoinNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? bitcoinNetworks[0];
+
+    const inAppSelectedPubkeyStyle = preferAccountType[currentAccount.id][network.id].pubkeyStyle;
+
+    const response = produce(network, (draft) => {
+      draft.accountTypes = draft.accountTypes.filter((item) => item.pubkeyStyle === inAppSelectedPubkeyStyle);
+    });
+
+    return response;
   })();
 
   const currentAccountAllowedOrigins = approvedOrigins

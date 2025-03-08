@@ -2,6 +2,7 @@ import { registerWallet } from '@mysten/wallet-standard';
 
 import type { ComProvidersResponse } from '@/types/message/inject/common';
 
+import { CosmostationBitcoin } from './bitcoin/provider/bitcoin';
 import { commonProvider } from './common/provider';
 import { cosmosProvider } from './cosmos/provider/cosmostation';
 import { keplrProvider } from './cosmos/provider/keplr';
@@ -15,6 +16,7 @@ void (() => {
     common: commonProvider,
     cosmos: cosmosProvider,
     ethereum: Ethereum.getInstance(),
+    bitcoin: CosmostationBitcoin.getInstance(),
     sui: suiProvider,
     providers: {
       keplr: keplrProvider,

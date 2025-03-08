@@ -47,6 +47,7 @@ import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/trans
 import { Route as PopupEvmSwitchNetworkIndexImport } from './pages/popup/evm/switch-network/index'
 import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/addChain/index'
 import { Route as PopupCosmosAddTokenIndexImport } from './pages/popup/cosmos/add-token/index'
+import { Route as PopupBitcoinSwitchNetworkIndexImport } from './pages/popup/bitcoin/switch-network/index'
 import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
 import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
 import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
@@ -302,6 +303,13 @@ const PopupCosmosAddTokenIndexRoute = PopupCosmosAddTokenIndexImport.update({
   path: '/popup/cosmos/add-token/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const PopupBitcoinSwitchNetworkIndexRoute =
+  PopupBitcoinSwitchNetworkIndexImport.update({
+    id: '/popup/bitcoin/switch-network/',
+    path: '/popup/bitcoin/switch-network/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ManageAssetsVisibilityNetworkIndexRoute =
   ManageAssetsVisibilityNetworkIndexImport.update({
@@ -741,6 +749,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsVisibilityNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/bitcoin/switch-network/': {
+      id: '/popup/bitcoin/switch-network/'
+      path: '/popup/bitcoin/switch-network'
+      fullPath: '/popup/bitcoin/switch-network'
+      preLoaderRoute: typeof PopupBitcoinSwitchNetworkIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/cosmos/add-token/': {
       id: '/popup/cosmos/add-token/'
       path: '/popup/cosmos/add-token'
@@ -965,6 +980,7 @@ export interface FileRoutesByFullPath {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
   '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
@@ -1030,6 +1046,7 @@ export interface FileRoutesByTo {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
   '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
@@ -1096,6 +1113,7 @@ export interface FileRoutesById {
   '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/bitcoin/switch-network/': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-token/': typeof PopupCosmosAddTokenIndexRoute
   '/popup/cosmos/addChain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network/': typeof PopupEvmSwitchNetworkIndexRoute
@@ -1163,6 +1181,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-token'
     | '/popup/cosmos/addChain'
     | '/popup/evm/switch-network'
@@ -1227,6 +1246,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-token'
     | '/popup/cosmos/addChain'
     | '/popup/evm/switch-network'
@@ -1291,6 +1311,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network/'
     | '/manage-assets/visibility/assets/'
     | '/manage-assets/visibility/network/'
+    | '/popup/bitcoin/switch-network/'
     | '/popup/cosmos/add-token/'
     | '/popup/cosmos/addChain/'
     | '/popup/evm/switch-network/'
@@ -1357,6 +1378,7 @@ export interface RootRouteChildren {
   ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
   ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
   ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
+  PopupBitcoinSwitchNetworkIndexRoute: typeof PopupBitcoinSwitchNetworkIndexRoute
   PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
   PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
   PopupEvmSwitchNetworkIndexRoute: typeof PopupEvmSwitchNetworkIndexRoute
@@ -1432,6 +1454,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAssetsVisibilityAssetsIndexRoute,
   ManageAssetsVisibilityNetworkIndexRoute:
     ManageAssetsVisibilityNetworkIndexRoute,
+  PopupBitcoinSwitchNetworkIndexRoute: PopupBitcoinSwitchNetworkIndexRoute,
   PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
   PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
   PopupEvmSwitchNetworkIndexRoute: PopupEvmSwitchNetworkIndexRoute,
@@ -1519,6 +1542,7 @@ export const routeTree = rootRoute
         "/manage-assets/import/network/",
         "/manage-assets/visibility/assets/",
         "/manage-assets/visibility/network/",
+        "/popup/bitcoin/switch-network/",
         "/popup/cosmos/add-token/",
         "/popup/cosmos/addChain/",
         "/popup/evm/switch-network/",
@@ -1654,6 +1678,9 @@ export const routeTree = rootRoute
     },
     "/manage-assets/visibility/network/": {
       "filePath": "manage-assets/visibility/network/index.tsx"
+    },
+    "/popup/bitcoin/switch-network/": {
+      "filePath": "popup/bitcoin/switch-network/index.tsx"
     },
     "/popup/cosmos/add-token/": {
       "filePath": "popup/cosmos/add-token/index.tsx"

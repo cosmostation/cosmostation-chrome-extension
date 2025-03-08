@@ -34,6 +34,7 @@ export class Ethereum implements EthereumProvider {
         }
       };
 
+      // FIXME 지금 이 방식은 체인타입에 따라서 분기처리가 안되기때문에 이벤트 네임이 같은 수이나 evm같은 경우에서 백퍼 문제발생함.
       window.addEventListener('chainChanged', this.chainChangedEventHandler);
     }
 

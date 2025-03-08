@@ -1,4 +1,6 @@
+import { APTOS_LISTENER_TYPE, BITCOIN_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, SUI_LISTENER_TYPE } from '@/constants/message';
 import { sendMessage } from '@/libs/extension';
+import type { ListenerType } from '@/types/message';
 import type { ContentMessage } from '@/types/message/content';
 
 window.addEventListener('cosmostation_request', (event) => {
@@ -51,31 +53,21 @@ chrome.runtime.onMessage.addListener(
   ) => {
     if (sender.id !== chrome.runtime.id) return;
 
-    if (data?.event === 'chainChanged') {
-      const customEvent = new CustomEvent('chainChanged', {
-        detail: {
-          chainType: data?.chainType,
-          data: data?.data,
-        },
-      });
-      window.dispatchEvent(customEvent);
-    }
+    const types = (() => {
+      if (data.chainType === 'cosmos') return Object.values(COSMOS_LISTENER_TYPE);
+      if (data.chainType === 'evm') return Object.values(ETHEREUM_LISTENER_TYPE);
+      if (data.chainType === 'aptos') return Object.values(APTOS_LISTENER_TYPE);
+      if (data.chainType === 'sui') return Object.values(SUI_LISTENER_TYPE);
+      if (data.chainType === 'bitcoin') return Object.values(BITCOIN_LISTENER_TYPE);
 
-    if (data?.event === 'accountsChanged') {
-      const customEvent = new CustomEvent('accountsChanged', {
-        detail: {
-          chainType: data?.chainType,
-          data: data?.data,
-        },
-      });
-      window.dispatchEvent(customEvent);
-    }
+      return [];
+    })() as ListenerType[];
 
-    if (data?.event === 'disconnect') {
-      const customEvent = new CustomEvent('disconnect', {
+    if (types.includes(data.event as ListenerType)) {
+      const customEvent = new CustomEvent(data.event, {
         detail: {
-          chainType: data?.chainType,
-          data: data?.data,
+          chainType: data.chainType,
+          data: data.data,
         },
       });
       window.dispatchEvent(customEvent);
