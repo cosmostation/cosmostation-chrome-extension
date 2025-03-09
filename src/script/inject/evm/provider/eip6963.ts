@@ -4,7 +4,7 @@ import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_RDNS, COSMOSTATION_WALLET
 import { EIP_6963_EVENTS } from '@/constants/evm/eip6963';
 import type { EIP6963ProviderDetail, EIP6963ProviderInfo } from '@/types/evm/eip6963';
 
-import { Ethereum } from './evm';
+import { CosmostaionEthereum } from './evm';
 
 const providerUUID = uuidv4();
 
@@ -16,7 +16,7 @@ const dispatchProviderAnnouncement = () => {
     rdns: COSMOSTATION_RDNS,
   };
 
-  const detail: EIP6963ProviderDetail = Object.freeze({ info, provider: Ethereum.getInstance() });
+  const detail: EIP6963ProviderDetail = Object.freeze({ info, provider: CosmostaionEthereum.getInstance() });
 
   window.dispatchEvent(
     new CustomEvent(EIP_6963_EVENTS.announce, {

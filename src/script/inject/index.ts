@@ -8,7 +8,7 @@ import { commonProvider } from './common/provider';
 import { cosmosProvider } from './cosmos/provider/cosmostation';
 import { keplrProvider } from './cosmos/provider/keplr';
 import { announceEip6963Provider } from './evm/provider/eip6963';
-import { Ethereum } from './evm/provider/evm';
+import { CosmostaionEthereum } from './evm/provider/evm';
 import { suiProvider, SuiStandard } from './sui/provider/sui';
 
 void (() => {
@@ -16,13 +16,13 @@ void (() => {
     version: __APP_VERSION__,
     common: commonProvider,
     cosmos: cosmosProvider,
-    ethereum: Ethereum.getInstance(),
+    ethereum: CosmostaionEthereum.getInstance(),
     bitcoin: CosmostationBitcoin.getInstance(),
     sui: suiProvider,
     aptos: CosmostationAptos.getInstance(),
     providers: {
       keplr: keplrProvider,
-      metamask: Ethereum.getInstance(),
+      metamask: CosmostaionEthereum.getInstance(),
     },
   };
 
