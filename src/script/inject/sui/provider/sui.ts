@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isTransaction } from '@mysten/sui/transactions';
 import type {
   IdentifierArray,
@@ -22,6 +24,7 @@ import type {
 
 import { COSMOSTATION_WALLET_NAME } from '@/constants/common';
 import type { ApprovedSuiPermissionType } from '@/types/extension';
+import type { SuiListenerType } from '@/types/message';
 import type {
   SuiRequestAccountResponse,
   SuiRequestChainResponse,
@@ -150,20 +153,6 @@ const signPersonalMessage: SuiSignPersonalMessageMethod = async ({ message, acco
     },
   }) as Promise<SuiSignPersonalMessageOutput>;
 
-// NOTE temporary implementation
-const on = (eventName: string, eventHandler: (event?: unknown) => void) => {
-  window.addEventListener(eventName, (event) => {
-    eventHandler(event);
-  });
-};
-
-// NOTE temporary implementation
-const off = (eventName: string, eventHandler: (event?: unknown) => void) => {
-  window.removeEventListener(eventName, (event) => {
-    eventHandler(event);
-  });
-};
-
 class SuiStandard implements Wallet {
   version: '1.0.0';
 
@@ -178,6 +167,34 @@ class SuiStandard implements Wallet {
   accounts: readonly WalletAccount[] = [];
 
   hasPermissions = hasPermissions;
+
+  private networkChangeEventHandler: (event: any) => void = () => {};
+  private accountChangeEventHandler: (event: any) => void = () => {};
+
+  on(eventName: SuiListenerType, eventHandler: (data: unknown) => void) {
+    if (eventName === 'networkChange') {
+      this.networkChangeEventHandler = (event: any) => {
+        if (event.detail.chainType === 'sui') {
+          eventHandler(event.detail.data.result);
+        }
+      };
+
+      window.addEventListener('networkChange', this.networkChangeEventHandler);
+    }
+    if (eventName === 'accountChange') {
+      this.accountChangeEventHandler = (event: any) => {
+        if (event.detail.chainType === 'sui') {
+          if (!event.detail.data.result) {
+            eventHandler('');
+          } else {
+            eventHandler(event.detail.data.result as string);
+          }
+        }
+      };
+
+      window.addEventListener('accountChange', this.accountChangeEventHandler);
+    }
+  }
 
   constructor() {
     this.version = '1.0.0';
@@ -221,7 +238,7 @@ class SuiStandard implements Wallet {
 
       'standard:events': {
         version: '1.0.0',
-        on,
+        on: this.on.bind(this),
       },
 
       'sui:signTransactionBlock': {
@@ -284,23 +301,67 @@ class SuiStandard implements Wallet {
   }
 }
 
-export const suiProvider: SuiProvider = {
-  connect,
-  disconnect,
-  getAccounts,
-  getPublicKey,
-  getChain,
-  hasPermissions,
-  off,
-  on,
-  request: suiRequestApp,
-  requestPermissions,
-  signTransactionBlock,
-  signTransaction,
-  signAndExecuteTransactionBlock,
-  signAndExecuteTransaction,
-  signMessage,
-  signPersonalMessage,
-};
+export class CosmostationSui implements SuiProvider {
+  private static instance: SuiProvider;
+
+  private networkChangeEventHandler: (event: any) => void = () => {};
+  private accountChangeEventHandler: (event: any) => void = () => {};
+
+  public static getInstance(): SuiProvider {
+    if (!CosmostationSui.instance) {
+      CosmostationSui.instance = new CosmostationSui();
+    }
+    return CosmostationSui.instance;
+  }
+
+  request = suiRequestApp;
+  on(eventName: SuiListenerType, eventHandler: (data: unknown) => void) {
+    if (eventName === 'networkChange') {
+      this.networkChangeEventHandler = (event: any) => {
+        if (event.detail.chainType === 'sui') {
+          eventHandler(event.detail.data.result);
+        }
+      };
+
+      window.addEventListener('networkChange', this.networkChangeEventHandler);
+    }
+
+    if (eventName === 'accountChange') {
+      this.accountChangeEventHandler = (event: any) => {
+        if (event.detail.chainType === 'sui') {
+          if (!event.detail.data.result) {
+            eventHandler('');
+          } else {
+            eventHandler(event.detail.data.result as string);
+          }
+        }
+      };
+
+      window.addEventListener('accountChange', this.accountChangeEventHandler);
+    }
+  }
+  off(eventName: SuiListenerType) {
+    if (eventName === 'networkChange') {
+      window.removeEventListener('networkChange', this.networkChangeEventHandler);
+    }
+
+    if (eventName === 'accountChange') {
+      window.removeEventListener('accountChange', this.accountChangeEventHandler);
+    }
+  }
+  connect = connect;
+  disconnect = disconnect;
+  getAccounts = getAccounts;
+  getPublicKey = getPublicKey;
+  getChain = getChain;
+  hasPermissions = hasPermissions;
+  requestPermissions = requestPermissions;
+  signTransactionBlock = signTransactionBlock;
+  signTransaction = signTransaction;
+  signAndExecuteTransactionBlock = signAndExecuteTransactionBlock;
+  signAndExecuteTransaction = signAndExecuteTransaction;
+  signMessage = signMessage;
+  signPersonalMessage = signPersonalMessage;
+}
 
 export { SuiStandard };

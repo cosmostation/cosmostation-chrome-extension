@@ -1,34 +1,38 @@
+import { registerCosmosWallet } from '@cosmostation/wallets';
 import { registerWallet } from '@mysten/wallet-standard';
 
 import type { ComProvidersResponse } from '@/types/message/inject/common';
 
 import { CosmostationAptos } from './aptos/provider/aptos';
 import { CosmostationBitcoin } from './bitcoin/provider/bitcoin';
-import { commonProvider } from './common/provider';
-import { cosmosProvider } from './cosmos/provider/cosmostation';
-import { keplrProvider } from './cosmos/provider/keplr';
+import { CosmostaionCommon } from './common/provider';
+import { CosmostaionCosmos } from './cosmos/provider/cosmostation';
+import { CosmostationKeplr } from './cosmos/provider/keplr';
+import { cosmosWallet } from './cosmos/provider/wallets';
 import { announceEip6963Provider } from './evm/provider/eip6963';
 import { CosmostaionEthereum } from './evm/provider/evm';
-import { suiProvider, SuiStandard } from './sui/provider/sui';
+import { CosmostationSui, SuiStandard } from './sui/provider/sui';
 
 void (() => {
   window.cosmostation = {
     version: __APP_VERSION__,
-    common: commonProvider,
-    cosmos: cosmosProvider,
+    common: CosmostaionCommon.getInstance(),
+    cosmos: CosmostaionCosmos.getInstance(),
     ethereum: CosmostaionEthereum.getInstance(),
     bitcoin: CosmostationBitcoin.getInstance(),
-    sui: suiProvider,
+    sui: CosmostationSui.getInstance(),
     aptos: CosmostationAptos.getInstance(),
     providers: {
-      keplr: keplrProvider,
+      keplr: CosmostationKeplr.getInstance(),
       metamask: CosmostaionEthereum.getInstance(),
     },
   };
 
-  window.cosmostationWallet = suiProvider;
+  window.cosmostationWallet = CosmostationSui.getInstance();
 
   registerWallet(new SuiStandard());
+  registerCosmosWallet(cosmosWallet);
+
   announceEip6963Provider();
 
   void (async () => {

@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import type { SignDirectDoc } from '@/types/cosmos/direct';
+import type { CosmosListenerType } from '@/types/message';
 import type { BaseRequest } from '@/types/message/inject';
 import type {
   CosRequestAccountResponse,
@@ -131,8 +134,39 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
   return cosmosRequestApp(message);
 };
 
-export const cosmosProvider: CosmosProvider = {
-  // on,
-  // off,
-  request: wrappedCosmosRequestApp,
-};
+export class CosmostaionCosmos implements CosmosProvider {
+  private static instance: CosmostaionCosmos;
+
+  isMetaMask = false;
+  chainId?: string;
+  networkVersion?: string;
+
+  private accountChangedEventHandler: (event: any) => void = () => {};
+
+  public static getInstance(): CosmostaionCosmos {
+    if (!CosmostaionCosmos.instance) {
+      CosmostaionCosmos.instance = new CosmostaionCosmos();
+    }
+    return CosmostaionCosmos.instance;
+  }
+
+  request = wrappedCosmosRequestApp;
+
+  on(eventName: CosmosListenerType, eventHandler: (data: unknown) => void) {
+    if (eventName === 'accountChanged') {
+      this.accountChangedEventHandler = (event: any) => {
+        if (event.detail.chainType === 'evm') {
+          eventHandler(event.detail.data.result as string[]);
+        }
+      };
+
+      window.addEventListener('accountChanged', this.accountChangedEventHandler);
+    }
+  }
+
+  off(eventName: CosmosListenerType) {
+    if (eventName === 'accountChanged') {
+      window.removeEventListener('accountChanged', this.accountChangedEventHandler);
+    }
+  }
+}

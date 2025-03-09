@@ -1,4 +1,5 @@
 import Long from 'long';
+import type { KeplrMode } from '@keplr-wallet/types';
 
 import type { SignAminoDoc } from '@/types/cosmos/amino';
 import type {
@@ -224,22 +225,31 @@ const keplrSuggestToken: KeplrInterface['suggestToken'] = async (chainId, contra
   }
 };
 
-export const keplrProvider: KeplrInterface = {
-  version: '0.0.0',
-  mode: 'extension',
-  defaultOptions: {
+export class CosmostationKeplr implements KeplrInterface {
+  version = '0.0.0';
+  mode = 'extension' as KeplrMode;
+  defaultOptions = {
     sign: { disableBalanceCheck: false, preferNoSetFee: false, preferNoSetMemo: false },
-  },
-  enable: keplrEnable,
-  getKey: keplrGetKey,
-  experimentalSuggestChain: keplrExperimentalSuggestChain,
-  getOfflineSigner: keplrGetOfflineSigner,
-  getOfflineSignerAuto: keplrGetOfflineSignerAuto,
-  getOfflineSignerOnlyAmino: keplrGetOfflineSignerOnlyAmino,
-  sendTx: keplrSendTx,
-  signAmino: keplrSignAmino,
-  signDirect: keplrSignDirect,
-  signArbitrary: keplrSignArbitrary,
-  verifyArbitrary: keplrVerifyArbitrary,
-  suggestToken: keplrSuggestToken,
-};
+  };
+
+  private static instance: KeplrInterface;
+
+  public static getInstance(): KeplrInterface {
+    if (!CosmostationKeplr.instance) {
+      CosmostationKeplr.instance = new CosmostationKeplr();
+    }
+    return CosmostationKeplr.instance;
+  }
+  enable = keplrEnable;
+  getKey = keplrGetKey;
+  experimentalSuggestChain = keplrExperimentalSuggestChain;
+  getOfflineSigner = keplrGetOfflineSigner;
+  getOfflineSignerAuto = keplrGetOfflineSignerAuto;
+  getOfflineSignerOnlyAmino = keplrGetOfflineSignerOnlyAmino;
+  sendTx = keplrSendTx;
+  signAmino = keplrSignAmino;
+  signDirect = keplrSignDirect;
+  signArbitrary = keplrSignArbitrary;
+  verifyArbitrary = keplrVerifyArbitrary;
+  suggestToken = keplrSuggestToken;
+}

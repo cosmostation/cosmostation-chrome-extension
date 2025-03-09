@@ -23,6 +23,7 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.33.2",
     "@bitcoinerlab/secp256k1": "^1.1.1",
+    "@cosmostation/wallets": "^2.0.8",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@hookform/resolvers": "^3.9.1",
