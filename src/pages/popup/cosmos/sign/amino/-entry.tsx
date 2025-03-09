@@ -42,6 +42,8 @@ type EntryProps = {
 
 // TODO 카바케이스 및 커스텀 체인에 대한 테스트 필요.
 export default function Entry({ request, chain }: EntryProps) {
+  console.log('🚀 ~ Entry ~ chain:', chain);
+
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();
 
@@ -57,6 +59,8 @@ export default function Entry({ request, chain }: EntryProps) {
     () => accountAllAssets?.allCosmosAccountAssets.find((item) => isSameChain(item.chain, chain)),
     [accountAllAssets?.allCosmosAccountAssets, chain],
   );
+
+  console.log('🚀 ~ Entry ~ accountAsset:', accountAsset);
 
   const accountAssetCoinId = useMemo(() => (accountAsset ? getCoinId(accountAsset.asset) : ''), [accountAsset]);
 
@@ -80,6 +84,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const { doc, isEditFee = true, isEditMemo = true, isCheckBalance = true } = params;
 
+  // NOTE 카바 케이스 고려해서 비트코인처럼 어카운트타입 필터링해야함.
   const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
 
   const [inputMemo, setInputMemo] = useState(doc.memo);

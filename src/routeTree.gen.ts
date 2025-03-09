@@ -62,6 +62,7 @@ import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account
 import { Route as WalletUnstakeCoinIdValidatorAddressIndexImport } from './pages/wallet/unstake/$coinId/$validatorAddress/index'
 import { Route as WalletStakeCoinIdValidatorAddressIndexImport } from './pages/wallet/stake/$coinId/$validatorAddress/index'
 import { Route as WalletClaimRewardsCoinIdValidatorAddressIndexImport } from './pages/wallet/claim-rewards/$coinId/$validatorAddress/index'
+import { Route as PopupCosmosSignMessageIndexImport } from './pages/popup/cosmos/sign/message/index'
 import { Route as PopupCosmosSignDirectIndexImport } from './pages/popup/cosmos/sign/direct/index'
 import { Route as PopupCosmosSignAminoIndexImport } from './pages/popup/cosmos/sign/amino/index'
 import { Route as ManageAccountViewPrivateKeyAccountIdIndexImport } from './pages/manage-account/view/privateKey/$accountId/index'
@@ -406,6 +407,13 @@ const WalletClaimRewardsCoinIdValidatorAddressIndexRoute =
   WalletClaimRewardsCoinIdValidatorAddressIndexImport.update({
     id: '/wallet/claim-rewards/$coinId/$validatorAddress/',
     path: '/wallet/claim-rewards/$coinId/$validatorAddress/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const PopupCosmosSignMessageIndexRoute =
+  PopupCosmosSignMessageIndexImport.update({
+    id: '/popup/cosmos/sign/message/',
+    path: '/popup/cosmos/sign/message/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -903,6 +911,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupCosmosSignDirectIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/cosmos/sign/message/': {
+      id: '/popup/cosmos/sign/message/'
+      path: '/popup/cosmos/sign/message'
+      fullPath: '/popup/cosmos/sign/message'
+      preLoaderRoute: typeof PopupCosmosSignMessageIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/claim-rewards/$coinId/$validatorAddress/': {
       id: '/wallet/claim-rewards/$coinId/$validatorAddress/'
       path: '/wallet/claim-rewards/$coinId/$validatorAddress'
@@ -1002,6 +1017,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/popup/cosmos/sign/amino': typeof PopupCosmosSignAminoIndexRoute
   '/popup/cosmos/sign/direct': typeof PopupCosmosSignDirectIndexRoute
+  '/popup/cosmos/sign/message': typeof PopupCosmosSignMessageIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   '/wallet/stake/$coinId/$validatorAddress': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1068,6 +1084,7 @@ export interface FileRoutesByTo {
   '/manage-account/view/privateKey/$accountId': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/popup/cosmos/sign/amino': typeof PopupCosmosSignAminoIndexRoute
   '/popup/cosmos/sign/direct': typeof PopupCosmosSignDirectIndexRoute
+  '/popup/cosmos/sign/message': typeof PopupCosmosSignMessageIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   '/wallet/stake/$coinId/$validatorAddress': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1135,6 +1152,7 @@ export interface FileRoutesById {
   '/manage-account/view/privateKey/$accountId/': typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   '/popup/cosmos/sign/amino/': typeof PopupCosmosSignAminoIndexRoute
   '/popup/cosmos/sign/direct/': typeof PopupCosmosSignDirectIndexRoute
+  '/popup/cosmos/sign/message/': typeof PopupCosmosSignMessageIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress/': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   '/wallet/stake/$coinId/$validatorAddress/': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress/': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1203,6 +1221,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/privateKey/$accountId'
     | '/popup/cosmos/sign/amino'
     | '/popup/cosmos/sign/direct'
+    | '/popup/cosmos/sign/message'
     | '/wallet/claim-rewards/$coinId/$validatorAddress'
     | '/wallet/stake/$coinId/$validatorAddress'
     | '/wallet/unstake/$coinId/$validatorAddress'
@@ -1268,6 +1287,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/privateKey/$accountId'
     | '/popup/cosmos/sign/amino'
     | '/popup/cosmos/sign/direct'
+    | '/popup/cosmos/sign/message'
     | '/wallet/claim-rewards/$coinId/$validatorAddress'
     | '/wallet/stake/$coinId/$validatorAddress'
     | '/wallet/unstake/$coinId/$validatorAddress'
@@ -1333,6 +1353,7 @@ export interface FileRouteTypes {
     | '/manage-account/view/privateKey/$accountId/'
     | '/popup/cosmos/sign/amino/'
     | '/popup/cosmos/sign/direct/'
+    | '/popup/cosmos/sign/message/'
     | '/wallet/claim-rewards/$coinId/$validatorAddress/'
     | '/wallet/stake/$coinId/$validatorAddress/'
     | '/wallet/unstake/$coinId/$validatorAddress/'
@@ -1400,6 +1421,7 @@ export interface RootRouteChildren {
   ManageAccountViewPrivateKeyAccountIdIndexRoute: typeof ManageAccountViewPrivateKeyAccountIdIndexRoute
   PopupCosmosSignAminoIndexRoute: typeof PopupCosmosSignAminoIndexRoute
   PopupCosmosSignDirectIndexRoute: typeof PopupCosmosSignDirectIndexRoute
+  PopupCosmosSignMessageIndexRoute: typeof PopupCosmosSignMessageIndexRoute
   WalletClaimRewardsCoinIdValidatorAddressIndexRoute: typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   WalletStakeCoinIdValidatorAddressIndexRoute: typeof WalletStakeCoinIdValidatorAddressIndexRoute
   WalletUnstakeCoinIdValidatorAddressIndexRoute: typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1484,6 +1506,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAccountViewPrivateKeyAccountIdIndexRoute,
   PopupCosmosSignAminoIndexRoute: PopupCosmosSignAminoIndexRoute,
   PopupCosmosSignDirectIndexRoute: PopupCosmosSignDirectIndexRoute,
+  PopupCosmosSignMessageIndexRoute: PopupCosmosSignMessageIndexRoute,
   WalletClaimRewardsCoinIdValidatorAddressIndexRoute:
     WalletClaimRewardsCoinIdValidatorAddressIndexRoute,
   WalletStakeCoinIdValidatorAddressIndexRoute:
@@ -1564,6 +1587,7 @@ export const routeTree = rootRoute
         "/manage-account/view/privateKey/$accountId/",
         "/popup/cosmos/sign/amino/",
         "/popup/cosmos/sign/direct/",
+        "/popup/cosmos/sign/message/",
         "/wallet/claim-rewards/$coinId/$validatorAddress/",
         "/wallet/stake/$coinId/$validatorAddress/",
         "/wallet/unstake/$coinId/$validatorAddress/",
@@ -1744,6 +1768,9 @@ export const routeTree = rootRoute
     },
     "/popup/cosmos/sign/direct/": {
       "filePath": "popup/cosmos/sign/direct/index.tsx"
+    },
+    "/popup/cosmos/sign/message/": {
+      "filePath": "popup/cosmos/sign/message/index.tsx"
     },
     "/wallet/claim-rewards/$coinId/$validatorAddress/": {
       "filePath": "wallet/claim-rewards/$coinId/$validatorAddress/index.tsx"

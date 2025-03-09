@@ -2115,6 +2115,14 @@
               "reject": "Reject",
               "sign": "Sign"
             }
+          },
+          "message": {
+            "entry": {
+              "signatureRequest": "Signature Request",
+              "message": "Message",
+              "reject": "Reject",
+              "sign": "Sign"
+            }
           }
         },
         "addChain": {

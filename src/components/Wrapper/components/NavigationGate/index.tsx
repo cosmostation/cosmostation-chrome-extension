@@ -7,6 +7,7 @@ import { Route as CosmosAddToken } from '@/pages/popup/cosmos/add-token';
 import { Route as CosmosAddChain } from '@/pages/popup/cosmos/addChain';
 import { Route as CosmosSignAmino } from '@/pages/popup/cosmos/sign/amino';
 import { Route as CosmosSignDirect } from '@/pages/popup/cosmos/sign/direct';
+import { Route as CosmosSignMessage } from '@/pages/popup/cosmos/sign/message';
 import { Route as EVMSwitchChain } from '@/pages/popup/evm/switch-network';
 import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
@@ -82,6 +83,8 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
       return CosmosSignDirect.to;
     case 'cos_addTokensCW20Internal':
       return CosmosAddToken.to;
+    case 'cos_signMessage':
+      return CosmosSignMessage.to;
 
     default:
       return '';

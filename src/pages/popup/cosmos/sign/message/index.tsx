@@ -4,16 +4,16 @@ import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import AccessRequest from '@/pages/popup/-components/requests/AccessRequest';
 import type { RequestQueue } from '@/types/extension';
-import type { CosSignDirect } from '@/types/message/inject/cosmos';
+import type { CosSignMessage } from '@/types/message/inject/cosmos';
 
 import Entry from './-entry';
 import Layout from './-layout';
 
-export const Route = createFileRoute('/popup/cosmos/sign/direct/')({
-  component: CosmosSignDirect,
+export const Route = createFileRoute('/popup/cosmos/sign/message/')({
+  component: CosmosSignMessage,
 });
 
-function CosmosSignDirect() {
+function CosmosSignMessage() {
   const { currentRequestQueue } = useCurrentRequestQueue();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -21,7 +21,7 @@ function CosmosSignDirect() {
     disableDupeEthermint: true,
   });
 
-  if (currentRequestQueue && isCosSignDirect(currentRequestQueue)) {
+  if (currentRequestQueue && isCosSignMessage(currentRequestQueue)) {
     // NOTE 카바케이스를 위해서 비트코인처럼 accountType필터링 필요.
     const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) => asset.chain.name === currentRequestQueue.params.chainName);
 
@@ -38,6 +38,6 @@ function CosmosSignDirect() {
   return null;
 }
 
-function isCosSignDirect(queue: RequestQueue): queue is CosSignDirect {
-  return queue.method === 'cos_signDirect';
+function isCosSignMessage(queue: RequestQueue): queue is CosSignMessage {
+  return queue.method === 'cos_signMessage';
 }
