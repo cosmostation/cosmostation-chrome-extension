@@ -12,6 +12,7 @@ import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
 import { Route as SuiSignMessage } from '@/pages/popup/sui/sign-message';
 import { Route as SuiTransaction } from '@/pages/popup/sui/transaction';
+import type { AptosRequest } from '@/types/message/inject/aptos';
 import type { BitcoinRequest } from '@/types/message/inject/bitcoin';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
@@ -55,6 +56,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         if (requestQueue[0].chainType === 'bitcoin') {
           navigate({
             to: getNavigationPathForBitcoinRequest(requestQueue[0]),
+          });
+        }
+        if (requestQueue[0].chainType === 'aptos') {
+          navigate({
+            to: getNavigationPathForAptosRequest(requestQueue[0]),
           });
         }
       }
@@ -130,6 +136,18 @@ const getNavigationPathForBitcoinRequest = (requestQueue: BitcoinRequest) => {
       return RequestAccount.to;
     case 'bitc_switchNetwork':
       return BitcoinSwitchChain.to;
+
+    default:
+      return '';
+  }
+};
+
+const getNavigationPathForAptosRequest = (requestQueue: AptosRequest) => {
+  switch (requestQueue.method) {
+    case 'aptos_connect':
+      return RequestAccount.to;
+    case 'aptos_account':
+      return RequestAccount.to;
 
     default:
       return '';

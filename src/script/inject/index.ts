@@ -2,6 +2,7 @@ import { registerWallet } from '@mysten/wallet-standard';
 
 import type { ComProvidersResponse } from '@/types/message/inject/common';
 
+import { CosmostationAptos } from './aptos/provider/aptos';
 import { CosmostationBitcoin } from './bitcoin/provider/bitcoin';
 import { commonProvider } from './common/provider';
 import { cosmosProvider } from './cosmos/provider/cosmostation';
@@ -18,6 +19,7 @@ void (() => {
     ethereum: Ethereum.getInstance(),
     bitcoin: CosmostationBitcoin.getInstance(),
     sui: suiProvider,
+    aptos: CosmostationAptos.getInstance(),
     providers: {
       keplr: keplrProvider,
       metamask: Ethereum.getInstance(),
@@ -39,6 +41,16 @@ void (() => {
       window.cosmostation.ethereum.networkVersion = `${parseInt(chainId as string, 16)}`;
     });
 
+    // const cosmostationEvent = new CustomEvent('cosmostation_keystorechange', { cancelable: true });
+
+    // window.addEventListener('accountChanged', (event) => {
+    //   console.log('🚀 ~ window.addEventListener ~ event:', event);
+
+    //   if (event.data?.event === 'accountChanged' && event.detail.chainType === 'cosmos') {
+    //     window.dispatchEvent(cosmostationEvent);
+    //   }
+    // });
+
     const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
 
     if (providers.keplr && !window.keplr) {
@@ -57,6 +69,15 @@ void (() => {
       // };
 
       // window.addEventListener('message', handler);
+    }
+
+    if (providers.metamask && !window.ethereum?.isMetaMask) {
+      window.cosmostation.ethereum.isMetaMask = true;
+      window.ethereum = window.cosmostation.providers.metamask;
+    }
+
+    if (providers.aptos) {
+      window.aptos = CosmostationAptos.getInstance();
     }
   })();
 })();

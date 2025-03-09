@@ -1,5 +1,6 @@
 import type { Request } from '@/types/message/inject';
 
+import { aptosProcess } from './apots';
 import { bitcoinProcess } from './bitcoin';
 import { commonProcess } from './common';
 import { cosmosProcess } from './cosmos';
@@ -24,6 +25,9 @@ export async function process(message: Request) {
     }
     if (message.chainType === 'bitcoin') {
       await bitcoinProcess(message);
+    }
+    if (message.chainType === 'aptos') {
+      await aptosProcess(message);
     }
   } catch (e) {
     console.log('process error', e);

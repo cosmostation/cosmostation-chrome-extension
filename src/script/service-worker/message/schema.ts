@@ -6,6 +6,7 @@ import type { Fee, Msg, SignAminoDoc } from '@/types/cosmos/amino';
 import type { Amount } from '@/types/cosmos/common';
 import type { SignDirectDoc } from '@/types/cosmos/direct';
 import type { AddChainGasRate } from '@/types/fee';
+import type { AptosSignMessage, AptosSignTransaction } from '@/types/message/inject/aptos';
 import type {
   CosAddNFTsCW721,
   CosAddTokensCW20,
@@ -408,3 +409,30 @@ export const suiSignMessageSchema = () =>
   }).required();
 
 export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
+
+export const aptosSignTransactionSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<AptosSignTransaction['params'][0]>({
+        type: Joi.string().optional(),
+        function: Joi.string().required(),
+        type_arguments: Joi.array().items(Joi.string().optional()).required(),
+        arguments: Joi.array().required().items(Joi.any().optional()),
+      }).required(),
+    );
+
+export const aptosSignMessageSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<AptosSignMessage['params'][0]>({
+        address: Joi.boolean().optional(),
+        application: Joi.boolean().optional(),
+        chainId: Joi.boolean().optional(),
+        message: Joi.string().required(),
+        nonce: Joi.number().required(),
+      }).required(),
+    );

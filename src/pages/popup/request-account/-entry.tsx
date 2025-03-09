@@ -10,6 +10,7 @@ import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
 import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
+import type { AptosAccount } from '@/types/message/inject/aptos';
 import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
 import type { CosRequestAccount, CosRequestAccountResponse } from '@/types/message/inject/cosmos';
 import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
@@ -204,101 +205,39 @@ export default function Entry() {
             void deQueue();
           }
         }
+
+        if ((currentRequestQueue?.method === 'aptos_account' || currentRequestQueue?.method === 'aptos_connect') && currentPassword) {
+          const { tabId, requestId, origin } = currentRequestQueue;
+
+          const { currentAptosNetwork } = await extensionLocalStorage();
+
+          if (currentAptosNetwork) {
+            const keyPair = getKeypair(currentAptosNetwork, currentAccount, currentPassword);
+            const address = getAddress(currentAptosNetwork, keyPair?.publicKey);
+
+            const result = { address, publicKey: `0x${keyPair!.publicKey}` };
+
+            sendMessage<ResponseAppMessage<AptosAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
+              },
+            });
+
+            void deQueue();
+          }
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     handleRequestAccount();
-
-    // if ((currentQueue?.message.method === 'aptos_account' || currentQueue?.message.method === 'aptos_connect') && currentPassword) {
-    //   const { message, messageId, origin } = currentQueue;
-    //   const chain = APTOS;
-
-    //   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-    //   const address = getAddress(chain, keyPair?.publicKey);
-
-    //   const result: AptosAccountResponse = { address, publicKey: `0x${keyPair!.publicKey.toString('hex')}` };
-
-    //   responseToWeb({
-    //     response: {
-    //       result,
-    //     },
-    //     message,
-    //     messageId,
-    //     origin,
-    //   });
-
-    //   void deQueue();
-    // }
-
-    // if (currentQueue?.message.method === 'sui_connect') {
-    //   const { message, messageId, origin } = currentQueue;
-
-    //   const result: SuiConnectResponse = null;
-
-    //   responseToWeb({
-    //     response: {
-    //       result,
-    //     },
-    //     message,
-    //     messageId,
-    //     origin,
-    //   });
-
-    //   void deQueue();
-    // }
-
-    // if (currentQueue?.message.method === 'sui_getAccount' && currentPassword) {
-    //   const chain = SUI;
-
-    //   const { message, messageId, origin } = currentQueue;
-
-    //   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-    //   const address = getAddress(chain, keyPair?.publicKey);
-
-    //   const publicKey = `0x${keyPair!.publicKey.toString('hex')}`;
-
-    //   const result: SuiGetAccountResponse = {
-    //     address,
-    //     publicKey,
-    //   };
-
-    //   responseToWeb({
-    //     response: {
-    //       result,
-    //     },
-    //     message,
-    //     messageId,
-    //     origin,
-    //   });
-
-    //   void deQueue();
-    // }
-
-    // if (currentQueue?.message.method === 'bit_requestAccount' && currentPassword) {
-    //   const { message, messageId, origin } = currentQueue;
-
-    //   const chain = BITCOIN;
-
-    //   if (chain) {
-    //     const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-    //     const address = getAddress(chain, keyPair?.publicKey);
-
-    //     const result: BitRequestAccountResponse = [address];
-
-    //     responseToWeb({
-    //       response: {
-    //         result,
-    //       },
-    //       message,
-    //       messageId,
-    //       origin,
-    //     });
-
-    //     void deQueue();
-    //   }
-    // }
   }, [
     chainList.cosmosChains,
     chainList.customCosmosChains,

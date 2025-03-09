@@ -10,8 +10,20 @@ import type {
 
 import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedSuiPermissionType } from '@/types/extension';
-import type { BitcoinListenerType, EthereumListenerType, SuiListenerType } from '@/types/message';
+import type { AptosListenerType, BitcoinListenerType, EthereumListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
+import type {
+  AptosAccountResponse,
+  AptosConnectResponse,
+  AptosDisconnectResponse,
+  AptosIsConnectedResponse,
+  AptosNetworkResponse,
+  AptosSignAndSubmitTransactionResponse,
+  AptosSignMessage,
+  AptosSignMessageResponse,
+  AptosSignPayload,
+  AptosSignTransactionResponse,
+} from '@/types/message/inject/aptos';
 import type {
   BitGetAddressResponse,
   BitGetBalanceResponse,
@@ -125,6 +137,24 @@ declare global {
     off: (eventName: BitcoinListenerType, callBack: () => void) => void;
   }
 
+  interface AptosProvider {
+    request: <T extends Omit<Request, 'chainType' | 'origin' | 'requestId'>>(message: T) => Promise<Unknown>;
+    on: (eventName: AptosListenerType, eventHandler: (data?: unknown) => void) => void;
+    off: (eventName: AptosListenerType, eventHandler: (data: unknown) => void) => void;
+    connect: () => Promise<AptosConnectResponse>;
+    network: () => Promise<AptosNetworkResponse>;
+    disconnect: () => Promise<AptosDisconnectResponse>;
+    isConnected: () => Promise<AptosIsConnectedResponse>;
+    account: () => Promise<AptosAccountResponse>;
+    signAndSubmitTransaction: (payload: AptosSignPayload) => Promise<AptosSignAndSubmitTransactionResponse>;
+    signTransaction: (payload: AptosSignPayload) => Promise<AptosSignTransactionResponse>;
+    signMessage: (params: AptosSignMessage['params'][0]) => Promise<AptosSignMessageResponse>;
+    onNetworkChange: (eventHandler: (data?: unknown) => void) => void;
+    offNetworkChange: (eventHandler: (data?: unknown) => void) => void;
+    onAccountChange: (eventHandler: (data?: unknown) => void) => void;
+    offAccountChange: (eventHandler: (data?: unknown) => void) => void;
+  }
+
   interface Window {
     customProperty: boolean;
 
@@ -138,6 +168,7 @@ declare global {
       ethereum: EthereumProvider;
       sui: SuiProvider;
       bitcoin: BitcoinProvider;
+      aptos: AptosProvider;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;
@@ -148,7 +179,10 @@ declare global {
     getOfflineSigner?: unknown;
     getOfflineSignerOnlyAmino?: unknown;
     getOfflineSignerAuto?: unknown;
+
+    ethereum?: EthereumProvider;
     suiWallet?: SuiProvider;
+    aptos?: AptosProvider;
   }
 }
 

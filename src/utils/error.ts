@@ -63,7 +63,7 @@ export class CosmosRPCError extends Error {
 export class AptosRPCError extends Error {
   public code: number;
 
-  public rpcMessage: unknown;
+  public rpcMessage: Record<string, { code: number; message: string }>;
 
   constructor(code: number, message: string) {
     super(message);
