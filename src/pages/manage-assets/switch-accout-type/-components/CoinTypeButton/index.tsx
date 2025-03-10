@@ -8,6 +8,7 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import type { Chain } from '@/types/chain';
+import { emitChangedAddressEvent } from '@/utils/event';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { AccountTypeTextContainer, ChainImage } from './styled';
@@ -63,6 +64,7 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
           });
 
           await updateCurrentPreferAccountType(updatedPreferAccountType);
+          await emitChangedAddressEvent(currentAccount.id);
         }}
       />
     </>
