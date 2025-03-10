@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isTransaction } from '@mysten/sui/transactions';
 import type {
   IdentifierArray,
@@ -24,7 +23,7 @@ import type {
 
 import { COSMOSTATION_WALLET_NAME } from '@/constants/common';
 import type { ApprovedSuiPermissionType } from '@/types/extension';
-import type { SuiListenerType } from '@/types/message';
+import type { EventDetail, SuiListenerType } from '@/types/message';
 import type {
   SuiRequestAccountResponse,
   SuiRequestChainResponse,
@@ -168,21 +167,21 @@ class SuiStandard implements Wallet {
 
   hasPermissions = hasPermissions;
 
-  private networkChangeEventHandler: (event: any) => void = () => {};
-  private accountChangeEventHandler: (event: any) => void = () => {};
+  private networkChangeEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  private accountChangeEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 
   on(eventName: SuiListenerType, eventHandler: (data: unknown) => void) {
     if (eventName === 'networkChange') {
-      this.networkChangeEventHandler = (event: any) => {
+      this.networkChangeEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'sui') {
           eventHandler(event.detail.data.result);
         }
       };
 
-      window.addEventListener('networkChange', this.networkChangeEventHandler);
+      window.addEventListener('networkChange', this.networkChangeEventHandler as EventListener);
     }
     if (eventName === 'accountChange') {
-      this.accountChangeEventHandler = (event: any) => {
+      this.accountChangeEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'sui') {
           if (!event.detail.data.result) {
             eventHandler('');
@@ -192,7 +191,7 @@ class SuiStandard implements Wallet {
         }
       };
 
-      window.addEventListener('accountChange', this.accountChangeEventHandler);
+      window.addEventListener('accountChange', this.accountChangeEventHandler as EventListener);
     }
   }
 
@@ -304,8 +303,8 @@ class SuiStandard implements Wallet {
 export class CosmostationSui implements SuiProvider {
   private static instance: SuiProvider;
 
-  private networkChangeEventHandler: (event: any) => void = () => {};
-  private accountChangeEventHandler: (event: any) => void = () => {};
+  private networkChangeEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  private accountChangeEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 
   public static getInstance(): SuiProvider {
     if (!CosmostationSui.instance) {
@@ -317,17 +316,17 @@ export class CosmostationSui implements SuiProvider {
   request = suiRequestApp;
   on(eventName: SuiListenerType, eventHandler: (data: unknown) => void) {
     if (eventName === 'networkChange') {
-      this.networkChangeEventHandler = (event: any) => {
+      this.networkChangeEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'sui') {
           eventHandler(event.detail.data.result);
         }
       };
 
-      window.addEventListener('networkChange', this.networkChangeEventHandler);
+      window.addEventListener('networkChange', this.networkChangeEventHandler as EventListener);
     }
 
     if (eventName === 'accountChange') {
-      this.accountChangeEventHandler = (event: any) => {
+      this.accountChangeEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'sui') {
           if (!event.detail.data.result) {
             eventHandler('');
@@ -337,16 +336,16 @@ export class CosmostationSui implements SuiProvider {
         }
       };
 
-      window.addEventListener('accountChange', this.accountChangeEventHandler);
+      window.addEventListener('accountChange', this.accountChangeEventHandler as EventListener);
     }
   }
   off(eventName: SuiListenerType) {
     if (eventName === 'networkChange') {
-      window.removeEventListener('networkChange', this.networkChangeEventHandler);
+      window.removeEventListener('networkChange', this.networkChangeEventHandler as EventListener);
     }
 
     if (eventName === 'accountChange') {
-      window.removeEventListener('accountChange', this.accountChangeEventHandler);
+      window.removeEventListener('accountChange', this.accountChangeEventHandler as EventListener);
     }
   }
   connect = connect;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { Network } from '@/constants/bitcoin/common';
 import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_WALLET_NAME } from '@/constants/common';
-import type { BitcoinListenerType } from '@/types/message';
+import type { BitcoinListenerType, EventDetail } from '@/types/message';
 import type {
   BitGetAddressResponse,
   BitGetBalanceResponse,
@@ -103,7 +103,7 @@ const getWalletProviderIcon = async () => COSMOSTATION_ENCODED_LOGO_IMAGE;
 export class CosmostationBitcoin implements BitcoinProvider {
   private static instance: BitcoinProvider;
 
-  private accountsChangedEventHandler: (event: any) => void = () => {};
+  private accountsChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 
   public static getInstance(): BitcoinProvider {
     if (!CosmostationBitcoin.instance) {
@@ -131,20 +131,19 @@ export class CosmostationBitcoin implements BitcoinProvider {
 
   on(eventName: BitcoinListenerType, eventHandler: (data: unknown) => void) {
     if (eventName === 'accountChanged') {
-      this.accountsChangedEventHandler = (event: any) => {
+      this.accountsChangedEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'bitcoin') {
-          // NOTE evm의 accountChanged와 동일한 리스폰스타입 ['bc1pgksq8hmsq8txyjkv7g4nrewvp5yle7nvgqcx7jwpa050fctus5vspx6gps']
           eventHandler(event.detail.data.result as string[]);
         }
       };
 
-      window.addEventListener('accountChanged', this.accountsChangedEventHandler);
+      window.addEventListener('accountChanged', this.accountsChangedEventHandler as EventListener);
     }
   }
 
   off(eventName: BitcoinListenerType) {
     if (eventName === 'accountChanged') {
-      window.removeEventListener('accountChanged', this.accountsChangedEventHandler);
+      window.removeEventListener('accountChanged', this.accountsChangedEventHandler as EventListener);
     }
   }
 }

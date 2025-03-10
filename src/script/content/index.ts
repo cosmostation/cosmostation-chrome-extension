@@ -1,5 +1,6 @@
 import { APTOS_LISTENER_TYPE, BITCOIN_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, SUI_LISTENER_TYPE } from '@/constants/message';
 import { sendMessage } from '@/libs/extension';
+import type { ChainType } from '@/types/chain';
 import type { ListenerType } from '@/types/message';
 import type { ContentMessage } from '@/types/message/content';
 
@@ -45,8 +46,8 @@ chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendRespo
 chrome.runtime.onMessage.addListener(
   (
     data: {
-      event: string;
-      chainType: string;
+      event: ListenerType;
+      chainType: ChainType;
       data: unknown;
     },
     sender,
@@ -63,7 +64,7 @@ chrome.runtime.onMessage.addListener(
       return [];
     })() as ListenerType[];
 
-    if (types.includes(data.event as ListenerType)) {
+    if (types.includes(data.event)) {
       const customEvent = new CustomEvent(data.event, {
         detail: {
           chainType: data.chainType,

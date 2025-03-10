@@ -2,6 +2,7 @@ import type { APTOS_LISTENER_TYPE, BITCOIN_LISTENER_TYPE, COSMOS_LISTENER_TYPE, 
 
 import type { ContentMessage, ContentResponse } from './content';
 import type { ServiceWorkerMessage, ServiceWorkerResponse } from './service-worker';
+import type { ChainType } from '../chain';
 
 export type TargetType = 'SERVICE_WORKER' | 'CONTENT';
 
@@ -29,3 +30,11 @@ export type AptosListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
 export type SuiListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
 export type BitcoinListenerType = ValueOf<typeof BITCOIN_LISTENER_TYPE>;
 export type ListenerType = CosmosListenerType | EthereumListenerType | AptosListenerType | BitcoinListenerType;
+
+export type EventDetail = {
+  chainType: ChainType;
+  data: {
+    error?: unknown | null;
+    result?: unknown | null;
+  };
+};

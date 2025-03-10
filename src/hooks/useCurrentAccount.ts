@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { getAddress, getKeypair } from '@/libs/address';
 import type { Account, AccountWithName } from '@/types/account';
 import type { ApprovedSuiPermissionType } from '@/types/extension';
+import { emitToWeb } from '@/utils/message';
 import { removeMnemonicName } from '@/utils/mnemonicNames';
-import { deleteKeysContainingString } from '@/utils/storage';
+import { deleteKeysContainingString, extensionLocalStorage } from '@/utils/storage';
 import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
 import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
 import { removeInitAccountId, removeInitAccountIds } from '@/utils/zustand/initAccountIds';
@@ -12,10 +14,17 @@ import { removeInitCheckLegacyBalanceAccountId, removeInitCheckLegacyBalanceAcco
 import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useChainList } from './useChainList';
+import { useCurrentPassword } from './useCurrentPassword';
+
 export function useCurrentAccount() {
   const { accounts, accountNamesById, selectedAccountId, approvedOrigins, approvedSuiPermissions, updateExtensionStorageStore } = useExtensionStorageStore(
     (state) => state,
   );
+
+  const { chainList } = useChainList();
+
+  const { currentPassword } = useCurrentPassword();
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -28,7 +37,56 @@ export function useCurrentAccount() {
   const setCurrentAccount = async (id: string) => {
     if (selectedAccountId === id) return;
 
-    await updateExtensionStorageStore('selectedAccountId', id);
+    const isExist = !!accounts.find((account) => account.id === id);
+
+    const newAccountId = isExist ? id : accounts[0].id;
+
+    await updateExtensionStorageStore('selectedAccountId', newAccountId);
+
+    const evmChainForAddress = chainList?.evmChains?.[0];
+
+    const ethereumKeyPair = getKeypair(evmChainForAddress!, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+    const ethereumAddress = getAddress(evmChainForAddress!, ethereumKeyPair?.publicKey);
+
+    const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === newAccountId).map((item) => item.origin)));
+    const currentAccountNotOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId !== newAccountId).map((item) => item.origin)));
+
+    emitToWeb({ event: 'accountsChanged', chainType: 'evm', data: { result: [ethereumAddress] } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'accountsChanged', chainType: 'evm', data: { result: [] } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+
+    emitToWeb({ event: 'accountChanged', chainType: 'cosmos', data: undefined }, currentAccountOrigins);
+
+    const aptosChainForAddress = chainList.aptosChains?.[0];
+
+    const aptosKeyPair = getKeypair(aptosChainForAddress!, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+    const aptosAddress = getAddress(aptosChainForAddress!, aptosKeyPair?.publicKey);
+
+    emitToWeb({ event: 'accountChange', chainType: 'aptos', data: { result: aptosAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'accountChange', chainType: 'aptos', data: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+
+    const suiChainForAddress = chainList.suiChains?.[0];
+
+    const suiKeyPair = getKeypair(suiChainForAddress!, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+    const suiAddress = getAddress(suiChainForAddress!, suiKeyPair?.publicKey);
+
+    emitToWeb({ event: 'accountChange', chainType: 'sui', data: { result: suiAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'accountChange', chainType: 'sui', data: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+
+    const { currentBitcoinNetwork } = await extensionLocalStorage();
+
+    const bitcoinKeyPair = getKeypair(currentBitcoinNetwork, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+    const bitcoinAddress = getAddress(currentBitcoinNetwork, bitcoinKeyPair?.publicKey);
+
+    emitToWeb({ event: 'accountChanged', chainType: 'bitcoin', data: { result: [bitcoinAddress] } }, currentAccountOrigins);
   };
 
   const addAccount = async (account: Account) => {
@@ -105,15 +163,12 @@ export function useCurrentAccount() {
       (approvedOrigin) => !(approvedOrigin.accountId === selectedAccountId && approvedOrigin.origin === origin),
     );
 
-    // TODO
-    // emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin]);
-
+    emitToWeb({ event: 'accountsChanged', chainType: 'evm', data: { result: [] } }, [origin]);
     await updateExtensionStorageStore('approvedOrigins', newApprovedOrigins);
   };
 
   const removeAllApprovedOrigin = async () => {
-    // TODO
-    // emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin]);
+    emitToWeb({ event: 'accountsChanged', chainType: 'evm', data: { result: [] } }, [origin]);
 
     await updateExtensionStorageStore('approvedOrigins', []);
     await updateExtensionStorageStore('approvedSuiPermissions', []);

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { EthereumListenerType } from '@/types/message';
+
+import type { EthereumListenerType, EventDetail } from '@/types/message';
 import type { EthRequestAccountsResponse } from '@/types/message/inject/evm';
 
 import { evmRequestApp } from '../request';
@@ -12,10 +12,10 @@ export class CosmostaionEthereum implements EthereumProvider {
   chainId?: string;
   networkVersion?: string;
 
-  private chainChangedEventHandler: (event: any) => void = () => {};
-  private accountsChangedEventHandler: (event: any) => void = () => {};
-  private disconnectEventHandler: (event: any) => void = () => {};
-  private connectEventHandler: (event: any) => void = () => {};
+  private chainChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  private accountsChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  private disconnectEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  private connectEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 
   public static getInstance(): CosmostaionEthereum {
     if (!CosmostaionEthereum.instance) {
@@ -28,27 +28,27 @@ export class CosmostaionEthereum implements EthereumProvider {
 
   on(eventName: EthereumListenerType, eventHandler: (data: unknown) => void) {
     if (eventName === 'chainChanged') {
-      this.chainChangedEventHandler = (event: any) => {
+      this.chainChangedEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'evm') {
           eventHandler(event.detail.data.result);
         }
       };
 
-      window.addEventListener('chainChanged', this.chainChangedEventHandler);
+      window.addEventListener('chainChanged', this.chainChangedEventHandler as EventListener);
     }
 
     if (eventName === 'accountsChanged') {
-      this.accountsChangedEventHandler = (event: any) => {
+      this.accountsChangedEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'evm') {
           eventHandler(event.detail.data.result as string[]);
         }
       };
 
-      window.addEventListener('accountsChanged', this.accountsChangedEventHandler);
+      window.addEventListener('accountsChanged', this.accountsChangedEventHandler as EventListener);
     }
 
     if (eventName === 'disconnect') {
-      this.disconnectEventHandler = (event: any) => {
+      this.disconnectEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'evm') {
           eventHandler(
             event.detail.data.result as {
@@ -60,11 +60,11 @@ export class CosmostaionEthereum implements EthereumProvider {
         }
       };
 
-      window.addEventListener('disconnect', this.disconnectEventHandler);
+      window.addEventListener('disconnect', this.disconnectEventHandler as EventListener);
     }
 
     if (eventName === 'connect') {
-      this.connectEventHandler = (event: any) => {
+      this.connectEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'evm') {
           eventHandler(
             event.detail.data.result as {
@@ -74,7 +74,7 @@ export class CosmostaionEthereum implements EthereumProvider {
         }
       };
 
-      window.addEventListener('connect', this.connectEventHandler);
+      window.addEventListener('connect', this.connectEventHandler as EventListener);
     }
   }
 
@@ -84,19 +84,19 @@ export class CosmostaionEthereum implements EthereumProvider {
 
   removeListener(eventName: EthereumListenerType) {
     if (eventName === 'chainChanged') {
-      window.removeEventListener('chainChanged', this.chainChangedEventHandler);
+      window.removeEventListener('chainChanged', this.chainChangedEventHandler as EventListener);
     }
 
     if (eventName === 'accountsChanged') {
-      window.removeEventListener('accountsChanged', this.accountsChangedEventHandler);
+      window.removeEventListener('accountsChanged', this.accountsChangedEventHandler as EventListener);
     }
 
     if (eventName === 'disconnect') {
-      window.removeEventListener('disconnect', this.disconnectEventHandler);
+      window.removeEventListener('disconnect', this.disconnectEventHandler as EventListener);
     }
 
     if (eventName === 'connect') {
-      window.removeEventListener('connect', this.connectEventHandler);
+      window.removeEventListener('connect', this.connectEventHandler as EventListener);
     }
   }
 

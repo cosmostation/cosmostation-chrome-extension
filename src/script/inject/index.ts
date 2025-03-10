@@ -1,6 +1,7 @@
 import { registerCosmosWallet } from '@cosmostation/wallets';
 import { registerWallet } from '@mysten/wallet-standard';
 
+import type { EventDetail } from '@/types/message';
 import type { ComProvidersResponse } from '@/types/message/inject/common';
 
 import { CosmostationAptos } from './aptos/provider/aptos';
@@ -45,15 +46,15 @@ void (() => {
       window.cosmostation.ethereum.networkVersion = `${parseInt(chainId as string, 16)}`;
     });
 
-    // const cosmostationEvent = new CustomEvent('cosmostation_keystorechange', { cancelable: true });
+    const cosmostationEvent = new CustomEvent('cosmostation_keystorechange', { cancelable: true });
 
-    // window.addEventListener('accountChanged', (event) => {
-    //   console.log('🚀 ~ window.addEventListener ~ event:', event);
+    const accountChangedHandler = (event: CustomEvent<EventDetail>) => {
+      if (event?.type === 'accountChanged' && event.detail.chainType === 'cosmos') {
+        window.dispatchEvent(cosmostationEvent);
+      }
+    };
 
-    //   if (event.data?.event === 'accountChanged' && event.detail.chainType === 'cosmos') {
-    //     window.dispatchEvent(cosmostationEvent);
-    //   }
-    // });
+    window.addEventListener('accountChanged', accountChangedHandler as EventListener);
 
     const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
 
@@ -64,15 +65,15 @@ void (() => {
       window.getOfflineSignerOnlyAmino = window.cosmostation.providers.keplr.getOfflineSignerOnlyAmino;
       window.getOfflineSignerAuto = window.cosmostation.providers.keplr.getOfflineSignerAuto;
 
-      // const keplrEvent = new CustomEvent('keplr_keystorechange', { cancelable: true });
+      const keplrEvent = new CustomEvent('keplr_keystorechange', { cancelable: true });
 
-      // const handler = (event: MessageEvent<ListenerMessage>) => {
-      //   if (event.data?.isCosmostation && event.data?.type === 'accountChanged' && event.data?.line === 'COSMOS') {
-      //     window.dispatchEvent(keplrEvent);
-      //   }
-      // };
+      const handler = (event: CustomEvent<EventDetail>) => {
+        if (event?.type === 'accountChanged' && event.detail.chainType === 'cosmos') {
+          window.dispatchEvent(keplrEvent);
+        }
+      };
 
-      // window.addEventListener('message', handler);
+      window.addEventListener('accountChanged', handler as EventListener);
     }
 
     if (providers.metamask && !window.ethereum?.isMetaMask) {

@@ -1,9 +1,12 @@
+import type { ChainType } from '@/types/chain';
+import type { ListenerType } from '@/types/message';
+
 import { extension } from './browser';
 
 export function emitToWeb(
   data: {
-    event: string;
-    chainType: string;
+    event: ListenerType;
+    chainType: ChainType;
     data: unknown;
   },
   origins: string[],

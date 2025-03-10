@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { AptosListenerType } from '@/types/message';
+import type { AptosListenerType, EventDetail } from '@/types/message';
 import type {
   AptosAccountResponse,
   AptosConnectResponse,
@@ -32,8 +31,8 @@ const signMessage = (params: AptosSignMessage['params'][0]) =>
 export class CosmostationAptos implements AptosProvider {
   private static instance: AptosProvider;
 
-  private networkChangeEventHandler: (event: any) => void = () => {};
-  private accountsChangedEventHandler: (event: any) => void = () => {};
+  private networkChangeEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  private accountsChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 
   public static getInstance(): AptosProvider {
     if (!CosmostationAptos.instance) {
@@ -45,17 +44,17 @@ export class CosmostationAptos implements AptosProvider {
   request = aptosRequestApp;
   on(eventName: AptosListenerType, eventHandler: (data: unknown) => void) {
     if (eventName === 'networkChange') {
-      this.networkChangeEventHandler = (event: any) => {
+      this.networkChangeEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'aptos') {
           eventHandler(event.detail.data.result);
         }
       };
 
-      window.addEventListener('networkChange', this.networkChangeEventHandler);
+      window.addEventListener('networkChange', this.networkChangeEventHandler as EventListener);
     }
 
     if (eventName === 'accountChange') {
-      this.accountsChangedEventHandler = (event: any) => {
+      this.accountsChangedEventHandler = (event: CustomEvent<EventDetail>) => {
         if (event.detail.chainType === 'aptos') {
           if (!event.detail.data.result) {
             void (async () => {
@@ -73,16 +72,16 @@ export class CosmostationAptos implements AptosProvider {
         }
       };
 
-      window.addEventListener('accountChange', this.accountsChangedEventHandler);
+      window.addEventListener('accountChange', this.accountsChangedEventHandler as EventListener);
     }
   }
   off(eventName: AptosListenerType) {
     if (eventName === 'networkChange') {
-      window.removeEventListener('chainChanged', this.networkChangeEventHandler);
+      window.removeEventListener('chainChanged', this.networkChangeEventHandler as EventListener);
     }
 
     if (eventName === 'accountChange') {
-      window.removeEventListener('accountChange', this.accountsChangedEventHandler);
+      window.removeEventListener('accountChange', this.accountsChangedEventHandler as EventListener);
     }
   }
   connect = connect;
