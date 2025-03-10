@@ -60,7 +60,7 @@ export default function Cosmos() {
   const [isSupportCosmwasm, setIsSupportCosmwasm] = useState('False');
   const [selectedPubkeyStyle, setSelectedPubkeyStyle] = useState(PUBKEY_STYLE.secp256k1);
 
-  const cosmosChains = [...(chainList?.cosmosChains || []), ...chainList.customCosmosChains];
+  const cosmosChains = [...(chainList?.allCosmosChains || [])];
   const invalidChainIds = cosmosChains?.map((chain) => chain.chainId) || [];
 
   const { addChainForm } = useSchema();

@@ -36,7 +36,7 @@ export default function Entry() {
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
           const { tabId, requestId, origin, params } = currentRequestQueue;
 
-          const allCosmosChains = [...(chainList.cosmosChains || []), ...chainList.customCosmosChains];
+          const allCosmosChains = chainList?.allCosmosChains || [];
 
           const selectedChain = allCosmosChains.filter((item) => item.chainId === params?.chainName);
 
@@ -252,6 +252,6 @@ export default function Entry() {
     };
 
     handleRequestAccount();
-  }, [chainList.cosmosChains, chainList.customCosmosChains, currentAccount, currentPassword, currentPreferAccountType, currentRequestQueue, deQueue]);
+  }, [chainList?.allCosmosChains, currentAccount, currentPassword, currentPreferAccountType, currentRequestQueue, deQueue]);
   return null;
 }

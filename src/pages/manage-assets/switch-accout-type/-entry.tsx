@@ -22,8 +22,10 @@ export default function Entry() {
 
   const managedChains = useMemo(
     () =>
-      flatChainList.filter((chain) => ![...chainList.customCosmosChains, ...chainList.customEvmChains].some((customChain) => isSameChain(chain, customChain))),
-    [chainList.customCosmosChains, chainList.customEvmChains, flatChainList],
+      flatChainList.filter(
+        (chain) => ![...(chainList?.customCosmosChains || []), ...(chainList?.customEvmChains || [])].some((customChain) => isSameChain(chain, customChain)),
+      ),
+    [chainList?.customCosmosChains, chainList?.customEvmChains, flatChainList],
   );
 
   const mappedAccountTypes = useMemo(

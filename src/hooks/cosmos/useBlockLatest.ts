@@ -19,7 +19,7 @@ export function useBlockLatest({ chainId, config }: UseBlockLatestProps) {
   const { chainList } = useChainList();
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const chain = chainList.cosmosChains?.find((asset) => isMatchingUniqueChainId(asset, chainId));
+  const chain = chainList?.allCosmosChains?.find((asset) => isMatchingUniqueChainId(asset, chainId));
 
   const requestURLs = useMemo(() => {
     if (!chain) return [];

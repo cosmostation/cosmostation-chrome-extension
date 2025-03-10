@@ -29,7 +29,7 @@ export function useSchema() {
 
   const { chainList } = useChainList();
 
-  const cosmosChains = [...(chainList?.cosmosChains || []), ...chainList.customCosmosChains];
+  const cosmosChains = [...(chainList?.allCosmosChains || [])];
 
   const invalidChainNames = cosmosChains.map((chain) => chain.name);
 

@@ -44,7 +44,7 @@ export default function EVM() {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const evmChains = [...(chainList?.evmChains || []), ...chainList.customEvmChains];
+  const evmChains = [...(chainList?.allEVMChains || [])];
   const invalidChainIds = evmChains?.map((chain) => chain.chainId) || [];
 
   const { addNetworkForm } = useSchema();

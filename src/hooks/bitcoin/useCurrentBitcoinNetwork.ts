@@ -14,7 +14,7 @@ export function useCurrentBitcoinNetwork() {
   const { chosenBitcoinNetworkId, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
 
-  const allNetworks = useMemo(() => [...(chainList.bitcoinChains || [])], [chainList.bitcoinChains]);
+  const allNetworks = useMemo(() => [...(chainList?.bitcoinChains || [])], [chainList?.bitcoinChains]);
 
   const currentAccountSelectedBitcoinNetworkId = allNetworks.find((network) => network.id === chosenBitcoinNetworkId)?.id ?? allNetworks[0]?.id;
 

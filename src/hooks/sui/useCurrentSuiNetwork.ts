@@ -11,7 +11,7 @@ export function useCurrentSuiNetwork() {
   const { chainList } = useChainList();
   const { chosenSuiNetworkId, approvedOrigins, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const allSuiChains = useMemo(() => [...(chainList.suiChains || [])], [chainList.suiChains]);
+  const allSuiChains = useMemo(() => [...(chainList?.suiChains || [])], [chainList?.suiChains]);
 
   const currentAccountSelectedSuiNetworkId = useMemo(() => {
     const selectedEvmChain = allSuiChains.find((network) => isMatchingUniqueChainId(network, chosenSuiNetworkId)) || allSuiChains[0];

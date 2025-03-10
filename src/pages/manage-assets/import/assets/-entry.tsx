@@ -17,8 +17,8 @@ export default function Entry() {
   const { chainList } = useChainList();
 
   // FIXME Shido케이스 핸들링 필요., 커스텀 체인도 리스팅되도록 로직 수정 필요
-  const allCosmosChains = [...(chainList?.cosmosChains || []), ...chainList.customCosmosChains];
-  const allEVMChains = [...(chainList?.evmChains || []), ...chainList.customEvmChains];
+  const allCosmosChains = [...(chainList?.allCosmosChains || [])];
+  const allEVMChains = [...(chainList?.allEVMChains || [])];
 
   const mergedChainList = [...allEVMChains, ...(allCosmosChains?.filter((chain) => chain.isCosmwasm) || [])];
 

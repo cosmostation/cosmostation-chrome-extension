@@ -11,7 +11,7 @@ export function useCurrentEVMNetwork() {
   const { chainList } = useChainList();
   const { chosenEthereumNetworkId, addedCustomChainList, approvedOrigins, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const allEVMChains = useMemo(() => [...(chainList.evmChains || []), ...chainList.customEvmChains], [chainList.customEvmChains, chainList.evmChains]);
+  const allEVMChains = useMemo(() => [...(chainList?.allEVMChains || [])], [chainList?.allEVMChains]);
   const additionalEthereumNetworks = useMemo(() => addedCustomChainList.filter((chain) => chain.chainType === 'evm'), [addedCustomChainList]);
 
   const currentAccountSelectedEthereumNetworkId = useMemo(() => {

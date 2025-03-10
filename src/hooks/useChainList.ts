@@ -2,11 +2,10 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { getChains } from '@/libs/chain';
-
-import { useCustomChain } from './useCustomChain';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useChainList() {
-  const { addedCustomChainList } = useCustomChain();
+  const { addedCustomChainList } = useExtensionStorageStore((state) => state);
 
   const fetcher = async () => {
     return getChains();
@@ -22,10 +21,15 @@ export function useChainList() {
     const customCosmosChains = addedCustomChainList.filter((chain) => chain.chainType === 'cosmos');
     const customEvmChains = addedCustomChainList.filter((chain) => chain.chainType === 'evm');
 
+    const allCosmosChains = [...(data?.cosmosChains || []), ...customCosmosChains];
+    const allEVMChains = [...(data?.evmChains || []), ...customEvmChains];
+
     return {
       ...data,
       customCosmosChains,
       customEvmChains,
+      allCosmosChains,
+      allEVMChains,
     };
   }, [addedCustomChainList, data]);
 
