@@ -45,8 +45,8 @@ import { Route as PopupSuiTransactionIndexImport } from './pages/popup/sui/trans
 import { Route as PopupSuiSignMessageIndexImport } from './pages/popup/sui/sign-message/index'
 import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/transaction/index'
 import { Route as PopupEvmSwitchNetworkIndexImport } from './pages/popup/evm/switch-network/index'
-import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/addChain/index'
 import { Route as PopupCosmosAddTokenIndexImport } from './pages/popup/cosmos/add-token/index'
+import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/add-chain/index'
 import { Route as PopupBitcoinSwitchNetworkIndexImport } from './pages/popup/bitcoin/switch-network/index'
 import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
 import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
@@ -293,15 +293,15 @@ const PopupEvmSwitchNetworkIndexRoute = PopupEvmSwitchNetworkIndexImport.update(
   } as any,
 )
 
-const PopupCosmosAddChainIndexRoute = PopupCosmosAddChainIndexImport.update({
-  id: '/popup/cosmos/addChain/',
-  path: '/popup/cosmos/addChain/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const PopupCosmosAddTokenIndexRoute = PopupCosmosAddTokenIndexImport.update({
   id: '/popup/cosmos/add-token/',
   path: '/popup/cosmos/add-token/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupCosmosAddChainIndexRoute = PopupCosmosAddChainIndexImport.update({
+  id: '/popup/cosmos/add-chain/',
+  path: '/popup/cosmos/add-chain/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -764,18 +764,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupBitcoinSwitchNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/cosmos/add-chain/': {
+      id: '/popup/cosmos/add-chain/'
+      path: '/popup/cosmos/add-chain'
+      fullPath: '/popup/cosmos/add-chain'
+      preLoaderRoute: typeof PopupCosmosAddChainIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/cosmos/add-token/': {
       id: '/popup/cosmos/add-token/'
       path: '/popup/cosmos/add-token'
       fullPath: '/popup/cosmos/add-token'
       preLoaderRoute: typeof PopupCosmosAddTokenIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/popup/cosmos/addChain/': {
-      id: '/popup/cosmos/addChain/'
-      path: '/popup/cosmos/addChain'
-      fullPath: '/popup/cosmos/addChain'
-      preLoaderRoute: typeof PopupCosmosAddChainIndexImport
       parentRoute: typeof rootRoute
     }
     '/popup/evm/switch-network/': {
@@ -996,8 +996,8 @@ export interface FileRoutesByFullPath {
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
+  '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
-  '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
@@ -1063,8 +1063,8 @@ export interface FileRoutesByTo {
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
+  '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
-  '/popup/cosmos/addChain': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
@@ -1131,8 +1131,8 @@ export interface FileRoutesById {
   '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/popup/bitcoin/switch-network/': typeof PopupBitcoinSwitchNetworkIndexRoute
+  '/popup/cosmos/add-chain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token/': typeof PopupCosmosAddTokenIndexRoute
-  '/popup/cosmos/addChain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/evm/switch-network/': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction/': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message/': typeof PopupSuiSignMessageIndexRoute
@@ -1200,8 +1200,8 @@ export interface FileRouteTypes {
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
     | '/popup/bitcoin/switch-network'
+    | '/popup/cosmos/add-chain'
     | '/popup/cosmos/add-token'
-    | '/popup/cosmos/addChain'
     | '/popup/evm/switch-network'
     | '/popup/evm/transaction'
     | '/popup/sui/sign-message'
@@ -1266,8 +1266,8 @@ export interface FileRouteTypes {
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
     | '/popup/bitcoin/switch-network'
+    | '/popup/cosmos/add-chain'
     | '/popup/cosmos/add-token'
-    | '/popup/cosmos/addChain'
     | '/popup/evm/switch-network'
     | '/popup/evm/transaction'
     | '/popup/sui/sign-message'
@@ -1332,8 +1332,8 @@ export interface FileRouteTypes {
     | '/manage-assets/visibility/assets/'
     | '/manage-assets/visibility/network/'
     | '/popup/bitcoin/switch-network/'
+    | '/popup/cosmos/add-chain/'
     | '/popup/cosmos/add-token/'
-    | '/popup/cosmos/addChain/'
     | '/popup/evm/switch-network/'
     | '/popup/evm/transaction/'
     | '/popup/sui/sign-message/'
@@ -1400,8 +1400,8 @@ export interface RootRouteChildren {
   ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
   ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
   PopupBitcoinSwitchNetworkIndexRoute: typeof PopupBitcoinSwitchNetworkIndexRoute
-  PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
   PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
+  PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
   PopupEvmSwitchNetworkIndexRoute: typeof PopupEvmSwitchNetworkIndexRoute
   PopupEvmTransactionIndexRoute: typeof PopupEvmTransactionIndexRoute
   PopupSuiSignMessageIndexRoute: typeof PopupSuiSignMessageIndexRoute
@@ -1477,8 +1477,8 @@ const rootRouteChildren: RootRouteChildren = {
   ManageAssetsVisibilityNetworkIndexRoute:
     ManageAssetsVisibilityNetworkIndexRoute,
   PopupBitcoinSwitchNetworkIndexRoute: PopupBitcoinSwitchNetworkIndexRoute,
-  PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
   PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
+  PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
   PopupEvmSwitchNetworkIndexRoute: PopupEvmSwitchNetworkIndexRoute,
   PopupEvmTransactionIndexRoute: PopupEvmTransactionIndexRoute,
   PopupSuiSignMessageIndexRoute: PopupSuiSignMessageIndexRoute,
@@ -1566,8 +1566,8 @@ export const routeTree = rootRoute
         "/manage-assets/visibility/assets/",
         "/manage-assets/visibility/network/",
         "/popup/bitcoin/switch-network/",
+        "/popup/cosmos/add-chain/",
         "/popup/cosmos/add-token/",
-        "/popup/cosmos/addChain/",
         "/popup/evm/switch-network/",
         "/popup/evm/transaction/",
         "/popup/sui/sign-message/",
@@ -1706,11 +1706,11 @@ export const routeTree = rootRoute
     "/popup/bitcoin/switch-network/": {
       "filePath": "popup/bitcoin/switch-network/index.tsx"
     },
+    "/popup/cosmos/add-chain/": {
+      "filePath": "popup/cosmos/add-chain/index.tsx"
+    },
     "/popup/cosmos/add-token/": {
       "filePath": "popup/cosmos/add-token/index.tsx"
-    },
-    "/popup/cosmos/addChain/": {
-      "filePath": "popup/cosmos/addChain/index.tsx"
     },
     "/popup/evm/switch-network/": {
       "filePath": "popup/evm/switch-network/index.tsx"

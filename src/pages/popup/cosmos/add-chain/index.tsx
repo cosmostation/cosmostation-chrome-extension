@@ -8,7 +8,7 @@ import Entry from './-entry';
 import Layout from './-layout';
 import AccessRequest from '../../-components/requests/AccessRequest';
 
-export const Route = createFileRoute('/popup/cosmos/addChain/')({
+export const Route = createFileRoute('/popup/cosmos/add-chain/')({
   component: CosmosAddChain,
 });
 
