@@ -74,7 +74,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [tabValue, setTabValue] = useState(0);
-  const tabLabels = ['Detail', 'Data', 'Decoded'];
+  const tabLabels = ['Detail', 'Data'];
 
   const [txMessagePage, setTxMessagePage] = useState(0);
 
@@ -92,7 +92,6 @@ export default function Entry({ request, chain }: EntryProps) {
   const decodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(body_bytes), [body_bytes]);
   const decodedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
 
-  // NOTE 카바의 경우 어카운트 타입이 여러개이기 떄문에 특정지을 필요가 있음.
   const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
 
   const [inputMemo, setInputMemo] = useState(decodedBodyBytes.memo);
@@ -396,6 +395,7 @@ export default function Entry({ request, chain }: EntryProps) {
               {tabLabels.map((item) => (
                 <FilledTab key={item} label={item} />
               ))}
+              {decodedByProtoBuilderTx && <FilledTab label="Decoded" />}
             </FilledTabs>
           </StickyTabContainer>
           <StyledTabPanel value={tabValue} index={0}>

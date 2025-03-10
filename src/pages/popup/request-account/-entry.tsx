@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
+import { produce } from 'immer';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
@@ -21,6 +23,7 @@ import { addHexPrefix } from '@/utils/string';
 
 export default function Entry() {
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
 
   const { currentPassword } = useCurrentPassword();
@@ -42,17 +45,28 @@ export default function Entry() {
           const chain = allCosmosChains.find((item) => item.name.toLowerCase() === chainName) as CosmosChain | undefined;
 
           if (chain) {
-            const keyPair = getKeypair(chain, currentAccount, currentPassword);
-            const address = getAddress(chain, keyPair.publicKey);
+            const inAppSelectedPreferAccountType = currentPreferAccountType[chain.id];
+
+            const updatedChain = inAppSelectedPreferAccountType
+              ? produce(chain, (draft) => {
+                  draft.accountTypes = draft.accountTypes.filter(
+                    (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+                  );
+                })
+              : chain;
+
+            const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
+            const address = getAddress(updatedChain, keyPair.publicKey);
 
             const publicKey = keyPair.publicKey;
+            const isEthermint = updatedChain.accountTypes[0].pubkeyStyle === 'keccak256';
 
             const result: CosRequestAccountResponse = {
               address,
               publicKey,
               name: currentAccount.name,
               isLedger: false,
-              isEthermint: chain.isEvm,
+              isEthermint,
             };
 
             sendMessage<ResponseAppMessage<CosRequestAccount>>({
@@ -238,15 +252,6 @@ export default function Entry() {
     };
 
     handleRequestAccount();
-  }, [
-    chainList.cosmosChains,
-    chainList.customCosmosChains,
-    chainList.evmChains,
-    chainList.suiChains,
-    currentAccount,
-    currentPassword,
-    currentRequestQueue,
-    deQueue,
-  ]);
+  }, [chainList.cosmosChains, chainList.customCosmosChains, currentAccount, currentPassword, currentPreferAccountType, currentRequestQueue, deQueue]);
   return null;
 }

@@ -1,3 +1,4 @@
+import { produce } from 'immer';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -24,11 +25,17 @@ function CosmosSignAmino() {
   if (currentRequestQueue && isCosSignAmino(currentRequestQueue)) {
     const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) => asset.chain.name === currentRequestQueue.params.chainName);
 
-    if (selectedAsset?.chain) {
+    if (selectedAsset) {
+      const updatedChain = produce(selectedAsset.chain, (draft) => {
+        draft.accountTypes = draft.accountTypes.filter(
+          (item) => item.pubkeyStyle === selectedAsset.address.accountType.pubkeyStyle && item.hdPath === selectedAsset.address.accountType.hdPath,
+        );
+      });
+
       return (
         <AccessRequest>
           <Layout>
-            <Entry request={currentRequestQueue} chain={selectedAsset.chain} />
+            <Entry request={currentRequestQueue} chain={updatedChain} />
           </Layout>
         </AccessRequest>
       );

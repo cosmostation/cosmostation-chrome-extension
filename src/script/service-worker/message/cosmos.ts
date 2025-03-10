@@ -1,6 +1,7 @@
 import encHex from 'crypto-js/enc-hex';
 import sha256 from 'crypto-js/sha256';
 import { keccak256 } from 'ethers/crypto';
+import { produce } from 'immer';
 import sortKeys from 'sort-keys';
 import ecc from '@bitcoinerlab/secp256k1';
 
@@ -59,8 +60,11 @@ import {
 export async function cosmosProcess(message: CosmosRequest) {
   const { method, requestId, tabId, origin } = message;
 
-  // FIXME kava같은 경우에 459할수도 60할수도 있으니까 preferAccountType별로 필터링해야함.
   const { cosmosChains } = await getChains();
+
+  const { currentAccount, currentAccountAllowedOrigins, currentAccountName, approvedOrigins, preferAccountType } = await extensionLocalStorage();
+  const { currentPassword } = await extensionSessionStorage();
+
   const addedCustomChains = await getAddedCustomChains();
 
   const cosmosAdditionalChains = addedCustomChains.filter((chain) => chain.chainType === 'cosmos');
@@ -73,10 +77,24 @@ export async function cosmosProcess(message: CosmosRequest) {
 
   const allCosmosChains = [...cosmosChains, ...cosmosAdditionalChains];
   const allChainLowercaseNames = allCosmosChains.map((item) => item.name.toLowerCase());
-  const getChain = (chainName?: string) => allCosmosChains.find((item) => item.name.toLowerCase() === chainName?.toLowerCase());
 
-  const { currentAccount, currentAccountAllowedOrigins, currentAccountName, approvedOrigins } = await extensionLocalStorage();
-  const { currentPassword } = await extensionSessionStorage();
+  const getChain = (chainName?: string) => {
+    const chain = allCosmosChains.find((item) => item.name.toLowerCase() === chainName?.toLowerCase());
+
+    if (!chain) return chain;
+
+    const inAppSelectedPreferAccountType = preferAccountType[currentAccount.id][chain.id];
+
+    const response = inAppSelectedPreferAccountType
+      ? produce(chain, (draft) => {
+          draft.accountTypes = draft.accountTypes.filter(
+            (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+          );
+        })
+      : chain;
+
+    return response;
+  };
 
   const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
 
@@ -104,13 +122,14 @@ export async function cosmosProcess(message: CosmosRequest) {
           const address = getAddress(chain, keyPair?.publicKey);
 
           const publicKey = keyPair?.publicKey || '';
+          const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
 
           const result: CosRequestAccountResponse = {
             address,
             publicKey,
             name: currentAccountName,
             isLedger: false,
-            isEthermint: chain.isEvm,
+            isEthermint,
           };
 
           sendMessage<ResponseAppMessage<CosRequestAccount>>({
@@ -438,13 +457,14 @@ export async function cosmosProcess(message: CosmosRequest) {
           const address = getAddress(chain, keyPair?.publicKey);
 
           const publicKey = keyPair?.publicKey || '';
+          const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
 
           const result: CosAccountResponse = {
             address,
             publicKey,
             name: currentAccountName,
             isLedger: false,
-            isEthermint: chain.isEvm,
+            isEthermint: isEthermint,
           };
 
           sendMessage<ResponseAppMessage<CosAccount>>({
@@ -727,7 +747,9 @@ export async function cosmosProcess(message: CosmosRequest) {
 
           const signDoc = JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message)));
 
-          const tx = chain.isEvm
+          const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+          const tx = isEthermint
             ? keccak256(Buffer.from(signDoc)).substring(2)
             : sha256(JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message), { deep: true }))).toString(encHex);
 

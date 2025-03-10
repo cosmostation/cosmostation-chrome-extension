@@ -1,3 +1,4 @@
+import { produce } from 'immer';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -22,14 +23,19 @@ function CosmosSignMessage() {
   });
 
   if (currentRequestQueue && isCosSignMessage(currentRequestQueue)) {
-    // NOTE 카바케이스를 위해서 비트코인처럼 accountType필터링 필요.
     const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) => asset.chain.name === currentRequestQueue.params.chainName);
 
     if (selectedAsset?.chain) {
+      const updatedChain = produce(selectedAsset.chain, (draft) => {
+        draft.accountTypes = draft.accountTypes.filter(
+          (item) => item.pubkeyStyle === selectedAsset.address.accountType.pubkeyStyle && item.hdPath === selectedAsset.address.accountType.hdPath,
+        );
+      });
+
       return (
         <AccessRequest>
           <Layout>
-            <Entry request={currentRequestQueue} chain={selectedAsset.chain} />
+            <Entry request={currentRequestQueue} chain={updatedChain} />
           </Layout>
         </AccessRequest>
       );
