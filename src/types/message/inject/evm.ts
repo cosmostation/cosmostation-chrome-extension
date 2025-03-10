@@ -24,7 +24,8 @@ export type EvmRequest =
   | WalletSwitchEthereumChain
   | EthCoinBase
   | WalletGetPermission
-  | EthGetBalance;
+  | EthGetBalance
+  | EthNetVersion;
 
 export interface EvmResponse {
   [EVM_METHOD_TYPE.ETH__REQUEST_ACCOUNTS]: EthRequestAccountsResponse;
@@ -44,6 +45,7 @@ export interface EvmResponse {
   [EVM_METHOD_TYPE.WALLET__ADD_ETHEREUM_CHAIN]: WalletAddEthereumChainResponse;
   [EVM_METHOD_TYPE.WALLET__SWITCH_ETHEREUM_CHAIN]: WalletSwitchEthereumChainResponse;
   [EVM_METHOD_TYPE.ETH__COINBASE]: EthCoinbaseResponse;
+  [EVM_METHOD_TYPE.NET__VERSION]: EthNetVersionResponse;
 }
 
 export interface EthRequestAccounts extends RequestBase {
@@ -264,3 +266,11 @@ export interface EthGetBalance extends RequestBase {
   method: typeof EVM_METHOD_TYPE.ETH__GET_BALANCE;
   params: string[];
 }
+
+export interface EthNetVersion extends RequestBase {
+  chainType: Extract<ChainType, 'evm'>;
+  method: typeof EVM_METHOD_TYPE.NET__VERSION;
+  params?: unknown;
+}
+
+export type EthNetVersionResponse = string;

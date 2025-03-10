@@ -12,17 +12,19 @@ import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import PaginationControls from '@/components/PaginationControls';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
-import { useTokenBalance } from '@/hooks/cosmos/useTokenBalance';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
+import { useTokenBalance } from '@/hooks/evm/useTokenBalance';
 import { useCoinList } from '@/hooks/useCoinList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
-import { useCurrentCustomCW20Tokens } from '@/hooks/useCurrentCustomCW20Tokens';
+import { useCurrentCustomERC20Tokens } from '@/hooks/useCurrentCustomERC20Tokens';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getAddress, getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import type { CosmosChain } from '@/types/chain';
-import type { CosAddTokensCW20Internal, CosAddTokensCW20Response } from '@/types/message/inject/cosmos';
+import type { ResponseAppMessage } from '@/types/message/content';
+import type { EthcAddTokens } from '@/types/message/inject/evm';
 import { toDisplayDenomAmount } from '@/utils/numbers';
+import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import { AmountContainer, DetailWrapper, Divider, LabelContainer, LineDivider, MsgTitle, MsgTitleContainer } from './-styled';
@@ -31,63 +33,77 @@ import { AddressContainer } from '../../-components/CommonTxMessageStyle';
 import DappInfo from '../../-components/DappInfo';
 
 type EntryProps = {
-  request: CosAddTokensCW20Internal;
-  chain: CosmosChain;
+  request: EthcAddTokens;
 };
 
 // TODO 기존에 등록되 있는 토큰은 화이트리스트에 추가, 없던 코인은 새로 추가
-export default function Entry({ request, chain }: EntryProps) {
+export default function Entry({ request }: EntryProps) {
   const { t } = useTranslation();
 
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+
+  const { currentEVMNetwork } = useCurrentEVMNetwork();
   const { data } = useCoinList();
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { chainName, tokens } = request.params;
+  const tokens = request.params;
 
   const [currentStep, setCurrentStep] = useState(0);
 
   const wrappedTokens = useMemo(() => {
-    return tokens.map((token) => ({
-      ...token,
-      image: data?.cw20Assets.find((coin) => coin.id === token.id)?.image,
-      coinGeckoId: data?.cw20Assets.find((coin) => coin.id === token.id)?.coinGeckoId,
-    }));
-  }, [data?.cw20Assets, tokens]);
+    return tokens.map((token) => {
+      const selectedToken = data?.erc20Assets.find((coin) => isEqualsIgnoringCase(coin.id, token.id));
+
+      if (selectedToken) {
+        return {
+          ...token,
+          id: selectedToken.id,
+          symbol: selectedToken.symbol,
+          decimals: selectedToken.decimals,
+          image: selectedToken.image,
+          coinGeckoId: selectedToken.coinGeckoId,
+        };
+      }
+      return token;
+    });
+  }, [data?.erc20Assets, tokens]);
 
   const currentToken = useMemo(() => wrappedTokens[currentStep], [currentStep, wrappedTokens]);
 
-  const { addCustomCW20Tokens } = useCurrentCustomCW20Tokens();
+  const { addCustomERC20Tokens } = useCurrentCustomERC20Tokens();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const keyPair = getKeypair(chain, currentAccount, currentPassword);
-  const address = getAddress(chain, keyPair.publicKey);
+  const keyPair = useMemo(
+    () => currentEVMNetwork && getKeypair(currentEVMNetwork, currentAccount, currentPassword),
+    [currentAccount, currentEVMNetwork, currentPassword],
+  );
+  const address = useMemo(
+    () => currentEVMNetwork && keyPair?.publicKey && getAddress(currentEVMNetwork, keyPair.publicKey),
+    [currentEVMNetwork, keyPair?.publicKey],
+  );
 
   const { data: tokenBalance } = useTokenBalance({
-    chain,
     address,
-    contractAddress: currentToken.id,
+    tokenContractAddress: currentToken.id,
   });
 
   const { siteIconURL } = useSiteIconURL(request.origin);
   const siteTitle = getSiteTitle(request.origin);
 
-  const currentTokenDiplayAmount = useMemo(
-    () => toDisplayDenomAmount(tokenBalance?.data.balance ?? '0', currentToken.decimals || 0),
-    [currentToken.decimals, tokenBalance?.data.balance],
-  );
+  const currentTokenDiplayAmount = useMemo(() => toDisplayDenomAmount(tokenBalance ?? '0', currentToken.decimals || 0), [currentToken.decimals, tokenBalance]);
 
   const handleOnClickAdd = async () => {
     try {
       setIsProcessing(true);
 
-      await addCustomCW20Tokens(wrappedTokens);
+      await addCustomERC20Tokens(wrappedTokens);
 
-      const result: CosAddTokensCW20Response = null;
-      sendMessage({
+      const result = null;
+
+      sendMessage<ResponseAppMessage<EthcAddTokens>>({
         target: 'CONTENT',
         method: 'responseApp',
         origin: request.origin,
@@ -127,7 +143,7 @@ export default function Entry({ request, chain }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={currentRequestQueue?.origin} />
           <LineDivider />
           <MsgTitleContainer>
-            <MsgTitle variant="h3_B">{t('pages.popup.cosmos.add-token.entry.addCustomToken')}</MsgTitle>
+            <MsgTitle variant="h3_B">{t('pages.popup.evm.add-token.entry.addCustomToken')}</MsgTitle>
             {wrappedTokens.length > 1 && (
               <PaginationControls
                 currentPage={currentStep}
@@ -148,12 +164,12 @@ export default function Entry({ request, chain }: EntryProps) {
               margin: '1.2rem 0 1rem',
             }}
           >
-            {t('pages.popup.cosmos.add-token.entry.tokenToAdd')}
+            {t('pages.popup.evm.add-token.entry.tokenToAdd')}
           </Base1000Text>
           <AssetContainer
             tokenimageURL={currentToken.image || 'unknown'}
             leftHeaderComponent={<Base1300Text variant="b2_M">{currentToken.symbol}</Base1300Text>}
-            leftSubHeaderComponent={<Base1000Text variant="b4_R">{chainName}</Base1000Text>}
+            leftSubHeaderComponent={<Base1000Text variant="b4_R">{currentEVMNetwork?.name}</Base1000Text>}
             rightHeaderComponent={
               <AmountContainer>
                 <NumberTypo typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" fixed={6}>
@@ -176,7 +192,7 @@ export default function Entry({ request, chain }: EntryProps) {
                 marginBottom: '0.4rem',
               }}
             >
-              {t('pages.popup.cosmos.add-token.entry.contractAddress')}
+              {t('pages.popup.evm.add-token.entry.contractAddress')}
             </Base1000Text>
             <AddressContainer>
               <Base1300Text variant="b3_M">{currentToken.id}</Base1300Text>
@@ -189,9 +205,9 @@ export default function Entry({ request, chain }: EntryProps) {
                 marginBottom: '0.4rem',
               }}
             >
-              {t('pages.popup.cosmos.add-token.entry.type')}
+              {t('pages.popup.evm.add-token.entry.type')}
             </Base1000Text>
-            <Base1300Text variant="b3_M">{'CW20'}</Base1300Text>
+            <Base1300Text variant="b3_M">{'ERC20'}</Base1300Text>
           </LabelContainer>
           <LabelContainer>
             <Base1000Text
@@ -200,7 +216,7 @@ export default function Entry({ request, chain }: EntryProps) {
                 marginBottom: '0.4rem',
               }}
             >
-              {t('pages.popup.cosmos.add-token.entry.decimals')}
+              {t('pages.popup.evm.add-token.entry.decimals')}
             </Base1000Text>
             <Base1300Text variant="b3_M">{currentToken.decimals}</Base1300Text>
           </LabelContainer>
@@ -230,12 +246,12 @@ export default function Entry({ request, chain }: EntryProps) {
               }}
               variant="dark"
             >
-              {t('pages.popup.cosmos.add-token.entry.reject')}
+              {t('pages.popup.evm.add-token.entry.reject')}
             </Button>
           }
           confirmButton={
             <Button isProgress={isProcessing} onClick={handleOnClickAdd}>
-              {t('pages.popup.cosmos.add-token.entry.addToken')}
+              {t('pages.popup.evm.add-token.entry.addToken')}
             </Button>
           }
         />

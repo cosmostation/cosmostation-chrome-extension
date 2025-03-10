@@ -18,6 +18,7 @@ import type {
   EthCoinbaseResponse,
   EthcSwitchNetwork,
   EthcSwitchNetworkResponse,
+  EthNetVersion,
   EthRequestAccounts,
   EthRequestAccountsResponse,
   EthRequestChainId,
@@ -602,6 +603,20 @@ export async function evmProcess(message: EvmRequest) {
             params: {
               id: requestId,
               result: currentEthereumNetwork.chainId,
+            },
+          });
+        } else if (method === 'net_version') {
+          const netVersion = `${parseInt(currentEthereumNetwork.chainId, 16)}`;
+
+          sendMessage<ResponseAppMessage<EthNetVersion>>({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin,
+            requestId,
+            tabId,
+            params: {
+              id: requestId,
+              result: netVersion,
             },
           });
         } else {

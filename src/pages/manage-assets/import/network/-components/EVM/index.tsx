@@ -95,7 +95,7 @@ export default function EVM() {
         rpcUrls: [
           {
             provider: 'Custom',
-            url: data.rpcURL,
+            url: removedTrailingSlashUrl,
           },
         ],
         explorer: {

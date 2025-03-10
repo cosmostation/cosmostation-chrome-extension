@@ -45,6 +45,8 @@ import { Route as PopupSuiTransactionIndexImport } from './pages/popup/sui/trans
 import { Route as PopupSuiSignMessageIndexImport } from './pages/popup/sui/sign-message/index'
 import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/transaction/index'
 import { Route as PopupEvmSwitchNetworkIndexImport } from './pages/popup/evm/switch-network/index'
+import { Route as PopupEvmAddTokenIndexImport } from './pages/popup/evm/add-token/index'
+import { Route as PopupEvmAddChainIndexImport } from './pages/popup/evm/add-chain/index'
 import { Route as PopupCosmosAddTokenIndexImport } from './pages/popup/cosmos/add-token/index'
 import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/add-chain/index'
 import { Route as PopupBitcoinSwitchNetworkIndexImport } from './pages/popup/bitcoin/switch-network/index'
@@ -62,6 +64,9 @@ import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account
 import { Route as WalletUnstakeCoinIdValidatorAddressIndexImport } from './pages/wallet/unstake/$coinId/$validatorAddress/index'
 import { Route as WalletStakeCoinIdValidatorAddressIndexImport } from './pages/wallet/stake/$coinId/$validatorAddress/index'
 import { Route as WalletClaimRewardsCoinIdValidatorAddressIndexImport } from './pages/wallet/claim-rewards/$coinId/$validatorAddress/index'
+import { Route as PopupEvmSignSignTypedDataIndexImport } from './pages/popup/evm/sign/sign-typed-data/index'
+import { Route as PopupEvmSignPersonalSignIndexImport } from './pages/popup/evm/sign/personal-sign/index'
+import { Route as PopupEvmSignEthSignIndexImport } from './pages/popup/evm/sign/eth-sign/index'
 import { Route as PopupCosmosSignMessageIndexImport } from './pages/popup/cosmos/sign/message/index'
 import { Route as PopupCosmosSignDirectIndexImport } from './pages/popup/cosmos/sign/direct/index'
 import { Route as PopupCosmosSignAminoIndexImport } from './pages/popup/cosmos/sign/amino/index'
@@ -293,6 +298,18 @@ const PopupEvmSwitchNetworkIndexRoute = PopupEvmSwitchNetworkIndexImport.update(
   } as any,
 )
 
+const PopupEvmAddTokenIndexRoute = PopupEvmAddTokenIndexImport.update({
+  id: '/popup/evm/add-token/',
+  path: '/popup/evm/add-token/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupEvmAddChainIndexRoute = PopupEvmAddChainIndexImport.update({
+  id: '/popup/evm/add-chain/',
+  path: '/popup/evm/add-chain/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const PopupCosmosAddTokenIndexRoute = PopupCosmosAddTokenIndexImport.update({
   id: '/popup/cosmos/add-token/',
   path: '/popup/cosmos/add-token/',
@@ -409,6 +426,26 @@ const WalletClaimRewardsCoinIdValidatorAddressIndexRoute =
     path: '/wallet/claim-rewards/$coinId/$validatorAddress/',
     getParentRoute: () => rootRoute,
   } as any)
+
+const PopupEvmSignSignTypedDataIndexRoute =
+  PopupEvmSignSignTypedDataIndexImport.update({
+    id: '/popup/evm/sign/sign-typed-data/',
+    path: '/popup/evm/sign/sign-typed-data/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const PopupEvmSignPersonalSignIndexRoute =
+  PopupEvmSignPersonalSignIndexImport.update({
+    id: '/popup/evm/sign/personal-sign/',
+    path: '/popup/evm/sign/personal-sign/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const PopupEvmSignEthSignIndexRoute = PopupEvmSignEthSignIndexImport.update({
+  id: '/popup/evm/sign/eth-sign/',
+  path: '/popup/evm/sign/eth-sign/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const PopupCosmosSignMessageIndexRoute =
   PopupCosmosSignMessageIndexImport.update({
@@ -778,6 +815,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupCosmosAddTokenIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/evm/add-chain/': {
+      id: '/popup/evm/add-chain/'
+      path: '/popup/evm/add-chain'
+      fullPath: '/popup/evm/add-chain'
+      preLoaderRoute: typeof PopupEvmAddChainIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/evm/add-token/': {
+      id: '/popup/evm/add-token/'
+      path: '/popup/evm/add-token'
+      fullPath: '/popup/evm/add-token'
+      preLoaderRoute: typeof PopupEvmAddTokenIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/evm/switch-network/': {
       id: '/popup/evm/switch-network/'
       path: '/popup/evm/switch-network'
@@ -918,6 +969,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupCosmosSignMessageIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/evm/sign/eth-sign/': {
+      id: '/popup/evm/sign/eth-sign/'
+      path: '/popup/evm/sign/eth-sign'
+      fullPath: '/popup/evm/sign/eth-sign'
+      preLoaderRoute: typeof PopupEvmSignEthSignIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/evm/sign/personal-sign/': {
+      id: '/popup/evm/sign/personal-sign/'
+      path: '/popup/evm/sign/personal-sign'
+      fullPath: '/popup/evm/sign/personal-sign'
+      preLoaderRoute: typeof PopupEvmSignPersonalSignIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/evm/sign/sign-typed-data/': {
+      id: '/popup/evm/sign/sign-typed-data/'
+      path: '/popup/evm/sign/sign-typed-data'
+      fullPath: '/popup/evm/sign/sign-typed-data'
+      preLoaderRoute: typeof PopupEvmSignSignTypedDataIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/claim-rewards/$coinId/$validatorAddress/': {
       id: '/wallet/claim-rewards/$coinId/$validatorAddress/'
       path: '/wallet/claim-rewards/$coinId/$validatorAddress'
@@ -998,6 +1070,8 @@ export interface FileRoutesByFullPath {
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
+  '/popup/evm/add-chain': typeof PopupEvmAddChainIndexRoute
+  '/popup/evm/add-token': typeof PopupEvmAddTokenIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
@@ -1018,6 +1092,9 @@ export interface FileRoutesByFullPath {
   '/popup/cosmos/sign/amino': typeof PopupCosmosSignAminoIndexRoute
   '/popup/cosmos/sign/direct': typeof PopupCosmosSignDirectIndexRoute
   '/popup/cosmos/sign/message': typeof PopupCosmosSignMessageIndexRoute
+  '/popup/evm/sign/eth-sign': typeof PopupEvmSignEthSignIndexRoute
+  '/popup/evm/sign/personal-sign': typeof PopupEvmSignPersonalSignIndexRoute
+  '/popup/evm/sign/sign-typed-data': typeof PopupEvmSignSignTypedDataIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   '/wallet/stake/$coinId/$validatorAddress': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1065,6 +1142,8 @@ export interface FileRoutesByTo {
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
+  '/popup/evm/add-chain': typeof PopupEvmAddChainIndexRoute
+  '/popup/evm/add-token': typeof PopupEvmAddTokenIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
@@ -1085,6 +1164,9 @@ export interface FileRoutesByTo {
   '/popup/cosmos/sign/amino': typeof PopupCosmosSignAminoIndexRoute
   '/popup/cosmos/sign/direct': typeof PopupCosmosSignDirectIndexRoute
   '/popup/cosmos/sign/message': typeof PopupCosmosSignMessageIndexRoute
+  '/popup/evm/sign/eth-sign': typeof PopupEvmSignEthSignIndexRoute
+  '/popup/evm/sign/personal-sign': typeof PopupEvmSignPersonalSignIndexRoute
+  '/popup/evm/sign/sign-typed-data': typeof PopupEvmSignSignTypedDataIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   '/wallet/stake/$coinId/$validatorAddress': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1133,6 +1215,8 @@ export interface FileRoutesById {
   '/popup/bitcoin/switch-network/': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token/': typeof PopupCosmosAddTokenIndexRoute
+  '/popup/evm/add-chain/': typeof PopupEvmAddChainIndexRoute
+  '/popup/evm/add-token/': typeof PopupEvmAddTokenIndexRoute
   '/popup/evm/switch-network/': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction/': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message/': typeof PopupSuiSignMessageIndexRoute
@@ -1153,6 +1237,9 @@ export interface FileRoutesById {
   '/popup/cosmos/sign/amino/': typeof PopupCosmosSignAminoIndexRoute
   '/popup/cosmos/sign/direct/': typeof PopupCosmosSignDirectIndexRoute
   '/popup/cosmos/sign/message/': typeof PopupCosmosSignMessageIndexRoute
+  '/popup/evm/sign/eth-sign/': typeof PopupEvmSignEthSignIndexRoute
+  '/popup/evm/sign/personal-sign/': typeof PopupEvmSignPersonalSignIndexRoute
+  '/popup/evm/sign/sign-typed-data/': typeof PopupEvmSignSignTypedDataIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress/': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   '/wallet/stake/$coinId/$validatorAddress/': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress/': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1202,6 +1289,8 @@ export interface FileRouteTypes {
     | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-chain'
     | '/popup/cosmos/add-token'
+    | '/popup/evm/add-chain'
+    | '/popup/evm/add-token'
     | '/popup/evm/switch-network'
     | '/popup/evm/transaction'
     | '/popup/sui/sign-message'
@@ -1222,6 +1311,9 @@ export interface FileRouteTypes {
     | '/popup/cosmos/sign/amino'
     | '/popup/cosmos/sign/direct'
     | '/popup/cosmos/sign/message'
+    | '/popup/evm/sign/eth-sign'
+    | '/popup/evm/sign/personal-sign'
+    | '/popup/evm/sign/sign-typed-data'
     | '/wallet/claim-rewards/$coinId/$validatorAddress'
     | '/wallet/stake/$coinId/$validatorAddress'
     | '/wallet/unstake/$coinId/$validatorAddress'
@@ -1268,6 +1360,8 @@ export interface FileRouteTypes {
     | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-chain'
     | '/popup/cosmos/add-token'
+    | '/popup/evm/add-chain'
+    | '/popup/evm/add-token'
     | '/popup/evm/switch-network'
     | '/popup/evm/transaction'
     | '/popup/sui/sign-message'
@@ -1288,6 +1382,9 @@ export interface FileRouteTypes {
     | '/popup/cosmos/sign/amino'
     | '/popup/cosmos/sign/direct'
     | '/popup/cosmos/sign/message'
+    | '/popup/evm/sign/eth-sign'
+    | '/popup/evm/sign/personal-sign'
+    | '/popup/evm/sign/sign-typed-data'
     | '/wallet/claim-rewards/$coinId/$validatorAddress'
     | '/wallet/stake/$coinId/$validatorAddress'
     | '/wallet/unstake/$coinId/$validatorAddress'
@@ -1334,6 +1431,8 @@ export interface FileRouteTypes {
     | '/popup/bitcoin/switch-network/'
     | '/popup/cosmos/add-chain/'
     | '/popup/cosmos/add-token/'
+    | '/popup/evm/add-chain/'
+    | '/popup/evm/add-token/'
     | '/popup/evm/switch-network/'
     | '/popup/evm/transaction/'
     | '/popup/sui/sign-message/'
@@ -1354,6 +1453,9 @@ export interface FileRouteTypes {
     | '/popup/cosmos/sign/amino/'
     | '/popup/cosmos/sign/direct/'
     | '/popup/cosmos/sign/message/'
+    | '/popup/evm/sign/eth-sign/'
+    | '/popup/evm/sign/personal-sign/'
+    | '/popup/evm/sign/sign-typed-data/'
     | '/wallet/claim-rewards/$coinId/$validatorAddress/'
     | '/wallet/stake/$coinId/$validatorAddress/'
     | '/wallet/unstake/$coinId/$validatorAddress/'
@@ -1402,6 +1504,8 @@ export interface RootRouteChildren {
   PopupBitcoinSwitchNetworkIndexRoute: typeof PopupBitcoinSwitchNetworkIndexRoute
   PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
   PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
+  PopupEvmAddChainIndexRoute: typeof PopupEvmAddChainIndexRoute
+  PopupEvmAddTokenIndexRoute: typeof PopupEvmAddTokenIndexRoute
   PopupEvmSwitchNetworkIndexRoute: typeof PopupEvmSwitchNetworkIndexRoute
   PopupEvmTransactionIndexRoute: typeof PopupEvmTransactionIndexRoute
   PopupSuiSignMessageIndexRoute: typeof PopupSuiSignMessageIndexRoute
@@ -1422,6 +1526,9 @@ export interface RootRouteChildren {
   PopupCosmosSignAminoIndexRoute: typeof PopupCosmosSignAminoIndexRoute
   PopupCosmosSignDirectIndexRoute: typeof PopupCosmosSignDirectIndexRoute
   PopupCosmosSignMessageIndexRoute: typeof PopupCosmosSignMessageIndexRoute
+  PopupEvmSignEthSignIndexRoute: typeof PopupEvmSignEthSignIndexRoute
+  PopupEvmSignPersonalSignIndexRoute: typeof PopupEvmSignPersonalSignIndexRoute
+  PopupEvmSignSignTypedDataIndexRoute: typeof PopupEvmSignSignTypedDataIndexRoute
   WalletClaimRewardsCoinIdValidatorAddressIndexRoute: typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
   WalletStakeCoinIdValidatorAddressIndexRoute: typeof WalletStakeCoinIdValidatorAddressIndexRoute
   WalletUnstakeCoinIdValidatorAddressIndexRoute: typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
@@ -1479,6 +1586,8 @@ const rootRouteChildren: RootRouteChildren = {
   PopupBitcoinSwitchNetworkIndexRoute: PopupBitcoinSwitchNetworkIndexRoute,
   PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
   PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
+  PopupEvmAddChainIndexRoute: PopupEvmAddChainIndexRoute,
+  PopupEvmAddTokenIndexRoute: PopupEvmAddTokenIndexRoute,
   PopupEvmSwitchNetworkIndexRoute: PopupEvmSwitchNetworkIndexRoute,
   PopupEvmTransactionIndexRoute: PopupEvmTransactionIndexRoute,
   PopupSuiSignMessageIndexRoute: PopupSuiSignMessageIndexRoute,
@@ -1507,6 +1616,9 @@ const rootRouteChildren: RootRouteChildren = {
   PopupCosmosSignAminoIndexRoute: PopupCosmosSignAminoIndexRoute,
   PopupCosmosSignDirectIndexRoute: PopupCosmosSignDirectIndexRoute,
   PopupCosmosSignMessageIndexRoute: PopupCosmosSignMessageIndexRoute,
+  PopupEvmSignEthSignIndexRoute: PopupEvmSignEthSignIndexRoute,
+  PopupEvmSignPersonalSignIndexRoute: PopupEvmSignPersonalSignIndexRoute,
+  PopupEvmSignSignTypedDataIndexRoute: PopupEvmSignSignTypedDataIndexRoute,
   WalletClaimRewardsCoinIdValidatorAddressIndexRoute:
     WalletClaimRewardsCoinIdValidatorAddressIndexRoute,
   WalletStakeCoinIdValidatorAddressIndexRoute:
@@ -1568,6 +1680,8 @@ export const routeTree = rootRoute
         "/popup/bitcoin/switch-network/",
         "/popup/cosmos/add-chain/",
         "/popup/cosmos/add-token/",
+        "/popup/evm/add-chain/",
+        "/popup/evm/add-token/",
         "/popup/evm/switch-network/",
         "/popup/evm/transaction/",
         "/popup/sui/sign-message/",
@@ -1588,6 +1702,9 @@ export const routeTree = rootRoute
         "/popup/cosmos/sign/amino/",
         "/popup/cosmos/sign/direct/",
         "/popup/cosmos/sign/message/",
+        "/popup/evm/sign/eth-sign/",
+        "/popup/evm/sign/personal-sign/",
+        "/popup/evm/sign/sign-typed-data/",
         "/wallet/claim-rewards/$coinId/$validatorAddress/",
         "/wallet/stake/$coinId/$validatorAddress/",
         "/wallet/unstake/$coinId/$validatorAddress/",
@@ -1712,6 +1829,12 @@ export const routeTree = rootRoute
     "/popup/cosmos/add-token/": {
       "filePath": "popup/cosmos/add-token/index.tsx"
     },
+    "/popup/evm/add-chain/": {
+      "filePath": "popup/evm/add-chain/index.tsx"
+    },
+    "/popup/evm/add-token/": {
+      "filePath": "popup/evm/add-token/index.tsx"
+    },
     "/popup/evm/switch-network/": {
       "filePath": "popup/evm/switch-network/index.tsx"
     },
@@ -1771,6 +1894,15 @@ export const routeTree = rootRoute
     },
     "/popup/cosmos/sign/message/": {
       "filePath": "popup/cosmos/sign/message/index.tsx"
+    },
+    "/popup/evm/sign/eth-sign/": {
+      "filePath": "popup/evm/sign/eth-sign/index.tsx"
+    },
+    "/popup/evm/sign/personal-sign/": {
+      "filePath": "popup/evm/sign/personal-sign/index.tsx"
+    },
+    "/popup/evm/sign/sign-typed-data/": {
+      "filePath": "popup/evm/sign/sign-typed-data/index.tsx"
     },
     "/wallet/claim-rewards/$coinId/$validatorAddress/": {
       "filePath": "wallet/claim-rewards/$coinId/$validatorAddress/index.tsx"

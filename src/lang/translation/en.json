@@ -2237,6 +2237,56 @@
             "reject": "Reject",
             "sign": "Sign"
           }
+        },
+        "add-chain": {
+          "entry": {
+            "addCustomChain": "Add Custom Chain",
+            "networkToAdd": "Network to Add",
+            "currencySymbol": "Currency Symbol",
+            "networkURL": "Network URL",
+            "cautionTitle": "Not Validated",
+            "cautionDescription": "Cosmostation does not validate custom network",
+            "reject": "Reject",
+            "addChain": "Add Chain"
+          }
+        },
+        "add-token": {
+          "entry": {
+            "addCustomToken": "Add ERC20",
+            "tokenToAdd": "Token to Add",
+            "contractAddress": "Contract Address",
+            "type": "Type",
+            "decimals": "Decimals",
+            "reject": "Reject",
+            "addToken": "Add Token"
+          }
+        },
+        "sign": {
+          "eth-sign": {
+            "entry": {
+              "signatureRequest": "Signature Request",
+              "message": "Message",
+              "reject": "Reject",
+              "sign": "Sign"
+            }
+          },
+          "personal-sign": {
+            "entry": {
+              "signatureRequest": "Signature Request",
+              "message": "Message",
+              "reject": "Reject",
+              "sign": "Sign"
+            }
+          },
+          "sign-typed-data": {
+            "entry": {
+              "signatureRequest": "Signature Request",
+              "domain": "Domain",
+              "message": "Message",
+              "reject": "Reject",
+              "sign": "Sign"
+            }
+          }
         }
       },
       "sui": {

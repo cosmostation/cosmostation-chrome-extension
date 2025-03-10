@@ -8,6 +8,11 @@ import { Route as CosmosAddToken } from '@/pages/popup/cosmos/add-token';
 import { Route as CosmosSignAmino } from '@/pages/popup/cosmos/sign/amino';
 import { Route as CosmosSignDirect } from '@/pages/popup/cosmos/sign/direct';
 import { Route as CosmosSignMessage } from '@/pages/popup/cosmos/sign/message';
+import { Route as EVMAddChain } from '@/pages/popup/evm/add-chain';
+import { Route as EVMAddToken } from '@/pages/popup/evm/add-token';
+import { Route as EVMSign } from '@/pages/popup/evm/sign/eth-sign';
+import { Route as EVMPersonalSign } from '@/pages/popup/evm/sign/personal-sign';
+import { Route as EVMSignTypedData } from '@/pages/popup/evm/sign/sign-typed-data';
 import { Route as EVMSwitchChain } from '@/pages/popup/evm/switch-network';
 import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
@@ -103,6 +108,18 @@ const getNavigationPathForEvmRequest = (requestQueue: EvmRequest) => {
       return EVMTransaction.to;
     case 'eth_sendTransaction':
       return EVMTransaction.to;
+    case 'eth_sign':
+      return EVMSign.to;
+    case 'personal_sign':
+      return EVMPersonalSign.to;
+    case 'eth_signTypedData_v3':
+      return EVMSignTypedData.to;
+    case 'eth_signTypedData_v4':
+      return EVMSignTypedData.to;
+    case 'ethc_addNetwork':
+      return EVMAddChain.to;
+    case 'ethc_addTokens':
+      return EVMAddToken.to;
 
     default:
       return '';

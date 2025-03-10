@@ -1,3 +1,4 @@
+import { ecsign, hashPersonalMessage, isHexString, stripHexPrefix, toBuffer, toRpcSig } from 'ethereumjs-util';
 import type { TransactionRequest } from 'ethers';
 import { ethers } from 'ethers';
 import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
@@ -47,4 +48,27 @@ export function signTypedData<T extends MessageTypes>(
 ) {
   const dataToSign = (data.domain.salt ? { ...data, domain: { ...data.domain, salt: Buffer.from(toHex(data.domain.salt), 'hex') } } : data) as TypedMessage<T>;
   return baseSignTypedData({ privateKey, data: dataToSign, version });
+}
+
+export function signMessage(data: string, privateKey: string) {
+  const message = Buffer.from(stripHexPrefix(data), 'hex');
+
+  const privateKeyBuffer = Buffer.from(privateKey, 'hex');
+  const signature = ecsign(message, privateKeyBuffer);
+
+  const rpcSignature = toRpcSig(signature.v, signature.r, signature.s);
+
+  return rpcSignature;
+}
+
+export function personalSign(data: string, privateKey: string) {
+  const message = isHexString(data) ? toBuffer(data) : Buffer.from(data);
+  const msgHash = hashPersonalMessage(message);
+
+  const privateKeyBuffer = Buffer.from(privateKey, 'hex');
+  const signature = ecsign(msgHash, privateKeyBuffer);
+
+  const rpcSignature = toRpcSig(signature.v, signature.r, signature.s);
+
+  return rpcSignature;
 }

@@ -176,6 +176,14 @@ export default function Entry({ request }: EntryProps) {
           title: 'From Dapp',
         } as EIP1559FeeOption;
       }
+
+      return {
+        ...defaultFeeOption,
+        type: 'BASIC',
+        gas: dappFromGas,
+        gasPrice: '0',
+        title: 'From Dapp',
+      } as BasicFeeOption;
     })();
 
     const customOption = (() => {

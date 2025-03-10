@@ -7,10 +7,10 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
-import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getAddress, getKeypair } from '@/libs/address';
@@ -18,23 +18,23 @@ import { sendMessage } from '@/libs/extension';
 import { LabelContainer, MemoContainer } from '@/pages/popup/-components/CommonTxMessageStyle';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import RequestMethodTitle from '@/pages/popup/-components/RequestMethodTitle';
-import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
-import type { CosSignMessage } from '@/types/message/inject/cosmos';
-import { getMsgSignData, getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
+import type { EthSign } from '@/types/message/inject/evm';
+import { signMessage } from '@/utils/ethereum/sign';
+import { toHex, toUTF8 } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import { ContentsContainer, Divider, LineDivider, SticktFooterInnerBody } from './-styled';
 
 type EntryProps = {
-  request: CosSignMessage;
-  chain: CosmosChain;
+  request: EthSign;
 };
 
-export default function Entry({ request, chain }: EntryProps) {
+export default function Entry({ request }: EntryProps) {
   const { t } = useTranslation();
 
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const { currentEVMNetwork } = useCurrentEVMNetwork();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -44,21 +44,18 @@ export default function Entry({ request, chain }: EntryProps) {
   const { siteIconURL } = useSiteIconURL(request.origin);
   const siteTitle = getSiteTitle(request.origin);
 
-  const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [currentAccount, chain, currentPassword]);
-
-  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
-
+  const keyPair = useMemo(
+    () => currentEVMNetwork && getKeypair(currentEVMNetwork, currentAccount, currentPassword),
+    [currentAccount, currentEVMNetwork, currentPassword],
+  );
+  const address = useMemo(
+    () => currentEVMNetwork && keyPair?.publicKey && getAddress(currentEVMNetwork, keyPair.publicKey),
+    [currentEVMNetwork, keyPair?.publicKey],
+  );
   const { params } = request;
-  const { signer, message: txMessage } = params;
 
-  const tx = useMemo(() => getMsgSignData(signer, txMessage), [signer, txMessage]);
-
-  const msg = useMemo(() => tx.msgs[0], [tx.msgs]);
-
-  const { value } = msg;
-  const { data } = value;
-
-  const decodedMessage = Buffer.from(data, 'base64').toString('utf8');
+  const dataToHex = toHex(params[1]);
+  const hexToUTF8 = toUTF8(dataToHex);
 
   const handleOnClickSign = async () => {
     try {
@@ -68,37 +65,21 @@ export default function Entry({ request, chain }: EntryProps) {
         throw new Error('key pair does not exist');
       }
 
-      if (!chain) {
-        throw new Error('accountAsset does not exist');
-      }
-
       const signature = await (async () => {
         if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-          if (!keyPair.privateKey) {
-            throw new Error('key does not exist');
+          if (!keyPair?.privateKey) {
+            throw new Error('Unknown Error');
           }
 
-          const privateKeyBuffer = Buffer.from(keyPair.privateKey, 'hex');
-
-          return signAmino(tx, privateKeyBuffer, chain);
+          return signMessage(dataToHex, keyPair.privateKey);
         }
 
         throw new Error('Unknown type account');
       })();
-      const base64Signature = Buffer.from(signature).toString('base64');
 
-      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+      const result = signature;
 
-      const publicKeyType = chain.accountTypes[0].pubkeyType ? getPublicKeyType(chain.accountTypes[0].pubkeyType) : PUBLIC_KEY_TYPE.SECP256K1;
-
-      const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-      const result = {
-        signature: base64Signature,
-        pub_key: pubKey,
-      };
-
-      sendMessage<ResponseAppMessage<CosSignMessage>>({
+      sendMessage<ResponseAppMessage<EthSign>>({
         target: 'CONTENT',
         method: 'responseApp',
         origin: request.origin,
@@ -134,7 +115,7 @@ export default function Entry({ request, chain }: EntryProps) {
   useEffect(() => {
     void (async () => {
       if (address) {
-        if (signer !== address) {
+        if (address.toLowerCase() !== params[0].toLowerCase()) {
           sendMessage({
             target: 'CONTENT',
             method: 'responseApp',
@@ -163,7 +144,7 @@ export default function Entry({ request, chain }: EntryProps) {
         <EdgeAligner>
           <DappInfo image={siteIconURL} name={siteTitle} url={currentRequestQueue?.origin} />
           <LineDivider />
-          <RequestMethodTitle title={t('pages.popup.cosmos.sign.message.entry.signatureRequest')} />
+          <RequestMethodTitle title={t('pages.popup.evm.sign.eth-sign.entry.signatureRequest')} />
         </EdgeAligner>
         <Divider
           sx={{
@@ -178,10 +159,10 @@ export default function Entry({ request, chain }: EntryProps) {
                 marginBottom: '0.4rem',
               }}
             >
-              {t('pages.popup.cosmos.sign.message.entry.message')}
+              {t('pages.popup.evm.sign.eth-sign.entry.message')}
             </Base1000Text>
             <MemoContainer>
-              <Base1300Text variant="b3_M">{decodedMessage}</Base1300Text>
+              <Base1300Text variant="b3_M">{hexToUTF8}</Base1300Text>
             </MemoContainer>
           </LabelContainer>
         </ContentsContainer>
@@ -211,12 +192,12 @@ export default function Entry({ request, chain }: EntryProps) {
               }}
               variant="dark"
             >
-              {t('pages.popup.cosmos.sign.message.entry.reject')}
+              {t('pages.popup.evm.sign.eth-sign.entry.reject')}
             </Button>
           }
           confirmButton={
             <Button isProgress={isProcessing} onClick={handleOnClickSign}>
-              {t('pages.popup.cosmos.sign.message.entry.sign')}
+              {t('pages.popup.evm.sign.eth-sign.entry.sign')}
             </Button>
           }
         />

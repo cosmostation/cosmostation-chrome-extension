@@ -102,9 +102,9 @@ export default function FeeSettingBottomSheet({
   );
 
   const defaultCustomGasAmount = useMemo(() => {
-    const customGasAmount = feeOptionDatas?.[customFeeStepKey].gas;
+    const customGasAmount = feeOptionDatas?.[customFeeStepKey]?.gas;
 
-    return customGasAmount || feeOptionDatas?.[0].gas || '0';
+    return customGasAmount || feeOptionDatas?.[0]?.gas || '0';
   }, [customFeeStepKey, feeOptionDatas]);
 
   const defatultCustomGasPrice = useMemo(() => {

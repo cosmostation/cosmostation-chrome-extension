@@ -34,6 +34,30 @@ export function useCurrentCustomERC20Tokens() {
     await refetchAccountAllAssets();
   };
 
+  const addCustomERC20Tokens = async (assets: EvmErc20Asset[]) => {
+    const storedERC20Assets = await getExtensionLocalStorage('erc20Assets');
+
+    const newlyUnstoredTokens = assets.filter(
+      (item) => !storedERC20Assets.some((storedItem) => storedItem.id.toLowerCase() === item.id.toLowerCase() && storedItem.chainId === item.chainId),
+    );
+
+    if (newlyUnstoredTokens.length === 0) {
+      return;
+    }
+
+    const storedCustomERC20 = await getExtensionLocalStorage('customErc20Assets');
+    const filteredExistingTokens = storedCustomERC20.filter(
+      (item) => !newlyUnstoredTokens.some((filteredItem) => filteredItem.id.toLowerCase() === item.id.toLowerCase() && filteredItem.chainId === item.chainId),
+    );
+
+    const updatedCustomTokens = [...filteredExistingTokens, ...newlyUnstoredTokens];
+
+    await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
+
+    await refetchAccountAssets();
+    await refetchAccountAllAssets();
+  };
+
   const removeCustomERC20Token = async (coinId: string) => {
     const storedCustomERC20 = await getExtensionLocalStorage('customErc20Assets');
     const updatedCustomTokens = storedCustomERC20.filter((item) => getCoinId(item) !== coinId);
@@ -44,5 +68,5 @@ export function useCurrentCustomERC20Tokens() {
     await refetchAccountAllAssets();
   };
 
-  return { currentCustomERC20Tokens, addCustomERC20Token, removeCustomERC20Token };
+  return { currentCustomERC20Tokens, addCustomERC20Token, addCustomERC20Tokens, removeCustomERC20Token };
 }

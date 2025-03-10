@@ -1,3 +1,5 @@
+import { stripHexPrefix } from 'ethereumjs-util';
+
 import { fix, times } from './numbers';
 
 export function shorterAddress(address?: string, maxLength = 25) {
@@ -123,4 +125,8 @@ export function isJsonString(str: string): boolean {
 
 export function addHexPrefix(str: string) {
   return str.startsWith('0x') ? str : `0x${str}`;
+}
+
+export function toUTF8(hex: string) {
+  return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
 }
