@@ -30,7 +30,7 @@ type SwapProps = {
   onPageChange?: (page: number) => void;
 };
 
-export default function Send({ msg, chain, currentStep, totalSteps, onPageChange }: SwapProps) {
+export default function Swap({ msg, chain, currentStep, totalSteps, onPageChange }: SwapProps) {
   const { t } = useTranslation();
 
   const { data: accountAllAssets } = useAccountAllAssets({
