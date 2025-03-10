@@ -63,7 +63,7 @@ export default function Send({ msg, chain, currentStep, totalSteps, onPageChange
         inputCoin?.asset.symbol || 'Unknown',
         ...routes
           .map(({ token_out_denom }) => token_out_denom)
-          .map((item) => coinList?.find((chainAsset) => chainAsset.asset.id === item)?.asset.id || 'Unknown'),
+          .map((item) => coinList?.find((chainAsset) => chainAsset.asset.id === item)?.asset.symbol || 'Unknown'),
       ].join(' / '),
     [coinList, inputCoin?.asset.symbol, routes],
   );
