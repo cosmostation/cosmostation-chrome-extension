@@ -19,3 +19,16 @@ export const ContentsInfoContainer = styled('div')({
   alignItems: 'flex-start',
   rowGap: '0.4rem',
 });
+
+export const EllipsisContainer = styled('div')({
+  display: 'flex',
+
+  maxWidth: '27rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
