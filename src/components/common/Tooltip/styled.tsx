@@ -18,7 +18,7 @@ export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
     marginTop: '1rem !important',
 
     backgroundColor: props['data-varient'] === 'error' ? theme.palette.accentColor.red100 : theme.palette.color.base100,
-    color: props['data-varient'] === 'error' ? theme.palette.accentColor.red200 : theme.palette.color.base1300,
+    color: theme.palette.color.base1300,
     padding: '0.8rem',
 
     textAlign: 'center',
