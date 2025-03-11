@@ -2329,6 +2329,56 @@
             "infoDescription": "Upon authorization, the website will be allowed to access addresses within this network",
             "reject": "Reject"
           }
+        },
+        "components": {
+          "TxMessage": {
+            "index": {
+              "inputs": "Inputs",
+              "outputs": "Outputs"
+            }
+          }
+        },
+        "send": {
+          "entry": {
+            "invalidAddress": "Invalid address",
+            "failedLoadFee": "Failed to load fee",
+            "noAvailableAmount": "No available amount",
+            "noAmount": "No amount",
+            "failedCreateTxHex": "Failed to create tx hex",
+            "sendAmount": "Send Amount",
+            "from": "From Address",
+            "to": "To Address",
+            "failedCreateTxHexDescription": "An error occurred while generating the transaction hex, possibly due to invalid inputs, insufficient funds, or signing issues.",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "sign-psbt": {
+          "entry": {
+            "invalidAddress": "Invalid address",
+            "noAvailableAmount": "No available amount",
+            "noAmount": "No amount",
+            "failedCreateTxHex": "Failed to create tx hex",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "sign-psbts": {
+          "entry": {
+            "invalidAddress": "Invalid address",
+            "noAvailableAmount": "No available amount",
+            "failedCreateTxHex": "Failed to create tx hex",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "sign-message": {
+          "entry": {
+            "signatureRequest": "Signature Request",
+            "message": "Message",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
         }
       }
     },

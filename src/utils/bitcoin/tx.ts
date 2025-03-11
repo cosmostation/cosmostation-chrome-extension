@@ -223,6 +223,14 @@ export function ecpairFromPrivateKey(privateKey: string) {
   return BitcoinLibSigner;
 }
 
+export function ecpairInstanceFromPrivateKey(privateKey: string) {
+  const privateKeyBuffer = Buffer.from(privateKey, 'hex');
+
+  const EcPairInstance = ECPairInstance.fromPrivateKey(privateKeyBuffer);
+
+  return EcPairInstance;
+}
+
 export function ecpairFromPublicKey(publicKey: string) {
   const publicKeyBuffer = Buffer.from(publicKey, 'hex');
 

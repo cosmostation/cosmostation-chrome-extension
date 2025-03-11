@@ -36,6 +36,7 @@
     "axios": "^1.7.7",
     "big.js": "^6.2.2",
     "bip32": "^5.0.0-rc.0",
+    "bip322-js": "^2.0.0",
     "bip39": "^3.1.0",
     "bitcoin-address-validation": "^3.0.0",
     "bitcoinjs-lib": "^6.1.7",

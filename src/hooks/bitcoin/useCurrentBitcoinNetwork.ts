@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { produce } from 'immer';
 
 import type { BitcoinChain } from '@/types/chain';
-import { getUniqueChainId } from '@/utils/queryParamGenerator';
+import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useChainList } from '../useChainList';
@@ -15,11 +15,18 @@ export function useCurrentBitcoinNetwork() {
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
 
   const allNetworks = useMemo(() => [...(chainList?.bitcoinChains || [])], [chainList?.bitcoinChains]);
+  const selectedBitcoinNetwork = useMemo(
+    () => allNetworks.find((network) => isMatchingUniqueChainId(network, chosenBitcoinNetworkId)),
+    [allNetworks, chosenBitcoinNetworkId],
+  );
 
-  const currentAccountSelectedBitcoinNetworkId = allNetworks.find((network) => network.id === chosenBitcoinNetworkId)?.id ?? allNetworks[0]?.id;
+  const currentAccountSelectedBitcoinNetworkId = useMemo(
+    () => (selectedBitcoinNetwork ? getUniqueChainId(selectedBitcoinNetwork) : allNetworks[0] ? getUniqueChainId(allNetworks[0]) : undefined),
+    [allNetworks, selectedBitcoinNetwork],
+  );
 
   const currentBitcoinNetwork = useMemo(() => {
-    const network = allNetworks.find((network) => network.id === currentAccountSelectedBitcoinNetworkId);
+    const network = allNetworks.find((network) => isMatchingUniqueChainId(network, currentAccountSelectedBitcoinNetworkId));
 
     if (!network) {
       return allNetworks[0];

@@ -2,6 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as Initial } from '@/pages/account/initial';
+import { Route as BitcoinSend } from '@/pages/popup/bitcoin/send';
+import { Route as BitcoinSignMessage } from '@/pages/popup/bitcoin/sign-message';
+import { Route as BitcoinSignPsbt } from '@/pages/popup/bitcoin/sign-psbt';
+import { Route as BitcoinSignPsbts } from '@/pages/popup/bitcoin/sign-psbts';
 import { Route as BitcoinSwitchChain } from '@/pages/popup/bitcoin/switch-network';
 import { Route as CosmosAddChain } from '@/pages/popup/cosmos/add-chain';
 import { Route as CosmosAddToken } from '@/pages/popup/cosmos/add-token';
@@ -156,6 +160,14 @@ const getNavigationPathForBitcoinRequest = (requestQueue: BitcoinRequest) => {
       return RequestAccount.to;
     case 'bitc_switchNetwork':
       return BitcoinSwitchChain.to;
+    case 'bit_sendBitcoin':
+      return BitcoinSend.to;
+    case 'bit_signPsbt':
+      return BitcoinSignPsbt.to;
+    case 'bit_signPsbts':
+      return BitcoinSignPsbts.to;
+    case 'bit_signMessage':
+      return BitcoinSignMessage.to;
 
     default:
       return '';

@@ -17,10 +17,12 @@ import { getAddress, getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import { LabelContainer, MemoContainer } from '@/pages/popup/-components/CommonTxMessageStyle';
 import DappInfo from '@/pages/popup/-components/DappInfo';
+import NetworkInfo from '@/pages/popup/-components/NetworkInfo';
 import RequestMethodTitle from '@/pages/popup/-components/RequestMethodTitle';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { EthSign } from '@/types/message/inject/evm';
 import { signMessage } from '@/utils/ethereum/sign';
+import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { toHex, toUTF8 } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -35,6 +37,8 @@ export default function Entry({ request }: EntryProps) {
 
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
   const { currentEVMNetwork } = useCurrentEVMNetwork();
+
+  const currentEVMChainId = useMemo(() => currentEVMNetwork && getUniqueChainId(currentEVMNetwork), [currentEVMNetwork]);
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -143,6 +147,8 @@ export default function Entry({ request }: EntryProps) {
       <BaseBody>
         <EdgeAligner>
           <DappInfo image={siteIconURL} name={siteTitle} url={currentRequestQueue?.origin} />
+          <Divider />
+          {currentEVMChainId && <NetworkInfo chainId={currentEVMChainId} />}
           <LineDivider />
           <RequestMethodTitle title={t('pages.popup.evm.sign.eth-sign.entry.signatureRequest')} />
         </EdgeAligner>

@@ -50,6 +50,10 @@ import { Route as PopupEvmAddChainIndexImport } from './pages/popup/evm/add-chai
 import { Route as PopupCosmosAddTokenIndexImport } from './pages/popup/cosmos/add-token/index'
 import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/add-chain/index'
 import { Route as PopupBitcoinSwitchNetworkIndexImport } from './pages/popup/bitcoin/switch-network/index'
+import { Route as PopupBitcoinSignPsbtsIndexImport } from './pages/popup/bitcoin/sign-psbts/index'
+import { Route as PopupBitcoinSignPsbtIndexImport } from './pages/popup/bitcoin/sign-psbt/index'
+import { Route as PopupBitcoinSignMessageIndexImport } from './pages/popup/bitcoin/sign-message/index'
+import { Route as PopupBitcoinSendIndexImport } from './pages/popup/bitcoin/send/index'
 import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
 import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
 import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
@@ -328,6 +332,33 @@ const PopupBitcoinSwitchNetworkIndexRoute =
     path: '/popup/bitcoin/switch-network/',
     getParentRoute: () => rootRoute,
   } as any)
+
+const PopupBitcoinSignPsbtsIndexRoute = PopupBitcoinSignPsbtsIndexImport.update(
+  {
+    id: '/popup/bitcoin/sign-psbts/',
+    path: '/popup/bitcoin/sign-psbts/',
+    getParentRoute: () => rootRoute,
+  } as any,
+)
+
+const PopupBitcoinSignPsbtIndexRoute = PopupBitcoinSignPsbtIndexImport.update({
+  id: '/popup/bitcoin/sign-psbt/',
+  path: '/popup/bitcoin/sign-psbt/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupBitcoinSignMessageIndexRoute =
+  PopupBitcoinSignMessageIndexImport.update({
+    id: '/popup/bitcoin/sign-message/',
+    path: '/popup/bitcoin/sign-message/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const PopupBitcoinSendIndexRoute = PopupBitcoinSendIndexImport.update({
+  id: '/popup/bitcoin/send/',
+  path: '/popup/bitcoin/send/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ManageAssetsVisibilityNetworkIndexRoute =
   ManageAssetsVisibilityNetworkIndexImport.update({
@@ -794,6 +825,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsVisibilityNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/bitcoin/send/': {
+      id: '/popup/bitcoin/send/'
+      path: '/popup/bitcoin/send'
+      fullPath: '/popup/bitcoin/send'
+      preLoaderRoute: typeof PopupBitcoinSendIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/bitcoin/sign-message/': {
+      id: '/popup/bitcoin/sign-message/'
+      path: '/popup/bitcoin/sign-message'
+      fullPath: '/popup/bitcoin/sign-message'
+      preLoaderRoute: typeof PopupBitcoinSignMessageIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/bitcoin/sign-psbt/': {
+      id: '/popup/bitcoin/sign-psbt/'
+      path: '/popup/bitcoin/sign-psbt'
+      fullPath: '/popup/bitcoin/sign-psbt'
+      preLoaderRoute: typeof PopupBitcoinSignPsbtIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/bitcoin/sign-psbts/': {
+      id: '/popup/bitcoin/sign-psbts/'
+      path: '/popup/bitcoin/sign-psbts'
+      fullPath: '/popup/bitcoin/sign-psbts'
+      preLoaderRoute: typeof PopupBitcoinSignPsbtsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/bitcoin/switch-network/': {
       id: '/popup/bitcoin/switch-network/'
       path: '/popup/bitcoin/switch-network'
@@ -1067,6 +1126,10 @@ export interface FileRoutesByFullPath {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/bitcoin/send': typeof PopupBitcoinSendIndexRoute
+  '/popup/bitcoin/sign-message': typeof PopupBitcoinSignMessageIndexRoute
+  '/popup/bitcoin/sign-psbt': typeof PopupBitcoinSignPsbtIndexRoute
+  '/popup/bitcoin/sign-psbts': typeof PopupBitcoinSignPsbtsIndexRoute
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
@@ -1139,6 +1202,10 @@ export interface FileRoutesByTo {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/bitcoin/send': typeof PopupBitcoinSendIndexRoute
+  '/popup/bitcoin/sign-message': typeof PopupBitcoinSignMessageIndexRoute
+  '/popup/bitcoin/sign-psbt': typeof PopupBitcoinSignPsbtIndexRoute
+  '/popup/bitcoin/sign-psbts': typeof PopupBitcoinSignPsbtsIndexRoute
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
@@ -1212,6 +1279,10 @@ export interface FileRoutesById {
   '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/popup/bitcoin/send/': typeof PopupBitcoinSendIndexRoute
+  '/popup/bitcoin/sign-message/': typeof PopupBitcoinSignMessageIndexRoute
+  '/popup/bitcoin/sign-psbt/': typeof PopupBitcoinSignPsbtIndexRoute
+  '/popup/bitcoin/sign-psbts/': typeof PopupBitcoinSignPsbtsIndexRoute
   '/popup/bitcoin/switch-network/': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain/': typeof PopupCosmosAddChainIndexRoute
   '/popup/cosmos/add-token/': typeof PopupCosmosAddTokenIndexRoute
@@ -1286,6 +1357,10 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/popup/bitcoin/send'
+    | '/popup/bitcoin/sign-message'
+    | '/popup/bitcoin/sign-psbt'
+    | '/popup/bitcoin/sign-psbts'
     | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-chain'
     | '/popup/cosmos/add-token'
@@ -1357,6 +1432,10 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/popup/bitcoin/send'
+    | '/popup/bitcoin/sign-message'
+    | '/popup/bitcoin/sign-psbt'
+    | '/popup/bitcoin/sign-psbts'
     | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-chain'
     | '/popup/cosmos/add-token'
@@ -1428,6 +1507,10 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network/'
     | '/manage-assets/visibility/assets/'
     | '/manage-assets/visibility/network/'
+    | '/popup/bitcoin/send/'
+    | '/popup/bitcoin/sign-message/'
+    | '/popup/bitcoin/sign-psbt/'
+    | '/popup/bitcoin/sign-psbts/'
     | '/popup/bitcoin/switch-network/'
     | '/popup/cosmos/add-chain/'
     | '/popup/cosmos/add-token/'
@@ -1501,6 +1584,10 @@ export interface RootRouteChildren {
   ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
   ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
   ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
+  PopupBitcoinSendIndexRoute: typeof PopupBitcoinSendIndexRoute
+  PopupBitcoinSignMessageIndexRoute: typeof PopupBitcoinSignMessageIndexRoute
+  PopupBitcoinSignPsbtIndexRoute: typeof PopupBitcoinSignPsbtIndexRoute
+  PopupBitcoinSignPsbtsIndexRoute: typeof PopupBitcoinSignPsbtsIndexRoute
   PopupBitcoinSwitchNetworkIndexRoute: typeof PopupBitcoinSwitchNetworkIndexRoute
   PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
   PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
@@ -1583,6 +1670,10 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAssetsVisibilityAssetsIndexRoute,
   ManageAssetsVisibilityNetworkIndexRoute:
     ManageAssetsVisibilityNetworkIndexRoute,
+  PopupBitcoinSendIndexRoute: PopupBitcoinSendIndexRoute,
+  PopupBitcoinSignMessageIndexRoute: PopupBitcoinSignMessageIndexRoute,
+  PopupBitcoinSignPsbtIndexRoute: PopupBitcoinSignPsbtIndexRoute,
+  PopupBitcoinSignPsbtsIndexRoute: PopupBitcoinSignPsbtsIndexRoute,
   PopupBitcoinSwitchNetworkIndexRoute: PopupBitcoinSwitchNetworkIndexRoute,
   PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
   PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
@@ -1677,6 +1768,10 @@ export const routeTree = rootRoute
         "/manage-assets/import/network/",
         "/manage-assets/visibility/assets/",
         "/manage-assets/visibility/network/",
+        "/popup/bitcoin/send/",
+        "/popup/bitcoin/sign-message/",
+        "/popup/bitcoin/sign-psbt/",
+        "/popup/bitcoin/sign-psbts/",
         "/popup/bitcoin/switch-network/",
         "/popup/cosmos/add-chain/",
         "/popup/cosmos/add-token/",
@@ -1819,6 +1914,18 @@ export const routeTree = rootRoute
     },
     "/manage-assets/visibility/network/": {
       "filePath": "manage-assets/visibility/network/index.tsx"
+    },
+    "/popup/bitcoin/send/": {
+      "filePath": "popup/bitcoin/send/index.tsx"
+    },
+    "/popup/bitcoin/sign-message/": {
+      "filePath": "popup/bitcoin/sign-message/index.tsx"
+    },
+    "/popup/bitcoin/sign-psbt/": {
+      "filePath": "popup/bitcoin/sign-psbt/index.tsx"
+    },
+    "/popup/bitcoin/sign-psbts/": {
+      "filePath": "popup/bitcoin/sign-psbts/index.tsx"
     },
     "/popup/bitcoin/switch-network/": {
       "filePath": "popup/bitcoin/switch-network/index.tsx"

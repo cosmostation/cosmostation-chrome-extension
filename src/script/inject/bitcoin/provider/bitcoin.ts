@@ -11,7 +11,7 @@ import type {
   BitSignPsbtResposne,
   BitSignPsbtsResposne,
 } from '@/types/message/inject/bitcoin';
-import { formatPsbtHex } from '@/utils/bitcoin.ts/tx';
+import { formatPsbtHex } from '@/utils/bitcoin/tx';
 
 import { bitcoinRequestApp } from '../request';
 

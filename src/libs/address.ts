@@ -15,7 +15,7 @@ import { Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
 
 import type { Account } from '@/types/account';
 import type { Chain } from '@/types/chain';
-import { initBitcoinEcc } from '@/utils/bitcoin.ts/tx';
+import { initBitcoinEcc } from '@/utils/bitcoin/tx';
 import { aesDecrypt } from '@/utils/crypto';
 
 const bip32 = BIP32Factory(ecc);

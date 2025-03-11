@@ -72,6 +72,7 @@ export interface AptosAsset extends AssetBase {
 export interface BitcoinAsset extends AssetBase {
   chainType: 'bitcoin';
   type: string;
+  color?: string;
 }
 
 export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset;

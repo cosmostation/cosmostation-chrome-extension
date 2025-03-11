@@ -17,11 +17,13 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import type { SuiSignMessage, SuiSignPersonalMessage } from '@/types/message/inject/sui';
+import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
 import { ContentsContainer, Divider, LineDivider, SticktFooterInnerBody } from './-styled';
 import { LabelContainer, MemoContainer } from '../../-components/CommonTxMessageStyle';
 import DappInfo from '../../-components/DappInfo';
+import NetworkInfo from '../../-components/NetworkInfo';
 import RequestMethodTitle from '../../-components/RequestMethodTitle';
 
 type EntryProps = {
@@ -37,6 +39,7 @@ export default function Entry({ request }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
+  const currentSuiChainId = useMemo(() => currentSuiNetwork && getUniqueChainId(currentSuiNetwork), [currentSuiNetwork]);
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -126,6 +129,8 @@ export default function Entry({ request }: EntryProps) {
       <BaseBody>
         <EdgeAligner>
           <DappInfo image={siteIconURL} name={siteTitle} url={currentRequestQueue?.origin} />
+          <Divider />
+          {currentSuiChainId && <NetworkInfo chainId={currentSuiChainId} />}
           <LineDivider />
           <RequestMethodTitle title={t('pages.popup.sui.sign-message.entry.signatureRequest')} />
         </EdgeAligner>

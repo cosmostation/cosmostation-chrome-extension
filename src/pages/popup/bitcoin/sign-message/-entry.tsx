@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Signer } from 'bip322-js';
+import * as bitcoinMessage from 'bitcoinjs-message';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
@@ -7,8 +9,8 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
-import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -17,26 +19,27 @@ import { getAddress, getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import { LabelContainer, MemoContainer } from '@/pages/popup/-components/CommonTxMessageStyle';
 import DappInfo from '@/pages/popup/-components/DappInfo';
-import NetworkInfo from '@/pages/popup/-components/NetworkInfo';
 import RequestMethodTitle from '@/pages/popup/-components/RequestMethodTitle';
-import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
-import type { CosSignMessage } from '@/types/message/inject/cosmos';
-import { getMsgSignData, getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
+import type { BitSignMessage, BitSignMessageResposne } from '@/types/message/inject/bitcoin';
+import { ecpairInstanceFromPrivateKey } from '@/utils/bitcoin/tx';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
 import { ContentsContainer, Divider, LineDivider, SticktFooterInnerBody } from './-styled';
+import NetworkInfo from '../../-components/NetworkInfo';
 
 type EntryProps = {
-  request: CosSignMessage;
-  chain: CosmosChain;
+  request: BitSignMessage;
 };
 
-export default function Entry({ request, chain }: EntryProps) {
+export default function Entry({ request }: EntryProps) {
   const { t } = useTranslation();
 
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
+
+  const currentBitcoinChainId = useMemo(() => currentBitcoinNetwork && getUniqueChainId(currentBitcoinNetwork), [currentBitcoinNetwork]);
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -46,21 +49,15 @@ export default function Entry({ request, chain }: EntryProps) {
   const { siteIconURL } = useSiteIconURL(request.origin);
   const siteTitle = getSiteTitle(request.origin);
 
-  const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [currentAccount, chain, currentPassword]);
+  const keyPair = useMemo(
+    () => currentBitcoinNetwork && getKeypair(currentBitcoinNetwork, currentAccount, currentPassword),
+    [currentAccount, currentBitcoinNetwork, currentPassword],
+  );
 
-  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
+  const address = useMemo(() => currentBitcoinNetwork && getAddress(currentBitcoinNetwork, keyPair?.publicKey), [currentBitcoinNetwork, keyPair?.publicKey]);
 
   const { params } = request;
-  const { signer, message: txMessage } = params;
-
-  const tx = useMemo(() => getMsgSignData(signer, txMessage), [signer, txMessage]);
-
-  const msg = useMemo(() => tx.msgs[0], [tx.msgs]);
-
-  const { value } = msg;
-  const { data } = value;
-
-  const decodedMessage = Buffer.from(data, 'base64').toString('utf8');
+  const { message: messageToSign, type: signType } = params;
 
   const handleOnClickSign = async () => {
     try {
@@ -70,37 +67,46 @@ export default function Entry({ request, chain }: EntryProps) {
         throw new Error('key pair does not exist');
       }
 
-      if (!chain) {
-        throw new Error('accountAsset does not exist');
+      const ecpairInsatance = ecpairInstanceFromPrivateKey(keyPair.privateKey);
+      if (!ecpairInsatance || !ecpairInsatance.privateKey) {
+        throw new Error('Failed to create ecpair instance');
       }
 
-      const signature = await (async () => {
-        if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-          if (!keyPair.privateKey) {
-            throw new Error('key does not exist');
-          }
-
+      const result = (() => {
+        if (signType === 'ecdsa') {
           const privateKeyBuffer = Buffer.from(keyPair.privateKey, 'hex');
 
-          return signAmino(tx, privateKeyBuffer, chain);
+          const signedMessage = bitcoinMessage.sign(messageToSign, privateKeyBuffer, ecpairInsatance.compressed);
+
+          const result: BitSignMessageResposne = signedMessage.toString('base64');
+
+          if (!result) {
+            throw new Error('Failed to sign message');
+          }
+
+          return result;
         }
 
-        throw new Error('Unknown type account');
+        if (signType === 'bip322-simple') {
+          const base58PrvKeyString = ecpairInsatance.toWIF();
+
+          const messageSignature = Signer.sign(base58PrvKeyString, address, messageToSign);
+
+          const result: BitSignMessageResposne = typeof messageSignature === 'string' ? messageSignature : messageSignature.toString('base64');
+
+          if (!result) {
+            throw new Error('Failed to sign message');
+          }
+
+          return result;
+        }
       })();
-      const base64Signature = Buffer.from(signature).toString('base64');
 
-      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+      if (!result) {
+        throw new Error('Failed to sign message');
+      }
 
-      const publicKeyType = chain.accountTypes[0].pubkeyType ? getPublicKeyType(chain.accountTypes[0].pubkeyType) : PUBLIC_KEY_TYPE.SECP256K1;
-
-      const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-      const result = {
-        signature: base64Signature,
-        pub_key: pubKey,
-      };
-
-      sendMessage<ResponseAppMessage<CosSignMessage>>({
+      sendMessage<ResponseAppMessage<BitSignMessage>>({
         target: 'CONTENT',
         method: 'responseApp',
         origin: request.origin,
@@ -133,41 +139,15 @@ export default function Entry({ request, chain }: EntryProps) {
     }
   };
 
-  useEffect(() => {
-    void (async () => {
-      if (address) {
-        if (signer !== address) {
-          sendMessage({
-            target: 'CONTENT',
-            method: 'responseApp',
-            origin: request.origin,
-            requestId: request.requestId,
-            tabId: request.tabId,
-            params: {
-              id: request.requestId,
-              error: {
-                code: RPC_ERROR.INVALID_PARAMS,
-                message: 'Invalid signer',
-              },
-            },
-          });
-
-          await deQueue();
-        }
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
-
   return (
     <>
       <BaseBody>
         <EdgeAligner>
           <DappInfo image={siteIconURL} name={siteTitle} url={currentRequestQueue?.origin} />
           <Divider />
-          <NetworkInfo chainId={getUniqueChainId(chain)} />
+          {currentBitcoinChainId && <NetworkInfo chainId={currentBitcoinChainId} />}
           <LineDivider />
-          <RequestMethodTitle title={t('pages.popup.cosmos.sign.message.entry.signatureRequest')} />
+          <RequestMethodTitle title={t('pages.popup.bitcoin.sign-message.entry.signatureRequest')} />
         </EdgeAligner>
         <Divider
           sx={{
@@ -182,10 +162,10 @@ export default function Entry({ request, chain }: EntryProps) {
                 marginBottom: '0.4rem',
               }}
             >
-              {t('pages.popup.cosmos.sign.message.entry.message')}
+              {t('pages.popup.bitcoin.sign-message.entry.message')}
             </Base1000Text>
             <MemoContainer>
-              <Base1300Text variant="b3_M">{decodedMessage}</Base1300Text>
+              <Base1300Text variant="b3_M">{messageToSign}</Base1300Text>
             </MemoContainer>
           </LabelContainer>
         </ContentsContainer>
@@ -215,12 +195,12 @@ export default function Entry({ request, chain }: EntryProps) {
               }}
               variant="dark"
             >
-              {t('pages.popup.cosmos.sign.message.entry.reject')}
+              {t('pages.popup.bitcoin.sign-message.entry.reject')}
             </Button>
           }
           confirmButton={
             <Button isProgress={isProcessing} onClick={handleOnClickSign}>
-              {t('pages.popup.cosmos.sign.message.entry.sign')}
+              {t('pages.popup.bitcoin.sign-message.entry.sign')}
             </Button>
           }
         />
