@@ -1,10 +1,12 @@
 import type { TransactionResponse } from '@aptos-labs/ts-sdk';
 import {
+  Deserializer,
   isBlockEpilogueTransactionResponse,
   isBlockMetadataTransactionResponse,
   isStateCheckpointTransactionResponse,
   isUserTransactionResponse,
   isValidatorTransactionResponse,
+  SimpleTransaction,
 } from '@aptos-labs/ts-sdk';
 
 import type { AccountTx } from '@/types/aptos/tx';
@@ -55,4 +57,12 @@ export function getTimestamp(tx: TransactionResponse) {
   }
 
   return '';
+}
+
+export function getOriginalTx(serializedTxHex: string) {
+  const _signDoc = Uint8Array.from(Buffer.from(serializedTxHex, 'hex'));
+  const deserializer = new Deserializer(_signDoc);
+  const originTx = deserializer.deserialize(SimpleTransaction);
+
+  return originTx;
 }

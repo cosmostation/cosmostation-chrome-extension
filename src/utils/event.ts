@@ -32,7 +32,16 @@ export async function emitChangedAddressEvent(newAccountId: string) {
 
   emitToWeb({ event: 'accountChange', chainType: 'aptos', data: { result: aptosAddress } }, currentAccountOrigins);
   emitToWeb(
-    { event: 'accountChange', chainType: 'aptos', data: { result: '' } },
+    {
+      event: 'accountChange',
+      chainType: 'aptos',
+      data: {
+        result: {
+          address: aptosAddress,
+          publicKey: aptosKeyPair?.publicKey || '',
+        },
+      },
+    },
     currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
   );
 

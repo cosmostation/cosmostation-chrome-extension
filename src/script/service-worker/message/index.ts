@@ -1,6 +1,6 @@
 import type { Request } from '@/types/message/inject';
 
-import { aptosProcess } from './apots';
+import { aptosProcess } from './aptos';
 import { bitcoinProcess } from './bitcoin';
 import { commonProcess } from './common';
 import { cosmosProcess } from './cosmos';

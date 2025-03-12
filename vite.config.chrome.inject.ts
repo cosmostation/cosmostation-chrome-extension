@@ -25,6 +25,17 @@ export default defineConfig(({ mode }) => {
       nodePolyfills({
         include: ['stream', 'assert', 'os', 'url', 'http', 'https', 'crypto'],
       }),
+      {
+        name: 'replace-global',
+        transform(code, id) {
+          if (id.endsWith('.js')) {
+            return {
+              code: code.replace(/_global/g, '_cosmostationGlobal'),
+              map: null,
+            };
+          }
+        },
+      },
     ],
     build: {
       outDir,

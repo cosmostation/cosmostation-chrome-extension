@@ -59,7 +59,7 @@ export async function aptosProcess(message: AptosRequest) {
         }
       }
 
-      if (method === 'aptos_signTransaction' || method === 'aptos_signAndSubmitTransaction') {
+      if (method === 'aptos_signTransaction') {
         const { params } = message;
 
         try {
@@ -70,7 +70,7 @@ export async function aptosProcess(message: AptosRequest) {
           void processRequest({
             ...message,
 
-            params: [...validatedParams] as AptosSignTransaction['params'],
+            params: validatedParams as AptosSignTransaction['params'],
           });
         } catch (e) {
           if (e instanceof AptosRPCError) {
@@ -89,7 +89,7 @@ export async function aptosProcess(message: AptosRequest) {
 
           const validatedParams = (await schema.validateAsync(params)) as AptosSignMessage['params'];
 
-          void processRequest({ ...message, params: [...validatedParams] as AptosSignMessage['params'] });
+          void processRequest({ ...message, params: validatedParams as AptosSignMessage['params'] });
         } catch (e) {
           if (e instanceof AptosRPCError) {
             throw e;

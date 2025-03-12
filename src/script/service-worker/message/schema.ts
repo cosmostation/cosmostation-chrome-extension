@@ -411,28 +411,16 @@ export const suiSignMessageSchema = () =>
 export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
 
 export const aptosSignTransactionSchema = () =>
-  Joi.array()
-    .label('params')
-    .required()
-    .items(
-      Joi.object<AptosSignTransaction['params'][0]>({
-        type: Joi.string().optional(),
-        function: Joi.string().required(),
-        type_arguments: Joi.array().items(Joi.string().optional()).required(),
-        arguments: Joi.array().required().items(Joi.any().optional()),
-      }).required(),
-    );
+  Joi.object<AptosSignTransaction['params']>({
+    serializedTxHex: Joi.string().required(),
+    asFeePayer: Joi.boolean().optional(),
+  }).required();
 
 export const aptosSignMessageSchema = () =>
-  Joi.array()
-    .label('params')
-    .required()
-    .items(
-      Joi.object<AptosSignMessage['params'][0]>({
-        address: Joi.boolean().optional(),
-        application: Joi.boolean().optional(),
-        chainId: Joi.boolean().optional(),
-        message: Joi.string().required(),
-        nonce: Joi.number().required(),
-      }).required(),
-    );
+  Joi.object<AptosSignMessage['params']>({
+    address: Joi.boolean().optional(),
+    application: Joi.boolean().optional(),
+    chainId: Joi.boolean().optional(),
+    message: Joi.string().required(),
+    nonce: Joi.number().required(),
+  }).required();

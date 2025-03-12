@@ -1,3 +1,4 @@
+import type { AptosWallet } from '@aptos-labs/wallet-standard';
 import type { Keplr } from '@keplr-wallet/types';
 import type {
   SuiSignAndExecuteTransactionBlockInput,
@@ -10,20 +11,8 @@ import type {
 
 import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedSuiPermissionType } from '@/types/extension';
-import type { AptosListenerType, BitcoinListenerType, EthereumListenerType, SuiListenerType } from '@/types/message';
+import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
-import type {
-  AptosAccountResponse,
-  AptosConnectResponse,
-  AptosDisconnectResponse,
-  AptosIsConnectedResponse,
-  AptosNetworkResponse,
-  AptosSignAndSubmitTransactionResponse,
-  AptosSignMessage,
-  AptosSignMessageResponse,
-  AptosSignPayload,
-  AptosSignTransactionResponse,
-} from '@/types/message/inject/aptos';
 import type {
   BitGetAddressResponse,
   BitGetBalanceResponse,
@@ -78,11 +67,8 @@ declare global {
 
   interface CosmosProvider {
     request: <T extends BaseRequest>(message: T) => Promise<Unknown>;
-    // on: (eventName: import('@/types/').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
-    // off: (
-    //   eventName: import('~/types/message').CosmosListenerType | ((event: MessageEvent<ListenerMessage>) => void),
-    //   eventHandler?: (data: unknown) => void,
-    // ) => void;
+    on: (eventName: CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
+    off: (eventName: CosmosListenerType, eventHandler?: (data: unknown) => void) => void;
   }
 
   interface SuiProvider {
@@ -137,25 +123,8 @@ declare global {
     off: (eventName: BitcoinListenerType, callBack: () => void) => void;
   }
 
-  interface AptosProvider {
-    request: <T extends Omit<Request, 'chainType' | 'origin' | 'requestId'>>(message: T) => Promise<Unknown>;
-    on: (eventName: AptosListenerType, eventHandler: (data?: unknown) => void) => void;
-    off: (eventName: AptosListenerType, eventHandler: (data: unknown) => void) => void;
-    connect: () => Promise<AptosConnectResponse>;
-    network: () => Promise<AptosNetworkResponse>;
-    disconnect: () => Promise<AptosDisconnectResponse>;
-    isConnected: () => Promise<AptosIsConnectedResponse>;
-    account: () => Promise<AptosAccountResponse>;
-    signAndSubmitTransaction: (payload: AptosSignPayload) => Promise<AptosSignAndSubmitTransactionResponse>;
-    signTransaction: (payload: AptosSignPayload) => Promise<AptosSignTransactionResponse>;
-    signMessage: (params: AptosSignMessage['params'][0]) => Promise<AptosSignMessageResponse>;
-    onNetworkChange: (eventHandler: (data?: unknown) => void) => void;
-    offNetworkChange: (eventHandler: (data?: unknown) => void) => void;
-    onAccountChange: (eventHandler: (data?: unknown) => void) => void;
-    offAccountChange: (eventHandler: (data?: unknown) => void) => void;
-  }
-
   interface Window {
+    __cosmostationInjected__: boolean;
     customProperty: boolean;
 
     addEventListener<K extends keyof CustomEventMap>(type: K, listener: (event: CustomEventMap[K]) => void): void;
@@ -168,7 +137,7 @@ declare global {
       ethereum: EthereumProvider;
       sui: SuiProvider;
       bitcoin: BitcoinProvider;
-      aptos: AptosProvider;
+      aptos: AptosWallet;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;
@@ -182,7 +151,6 @@ declare global {
 
     ethereum?: EthereumProvider;
     suiWallet?: SuiProvider;
-    aptos?: AptosProvider;
   }
 }
 

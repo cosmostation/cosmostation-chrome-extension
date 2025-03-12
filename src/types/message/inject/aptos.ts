@@ -5,21 +5,12 @@ import type { ChainType } from '@/types/chain';
 
 import type { RequestBase } from '.';
 
-export type AptosRequest =
-  | AptosIsConnected
-  | AptosDisconnect
-  | AptosNetwork
-  | AptosConnect
-  | AptosAccount
-  | AptosSignTransaction
-  | AptosSignAndSubmitTransaction
-  | AptosSignMessage;
+export type AptosRequest = AptosIsConnected | AptosDisconnect | AptosNetwork | AptosConnect | AptosAccount | AptosSignTransaction | AptosSignMessage;
 
 export interface AptosResponse {
   [APTOS_POPUP_METHOD_TYPE.APTOS__CONNECT]: AptosConnectResponse;
   [APTOS_POPUP_METHOD_TYPE.APTOS__ACCOUNT]: AptosAccountResponse;
   [APTOS_POPUP_METHOD_TYPE.APTOS__SIGN_TRANSACION]: AptosSignTransactionResponse;
-  [APTOS_POPUP_METHOD_TYPE.APTOS__SIGN_AND_SUBMIT_TRANSACTION]: AptosSignAndSubmitTransactionResponse;
   [APTOS_POPUP_METHOD_TYPE.APTOS__SIGN_MESSAGE]: AptosSignMessageResponse;
   [APTOS_NO_POPUP_METHOD_TYPE.APTOS__IS_CONNECTED]: AptosIsConnectedResponse;
   [APTOS_NO_POPUP_METHOD_TYPE.APTOS__DISCONNECT]: AptosDisconnectResponse;
@@ -70,17 +61,15 @@ export interface AptosAccount extends RequestBase {
 
 export type AptosAccountResponse = AptosConnectResponse;
 
-export interface AptosSignPayload<T = unknown> {
-  function: string;
-  type: string;
-  type_arguments: string[];
-  arguments: T[];
+export interface AptosSignPayload {
+  serializedTxHex: string;
+  asFeePayer?: boolean;
 }
 
 export interface AptosSignTransaction extends RequestBase {
   chainType: Extract<ChainType, 'aptos'>;
   method: typeof APTOS_POPUP_METHOD_TYPE.APTOS__SIGN_TRANSACION;
-  params: [AptosSignPayload];
+  params: AptosSignPayload;
 }
 
 export type AptosSignTransactionResponse = string;
@@ -104,7 +93,7 @@ export interface AptosSignMessageParams {
 export interface AptosSignMessage extends RequestBase {
   chainType: Extract<ChainType, 'aptos'>;
   method: typeof APTOS_POPUP_METHOD_TYPE.APTOS__SIGN_MESSAGE;
-  params: [AptosSignMessageParams];
+  params: AptosSignMessageParams;
 }
 
 export interface AptosSignMessageResponse {
