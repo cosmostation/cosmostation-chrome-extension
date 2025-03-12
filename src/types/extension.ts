@@ -108,6 +108,7 @@ export interface ExtensionStorage {
   chosenBitcoinNetworkId: string;
   currentWindowId: number | null;
   prioritizedProvider: PrioritizedProvider;
+  pinnedDappIds: string[];
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

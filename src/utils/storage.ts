@@ -391,6 +391,10 @@ export async function initExtensionLocalStorage() {
 
     await setExtensionLocalStorage('prioritizedProvider', newProviders);
   }
+
+  if (!originStorage.pinnedDappIds) {
+    await setExtensionLocalStorage('pinnedDappIds', []);
+  }
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {

@@ -54,6 +54,7 @@ export const initialState: ExtensionStorageState = {
     metamask: false,
     aptos: false,
   },
+  pinnedDappIds: [],
 };
 
 const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets'];
