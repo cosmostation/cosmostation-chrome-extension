@@ -14,9 +14,9 @@ export function useCurrentSuiNetwork() {
   const allSuiChains = useMemo(() => [...(chainList?.suiChains || [])], [chainList?.suiChains]);
 
   const currentAccountSelectedSuiNetworkId = useMemo(() => {
-    const selectedEvmChain = allSuiChains.find((network) => isMatchingUniqueChainId(network, chosenSuiNetworkId)) || allSuiChains[0];
+    const selectedSuiChain = allSuiChains.find((network) => isMatchingUniqueChainId(network, chosenSuiNetworkId)) || allSuiChains[0];
 
-    return selectedEvmChain ? getUniqueChainId(selectedEvmChain) : '';
+    return selectedSuiChain ? getUniqueChainId(selectedSuiChain) : '';
   }, [allSuiChains, chosenSuiNetworkId]);
 
   const currentSuiNetwork = useMemo(
@@ -37,7 +37,7 @@ export function useCurrentSuiNetwork() {
   };
 
   return {
-    ethereumNetworks: allSuiChains,
+    suiNetworks: allSuiChains,
     currentSuiNetwork,
     setCurrentSuiNetwork,
   };

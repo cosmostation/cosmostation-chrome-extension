@@ -49,7 +49,7 @@ export async function signAndExecuteTxSequentially(
   throw new Error('All RPC URLs failed');
 }
 
-export async function signTxSequentially(
+export function signTxSequentially(
   signer: Ed25519Account,
   transaction: AnyRawTransaction,
   urls: string[],
@@ -87,7 +87,7 @@ export async function signTxSequentially(
   throw new Error('All RPC URLs failed');
 }
 
-export async function signMessage(privateKey: string, messageToSign: HexInput) {
+export function signMessage(privateKey: string, messageToSign: HexInput) {
   try {
     const pk = PrivateKey.formatPrivateKey(privateKey, PrivateKeyVariants.Ed25519);
 

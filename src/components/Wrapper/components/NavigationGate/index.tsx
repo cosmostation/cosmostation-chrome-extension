@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { Route as Initial } from '@/pages/account/initial';
+import { Route as AptosSignMessage } from '@/pages/popup/aptos/sign-message';
+import { Route as AptosTransaction } from '@/pages/popup/aptos/transaction';
 import { Route as BitcoinSend } from '@/pages/popup/bitcoin/send';
 import { Route as BitcoinSignMessage } from '@/pages/popup/bitcoin/sign-message';
 import { Route as BitcoinSignPsbt } from '@/pages/popup/bitcoin/sign-psbt';
@@ -180,6 +182,10 @@ const getNavigationPathForAptosRequest = (requestQueue: AptosRequest) => {
       return RequestAccount.to;
     case 'aptos_account':
       return RequestAccount.to;
+    case 'aptos_signTransaction':
+      return AptosTransaction.to;
+    case 'aptos_signMessage':
+      return AptosSignMessage.to;
 
     default:
       return '';

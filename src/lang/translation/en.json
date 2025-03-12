@@ -2380,6 +2380,24 @@
             "sign": "Sign"
           }
         }
+      },
+      "aptos": {
+        "transaction": {
+          "entry": {
+            "insufficientBalance": "Insufficient balance",
+            "failedToSimulate": "Fail to simulate",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "sign-message": {
+          "entry": {
+            "signatureRequest": "Signature Request",
+            "message": "Message",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        }
       }
     },
     "coin-overview": {

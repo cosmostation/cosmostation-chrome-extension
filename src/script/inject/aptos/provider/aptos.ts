@@ -230,6 +230,8 @@ export class CosmostationAptos implements AptosWalletInterface {
       status: UserResponseStatus.APPROVED,
       args: {
         address: response.address,
+        application: input.application && !!response.application ? response.application : undefined,
+        chainId: input.chainId && !!response.chainId ? response.chainId : undefined,
         fullMessage: response.fullMessage,
         message: input.message,
         nonce: input.nonce,

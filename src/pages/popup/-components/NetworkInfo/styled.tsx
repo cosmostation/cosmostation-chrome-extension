@@ -9,6 +9,8 @@ export const Container = styled('div')({
   flexDirection: 'column',
   alignItems: 'flex-start',
   rowGap: '0.6rem',
+
+  boxSizing: 'border-box',
 });
 
 export const ChainContainer = styled('div')({
