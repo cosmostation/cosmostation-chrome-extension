@@ -5,16 +5,32 @@ import { Typography } from '@mui/material';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
+import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
+import IconButton from '@/components/common/IconButton';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DAPP_LIST_SORT_KEY } from '@/constants/sortKey';
 import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { DappListSortKeyType } from '@/types/sortKey';
+import { chunkArray } from '@/utils/array';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { Container, FilterContaienr, SortConditionContainer, StickyContentsContainer } from './-styled';
+import ChipTypeButton from './-components/ChipTypeButton';
+import {
+  CarouselContainer,
+  CarouselWrapper,
+  ChipButtonContainer,
+  ChipButtonContentsContainer,
+  FilterContaienr,
+  LeftChevronIconContainer,
+  SortConditionContainer,
+  StickyContentsContainer,
+} from './-styled';
+
+import PopularIcon from '@/assets/images/icons/Popular16.svg';
+import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
 const dappList = [
   {
@@ -84,6 +100,9 @@ const dappList = [
   },
 ];
 
+const DEFAULT_DAPP_TYPE = 'Popular';
+const ALL_DAPP_TYPE = 'All';
+
 export default function Entry() {
   const { t } = useTranslation();
 
@@ -94,6 +113,9 @@ export default function Entry() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
+  const [currentDappTypeButtonPage, setCurrentDappTypeButtonPate] = useState(0);
+  const [selectedDappType, setSelectedDappType] = useState(DEFAULT_DAPP_TYPE);
+
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
   const [isShowPinnedOnly, setIsShowPinnedOnly] = useState(false);
 
@@ -101,6 +123,19 @@ export default function Entry() {
 
   const [sortOption, setSortOption] = useState<DappListSortKeyType>(DAPP_LIST_SORT_KEY.ALPHABETICAL_ASC);
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
+
+  const dappTypeList = useMemo(() => {
+    const aggregatedDappTypes = dappList.reduce((acc, dapp) => {
+      if (!acc.includes(dapp.type)) {
+        acc.push(dapp.type);
+      }
+      return acc;
+    }, [] as string[]);
+
+    return [DEFAULT_DAPP_TYPE, ALL_DAPP_TYPE, ...aggregatedDappTypes];
+  }, []);
+
+  const dappTypeListChunk = useMemo(() => chunkArray(dappTypeList, 2), [dappTypeList]);
 
   const soretedDappList = useMemo(() => {
     return dappList.sort((a, b) => {
@@ -117,9 +152,17 @@ export default function Entry() {
   const filteredDappList = useMemo(() => {
     const filteredByPinned = isShowPinnedOnly ? soretedDappList.filter((dapp) => pinnedDappIds.includes(String(dapp.id))) : soretedDappList;
 
-    // NOTE all. defi 등 타입별 필터링 추가
+    const filteredByType = (() => {
+      if (selectedDappType === DEFAULT_DAPP_TYPE) {
+        return filteredByPinned.filter((dapp) => dapp.is_default);
+      }
+      if (selectedDappType === ALL_DAPP_TYPE) {
+        return filteredByPinned;
+      }
+      return filteredByPinned.filter((dapp) => dapp.type === selectedDappType);
+    })();
 
-    const filteredDappsByChain = currentSelectedChainId ? filteredByPinned.filter((dapp) => dapp.chains.includes(currentSelectedChainId)) : filteredByPinned;
+    const filteredDappsByChain = currentSelectedChainId ? filteredByType.filter((dapp) => dapp.chains.includes(currentSelectedChainId)) : filteredByType;
 
     if (!!search && debouncedSearch.length > 1) {
       return (
@@ -131,64 +174,105 @@ export default function Entry() {
       );
     }
     return filteredDappsByChain;
-  }, [currentSelectedChainId, debouncedSearch, isShowPinnedOnly, pinnedDappIds, search, soretedDappList]);
+  }, [currentSelectedChainId, selectedDappType, debouncedSearch, isShowPinnedOnly, pinnedDappIds, search, soretedDappList]);
 
   console.log('🚀 ~ filteredDappList ~ filteredDappList:', filteredDappList);
 
   return (
     <>
       <BaseBody>
-        <Container>
-          <StickyContentsContainer>
-            <FilterContaienr>
-              <Search
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.currentTarget.value);
-                }}
-                isPending={isDebouncing}
-                placeholder={t('pages.dapp-list.entry.searchPlaceholder')}
-                onClickFilter={() => {
-                  setIsOpenSortBottomSheet(true);
-                }}
-                onClear={() => {
-                  setSearch('');
-                  cancel();
-                }}
-              />
-            </FilterContaienr>
-            {/* NOTE 슬라이더 컴포넌트 */}
-            {/* <Pagination
-  count={10}
-  renderItem={(item) => (
-    <PaginationItem
-      slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-      {...item}
-    />
-  )}
-/> */}
-            <SortConditionContainer>
-              <AllNetworkButton
-                sizeVariant="medium"
-                typoVarient="b2_M"
-                currentChainId={currentSelectedChainId}
-                chainList={flatChainList}
-                selectChainOption={(id) => {
-                  setCurrentSelectedChainId(id);
-                }}
-              />
+        <StickyContentsContainer>
+          <FilterContaienr>
+            <Search
+              value={search}
+              onChange={(event) => {
+                setSearch(event.currentTarget.value);
+              }}
+              isPending={isDebouncing}
+              placeholder={t('pages.dapp-list.entry.searchPlaceholder')}
+              onClickFilter={() => {
+                setIsOpenSortBottomSheet(true);
+              }}
+              onClear={() => {
+                setSearch('');
+                cancel();
+              }}
+            />
+          </FilterContaienr>
 
-              <CheckBoxTextButton
-                isChecked={!isShowPinnedOnly}
-                onClick={() => {
-                  setIsShowPinnedOnly(false);
-                }}
+          <CarouselWrapper>
+            <IconButton
+              sx={{
+                width: 'fit-content',
+                height: 'fit-content',
+                visibility: currentDappTypeButtonPage === 0 ? 'hidden' : 'visible',
+              }}
+              disabled={currentDappTypeButtonPage === 0}
+              onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
+            >
+              <LeftChevronIconContainer>
+                <RightChevronIcon />
+              </LeftChevronIconContainer>
+            </IconButton>
+            <CarouselContainer>
+              <Carousel
+                hideIndicator
+                currentIndex={currentDappTypeButtonPage}
+                onClickNext={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
+                onClickPrev={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
               >
-                <Typography variant="b3_R">{t('pages.dapp-list.entry.pinnedDapps')}</Typography>
-              </CheckBoxTextButton>
-            </SortConditionContainer>
-          </StickyContentsContainer>
-        </Container>
+                {dappTypeListChunk.map((dappTypeListChunk, index) => (
+                  <ChipButtonContainer key={index}>
+                    {dappTypeListChunk.map((type) => (
+                      <ChipTypeButton
+                        key={type}
+                        isActive={selectedDappType === type}
+                        onClick={() => {
+                          setSelectedDappType(type);
+                        }}
+                      >
+                        <ChipButtonContentsContainer>
+                          {type === DEFAULT_DAPP_TYPE && <PopularIcon />}
+                          <Typography variant="h4_B">{type}</Typography>
+                        </ChipButtonContentsContainer>
+                      </ChipTypeButton>
+                    ))}
+                  </ChipButtonContainer>
+                ))}
+              </Carousel>
+            </CarouselContainer>
+            <IconButton
+              sx={{
+                width: 'fit-content',
+                height: 'fit-content',
+                visibility: currentDappTypeButtonPage === dappTypeListChunk.length - 1 ? 'hidden' : 'visible',
+              }}
+              onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
+            >
+              <RightChevronIcon />
+            </IconButton>
+          </CarouselWrapper>
+          <SortConditionContainer>
+            <AllNetworkButton
+              sizeVariant="medium"
+              typoVarient="b2_M"
+              currentChainId={currentSelectedChainId}
+              chainList={flatChainList}
+              selectChainOption={(id) => {
+                setCurrentSelectedChainId(id);
+              }}
+            />
+
+            <CheckBoxTextButton
+              isChecked={!isShowPinnedOnly}
+              onClick={() => {
+                setIsShowPinnedOnly(false);
+              }}
+            >
+              <Typography variant="b3_R">{t('pages.dapp-list.entry.pinnedDapps')}</Typography>
+            </CheckBoxTextButton>
+          </SortConditionContainer>
+        </StickyContentsContainer>
       </BaseBody>
       <SortBottomSheet
         optionButtonProps={[

@@ -9,6 +9,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
@@ -196,7 +197,15 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.buy')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              onClick={() => {
+                navigate({
+                  to: DappList.to,
+                });
+              }}
+              leadingIcon={<StakeIcon />}
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.dapp')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>

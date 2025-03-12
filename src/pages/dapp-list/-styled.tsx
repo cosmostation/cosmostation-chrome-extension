@@ -13,12 +13,39 @@ export const StickyContentsContainer = styled('div')(({ theme }) => ({
   position: 'sticky',
   top: '3rem',
 
-  padding: '0.8rem 1.2rem',
+  padding: '0.8rem 0',
 
   boxSizing: 'border-box',
 
   zIndex: 1,
   backgroundColor: theme.palette.color.base50,
+}));
+
+export const CarouselWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const CarouselContainer = styled('div')({
+  flex: 1,
+  overflow: 'hidden',
+});
+
+export const ChipButtonContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const ChipButtonContentsContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.2rem',
+});
+
+export const LeftChevronIconContainer = styled('div')(() => ({
+  width: '2rem',
+  height: '2rem',
+  transform: 'rotate(180deg)',
 }));
 
 export const FilterContaienr = styled('div')({
@@ -41,5 +68,7 @@ export const InfoIconContainer = styled('div')(({ theme }) => ({
 
 export const SortConditionContainer = styled('div')({
   display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
   padding: '1rem 0.4rem',
 });

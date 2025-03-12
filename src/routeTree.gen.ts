@@ -15,6 +15,7 @@ import { Route as IndexImport } from './pages/index'
 import { Route as ManageDappsIndexImport } from './pages/manage-dapps/index'
 import { Route as GeneralSettingIndexImport } from './pages/general-setting/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
+import { Route as DappListIndexImport } from './pages/dapp-list/index'
 import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as WalletTxResultIndexImport } from './pages/wallet/tx-result/index'
 import { Route as WalletSwapIndexImport } from './pages/wallet/swap/index'
@@ -110,6 +111,12 @@ const GeneralSettingIndexRoute = GeneralSettingIndexImport.update({
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DappListIndexRoute = DappListIndexImport.update({
+  id: '/dapp-list/',
+  path: '/dapp-list/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -603,6 +610,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/dapp-list/': {
+      id: '/dapp-list/'
+      path: '/dapp-list'
+      fullPath: '/dapp-list'
+      preLoaderRoute: typeof DappListIndexImport
       parentRoute: typeof rootRoute
     }
     '/dashboard/': {
@@ -1124,6 +1138,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/dapp-list': typeof DappListIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
   '/manage-dapps': typeof ManageDappsIndexRoute
@@ -1202,6 +1217,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/dapp-list': typeof DappListIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
   '/manage-dapps': typeof ManageDappsIndexRoute
@@ -1281,6 +1297,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
+  '/dapp-list/': typeof DappListIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/general-setting/': typeof GeneralSettingIndexRoute
   '/manage-dapps/': typeof ManageDappsIndexRoute
@@ -1361,6 +1378,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/dapp-list'
     | '/dashboard'
     | '/general-setting'
     | '/manage-dapps'
@@ -1438,6 +1456,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/dapp-list'
     | '/dashboard'
     | '/general-setting'
     | '/manage-dapps'
@@ -1515,6 +1534,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about/'
+    | '/dapp-list/'
     | '/dashboard/'
     | '/general-setting/'
     | '/manage-dapps/'
@@ -1594,6 +1614,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  DappListIndexRoute: typeof DappListIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   GeneralSettingIndexRoute: typeof GeneralSettingIndexRoute
   ManageDappsIndexRoute: typeof ManageDappsIndexRoute
@@ -1672,6 +1693,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
+  DappListIndexRoute: DappListIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   GeneralSettingIndexRoute: GeneralSettingIndexRoute,
   ManageDappsIndexRoute: ManageDappsIndexRoute,
@@ -1782,6 +1804,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about/",
+        "/dapp-list/",
         "/dashboard/",
         "/general-setting/",
         "/manage-dapps/",
@@ -1862,6 +1885,9 @@ export const routeTree = rootRoute
     },
     "/about/": {
       "filePath": "about/index.tsx"
+    },
+    "/dapp-list/": {
+      "filePath": "dapp-list/index.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"

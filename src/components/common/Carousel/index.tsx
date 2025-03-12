@@ -1,17 +1,23 @@
 import type React from 'react';
-import { Children, useState } from 'react';
+import { Children } from 'react';
 
 import { CarouselContainer, CarouselItem, CarouselItemContainer, Indicator, IndicatorContainer } from './styled';
 
 type CarouselProps = {
   children: React.ReactNode;
+  currentIndex: number;
+  hideIndicator?: boolean;
+  onClickNext?: () => void;
+  onClickPrev?: () => void;
 };
 
-export default function Carousel({ children }: CarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
+export default function Carousel({ children, currentIndex, hideIndicator, onClickNext, onClickPrev }: CarouselProps) {
   const handleIndicatorClick = (index: number) => {
-    setCurrentIndex(index);
+    if (index > currentIndex) {
+      onClickNext?.();
+    } else if (index < currentIndex) {
+      onClickPrev?.();
+    }
   };
 
   return (
@@ -23,13 +29,15 @@ export default function Carousel({ children }: CarouselProps) {
           ))}
         </CarouselItemContainer>
       </CarouselContainer>
-      {Children.count(children) > 1 && (
-        <IndicatorContainer>
-          {Children.map(children, (_, index) => (
-            <Indicator key={index} isActive={currentIndex === index} onClick={() => handleIndicatorClick(index)} />
-          ))}
-        </IndicatorContainer>
-      )}
+      {hideIndicator
+        ? null
+        : Children.count(children) > 1 && (
+            <IndicatorContainer>
+              {Children.map(children, (_, index) => (
+                <Indicator key={index} isActive={currentIndex === index} onClick={() => handleIndicatorClick(index)} />
+              ))}
+            </IndicatorContainer>
+          )}
     </>
   );
 }
