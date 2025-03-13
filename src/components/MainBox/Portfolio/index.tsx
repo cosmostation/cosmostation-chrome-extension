@@ -14,12 +14,12 @@ import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBot
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
-import { Route as SelectSwapCoin } from '@/pages/wallet/swap';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
 import {
   BodyBottomChipButtonContainer,
   BodyBottomContainer,
@@ -39,8 +39,11 @@ import {
 import MainBox from '..';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
+import DappIcon from '@/assets/images/icons/Dapp22.svg';
 import HistoryIcon from '@/assets/images/icons/History14.svg';
+import MoreIcon from '@/assets/images/icons/More22.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
+import SwapIcon from '@/assets/images/icons/Swap22.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
 
 import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
@@ -65,6 +68,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const [aggregatedTotalValue, setAggregatedTotalValue] = useState('0');
 
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
+  const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
 
   const chainList = useMemo(() => getfilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
 
@@ -184,29 +188,34 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.stake')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton
-              leadingIcon={<StakeIcon />}
+              leadingIcon={<SwapIcon />}
               direction="vertical"
               onClick={() => {
-                navigate({
-                  to: SelectSwapCoin.to,
-                });
+                window.open('https://www.mintscan.io/wallet/swap', '_blank');
               }}
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.buy')}</SpacedTypography>
-            </StyledIconTextButton>
+
             <StyledIconTextButton
               onClick={() => {
                 navigate({
                   to: DappList.to,
                 });
               }}
-              leadingIcon={<StakeIcon />}
+              leadingIcon={<DappIcon />}
               direction="vertical"
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.dapp')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton
+              onClick={() => {
+                setIsOpenMoreOptionBottomSheet(true);
+              }}
+              leadingIcon={<MoreIcon />}
+              direction="vertical"
+            >
+              <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.more')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>
         }
@@ -214,6 +223,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
         backgroundImage={CosmostationLogoImg}
       />
       <CurrencyBottomSheet open={isOpenCurrencyBottomSheet} onClose={() => setIsOpenCurrencyBottomSheet(false)} />
+      <MoreOptionBottomSheet open={isOpenMoreOptionBottomSheet} onClose={() => setIsOpenMoreOptionBottomSheet(false)} />
     </>
   );
 }
