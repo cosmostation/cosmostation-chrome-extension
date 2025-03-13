@@ -18,12 +18,15 @@ import { chunkArray } from '@/utils/array';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import ChipTypeButton from './-components/ChipTypeButton';
+import GridDappItem from './-components/GridDappItem';
 import {
   CarouselContainer,
   CarouselWrapper,
   ChipButtonContainer,
   ChipButtonContentsContainer,
+  Container,
   FilterContaienr,
+  GridContainer,
   LeftChevronIconContainer,
   SortConditionContainer,
   StickyContentsContainer,
@@ -40,7 +43,7 @@ const dappList = [
       'The 1inch Network unites decentralized protocols whose synergy enables the most lucrative, fastest and protected operations in the DeFi space.',
     thumbnail: 'https://raw.githubusercontent.com/cosmostation/chainlist/ecosystem_dev/wallet_mobile/resource/1inch.png',
     link: 'https://app.1inch.io',
-    chains: ['ethereum', 'arbitrum', 'avalanche', 'fantom', 'kaia', 'optimism', 'polygon'],
+    chains: ['ethereum', 'arbitrum', 'avalanche', 'fantom', 'kaia', 'optimism', 'polygon', 'bnb-smart-chain'],
     socials: {
       github: 'https://github.com/1inch',
       telegram: 'https://t.me/OneInchNetworkNews',
@@ -98,6 +101,20 @@ const dappList = [
     },
     type: 'DeFi',
   },
+  {
+    id: 5,
+    name: 'Eigenlayer',
+    description: 'EigenLayer lets Ethereum users restake assets to support other protocols and earn extra rewards.',
+    thumbnail: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/wallet_mobile/mobile_ecosystem/ethereum/resource/eigenlayer.png',
+    link: 'https://app.eigenlayer.xyz',
+    chains: ['ethereum'],
+    socials: {
+      github: 'https://github.com/eigenfoundation',
+      twitter: 'https://x.com/eigenlayer',
+      discord: 'https://discord.com/invite/eigenlayer',
+    },
+    type: 'Liquid staking',
+  },
 ];
 
 const DEFAULT_DAPP_TYPE = 'Popular';
@@ -126,8 +143,8 @@ export default function Entry() {
 
   const dappTypeList = useMemo(() => {
     const aggregatedDappTypes = dappList.reduce((acc, dapp) => {
-      if (!acc.includes(dapp.type)) {
-        acc.push(dapp.type);
+      if (!acc.includes(dapp?.type || '')) {
+        acc.push(dapp?.type || '');
       }
       return acc;
     }, [] as string[]);
@@ -135,22 +152,29 @@ export default function Entry() {
     return [DEFAULT_DAPP_TYPE, ALL_DAPP_TYPE, ...aggregatedDappTypes];
   }, []);
 
-  const dappTypeListChunk = useMemo(() => chunkArray(dappTypeList, 2), [dappTypeList]);
+  const dappTypeListChunk = useMemo(() => chunkArray(dappTypeList, 5), [dappTypeList]);
 
-  const soretedDappList = useMemo(() => {
-    return dappList.sort((a, b) => {
-      if (sortOption === DAPP_LIST_SORT_KEY.ALPHABETICAL_ASC) {
-        return a.name.localeCompare(b.name);
-      }
-      if (sortOption === DAPP_LIST_SORT_KEY.IS_MULTICHAIN_SUPPORT) {
-        return a.chains.length > 1 ? -1 : 1;
-      }
-      return 0;
-    });
-  }, [sortOption]);
+  const sortedDappList = useMemo(() => {
+    return dappList
+      .sort((a, b) => {
+        if (sortOption === DAPP_LIST_SORT_KEY.ALPHABETICAL_ASC) {
+          return a.name?.localeCompare(b?.name || '') || 0;
+        }
+
+        return 0;
+      })
+      .sort((a) => {
+        if (pinnedDappIds.includes(a.id)) {
+          return -1;
+        }
+        return 0;
+      });
+  }, [pinnedDappIds, sortOption]);
 
   const filteredDappList = useMemo(() => {
-    const filteredByPinned = isShowPinnedOnly ? soretedDappList.filter((dapp) => pinnedDappIds.includes(String(dapp.id))) : soretedDappList;
+    const filteredBySortOption =
+      sortOption === DAPP_LIST_SORT_KEY.IS_MULTICHAIN_SUPPORT ? sortedDappList.filter((dapp) => dapp.chains.length > 1) : sortedDappList;
+    const filteredByPinned = isShowPinnedOnly ? filteredBySortOption.filter((dapp) => pinnedDappIds.includes(dapp.id)) : filteredBySortOption;
 
     const filteredByType = (() => {
       if (selectedDappType === DEFAULT_DAPP_TYPE) {
@@ -167,112 +191,117 @@ export default function Entry() {
     if (!!search && debouncedSearch.length > 1) {
       return (
         filteredDappsByChain.filter((asset) => {
-          const condition = [...asset.chains, asset.name, asset.type];
+          const condition = [asset.name || '', asset.type || ''];
 
           return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
         }) || []
       );
     }
     return filteredDappsByChain;
-  }, [currentSelectedChainId, selectedDappType, debouncedSearch, isShowPinnedOnly, pinnedDappIds, search, soretedDappList]);
-
-  console.log('🚀 ~ filteredDappList ~ filteredDappList:', filteredDappList);
+  }, [sortOption, sortedDappList, isShowPinnedOnly, currentSelectedChainId, search, debouncedSearch, pinnedDappIds, selectedDappType]);
 
   return (
     <>
       <BaseBody>
-        <StickyContentsContainer>
-          <FilterContaienr>
-            <Search
-              value={search}
-              onChange={(event) => {
-                setSearch(event.currentTarget.value);
-              }}
-              isPending={isDebouncing}
-              placeholder={t('pages.dapp-list.entry.searchPlaceholder')}
-              onClickFilter={() => {
-                setIsOpenSortBottomSheet(true);
-              }}
-              onClear={() => {
-                setSearch('');
-                cancel();
-              }}
-            />
-          </FilterContaienr>
+        <Container>
+          <StickyContentsContainer>
+            <FilterContaienr>
+              <Search
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.currentTarget.value);
+                }}
+                isPending={isDebouncing}
+                placeholder={t('pages.dapp-list.entry.searchPlaceholder')}
+                onClickFilter={() => {
+                  setIsOpenSortBottomSheet(true);
+                }}
+                onClear={() => {
+                  setSearch('');
+                  cancel();
+                }}
+              />
+            </FilterContaienr>
 
-          <CarouselWrapper>
-            <IconButton
-              sx={{
-                width: 'fit-content',
-                height: 'fit-content',
-                visibility: currentDappTypeButtonPage === 0 ? 'hidden' : 'visible',
-              }}
-              disabled={currentDappTypeButtonPage === 0}
-              onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
-            >
-              <LeftChevronIconContainer>
-                <RightChevronIcon />
-              </LeftChevronIconContainer>
-            </IconButton>
-            <CarouselContainer>
-              <Carousel
-                hideIndicator
-                currentIndex={currentDappTypeButtonPage}
-                onClickNext={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
-                onClickPrev={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
+            <CarouselWrapper>
+              <IconButton
+                sx={{
+                  width: 'fit-content',
+                  height: 'fit-content',
+                  visibility: currentDappTypeButtonPage === 0 ? 'hidden' : 'visible',
+                }}
+                disabled={currentDappTypeButtonPage === 0}
+                onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
               >
-                {dappTypeListChunk.map((dappTypeListChunk, index) => (
-                  <ChipButtonContainer key={index}>
-                    {dappTypeListChunk.map((type) => (
-                      <ChipTypeButton
-                        key={type}
-                        isActive={selectedDappType === type}
-                        onClick={() => {
-                          setSelectedDappType(type);
-                        }}
-                      >
-                        <ChipButtonContentsContainer>
-                          {type === DEFAULT_DAPP_TYPE && <PopularIcon />}
-                          <Typography variant="h4_B">{type}</Typography>
-                        </ChipButtonContentsContainer>
-                      </ChipTypeButton>
-                    ))}
-                  </ChipButtonContainer>
-                ))}
-              </Carousel>
-            </CarouselContainer>
-            <IconButton
-              sx={{
-                width: 'fit-content',
-                height: 'fit-content',
-                visibility: currentDappTypeButtonPage === dappTypeListChunk.length - 1 ? 'hidden' : 'visible',
-              }}
-              onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
-            >
-              <RightChevronIcon />
-            </IconButton>
-          </CarouselWrapper>
-          <SortConditionContainer>
-            <AllNetworkButton
-              sizeVariant="medium"
-              typoVarient="b2_M"
-              currentChainId={currentSelectedChainId}
-              chainList={flatChainList}
-              selectChainOption={(id) => {
-                setCurrentSelectedChainId(id);
-              }}
-            />
+                <LeftChevronIconContainer>
+                  <RightChevronIcon />
+                </LeftChevronIconContainer>
+              </IconButton>
+              <CarouselContainer>
+                <Carousel
+                  hideIndicator
+                  currentIndex={currentDappTypeButtonPage}
+                  onClickNext={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
+                  onClickPrev={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
+                >
+                  {dappTypeListChunk.map((dappTypeListChunk, index) => (
+                    <ChipButtonContainer key={index}>
+                      {dappTypeListChunk.map((type) => (
+                        <ChipTypeButton
+                          key={type}
+                          isActive={selectedDappType === type}
+                          onClick={() => {
+                            setSelectedDappType(type);
+                          }}
+                        >
+                          <ChipButtonContentsContainer>
+                            {type === DEFAULT_DAPP_TYPE && <PopularIcon />}
+                            <Typography variant="h4_B">{type}</Typography>
+                          </ChipButtonContentsContainer>
+                        </ChipTypeButton>
+                      ))}
+                    </ChipButtonContainer>
+                  ))}
+                </Carousel>
+              </CarouselContainer>
+              <IconButton
+                sx={{
+                  width: 'fit-content',
+                  height: 'fit-content',
+                  visibility: currentDappTypeButtonPage === dappTypeListChunk.length - 1 ? 'hidden' : 'visible',
+                }}
+                onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
+              >
+                <RightChevronIcon />
+              </IconButton>
+            </CarouselWrapper>
+            <SortConditionContainer>
+              <AllNetworkButton
+                sizeVariant="medium"
+                typoVarient="b2_M"
+                currentChainId={currentSelectedChainId}
+                chainList={flatChainList}
+                selectChainOption={(id) => {
+                  setCurrentSelectedChainId(id);
+                }}
+              />
 
-            <CheckBoxTextButton
-              isChecked={!isShowPinnedOnly}
-              onClick={() => {
-                setIsShowPinnedOnly(false);
-              }}
-            >
-              <Typography variant="b3_R">{t('pages.dapp-list.entry.pinnedDapps')}</Typography>
-            </CheckBoxTextButton>
-          </SortConditionContainer>
-        </StickyContentsContainer>
+              <CheckBoxTextButton
+                isChecked={isShowPinnedOnly}
+                onClick={() => {
+                  setIsShowPinnedOnly(!isShowPinnedOnly);
+                }}
+              >
+                <Typography variant="b3_R">{t('pages.dapp-list.entry.pinnedDapps')}</Typography>
+              </CheckBoxTextButton>
+            </SortConditionContainer>
+          </StickyContentsContainer>
+          <GridContainer>
+            {filteredDappList.map((dapp) => {
+              return <GridDappItem key={dapp.id} dappItemInfo={dapp} />;
+            })}
+          </GridContainer>
+        </Container>
       </BaseBody>
       <SortBottomSheet
         optionButtonProps={[

@@ -1,9 +1,6 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  rowGap: '2.4rem',
   width: '100%',
 });
 
@@ -14,8 +11,6 @@ export const StickyContentsContainer = styled('div')(({ theme }) => ({
   top: '3rem',
 
   padding: '0.8rem 0',
-
-  boxSizing: 'border-box',
 
   zIndex: 1,
   backgroundColor: theme.palette.color.base50,
@@ -71,4 +66,11 @@ export const SortConditionContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '1rem 0.4rem',
+});
+
+export const GridContainer = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(16rem, 1fr))',
+  rowGap: '1.6rem',
+  columnGap: '1rem',
 });

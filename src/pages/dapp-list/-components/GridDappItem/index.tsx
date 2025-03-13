@@ -1,8 +1,9 @@
+import { useMemo, useState } from 'react';
+
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import { useChainList } from '@/hooks/useChainList';
-import type { FormattedDappEcosystemInfo } from '@/types/registry/dapp';
-import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import type { DappEcosystemInfo } from '@/types/registry/dapp';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -10,73 +11,113 @@ import {
   BodyText,
   BodyTopContainer,
   ChainImageContainer,
+  DappNameContainer,
   MultipleChainContainer,
   OneChainContainer,
   PinButton,
   PinnedIconContainer,
   StyledButton,
+  ThumbnailImageContainer,
 } from './styled';
+import DappDetailBottomSheet from '../DappDetailBottomSheet';
 
 import UnFavoriteIcon from '@/assets/images/icons/UnFavorite16.svg';
 
+import dappDefaultImage from 'assets/images/default/dappDefault.png';
+
 type GridDappItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
-  dappItemInfo: FormattedDappEcosystemInfo;
+  dappItemInfo: DappEcosystemInfo;
 };
 
 const MAX_DISPLAY_CHAIN_COUNT = 7;
 
 export default function GridDappItem({ dappItemInfo, ...remainer }: GridDappItemProps) {
-  const { pinnedDappIds } = useExtensionStorageStore((state) => state);
+  const [isOpenDappDetailBottomSheet, setIsOpenDappDetailBottomSheet] = useState(false);
+
+  const { pinnedDappIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { flatChainList } = useChainList();
 
-  const totalChainCount = dappItemInfo.chainIds?.length || 0;
+  const totalChainCount = dappItemInfo.chains?.length || 0;
   const restChainCount = totalChainCount - MAX_DISPLAY_CHAIN_COUNT;
 
-  const slicedChains = dappItemInfo.chainIds?.splice(0, MAX_DISPLAY_CHAIN_COUNT)?.map((chainId) => {
-    return flatChainList.find((chain) => isMatchingUniqueChainId(chain, chainId));
-  });
+  const slicedChains = useMemo(
+    () =>
+      dappItemInfo.chains?.slice(0, MAX_DISPLAY_CHAIN_COUNT)?.map((chainId) => {
+        return flatChainList.find((chain) => chain.id === chainId);
+      }),
+    [dappItemInfo.chains, flatChainList],
+  );
 
   const isOneChainSupported = slicedChains?.length === 1;
 
-  return (
-    <StyledButton {...remainer}>
-      <BodyContainer>
-        <BodyTopContainer>
-          <Base1300Text variant="h2_B">{dappItemInfo.name}</Base1300Text>
-          <PinButton>
-            {pinnedDappIds.includes(dappItemInfo.id) ? (
-              <PinnedIconContainer>
-                <UnFavoriteIcon />
-              </PinnedIconContainer>
-            ) : (
-              <UnFavoriteIcon />
-            )}
-          </PinButton>
-        </BodyTopContainer>
-        <BodyText variant="b4_R">{dappItemInfo.description}</BodyText>
+  const isPinned = useMemo(() => pinnedDappIds.includes(dappItemInfo.id), [dappItemInfo.id, pinnedDappIds]);
 
-        {isOneChainSupported ? (
-          <OneChainContainer>
-            <ChainImageContainer src={slicedChains[0]?.image} />
-            <Base1000Text variant="b4_M">{slicedChains[0]?.name}</Base1000Text>
-          </OneChainContainer>
-        ) : (
-          <MultipleChainContainer>
-            {slicedChains?.map((chain) => {
-              return <ChainImageContainer key={chain?.id} src={chain?.image} />;
-            })}
-            {totalChainCount > MAX_DISPLAY_CHAIN_COUNT && (
-              <Base1000Text
-                sx={{
-                  marginLeft: '0.2rem',
-                }}
-                variant="h7n_M"
-              >{`+${restChainCount}`}</Base1000Text>
-            )}
-          </MultipleChainContainer>
-        )}
-      </BodyContainer>
-    </StyledButton>
+  const onPinButtonClick = () => {
+    if (isPinned) {
+      updateExtensionStorageStore(
+        'pinnedDappIds',
+        pinnedDappIds.filter((id) => id !== dappItemInfo.id),
+      );
+    } else {
+      updateExtensionStorageStore('pinnedDappIds', [...pinnedDappIds, dappItemInfo.id]);
+    }
+  };
+
+  return (
+    <>
+      <StyledButton
+        onClick={() => {
+          setIsOpenDappDetailBottomSheet(true);
+        }}
+        {...remainer}
+      >
+        <ThumbnailImageContainer src={dappItemInfo.thumbnail} defaultImgSrc={dappDefaultImage} />
+        <BodyContainer>
+          <BodyTopContainer>
+            <DappNameContainer>
+              <Base1300Text variant="h2_B">{dappItemInfo.name}</Base1300Text>
+            </DappNameContainer>
+            <PinButton
+              onClick={(e) => {
+                e.stopPropagation();
+                onPinButtonClick();
+              }}
+            >
+              {isPinned ? (
+                <PinnedIconContainer>
+                  <UnFavoriteIcon />
+                </PinnedIconContainer>
+              ) : (
+                <UnFavoriteIcon />
+              )}
+            </PinButton>
+          </BodyTopContainer>
+          <BodyText variant="b4_R">{dappItemInfo.description}</BodyText>
+
+          {isOneChainSupported ? (
+            <OneChainContainer>
+              <ChainImageContainer src={slicedChains[0]?.image} />
+              <Base1000Text variant="b4_M">{slicedChains[0]?.name}</Base1000Text>
+            </OneChainContainer>
+          ) : (
+            <MultipleChainContainer>
+              {slicedChains?.map((chain) => {
+                return <ChainImageContainer key={chain?.id} src={chain?.image} />;
+              })}
+              {totalChainCount > MAX_DISPLAY_CHAIN_COUNT && (
+                <Base1000Text
+                  sx={{
+                    marginLeft: '0.2rem',
+                  }}
+                  variant="h7n_M"
+                >{`+${restChainCount}`}</Base1000Text>
+              )}
+            </MultipleChainContainer>
+          )}
+        </BodyContainer>
+      </StyledButton>
+      <DappDetailBottomSheet dappInfo={dappItemInfo} open={isOpenDappDetailBottomSheet} onClose={() => setIsOpenDappDetailBottomSheet(false)} />
+    </>
   );
 }

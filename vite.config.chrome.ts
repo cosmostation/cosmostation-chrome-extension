@@ -69,5 +69,6 @@ export default defineConfig(({ mode }) => {
         ],
       },
     },
+    cacheDir: 'node_modules/.vite',
   };
 });

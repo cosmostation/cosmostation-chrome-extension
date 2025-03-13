@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import BaseChainImage from '@/components/common/BaseChainImage';
+import SkeletonImage from '@/components/common/SkeletonImage';
 
 export const StyledButton = styled('button')({
   width: '100%',
@@ -15,11 +16,25 @@ export const StyledButton = styled('button')({
 
   rowGap: '1rem',
 
+  backgroundColor: 'transparent',
+
   '&:hover': {
     opacity: '0.8',
   },
 
   cursor: 'pointer',
+});
+
+export const ThumbnailImageWrapper = styled('div')({
+  width: '100%',
+});
+
+export const ThumbnailImageContainer = styled(SkeletonImage)({
+  borderRadius: '0.4rem',
+  position: 'relative',
+  aspectRatio: '4 / 3',
+  maxWidth: '100%',
+  height: 'auto',
 });
 
 export const BodyContainer = styled('div')({
@@ -33,7 +48,13 @@ export const BodyTopContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  maxWidth: '100%',
+  width: '100%',
+});
+
+export const DappNameContainer = styled('div')({
+  display: 'flex',
+
+  maxWidth: '75%',
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
 
@@ -43,26 +64,15 @@ export const BodyTopContainer = styled('div')({
   },
 });
 
-// export const TitleEllipsisContainer = styled('div')({
-//   display: 'flex',
-
-//   maxWidth: '27rem',
-//   wordBreak: 'keep-all',
-//   whiteSpace: 'nowrap',
-
-//   '& > *': {
-//     overflow: 'hidden',
-//     textOverflow: 'ellipsis',
-//   },
-// });
-
 export const BodyText = styled(Typography)(({ theme }) => ({
+  maxWidth: '90%',
+  textAlign: 'left',
   wordBreak: 'break-word',
   color: theme.palette.color.base1000,
 
   display: '-webkit-box',
   WebkitBoxOrient: 'vertical',
-  WebkitLineClamp: 3,
+  WebkitLineClamp: 2,
   overflow: 'hidden',
 }));
 
@@ -81,11 +91,13 @@ export const MultipleChainContainer = styled('div')({
 });
 
 export const ChainImageContainer = styled(BaseChainImage)({
-  width: '1.2rem',
-  height: '1.2rem',
+  width: '1.6rem',
+  height: '1.6rem',
 });
 
 export const PinButton = styled('button')({
+  width: '1.6rem',
+  height: '1.6rem',
   padding: '0',
   border: 'none',
   backgroundColor: 'transparent',

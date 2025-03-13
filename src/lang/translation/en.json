@@ -2406,6 +2406,29 @@
           "search": "Search Crypto (Ex. BTC)"
         }
       }
+    },
+    "dapp-list": {
+      "components": {
+        "DappDetailBottomSheet": {
+          "index": {
+            "supportedNetwork": "Supported Network",
+            "socialInfo": "Social Info",
+            "cancel": "Cancel",
+            "goToDapp": "Go to Dapp"
+          }
+        }
+      },
+      "entry": {
+        "searchPlaceholder": "Search Dapp",
+        "pinnedDapps": "Pinned Dapps",
+        "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
+        "multiChainSupport": "Multi-Chain Support"
+      },
+      "layout": {
+        "header": "All Dapps",
+        "githubHeaderTitle": "Dapp Listing Information",
+        "githubSubTitle": "DApp information is developed in collaboration with the community.\nIf your DApp is not displayed, share the GitHub link for automatic registration in the wallet."
+      }
     }
   },
   "schema": {

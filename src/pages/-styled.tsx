@@ -63,7 +63,7 @@ export const ManageCryptoContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  marginBottom: '1.1rem',
+  marginTop: '1.2rem',
 });
 
 export const CoinButtonWrapper = styled('div')({
