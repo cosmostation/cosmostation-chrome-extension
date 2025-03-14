@@ -142,7 +142,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
           <InputWrapper>
             <ValidatorSelectBox
               validatorList={testValidator}
-              currentValidaotorAddress={currentValidaotrAddress}
+              currentValidatorAddress={currentValidaotrAddress}
               onClickItem={() => {
                 setIsOpenValidatorBottomSheet(true);
               }}

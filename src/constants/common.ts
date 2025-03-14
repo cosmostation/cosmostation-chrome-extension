@@ -10,5 +10,6 @@ export const COSMOSTATION_ENCODED_LOGO_IMAGE =
 export const COSMOSTATION_WALLET_NAME = 'Cosmostation Wallet';
 export const COSMOSTATION_RDNS = 'io.cosmostation';
 
-export const MOONPAY_API_URL =
-  'https://buy.moonpay.com/?apiKey=pk_live_zbG1BOGMVTcfKibboIE2K3vduJBTuuCn&signature=FqjS%2Bp%2BNjaXarTOAsom5hHZkaFZFr2hkdCkSYmni%2Fcs%3D';
+export const MOONPAY_API_URL = 'https://buy.moonpay.com';
+
+export const MOONPAY_API_KEY = 'pk_live_zbG1BOGMVTcfKibboIE2K3vduJBTuuCn';

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
@@ -69,18 +69,22 @@ export default function ChainListBottomSheet({
 
   const AllNetworkOptionId = undefined;
 
-  const sortedChainList = disableSort
-    ? chainList
-    : chainList?.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+  const sortedChainList = useMemo(
+    () =>
+      disableSort
+        ? chainList
+        : chainList?.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+          }),
+    [chainList, disableSort],
+  );
 
-  const filteredChainList = (() => {
+  const filteredChainList = useMemo(() => {
     if (!!search && debouncedSearch.length > 1) {
       return sortedChainList?.filter((chain) => chain.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
     }
     return sortedChainList;
-  })();
+  }, [debouncedSearch, search, sortedChainList]);
 
   const chainsCount = String(chainList.length);
 

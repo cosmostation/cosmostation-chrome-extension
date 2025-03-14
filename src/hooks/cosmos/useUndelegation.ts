@@ -7,7 +7,9 @@ import type { UnbondingPayload } from '@/types/cosmos/undelegation';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { parseCoinId } from '@/utils/queryParamGenerator';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
+import { useValidators } from './useValidators';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseUndelegationProps = {
@@ -16,6 +18,7 @@ type UseUndelegationProps = {
 };
 
 export function useUndelegation({ coinId, config }: UseUndelegationProps) {
+  const validators = useValidators({ coinId });
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
@@ -43,7 +46,9 @@ export function useUndelegation({ coinId, config }: UseUndelegationProps) {
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<UnbondingPayload>(requestURLs[index]);
+      const response = await get<UnbondingPayload>(requestURLs[index], {
+        timeout: 5000,
+      });
 
       setIsAllRequestsFailed(false);
 
@@ -87,7 +92,18 @@ export function useUndelegation({ coinId, config }: UseUndelegationProps) {
     return [];
   }, [data]);
 
-  const flattenData = useMemo(() => returnData?.flat() || [], [returnData]);
+  const flattenData = useMemo(
+    () =>
+      returnData?.flat().map((item) => {
+        const validatorInfo = validators.data?.find((validator) => isEqualsIgnoringCase(validator.operator_address, item.validator_address));
+
+        return {
+          ...item,
+          validatorInfo,
+        };
+      }) || [],
+    [returnData, validators.data],
+  );
 
   return { data: flattenData, error, refetch, isLoading };
 }

@@ -42,6 +42,15 @@ export const ValidatorNameContainer = styled('div')({
   display: 'flex',
   alignItems: 'flex-start',
   columnGap: '0.2rem',
+
+  maxWidth: '14rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 });
 
 export const RightChevronIconContainer = styled('div')(({ theme }) => ({

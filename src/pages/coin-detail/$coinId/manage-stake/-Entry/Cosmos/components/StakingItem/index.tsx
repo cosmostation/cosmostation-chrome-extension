@@ -27,16 +27,18 @@ import StakingOptionBottomSheet from '../../../components/StakingOptionBottomShe
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
+import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+
 type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   stakingCoinId: string;
   validatorAddress: string;
   validatorName: string;
-  commission: string;
   symbol: string;
   decimals: number;
   stakedAmount: string;
   rewardAmount: string;
-  rewardCounts: string;
+  commission?: string;
+  rewardCounts?: string;
   validatorImage?: string;
 };
 
@@ -69,7 +71,7 @@ export default function StakingItem({
       >
         <TopContainer>
           <ImageContainer>
-            <Image src={validatorImage} />
+            <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
           </ImageContainer>
           <TopLeftContainer>
             <ValidatorNameContainer>
@@ -102,9 +104,7 @@ export default function StakingItem({
           </StakingInfoRowContainer>
           <StakingInfoRowContainer>
             <Base1000Text variant="b3_R">
-              {t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.reward', {
-                counts: rewardCounts,
-              })}
+              {`${t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.reward')} ${rewardCounts ? `+ ${rewardCounts}` : ''}`}
             </Base1000Text>
             <AmountContainer>
               <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>

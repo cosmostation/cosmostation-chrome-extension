@@ -63,6 +63,7 @@ export const EmptyAssetContainer = styled('div')({
   flexDirection: 'column',
 
   alignItems: 'center',
+  paddingTop: '30rem',
 });
 
 export const StyledOutlinedChipButton = styled(OutlinedChipButton)({

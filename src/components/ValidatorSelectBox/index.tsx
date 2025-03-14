@@ -14,18 +14,20 @@ import {
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
+import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+
 // TODO 제거
 export type Validator = {
   validatorName: string;
   validatorAddress: string;
   votingPower: string;
   commission: string;
-  validatorImage: string;
+  validatorImage?: string;
 };
 
 type ValidatorSelectBoxProps = TextFieldProps & {
   validatorList: Validator[];
-  currentValidaotorAddress?: string;
+  currentValidatorAddress?: string;
   validatorCounts?: number;
   helperText?: string;
   rightAdornmentComponent?: JSX.Element;
@@ -35,7 +37,7 @@ type ValidatorSelectBoxProps = TextFieldProps & {
 
 export default function ValidatorSelectBox({
   validatorList,
-  currentValidaotorAddress,
+  currentValidatorAddress,
   validatorCounts,
   helperText,
   rightAdornmentComponent,
@@ -49,7 +51,7 @@ export default function ValidatorSelectBox({
   const isShowBottomContainer = helperText;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const currentValidator = validatorList.find((validator) => validator.validatorAddress === currentValidaotorAddress);
+  const currentValidator = validatorList.find((validator) => validator.validatorAddress === currentValidatorAddress);
 
   const handleInputClick = () => {
     onClickItem?.();
@@ -67,9 +69,9 @@ export default function ValidatorSelectBox({
           input: {
             readOnly: true,
             startAdornment:
-              !validatorCounts && currentValidaotorAddress ? (
+              !validatorCounts && currentValidatorAddress ? (
                 <InputAdornment position="start">
-                  <ImageContainer src={currentValidator?.validatorImage} />
+                  <ImageContainer src={currentValidator?.validatorImage} defaultImgSrc={defaultValidatorImage} />
                 </InputAdornment>
               ) : null,
             endAdornment: disabled ? null : (
@@ -84,7 +86,7 @@ export default function ValidatorSelectBox({
             ),
           },
           inputLabel: {
-            shrink: !!currentValidaotorAddress,
+            shrink: !!currentValidatorAddress,
           },
         }}
         onClick={handleInputClick}

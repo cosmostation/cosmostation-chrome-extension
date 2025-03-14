@@ -128,7 +128,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
           <InputWrapper>
             <ValidatorSelectBox
               validatorList={testValidator}
-              currentValidaotorAddress={currentValidaotrAddress}
+              currentValidatorAddress={currentValidaotrAddress}
               onClickItem={() => {
                 setIsOpenValidatorBottomSheet(true);
               }}

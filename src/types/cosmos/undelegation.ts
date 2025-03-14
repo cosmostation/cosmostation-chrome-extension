@@ -1,10 +1,10 @@
 import type { Pagination } from './common';
-import type { Validators } from './validator';
+import type { UnbondingValidators } from './validator';
 
 export type ParsingUnbondingProps = {
   balance: string;
   validator_address: string;
-  moniker: string | Validators;
+  moniker: string | UnbondingValidators;
   completion_time: string;
   creation_height: string;
 };

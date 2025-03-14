@@ -1,6 +1,6 @@
 import type { Pagination, Uptime } from './common';
 
-export type Validators = {
+export type UnbondingValidators = {
   account_address: string;
   consensus_pubkey: string;
   delegator_shares: string;
@@ -24,35 +24,53 @@ export type Validators = {
   website: string;
 };
 
-export type Validator = {
+export interface GetValidatorsResponse {
+  validators: CosmosValidator[];
+  pagination: Pagination;
+}
+
+export interface CosmosValidator {
   operator_address: string;
-  consensus_pubkey: string;
+  consensus_pubkey: ConsensusPubkey;
   jailed: boolean;
-  status: number | string;
+  status: string;
   tokens: string;
   delegator_shares: string;
-  description: {
-    moniker: string;
-    identity: string;
-    website: string;
-    security_contact: string;
-    details: string;
-  };
+  description: Description;
   unbonding_height: string;
-  unbonding_time: string;
-  commission: {
-    commission_rates: {
-      rate: string;
-      max_rate: string;
-      max_change_rate: string;
-    };
-    update_time: string;
-  };
+  unbonding_time: Date;
+  commission: Commission;
   min_self_delegation: string;
-};
+  unbonding_on_hold_ref_count: string;
+  unbonding_ids: string[];
+  validator_bond_shares: string;
+  liquid_shares: string;
+}
 
-export type ValidatorPayload = {
-  result?: Validator[];
-  validators?: Validator[];
-  pagination?: Pagination;
-};
+export interface FormattedCosmosValidator extends CosmosValidator {
+  monikerImage?: string;
+}
+
+export interface Commission {
+  commission_rates: CommissionRates;
+  update_time: Date;
+}
+
+export interface CommissionRates {
+  rate: string;
+  max_rate: string;
+  max_change_rate: string;
+}
+
+export interface ConsensusPubkey {
+  '@type': string;
+  key: string;
+}
+
+export interface Description {
+  moniker: string;
+  identity: string;
+  website: string;
+  security_contact: string;
+  details: string;
+}

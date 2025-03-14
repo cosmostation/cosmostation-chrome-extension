@@ -28,5 +28,6 @@ export function cosmosURL(lcdURL: string, chainId: string) {
     getBlockLatest: () => (chainId === GRAVITY_BRDIGE_CHAINLIST_ID ? `${lcdURL}/blocks/latest` : `${lcdURL}/cosmos/base/tendermint/v1beta1/blocks/latest`),
     getCommission: (validatorAddress: string) => `${lcdURL}/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`,
     getFeemarket: (denom?: string) => `${lcdURL}/feemarket/v1/gas_prices${denom ? `/${denom}` : ''}`,
+    getValidators: () => `${lcdURL}/cosmos/staking/v1beta1/validators?pagination.limit=10000`,
   };
 }

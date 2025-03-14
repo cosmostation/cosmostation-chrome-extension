@@ -1,7 +1,6 @@
 import { styled } from '@mui/material/styles';
 
 import BottomSheet from '@/components/common/BottomSheet';
-import OutlinedInput from '@/components/common/OutlinedInput';
 
 export const Container = styled('div')({
   overflow: 'hidden',
@@ -23,18 +22,9 @@ export const HeaderTitle = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const StyledInput = styled(OutlinedInput)({
-  height: '3.2rem',
-});
-
 export const FilterContaienr = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  columnGap: '0.6rem',
-
-  margin: '0.8rem 1.2rem 1.2rem',
+  margin: '0.3rem 1.2rem 1.6rem',
+  boxSizing: 'border-box',
 });
 
 export const SubHeaderContaienr = styled('div')({
@@ -47,6 +37,7 @@ export const SubHeaderContaienr = styled('div')({
 export const Body = styled('div')({
   width: '100%',
   overflow: 'auto',
+  paddingBottom: '0.2rem',
 });
 
 export const StyledBottomSheet = styled(BottomSheet)({

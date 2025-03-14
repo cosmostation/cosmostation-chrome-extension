@@ -2,7 +2,19 @@ import { cosmos, google } from '@/proto/cosmos-sdk-v0.47.4.js';
 import { cosmwasm } from '@/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '@/proto/ibc-v7.1.0.js';
 import { osmosis } from '@/proto/osmosis-v13.1.2.js';
-import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '@/types/cosmos/amino';
+import type {
+  Msg,
+  MsgCancelUnbondingDelegation,
+  MsgCommission,
+  MsgDelegation,
+  MsgExecuteContract,
+  MsgReward,
+  MsgSend,
+  MsgSwapExactAmountIn,
+  MsgTransfer,
+  MsgUndelegation,
+  SignAminoDoc,
+} from '@/types/cosmos/amino';
 import type { SendTransactionPayload } from '@/types/cosmos/common';
 import type {
   Msg as ProtoMsg,
@@ -14,7 +26,17 @@ import type {
   PubKey,
 } from '@/types/cosmos/direct';
 
-import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from './msg';
+import {
+  isAminoCancelUnbondingDelegation,
+  isAminoCommission,
+  isAminoDelegation,
+  isAminoExecuteContract,
+  isAminoIBCSend,
+  isAminoReward,
+  isAminoSend,
+  isAminoSwapExactAmountIn,
+  isAminoUndelegation,
+} from './msg';
 import { post } from '../axios';
 
 export function convertAminoMessageToProto(msg: Msg) {
@@ -28,6 +50,17 @@ export function convertAminoMessageToProto(msg: Msg) {
 
   if (isAminoIBCSend(msg)) {
     return convertIBCAminoSendMessageToProto(msg);
+  }
+
+  if (isAminoDelegation(msg)) {
+    return convertAminoDelegationMessageToProto(msg);
+  }
+
+  if (isAminoUndelegation(msg)) {
+    return convertAminoUndelegationMessageToProto(msg);
+  }
+  if (isAminoCancelUnbondingDelegation(msg)) {
+    return convertAminoCancelUnbondingMessageToProto(msg);
   }
 
   if (isAminoReward(msg)) {
@@ -76,6 +109,46 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
   return new google.protobuf.Any({
     type_url: '/ibc.applications.transfer.v1.MsgTransfer',
     value: ibc.applications.transfer.v1.MsgTransfer.encode(message).finish(),
+  });
+}
+
+export function convertAminoDelegationMessageToProto(msg: Msg<MsgDelegation>) {
+  const message = new cosmos.staking.v1beta1.MsgDelegate({
+    amount: msg.value.amount,
+    delegator_address: msg.value.delegator_address,
+    validator_address: msg.value.validator_address,
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/cosmos.staking.v1beta1.MsgDelegate',
+    value: cosmos.staking.v1beta1.MsgDelegate.encode(message).finish(),
+  });
+}
+
+export function convertAminoUndelegationMessageToProto(msg: Msg<MsgUndelegation>) {
+  const message = new cosmos.staking.v1beta1.MsgUndelegate({
+    amount: msg.value.amount,
+    delegator_address: msg.value.delegator_address,
+    validator_address: msg.value.validator_address,
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/cosmos.staking.v1beta1.MsgUndelegate',
+    value: cosmos.staking.v1beta1.MsgUndelegate.encode(message).finish(),
+  });
+}
+
+export function convertAminoCancelUnbondingMessageToProto(msg: Msg<MsgCancelUnbondingDelegation>) {
+  const message = new cosmos.staking.v1beta1.MsgCancelUnbondingDelegation({
+    amount: msg.value.amount,
+    delegator_address: msg.value.delegator_address,
+    validator_address: msg.value.validator_address,
+    creation_height: msg.value.creation_height,
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/cosmos.staking.v1beta1.MsgCancelUnbondingDelegation',
+    value: cosmos.staking.v1beta1.MsgCancelUnbondingDelegation.encode(message).finish(),
   });
 }
 

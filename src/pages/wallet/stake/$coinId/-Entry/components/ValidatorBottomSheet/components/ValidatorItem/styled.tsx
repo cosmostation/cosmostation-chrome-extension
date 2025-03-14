@@ -31,6 +31,18 @@ export const ImageContainer = styled('div')({
   },
 });
 
+export const ValidatorNameContainer = styled('div')({
+  display: 'flex',
+
+  maxWidth: '14rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const InfoContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',

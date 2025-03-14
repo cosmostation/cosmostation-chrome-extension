@@ -172,7 +172,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
             <ValidatorSelectBox
               validatorList={testValidator}
               disabled
-              currentValidaotorAddress={validatorAddress}
+              currentValidatorAddress={validatorAddress}
               label={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.validator')}
             />
 

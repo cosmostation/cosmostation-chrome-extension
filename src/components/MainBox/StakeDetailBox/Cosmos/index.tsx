@@ -4,16 +4,19 @@ import { useNavigate } from '@tanstack/react-router';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAmount } from '@/hooks/cosmos/useAmount';
+import { useReward } from '@/hooks/cosmos/useReward';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ClaimAllRewards } from '@/pages/wallet/claim-all-rewards/$coinId';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId';
 import { toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { AmountContainer, BodyContainer, BodyContentsContainer, BottomButtonContainer, SpacedTypography, StyledIconTextButton, TopContainer } from './styled';
 import MainBox from '../..';
 
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
+
+import stakemanageBg from '@/assets/images/stakeManageBg.png';
 
 type CosmosProps = {
   coinId: string;
@@ -23,13 +26,18 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data } = useAccountAssets();
-  const currentCoin = data?.cosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const currentCoin = getCosmosAccountAsset();
+
+  const { rewardAmount } = useAmount(coinId);
+  const reward = useReward({ coinId });
 
   const symbol = currentCoin?.asset.symbol;
   const decimals = currentCoin?.asset.decimals;
   const availableAmount = toDisplayDenomAmount(currentCoin?.balance || '0', decimals || 0);
-  const rewardAmount = '80';
+
+  const rewardsDisplayAmount = toDisplayDenomAmount(rewardAmount, decimals || 0);
+  const rewardsCoinCounts = reward?.data?.total?.length || 0;
 
   return (
     <>
@@ -57,13 +65,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
             </BodyContentsContainer>
             <BodyContentsContainer>
               <Base1000Text variant="b2_M">
-                {t('components.MainBox.StakeDetailBox.Cosmos.index.reward', {
-                  counts: 3,
-                })}
+                {`${t('components.MainBox.StakeDetailBox.Cosmos.index.reward')} ${rewardsCoinCounts ? `+ ${rewardsCoinCounts}` : ''}`}
               </Base1000Text>
               <AmountContainer>
                 <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
-                  {rewardAmount}
+                  {rewardsDisplayAmount}
                 </NumberTypo>
                 &nbsp;
                 <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
@@ -83,11 +89,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
               leadingIcon={<StakeIcon />}
               direction="vertical"
             >
-              <SpacedTypography variant="b3_M">
-                {t('components.MainBox.StakeDetailBox.Cosmos.index.stake', {
-                  symbol: symbol,
-                })}
-              </SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.stake')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton
               onClick={() => {
@@ -107,7 +109,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
           </BottomButtonContainer>
         }
         className="circleGradient"
-        coinBackgroundImage={'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/sui/asset/sui.png'}
+        coinBackgroundImage={stakemanageBg}
       />
     </>
   );

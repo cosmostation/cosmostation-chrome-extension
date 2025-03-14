@@ -7,7 +7,9 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import TextButton from '@/components/common/TextButton';
-import { MOONPAY_API_URL } from '@/constants/common';
+import { MOONPAY_API_KEY, MOONPAY_API_URL } from '@/constants/common';
+import { useGetMoonpaySignature } from '@/hooks/useGetMoonpaySignature';
+import { buildRequestUrl } from '@/utils/fetch';
 
 import {
   ContentsContainer,
@@ -23,6 +25,7 @@ import moonpayLogoImage from '@/assets/images/logos/moonpayLogo.png';
 
 export default function Entry() {
   const { t } = useTranslation();
+  const { data } = useGetMoonpaySignature();
 
   return (
     <>
@@ -40,7 +43,13 @@ export default function Entry() {
             <OptionButtonWrapper>
               <BaseOptionButton
                 onClick={() => {
-                  window.open(MOONPAY_API_URL, '_blank');
+                  window.open(
+                    buildRequestUrl(MOONPAY_API_URL, undefined, {
+                      apiKey: MOONPAY_API_KEY,
+                      signature: data?.signature || '',
+                    }),
+                    '_blank',
+                  );
                 }}
                 leftContent={<Image src={moonpayLogoImage} />}
                 leftSecondHeader={<Base1300Text variant="b2_B">{t('pages.buy-coin.entry.moonpay')}</Base1300Text>}

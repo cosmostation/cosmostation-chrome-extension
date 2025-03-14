@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1000Text from '@/components/common/Base1000Text';
@@ -7,7 +8,9 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
 
-import { ImageContainer, VotinPowerContainer } from './styled';
+import { ImageContainer, ValidatorNameContainer, VotinPowerContainer } from './styled';
+
+import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
 type ValidatorButtonProps = BaseOptionButtonProps & {
   validatorName: string;
@@ -17,19 +20,24 @@ type ValidatorButtonProps = BaseOptionButtonProps & {
   validatorImage?: string;
 };
 
-export default function ValidatorButton({ validatorName, votingPower, commission, validatorImage, ...remainder }: ValidatorButtonProps) {
+const ValidatorButton = forwardRef<HTMLButtonElement, ValidatorButtonProps>(({ validatorName, votingPower, commission, validatorImage, ...remainder }, ref) => {
   const { t } = useTranslation();
 
   return (
     <BaseOptionButton
       {...remainder}
+      ref={remainder.isActive ? ref : undefined}
       disableRightChevron
       leftContent={
         <ImageContainer>
-          <Image src={validatorImage} />
+          <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
         </ImageContainer>
       }
-      leftSecondHeader={<Base1300Text variant="b2_M">{validatorName}</Base1300Text>}
+      leftSecondHeader={
+        <ValidatorNameContainer>
+          <Base1300Text variant="b2_M">{validatorName}</Base1300Text>
+        </ValidatorNameContainer>
+      }
       leftSecondBody={
         <VotinPowerContainer>
           <Base1000Text variant="b4_R">
@@ -49,4 +57,8 @@ export default function ValidatorButton({ validatorName, votingPower, commission
       }
     />
   );
-}
+});
+
+ValidatorButton.displayName = 'ValidatorButton';
+
+export default ValidatorButton;

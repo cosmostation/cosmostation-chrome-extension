@@ -43,8 +43,8 @@
           "index": {
             "title": "Stake & Earn {{symbol}}",
             "available": "Available",
-            "reward": "Reward +{{counts}}",
-            "stake": "{{symbol}} Stake",
+            "reward": "Reward",
+            "stake": "Stake",
             "claimAll": "Claim All",
             "compountAll": "Compount All"
           }
@@ -880,7 +880,7 @@
                   "index": {
                     "commission": "Commission",
                     "staked": "Staked",
-                    "reward": "Reward +{{counts}}",
+                    "reward": "Reward",
                     "stake": "Stake",
                     "stakeDescription": "Lock your tokens to earn rewards over time",
                     "unstake": "Unstake",
@@ -952,6 +952,15 @@
                 "startStaking": "Start Staking with COSMOSTATION",
                 "startStakingDescription": "Start earning staking rewards and\ncontribute to the network ecosystem",
                 "goToStake": "Go to Stake"
+              }
+            },
+            "Cosmos": {
+              "index": {
+                "startStaking": "Start Staking with COSMOSTATION",
+                "startStakingDescription": "Start earning staking rewards and\ncontribute to the network ecosystem",
+                "goToStake": "Go to Stake",
+                "emptyStaking": "No Unstaking",
+                "emptyStakingDescription": "Currently have no unstaking transactions."
               }
             }
           }
@@ -1432,7 +1441,9 @@
             "inform2": "APR is {{apr}}%",
             "stakeReview": "Confirm Stake",
             "stakeReviewSub": "Are you sure you want to proceed with the stake? \nThis action cannot be undone once completed.",
-            "commission": "Commission"
+            "commission": "Commission",
+            "txProcessing": "Transaction Processing",
+            "txProcessingSub": "Please wait a moment while the transaction is being processed"
           },
           "layout": {
             "header": "Stake"

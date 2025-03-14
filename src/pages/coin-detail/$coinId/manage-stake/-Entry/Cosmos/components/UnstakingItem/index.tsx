@@ -21,6 +21,8 @@ import {
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
+import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+
 type UnStakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   validatorName: string;
   symbol: string;
@@ -50,7 +52,7 @@ export default function UnstakingItem({
       <TopContainer>
         <TopLeftContainer>
           <ImageContainer>
-            <Image src={validatorImage} />
+            <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
           </ImageContainer>
           <ValidatorNameContainer>
             <Base1300Text variant="b2_M">{validatorName}</Base1300Text>

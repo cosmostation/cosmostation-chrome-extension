@@ -52,6 +52,25 @@ export type MsgTransfer = {
   memo: string;
 };
 
+export type MsgDelegation = {
+  delegator_address: string;
+  validator_address: string;
+  amount: Amount;
+};
+
+export type MsgUndelegation = {
+  delegator_address: string;
+  validator_address: string;
+  amount: Amount;
+};
+
+export type MsgCancelUnbondingDelegation = {
+  delegator_address: string;
+  validator_address: string;
+  amount: Amount;
+  creation_height: number;
+};
+
 export type MsgSwapExactAmountIn = {
   sender: string;
   routes: SwapAmountInRoute[];

@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InputAdornment, Typography } from '@mui/material';
+import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
+import IntersectionObserver from '@/components/common/IntersectionObserver';
+import Search from '@/components/Search';
 import type { Validator } from '@/components/ValidatorSelectBox';
 
 import ValidatorButton from './components/ValidatorItem';
-import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, SubHeaderContaienr } from './styled';
+import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, SubHeaderContaienr } from './styled';
 
-import SearchIcon from '@/assets/images/icons/Search18.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type ValidatorBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
@@ -21,9 +23,27 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
 
-  const [search, setSearch] = useState('');
+  const [viewLimit, setViewLimit] = useState(30);
 
-  const filteredValidatorList = validatorList?.filter((validator) => validator.validatorName.toLowerCase().indexOf(search.toLowerCase()) > -1) || [];
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
+
+  const filteredValidatorList = useMemo(() => {
+    if (!!search && debouncedSearch.length > 1) {
+      return (
+        validatorList
+          ?.filter((validator) => {
+            const condition = [validator.validatorName, validator.validatorAddress];
+
+            return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+          })
+          .slice(0, viewLimit) || []
+      );
+    }
+    return validatorList?.slice(0, viewLimit) || [];
+  }, [debouncedSearch, search, validatorList, viewLimit]);
 
   const handleClose = () => {
     onClose?.({}, 'backdropClick');
@@ -47,17 +67,19 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
           </StyledButton>
         </Header>
         <FilterContaienr>
-          <StyledInput
-            startAdornment={
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            }
-            placeholder={t('pages.wallet.stake.$coinId.components.ValidatorBottomSheet.index.searchPlaceholder')}
+          <Search
             value={search}
             onChange={(event) => {
               setSearch(event.currentTarget.value);
             }}
+            placeholder={t('pages.wallet.stake.$coinId.components.ValidatorBottomSheet.index.searchPlaceholder')}
+            isPending={isDebouncing}
+            onClear={() => {
+              setSearch('');
+              setViewLimit(30);
+              cancel();
+            }}
+            disableFilter
           />
         </FilterContaienr>
         <SubHeaderContaienr>
@@ -84,6 +106,14 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
               />
             );
           })}
+          {filteredValidatorList?.length > viewLimit - 1 && (
+            <IntersectionObserver
+              onIntersect={() => {
+                console.log('first');
+                setViewLimit((limit) => limit + 30);
+              }}
+            />
+          )}
         </Body>
       </Container>
     </StyledBottomSheet>

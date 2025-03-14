@@ -9,13 +9,16 @@ import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type {
   Msg,
+  MsgCancelUnbondingDelegation,
   MsgCommission,
+  MsgDelegation,
   MsgExecuteContract,
   MsgReward,
   MsgSend,
   MsgSignData,
   MsgSwapExactAmountIn,
   MsgTransfer,
+  MsgUndelegation,
   SignAminoDoc,
 } from '@/types/cosmos/amino';
 import type { SignDirectDoc } from '@/types/cosmos/direct';
@@ -83,6 +86,18 @@ export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
 
 export function isAminoIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
   return msg.type === 'cosmos-sdk/MsgTransfer';
+}
+
+export function isAminoDelegation(msg: Msg): msg is Msg<MsgDelegation> {
+  return msg.type === 'cosmos-sdk/MsgDelegate';
+}
+
+export function isAminoUndelegation(msg: Msg): msg is Msg<MsgUndelegation> {
+  return msg.type === 'cosmos-sdk/Undelegate';
+}
+
+export function isAminoCancelUnbondingDelegation(msg: Msg): msg is Msg<MsgCancelUnbondingDelegation> {
+  return msg.type === 'cosmos-sdk/MsgCancelUnbondingDelegation';
 }
 
 export function isAminoReward(msg: Msg): msg is Msg<MsgReward> {

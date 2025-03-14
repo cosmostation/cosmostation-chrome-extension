@@ -50,3 +50,39 @@ export const StakingItemContainer = styled('div')({
   rowGap: '0.8rem',
   marginTop: '0.8rem',
 });
+
+export const EmptyAssetContainer = styled('div')({
+  position: 'absolute',
+
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+
+  display: 'flex',
+  flexDirection: 'column',
+
+  alignItems: 'center',
+  paddingTop: '30rem',
+});
+
+export const ChipButtonContentsContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const IconContainer = styled('div')(({ theme }) => ({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  marginLeft: '0.4rem',
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+
+    fill: theme.palette.color.base1000,
+
+    '& > path': {
+      fill: theme.palette.color.base1000,
+    },
+  },
+}));
