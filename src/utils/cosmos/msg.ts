@@ -93,7 +93,7 @@ export function isAminoDelegation(msg: Msg): msg is Msg<MsgDelegation> {
 }
 
 export function isAminoUndelegation(msg: Msg): msg is Msg<MsgUndelegation> {
-  return msg.type === 'cosmos-sdk/Undelegate';
+  return msg.type === 'cosmos-sdk/MsgUndelegate';
 }
 
 export function isAminoCancelUnbondingDelegation(msg: Msg): msg is Msg<MsgCancelUnbondingDelegation> {

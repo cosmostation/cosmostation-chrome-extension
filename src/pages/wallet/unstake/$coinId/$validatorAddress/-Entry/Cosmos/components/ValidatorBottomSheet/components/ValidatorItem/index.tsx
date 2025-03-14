@@ -1,8 +1,11 @@
+import { forwardRef } from 'react';
+
 import Base1300Text from '@/components/common/Base1300Text';
 import type { BaseOptionButtonProps } from '@/components/common/BaseOptionButton';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
+import { toDisplayDenomAmount } from '@/utils/numbers';
 
 import { ImageContainer, StakedAmountTextContainer } from './styled';
 
@@ -14,10 +17,13 @@ type ValidatorButtonProps = BaseOptionButtonProps & {
   validatorImage?: string;
 };
 
-export default function ValidatorButton({ validatorName, validatorImage, stakedAmount, decimals, ...remainder }: ValidatorButtonProps) {
+const ValidatorButton = forwardRef<HTMLButtonElement, ValidatorButtonProps>(({ validatorName, validatorImage, stakedAmount, decimals, ...remainder }, ref) => {
+  const displayStakedAmount = toDisplayDenomAmount(stakedAmount, decimals);
+
   return (
     <BaseOptionButton
       {...remainder}
+      ref={ref}
       disableRightChevron
       leftContent={
         <ImageContainer>
@@ -28,10 +34,14 @@ export default function ValidatorButton({ validatorName, validatorImage, stakedA
       rightContent={
         <StakedAmountTextContainer>
           <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
-            {stakedAmount}
+            {displayStakedAmount}
           </NumberTypo>
         </StakedAmountTextContainer>
       }
     />
   );
-}
+});
+
+ValidatorButton.displayName = 'ValidatorButton';
+
+export default ValidatorButton;

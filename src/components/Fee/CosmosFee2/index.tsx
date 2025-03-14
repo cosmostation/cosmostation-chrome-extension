@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Tooltip from '@/components/common/Tooltip';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { CosmosFeeAsset } from '@/types/cosmos/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -25,6 +26,7 @@ type FeeProps = {
   currentSelectedFeeOptionKey: number;
   disableConfirm?: boolean;
   isLoading?: boolean;
+  errorMessage?: string;
   onClickConfirm: () => void;
   onClickFeeStep: (gasRateKey: number) => void;
   onChangeGas: (gas: string) => void;
@@ -39,6 +41,7 @@ export default function Fee({
   currentSelectedFeeOptionKey,
   disableConfirm,
   isLoading,
+  errorMessage,
   onClickConfirm,
   onClickFeeStep,
   onChangeGas,
@@ -97,9 +100,13 @@ export default function Fee({
       </LeftContentContainer>
       <RightContentContainer>
         {
-          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.CosmosFee.index.continue')}
-          </StyledButton>
+          <Tooltip title={errorMessage} varient="error" placement="top">
+            <div>
+              <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+                {t('components.Fee.CosmosFee.index.continue')}
+              </StyledButton>
+            </div>
+          </Tooltip>
         }
       </RightContentContainer>
       <FeeSettingBottomSheet

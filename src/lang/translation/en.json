@@ -893,7 +893,9 @@
                 },
                 "UnstakingItem": {
                   "index": {
-                    "unstaking": "Unstaking"
+                    "unstaking": "Unstaking",
+                    "cancelUnstaking": "Cancel Unstaking",
+                    "cancelUnstakingDescription": "Cancel the unstaking process"
                   }
                 }
               }
@@ -1315,7 +1317,8 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "tooLowAmount": "Please enter an amount greater than 0",
-                "noRecipientAddress": "Please enter the recipient address"
+                "noRecipientAddress": "Please enter the recipient address",
+                "invalidRewardAmount": "Invalid reward amount"
               }
             }
           }
@@ -1477,7 +1480,17 @@
                   "lockUpPeriod": "{{lockUpPeriod}} day ",
                   "informDescription2": "waiting period, during which you can cancel the process",
                   "unstakeReview": "Confirm Unstake",
-                  "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed."
+                  "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
+                  "txProcessing": "Transaction Processing",
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "insufficientAmount": "Insufficient amount",
+                  "tooLowAmount": "Please enter an amount greater than 0",
+                  "bankLocked": "Unstake functionality is currently disabled.",
+                  "noAvailableAmount": "No available amount",
+                  "noAmount": "Please enter the amount",
+                  "invalidAmount": "Invalid amount",
+                  "failedToCalculateTransaction": "Failed to build transaction",
+                  "insufficientFee": "Insufficient fee"
                 }
               },
               "Sui": {
@@ -1508,7 +1521,14 @@
                   "informDescription": "{{address}}\nrewards will be sent to the above address.",
                   "claimRewardsReview": "Confirm Claim Rewards",
                   "claimRewardsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed.",
-                  "claimRewards": "Claim Rewards"
+                  "claimRewards": "Claim Rewards",
+                  "bankLocked": "Claim functionality is currently disabled.",
+                  "noReward": "No rewards available",
+                  "insufficientAmount": "Insufficient amount",
+                  "failedToCalculateTransaction": "Failed to build transaction",
+                  "txProcessing": "Transaction Processing",
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "subtitle": "{{symbol}} + {{coinCount}} Coins"
                 }
               }
             },

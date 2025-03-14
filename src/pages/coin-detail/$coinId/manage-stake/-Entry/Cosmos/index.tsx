@@ -166,6 +166,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
                 {unstakingItems.length > 0 ? (
                   unstakingItems.map((item) => (
                     <UnstakingItem
+                      stakingCoinId={coinId}
                       key={item.unstakingCompletionTime}
                       validatorImage={item.validatorImage}
                       validatorName={item.validatorName}

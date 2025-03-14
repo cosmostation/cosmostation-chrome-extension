@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import type { Validator } from '@/components/ValidatorSelectBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
 import ValidatorButton from './components/ValidatorItem';
 import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, SubHeaderContaienr } from './styled';
@@ -13,10 +13,14 @@ import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomShee
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
+type ValidatorWithStakedAmount = Validator & {
+  stakedAmount: string;
+};
+
 type ValidatorBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   currentUnstakingCoinId: string;
   currentValidatorId?: string;
-  validatorList?: Validator[];
+  validatorList?: ValidatorWithStakedAmount[];
   onClickItem: (address: string) => void;
 };
 
@@ -31,16 +35,16 @@ export default function ValidatorBottomSheet({
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
 
-  const { data } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId: currentUnstakingCoinId });
 
   const [search, setSearch] = useState('');
 
-  const filteredValidatorList = validatorList?.filter((validator) => validator.validatorName.toLowerCase().indexOf(search.toLowerCase()) > -1) || [];
+  const filteredValidatorList = useMemo(
+    () => validatorList?.filter((validator) => validator.validatorName.toLowerCase().indexOf(search.toLowerCase()) > -1) || [],
+    [search, validatorList],
+  );
 
-  const currentUnstakingCoin = data?.cosmosAccountAssets.find(({ asset }) => getCoinId(asset) === currentUnstakingCoinId);
-
-  // FIXME 비즈니스 로직 추가 필요
-  const stakedAmount = '400';
+  const currentUnstakingCoin = getCosmosAccountAsset();
 
   const handleClose = () => {
     onClose?.({}, 'backdropClick');
@@ -89,7 +93,8 @@ export default function ValidatorBottomSheet({
         </SubHeaderContaienr>
         <Body>
           {filteredValidatorList.map((item) => {
-            const isActive = item.validatorAddress === currentValidatorId;
+            const isActive = isEqualsIgnoringCase(item.validatorAddress, currentValidatorId);
+
             return (
               <ValidatorButton
                 key={item.validatorAddress}
@@ -98,7 +103,7 @@ export default function ValidatorBottomSheet({
                 validatorAddress={item.validatorAddress}
                 validatorName={item.validatorName}
                 validatorImage={item.validatorImage}
-                stakedAmount={stakedAmount}
+                stakedAmount={item.stakedAmount}
                 decimals={currentUnstakingCoin?.asset.decimals || 0}
                 onClick={() => {
                   onClickItem(item.validatorAddress);
