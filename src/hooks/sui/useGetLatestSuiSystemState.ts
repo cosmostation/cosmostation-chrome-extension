@@ -4,9 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { SuiRpcGetLatestSuiSystemState } from '@/types/sui/api';
 import { isAxiosError, post } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGetLatestSuiSystemStateProps = {
   coinId: string;
@@ -14,11 +13,11 @@ type UseGetLatestSuiSystemStateProps = {
 };
 
 export function useGetLatestSuiSystemState({ coinId, config }: UseGetLatestSuiSystemStateProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const accountAsset = getSuiAccountAsset();
 
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 

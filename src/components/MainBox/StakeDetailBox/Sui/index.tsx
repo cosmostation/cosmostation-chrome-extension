@@ -1,28 +1,34 @@
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import { useDelegations } from '@/hooks/sui/useDelegations';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { Route as Stake } from '@/pages/wallet/stake/$coinId';
-import { toDisplayDenomAmount } from '@/utils/numbers';
+import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
+import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
+import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import {
   AmountContainer,
   BodyContainer,
   BodyContentsContainer,
-  BottomContainer,
-  RightArrowIconContainer,
-  StakeButton,
-  StakeIconContainer,
+  BottomButtonContainer,
+  LabelAttributeText,
+  LabelLeftContainer,
+  SpacedTypography,
+  StyledIconTextButton,
   TopContainer,
+  ValueAttributeText,
 } from './styled';
 import MainBox from '../..';
 
-import RightArrow from '@/assets/images/icons/RightArrow14.svg';
+import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
+import UnstakeIcon from '@/assets/images/icons/Unstake22.svg';
 
 type SuiProps = {
   coinId: string;
@@ -33,12 +39,16 @@ export default function Sui({ coinId }: SuiProps) {
   const navigate = useNavigate();
 
   const { data } = useAccountAssets();
+  const { delegation, suiCosmostationValidator } = useDelegations({ coinId });
 
   const currentCoin = data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 
   const symbol = currentCoin?.asset.symbol;
   const decimals = currentCoin?.asset.decimals;
-  const availableAmount = toDisplayDenomAmount(currentCoin?.balance || '0', decimals || 0);
+
+  const displayTotalStakedAmount = toDisplayDenomAmount(delegation?.totalStakedAmount || '0', decimals || 0);
+  const displayTotalEarnedAmount = toDisplayDenomAmount(delegation.totalEstimatedRewards || '0', decimals || 0);
+  const displayTotalStakedAndEarned = plus(displayTotalStakedAmount, displayTotalEarnedAmount);
 
   return (
     <>
@@ -55,36 +65,72 @@ export default function Sui({ coinId }: SuiProps) {
         body={
           <BodyContainer>
             <BodyContentsContainer>
-              <Base1000Text variant="b2_M">{t('components.MainBox.StakeDetailBox.Sui.index.available')}</Base1000Text>
+              <Base1000Text variant="b2_M">{t('components.MainBox.StakeDetailBox.Sui.index.totalStaked')}</Base1000Text>
               <AmountContainer>
                 <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
-                  {availableAmount}
+                  {displayTotalStakedAndEarned}
                 </NumberTypo>
                 &nbsp;
                 <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
               </AmountContainer>
             </BodyContentsContainer>
+
+            <BodyContentsContainer>
+              <LabelLeftContainer>
+                <ClassificationIcon />
+                <LabelAttributeText variant="b3_M">{t('components.MainBox.StakeDetailBox.Sui.index.staked')}</LabelAttributeText>
+              </LabelLeftContainer>
+
+              <ValueAttributeText>
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
+                  {displayTotalStakedAmount}
+                </NumberTypo>
+                <Typography variant="b4_M">{symbol}</Typography>
+              </ValueAttributeText>
+            </BodyContentsContainer>
+
+            <BodyContentsContainer>
+              <LabelLeftContainer>
+                <ClassificationIcon />
+                <LabelAttributeText variant="b3_M">{t('components.MainBox.StakeDetailBox.Sui.index.earned')}</LabelAttributeText>
+              </LabelLeftContainer>
+
+              <ValueAttributeText>
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
+                  {displayTotalEarnedAmount}
+                </NumberTypo>
+                <Typography variant="b4_M">{symbol}</Typography>
+              </ValueAttributeText>
+            </BodyContentsContainer>
           </BodyContainer>
         }
         bottom={
-          <BottomContainer>
-            <StakeButton
+          <BottomButtonContainer>
+            <StyledIconTextButton
               onClick={() => {
                 navigate({
                   to: Stake.to,
-                  params: { coinId: coinId },
+                  params: { coinId: coinId, validatorAddress: suiCosmostationValidator?.suiAddress || '' },
                 });
               }}
+              leadingIcon={<StakeIcon />}
+              direction="vertical"
             >
-              <StakeIconContainer>
-                <StakeIcon />
-              </StakeIconContainer>
-              <Base1300Text variant="b2_B">{t('components.MainBox.StakeDetailBox.Sui.index.suiStake')}</Base1300Text>
-              <RightArrowIconContainer>
-                <RightArrow />
-              </RightArrowIconContainer>
-            </StakeButton>
-          </BottomContainer>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Sui.index.stake')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton
+              onClick={() => {
+                navigate({
+                  to: Unstake.to,
+                  params: { coinId: coinId, validatorAddress: '' },
+                });
+              }}
+              leadingIcon={<UnstakeIcon />}
+              direction="vertical"
+            >
+              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Sui.index.unstake')}</SpacedTypography>
+            </StyledIconTextButton>
+          </BottomButtonContainer>
         }
         className="circleGradient"
         coinBackgroundImage={'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/sui/asset/sui.png'}

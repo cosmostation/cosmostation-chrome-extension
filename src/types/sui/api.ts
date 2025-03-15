@@ -8,6 +8,7 @@ import type {
   SuiObjectResponse,
   SuiSystemStateSummary,
   SuiTransactionBlockResponse,
+  ValidatorsApy,
 } from '@mysten/sui/client';
 
 export interface SuiRpc<T> {
@@ -58,3 +59,5 @@ export interface SuiRpcGetDelegatedStakeResponse extends SuiRpc<DelegatedStake[]
 export interface SuiDryRunTransactionBlockResponse extends SuiRpc<DryRunTransactionBlockResponse> {}
 
 export interface SuiTxInfoResponse extends SuiRpc<SuiTransactionBlockResponse> {}
+
+export interface SuiGetAPYResponse extends SuiRpc<ValidatorsApy> {}

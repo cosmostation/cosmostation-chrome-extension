@@ -1,15 +1,17 @@
-import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton } from './styled';
+import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, ValidatorImage } from './styled';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-type StakingOptionBottomSheetProps = React.ComponentProps<typeof StyledBottomSheet>;
+import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
-export default function StakingOptionBottomSheet({ children, onClose, ...remainder }: StakingOptionBottomSheetProps) {
-  const { t } = useTranslation();
+type StakingOptionBottomSheetProps = React.ComponentProps<typeof StyledBottomSheet> & {
+  validatorName: string;
+  validatorImage?: string;
+};
 
+export default function StakingOptionBottomSheet({ validatorName, validatorImage, children, onClose, ...remainder }: StakingOptionBottomSheetProps) {
   return (
     <StyledBottomSheet
       {...remainder}
@@ -20,7 +22,8 @@ export default function StakingOptionBottomSheet({ children, onClose, ...remaind
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h2_B">{t('pages.coin-detail.$coinId.manage-stake.Entry.components.StakingOptionBottomSheet.index.title')}</Typography>
+            <ValidatorImage src={validatorImage} defaultImgSrc={defaultValidatorImage} />
+            <Typography variant="h3_B">{validatorName}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {

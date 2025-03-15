@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import BottomSheet from '@/components/common/BottomSheet';
+import Image from '@/components/common/Image';
 
 export const Container = styled('div')({
   overflow: 'hidden',
@@ -20,9 +21,17 @@ export const Header = styled('div')(({ theme }) => ({
   flexShrink: 0,
 }));
 
-export const HeaderTitle = styled('div')(({ theme }) => ({
-  color: theme.palette.color.base1300,
-}));
+export const HeaderTitle = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.6rem',
+});
+
+export const ValidatorImage = styled(Image)({
+  width: '2.8rem',
+  height: '2.8rem',
+  borderRadius: '50%',
+});
 
 export const Body = styled('div')({
   width: '100%',

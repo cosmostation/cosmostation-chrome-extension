@@ -121,7 +121,9 @@ export const LabelAttributeText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base900,
 }));
 
-export const ValueAttributeText = styled(Typography)(({ theme }) => ({
+export const ValueAttributeText = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'baseline',
   color: theme.palette.color.base900,
 }));
 

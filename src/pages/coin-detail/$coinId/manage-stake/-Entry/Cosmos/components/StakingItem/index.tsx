@@ -119,7 +119,12 @@ export default function StakingItem({
           </StakingInfoRowContainer>
         </StakingInfoContainer>
       </StyledButton>
-      <StakingOptionBottomSheet open={isOpenStakingOptionBottomSheet} onClose={() => setIsOpenStakingOptionBottomSheet(false)}>
+      <StakingOptionBottomSheet
+        validatorName={validatorName}
+        validatorImage={validatorImage}
+        open={isOpenStakingOptionBottomSheet}
+        onClose={() => setIsOpenStakingOptionBottomSheet(false)}
+      >
         <BaseOptionButton
           onClick={() => {
             navigate({

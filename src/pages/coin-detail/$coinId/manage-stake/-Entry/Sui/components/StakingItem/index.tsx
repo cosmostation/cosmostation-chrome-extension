@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import Base1000Text from '@/components/common/Base1000Text';
@@ -10,6 +11,7 @@ import NumberTypo from '@/components/common/NumberTypo';
 import { Route as ClaimRewards } from '@/pages/wallet/claim-rewards/$coinId/$validatorAddress';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
 import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
+import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { shorterAddress } from '@/utils/string';
 
 import {
@@ -39,7 +41,6 @@ type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLB
   objectId: string;
   symbol: string;
   decimals: number;
-  totalStakedAmount: string;
   stakedAmount: string;
   earnedAmount: string;
   startEarningEpoch: string;
@@ -52,7 +53,6 @@ export default function StakingItem({
   objectId,
   symbol,
   decimals,
-  totalStakedAmount,
   stakedAmount,
   earnedAmount,
   startEarningEpoch,
@@ -64,6 +64,10 @@ export default function StakingItem({
 
   const shortedObjectId = shorterAddress(objectId, 15);
   const [isOpenStakingOptionBottomSheet, setIsOpenStakingOptionBottomSheet] = useState(false);
+
+  const displayStakedAmount = toDisplayDenomAmount(stakedAmount, decimals);
+  const displayEarnedAmount = toDisplayDenomAmount(earnedAmount, decimals);
+  const totalStakedAmount = plus(displayStakedAmount, displayEarnedAmount);
 
   return (
     <>
@@ -111,8 +115,10 @@ export default function StakingItem({
 
               <ValueAttributeText>
                 <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimals}>
-                  {stakedAmount}
+                  {displayStakedAmount}
                 </NumberTypo>
+                &nbsp;
+                <Typography variant="h8n_M">{symbol}</Typography>
               </ValueAttributeText>
             </StakingInfoRowContainer>
 
@@ -126,8 +132,10 @@ export default function StakingItem({
 
               <ValueAttributeText>
                 <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimals}>
-                  {earnedAmount}
+                  {displayEarnedAmount}
                 </NumberTypo>
+                &nbsp;
+                <Typography variant="h8n_M">{symbol}</Typography>
               </ValueAttributeText>
             </StakingInfoRowContainer>
           </StakingInfoDetailContainer>
@@ -141,8 +149,12 @@ export default function StakingItem({
           </StakingInfoRowContainer>
         </StakingInfoContainer>
       </StyledButton>
-      {/* FIXME 컴파운딩 등 필요없는 옵션 버튼 삭제 */}
-      <StakingOptionBottomSheet open={isOpenStakingOptionBottomSheet} onClose={() => setIsOpenStakingOptionBottomSheet(false)}>
+      <StakingOptionBottomSheet
+        validatorName={validatorName}
+        validatorImage={validatorImage}
+        open={isOpenStakingOptionBottomSheet}
+        onClose={() => setIsOpenStakingOptionBottomSheet(false)}
+      >
         <BaseOptionButton
           onClick={() => {
             navigate({
@@ -196,19 +208,6 @@ export default function StakingItem({
           leftSecondBody={
             <Base1000Text variant="b4_R">
               {t('pages.coin-detail.$coinId.manage-stake.Entry.Sui.components.StakingItem.index.claimRewardsDescription')}
-            </Base1000Text>
-          }
-        />
-        <BaseOptionButton
-          onClick={() => {
-            setIsOpenStakingOptionBottomSheet(false);
-          }}
-          leftSecondHeader={
-            <Base1300Text variant="b2_M">{t('pages.coin-detail.$coinId.manage-stake.Entry.Sui.components.StakingItem.index.compounding')}</Base1300Text>
-          }
-          leftSecondBody={
-            <Base1000Text variant="b4_R">
-              {t('pages.coin-detail.$coinId.manage-stake.Entry.Sui.components.StakingItem.index.compoundingDescription')}
             </Base1000Text>
           }
         />

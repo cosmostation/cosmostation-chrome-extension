@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
+import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { shorterAddress } from '@/utils/string';
 
 import {
@@ -31,7 +33,6 @@ type PendingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLB
   objectId: string;
   symbol: string;
   decimals: number;
-  totalStakedAmount: string;
   stakedAmount: string;
   earnedAmount: string;
   startEarningEpoch: string;
@@ -43,7 +44,6 @@ export default function PendingItem({
   objectId,
   symbol,
   decimals,
-  totalStakedAmount,
   stakedAmount,
   earnedAmount,
   startEarningEpoch,
@@ -53,6 +53,10 @@ export default function PendingItem({
   const { t } = useTranslation();
 
   const shortedObjectId = shorterAddress(objectId, 15);
+
+  const displayStakedAmount = toDisplayDenomAmount(stakedAmount, decimals);
+  const displayEarnedAmount = toDisplayDenomAmount(earnedAmount, decimals);
+  const totalStakedAmount = plus(displayStakedAmount, displayEarnedAmount);
 
   return (
     <StyledButton type="button" {...remainder} disabled>
@@ -99,8 +103,10 @@ export default function PendingItem({
 
             <ValueAttributeText>
               <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimals}>
-                {stakedAmount}
+                {displayStakedAmount}
               </NumberTypo>
+              &nbsp;
+              <Typography variant="h8n_M">{symbol}</Typography>
             </ValueAttributeText>
           </StakingInfoRowContainer>
 
@@ -114,8 +120,10 @@ export default function PendingItem({
 
             <ValueAttributeText>
               <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={decimals}>
-                {earnedAmount}
+                {displayEarnedAmount}
               </NumberTypo>
+              &nbsp;
+              <Typography variant="h8n_M">{symbol}</Typography>
             </ValueAttributeText>
           </StakingInfoRowContainer>
         </StakingInfoDetailContainer>

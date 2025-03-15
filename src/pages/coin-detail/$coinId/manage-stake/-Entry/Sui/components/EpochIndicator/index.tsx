@@ -3,31 +3,39 @@ import { useTranslation } from 'react-i18next';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
+import { useGetLatestSuiSystemState } from '@/hooks/sui/useGetLatestSuiSystemState';
+import { minus, plus } from '@/utils/numbers';
 
-import { Container, ItemContainer } from './styled';
+import { Container, DistributionCountContainer, EpochContainer } from './styled';
 
-export default function EpochIndicator() {
+type EpochIndicatorProps = {
+  coinId: string;
+};
+
+export default function EpochIndicator({ coinId }: EpochIndicatorProps) {
   const { t } = useTranslation();
+  const { data: latestSystemState } = useGetLatestSuiSystemState({ coinId });
 
-  const currentEpoch = 600;
+  const currentEpoch = latestSystemState?.result?.epoch || '-';
+
+  const epochStartTimestampMs = latestSystemState?.result?.epochStartTimestampMs || '0';
+  const epochDurationMs = latestSystemState?.result?.epochDurationMs || '0';
 
   const [remainingTime, setRemainingTime] = useState('');
 
   useEffect(() => {
-    // TODO 실제 리워드 분배 시간으로 수정 필요.
     const calculateTimeLeft = () => {
       const now = new Date();
-      const endOfDay = new Date();
-      endOfDay.setHours(23, 59, 59, 999);
+      const endOfDayTimestampMs = plus(epochStartTimestampMs, epochDurationMs);
 
-      const diff = endOfDay.getTime() - now.getTime();
+      const diff = Number(minus(endOfDayTimestampMs, now.getTime()));
 
       if (diff > 0) {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        setRemainingTime(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+        setRemainingTime(`After ${String(hours).padStart(2, '0')}h :${String(minutes).padStart(2, '0')}m :${String(seconds).padStart(2, '0')}s,`);
       } else {
         setRemainingTime('00:00:00');
       }
@@ -37,18 +45,19 @@ export default function EpochIndicator() {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [epochDurationMs, epochStartTimestampMs]);
 
   return (
     <Container>
-      <ItemContainer>
-        <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.entry.Sui.components.EpochIndicator.index.currentEpoch')}</Base1000Text>
-        <Base1300Text variant="h3n_B">{`#${currentEpoch}`}</Base1300Text>
-      </ItemContainer>
-      <ItemContainer>
-        <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.entry.Sui.components.EpochIndicator.index.nextRewardShare')}</Base1000Text>
+      <DistributionCountContainer>
         <Base1300Text variant="h3n_B">{remainingTime}</Base1300Text>
-      </ItemContainer>
+        <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.entry.Sui.components.EpochIndicator.index.nextRewardShare')}</Base1000Text>
+      </DistributionCountContainer>
+
+      <EpochContainer>
+        <Base1000Text variant="b4_R">{t('pages.coin-detail.$coinId.manage-stake.entry.Sui.components.EpochIndicator.index.currentEpoch')}</Base1000Text>
+        <Base1300Text variant="b2_B">{`#${currentEpoch}`}</Base1300Text>
+      </EpochContainer>
     </Container>
   );
 }

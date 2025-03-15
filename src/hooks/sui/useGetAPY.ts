@@ -1,20 +1,18 @@
-import type { SuiRpcGetDelegatedStakeResponse } from '@/types/sui/api';
+import type { SuiGetAPYResponse } from '@/types/sui/api';
 import { isAxiosError, post } from '@/utils/axios';
 
 import { useFetch, type UseFetchConfig } from '../common/useFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
-type UseGetStakesProps = {
+type UseGetAPYProps = {
   coinId: string;
   config?: UseFetchConfig;
 };
 
-export function useGetStakes({ coinId, config }: UseGetStakesProps) {
+export function useGetAPY({ coinId, config }: UseGetAPYProps) {
   const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
   const accountAsset = getSuiAccountAsset();
-
-  const address = accountAsset?.address.address || '';
 
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 
@@ -26,11 +24,11 @@ export function useGetStakes({ coinId, config }: UseGetStakesProps) {
 
       const requestURL = rpcURLs[index];
 
-      const respose = await post<SuiRpcGetDelegatedStakeResponse>(requestURL, {
+      const respose = await post<SuiGetAPYResponse>(requestURL, {
         jsonrpc: '2.0',
-        method: 'suix_getStakes',
-        params: [address],
-        id: address,
+        method: 'suix_getValidatorsApy',
+        params: [],
+        id: '1',
       });
 
       return respose;
@@ -50,11 +48,10 @@ export function useGetStakes({ coinId, config }: UseGetStakesProps) {
   };
 
   const { data, isLoading, error } = useFetch({
-    queryKey: ['useGetStakes', coinId, address],
+    queryKey: ['useSuiGetAPY', coinId],
     fetchFunction: () => fetcher(),
     config: {
       enabled: !!coinId && !!rpcURLs.length,
-      refetchInterval: 1000 * 15,
       retry: 3,
       ...config,
     },

@@ -53,7 +53,12 @@
           "index": {
             "title": "Stake & Earn {{symbol}}",
             "available": "Available",
-            "suiStake": "Sui Stake"
+            "suiStake": "Sui Stake",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned",
+            "stake": "Stake",
+            "unstake": "Unstake"
           }
         }
       },
@@ -909,14 +914,12 @@
                     "earned": "Earned",
                     "totalStaked": "Total Staked",
                     "startEarning": "Start Earning",
-                    "stake": "__STRING_NOT_TRANSLATED__",
-                    "stakeDescription": "__STRING_NOT_TRANSLATED__",
-                    "unstake": "__STRING_NOT_TRANSLATED__",
-                    "unstakeDescription": "__STRING_NOT_TRANSLATED__",
-                    "claimRewards": "__STRING_NOT_TRANSLATED__",
-                    "claimRewardsDescription": "__STRING_NOT_TRANSLATED__",
-                    "compounding": "__STRING_NOT_TRANSLATED__",
-                    "compoundingDescription": "__STRING_NOT_TRANSLATED__"
+                    "stake": "Stake",
+                    "stakeDescription": "Lock your tokens to earn rewards over time",
+                    "unstake": "Unstake",
+                    "unstakeDescription": "Withdraw staked tokens",
+                    "claimRewards": "Claim Rewards",
+                    "claimRewardsDescription": "Collect your accumulated staking rewards"
                   }
                 },
                 "PendingItem": {
@@ -944,7 +947,7 @@
                 "EpochIndicator": {
                   "index": {
                     "currentEpoch": "Current Epoch",
-                    "nextRewardShare": "Next Reward Share"
+                    "nextRewardShare": "The next rewards will be distributed"
                   }
                 }
               },

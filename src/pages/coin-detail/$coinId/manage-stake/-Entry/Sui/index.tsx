@@ -8,9 +8,8 @@ import Base1300Text from '@/components/common/Base1300Text';
 import { Tab, Tabs } from '@/components/common/Tab';
 import EmptyAsset from '@/components/EmptyAsset';
 import StakeDetailBox from '@/components/MainBox/StakeDetailBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useDelegations } from '@/hooks/sui/useDelegations';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import EpochIndicator from './components/EpochIndicator';
 import PendingItem from './components/PendingItem';
@@ -39,43 +38,14 @@ export default function Sui({ coinId }: SuiProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data } = useAccountAssets();
-  const currentCoin = data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['My Active', 'My Pending'];
+
+  const { activeDelegationDetails, pendingDelegationDetails, suiCosmostationValidator } = useDelegations({ coinId });
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
-
-  const dummyPendingItems = [
-    {
-      validatorName: 'Cosmostation',
-      objectId: '0x69bed13306e0a48590c695ef8b967177f039394279624faab0f984d03a17acfa',
-      symbol: 'SUI',
-      decimals: currentCoin?.asset.decimals || 0,
-      totalStakedAmount: '1000',
-      stakedAmount: '100',
-      earnedAmount: '900',
-      startEarningEpoch: '600',
-      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
-    },
-  ];
-
-  const dummyStakingItems = [
-    {
-      validatorName: 'Cosmostation',
-      objectId: '0x69bed13306e0a48590c695ef8b967177f039394279624faab0f984d03a17acfa',
-      symbol: 'SUI',
-      decimals: currentCoin?.asset.decimals || 0,
-      totalStakedAmount: '1000',
-      stakedAmount: '100',
-      earnedAmount: '900',
-      startEarningEpoch: '600',
-      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
-    },
-  ];
 
   return (
     <BaseBody>
@@ -83,7 +53,7 @@ export default function Sui({ coinId }: SuiProps) {
         <Container>
           <StakeDetailBox coinId={coinId} />
           <Divider />
-          <EpochIndicator />
+          <EpochIndicator coinId={coinId} />
           <Divider />
           <TabWrapper>
             <StickyTabContainer>
@@ -95,8 +65,8 @@ export default function Sui({ coinId }: SuiProps) {
             </StickyTabContainer>
             <StyledTabPanel value={tabValue} index={0}>
               <StakingItemContainer>
-                {dummyStakingItems.length > 0 ? (
-                  dummyStakingItems.map((item, index) => (
+                {activeDelegationDetails && activeDelegationDetails.length > 0 ? (
+                  activeDelegationDetails.map((item, index) => (
                     <StakingItem
                       key={index}
                       stakingCoinId={coinId}
@@ -105,7 +75,6 @@ export default function Sui({ coinId }: SuiProps) {
                       symbol={item.symbol}
                       decimals={item.decimals}
                       stakedAmount={item.stakedAmount}
-                      totalStakedAmount={item.totalStakedAmount}
                       earnedAmount={item.earnedAmount}
                       startEarningEpoch={item.startEarningEpoch}
                       objectId={item.objectId}
@@ -125,8 +94,7 @@ export default function Sui({ coinId }: SuiProps) {
                           to: Stake.to,
                           params: {
                             coinId: coinId,
-                            // TODO 코스모스테이션 주소 추가
-                            validatorAddress: '0x69bed13306e0a48590c695ef8b967177f039394279624faab0f984d03a17acfa',
+                            validatorAddress: suiCosmostationValidator?.suiAddress || '',
                           },
                         });
                       }}
@@ -142,8 +110,8 @@ export default function Sui({ coinId }: SuiProps) {
             </StyledTabPanel>
             <StyledTabPanel value={tabValue} index={1}>
               <StakingItemContainer>
-                {dummyPendingItems.length > 0 ? (
-                  dummyPendingItems.map((item, index) => (
+                {pendingDelegationDetails && pendingDelegationDetails.length > 0 ? (
+                  pendingDelegationDetails.map((item, index) => (
                     <PendingItem
                       key={index}
                       validatorImage={item.validatorImage}
@@ -151,7 +119,6 @@ export default function Sui({ coinId }: SuiProps) {
                       symbol={item.symbol}
                       decimals={item.decimals}
                       stakedAmount={item.stakedAmount}
-                      totalStakedAmount={item.totalStakedAmount}
                       earnedAmount={item.earnedAmount}
                       startEarningEpoch={item.startEarningEpoch}
                       objectId={item.objectId}
