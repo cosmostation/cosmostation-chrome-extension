@@ -22,6 +22,7 @@ import {
   TopContainer,
   TopLeftContainer,
   ValidatorNameContainer,
+  ValidatorNameWrapper,
 } from './styled';
 import StakingOptionBottomSheet from '../../../components/StakingOptionBottomSheet';
 
@@ -74,12 +75,14 @@ export default function StakingItem({
             <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
           </ImageContainer>
           <TopLeftContainer>
-            <ValidatorNameContainer>
-              <Base1300Text variant="b2_M">{validatorName}</Base1300Text>
+            <ValidatorNameWrapper>
+              <ValidatorNameContainer>
+                <Base1300Text variant="b2_M">{validatorName}</Base1300Text>
+              </ValidatorNameContainer>
               <RightChevronIconContainer>
                 <RightChevronIcon />
               </RightChevronIconContainer>
-            </ValidatorNameContainer>
+            </ValidatorNameWrapper>
             <CommissionContainer>
               <Base1000Text variant="b4_R">
                 {`${t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.commission')} : `}

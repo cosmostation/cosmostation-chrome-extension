@@ -43,6 +43,7 @@ import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coi
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
+import { Route as WalletCancelUnstakingCoinIdIndexImport } from './pages/wallet/cancel-unstaking/$coinId/index'
 import { Route as PopupSuiTransactionIndexImport } from './pages/popup/sui/transaction/index'
 import { Route as PopupSuiSignMessageIndexImport } from './pages/popup/sui/sign-message/index'
 import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/transaction/index'
@@ -289,6 +290,13 @@ const WalletClaimAllRewardsCoinIdIndexRoute =
   WalletClaimAllRewardsCoinIdIndexImport.update({
     id: '/wallet/claim-all-rewards/$coinId/',
     path: '/wallet/claim-all-rewards/$coinId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const WalletCancelUnstakingCoinIdIndexRoute =
+  WalletCancelUnstakingCoinIdIndexImport.update({
+    id: '/wallet/cancel-unstaking/$coinId/',
+    path: '/wallet/cancel-unstaking/$coinId/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -976,6 +984,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupSuiTransactionIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/cancel-unstaking/$coinId/': {
+      id: '/wallet/cancel-unstaking/$coinId/'
+      path: '/wallet/cancel-unstaking/$coinId'
+      fullPath: '/wallet/cancel-unstaking/$coinId'
+      preLoaderRoute: typeof WalletCancelUnstakingCoinIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/claim-all-rewards/$coinId/': {
       id: '/wallet/claim-all-rewards/$coinId/'
       path: '/wallet/claim-all-rewards/$coinId'
@@ -1203,6 +1218,7 @@ export interface FileRoutesByFullPath {
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
   '/popup/sui/transaction': typeof PopupSuiTransactionIndexRoute
+  '/wallet/cancel-unstaking/$coinId': typeof WalletCancelUnstakingCoinIdIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
@@ -1283,6 +1299,7 @@ export interface FileRoutesByTo {
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
   '/popup/sui/transaction': typeof PopupSuiTransactionIndexRoute
+  '/wallet/cancel-unstaking/$coinId': typeof WalletCancelUnstakingCoinIdIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
@@ -1364,6 +1381,7 @@ export interface FileRoutesById {
   '/popup/evm/transaction/': typeof PopupEvmTransactionIndexRoute
   '/popup/sui/sign-message/': typeof PopupSuiSignMessageIndexRoute
   '/popup/sui/transaction/': typeof PopupSuiTransactionIndexRoute
+  '/wallet/cancel-unstaking/$coinId/': typeof WalletCancelUnstakingCoinIdIndexRoute
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
@@ -1446,6 +1464,7 @@ export interface FileRouteTypes {
     | '/popup/evm/transaction'
     | '/popup/sui/sign-message'
     | '/popup/sui/transaction'
+    | '/wallet/cancel-unstaking/$coinId'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
@@ -1525,6 +1544,7 @@ export interface FileRouteTypes {
     | '/popup/evm/transaction'
     | '/popup/sui/sign-message'
     | '/popup/sui/transaction'
+    | '/wallet/cancel-unstaking/$coinId'
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
@@ -1604,6 +1624,7 @@ export interface FileRouteTypes {
     | '/popup/evm/transaction/'
     | '/popup/sui/sign-message/'
     | '/popup/sui/transaction/'
+    | '/wallet/cancel-unstaking/$coinId/'
     | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
@@ -1685,6 +1706,7 @@ export interface RootRouteChildren {
   PopupEvmTransactionIndexRoute: typeof PopupEvmTransactionIndexRoute
   PopupSuiSignMessageIndexRoute: typeof PopupSuiSignMessageIndexRoute
   PopupSuiTransactionIndexRoute: typeof PopupSuiTransactionIndexRoute
+  WalletCancelUnstakingCoinIdIndexRoute: typeof WalletCancelUnstakingCoinIdIndexRoute
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
@@ -1775,6 +1797,7 @@ const rootRouteChildren: RootRouteChildren = {
   PopupEvmTransactionIndexRoute: PopupEvmTransactionIndexRoute,
   PopupSuiSignMessageIndexRoute: PopupSuiSignMessageIndexRoute,
   PopupSuiTransactionIndexRoute: PopupSuiTransactionIndexRoute,
+  WalletCancelUnstakingCoinIdIndexRoute: WalletCancelUnstakingCoinIdIndexRoute,
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
@@ -1877,6 +1900,7 @@ export const routeTree = rootRoute
         "/popup/evm/transaction/",
         "/popup/sui/sign-message/",
         "/popup/sui/transaction/",
+        "/wallet/cancel-unstaking/$coinId/",
         "/wallet/claim-all-rewards/$coinId/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
@@ -2061,6 +2085,9 @@ export const routeTree = rootRoute
     },
     "/popup/sui/transaction/": {
       "filePath": "popup/sui/transaction/index.tsx"
+    },
+    "/wallet/cancel-unstaking/$coinId/": {
+      "filePath": "wallet/cancel-unstaking/$coinId/index.tsx"
     },
     "/wallet/claim-all-rewards/$coinId/": {
       "filePath": "wallet/claim-all-rewards/$coinId/index.tsx"

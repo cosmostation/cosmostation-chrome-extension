@@ -99,6 +99,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
       const displayUnstakingAmount = toDisplayDenomAmount(item.entries.balance, currentCoin?.asset.decimals || 0);
 
       return {
+        validatorAddress: item.validator_address,
+        creationHeight: item.entries.creation_height,
+        amount: item.entries.balance,
         validatorImage: item.validatorInfo?.monikerImage,
         validatorName: item.validatorInfo?.description.moniker || shorterAddress(item.validator_address, 12) || '',
         symbol: currentCoin?.asset.symbol || '',
@@ -168,6 +171,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
                     <UnstakingItem
                       stakingCoinId={coinId}
                       key={item.unstakingCompletionTime}
+                      validatorAddress={item.validatorAddress}
+                      creationHeight={item.creationHeight}
+                      baseUnstakingAmount={item.amount}
                       validatorImage={item.validatorImage}
                       validatorName={item.validatorName}
                       symbol={currentCoin?.asset.symbol || ''}

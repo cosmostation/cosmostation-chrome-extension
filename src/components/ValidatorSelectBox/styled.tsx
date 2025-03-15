@@ -126,7 +126,7 @@ export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ th
 export const ImageContainer = styled(Image)({
   width: '2rem',
   height: '2rem',
-  paddingBottom: '0.5rem',
+  marginBottom: '0.5rem',
   borderRadius: '50%',
 });
 

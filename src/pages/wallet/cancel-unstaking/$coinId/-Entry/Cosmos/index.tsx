@@ -10,17 +10,15 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.ts
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee/CosmosFee2';
-import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { useAccount } from '@/hooks/cosmos/useAccount';
-import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
+import { useUndelegation } from '@/hooks/cosmos/useUndelegation';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
-import { useCoinList } from '@/hooks/useCoinList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
@@ -28,33 +26,25 @@ import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
-import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
+import type { MsgCancelUnbondingDelegation, SignAminoDoc } from '@/types/cosmos/amino';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
-import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { ceil, gt, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string';
+import { isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import {
-  ChainNameContainer,
-  CoinContainer,
-  CoinImage,
-  CoinImageContainer,
-  CoinSymbolText,
-  Divider,
-  EstimatedValueTextContainer,
-  InformationPanelBody,
-  InputWrapper,
-} from './styled';
+import { ChainNameContainer, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper } from './styled';
 
 type CosmosProps = {
   coinId: string;
   validatorAddress: string;
+  amount: string;
+  creationHeight: string;
 };
 
-export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
+export default function Cosmos({ coinId, validatorAddress, creationHeight, amount }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -68,103 +58,67 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
 
-  const [inputMemo, setInputMemo] = useState('');
-
-  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
-
-  const { currency } = useExtensionStorageStore((state) => state);
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
-
   const account = useAccount({ coinId });
   const nodeInfo = useNodeInfo({ coinId });
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
+  const { currency } = useExtensionStorageStore((state) => state);
+  const { data: coinGeckoPrice } = useCoinGeckoPrice();
+
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const selectedCancelUnstakeCoin = getCosmosAccountAsset();
+
+  const undelegation = useUndelegation({ coinId });
   const { feeAssets } = useFees({ coinId: coinId });
 
-  const { data: coinList } = useCoinList();
+  const currentCancelUnstaking = useMemo(() => {
+    return undelegation.data.find(
+      (item) =>
+        isEqualsIgnoringCase(item.validator_address, validatorAddress) && item.entries.creation_height === creationHeight && item.entries.balance === amount,
+    );
+  }, [amount, creationHeight, undelegation.data, validatorAddress]);
 
-  const selectedRewardCoin = getCosmosAccountAsset();
+  const baseCancelUnstakeAmount = currentCancelUnstaking?.entries.balance || '0';
+  const displayCancelUnstakeAmount = toDisplayDenomAmount(baseCancelUnstakeAmount, selectedCancelUnstakeCoin?.asset.decimals || 0);
 
-  const delegationInfo = useDelegationInfo({ coinId });
+  const stakerAddress = useMemo(() => currentCancelUnstaking?.delegator_address, [currentCancelUnstaking?.delegator_address]);
 
-  const rewardReceiptAddress = selectedRewardCoin?.address.address || '';
+  const coinImageURL = selectedCancelUnstakeCoin?.asset.image || '';
 
-  const coinSymbol = selectedRewardCoin?.asset.symbol || '';
-  const chainName = selectedRewardCoin?.chain.name || '';
+  const coinSymbol = selectedCancelUnstakeCoin?.asset.symbol || '';
+
+  const chainName = selectedCancelUnstakeCoin?.chain.name || '';
+
+  const coinGeckoId = selectedCancelUnstakeCoin?.asset.coinGeckoId || '';
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+
+  const displayCancelUnstakeAmountPrice = times(coinPrice, displayCancelUnstakeAmount, 0);
+
+  const [inputMemo, setInputMemo] = useState('');
+
+  const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
   const availableValidators = useMemo(
     () =>
-      delegationInfo.delegationInfo
+      undelegation.data
         .map((item) => {
-          const votinPower = ceil(toDisplayDenomAmount(item.validatorInfo?.tokens || '0', selectedRewardCoin?.asset.decimals || 0));
+          const votinPower = ceil(toDisplayDenomAmount(item.validatorInfo?.tokens || '0', selectedCancelUnstakeCoin?.asset.decimals || 0));
           const commission = toPercentages(item.validatorInfo?.commission.commission_rates.rate || '0', {
             disableMark: true,
           });
 
           return {
-            validatorName: item.validatorInfo?.description.moniker || shorterAddress(item.validatorAddress, 12) || '',
-            validatorAddress: item.validatorAddress,
+            validatorName: item.validatorInfo?.description.moniker || shorterAddress(item.validator_address, 12) || '',
+            validatorAddress: item.validator_address,
             votingPower: votinPower,
             commission: commission,
-            stakedAmount: item.totalDelegationAmount,
             validatorImage: item.validatorInfo?.monikerImage,
           };
         })
         .sort((a, b) => (gt(a.votingPower, b.votingPower) ? -1 : 1)),
-    [delegationInfo.delegationInfo, selectedRewardCoin?.asset.decimals],
-  );
-
-  const currentRewardInfo = useMemo(
-    () => delegationInfo.delegationInfo.find((item) => isEqualsIgnoringCase(item.validatorAddress, validatorAddress)),
-    [delegationInfo.delegationInfo, validatorAddress],
-  );
-
-  const rewardCoins = useMemo(
-    () =>
-      currentRewardInfo?.rewardInfo?.reward.map((item) => {
-        const rewardCoinAccountAsset = [...(coinList?.cosmosAssets || []), ...(coinList?.cw20Assets || [])].find(
-          (asset) => selectedRewardCoin?.chain.chainType === asset.chainType && selectedRewardCoin?.chain.id === asset.chainId && asset.id === item.denom,
-        );
-
-        const displayRewardAmount = toDisplayDenomAmount(item.amount, rewardCoinAccountAsset?.decimals || 0);
-
-        return {
-          id: rewardCoinAccountAsset?.id,
-          coinImage: rewardCoinAccountAsset?.image,
-          symbol: rewardCoinAccountAsset?.symbol,
-          coinGeckoId: rewardCoinAccountAsset?.coinGeckoId,
-          displayRewardAmount,
-        };
-      }),
-    [coinList?.cosmosAssets, coinList?.cw20Assets, currentRewardInfo?.rewardInfo?.reward, selectedRewardCoin?.chain.chainType, selectedRewardCoin?.chain.id],
-  );
-
-  const rewardCoinImages = useMemo(
-    () =>
-      rewardCoins
-        ?.sort((a) => (a.id === selectedRewardCoin?.asset.id ? -1 : 1))
-        .map((item) => item.coinImage || '')
-        .slice(0, 5)
-        .filter((item) => item),
-    [rewardCoins, selectedRewardCoin?.asset.id],
-  );
-
-  const rewardCoinCounts = rewardCoins?.length || 0;
-  const isMultipleRewardCoins = rewardCoinCounts > 1;
-
-  const displayMainCoinRewardAmount = rewardCoins?.find((item) => item.id === selectedRewardCoin?.asset.id)?.displayRewardAmount || '0';
-
-  const displayTotalRewardValue = useMemo(
-    () =>
-      rewardCoins?.reduce((acc, item) => {
-        const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[currency]) || 0;
-        const value = times(coinPrice, item.displayRewardAmount);
-        return plus(acc, value);
-      }, '0'),
-    [coinGeckoPrice, currency, rewardCoins],
+    [selectedCancelUnstakeCoin?.asset.decimals, undelegation.data],
   );
 
   const alternativeFeeAsset = useMemo(
@@ -176,39 +130,41 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 
-  const memoizedRewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
-    if (selectedRewardCoin) {
+  const memoizedCancelUnstakeAminoTx = useMemo<SignAminoDoc<MsgCancelUnbondingDelegation> | undefined>(() => {
+    if (selectedCancelUnstakeCoin) {
       if (
         account.data?.value.account_number &&
-        gt(displayMainCoinRewardAmount || '0', '0') &&
+        gt(displayCancelUnstakeAmount || '0', '0') &&
         alternativeFeeAsset?.asset.id &&
-        currentRewardInfo?.rewardInfo?.validator_address &&
-        rewardReceiptAddress
+        currentCancelUnstaking &&
+        stakerAddress
       ) {
         const sequence = String(account.data?.value.sequence || '0');
 
         return {
           account_number: String(account.data.value.account_number),
           sequence,
-          chain_id: nodeInfo.data?.default_node_info?.network ?? selectedRewardCoin.chain.chainId,
+          chain_id: nodeInfo.data?.default_node_info?.network ?? selectedCancelUnstakeCoin.chain.chainId,
           fee: {
             amount: [
               {
                 denom: alternativeFeeAsset.asset.id,
-                amount: selectedRewardCoin.chain.isEvm
-                  ? times(alternativeGasRate?.[0] || '0', selectedRewardCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                amount: selectedCancelUnstakeCoin?.chain.isEvm
+                  ? times(alternativeGasRate?.[0] || '0', selectedCancelUnstakeCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
                   : '1',
               },
             ],
-            gas: String(selectedRewardCoin.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
+            gas: String(selectedCancelUnstakeCoin.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
           },
           memo: inputMemo,
           msgs: [
             {
-              type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+              type: 'cosmos-sdk/MsgCancelUnbondingDelegation',
               value: {
-                delegator_address: rewardReceiptAddress,
-                validator_address: currentRewardInfo.rewardInfo.validator_address,
+                delegator_address: stakerAddress,
+                validator_address: currentCancelUnstaking.validator_address,
+                amount: { denom: selectedCancelUnstakeCoin.asset.id, amount: currentCancelUnstaking.entries.balance },
+                creation_height: Number(currentCancelUnstaking.entries.creation_height),
               },
             },
           ],
@@ -222,40 +178,40 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     account.data?.value.sequence,
     alternativeFeeAsset?.asset.id,
     alternativeGasRate,
-    currentRewardInfo?.rewardInfo?.validator_address,
-    displayMainCoinRewardAmount,
+    currentCancelUnstaking,
+    displayCancelUnstakeAmount,
     inputMemo,
     nodeInfo.data?.default_node_info?.network,
-    rewardReceiptAddress,
-    selectedRewardCoin,
+    selectedCancelUnstakeCoin,
+    stakerAddress,
   ]);
 
-  const [rewardAminoTx] = useDebounce(memoizedRewardAminoTx, 700);
+  const [cancelUnstakeAminoTx] = useDebounce(memoizedCancelUnstakeAminoTx, 700);
 
-  const unstakeProtoTx = useMemo(() => {
-    if (rewardAminoTx) {
+  const cancelUnstakeProtoTx = useMemo(() => {
+    if (cancelUnstakeAminoTx) {
       const pTx = protoTx(
-        rewardAminoTx,
+        cancelUnstakeAminoTx,
         [''],
-        { type: selectedRewardCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
+        { type: selectedCancelUnstakeCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
         cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [selectedRewardCoin?.address.accountType.pubkeyType, rewardAminoTx]);
+  }, [selectedCancelUnstakeCoin?.address.accountType.pubkeyType, cancelUnstakeAminoTx]);
 
-  const simulate = useSimulate({ coinId, txBytes: unstakeProtoTx?.tx_bytes });
+  const simulate = useSimulate({ coinId, txBytes: cancelUnstakeProtoTx?.tx_bytes });
 
   const alternativeGas = useMemo(() => {
-    const gasCoefficient = selectedRewardCoin?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
+    const gasCoefficient = selectedCancelUnstakeCoin?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
     const simulatedGas = simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasCoefficient, 0) : undefined;
 
-    const baseEstimateGas = simulatedGas || String(selectedRewardCoin?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS;
+    const baseEstimateGas = simulatedGas || String(selectedCancelUnstakeCoin?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS;
 
     return baseEstimateGas;
-  }, [selectedRewardCoin?.chain.feeInfo.defaultGasLimit, selectedRewardCoin?.chain.feeInfo.gasCoefficient, simulate.data?.gas_info?.gas_used]);
+  }, [selectedCancelUnstakeCoin?.chain.feeInfo.defaultGasLimit, selectedCancelUnstakeCoin?.chain.feeInfo.gasCoefficient, simulate.data?.gas_info?.gas_used]);
 
   const feeOptions = useMemo(() => {
     const customOption = {
@@ -313,31 +269,25 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const currentGas = selectedFeeOption.gas || '0';
 
   const errorMessage = useMemo(() => {
-    if (!selectedRewardCoin?.chain.isSupportStaking) {
-      return t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.bankLocked');
+    if (!selectedCancelUnstakeCoin?.chain.isSupportStaking) {
+      return t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.bankLocked');
     }
 
-    if (!rewardCoins || rewardCoins.length === 0 || !gt(displayMainCoinRewardAmount, '0')) {
-      return t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.noReward');
+    if (gt(currentDisplayFeeAmount, toDisplayDenomAmount(selectedFeeOption.balance, selectedFeeOption.decimals))) {
+      return t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.insufficientFee');
     }
 
-    if (gt(currentDisplayFeeAmount, toDisplayDenomAmount(selectedFeeOption.balance || '0', selectedFeeOption.decimals))) {
-      return t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.insufficientAmount');
-    }
-
-    if (!rewardAminoTx) {
-      return t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.failedToCalculateTransaction');
+    if (!cancelUnstakeAminoTx) {
+      return t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.failedToCalculateTransaction');
     }
 
     return '';
   }, [
+    cancelUnstakeAminoTx,
     currentDisplayFeeAmount,
-    displayMainCoinRewardAmount,
-    rewardAminoTx,
-    rewardCoins,
+    selectedCancelUnstakeCoin?.chain.isSupportStaking,
     selectedFeeOption.balance,
     selectedFeeOption.decimals,
-    selectedRewardCoin?.chain.isSupportStaking,
     t,
   ]);
 
@@ -345,7 +295,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     try {
       setIsOpenTxProcessingOverlay(true);
 
-      if (!selectedRewardCoin?.chain) {
+      if (!selectedCancelUnstakeCoin?.chain) {
         throw new Error('Chain not found');
       }
 
@@ -353,7 +303,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         throw new Error('Account number not found');
       }
 
-      if (!memoizedRewardAminoTx) {
+      if (!memoizedCancelUnstakeAminoTx) {
         throw new Error('Failed to calculate final transaction');
       }
 
@@ -362,14 +312,14 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       }
 
       const finalizedTransaction = {
-        ...memoizedRewardAminoTx,
+        ...memoizedCancelUnstakeAminoTx,
         fee: {
           amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
           gas: currentGas,
         },
       };
 
-      const keyPair = getKeypair(selectedRewardCoin.chain, currentAccount, currentPassword);
+      const keyPair = getKeypair(selectedCancelUnstakeCoin.chain, currentAccount, currentPassword);
       const privateKey = keyPair.privateKey;
 
       const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : '';
@@ -377,7 +327,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       const pTx = protoTx(
         finalizedTransaction,
         [''],
-        { type: selectedRewardCoin.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: base64PublicKey },
+        { type: selectedCancelUnstakeCoin.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: base64PublicKey },
         cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
       );
 
@@ -386,13 +336,13 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       }
 
       const directDoc = {
-        chain_id: selectedRewardCoin.chain.chainId,
+        chain_id: selectedCancelUnstakeCoin.chain.chainId,
         account_number: account.data.value.account_number,
         auth_info_bytes: [...Array.from(pTx.authInfoBytes)],
         body_bytes: [...Array.from(pTx.txBodyBytes)],
       };
 
-      const requestURLs = selectedRewardCoin?.chain.lcdUrls.map((item) => cosmosURL(item.url, parseCoinId(coinId).chainId).postBroadcast()) || [];
+      const requestURLs = selectedCancelUnstakeCoin?.chain.lcdUrls.map((item) => cosmosURL(item.url, parseCoinId(coinId).chainId).postBroadcast()) || [];
 
       if (!requestURLs.length) {
         throw new Error('RPC URLs not found');
@@ -401,7 +351,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       const response = await signDirectAndexecuteTxSequentially({
         privateKey,
         directDoc,
-        chain: selectedRewardCoin.chain,
+        chain: selectedCancelUnstakeCoin.chain,
         urls: requestURLs,
       });
 
@@ -433,11 +383,11 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     currentBaseFee,
     currentGas,
     currentPassword,
-    memoizedRewardAminoTx,
+    memoizedCancelUnstakeAminoTx,
     navigate,
     selectedFeeOption,
-    selectedRewardCoin?.address.accountType.pubkeyType,
-    selectedRewardCoin?.chain,
+    selectedCancelUnstakeCoin?.address.accountType.pubkeyType,
+    selectedCancelUnstakeCoin?.chain,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
@@ -450,33 +400,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     setIsDisabled(true);
 
     debouncedEnabled();
-  }, [debouncedEnabled, memoizedRewardAminoTx, simulate.isFetching]);
+  }, [debouncedEnabled, memoizedCancelUnstakeAminoTx, simulate.isFetching]);
 
   return (
     <>
       <BaseBody>
         <>
           <CoinContainer>
-            <CoinImageContainer>
-              <CoinImage imageURLs={rewardCoinImages} />
-            </CoinImageContainer>
+            <CoinImage imageURL={coinImageURL} />
             <CoinSymbolText variant="h2_B">
-              {isMultipleRewardCoins
-                ? t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewards')
-                : t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimSymbolRewards', {
-                    symbol: coinSymbol,
-                  })}
+              {t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstake', {
+                symbol: coinSymbol,
+              })}
             </CoinSymbolText>
             <ChainNameContainer>
               <Typography variant="b3_M">
-                {isMultipleRewardCoins
-                  ? t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.subtitle', {
-                      symbol: coinSymbol,
-                      coinCount: rewardCoinCounts - 1,
-                    })
-                  : t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.stakingCoin', {
-                      chainName: chainName,
-                    })}
+                {t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.stakingCoin', {
+                  chainName: chainName,
+                })}
               </Typography>
             </ChainNameContainer>
           </CoinContainer>
@@ -484,14 +425,14 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
           <InputWrapper>
             <ValidatorSelectBox
               validatorList={availableValidators}
+              currentValidatorAddress={currentCancelUnstaking?.validator_address}
               disabled
-              currentValidatorAddress={validatorAddress}
-              label={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.validator')}
+              label={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.validator')}
             />
 
             <StandardInput
-              label={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.rewardAmount')}
-              value={displayMainCoinRewardAmount + ' ' + coinSymbol + `${rewardCoins?.length || 0 > 1 ? ` + ${rewardCoins?.length || 0 - 1} Coins` : ''}`}
+              label={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakingAmount')}
+              value={displayCancelUnstakeAmount}
               disabled
               slotProps={{
                 input: {
@@ -499,7 +440,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
                     <InputAdornment position="end">
                       <EstimatedValueTextContainer>
                         <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency} isApporximation>
-                          {displayTotalRewardValue}
+                          {displayCancelUnstakeAmountPrice}
                         </NumberTypo>
                       </EstimatedValueTextContainer>
                     </InputAdornment>
@@ -510,7 +451,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
             <StandardInput
               multiline
               maxRows={3}
-              label={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.memo')}
+              label={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.memo')}
               value={inputMemo}
               onChange={(e) => setInputMemo(e.target.value)}
             />
@@ -519,20 +460,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       </BaseBody>
       <BaseFooter>
         <>
-          <InformationPanel
-            varitant="info"
-            title={<Typography variant="b3_M">{t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.inform')}</Typography>}
-            body={
-              <InformationPanelBody>
-                <Typography variant="b4_R_Multiline">
-                  {t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.informDescription', {
-                    address: rewardReceiptAddress,
-                  })}
-                </Typography>
-              </InformationPanelBody>
-            }
-          />
-
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
@@ -541,7 +468,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
             availableFeeAssets={feeAssets}
             selectedCustomFeeCoinId={alternativeFeeCoinId}
             currentSelectedFeeOptionKey={currentFeeStepKey}
-            errorMessage={errorMessage}
             onChangeGas={(gas) => {
               setCustomGasAmount(gas);
             }}
@@ -565,15 +491,15 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewardsReview')}
-        contentsSubTitle={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewardsReviewDescription')}
-        confirmButtonText={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewards')}
+        contentsTitle={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeReview')}
+        contentsSubTitle={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeReviewDescription')}
+        confirmButtonText={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeConfirm')}
         onClickConfirm={handleOnClickConfirm}
       />
       <TxProcessingOverlay
         open={isOpenTxProcessingOverlay}
-        title={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.txProcessing')}
-        message={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.txProcessingSub')}
+        title={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.txProcessing')}
+        message={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.txProcessingSub')}
       />
     </>
   );

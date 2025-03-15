@@ -7,7 +7,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
-import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
+import { Route as CancelUnstake } from '@/pages/wallet/cancel-unstaking/$coinId';
 import { formatDateForUnstakingEndDate, getDDay } from '@/utils/date';
 
 import {
@@ -21,6 +21,7 @@ import {
   TopLeftContainer,
   TopRightContainer,
   ValidatorNameContainer,
+  ValidatorNameWrapper,
 } from './styled';
 import StakingOptionBottomSheet from '../../../components/StakingOptionBottomSheet';
 
@@ -30,6 +31,9 @@ import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
 type UnStakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   stakingCoinId: string;
+  validatorAddress: string;
+  creationHeight: string;
+  baseUnstakingAmount: string;
   validatorName: string;
   symbol: string;
   decimals: number;
@@ -40,6 +44,9 @@ type UnStakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTM
 
 export default function UnstakingItem({
   stakingCoinId,
+  validatorAddress,
+  creationHeight,
+  baseUnstakingAmount,
   validatorName,
   symbol,
   decimals,
@@ -59,18 +66,26 @@ export default function UnstakingItem({
 
   return (
     <>
-      <StyledButton type="button" {...remainder}>
+      <StyledButton
+        type="button"
+        onClick={() => {
+          setIsOpenStakingOptionBottomSheet(true);
+        }}
+        {...remainder}
+      >
         <TopContainer>
           <TopLeftContainer>
             <ImageContainer>
               <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
             </ImageContainer>
-            <ValidatorNameContainer>
-              <Base1300Text variant="b2_M">{validatorName}</Base1300Text>
+            <ValidatorNameWrapper>
+              <ValidatorNameContainer>
+                <Base1300Text variant="b2_M">{validatorName}</Base1300Text>
+              </ValidatorNameContainer>
               <RightChevronIconContainer>
                 <RightChevronIcon />
               </RightChevronIconContainer>
-            </ValidatorNameContainer>
+            </ValidatorNameWrapper>
           </TopLeftContainer>
           <TopRightContainer>
             <Base1000Text variant="h6n_M">{`D-${dday}`}</Base1000Text>
@@ -94,10 +109,14 @@ export default function UnstakingItem({
         <BaseOptionButton
           onClick={() => {
             navigate({
-              to: Unstake.to,
+              to: CancelUnstake.to,
               params: {
                 coinId: stakingCoinId,
-                validatorAddress: '',
+              },
+              search: {
+                validatorAddress: validatorAddress,
+                amount: baseUnstakingAmount,
+                creationHeight: creationHeight,
               },
             });
             setIsOpenStakingOptionBottomSheet(false);

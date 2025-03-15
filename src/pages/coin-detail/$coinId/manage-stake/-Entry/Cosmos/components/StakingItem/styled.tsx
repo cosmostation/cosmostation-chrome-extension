@@ -38,11 +38,14 @@ export const TopLeftContainer = styled('div')({
   rowGap: '0.2rem',
 });
 
-export const ValidatorNameContainer = styled('div')({
+export const ValidatorNameWrapper = styled('div')({
   display: 'flex',
   alignItems: 'flex-start',
   columnGap: '0.2rem',
+});
 
+export const ValidatorNameContainer = styled('div')({
+  display: 'flex',
   maxWidth: '14rem',
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

@@ -1555,13 +1555,46 @@
                   "claimAllRewardsReviewDescription": "Are you sure you want to proceed with the claim all rewards? \nThis action cannot be undone once completed.",
                   "claimAllRewards": "Claim All Rewards",
                   "subtitle": "{{symbol}} + {{coinCount}} Coins",
-                  "stakingCoin": "{{chainName}} Staking Coin"
+                  "stakingCoin": "{{chainName}} Staking Coin",
+                  "bankLocked": "Claim functionality is currently disabled.",
+                  "noReward": "No rewards available",
+                  "insufficientAmount": "Insufficient fee",
+                  "failedToCalculateTransaction": "Failed to build transaction",
+                  "txProcessing": "Transaction Processing",
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
                 }
               }
             }
           },
           "layout": {
             "header": "Claim Rewards"
+          }
+        }
+      },
+      "cancel-unstaking": {
+        "$coinId": {
+          "Entry": {
+            "Cosmos": {
+              "index": {
+                "bankLocked": "Cancel Unstake functionality is currently disabled.",
+                "insufficientFee": "Insufficient fee",
+                "failedToCalculateTransaction": "Failed to build transaction",
+                "cancelUnstake": "Cancel Unstake {{symbol}}",
+                "stakingCoin": "{{chainName}} Staking Coin",
+                "validator": "Validator",
+                "unstakingAmount": "Unstaking Amount",
+                "memo": "Memo (Option)",
+                "cancelUnstakeReview": "Confirm Cancel Unstake",
+                "cancelUnstakeReviewDescription": "Are you sure you want to proceed with the cancel unstake? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "cancelUnstakingAmount": "Cancel Unstaking Amount",
+                "cancelUnstakeConfirm": "Cancel Unstake"
+              }
+            }
+          },
+          "layout": {
+            "header": "Cancel Unstaking"
           }
         }
       }
