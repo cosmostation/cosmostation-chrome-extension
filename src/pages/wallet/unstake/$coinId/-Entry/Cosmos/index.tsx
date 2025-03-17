@@ -480,6 +480,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
               onClickItem={() => {
                 setIsOpenValidatorBottomSheet(true);
               }}
+              disabled={!!validatorAddress}
               isBottomSheetOpen={isOpenValidatorBottomSheet}
               label={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.validator')}
             />

@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
+import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 import { shorterAddress } from '@/utils/string';
@@ -24,7 +25,7 @@ export default function Sui({ coinId }: SuiProps) {
   const navigate = useNavigate();
 
   const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
-
+  const { averageAPY } = useGetAverageAPY({ coinId });
   const selectedCoin = getSuiAccountAsset();
 
   const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
@@ -38,6 +39,7 @@ export default function Sui({ coinId }: SuiProps) {
           <SectionContainer>
             <StakePromotion
               symbol={symbol}
+              apr={averageAPY}
               onClick={() => {
                 navigate({
                   to: ManageStake.to,

@@ -5,10 +5,11 @@ import Sui from './Sui';
 
 type EntryProps = {
   coinId: string;
-  validatorAddress?: string;
+  validatorAddress: string;
+  objectId?: string;
 };
 
-export default function Entry({ coinId, validatorAddress }: EntryProps) {
+export default function Entry({ coinId, validatorAddress, objectId }: EntryProps) {
   const { getAccountAsset } = useGetAccountAsset({ coinId });
   const currentCoin = getAccountAsset();
 
@@ -17,7 +18,7 @@ export default function Entry({ coinId, validatorAddress }: EntryProps) {
   }
 
   if (currentCoin?.asset.chainType === 'sui') {
-    return <Sui coinId={coinId} validatorAddress={validatorAddress} />;
+    return <Sui coinId={coinId} objectId={objectId} />;
   }
 
   return null;

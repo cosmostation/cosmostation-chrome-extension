@@ -8,7 +8,6 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
-import { Route as ClaimRewards } from '@/pages/wallet/claim-rewards/$coinId/$validatorAddress';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
 import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
@@ -183,6 +182,9 @@ export default function StakingItem({
                 coinId: stakingCoinId,
                 validatorAddress: validatorAddress,
               },
+              search: {
+                objectId: objectId,
+              },
             });
             setIsOpenStakingOptionBottomSheet(false);
           }}
@@ -191,26 +193,6 @@ export default function StakingItem({
           }
           leftSecondBody={
             <Base1000Text variant="b4_R">{t('pages.coin-detail.$coinId.manage-stake.Entry.Sui.components.StakingItem.index.unstakeDescription')}</Base1000Text>
-          }
-        />
-        <BaseOptionButton
-          onClick={() => {
-            navigate({
-              to: ClaimRewards.to,
-              params: {
-                coinId: stakingCoinId,
-                validatorAddress: validatorAddress,
-              },
-            });
-            setIsOpenStakingOptionBottomSheet(false);
-          }}
-          leftSecondHeader={
-            <Base1300Text variant="b2_M">{t('pages.coin-detail.$coinId.manage-stake.Entry.Sui.components.StakingItem.index.claimRewards')}</Base1300Text>
-          }
-          leftSecondBody={
-            <Base1000Text variant="b4_R">
-              {t('pages.coin-detail.$coinId.manage-stake.Entry.Sui.components.StakingItem.index.claimRewardsDescription')}
-            </Base1000Text>
           }
         />
       </StakingOptionBottomSheet>

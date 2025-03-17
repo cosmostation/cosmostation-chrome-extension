@@ -6,6 +6,7 @@ import { isEqualsIgnoringCase } from '@/utils/string';
 import { useGetLatestSuiSystemState } from './useGetLatestSuiSystemState';
 import { useGetStakes } from './useGetStakes';
 import { type UseFetchConfig } from '../common/useFetch';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 export type SuiDelegationData = {
   validatorName: string;
@@ -17,6 +18,7 @@ export type SuiDelegationData = {
   startEarningEpoch: string;
   objectId: string;
   validatorImage?: string;
+  coinGeckoId?: string;
 };
 
 type UseDelegationsProps = {
@@ -27,7 +29,11 @@ type UseDelegationsProps = {
 export function useDelegations({ coinId, config }: UseDelegationsProps) {
   const suiStakes = useGetStakes({ coinId, config });
 
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+
   const latestSuiSystemState = useGetLatestSuiSystemState({ coinId, config });
+
+  const suiAccountAsset = getSuiAccountAsset();
 
   const delegation = useMemo(
     () => ({
@@ -69,17 +75,18 @@ export function useDelegations({ coinId, config }: UseDelegationsProps) {
             validatorImage: item.validator?.imageUrl || '',
             validatorAddress: item.validator?.suiAddress || '',
             validatorName: item.validator?.name || 'unknown',
-            symbol: 'SUI',
-            decimals: 9,
+            symbol: suiAccountAsset?.asset?.symbol || 'SUI',
+            decimals: suiAccountAsset?.asset?.decimals || 9,
             stakedAmount: stakeData.principal,
             earnedAmount: stakeData.estimatedReward,
             startEarningEpoch: stakeData.stakeActiveEpoch,
             objectId: stakeData.stakedSuiId,
+            coinGeckoId: suiAccountAsset?.asset?.coinGeckoId,
           }));
 
         return [...acc, ...aafads];
       }, []),
-    [delegation.stakedObjects],
+    [delegation.stakedObjects, suiAccountAsset?.asset?.coinGeckoId, suiAccountAsset?.asset?.decimals, suiAccountAsset?.asset?.symbol],
   );
 
   const pendingDelegationDetails = useMemo(
@@ -91,17 +98,18 @@ export function useDelegations({ coinId, config }: UseDelegationsProps) {
             validatorImage: item.validator?.imageUrl || '',
             validatorName: item.validator?.name || 'unknown',
             validatorAddress: item.validator?.suiAddress || '',
-            symbol: 'SUI',
-            decimals: 9,
+            symbol: suiAccountAsset?.asset?.symbol || 'SUI',
+            decimals: suiAccountAsset?.asset?.decimals || 9,
             stakedAmount: stakeData.principal,
             earnedAmount: '0',
             startEarningEpoch: stakeData.stakeActiveEpoch,
             objectId: stakeData.stakedSuiId,
+            coinGeckoId: suiAccountAsset?.asset?.coinGeckoId,
           }));
 
         return [...acc, ...aafads];
       }, []),
-    [delegation.stakedObjects],
+    [delegation.stakedObjects, suiAccountAsset?.asset?.coinGeckoId, suiAccountAsset?.asset?.decimals, suiAccountAsset?.asset?.symbol],
   );
 
   const suiCosmostationValidator = useMemo(

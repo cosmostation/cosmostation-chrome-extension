@@ -17,7 +17,7 @@ export default function Layout({ children }: LayoutProps) {
       header={
         <Header
           leftContent={<NavigationPanel />}
-          middleContent={<Base1300Text variant="h4_B">{t('pages.wallet.unstake.$coinId.$validatorAddress.layout.header')}</Base1300Text>}
+          middleContent={<Base1300Text variant="h4_B">{t('pages.wallet.unstake.$coinId.layout.header')}</Base1300Text>}
         />
       }
     >

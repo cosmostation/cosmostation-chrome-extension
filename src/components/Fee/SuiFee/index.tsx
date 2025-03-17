@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
+import Tooltip from '@/components/common/Tooltip';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -13,11 +14,12 @@ import NumberTypo from '../../common/NumberTypo';
 type SuiFeeProps = {
   displayFeeAmount?: string;
   disableConfirm?: boolean;
+  errorMessage?: string;
   isLoading?: boolean;
   onClickConfirm: () => void;
 };
 
-export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: SuiFeeProps) {
+export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, errorMessage, onClickConfirm }: SuiFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { currency } = useExtensionStorageStore((state) => state);
@@ -56,11 +58,13 @@ export default function SuiFee({ displayFeeAmount, disableConfirm, isLoading, on
         </FeeCustomButton>
       </LeftContentContainer>
       <RightContentContainer>
-        {
-          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.SuiFee.index.continue')}
-          </StyledButton>
-        }
+        <Tooltip title={errorMessage} varient="error" placement="top">
+          <div>
+            <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+              {t('components.Fee.SuiFee.index.continue')}
+            </StyledButton>
+          </div>
+        </Tooltip>
       </RightContentContainer>
     </Container>
   );

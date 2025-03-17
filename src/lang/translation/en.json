@@ -46,7 +46,8 @@
             "reward": "Reward",
             "stake": "Stake",
             "claimAll": "Claim All",
-            "compountAll": "Compount All"
+            "compountAll": "Compount All",
+            "unstake": "Unstake"
           }
         },
         "Sui": {
@@ -1455,6 +1456,15 @@
                 "validator": "Validator",
                 "commisson": "Commission"
               }
+            },
+            "UnstakeObjectBottomSheet": {
+              "index": {
+                "title": "Select Validator (Object)",
+                "objectId": "Object ID : {{objectId}}",
+                "staked": "Staked",
+                "earned": "Earned",
+                "totalStaked": "Total Staked"
+              }
             }
           },
           "entry": {
@@ -1470,7 +1480,13 @@
             "stakeReviewSub": "Are you sure you want to proceed with the stake? \nThis action cannot be undone once completed.",
             "commission": "Commission",
             "txProcessing": "Transaction Processing",
-            "txProcessingSub": "Please wait a moment while the transaction is being processed"
+            "txProcessingSub": "Please wait a moment while the transaction is being processed",
+            "insufficientBalance": "Insufficient balance",
+            "tooLowAmount": "Please enter an amount greater than 0",
+            "noValidator": "No validator selected",
+            "noAmount": "Please enter the amount",
+            "failedToDryRun": "Transaction simulation failed",
+            "failedToBuildTransaction": "Failed to build transaction"
           },
           "layout": {
             "header": "Stake"
@@ -1519,14 +1535,42 @@
               },
               "Sui": {
                 "index": {
-                  "inform": "__STRING_NOT_TRANSLATED__",
-                  "informDescription": "__STRING_NOT_TRANSLATED__"
+                  "inform": "Unstake Period",
+                  "informDescription": "Unstaking SUI incurs instantly without a waiting period, and the process cannot be canceled",
+                  "noObject": "No object selected",
+                  "insufficientFee": "Insufficient fee",
+                  "failedToDryRun": "Transaction simulation failed",
+                  "failedToBuildTransaction": "Failed to build transaction",
+                  "unstake": "Unstake",
+                  "stakingCoin": "{{chainName}} Staking Coin",
+                  "unstakeReview": "Confirm Unstake",
+                  "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
+                  "txProcessing": "Transaction Processing",
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
                 }
               }
             },
             "layout": {
               "header": "Unstake"
             }
+          },
+          "entry": {
+            "Sui": {
+              "components": {
+                "UnstakeObjectSelectBox": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "selectValidator": "Select Validator (Object)",
+                    "amountToStake": "Amount to Unstake",
+                    "staked": "Staked",
+                    "earned": "Earned"
+                  }
+                }
+              }
+            }
+          },
+          "layout": {
+            "header": "Unstake"
           }
         }
       },

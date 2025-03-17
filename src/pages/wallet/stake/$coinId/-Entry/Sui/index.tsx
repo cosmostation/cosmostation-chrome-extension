@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
+import { Transaction, type Transaction as TransactionType } from '@mysten/sui/transactions';
+import { isValidSuiAddress, SUI_SYSTEM_STATE_OBJECT_ID } from '@mysten/sui/utils';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -11,16 +15,24 @@ import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-// import Fee from '@/components/Fee';
+import SuiFee from '@/components/Fee/SuiFee';
 import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
+import { DEFAULT_GAS_BUDGET, DEFAULT_GAS_BUDGET_MULTIPLY } from '@/constants/sui/gas';
+import { useDryRunTransaction } from '@/hooks/sui/useDryRunTransaction';
+import { useGetAPY } from '@/hooks/sui/useGetAPY';
+import { useGetLatestSuiSystemState } from '@/hooks/sui/useGetLatestSuiSystemState';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { getKeypair } from '@/libs/address';
+import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal } from '@/utils/string.ts';
+import { ceil, divide, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
+import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import {
@@ -50,23 +62,23 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
+
   const { currency } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { data } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
-  const parsedCoinId = parseCoinId(coinId);
+  const latestSuiSystemState = useGetLatestSuiSystemState({ coinId });
+  const { data: suiAPY } = useGetAPY({ coinId });
 
-  const selectedStakingCoin = (() => {
-    if (!data) return undefined;
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
-    if (parsedCoinId.chainType === 'sui') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
+  const selectedStakingCoin = getSuiAccountAsset();
 
-    // TODO bitcoin...
-    return undefined;
-  })();
+  const currentStakerAddress = selectedStakingCoin?.address.address || '';
 
   const coinImageURL = selectedStakingCoin?.asset.image || '';
 
@@ -81,48 +93,233 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
   const baseAvailableAmount = selectedStakingCoin?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
 
-  console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
+  const [displayStakeAmount, setDisplayStakeAmount] = useState('');
+  const baseStakeAmount = displayStakeAmount ? toBaseDenomAmount(displayStakeAmount, coinDecimal) : '0';
 
-  // FIXME: 밸런스 그대로를 입력할 지 예상 가스비를 제외한 값을 맥스값으로 설정할 지 결정 필요.
-  const maxAmount = '1000000000000';
-
-  const [sendDisplayAmount, setSendDisplayAmount] = useState('');
-
-  const displaySendAmountPrice = sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0';
+  const displaySendAmountPrice = displayStakeAmount ? times(displayStakeAmount, coinPrice) : '0';
 
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
   const [isOpenValidatorBottomSheet, setIsOpenValidatorBottomSheet] = useState(false);
 
-  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState(validatorAddress || '');
+  const [currentValidatorAddress, setCurrentValidatorAddress] = useState(validatorAddress || '');
 
-  const testValidator = [
-    {
-      validatorName: 'testValidator1',
-      validatorAddress: 'testValidatorAddress1',
-      votingPower: '23895865',
-      commission: '5',
-      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
-    },
-    {
-      validatorName: 'testValidator2',
-      validatorAddress: 'testValidatorAddress2',
-      votingPower: '23895865',
-      commission: '5',
-      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
-    },
-    {
-      validatorName: 'testValidator3',
-      validatorAddress: 'testValidatorAddress3',
-      votingPower: '23895865',
-      commission: '5',
-      validatorImage: 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/dydx/moniker/dydxvaloper1hv2jdxyfdkfk4vja52dj0p80mk85nmuaklx55e.png',
-    },
-  ];
+  const availableValidators = useMemo(() => {
+    return latestSuiSystemState.data?.result?.activeValidators
+      .map((validator) => {
+        const commission = divide(validator.commissionRate, 100);
+        const votingPower = ceil(toDisplayDenomAmount(validator.stakingPoolSuiBalance, selectedStakingCoin?.asset.decimals || 0));
+        const apr = toPercentages(String(suiAPY?.result?.apys.find((item) => isEqualsIgnoringCase(item.address, validator.suiAddress))?.apy || 0), {
+          fixed: 2,
+          disableMark: true,
+        });
 
-  const currentValidator = testValidator.find((validator) => validator.validatorAddress === currentValidaotrAddress);
-  const apr = 14.92;
+        return {
+          validatorName: validator.name,
+          validatorAddress: validator.suiAddress,
+          votingPower: votingPower,
+          commission: commission,
+          validatorImage: validator.imageUrl,
+          apr,
+        };
+      })
+      .sort((a, b) => (gt(a.votingPower, b.votingPower) ? -1 : 1))
+      .sort((a) => (a.validatorName.toLocaleLowerCase().includes('cosmostation') ? -1 : 1));
+  }, [latestSuiSystemState.data?.result?.activeValidators, selectedStakingCoin?.asset.decimals, suiAPY?.result?.apys]);
 
-  const estimatedMonthlyReward = '1';
+  const currentValidator = useMemo(
+    () => availableValidators?.find((validator) => isEqualsIgnoringCase(validator.validatorAddress, currentValidatorAddress)),
+    [availableValidators, currentValidatorAddress],
+  );
+
+  const stakeTx = useMemo<TransactionType | undefined>(() => {
+    if (!gt(baseStakeAmount, '0') || !currentValidator || !isValidSuiAddress(currentValidatorAddress) || !currentStakerAddress) {
+      return undefined;
+    }
+    const tx = new Transaction();
+    tx.setSenderIfNotSet(currentStakerAddress);
+
+    const stakeCoin = tx.splitCoins(tx.gas, [BigInt(baseStakeAmount)]);
+    tx.moveCall({
+      target: '0x3::sui_system::request_add_stake',
+      arguments: [
+        tx.sharedObjectRef({
+          objectId: SUI_SYSTEM_STATE_OBJECT_ID,
+          initialSharedVersion: 1,
+          mutable: true,
+        }),
+        stakeCoin,
+        tx.pure.address(currentValidatorAddress),
+      ],
+    });
+
+    return tx;
+  }, [baseStakeAmount, currentStakerAddress, currentValidator, currentValidatorAddress]);
+
+  const [debouncedTx] = useDebounce(stakeTx, 500);
+
+  const {
+    data: dryRunTransaction,
+    error: dryRunTransactionError,
+    isLoading: isDryRunTransactionLoading,
+    isFetching: isDryRunTransactionFetching,
+  } = useDryRunTransaction({
+    coinId,
+    transaction: debouncedTx,
+  });
+
+  const expectedBaseFeeAmount = (() => {
+    if (dryRunTransaction?.result?.effects.status.status === 'success') {
+      const storageCost = minus(dryRunTransaction.result.effects.gasUsed.storageCost, dryRunTransaction.result.effects.gasUsed.storageRebate);
+
+      const cost = plus(dryRunTransaction.result.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
+
+      const baseBudget = Number(times(cost, DEFAULT_GAS_BUDGET_MULTIPLY));
+
+      return baseBudget;
+    }
+
+    return DEFAULT_GAS_BUDGET;
+  })();
+
+  const displayExpectedBaseFeeAmount = toDisplayDenomAmount(expectedBaseFeeAmount, coinDecimal);
+
+  const displayEstimatedMonthlyReward = useMemo(() => {
+    if (!currentValidator?.apr || !displayStakeAmount || !currentValidator) return undefined;
+    const aprRate = times(currentValidator.apr, '0.01');
+    const commisionRate = times(currentValidator.commission, '0.01');
+
+    const realAprAfterCommission = times(aprRate, minus(1, commisionRate));
+
+    const annualReward = times(displayStakeAmount, realAprAfterCommission);
+
+    const monthlyReward = divide(annualReward, 12);
+
+    return monthlyReward;
+  }, [currentValidator, displayStakeAmount]);
+
+  const stakeAmountInputErrorMessage = (() => {
+    if (displayStakeAmount) {
+      const totalCostAmount = plus(displayStakeAmount, displayExpectedBaseFeeAmount);
+
+      if (gt(totalCostAmount, displayAvailableAmount)) {
+        return t('pages.wallet.stake.$coinId.entry.insufficientBalance');
+      }
+
+      if (!gt(displayStakeAmount, '0')) {
+        return t('pages.wallet.stake.$coinId.entry.tooLowAmount');
+      }
+    }
+
+    return '';
+  })();
+
+  const errorMessage = useMemo(() => {
+    if (!currentValidator) {
+      return t('pages.wallet.stake.$coinId.entry.noValidator');
+    }
+
+    if (!displayStakeAmount) {
+      return t('pages.wallet.stake.$coinId.entry.noAmount');
+    }
+
+    if (stakeAmountInputErrorMessage) {
+      return stakeAmountInputErrorMessage;
+    }
+
+    if (dryRunTransactionError?.message) {
+      const idx = dryRunTransactionError.message.lastIndexOf(':');
+
+      return dryRunTransactionError.message.substring(idx === -1 ? 0 : idx + 1).trim();
+    }
+
+    if (dryRunTransaction?.result?.effects.status.error) {
+      return dryRunTransaction?.result?.effects.status.error;
+    }
+
+    if (dryRunTransaction?.result?.effects.status.status !== 'success') {
+      return t('pages.wallet.stake.$coinId.entry.failedToDryRun');
+    }
+
+    if (!debouncedTx) {
+      return t('pages.wallet.stake.$coinId.entry.failedToBuildTransaction');
+    }
+
+    return '';
+  }, [
+    currentValidator,
+    debouncedTx,
+    displayStakeAmount,
+    dryRunTransaction?.result?.effects.status.error,
+    dryRunTransaction?.result?.effects.status.status,
+    dryRunTransactionError?.message,
+    stakeAmountInputErrorMessage,
+    t,
+  ]);
+
+  const handleOnClickMax = () => {
+    const maxAmount = minus(displayAvailableAmount, displayExpectedBaseFeeAmount);
+
+    setDisplayStakeAmount(gt(maxAmount, '0') ? maxAmount : '0');
+  };
+
+  const handleOnClickConfirm = async () => {
+    try {
+      setIsOpenTxProcessingOverlay(true);
+
+      if (!selectedStakingCoin?.chain) {
+        throw new Error('Chain not found');
+      }
+
+      if (!debouncedTx) {
+        throw new Error('Transaction not found');
+      }
+
+      const keyPair = getKeypair(selectedStakingCoin.chain, currentAccount, currentPassword);
+      const privateKey = Buffer.from(keyPair.privateKey, 'hex');
+
+      const signer = Ed25519Keypair.fromSecretKey(privateKey);
+      const rpcURLs = selectedStakingCoin?.chain.rpcUrls.map((item) => item.url) || [];
+
+      if (!rpcURLs.length) {
+        throw new Error('RPC URLs not found');
+      }
+
+      const response = await signAndExecuteTxSequentially(signer, debouncedTx, rpcURLs);
+      if (!response) {
+        throw new Error('Failed to send transaction');
+      }
+
+      navigate({
+        to: TxResult.to,
+        search: {
+          coinId,
+          txHash: response.digest,
+        },
+      });
+    } catch {
+      navigate({
+        to: TxResult.to,
+        search: {
+          coinId,
+        },
+      });
+    } finally {
+      setIsOpenTxProcessingOverlay(false);
+    }
+  };
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
+  useEffect(() => {
+    setIsDisabled(true);
+
+    debouncedEnabled();
+  }, [debouncedEnabled, stakeTx, isDryRunTransactionLoading, isDryRunTransactionFetching]);
+
   return (
     <>
       <BaseBody>
@@ -141,8 +338,8 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
 
           <InputWrapper>
             <ValidatorSelectBox
-              validatorList={testValidator}
-              currentValidatorAddress={currentValidaotrAddress}
+              validatorList={availableValidators || []}
+              currentValidatorAddress={currentValidatorAddress}
               onClickItem={() => {
                 setIsOpenValidatorBottomSheet(true);
               }}
@@ -168,15 +365,15 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
 
             <StandardInput
               label={t('pages.wallet.stake.$coinId.entry.stakingAmount')}
-              // error={!!errors.password}
-              // helperText={errors.password?.message}
-              value={sendDisplayAmount}
+              error={!!stakeAmountInputErrorMessage}
+              helperText={stakeAmountInputErrorMessage}
+              value={displayStakeAmount}
               onChange={(e) => {
                 if (!isDecimal(e.currentTarget.value, coinDecimal || 0) && e.currentTarget.value) {
                   return;
                 }
 
-                setSendDisplayAmount(e.currentTarget.value);
+                setDisplayStakeAmount(e.currentTarget.value);
               }}
               slotProps={{
                 input: {
@@ -192,15 +389,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
                 },
               }}
               rightBottomAdornment={
-                selectedStakingCoin && (
-                  <BalanceButton
-                    onClick={() => {
-                      setSendDisplayAmount(maxAmount);
-                    }}
-                    coin={selectedStakingCoin?.asset}
-                    balance={baseAvailableAmount}
-                  />
-                )
+                selectedStakingCoin && <BalanceButton onClick={handleOnClickMax} coin={selectedStakingCoin?.asset} balance={baseAvailableAmount} />
               }
             />
           </InputWrapper>
@@ -219,7 +408,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
                 &nbsp;
                 <APRText variant="b4_R_Multiline">
                   {t('pages.wallet.stake.$coinId.entry.inform2', {
-                    apr: apr.toFixed(2),
+                    apr: currentValidator?.apr,
                   })}
                 </APRText>
               </Typography>
@@ -233,7 +422,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
               </EstimatedRewardCoin>
               <EstimatedRewardAmountContainer>
                 <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={coinDecimal}>
-                  {estimatedMonthlyReward}
+                  {displayEstimatedMonthlyReward}
                 </NumberTypo>
               </EstimatedRewardAmountContainer>
             </EstimatedReward>
@@ -241,11 +430,15 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          {/* <Fee
+          <SuiFee
+            displayFeeAmount={displayExpectedBaseFeeAmount}
+            disableConfirm={!!errorMessage || isDisabled}
+            isLoading={isDisabled}
+            errorMessage={errorMessage}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
-          /> */}
+          />
         </>
       </BaseFooter>
       <ReviewBottomSheet
@@ -254,28 +447,21 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
         contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}
         contentsSubTitle={t('pages.wallet.stake.$coinId.entry.stakeReviewSub')}
         confirmButtonText={t('pages.wallet.stake.$coinId.entry.stake')}
-        onClickCancel={() => {
-          console.log('onClickCancel');
-        }}
-        onClickConfirm={() => {
-          navigate({
-            to: TxResult.to,
-            search: {
-              address: '',
-              coinId,
-              txHash: 'BE8D07E79F4F74C64C2F672621FF05A6CA13F3541AFAD36F8C7037D28B2C05C4',
-            },
-          });
-        }}
+        onClickConfirm={handleOnClickConfirm}
       />
       <ValidatorBottomSheet
-        validatorList={testValidator}
+        validatorList={availableValidators}
         open={isOpenValidatorBottomSheet}
         onClose={() => setIsOpenValidatorBottomSheet(false)}
-        currentValidatorId={currentValidaotrAddress}
+        currentValidatorId={currentValidatorAddress}
         onClickItem={(validatorAddress) => {
-          setCurrentValidaotrAddress(validatorAddress);
+          setCurrentValidatorAddress(validatorAddress);
         }}
+      />
+      <TxProcessingOverlay
+        open={isOpenTxProcessingOverlay}
+        title={t('pages.wallet.stake.$coinId.entry.txProcessing')}
+        message={t('pages.wallet.stake.$coinId.entry.txProcessingSub')}
       />
     </>
   );

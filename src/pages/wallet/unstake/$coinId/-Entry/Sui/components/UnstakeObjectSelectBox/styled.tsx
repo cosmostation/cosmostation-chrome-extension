@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 
 export const StyledButton = styled('button')(({ theme }) => ({
   width: '100%',
-  border: 0,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -12,10 +11,11 @@ export const StyledButton = styled('button')(({ theme }) => ({
   backgroundColor: theme.palette.color.base100,
 
   borderRadius: '0.8rem',
+  padding: '0',
 
   cursor: 'pointer',
 
-  padding: '1.2rem',
+  border: `0.1rem solid ${theme.palette.color.base200}`,
 
   '&:hover': {
     backgroundColor: theme.palette.color.base200,
@@ -27,11 +27,13 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
 export const TopContainer = styled('div')(({ theme }) => ({
   width: '100%',
+  height: '5.8rem',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  paddingBottom: '1.2rem',
-  borderBottom: `0.2rem solid ${theme.palette.color.base300}`,
+  padding: '1.2rem',
+  borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+  boxSizing: 'border-box',
 }));
 
 export const TopLeftContentsContainer = styled('div')({
@@ -45,6 +47,23 @@ export const TopLeftContainer = styled('div')({
   alignItems: 'flex-start',
   marginLeft: '1rem',
   rowGap: '0.2rem',
+});
+
+type ChevronIconContainer = {
+  'data-is-open': boolean;
+};
+
+export const ChevronIconContainer = styled('div')<ChevronIconContainer>(({ ...props }) => {
+  return {
+    width: '1.2rem',
+    height: '1.2rem',
+    transform: props['data-is-open'] ? 'rotate(180deg)' : 'rotate(0deg)',
+
+    '& svg': {
+      width: '100%',
+      height: '100%',
+    },
+  };
 });
 
 export const ValidatorNameContainer = styled('div')({
@@ -70,13 +89,15 @@ export const CommissionContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const StakingInfoContainer = styled('div')({
+export const StakingInfoContainer = styled('div')(({ theme }) => ({
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
   rowGap: '0.8rem',
-  marginTop: '1.2rem',
-});
+  backgroundColor: theme.palette.color.base50,
+  padding: '1.2rem',
+  boxSizing: 'border-box',
+}));
 
 export const StakingInfoTitleRowContainer = styled('div')({
   display: 'flex',

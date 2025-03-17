@@ -22,5 +22,8 @@ export const StyledIconButton = styled('button')<StyledIconButtonProps>(({ ...pr
 
   '&:hover': {
     opacity: 0.7,
+    '&:disabled': {
+      opacity: 1,
+    },
   },
 }));

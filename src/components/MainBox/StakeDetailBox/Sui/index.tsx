@@ -8,7 +8,7 @@ import NumberTypo from '@/components/common/NumberTypo';
 import { useDelegations } from '@/hooks/sui/useDelegations';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
-import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
+import { Route as Unstake } from '@/pages/wallet/unstake/$coinId';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
@@ -39,7 +39,7 @@ export default function Sui({ coinId }: SuiProps) {
   const navigate = useNavigate();
 
   const { data } = useAccountAssets();
-  const { delegation, suiCosmostationValidator } = useDelegations({ coinId });
+  const { delegation, suiCosmostationValidator, activeDelegationDetails } = useDelegations({ coinId });
 
   const currentCoin = data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
 
@@ -122,9 +122,10 @@ export default function Sui({ coinId }: SuiProps) {
               onClick={() => {
                 navigate({
                   to: Unstake.to,
-                  params: { coinId: coinId, validatorAddress: '' },
+                  params: { coinId: coinId },
                 });
               }}
+              disabled={!activeDelegationDetails || activeDelegationDetails.length === 0}
               leadingIcon={<UnstakeIcon />}
               direction="vertical"
             >

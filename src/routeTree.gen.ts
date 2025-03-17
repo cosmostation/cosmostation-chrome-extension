@@ -38,6 +38,7 @@ import { Route as CoinDetailCoinIdIndexImport } from './pages/coin-detail/$coinI
 import { Route as AccountSetPasswordIndexImport } from './pages/account/set-password/index'
 import { Route as AccountInitialIndexImport } from './pages/account/initial/index'
 import { Route as AccountAddWalletIndexImport } from './pages/account/add-wallet/index'
+import { Route as WalletUnstakeCoinIdIndexImport } from './pages/wallet/unstake/$coinId/index'
 import { Route as WalletSwapCoinIdIndexImport } from './pages/wallet/swap/$coinId/index'
 import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coinId/index'
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
@@ -259,6 +260,12 @@ const AccountInitialIndexRoute = AccountInitialIndexImport.update({
 const AccountAddWalletIndexRoute = AccountAddWalletIndexImport.update({
   id: '/account/add-wallet/',
   path: '/account/add-wallet/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WalletUnstakeCoinIdIndexRoute = WalletUnstakeCoinIdIndexImport.update({
+  id: '/wallet/unstake/$coinId/',
+  path: '/wallet/unstake/$coinId/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -1026,6 +1033,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletSwapCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/unstake/$coinId/': {
+      id: '/wallet/unstake/$coinId/'
+      path: '/wallet/unstake/$coinId'
+      fullPath: '/wallet/unstake/$coinId'
+      preLoaderRoute: typeof WalletUnstakeCoinIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/general-setting/address-book/edit-address/$id/': {
       id: '/general-setting/address-book/edit-address/$id/'
       path: '/general-setting/address-book/edit-address/$id'
@@ -1224,6 +1238,7 @@ export interface FileRoutesByFullPath {
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId': typeof WalletSwapCoinIdIndexRoute
+  '/wallet/unstake/$coinId': typeof WalletUnstakeCoinIdIndexRoute
   '/general-setting/address-book/edit-address/$id': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   '/general-setting/manage-custom-network/edit/$id': typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
@@ -1305,6 +1320,7 @@ export interface FileRoutesByTo {
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId': typeof WalletSwapCoinIdIndexRoute
+  '/wallet/unstake/$coinId': typeof WalletUnstakeCoinIdIndexRoute
   '/general-setting/address-book/edit-address/$id': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   '/general-setting/manage-custom-network/edit/$id': typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
@@ -1387,6 +1403,7 @@ export interface FileRoutesById {
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
   '/wallet/swap/$coinId/': typeof WalletSwapCoinIdIndexRoute
+  '/wallet/unstake/$coinId/': typeof WalletUnstakeCoinIdIndexRoute
   '/general-setting/address-book/edit-address/$id/': typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   '/general-setting/manage-custom-network/edit/$id/': typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   '/manage-account/backup-wallet/step1/$accountId/': typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
@@ -1470,6 +1487,7 @@ export interface FileRouteTypes {
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
     | '/wallet/swap/$coinId'
+    | '/wallet/unstake/$coinId'
     | '/general-setting/address-book/edit-address/$id'
     | '/general-setting/manage-custom-network/edit/$id'
     | '/manage-account/backup-wallet/step1/$accountId'
@@ -1550,6 +1568,7 @@ export interface FileRouteTypes {
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
     | '/wallet/swap/$coinId'
+    | '/wallet/unstake/$coinId'
     | '/general-setting/address-book/edit-address/$id'
     | '/general-setting/manage-custom-network/edit/$id'
     | '/manage-account/backup-wallet/step1/$accountId'
@@ -1630,6 +1649,7 @@ export interface FileRouteTypes {
     | '/wallet/send/$coinId/'
     | '/wallet/stake/$coinId/'
     | '/wallet/swap/$coinId/'
+    | '/wallet/unstake/$coinId/'
     | '/general-setting/address-book/edit-address/$id/'
     | '/general-setting/manage-custom-network/edit/$id/'
     | '/manage-account/backup-wallet/step1/$accountId/'
@@ -1712,6 +1732,7 @@ export interface RootRouteChildren {
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
   WalletSwapCoinIdIndexRoute: typeof WalletSwapCoinIdIndexRoute
+  WalletUnstakeCoinIdIndexRoute: typeof WalletUnstakeCoinIdIndexRoute
   GeneralSettingAddressBookEditAddressIdIndexRoute: typeof GeneralSettingAddressBookEditAddressIdIndexRoute
   GeneralSettingManageCustomNetworkEditIdIndexRoute: typeof GeneralSettingManageCustomNetworkEditIdIndexRoute
   ManageAccountBackupWalletStep1AccountIdIndexRoute: typeof ManageAccountBackupWalletStep1AccountIdIndexRoute
@@ -1803,6 +1824,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
   WalletStakeCoinIdIndexRoute: WalletStakeCoinIdIndexRoute,
   WalletSwapCoinIdIndexRoute: WalletSwapCoinIdIndexRoute,
+  WalletUnstakeCoinIdIndexRoute: WalletUnstakeCoinIdIndexRoute,
   GeneralSettingAddressBookEditAddressIdIndexRoute:
     GeneralSettingAddressBookEditAddressIdIndexRoute,
   GeneralSettingManageCustomNetworkEditIdIndexRoute:
@@ -1906,6 +1928,7 @@ export const routeTree = rootRoute
         "/wallet/send/$coinId/",
         "/wallet/stake/$coinId/",
         "/wallet/swap/$coinId/",
+        "/wallet/unstake/$coinId/",
         "/general-setting/address-book/edit-address/$id/",
         "/general-setting/manage-custom-network/edit/$id/",
         "/manage-account/backup-wallet/step1/$accountId/",
@@ -2103,6 +2126,9 @@ export const routeTree = rootRoute
     },
     "/wallet/swap/$coinId/": {
       "filePath": "wallet/swap/$coinId/index.tsx"
+    },
+    "/wallet/unstake/$coinId/": {
+      "filePath": "wallet/unstake/$coinId/index.tsx"
     },
     "/general-setting/address-book/edit-address/$id/": {
       "filePath": "general-setting/address-book/edit-address/$id/index.tsx"

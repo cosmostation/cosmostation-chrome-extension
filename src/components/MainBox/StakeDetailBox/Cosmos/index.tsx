@@ -5,16 +5,20 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
 import { useAmount } from '@/hooks/cosmos/useAmount';
+import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useReward } from '@/hooks/cosmos/useReward';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ClaimAllRewards } from '@/pages/wallet/claim-all-rewards/$coinId';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId';
+import { Route as UnStake } from '@/pages/wallet/unstake/$coinId';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 
 import { AmountContainer, BodyContainer, BodyContentsContainer, BottomButtonContainer, SpacedTypography, StyledIconTextButton, TopContainer } from './styled';
 import MainBox from '../..';
 
+import ClaimRewardIcon from '@/assets/images/icons/ClaimReward22.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
+import UnstakeIcon from '@/assets/images/icons/Unstake22.svg';
 
 import stakemanageBg from '@/assets/images/stakeManageBg.png';
 
@@ -28,6 +32,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
   const currentCoin = getCosmosAccountAsset();
+
+  const { delegationInfo } = useDelegationInfo({ coinId });
 
   const { rewardAmount } = useAmount(coinId);
   const reward = useReward({ coinId });
@@ -94,11 +100,26 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <StyledIconTextButton
               onClick={() => {
                 navigate({
+                  to: UnStake.to,
+                  params: {
+                    coinId: coinId,
+                  },
+                });
+              }}
+              disabled={!delegationInfo || delegationInfo.length === 0}
+              leadingIcon={<UnstakeIcon />}
+              direction="vertical"
+            >
+              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.unstake')}</SpacedTypography>
+            </StyledIconTextButton>
+            <StyledIconTextButton
+              onClick={() => {
+                navigate({
                   to: ClaimAllRewards.to,
                   params: { coinId: coinId },
                 });
               }}
-              leadingIcon={<StakeIcon />}
+              leadingIcon={<ClaimRewardIcon />}
               direction="vertical"
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.claimAll')}</SpacedTypography>

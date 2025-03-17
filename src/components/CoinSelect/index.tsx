@@ -8,6 +8,7 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
@@ -56,6 +57,9 @@ export default function CoinSelect({
     disableDupeEthermint: isDisableDupeEthermint,
   });
 
+  const suiCoinId = useMemo(() => (data?.suiAccountAssets[0]?.asset.id ? getCoinId(data.suiAccountAssets[0].asset) : ''), [data?.suiAccountAssets]);
+  const { averageAPY } = useGetAverageAPY({ coinId: suiCoinId });
+
   const { scrollToTop } = useScroll();
 
   const [search, setSearch] = useState('');
@@ -97,7 +101,6 @@ export default function CoinSelect({
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
-  // FIXME apr가져오는 비즈니스 로직 필요.
   const computedAssetValues = useMemo(() => {
     return (
       baseCoinList?.map((item) => {
@@ -107,13 +110,21 @@ export default function CoinSelect({
 
         const value = times(displayAmount, chainPrice);
 
-        // FIXME 비즈니스 로직 처리 필요. 10 부터 30까지의 랜덤값으로 처리함.
-        const apr =
-          variant === 'stake' && item.chain.chainType === 'cosmos' && item.chain.apr
-            ? toPercentages(item.chain.apr, {
+        const apr = (() => {
+          if (variant === 'stake') {
+            if (item.chain.chainType === 'cosmos' && item.chain.apr) {
+              return toPercentages(item.chain.apr, {
                 disableMark: true,
-              })
-            : undefined;
+              });
+            }
+
+            if (item.chain.chainType === 'sui') {
+              return averageAPY;
+            }
+          }
+
+          return undefined;
+        })();
 
         return {
           ...item,
@@ -122,7 +133,7 @@ export default function CoinSelect({
         };
       }) || []
     );
-  }, [baseCoinList, coinGeckoPrice, currency, variant]);
+  }, [averageAPY, baseCoinList, coinGeckoPrice, currency, variant]);
 
   const sortedAssets = useMemo(() => {
     const sortedValues = [...computedAssetValues].sort((a, b) => {
