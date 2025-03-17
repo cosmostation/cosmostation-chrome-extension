@@ -36,17 +36,34 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
   position: 'relative',
   zIndex: '1',
 
-  '&::before': {
-    width: '100%',
-    height: '100%',
-    content: '""',
-    background: `url(${props['backgroundImage']}) no-repeat calc(100% + 1rem) calc(50% + 2rem)/ 55% auto`,
-    position: 'absolute',
+  '&.basic': {
+    '&::before': {
+      width: '100%',
+      height: '100%',
+      content: '""',
+      background: `url(${props['backgroundImage']}) no-repeat calc(100% + 1rem) calc(50% + 2rem)/ 55% auto`,
+      position: 'absolute',
 
-    top: '0',
-    left: '0',
-    opacity: '0.1',
-    zIndex: '-1',
+      top: '0',
+      left: '0',
+      opacity: '0.1',
+      zIndex: '-1',
+    },
+  },
+
+  '&.stake': {
+    '&::before': {
+      width: '100%',
+      height: '100%',
+      content: '""',
+      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(100% + 2rem)/ auto auto`,
+      position: 'absolute',
+
+      top: '0',
+      left: '0',
+      opacity: '0.1',
+      zIndex: '-1',
+    },
   },
 }));
 

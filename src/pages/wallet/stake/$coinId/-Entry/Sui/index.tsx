@@ -155,7 +155,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
     return tx;
   }, [baseStakeAmount, currentStakerAddress, currentValidator, currentValidatorAddress]);
 
-  const [debouncedTx] = useDebounce(stakeTx, 500);
+  const [debouncedTx] = useDebounce(stakeTx, 300);
 
   const {
     data: dryRunTransaction,

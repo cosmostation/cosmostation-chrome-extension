@@ -30,6 +30,8 @@ import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 import UnstakeIcon from '@/assets/images/icons/Unstake22.svg';
 
+import stakemanageBg from '@/assets/images/stakeManageBg.png';
+
 type SuiProps = {
   coinId: string;
 };
@@ -134,7 +136,8 @@ export default function Sui({ coinId }: SuiProps) {
           </BottomButtonContainer>
         }
         className="circleGradient"
-        coinBackgroundImage={'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/sui/asset/sui.png'}
+        bgImageClassName="stake"
+        coinBackgroundImage={stakemanageBg}
       />
     </>
   );

@@ -87,7 +87,7 @@ export default function Sui({ coinId, objectId }: SuiProps) {
     return tx;
   }, [currentStakerAddress, currentUnstakeObjectId]);
 
-  const [debouncedTx] = useDebounce(unstakeTx, 500);
+  const [debouncedTx] = useDebounce(unstakeTx, 200);
 
   const {
     data: dryRunTransaction,

@@ -130,6 +130,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
           </BottomButtonContainer>
         }
         className="circleGradient"
+        bgImageClassName="stake"
         coinBackgroundImage={stakemanageBg}
       />
     </>

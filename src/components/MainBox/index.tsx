@@ -5,14 +5,15 @@ type MainBoxProps = {
   body: JSX.Element;
   bottom?: JSX.Element;
   className?: string;
+  bgImageClassName?: 'basic' | 'stake';
   backgroundImage?: string;
   coinBackgroundImage?: string;
 };
 
-export default function MainBox({ top, body, bottom, className, backgroundImage, coinBackgroundImage }: MainBoxProps) {
+export default function MainBox({ top, body, bottom, className, bgImageClassName = 'basic', backgroundImage, coinBackgroundImage }: MainBoxProps) {
   return (
     <Container className={className} backgroundImage={backgroundImage}>
-      <CoinBackgroundImage backgroundImage={coinBackgroundImage}>
+      <CoinBackgroundImage className={bgImageClassName} backgroundImage={coinBackgroundImage}>
         {coinBackgroundImage && <BlurEffectLayer />}
         <ContentsContainer data-is-bottom={!!bottom}>
           <TopContainer>{top}</TopContainer>
