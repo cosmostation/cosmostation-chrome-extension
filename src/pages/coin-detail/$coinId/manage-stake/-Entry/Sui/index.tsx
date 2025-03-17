@@ -72,6 +72,7 @@ export default function Sui({ coinId }: SuiProps) {
                       stakingCoinId={coinId}
                       validatorImage={item.validatorImage}
                       validatorName={item.validatorName}
+                      validatorAddress={item.validatorAddress}
                       symbol={item.symbol}
                       decimals={item.decimals}
                       stakedAmount={item.stakedAmount}

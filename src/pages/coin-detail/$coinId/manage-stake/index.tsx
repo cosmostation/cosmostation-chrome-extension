@@ -11,7 +11,7 @@ function ManageStake() {
   const params = Route.useParams();
 
   return (
-    <Layout>
+    <Layout coinId={params.coinId}>
       <Entry coinId={params.coinId} />
     </Layout>
   );

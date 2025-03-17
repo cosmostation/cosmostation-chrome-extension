@@ -8,14 +8,15 @@ import { useGetStakes } from './useGetStakes';
 import { type UseFetchConfig } from '../common/useFetch';
 
 export type SuiDelegationData = {
-  validatorImage: string;
   validatorName: string;
+  validatorAddress: string;
   symbol: string;
   decimals: number;
   stakedAmount: string;
   earnedAmount: string;
   startEarningEpoch: string;
   objectId: string;
+  validatorImage?: string;
 };
 
 type UseDelegationsProps = {
@@ -66,6 +67,7 @@ export function useDelegations({ coinId, config }: UseDelegationsProps) {
           .filter((item) => item.status === 'Active')
           .map((stakeData) => ({
             validatorImage: item.validator?.imageUrl || '',
+            validatorAddress: item.validator?.suiAddress || '',
             validatorName: item.validator?.name || 'unknown',
             symbol: 'SUI',
             decimals: 9,
@@ -88,6 +90,7 @@ export function useDelegations({ coinId, config }: UseDelegationsProps) {
           .map((stakeData) => ({
             validatorImage: item.validator?.imageUrl || '',
             validatorName: item.validator?.name || 'unknown',
+            validatorAddress: item.validator?.suiAddress || '',
             symbol: 'SUI',
             decimals: 9,
             stakedAmount: stakeData.principal,

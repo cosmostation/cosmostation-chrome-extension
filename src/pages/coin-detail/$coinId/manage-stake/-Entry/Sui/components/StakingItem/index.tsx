@@ -38,6 +38,7 @@ import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   stakingCoinId: string;
   validatorName: string;
+  validatorAddress: string;
   objectId: string;
   symbol: string;
   decimals: number;
@@ -50,6 +51,7 @@ type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLB
 export default function StakingItem({
   stakingCoinId,
   validatorName,
+  validatorAddress,
   objectId,
   symbol,
   decimals,
@@ -161,7 +163,7 @@ export default function StakingItem({
               to: Stake.to,
               params: {
                 coinId: stakingCoinId,
-                validatorAddress: objectId,
+                validatorAddress: validatorAddress,
               },
             });
             setIsOpenStakingOptionBottomSheet(false);
@@ -179,7 +181,7 @@ export default function StakingItem({
               to: Unstake.to,
               params: {
                 coinId: stakingCoinId,
-                validatorAddress: objectId,
+                validatorAddress: validatorAddress,
               },
             });
             setIsOpenStakingOptionBottomSheet(false);
@@ -197,7 +199,7 @@ export default function StakingItem({
               to: ClaimRewards.to,
               params: {
                 coinId: stakingCoinId,
-                validatorAddress: objectId,
+                validatorAddress: validatorAddress,
               },
             });
             setIsOpenStakingOptionBottomSheet(false);

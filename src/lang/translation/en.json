@@ -952,7 +952,7 @@
                 }
               },
               "index": {
-                "emptyPending": "No Unstaking",
+                "emptyPending": "No Pending",
                 "emptyPendingDescription": "There are no pending objects.",
                 "startStaking": "Start Staking with COSMOSTATION",
                 "startStakingDescription": "Start earning staking rewards and\ncontribute to the network ecosystem",
@@ -966,6 +966,27 @@
                 "goToStake": "Go to Stake",
                 "emptyStaking": "No Unstaking",
                 "emptyStakingDescription": "Currently have no unstaking transactions."
+              }
+            }
+          },
+          "components": {
+            "SuiStakingInfoBottomSheet": {
+              "index": {
+                "header": "SUI Staking Info",
+                "title1": "Epoch Creation",
+                "subtitle1": "Epochs are created every 24 hours. ",
+                "title2": "Pending State",
+                "subtitle2-1": "If you have started staking, it will remain in a ‘pending’ state until the current",
+                "epoch": "epoch(#{{epoch}})",
+                "subtitle2-2": "ends.",
+                "title3": "Reward Distribution",
+                "subtitle3-1": "At the end of the next",
+                "subtitle3-2": ", rewards will be distributed, Each subsequent epoch will be repeated.",
+                "title4": "Compounded Rewards",
+                "subtitle4": "Rewards are compounded and can be used immediately after the start of unstaking.  ",
+                "available": "Available",
+                "estApr": "Est, APR",
+                "goToSuiStake": "Go to SUI Stake"
               }
             }
           }
