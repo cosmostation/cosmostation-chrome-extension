@@ -33,6 +33,7 @@ import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
+import { getDayFromSeconds } from '@/utils/date';
 import { ceil, gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
@@ -284,8 +285,13 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const currentGas = selectedFeeOption.gas || '0';
 
-  // FIXME 비즈니스 로직 추가 필요
-  const lockUpPeriod = '21';
+  const lockUpPeriod = useMemo(
+    () =>
+      selectedUnstakingCoin?.chain.isSupportStaking && selectedUnstakingCoin.chain.stakingParams?.unbonding_time
+        ? getDayFromSeconds(selectedUnstakingCoin.chain.stakingParams.unbonding_time)
+        : '-',
+    [selectedUnstakingCoin?.chain.isSupportStaking, selectedUnstakingCoin?.chain.stakingParams?.unbonding_time],
+  );
 
   const unstakeAmountInputErrorMessage = useMemo(() => {
     if (displayUnstakeAmount) {

@@ -8,12 +8,12 @@ export type V11Param = {
     };
     staking_params: {
       params: {
-        unbonding_time: string;
-        max_validators: number;
-        max_entries: number;
-        historical_entries: number;
-        bond_denom: string;
-        min_commission_rate: string;
+        unbonding_time?: string;
+        max_validators?: number;
+        max_entries?: number;
+        historical_entries?: number;
+        bond_denom?: string;
+        min_commission_rate?: string;
       };
     };
     slashing_params: {

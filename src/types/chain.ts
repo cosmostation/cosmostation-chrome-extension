@@ -62,6 +62,14 @@ export interface CosmosChain extends ChainBase {
   isSupportHistory?: boolean;
   isDiableSend?: boolean;
   apr?: string;
+  stakingParams?: {
+    unbonding_time?: string;
+    max_validators?: number;
+    max_entries?: number;
+    historical_entries?: number;
+    bond_denom?: string;
+    min_commission_rate?: string;
+  };
 }
 
 export interface CustomCosmosChain extends ChainBase {
@@ -79,6 +87,14 @@ export interface CustomCosmosChain extends ChainBase {
   isSupportHistory?: boolean;
   isDiableSend?: boolean;
   apr?: string;
+  stakingParams?: {
+    unbonding_time?: string;
+    max_validators?: number;
+    max_entries?: number;
+    historical_entries?: number;
+    bond_denom?: string;
+    min_commission_rate?: string;
+  };
 }
 
 export interface EvmFeeInfo {

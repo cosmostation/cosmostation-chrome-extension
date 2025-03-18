@@ -1,3 +1,5 @@
+import { divide, fix, times } from './numbers';
+
 export function isUnixTimestamp(dateString: string) {
   return /^\d{10,16}$/.test(dateString) && !isNaN(Number(dateString));
 }
@@ -156,4 +158,11 @@ export function isDateAfter(date1: string, date2: string): boolean {
 
 export function getFutureDateIso(day: number) {
   return new Date(Date.now() + day * 24 * 60 * 60 * 1000).toISOString();
+}
+
+export function getDayFromSeconds(second: string) {
+  const formattedSecond = second.replace('s', '');
+  const day = fix(divide(formattedSecond, times(24, 3600)), undefined, 1);
+
+  return day;
 }

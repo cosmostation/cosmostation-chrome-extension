@@ -87,6 +87,8 @@ export async function getChains() {
 
     const apr = chain.params.apr;
 
+    const stakingParams = chain.params.staking_params.params;
+
     return {
       id,
       chainId,
@@ -105,6 +107,7 @@ export async function getChains() {
       isSupportHistory,
       isDiableSend,
       apr,
+      stakingParams,
     };
   });
 
