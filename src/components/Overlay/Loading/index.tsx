@@ -1,4 +1,4 @@
-import Lottie from 'lottie-react';
+import Lottie from 'react-lottie-player/dist/LottiePlayerLight';
 
 import { useLoadingOverlayStore } from '@/zustand/hooks/useLoadingOverlayStore';
 
@@ -18,6 +18,7 @@ export default function LoadingOverlay() {
     <Backdrop>
       <Container>
         <Lottie
+          play
           style={{
             width: '12rem',
             height: '12rem',

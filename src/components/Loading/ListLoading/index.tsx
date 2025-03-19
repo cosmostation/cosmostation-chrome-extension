@@ -1,4 +1,4 @@
-import Lottie from 'lottie-react';
+import Lottie from 'react-lottie-player/dist/LottiePlayerLight';
 
 import { Container, LottieContainer, SubTitleText, TextContainer, TitleText } from './styled';
 
@@ -14,6 +14,7 @@ export default function ListLoading({ title, subTitle }: EmptyAssetProps) {
     <Container>
       <LottieContainer>
         <Lottie
+          play
           style={{
             width: '7rem',
             height: '7rem',

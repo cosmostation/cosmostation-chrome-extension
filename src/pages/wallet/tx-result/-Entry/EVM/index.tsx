@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import Lottie from 'lottie-react';
+import Lottie from 'react-lottie-player/dist/LottiePlayerLight';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -89,6 +89,7 @@ export default function EVM({ coinId, txHash, address }: EVMProps) {
 
     return (
       <Lottie
+        play
         style={{
           width: '8.2rem',
           height: '8.2rem',
