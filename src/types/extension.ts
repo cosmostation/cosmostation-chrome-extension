@@ -19,6 +19,7 @@ import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './ass
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
 import type { Request } from './message/inject';
+import type { CosmosNFT, EvmNFT, SuiNFT } from './nft';
 import type { Password } from './password';
 import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
 
@@ -81,6 +82,9 @@ export interface ExtensionStorage {
   [key: `${string}-custom-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-custom-balance-cosmos`]: AccountAddressBalanceCosmos[];
   [key: `${string}-custom-balance-evm`]: AccountAddressBalanceEvm[];
+  [key: `${string}-nft-evm`]: EvmNFT[];
+  [key: `${string}-nft-cosmos`]: CosmosNFT[];
+  [key: `${string}-nft-sui`]: SuiNFT[];
   initAccountIds: Account['id'][];
   initCheckLegacyBalanceAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;

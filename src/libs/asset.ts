@@ -1,3 +1,6 @@
+import { KioskClient, Network } from '@mysten/kiosk';
+import type { DynamicFieldInfo, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
+import { SuiClient } from '@mysten/sui/client';
 import PromisePool from '@supercharge/promise-pool';
 
 import type {
@@ -15,10 +18,14 @@ import type {
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
+import type { SuiGetDynamicFieldsResponse, SuiGetObjectsOwnedByAddressResponse, SuiGetObjectsResponse } from '@/types/sui/api';
+import { chunkArray } from '@/utils/array';
+import { post } from '@/utils/axios';
 import { gt, minus } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
+import { getObjectDisplay, isKiosk } from '@/utils/sui/nft';
 
-import { getAllAccountAddress } from './account';
+import { getAccountAddress, getAllAccountAddress } from './account';
 import { getAddedCustomChains, getChains } from './chain';
 
 export async function getHiddenAssets(id: string) {
@@ -719,4 +726,291 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
     cosmosAccountCustomAssets: filteredCosmosAccountCustomAssets,
     evmAccountCustomAssets: filteredEVMAccountCustomAssets,
   };
+}
+
+type GetSuiNFTSOption = {
+  objectResponseQuery?: SuiObjectResponseQuery;
+};
+
+export async function getSuiNFTs(id: string, option?: GetSuiNFTSOption) {
+  const concurrency = 10;
+
+  const { suiChains } = await getChains();
+
+  const accountAddress = await getAccountAddress(id);
+
+  const suiAddresses = accountAddress.filter((address) => address.chainType === 'sui');
+
+  const addressWithChain = suiAddresses
+    .map((addr) => {
+      const chain = suiChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(concurrency)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      try {
+        const { chainId, chainType, address, chain } = addr;
+
+        const normalNFTObjects = await (async () => {
+          const objectsOwnedByAddress = await getObjectsByOwnedAddress(address, chain.id, chainType, option?.objectResponseQuery);
+
+          const objectIdList = objectsOwnedByAddress.map((object) => object.data?.objectId || '');
+
+          const objects = await getMultiObjects(objectIdList, chain.id, chainType, option?.objectResponseQuery);
+
+          const nftObjects = objects?.filter((item) => getObjectDisplay(item)?.data) || [];
+
+          return nftObjects;
+        })();
+
+        const anotherKioskObjects = await (async () => {
+          const anotherkioskObjects = normalNFTObjects.filter((item) => item.data && isKiosk(item.data));
+
+          const kioskObjectParentId = anotherkioskObjects
+            ? anotherkioskObjects.map((item) => getObjectDisplay(item)?.data?.kiosk || '').filter((item) => !!item)
+            : [];
+
+          const dynamicFields = await Promise.all(
+            kioskObjectParentId.map(async (kioskId) => {
+              return await getSuiDynamicFields(kioskId, chainId, chainType);
+            }),
+          );
+          const flatDynamicFields = dynamicFields.flat();
+
+          const kioskDynamicFieldsObjectIds = flatDynamicFields?.map((item) => item.objectId) || [];
+
+          const kioskObjects = await getMultiObjects(kioskDynamicFieldsObjectIds, chainId, chainType, option?.objectResponseQuery);
+          const filteredKioskObjects = kioskObjects.filter((item) => getObjectDisplay(item)?.data);
+
+          return filteredKioskObjects;
+        })();
+
+        const kioskNFTs = await getSuiKioskNFTs(address, chainId, chainType, option?.objectResponseQuery);
+
+        const total = [...normalNFTObjects, ...kioskNFTs, ...anotherKioskObjects];
+
+        const result = { accountId: id, chainId, chainType, address, nftObjects: total };
+
+        return result;
+      } catch {
+        return null;
+      }
+    });
+
+  return results.filter((result) => !!result);
+}
+
+export async function getSuiKioskNFTs(address: string, chainId: string, chainType: string, option?: SuiObjectResponseQuery) {
+  const { suiChains } = await getChains();
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+
+  const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+
+  const kioskNFTs = await Promise.any(
+    rpcUrls.map(async (rpcUrl) => {
+      const suiClient = new SuiClient({
+        url: rpcUrl,
+      });
+
+      const network = (() => {
+        if (suiChain.isTestnet) {
+          return Network.TESTNET;
+        }
+        return Network.MAINNET;
+      })();
+
+      const kioskClient = new KioskClient({
+        client: suiClient,
+        network: network,
+      });
+
+      const { kioskIds } = await kioskClient.getOwnedKiosks({ address });
+
+      const kioskDatas = await Promise.all(
+        kioskIds.map(async (id) => {
+          const kiosk = await kioskClient.getKiosk({
+            id,
+            options: {
+              withKioskFields: true,
+              withListingPrices: true,
+            },
+          });
+
+          return kiosk;
+        }),
+      );
+
+      const kioskObjectIds = kioskDatas.map((kiosk) => kiosk.itemIds).flat();
+
+      const kioskNFTObjects = await getMultiObjects(kioskObjectIds, chainId, chainType, option);
+
+      const filteredKioskNFTs = kioskNFTObjects.filter((item) => !!item).filter((item) => getObjectDisplay(item)?.data) || [];
+
+      return filteredKioskNFTs;
+    }),
+  );
+
+  return kioskNFTs;
+}
+
+export async function getSuiDynamicFields(parentObjectId: string, chainId: string, chainType: string) {
+  const { suiChains } = await getChains();
+
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+
+  const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+
+  let nextKey: string | null = null;
+
+  const responseBalances: DynamicFieldInfo[][] = [];
+
+  const promises = rpcUrls.map(async (rpcUrl) => {
+    const response = await post<SuiGetDynamicFieldsResponse>(rpcUrl, {
+      jsonrpc: '2.0',
+      method: 'suix_getDynamicFields',
+      params: [parentObjectId, null, null],
+      id: parentObjectId,
+    });
+
+    return response.result;
+  });
+
+  const response = await Promise.any(promises);
+
+  nextKey = response?.nextCursor && response.hasNextPage ? response.nextCursor : null;
+
+  responseBalances.push(response?.data ?? []);
+
+  while (nextKey) {
+    const nextPromises = rpcUrls.map(async (rpcUrl) => {
+      const response = await post<SuiGetDynamicFieldsResponse>(rpcUrl, {
+        jsonrpc: '2.0',
+        method: 'suix_getDynamicFields',
+        params: [parentObjectId, nextKey, null],
+        id: parentObjectId,
+      });
+
+      return response.result;
+    });
+
+    const nextResponse = await Promise.any(nextPromises);
+
+    responseBalances.push(nextResponse?.data ?? []);
+    nextKey = nextResponse?.nextCursor && !!nextResponse.hasNextPage ? nextResponse.nextCursor : null;
+  }
+
+  const retrunData = responseBalances.flat();
+
+  return retrunData;
+}
+
+export async function getObjectsByOwnedAddress(address: string, chainId: string, chainType: string, option?: SuiObjectResponseQuery) {
+  const { suiChains } = await getChains();
+
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+
+  const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+
+  let nextKey: string | null = null;
+
+  const suiObjectResponses: SuiObjectResponse[][] = [];
+
+  const promises = rpcUrls.map(async (rpcUrl) => {
+    const response = await post<SuiGetObjectsOwnedByAddressResponse>(rpcUrl, {
+      jsonrpc: '2.0',
+      method: 'suix_getOwnedObjects',
+      params: [
+        address,
+        {
+          ...option,
+        },
+      ],
+      id: address,
+    });
+
+    return response.result;
+  });
+
+  const response = await Promise.any(promises);
+
+  nextKey = response?.nextCursor && response.hasNextPage ? response.nextCursor : null;
+
+  suiObjectResponses.push(response?.data ?? []);
+
+  while (nextKey) {
+    const nextPromises = rpcUrls.map(async (rpcUrl) => {
+      const response = await post<SuiGetObjectsOwnedByAddressResponse>(rpcUrl, {
+        jsonrpc: '2.0',
+        method: 'suix_getOwnedObjects',
+        params: [
+          address,
+          {
+            ...option,
+          },
+          nextKey,
+        ],
+        id: address,
+      });
+
+      return response.result;
+    });
+
+    const nextResponse = await Promise.any(nextPromises);
+
+    suiObjectResponses.push(nextResponse?.data ?? []);
+    nextKey = nextResponse?.nextCursor && !!nextResponse.hasNextPage ? nextResponse.nextCursor : null;
+  }
+
+  const retrunData = suiObjectResponses.flat();
+
+  return retrunData;
+}
+
+export async function getMultiObjects(objectIds: string[], chainId: string, chainType: string, option?: SuiObjectResponseQuery) {
+  const { suiChains } = await getChains();
+
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+
+  const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+
+  const chunkedArray = chunkArray(objectIds, 50);
+
+  const multiGetObjectResults = await Promise.all(
+    chunkedArray
+      .map(async (chunk) => {
+        const response = await Promise.any(
+          rpcUrls.map(async (rpcUrl) => {
+            const requestUrl = rpcUrl;
+
+            const response = await post<SuiGetObjectsResponse>(requestUrl, {
+              jsonrpc: '2.0',
+              method: 'sui_multiGetObjects',
+              params: [
+                [...chunk],
+                {
+                  ...option,
+                  showType: true,
+                  showContent: true,
+                  showOwner: true,
+                  showDisplay: true,
+                },
+              ],
+              id: objectIds.join(','),
+            });
+
+            return response.result;
+          }),
+        );
+
+        return response;
+      })
+      .filter((aa) => !!aa),
+  );
+
+  const objects = multiGetObjectResults.flat().filter((item) => !!item);
+
+  return objects;
 }

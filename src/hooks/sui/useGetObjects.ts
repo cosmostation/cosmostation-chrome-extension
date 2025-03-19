@@ -78,7 +78,7 @@ export function useGetObjects({ coinId, objectIds, options, config }: UseGetObje
     );
   };
 
-  const { data, isLoading, error } = useFetch({
+  const { data, isLoading, error, refetch } = useFetch({
     queryKey: ['useGetObjects', coinId, objectIds],
     fetchFunction: () => multiFetcher({ url: rpcURLs[0], objectIds, options, method: 'sui_multiGetObjects' }),
     config: {
@@ -87,5 +87,5 @@ export function useGetObjects({ coinId, objectIds, options, config }: UseGetObje
     },
   });
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, refetch };
 }

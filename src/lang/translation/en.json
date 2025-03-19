@@ -1935,6 +1935,17 @@
           "layout": {
             "header": "Manage Custom Network"
           }
+        },
+        "nfts": {
+          "entry": {
+            "searchPlaceholder": "Search NFT",
+            "importNFT": "Import NFT"
+          },
+          "layout": {
+            "header": "Manage NFTs"
+          },
+          "headerTitle": "NFT Listing Information",
+          "contentsSubTitle": "All NFT information is being developed together with the community. If your NFT is not displayed, please share the GitHub link below with the NFT issuer or community. Once registered, the information will be automatically reflected in the wallet and Mintscan."
         }
       },
       "switch-account-type": {
@@ -2586,6 +2597,16 @@
       },
       "layout": {
         "header": "Buy Coin"
+      }
+    },
+    "components": {
+      "NFTList": {
+        "index": {
+          "search": "Search NFT",
+          "manageNFT": "Manage NFTs",
+          "noNFT": "No NFTs",
+          "noNFTDescription": "You can manage your NFTs by adding or deleting them."
+        }
       }
     }
   },

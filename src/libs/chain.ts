@@ -87,7 +87,7 @@ export async function getChains() {
 
     const apr = chain.params.apr;
 
-    const stakingParams = chain.params.staking_params.params;
+    const stakingParams = chain.params?.staking_params ? chain.params.staking_params.params : undefined;
 
     return {
       id,

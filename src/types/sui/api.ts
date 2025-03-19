@@ -2,6 +2,7 @@ import type {
   CoinMetadata,
   DelegatedStake,
   DryRunTransactionBlockResponse,
+  DynamicFieldPage,
   PaginatedCoins,
   PaginatedObjectsResponse,
   PaginatedTransactionResponse,
@@ -61,3 +62,5 @@ export interface SuiDryRunTransactionBlockResponse extends SuiRpc<DryRunTransact
 export interface SuiTxInfoResponse extends SuiRpc<SuiTransactionBlockResponse> {}
 
 export interface SuiGetAPYResponse extends SuiRpc<ValidatorsApy> {}
+
+export interface SuiGetDynamicFieldsResponse extends SuiRpc<DynamicFieldPage> {}

@@ -1,0 +1,109 @@
+import { styled } from '@mui/material/styles';
+
+import BaseChainImage from '@/components/common/BaseChainImage';
+import BaseNFTImage from '@/components/common/BaseNFTImage';
+
+export const StyledButton = styled('button')(({ theme }) => ({
+  width: '100%',
+  position: 'relative',
+
+  border: 0,
+  backgroundColor: 'transparent',
+
+  padding: '0.8rem 1.6rem 0.8rem 1.2rem',
+
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+
+  rowGap: '1rem',
+
+  cursor: 'pointer',
+
+  '&:disabled': {
+    cursor: 'default',
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  },
+
+  '&:hover': {
+    backgroundColor: theme.palette.color.base100,
+  },
+}));
+
+export const LeftContainer = styled('div')({
+  width: '80%',
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '1.2rem',
+});
+
+export const LeftContentsContainer = styled('div')({
+  maxWidth: '70%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+});
+
+export const NFTImageContainer = styled('div')({
+  width: '7rem',
+  height: '7rem',
+  position: 'relative',
+  overflow: 'hidden',
+  borderRadius: '0.8rem',
+
+  '& > img': {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+});
+
+export const NFTImage = styled(BaseNFTImage)({
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  borderRadius: '0.4rem',
+  position: 'relative',
+});
+
+export const NFTNameTextContainer = styled('div')({
+  display: 'flex',
+  maxWidth: '70%',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+  marginBottom: '0.4rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
+export const NFTSubNameTextContainer = styled('div')({
+  display: 'flex',
+  maxWidth: '70%',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+  marginBottom: '0.8rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
+export const ChainContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  columnGap: '0.2rem',
+});
+
+export const ChainImage = styled(BaseChainImage)({
+  width: '1.6rem',
+  height: '1.6rem',
+});

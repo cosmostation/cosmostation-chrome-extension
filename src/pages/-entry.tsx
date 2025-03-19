@@ -30,6 +30,7 @@ import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import NFTList from './-components/NFTList';
 import {
   // AdCarouselContainer,
   // CarouselImg,
@@ -38,14 +39,12 @@ import {
   FilterContaienr,
   ManageCryptoContainer,
   MarginLeftTypography,
-  MarginTopTypography,
   StickyTabContainer,
   StickyTabPanelContentsContainer,
   StyledTabPanel,
 } from './-styled';
 
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
-import StakeIcon from '@/assets/images/icons/Stake22.svg';
 
 // import testAdImg from '@/assets/images/test-ad.png';
 
@@ -74,7 +73,7 @@ export default function Entry() {
 
   const { groupAccountAssets } = useGroupAccountAssets();
 
-  const computedAssetValues = (() => {
+  const computedAssetValues = useMemo(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
     const unGroupedAccountAssets = Object.values(groupAccountAssets?.groupMap || []).flat();
@@ -103,7 +102,16 @@ export default function Entry() {
         value,
       };
     });
-  })();
+  }, [
+    coinGeckoPrice,
+    currency,
+    currentSelectedChainId,
+    debouncedSearch.length,
+    groupAccountAssets?.groupAccountAssets,
+    groupAccountAssets?.groupMap,
+    groupAccountAssets?.singleAccountAssets,
+    search,
+  ]);
 
   const hideSmallValueAssets = useMemo(() => {
     if (!isBalanceVisible) {
@@ -264,10 +272,7 @@ export default function Entry() {
               </CoinButtonWrapper>
             </StyledTabPanel>
             <StyledTabPanel value={tabValue} index={1}>
-              <IconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-                {/* TODO i18n 적용 필요 */}
-                <MarginTopTypography variant="b3_M">Setting</MarginTopTypography>
-              </IconTextButton>
+              <NFTList />
             </StyledTabPanel>
             <SortBottomSheet
               optionButtonProps={[

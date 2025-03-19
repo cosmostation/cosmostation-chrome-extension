@@ -60,6 +60,7 @@ import { Route as PopupBitcoinSignMessageIndexImport } from './pages/popup/bitco
 import { Route as PopupBitcoinSendIndexImport } from './pages/popup/bitcoin/send/index'
 import { Route as PopupAptosTransactionIndexImport } from './pages/popup/aptos/transaction/index'
 import { Route as PopupAptosSignMessageIndexImport } from './pages/popup/aptos/sign-message/index'
+import { Route as ManageAssetsVisibilityNftsIndexImport } from './pages/manage-assets/visibility/nfts/index'
 import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
 import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
 import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
@@ -406,6 +407,13 @@ const PopupAptosSignMessageIndexRoute = PopupAptosSignMessageIndexImport.update(
     getParentRoute: () => rootRoute,
   } as any,
 )
+
+const ManageAssetsVisibilityNftsIndexRoute =
+  ManageAssetsVisibilityNftsIndexImport.update({
+    id: '/manage-assets/visibility/nfts/',
+    path: '/manage-assets/visibility/nfts/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const ManageAssetsVisibilityNetworkIndexRoute =
   ManageAssetsVisibilityNetworkIndexImport.update({
@@ -886,6 +894,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsVisibilityNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-assets/visibility/nfts/': {
+      id: '/manage-assets/visibility/nfts/'
+      path: '/manage-assets/visibility/nfts'
+      fullPath: '/manage-assets/visibility/nfts'
+      preLoaderRoute: typeof ManageAssetsVisibilityNftsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/aptos/sign-message/': {
       id: '/popup/aptos/sign-message/'
       path: '/popup/aptos/sign-message'
@@ -1217,6 +1232,7 @@ export interface FileRoutesByFullPath {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/manage-assets/visibility/nfts': typeof ManageAssetsVisibilityNftsIndexRoute
   '/popup/aptos/sign-message': typeof PopupAptosSignMessageIndexRoute
   '/popup/aptos/transaction': typeof PopupAptosTransactionIndexRoute
   '/popup/bitcoin/send': typeof PopupBitcoinSendIndexRoute
@@ -1299,6 +1315,7 @@ export interface FileRoutesByTo {
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/manage-assets/visibility/nfts': typeof ManageAssetsVisibilityNftsIndexRoute
   '/popup/aptos/sign-message': typeof PopupAptosSignMessageIndexRoute
   '/popup/aptos/transaction': typeof PopupAptosTransactionIndexRoute
   '/popup/bitcoin/send': typeof PopupBitcoinSendIndexRoute
@@ -1382,6 +1399,7 @@ export interface FileRoutesById {
   '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
   '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
+  '/manage-assets/visibility/nfts/': typeof ManageAssetsVisibilityNftsIndexRoute
   '/popup/aptos/sign-message/': typeof PopupAptosSignMessageIndexRoute
   '/popup/aptos/transaction/': typeof PopupAptosTransactionIndexRoute
   '/popup/bitcoin/send/': typeof PopupBitcoinSendIndexRoute
@@ -1466,6 +1484,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/manage-assets/visibility/nfts'
     | '/popup/aptos/sign-message'
     | '/popup/aptos/transaction'
     | '/popup/bitcoin/send'
@@ -1547,6 +1566,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
+    | '/manage-assets/visibility/nfts'
     | '/popup/aptos/sign-message'
     | '/popup/aptos/transaction'
     | '/popup/bitcoin/send'
@@ -1628,6 +1648,7 @@ export interface FileRouteTypes {
     | '/manage-assets/import/network/'
     | '/manage-assets/visibility/assets/'
     | '/manage-assets/visibility/network/'
+    | '/manage-assets/visibility/nfts/'
     | '/popup/aptos/sign-message/'
     | '/popup/aptos/transaction/'
     | '/popup/bitcoin/send/'
@@ -1711,6 +1732,7 @@ export interface RootRouteChildren {
   ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
   ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
   ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
+  ManageAssetsVisibilityNftsIndexRoute: typeof ManageAssetsVisibilityNftsIndexRoute
   PopupAptosSignMessageIndexRoute: typeof PopupAptosSignMessageIndexRoute
   PopupAptosTransactionIndexRoute: typeof PopupAptosTransactionIndexRoute
   PopupBitcoinSendIndexRoute: typeof PopupBitcoinSendIndexRoute
@@ -1803,6 +1825,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAssetsVisibilityAssetsIndexRoute,
   ManageAssetsVisibilityNetworkIndexRoute:
     ManageAssetsVisibilityNetworkIndexRoute,
+  ManageAssetsVisibilityNftsIndexRoute: ManageAssetsVisibilityNftsIndexRoute,
   PopupAptosSignMessageIndexRoute: PopupAptosSignMessageIndexRoute,
   PopupAptosTransactionIndexRoute: PopupAptosTransactionIndexRoute,
   PopupBitcoinSendIndexRoute: PopupBitcoinSendIndexRoute,
@@ -1907,6 +1930,7 @@ export const routeTree = rootRoute
         "/manage-assets/import/network/",
         "/manage-assets/visibility/assets/",
         "/manage-assets/visibility/network/",
+        "/manage-assets/visibility/nfts/",
         "/popup/aptos/sign-message/",
         "/popup/aptos/transaction/",
         "/popup/bitcoin/send/",
@@ -2063,6 +2087,9 @@ export const routeTree = rootRoute
     },
     "/manage-assets/visibility/network/": {
       "filePath": "manage-assets/visibility/network/index.tsx"
+    },
+    "/manage-assets/visibility/nfts/": {
+      "filePath": "manage-assets/visibility/nfts/index.tsx"
     },
     "/popup/aptos/sign-message/": {
       "filePath": "popup/aptos/sign-message/index.tsx"
