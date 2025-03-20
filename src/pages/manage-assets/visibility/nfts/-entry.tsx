@@ -7,19 +7,33 @@ import { useNavigate } from '@tanstack/react-router';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
+import Base1000Text from '@/components/common/Base1000Text';
+import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
+import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
+import { useCurrentAddedEVMNFTsWithMetaData } from '@/hooks/evm/nft/useCurrentAddedEVMNFTsWithMetaData';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddibleNFTs } from '@/hooks/useCurrentAccountAddibleNFTs';
 import { useCurrentAccountNFT } from '@/hooks/useCurrentAccountNFT';
-import { Route as ImportNetwork } from '@/pages/manage-assets/import/network';
+import { Route as ImportNFT } from '@/pages/manage-assets/import/nft';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
 import NFTButtonItem from './-components/NFTButtonItem';
-import { ButtonWrapper, Container, ImportTextContainer, PurpleContainer, RowContainer, StickyContainer } from './-styled';
+import {
+  ButtonWrapper,
+  Container,
+  DeleteNFTContainer,
+  DeleteNFTImage,
+  DeleteNFTImageContainer,
+  ImportTextContainer,
+  PurpleContainer,
+  RowContainer,
+  StickyContainer,
+} from './-styled';
 
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
@@ -48,6 +62,7 @@ type EVMNFTItem = {
   tokenId: string;
   contractAddress: string;
   tokenType: string;
+  isCustom: boolean;
 };
 
 type CosmosNFTItem = {
@@ -73,6 +88,8 @@ export default function Entry() {
 
   const { chainList } = useChainList();
 
+  const [suppoesdDeleteNFTItem, setSupposedDeleteItem] = useState<NFTItem | undefined>();
+
   const [initSortKeys, setInitSortKeys] = useState<string[] | undefined>(undefined);
 
   const [viewLimit, setViewLimit] = useState(30);
@@ -89,13 +106,23 @@ export default function Entry() {
     return [...cosmosChains, ...(chainList.evmChains || []), ...(chainList.suiChains || [])];
   }, [chainList.cosmosChains, chainList.evmChains, chainList.suiChains]);
 
-  const { currentAccountAddibleNFTs } = useCurrentAccountAddibleNFTs();
+  // NOTE 수이, 코스모스
+  const { currentAccountAddibleNFTs, isLoading: isCurrentAccountAddibleNFTsLoading } = useCurrentAccountAddibleNFTs();
 
   const { currentAccountNFTs: currentAddedNFTs, addNFT, removeNFT } = useCurrentAccountNFT();
+  const { addedEVMNFTsWithMeta, isLoading: isCurrentAddedEVMNFTsLoading } = useCurrentAddedEVMNFTsWithMetaData();
+
+  const isLoading = useMemo(
+    () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading,
+    [isCurrentAccountAddibleNFTsLoading, isCurrentAddedEVMNFTsLoading],
+  );
 
   const addedNFTIds = useMemo(() => currentAddedNFTs.flat.map((item) => item.id), [currentAddedNFTs.flat]);
 
-  const aggregatedNFTs = useMemo<NFTItem[]>(() => [...(currentAccountAddibleNFTs.sui as SuiNFTItem[])], [currentAccountAddibleNFTs.sui]);
+  const aggregatedNFTs = useMemo<NFTItem[]>(
+    () => [...(currentAccountAddibleNFTs.sui as SuiNFTItem[]), ...(addedEVMNFTsWithMeta as EVMNFTItem[])],
+    [addedEVMNFTsWithMeta, currentAccountAddibleNFTs.sui],
+  );
 
   const sortedNFTs = useMemo(() => {
     return [...aggregatedNFTs].sort((a, b) => a.name.localeCompare(b.name));
@@ -185,7 +212,7 @@ export default function Entry() {
                 <IconTextButton
                   onClick={() => {
                     navigate({
-                      to: ImportNetwork.to,
+                      to: ImportNFT.to,
                     });
                   }}
                   leadingIcon={
@@ -202,7 +229,7 @@ export default function Entry() {
             </StickyContainer>
 
             <ButtonWrapper>
-              {!isDebouncing && (
+              {!isDebouncing && !isLoading && (
                 <>
                   {sortedByAddedNFTs.map((nftItem) => {
                     const isAdded = addedNFTIds.includes(nftItem.id || '');
@@ -228,7 +255,11 @@ export default function Entry() {
                         isActive={isAdded}
                         onClick={() => {
                           if (isAdded && nftItem.id) {
-                            handleRemoveNFT(nftItem.id);
+                            if (nftItem.chainType === 'evm' && nftItem.isCustom) {
+                              setSupposedDeleteItem(nftItem);
+                            } else {
+                              handleRemoveNFT(nftItem.id);
+                            }
                           } else {
                             handleAddNFT(nftItem);
                           }
@@ -250,6 +281,37 @@ export default function Entry() {
           </Container>
         </EdgeAligner>
       </BaseBody>
+      <DeleteConfirmBottomSheet
+        open={!!suppoesdDeleteNFTItem}
+        onClose={() => setSupposedDeleteItem(undefined)}
+        contents={
+          <DeleteNFTContainer>
+            <DeleteNFTImageContainer
+              sx={{
+                marginBottom: '0.8rem',
+              }}
+            >
+              <DeleteNFTImage src={suppoesdDeleteNFTItem?.image} />
+            </DeleteNFTImageContainer>
+            <Base1300Text
+              variant="b1_B"
+              sx={{
+                marginBottom: '0.2rem',
+              }}
+            >
+              {suppoesdDeleteNFTItem?.name}
+            </Base1300Text>
+            <Base1000Text variant="b4_R">{suppoesdDeleteNFTItem?.subName}</Base1000Text>
+          </DeleteNFTContainer>
+        }
+        descriptionText={t('pages.manage-assets.visibility.nfts.entry.deleteCustomNFTDescription')}
+        onClickConfirm={() => {
+          if (suppoesdDeleteNFTItem?.id) {
+            handleRemoveNFT(suppoesdDeleteNFTItem.id);
+            setSupposedDeleteItem(undefined);
+          }
+        }}
+      />
     </>
   );
 }

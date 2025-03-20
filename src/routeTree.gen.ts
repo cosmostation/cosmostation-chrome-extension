@@ -63,6 +63,7 @@ import { Route as PopupAptosSignMessageIndexImport } from './pages/popup/aptos/s
 import { Route as ManageAssetsVisibilityNftsIndexImport } from './pages/manage-assets/visibility/nfts/index'
 import { Route as ManageAssetsVisibilityNetworkIndexImport } from './pages/manage-assets/visibility/network/index'
 import { Route as ManageAssetsVisibilityAssetsIndexImport } from './pages/manage-assets/visibility/assets/index'
+import { Route as ManageAssetsImportNftIndexImport } from './pages/manage-assets/import/nft/index'
 import { Route as ManageAssetsImportNetworkIndexImport } from './pages/manage-assets/import/network/index'
 import { Route as ManageAssetsImportAssetsIndexImport } from './pages/manage-assets/import/assets/index'
 import { Route as ManageAccountCreateAccountMnemonicIdIndexImport } from './pages/manage-account/create-account/$mnemonicId/index'
@@ -428,6 +429,14 @@ const ManageAssetsVisibilityAssetsIndexRoute =
     path: '/manage-assets/visibility/assets/',
     getParentRoute: () => rootRoute,
   } as any)
+
+const ManageAssetsImportNftIndexRoute = ManageAssetsImportNftIndexImport.update(
+  {
+    id: '/manage-assets/import/nft/',
+    path: '/manage-assets/import/nft/',
+    getParentRoute: () => rootRoute,
+  } as any,
+)
 
 const ManageAssetsImportNetworkIndexRoute =
   ManageAssetsImportNetworkIndexImport.update({
@@ -880,6 +889,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsImportNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/manage-assets/import/nft/': {
+      id: '/manage-assets/import/nft/'
+      path: '/manage-assets/import/nft'
+      fullPath: '/manage-assets/import/nft'
+      preLoaderRoute: typeof ManageAssetsImportNftIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-assets/visibility/assets/': {
       id: '/manage-assets/visibility/assets/'
       path: '/manage-assets/visibility/assets'
@@ -1230,6 +1246,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-assets/import/assets': typeof ManageAssetsImportAssetsIndexRoute
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
+  '/manage-assets/import/nft': typeof ManageAssetsImportNftIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/manage-assets/visibility/nfts': typeof ManageAssetsVisibilityNftsIndexRoute
@@ -1313,6 +1330,7 @@ export interface FileRoutesByTo {
   '/manage-account/create-account/$mnemonicId': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-assets/import/assets': typeof ManageAssetsImportAssetsIndexRoute
   '/manage-assets/import/network': typeof ManageAssetsImportNetworkIndexRoute
+  '/manage-assets/import/nft': typeof ManageAssetsImportNftIndexRoute
   '/manage-assets/visibility/assets': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/manage-assets/visibility/nfts': typeof ManageAssetsVisibilityNftsIndexRoute
@@ -1397,6 +1415,7 @@ export interface FileRoutesById {
   '/manage-account/create-account/$mnemonicId/': typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   '/manage-assets/import/assets/': typeof ManageAssetsImportAssetsIndexRoute
   '/manage-assets/import/network/': typeof ManageAssetsImportNetworkIndexRoute
+  '/manage-assets/import/nft/': typeof ManageAssetsImportNftIndexRoute
   '/manage-assets/visibility/assets/': typeof ManageAssetsVisibilityAssetsIndexRoute
   '/manage-assets/visibility/network/': typeof ManageAssetsVisibilityNetworkIndexRoute
   '/manage-assets/visibility/nfts/': typeof ManageAssetsVisibilityNftsIndexRoute
@@ -1482,6 +1501,7 @@ export interface FileRouteTypes {
     | '/manage-account/create-account/$mnemonicId'
     | '/manage-assets/import/assets'
     | '/manage-assets/import/network'
+    | '/manage-assets/import/nft'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
     | '/manage-assets/visibility/nfts'
@@ -1564,6 +1584,7 @@ export interface FileRouteTypes {
     | '/manage-account/create-account/$mnemonicId'
     | '/manage-assets/import/assets'
     | '/manage-assets/import/network'
+    | '/manage-assets/import/nft'
     | '/manage-assets/visibility/assets'
     | '/manage-assets/visibility/network'
     | '/manage-assets/visibility/nfts'
@@ -1646,6 +1667,7 @@ export interface FileRouteTypes {
     | '/manage-account/create-account/$mnemonicId/'
     | '/manage-assets/import/assets/'
     | '/manage-assets/import/network/'
+    | '/manage-assets/import/nft/'
     | '/manage-assets/visibility/assets/'
     | '/manage-assets/visibility/network/'
     | '/manage-assets/visibility/nfts/'
@@ -1730,6 +1752,7 @@ export interface RootRouteChildren {
   ManageAccountCreateAccountMnemonicIdIndexRoute: typeof ManageAccountCreateAccountMnemonicIdIndexRoute
   ManageAssetsImportAssetsIndexRoute: typeof ManageAssetsImportAssetsIndexRoute
   ManageAssetsImportNetworkIndexRoute: typeof ManageAssetsImportNetworkIndexRoute
+  ManageAssetsImportNftIndexRoute: typeof ManageAssetsImportNftIndexRoute
   ManageAssetsVisibilityAssetsIndexRoute: typeof ManageAssetsVisibilityAssetsIndexRoute
   ManageAssetsVisibilityNetworkIndexRoute: typeof ManageAssetsVisibilityNetworkIndexRoute
   ManageAssetsVisibilityNftsIndexRoute: typeof ManageAssetsVisibilityNftsIndexRoute
@@ -1821,6 +1844,7 @@ const rootRouteChildren: RootRouteChildren = {
     ManageAccountCreateAccountMnemonicIdIndexRoute,
   ManageAssetsImportAssetsIndexRoute: ManageAssetsImportAssetsIndexRoute,
   ManageAssetsImportNetworkIndexRoute: ManageAssetsImportNetworkIndexRoute,
+  ManageAssetsImportNftIndexRoute: ManageAssetsImportNftIndexRoute,
   ManageAssetsVisibilityAssetsIndexRoute:
     ManageAssetsVisibilityAssetsIndexRoute,
   ManageAssetsVisibilityNetworkIndexRoute:
@@ -1928,6 +1952,7 @@ export const routeTree = rootRoute
         "/manage-account/create-account/$mnemonicId/",
         "/manage-assets/import/assets/",
         "/manage-assets/import/network/",
+        "/manage-assets/import/nft/",
         "/manage-assets/visibility/assets/",
         "/manage-assets/visibility/network/",
         "/manage-assets/visibility/nfts/",
@@ -2081,6 +2106,9 @@ export const routeTree = rootRoute
     },
     "/manage-assets/import/network/": {
       "filePath": "manage-assets/import/network/index.tsx"
+    },
+    "/manage-assets/import/nft/": {
+      "filePath": "manage-assets/import/nft/index.tsx"
     },
     "/manage-assets/visibility/assets/": {
       "filePath": "manage-assets/visibility/assets/index.tsx"

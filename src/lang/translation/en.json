@@ -1939,7 +1939,8 @@
         "nfts": {
           "entry": {
             "searchPlaceholder": "Search NFT",
-            "importNFT": "Import NFT"
+            "importNFT": "Import NFT",
+            "deleteCustomNFTDescription": "Would you like to delete this custom NFT that you added? If you want to add the NFT again after deletion, you will need to re-enter the information."
           },
           "layout": {
             "header": "Manage NFTs"
@@ -2057,6 +2058,42 @@
             "network": "Network",
             "selectNetwork": "Select Network",
             "searchNetwork": "Search Network (Ex. Bitcoin)"
+          }
+        },
+        "nft": {
+          "components": {
+            "EVM": {
+              "index": {
+                "invalidAddressTitle": "Invalid Contract Address",
+                "invalidTokenIdTitle": "Invalid token ID",
+                "invalidSourceTitle": "No NFTs found",
+                "invalidOwnershipTitle": "Ownership Mismatch",
+                "networkErrorTitle": "Network Error",
+                "imagePreview": "IMG Preview",
+                "invalidAddress": "Invalid address",
+                "invalidTokenId": "Invalid token ID",
+                "invalidSource": "NFT does not exist for the given contract address or token ID.",
+                "invalidOwnership": "The NFT is not owned by you for the given contract address or token ID.",
+                "networkError": "An error has occurred. please try again later",
+                "previewSubText": "When you enter your own NFT information, the image is displayed",
+                "success": "Successfully added the NFT",
+                "error": "Failed to add the NFT",
+                "contractAddress": "NFT Contract Address",
+                "tokenId": "Token ID",
+                "preview": "NFT Preview",
+                "uri": "URI",
+                "data": "Data",
+                "addNFT": "Add NFT"
+              }
+            }
+          },
+          "entry": {
+            "network": "Network",
+            "selectNetwork": "Select Network",
+            "searchNetwork": "Search Network (Ex. Ethereum)"
+          },
+          "layout": {
+            "header": "Import NFT"
           }
         }
       },

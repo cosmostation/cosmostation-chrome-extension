@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import { Body, ConfirmButton, Container, ContentsContainer, DescriptionText, Header, HeaderTitle, StyledBottomSheet, StyledButton } from './styled';
+import { Body, ConfirmButton, Container, ContentsContainer, DescriptionText, Footer, Header, HeaderTitle, StyledBottomSheet, StyledButton } from './styled';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
@@ -39,11 +39,12 @@ export default function DeleteConfirmBottomSheet({ contents, descriptionText, on
             {contents}
             <DescriptionText variant="b3_R_Multiline">{descriptionText}</DescriptionText>
           </ContentsContainer>
-
+        </Body>
+        <Footer>
           <ConfirmButton variant="red" onClick={onClickConfirm}>
             {t('components.DeleteConfirmBottomSheet.index.delete')}
           </ConfirmButton>
-        </Body>
+        </Footer>
       </Container>
     </StyledBottomSheet>
   );

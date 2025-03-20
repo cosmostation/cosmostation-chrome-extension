@@ -5,9 +5,9 @@ import BottomSheet from '@/components/common/BottomSheet';
 import Button from '@/components/common/Button';
 
 export const Container = styled('div')({
-  overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
+  flex: 1,
 
   height: '100%',
 });
@@ -31,11 +31,13 @@ export const HeaderTitle = styled('div')(({ theme }) => ({
 export const Body = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'center',
   height: '100%',
 
   margin: '0 1.6rem 1.2rem',
 
   boxSizing: 'border-box',
+  flex: 1,
 });
 
 export const ContentsContainer = styled('div')({
@@ -49,7 +51,7 @@ export const ContentsContainer = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    height: '45%',
+    minHeight: '45%',
   },
 });
 
@@ -77,6 +79,9 @@ export const DescriptionText = styled(Typography)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-export const ConfirmButton = styled(Button)({
+export const ConfirmButton = styled(Button)({});
+
+export const Footer = styled('div')({
   marginTop: 'auto',
+  padding: '1.2rem',
 });

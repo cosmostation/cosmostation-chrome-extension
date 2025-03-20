@@ -9,7 +9,7 @@ type UseCurrentAccountAddibleNFTsProps =
   | undefined;
 
 export function useCurrentAccountAddibleNFTs({ accountId }: UseCurrentAccountAddibleNFTsProps = {}) {
-  const { allSuiNFTsWithMeta } = useCurrentAddedSuiNFTsWithMetaData({ accountId });
+  const { allSuiNFTsWithMeta, isLoading: isSuiLoading } = useCurrentAddedSuiNFTsWithMetaData({ accountId });
   // NOTE const { mappedSuiNFTs2 } = useCurrentAddedCosmosNFTsWithMetaData({ accountId });
 
   const currentAccountAddibleNFTs = useMemo(() => {
@@ -18,5 +18,9 @@ export function useCurrentAccountAddibleNFTs({ accountId }: UseCurrentAccountAdd
     };
   }, [allSuiNFTsWithMeta]);
 
-  return { currentAccountAddibleNFTs };
+  const isLoading = useMemo(() => {
+    return isSuiLoading;
+  }, [isSuiLoading]);
+
+  return { currentAccountAddibleNFTs, isLoading };
 }

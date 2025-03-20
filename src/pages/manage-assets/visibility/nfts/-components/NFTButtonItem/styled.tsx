@@ -41,6 +41,7 @@ export const LeftContainer = styled('div')({
 
 export const LeftContentsContainer = styled('div')({
   maxWidth: '70%',
+  flex: 1,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',

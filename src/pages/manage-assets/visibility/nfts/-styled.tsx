@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import BaseChainImage from '@/components/common/BaseChainImage';
+import BaseNFTImage from '@/components/common/BaseNFTImage';
 
 export const Container = styled('div')({
   width: '100%',
@@ -72,3 +73,29 @@ export const InfoIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const DeleteNFTContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const DeleteNFTImageContainer = styled('div')({
+  width: '4.2rem',
+  height: '4.2rem',
+  position: 'relative',
+  overflow: 'hidden',
+  borderRadius: '0.8rem',
+
+  '& > img': {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+});
+
+export const DeleteNFTImage = styled(BaseNFTImage)({});
+
+export const TopContainer = styled('div')({});
+export const BodyContainer = styled('div')({});
