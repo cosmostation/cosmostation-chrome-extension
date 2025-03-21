@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Contract, ethers } from 'ethers';
 import { PromisePool } from '@supercharge/promise-pool';
 
-import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { ETHERS_PROVIDER_TIMEOUT, NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
@@ -613,14 +613,17 @@ async function erc20Balance(id: string) {
       const { rpcUrls } = chain;
       const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const providers = rpcUrls.map(
-        (rpcUrl) =>
-          new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
-            batchMaxCount: 1,
-            polling: false,
-            staticNetwork: true,
-          }),
-      );
+      const providers = rpcUrls.map((rpcUrl) => {
+        const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
+          batchMaxCount: 1,
+          polling: false,
+          staticNetwork: true,
+        });
+
+        provider._getConnection().timeout = ETHERS_PROVIDER_TIMEOUT;
+
+        return provider;
+      });
 
       const { results: allBalances } = await PromisePool.withConcurrency(10)
         .for(assets)
@@ -675,14 +678,17 @@ async function customErc20Balance(id: string) {
       const { rpcUrls } = chain;
       const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const providers = rpcUrls.map(
-        (rpcUrl) =>
-          new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
-            batchMaxCount: 1,
-            polling: false,
-            staticNetwork: true,
-          }),
-      );
+      const providers = rpcUrls.map((rpcUrl) => {
+        const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
+          batchMaxCount: 1,
+          polling: false,
+          staticNetwork: true,
+        });
+
+        provider._getConnection().timeout = ETHERS_PROVIDER_TIMEOUT;
+
+        return provider;
+      });
 
       const { results: allBalances } = await PromisePool.withConcurrency(10)
         .for(assets)
@@ -754,7 +760,9 @@ async function cw20Balance(id: string) {
             const urlPath = `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${btoa(`{"balance":{"address":"${address}"}}`)}`;
             const requestUrl = `${url}${urlPath}`;
 
-            const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl);
+            const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl, {
+              timeout: 1000 * 2,
+            });
 
             return response.data?.data?.balance ?? '0';
           });
