@@ -2085,6 +2085,26 @@
                 "data": "Data",
                 "addNFT": "Add NFT"
               }
+            },
+            "Cosmos": {
+              "index": {
+                "invalidAddressTitle": "Invalid Contract Address",
+                "invalidTokenIdTitle": "Invalid token ID",
+                "invalidOwnershipTitle": "Ownership Mismatch",
+                "networkErrorTitle": "Network Error",
+                "imagePreview": "IMG Preview",
+                "invalidAddress": "Invalid address",
+                "invalidTokenId": "Invalid token ID",
+                "invalidOwnership": "The NFT is not owned by you for the given contract address or token ID.",
+                "networkError": "An error has occurred. please try again later",
+                "previewSubText": "When you enter your own NFT information, the image is displayed",
+                "success": "Successfully added the NFT",
+                "error": "Failed to add the NFT",
+                "contractAddress": "NFT Contract Address",
+                "tokenId": "Token ID",
+                "preview": "NFT Preview",
+                "addNFT": "Add NFT"
+              }
             }
           },
           "entry": {

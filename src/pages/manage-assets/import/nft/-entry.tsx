@@ -7,17 +7,18 @@ import { useChainList } from '@/hooks/useChainList.ts';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
 
+import Cosmos from './-components/Cosmos/index.tsx';
 import EVM from './-components/EVM/index.tsx';
 import { Container } from './-styled.tsx';
 
 export default function Entry() {
   const { t } = useTranslation();
 
-  const { chainList } = useChainList();
+  const { chainListFilteredByAccountType } = useChainList();
 
-  // FIXME Shido케이스 핸들링 필요., 커스텀 체인도 리스팅되도록 로직 수정 필요
-  const allCosmosChains = chainList.cosmosChains?.filter((chain) => chain.isCosmwasm) || [];
-  const allEVMChains = [...(chainList.evmChains || [])];
+  const allCosmosChains = chainListFilteredByAccountType.cosmosChains?.filter((chain) => chain.isSupportCW721 || chain.isCosmwasm) || [];
+
+  const allEVMChains = [...(chainListFilteredByAccountType.evmChains || [])];
 
   const mergedChainList = [...allEVMChains, ...allCosmosChains];
 
@@ -47,7 +48,11 @@ export default function Entry() {
           bottomSheetSearchPlaceholder={t('pages.manage-assets.import.nft.entry.searchNetwork')}
         />
       </Container>
-      {currentChain?.chainType === 'evm' ? <EVM chainId={getUniqueChainId(currentChain)} /> : null}
+      {currentChain?.chainType === 'evm' ? (
+        <EVM chainId={getUniqueChainId(currentChain)} />
+      ) : currentChain?.chainType === 'cosmos' ? (
+        <Cosmos chainId={getUniqueChainId(currentChain)} />
+      ) : null}
     </BaseBody>
   );
 }

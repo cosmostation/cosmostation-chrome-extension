@@ -93,3 +93,10 @@ export interface CustomEvmAsset extends AssetBase {
 }
 
 export type CustomAsset = CustomCosmosAsset | CustomEvmAsset;
+
+export interface CW721AssetsResponse {
+  chain: string;
+  id: number;
+  name: string;
+  contractAddress: string;
+}

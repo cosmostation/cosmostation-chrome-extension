@@ -53,6 +53,7 @@ export default function EVM({ chainId }: EVMProps) {
 
   const [currentContractAddress, setCurrentContractAddress] = useState('');
   const [debouncedContractAddress] = useDebounce(currentContractAddress, 500);
+  const isValidDebouncedContractAddress = useMemo(() => ethereumAddressRegex.test(debouncedContractAddress), [debouncedContractAddress]);
 
   const [currentTokenId, setCurrentTokenId] = useState('');
   const [debouncedTokenId] = useDebounce(currentTokenId, 500);
@@ -73,19 +74,19 @@ export default function EVM({ chainId }: EVMProps) {
 
   const currentNFTStandard = useGetNFTStandard({
     chainId: currentChainId,
-    contractAddress: debouncedContractAddress,
+    contractAddress: isValidDebouncedContractAddress ? debouncedContractAddress : undefined,
   });
 
   const nftSourceURI = useGetNFTURI({
     chainId: currentChainId,
-    contractAddress: debouncedContractAddress,
+    contractAddress: isValidDebouncedContractAddress ? debouncedContractAddress : undefined,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
   const isOwnedNFT = useGetNFTOwner({
     chainId: currentChainId,
-    contractAddress: debouncedContractAddress,
+    contractAddress: isValidDebouncedContractAddress ? debouncedContractAddress : undefined,
     ownerAddress: currentAddress,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
@@ -93,7 +94,7 @@ export default function EVM({ chainId }: EVMProps) {
 
   const nftMeta = useGetNFTMeta({
     chainId: currentChainId,
-    contractAddress: debouncedContractAddress,
+    contractAddress: isValidDebouncedContractAddress ? debouncedContractAddress : undefined,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
