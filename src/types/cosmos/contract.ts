@@ -28,6 +28,11 @@ export interface NFTIDResponse {
   };
 }
 
+export interface OwnedNFTsTokenIdResponse {
+  contractAddress: string;
+  tokens: string[];
+}
+
 export interface NumTokensInfoResponse {
   data: {
     count: string;

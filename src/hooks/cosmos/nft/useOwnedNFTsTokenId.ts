@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
+import PromisePool from '@supercharge/promise-pool';
 
 import type { UseFetchConfig } from '@/hooks/common/useFetch';
 import { useFetch } from '@/hooks/common/useFetch';
 import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { NFTIDResponse } from '@/types/cosmos/contract';
-import { get, isAxiosError } from '@/utils/axios';
+import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { getCosmosAddressRegex } from '@/utils/regex';
@@ -24,7 +25,6 @@ type UseOwnedNFTsTokenIdProps = {
 
 export function useOwnedNFTsTokenId({ params, config }: UseOwnedNFTsTokenIdProps) {
   const { chainList } = useChainList();
-
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
   const isValidParams = useMemo(() => {
@@ -38,78 +38,71 @@ export function useOwnedNFTsTokenId({ params, config }: UseOwnedNFTsTokenIdProps
     );
   }, [params]);
 
-  const fetcher = async (index = 0) => {
-    try {
-      if (!params) {
-        throw new Error('Params are undefined');
+  const fetchWithFailover = async (param: UseOwnedNFTsTokenIdParam) => {
+    const { chainId: uniqueChainId, ownerAddress, contractAddress, limit = 50 } = param;
+
+    if (!uniqueChainId || !ownerAddress || !contractAddress) {
+      return {
+        contractAddress,
+        tokens: [],
+      };
+    }
+
+    const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, uniqueChainId));
+    if (!chain) return null;
+
+    const regex = getCosmosAddressRegex(chain.accountPrefix || '', [39, 59]);
+    if (!regex.test(contractAddress) || !regex.test(ownerAddress)) {
+      return null;
+    }
+
+    const { id: chainlistChainId } = parseUniqueChainId(uniqueChainId);
+    const cosmosEndpoints = chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainlistChainId));
+    const requestURLs = cosmosEndpoints.map((cosmosEndpoint) => cosmosEndpoint.getCW721NFTIds(contractAddress, ownerAddress, limit));
+
+    for (const requestURL of requestURLs) {
+      try {
+        const returnData = await get<NFTIDResponse>(requestURL, { timeout: 1000 * 2 });
+        return {
+          contractAddress,
+          tokens: returnData.data.tokens || [],
+        };
+      } catch {
+        console.warn(`Request failed for ${requestURL}, trying next...`);
       }
-      const response = await Promise.all(
-        params.map(async (param) => {
-          const { chainId: uniqueChainId, ownerAddress, contractAddress, limit = 50 } = param;
+    }
 
-          if (!uniqueChainId || !ownerAddress || !contractAddress) {
-            return {
-              contractAddress,
-              tokens: [],
-            };
-          }
+    throw new Error('All endpoints failed');
+  };
 
-          const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, uniqueChainId));
+  const fetcher = async () => {
+    if (!params) throw new Error('Params are undefined');
 
-          const regex = getCosmosAddressRegex(chain?.accountPrefix || '', [39, 59]);
+    try {
+      const { results, errors } = await PromisePool.for(params)
+        .withConcurrency(5)
+        .process(async (param) => {
+          return fetchWithFailover(param);
+        });
 
-          if (!regex.test(contractAddress) || !regex.test(ownerAddress)) {
-            return null;
-          }
+      const successResponses = results.filter((result) => result !== null);
 
-          const { id: chainlistChainId } = parseUniqueChainId(uniqueChainId);
-
-          const cosmosEndpoints = chain?.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainlistChainId));
-          const requestURLs = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getCW721NFTIds(contractAddress, ownerAddress, limit));
-
-          const requestURL = requestURLs?.[index];
-
-          if (!requestURLs || index >= requestURLs.length || !requestURL) {
-            setIsAllRequestsFailed(true);
-
-            throw new Error('All endpoints failed');
-          }
-
-          const returnData = await get<NFTIDResponse>(requestURL, {
-            timeout: 1000 * 2,
-          });
-
-          return {
-            contractAddress,
-            tokens: returnData.data.tokens || [],
-          };
-        }),
-      );
+      if (errors.length > 0 && successResponses.length === 0) {
+        setIsAllRequestsFailed(true);
+        throw new Error('All requests failed');
+      }
 
       setIsAllRequestsFailed(false);
-
-      return response;
+      return successResponses;
     } catch (e) {
-      const error = e as Error;
-      if (error.message === 'All endpoints failed') {
-        setIsAllRequestsFailed(true);
-
-        throw e;
-      }
-
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
-        }
-      }
-
-      return fetcher(index + 1);
+      setIsAllRequestsFailed(true);
+      throw e;
     }
   };
 
   const { data, isLoading, isFetching, error, refetch } = useFetch({
     queryKey: ['useOwnedNFTsTokenId', params],
-    fetchFunction: () => fetcher(),
+    fetchFunction: fetcher,
     config: {
       refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
       retry: 3,

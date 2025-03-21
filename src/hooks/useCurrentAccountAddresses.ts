@@ -4,15 +4,22 @@ import { getAccountAddress } from '@/libs/account';
 
 import { useCurrentAccount } from './useCurrentAccount';
 
-export function useCurrentAccountAddresses() {
+type UseCurrentAccountAddressesProps =
+  | {
+      accountId?: string;
+    }
+  | undefined;
+
+export function useCurrentAccountAddresses({ accountId }: UseCurrentAccountAddressesProps = {}) {
   const { currentAccount } = useCurrentAccount();
+  const currentAccountId = accountId || currentAccount.id;
 
   const fetcher = async () => {
-    return getAccountAddress(currentAccount.id);
+    return getAccountAddress(currentAccountId);
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['accountAddress', currentAccount.id],
+    queryKey: ['accountAddress', currentAccountId],
     queryFn: fetcher,
   });
 

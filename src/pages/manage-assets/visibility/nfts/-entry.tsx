@@ -14,6 +14,7 @@ import IntersectionObserver from '@/components/common/IntersectionObserver';
 import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
+import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useCurrentAddedEVMNFTsWithMetaData } from '@/hooks/evm/nft/useCurrentAddedEVMNFTsWithMetaData';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddibleNFTs } from '@/hooks/useCurrentAccountAddibleNFTs';
@@ -101,27 +102,42 @@ export default function Entry() {
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const baseChainList = useMemo(() => {
-    const cosmosChains = chainList.cosmosChains?.filter((item) => item.isCosmwasm) || [];
+    const cosmosChains = chainList.cosmosChains?.filter((item) => item.isCosmwasm || item.isSupportCW721) || [];
 
     return [...cosmosChains, ...(chainList.evmChains || []), ...(chainList.suiChains || [])];
   }, [chainList.cosmosChains, chainList.evmChains, chainList.suiChains]);
 
-  // NOTE 수이, 코스모스
   const { currentAccountAddibleNFTs, isLoading: isCurrentAccountAddibleNFTsLoading } = useCurrentAccountAddibleNFTs();
 
   const { currentAccountNFTs: currentAddedNFTs, addNFT, removeNFT } = useCurrentAccountNFT();
+
   const { addedEVMNFTsWithMeta, isLoading: isCurrentAddedEVMNFTsLoading } = useCurrentAddedEVMNFTsWithMetaData();
+  const { addedCosmosNFTsWithMeta, isLoading: isCurrentAddedCosmosNFTsLoading } = useCurrentAddedCosmosNFTsWithMetaData();
+
+  console.log('🚀 ~ Entry ~ addedCosmosNFTsWithMeta:', addedCosmosNFTsWithMeta);
+  console.log('🚀 ~ wrappedCosmosNFTs ~ currentAccountAddibleNFTs.cosmos:', currentAccountAddibleNFTs.cosmos);
+
+  // NOTE addible코스모스를 추가하면 addedCosmosNFTsWithMeta이 바뀌면서 fetcher가 돌면서 리스트가 잠깐 빈거처럼 사라지게됨.
+  const wrappedCosmosNFTs = useMemo(() => {
+    const cosmosNFTs = [...(addedCosmosNFTsWithMeta as CosmosNFTItem[]), ...(currentAccountAddibleNFTs.cosmos as CosmosNFTItem[])];
+
+    const uniqueCosmosNFTs = cosmosNFTs.filter(
+      (item, index, self) => self.findIndex((t) => t.contractAddress === item.contractAddress && t.tokenId === item.tokenId) === index,
+    );
+
+    return uniqueCosmosNFTs;
+  }, [addedCosmosNFTsWithMeta, currentAccountAddibleNFTs.cosmos]);
 
   const isLoading = useMemo(
-    () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading,
-    [isCurrentAccountAddibleNFTsLoading, isCurrentAddedEVMNFTsLoading],
+    () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading || isCurrentAddedCosmosNFTsLoading,
+    [isCurrentAccountAddibleNFTsLoading, isCurrentAddedCosmosNFTsLoading, isCurrentAddedEVMNFTsLoading],
   );
 
   const addedNFTIds = useMemo(() => currentAddedNFTs.flat.map((item) => item.id), [currentAddedNFTs.flat]);
 
   const aggregatedNFTs = useMemo<NFTItem[]>(
-    () => [...(currentAccountAddibleNFTs.sui as SuiNFTItem[]), ...(addedEVMNFTsWithMeta as EVMNFTItem[])],
-    [addedEVMNFTsWithMeta, currentAccountAddibleNFTs.sui],
+    () => [...(currentAccountAddibleNFTs.sui as SuiNFTItem[]), ...(addedEVMNFTsWithMeta as EVMNFTItem[]), ...wrappedCosmosNFTs],
+    [addedEVMNFTsWithMeta, currentAccountAddibleNFTs.sui, wrappedCosmosNFTs],
   );
 
   const sortedNFTs = useMemo(() => {
@@ -256,6 +272,14 @@ export default function Entry() {
                         onClick={() => {
                           if (isAdded && nftItem.id) {
                             if (nftItem.chainType === 'evm' && nftItem.isCustom) {
+                              setSupposedDeleteItem(nftItem);
+                            } else if (
+                              // NOTE 애초에 nft리스팅 로직을 개편해서 여기서 addible판단 로직이 필요없도록 수정
+                              nftItem.chainType === 'cosmos' &&
+                              !currentAccountAddibleNFTs.cosmos.some(
+                                (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,
+                              )
+                            ) {
                               setSupposedDeleteItem(nftItem);
                             } else {
                               handleRemoveNFT(nftItem.id);

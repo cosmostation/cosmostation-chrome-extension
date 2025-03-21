@@ -94,6 +94,8 @@ export function useNFTsMeta({ params, config }: UseNFTsMetaProps) {
           const supportedCW721CachedImageURL = cachedNFTImages.data?.find(
             (item) => item?.contractAddress === contractAddress && item.tokenId === tokenId && item.chainId === uniqueChainId,
           )?.url;
+          const supportedName = supportedCW721Assets?.find((item) => item?.contractAddress === contractAddress && item.chain === chain.id)?.name;
+          const formattedSupportedName = supportedName ? `${supportedName} ${toDisplayTokenId(tokenId)}` : undefined;
 
           if (chain?.id === 'archway' && !nftSourceURIData?.token_uri) {
             const imageURL =
@@ -114,7 +116,7 @@ export function useNFTsMeta({ params, config }: UseNFTsMetaProps) {
               imageURL: supportedCW721CachedImageURL || convertedIpfsImageURL,
               contractAddress,
               tokenId,
-              name: nftSourceURIData?.extension?.name ? String(nftSourceURIData.extension.name) : toDisplayTokenId(tokenId),
+              name: formattedSupportedName || (nftSourceURIData?.extension?.name ? String(nftSourceURIData.extension.name) : toDisplayTokenId(tokenId)),
               description: nftSourceURIData?.extension?.description ? String(nftSourceURIData.extension?.description) : contractAddress,
               sourceURL: supportedCW721CachedImageURL || convertedIpfsImageURL,
               attributes,
@@ -142,7 +144,7 @@ export function useNFTsMeta({ params, config }: UseNFTsMetaProps) {
             imageURL: supportedCW721CachedImageURL || nftMetaData?.imageURL || '',
             contractAddress,
             tokenId,
-            name: nftMetaData?.metaData?.name ? String(nftMetaData.metaData.name) : toDisplayTokenId(tokenId),
+            name: formattedSupportedName || (nftMetaData?.metaData?.name ? String(nftMetaData.metaData.name) : toDisplayTokenId(tokenId)),
             description: nftMetaData?.metaData?.description ? String(nftMetaData.metaData.description) : contractAddress,
             sourceURL: supportedCW721CachedImageURL || nftSourceURIData?.token_uri,
             attributes,
@@ -178,5 +180,9 @@ export function useNFTsMeta({ params, config }: UseNFTsMetaProps) {
     return nftSourceURI.isFetching || nftCollectionInfo.isFetching || nftContractInfo.isFetching || mintedNFTsCount.isFetching || isFetching;
   }, [nftSourceURI.isFetching, nftCollectionInfo.isFetching, nftContractInfo.isFetching, mintedNFTsCount.isFetching, isFetching]);
 
-  return { data, isLoading, isFetching: isFetchingAll, error, refetch };
+  const isLoadingAll = useMemo(() => {
+    return nftSourceURI.isLoading || nftCollectionInfo.isLoading || nftContractInfo.isLoading || mintedNFTsCount.isLoading || isLoading;
+  }, [nftSourceURI.isLoading, nftCollectionInfo.isLoading, nftContractInfo.isLoading, mintedNFTsCount.isLoading, isLoading]);
+
+  return { data, isLoading: isLoadingAll, isFetching: isFetchingAll, error, refetch };
 }

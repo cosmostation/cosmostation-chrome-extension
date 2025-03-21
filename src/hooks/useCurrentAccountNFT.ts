@@ -47,9 +47,6 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
     const nonDuplicateAddedNFTs = storedAddedSuiNFTs.filter(
       (item) => !(item.objectId.toLowerCase() === newNFT.objectId.toLowerCase() && item.chainId === newNFT.chainId && item.chainType === newNFT.chainType),
     );
-
-    console.log('🚀 ~ addSuiNFT ~ nonDuplicateAddedNFTs:', nonDuplicateAddedNFTs);
-
     const newNFTWithId: SuiNFT = {
       id: uuidv4(),
       chainId: newNFT.chainId,
@@ -58,8 +55,6 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
     };
 
     const updatedAddedNFTs = [...nonDuplicateAddedNFTs, newNFTWithId];
-
-    console.log('🚀 ~ addSuiNFT ~ updatedAddedNFTs:', updatedAddedNFTs);
 
     await updateExtensionStorageStore(`${currentAccountId}-nft-sui`, updatedAddedNFTs);
   };
@@ -99,9 +94,13 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
         ),
     );
 
-    const newNFTWithId = {
+    const newNFTWithId: EvmNFT = {
       id: uuidv4(),
-      ...newNFT,
+      chainId: newNFT.chainId,
+      chainType: newNFT.chainType,
+      contractAddress: newNFT.contractAddress,
+      tokenId: newNFT.tokenId,
+      tokenType: newNFT.tokenType,
     };
 
     const updatedAddedNFTs = [...nonDuplicateAddedNFTs, newNFTWithId];
@@ -144,9 +143,13 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
         item.chainType === newNFT.chainType,
     );
 
-    const newNFTWithId = {
+    const newNFTWithId: CosmosNFT = {
       id: uuidv4(),
-      ...newNFT,
+      chainId: newNFT.chainId,
+      chainType: newNFT.chainType,
+      contractAddress: newNFT.contractAddress,
+      tokenId: newNFT.tokenId,
+      tokenType: newNFT.tokenType,
     };
 
     const updatedAddedNFTs = [...nonDuplicateAddedNFTs, newNFTWithId];

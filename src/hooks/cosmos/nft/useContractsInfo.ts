@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import type { UseFetchConfig } from '@/hooks/common/useFetch';
-import { useFetch } from '@/hooks/common/useFetch';
+import { useFetchFailover } from '@/hooks/common/useFetchFailover';
 import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { ContractInfoResponse } from '@/types/cosmos/contract';
@@ -34,76 +34,49 @@ export function useContractsInfo({ params, config }: UseContractsInfoProps) {
     );
   }, [params]);
 
-  const fetcher = async (index = 0) => {
-    try {
-      if (!params) {
-        throw new Error('Params are undefined');
-      }
+  const fetchContractInfo = async (param: UseContractsInfoParam) => {
+    const { chainId: uniqueChainId, contractAddress } = param;
 
-      const response = await Promise.all(
-        params.map(async (param) => {
-          const { chainId: uniqueChainId, contractAddress } = param;
+    if (!uniqueChainId) return null;
 
-          if (!uniqueChainId) {
-            return null;
-          }
+    const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, uniqueChainId));
+    if (!chain) return null;
 
-          const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, uniqueChainId));
+    const regex = getCosmosAddressRegex(chain.accountPrefix || '', [39, 59]);
+    if (!regex.test(contractAddress)) return null;
 
-          const regex = getCosmosAddressRegex(chain?.accountPrefix || '', [39, 59]);
+    const { id: chainlistChainId } = parseUniqueChainId(uniqueChainId);
+    const cosmosEndpoints = chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainlistChainId));
+    const requestURLs = cosmosEndpoints.map((cosmosEndpoint) => cosmosEndpoint.getCW721ContractInfo(contractAddress));
 
-          if (!regex.test(contractAddress)) {
-            return null;
-          }
-
-          const { id: chainlistChainId } = parseUniqueChainId(uniqueChainId);
-
-          const cosmosEndpoints = chain?.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainlistChainId));
-          const requestURLs = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getCW721ContractInfo(contractAddress));
-
-          const requestURL = requestURLs?.[index];
-
-          if (!requestURLs || index >= requestURLs.length || !requestURL) {
-            throw new Error('All endpoints failed');
-          }
-
-          const returnData = await get<ContractInfoResponse>(requestURL, {
-            timeout: 1000 * 2,
-          });
-
-          return {
-            contractAddress,
-            chainId: uniqueChainId,
-            contractInfo: returnData.data,
-          };
-        }),
-      );
-
-      return response;
-    } catch (e) {
-      const error = e as Error;
-      if (error.message === 'All endpoints failed') {
-        return null;
-      }
-
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
+    for (const requestURL of requestURLs) {
+      try {
+        const returnData = await get<ContractInfoResponse>(requestURL, { timeout: 1000 * 2 });
+        return {
+          contractAddress,
+          chainId: uniqueChainId,
+          contractInfo: returnData.data,
+        };
+      } catch (e) {
+        if (isAxiosError(e) && e.response?.status === 404) {
           return null;
         }
+        console.warn(`Request failed for ${requestURL}, trying next...`);
       }
-
-      return fetcher(index + 1);
     }
+
+    throw new Error('All endpoints failed');
   };
 
-  const { data, isLoading, isFetching, isFetched, error, refetch } = useFetch({
-    queryKey: ['useCosmosContractsInfo', params],
-    fetchFunction: () => fetcher(),
+  const contractsInfoQueryResponse = useFetchFailover({
+    params: params || [],
+    fetchFunction: fetchContractInfo,
+    queryKey: 'useCosmosContractsInfo',
     config: {
       enabled: isValidParams,
       ...config,
     },
   });
 
-  return { data, isLoading, isFetching, isFetched, error, refetch };
+  return contractsInfoQueryResponse;
 }

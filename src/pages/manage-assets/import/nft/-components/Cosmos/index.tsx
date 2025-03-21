@@ -87,7 +87,7 @@ export default function Cosmos({ chainId }: CosmosProps) {
               contractAddress: debouncedContractAddress,
             },
           ]
-        : [],
+        : undefined,
   });
 
   const currentOwnedNFT = useMemo(() => {
@@ -125,8 +125,6 @@ export default function Cosmos({ chainId }: CosmosProps) {
       ),
     [currentChain?.chainType, currentChain?.id, currentOwnedNFT?.contractAddress, currentOwnedNFT?.tokenId, nftMetaData.data],
   );
-
-  console.log('🚀 ~ Cosmos ~ currentOwnedNFTMetaData:', currentOwnedNFTMetaData);
 
   const isLoadingData = useMemo(() => ownedNFTs.isFetching || nftMetaData.isFetching, [nftMetaData.isFetching, ownedNFTs.isFetching]);
 

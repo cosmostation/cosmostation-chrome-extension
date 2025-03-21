@@ -31,7 +31,9 @@ export function useTokenBalance({ chain, address, contractAddress, config }: Use
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<CW20BalanceResponse>(requestURLs[index]);
+      const response = await get<CW20BalanceResponse>(requestURLs[index], {
+        timeout: 1000 * 2,
+      });
 
       return response;
     } catch {
