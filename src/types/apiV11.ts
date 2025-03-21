@@ -45,6 +45,7 @@ export type V11Param = {
       is_send_enabled?: boolean;
       is_support_mintscan?: boolean;
       is_support_cw20?: boolean;
+      is_support_cw721?: boolean;
       is_support_mobile_wallet?: boolean;
       is_support_extension_wallet?: boolean;
       is_support_erc20?: boolean;

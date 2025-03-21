@@ -29,6 +29,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const mainAssetCoinGeckoId = chain.main_asset_coin_gecko_id || null;
 
       const isCosmwasm = chain?.is_support_cw20 ?? false;
+      const isSupportCW721 = chain.is_support_cw721 ?? false;
       const isEvm = chain?.chain_type?.includes('evm') ?? false;
 
       const lcdUrls = chain.lcd_endpoint ?? [];
@@ -69,6 +70,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
         mainAssetImage,
         mainAssetCoinGeckoId,
         isCosmwasm,
+        isSupportCW721,
         accountPrefix,
         isEvm,
         lcdUrls,

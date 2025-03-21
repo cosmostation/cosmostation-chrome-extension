@@ -38,6 +38,8 @@ export async function getChains() {
     const mainAssetDenom = chain.params.chainlist_params.main_asset_denom;
 
     const isCosmwasm = chain.params.chainlist_params?.is_support_cw20 ?? false;
+    const isSupportCW721 = chain.params.chainlist_params?.is_support_cw721 ?? false;
+
     const isEvm = chain.params.chainlist_params?.chain_type?.includes('evm') ?? false;
 
     const lcdUrls =
@@ -103,6 +105,7 @@ export async function getChains() {
       explorer,
       feeInfo,
       accountTypes,
+      isSupportCW721,
       isSupportStaking,
       isSupportHistory,
       isDiableSend,

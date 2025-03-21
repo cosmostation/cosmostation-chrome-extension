@@ -60,6 +60,7 @@ export interface CosmosChain extends ChainBase {
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;
   isSupportHistory?: boolean;
+  isSupportCW721?: boolean;
   isDiableSend?: boolean;
   apr?: string;
   stakingParams?: {
@@ -85,6 +86,7 @@ export interface CustomCosmosChain extends ChainBase {
   accountTypes: ChainAccountType[];
   isSupportStaking?: boolean;
   isSupportHistory?: boolean;
+  isSupportCW721?: boolean;
   isDiableSend?: boolean;
   apr?: string;
   stakingParams?: {

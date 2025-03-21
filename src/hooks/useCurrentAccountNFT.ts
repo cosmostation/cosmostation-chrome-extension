@@ -34,11 +34,7 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   }, [currentAccountId, storeData]);
 
   const addSuiNFT = async (newNFT: Omit<SuiNFT, 'id'>) => {
-    console.log('🚀 ~ addSuiNFT ~ newNFT:', newNFT);
-
     const storedAddedSuiNFTs = storeData[`${currentAccountId}-nft-sui`] || [];
-
-    console.log('🚀 ~ addSuiNFT ~ storedAddedSuiNFTs:', storedAddedSuiNFTs);
 
     const isAlreadyAdded = storedAddedSuiNFTs.some(
       (item) => item.objectId.toLowerCase() === newNFT.objectId.toLowerCase() && item.chainId === newNFT.chainId && item.chainType === newNFT.chainType,
