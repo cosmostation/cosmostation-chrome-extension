@@ -80,6 +80,17 @@ export const AddressTextContainer = styled('div')({
   flexDirection: 'column',
   alignItems: 'flex-start',
   rowGap: '0.4rem',
+
+  marginTop: '0.6rem',
+
+  maxWidth: '100%',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 });
 
 export const AddressText = styled(Typography)(({ theme }) => ({

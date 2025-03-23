@@ -5,6 +5,7 @@ import { produce } from 'immer';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import type { Chain } from '@/types/chain';
@@ -26,6 +27,16 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
 
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
 
+  const addressTypeLabel = (() => {
+    if (chain.chainType === 'bitcoin') {
+      return ADDRESS_FORMAT_MAPPING[coinTypeLevel as keyof typeof ADDRESS_FORMAT_MAPPING];
+    }
+
+    return t('pages.manage-assets.switch-account-type.entry.type', {
+      accountType: coinTypeLevel,
+    });
+  })();
+
   return (
     <>
       <BaseOptionButton
@@ -39,11 +50,7 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
           <AccountTypeTextContainer>
             <Base1000Text variant="b4_R">{t('pages.manage-assets.switch-account-type.entry.selected')}</Base1000Text>
             &nbsp;
-            <Base1000Text variant="b3_M">
-              {t('pages.manage-assets.switch-account-type.entry.type', {
-                accountType: coinTypeLevel,
-              })}
-            </Base1000Text>
+            <Base1000Text variant="b3_M">{addressTypeLabel}</Base1000Text>
           </AccountTypeTextContainer>
         }
         {...remainder}

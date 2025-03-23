@@ -40,6 +40,7 @@ export const DescriptionContainer = styled('div')(({ theme }) => ({
   width: '100%',
   padding: '1.2rem',
   color: theme.palette.color.base1100,
+  boxSizing: 'border-box',
 }));
 
 export const CoinTypeContainer = styled('div')({

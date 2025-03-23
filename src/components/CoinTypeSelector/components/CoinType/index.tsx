@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import { PUBKEY_STYLE_MAP } from '@/constants/bitcoin/common';
 import type { Chain, ChainAccountType } from '@/types/chain';
 import { equal, lt } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -81,12 +82,20 @@ export default function CoinTypeSelector({
           const highlightedText = isBitcoin ? purposeLevel : coinTypeLevel;
           const highlightedRightText = ` / ${isBitcoin ? `${coinTypeLevel} / ` : ''}${accountLevel} / ${changeLevel} ${indexLevel ? `/ ${indexLevel}` : ''}`;
 
+          const pubketStyleLabel = (() => {
+            if (chain.chainType === 'bitcoin') {
+              return PUBKEY_STYLE_MAP[item.accountType.pubkeyStyle as keyof typeof PUBKEY_STYLE_MAP];
+            }
+
+            return item.accountType.pubkeyStyle;
+          })();
+
           return (
             <OutlinedButton key={item.address} isSelected={isSelected} onClick={() => onClickChainType(chain.id, item.accountType)}>
               <ButtonBodyContainer>
                 <CoinTypeNameContainer>
                   <CoinTypeNameTextContainer>
-                    <Base1300Text variant="b2_M">{item.accountType.pubkeyStyle}</Base1300Text>
+                    <Base1300Text variant="b2_M">{pubketStyleLabel}</Base1300Text>
                     &nbsp;
                     {isDefaultAccountType && <DefaultText variant="b2_M">{'(Default)'}</DefaultText>}
                   </CoinTypeNameTextContainer>
