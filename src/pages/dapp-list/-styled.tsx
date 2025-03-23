@@ -71,6 +71,7 @@ export const SortConditionContainer = styled('div')({
 export const GridContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(16rem, 1fr))',
+  gridAutoRows: 'minmax(20.2rem, auto)',
   rowGap: '1.6rem',
   columnGap: '1rem',
 });
