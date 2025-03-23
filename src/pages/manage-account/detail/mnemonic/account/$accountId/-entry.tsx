@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
+import AccountImage from '@/components/AccountImage';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
@@ -116,7 +117,11 @@ export default function Entry({ accountId }: EntryProps) {
         <>
           <MainContentsContainer>
             <MainContentsLayout
-              top={<AccountImgContainer />}
+              top={
+                <AccountImgContainer>
+                  <AccountImage accountId={accountId} />
+                </AccountImgContainer>
+              }
               body={
                 <MainContentBody>
                   <IconTextButton
@@ -205,7 +210,11 @@ export default function Entry({ accountId }: EntryProps) {
         onClose={() => setIsOpenDeleteAccountBottomSheet(false)}
         contents={
           <MainContentsLayout
-            top={<SmallAccountImgContainer />}
+            top={
+              <SmallAccountImgContainer>
+                <AccountImage accountId={accountId} />
+              </SmallAccountImgContainer>
+            }
             body={
               <MainContentBody>
                 <MainContentTitleText variant="b1_B">{accountName}</MainContentTitleText>

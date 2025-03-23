@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
+import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
@@ -111,7 +112,9 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               }}
             >
               <AccountLeftContainer>
-                <AccountImgContainer />
+                <AccountImgContainer>
+                  <AccountImage accountId={item.id} />
+                </AccountImgContainer>
 
                 <AccountInfoContainer>
                   <Base1300Text variant="b2_M">{accountName}</Base1300Text>

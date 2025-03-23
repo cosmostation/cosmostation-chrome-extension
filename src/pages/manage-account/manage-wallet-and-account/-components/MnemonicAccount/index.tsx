@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
+import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
@@ -89,7 +90,9 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               }}
             >
               <AccountLeftContainer>
-                <AccountImgContainer />
+                <AccountImgContainer>
+                  <AccountImage accountId={item.id} />
+                </AccountImgContainer>
 
                 <AccountInfoContainer>
                   <Base1300Text variant="b2_M">{accountName}</Base1300Text>

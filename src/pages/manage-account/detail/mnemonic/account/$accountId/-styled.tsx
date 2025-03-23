@@ -35,15 +35,11 @@ export const MainContentSubtitleText = styled(Typography)(({ theme }) => ({
 export const AccountImgContainer = styled('div')({
   width: '5.4rem',
   height: '5.4rem',
-
-  background: 'gray',
 });
 
 export const SmallAccountImgContainer = styled('div')({
-  width: '5.4rem',
-  height: '5.4rem',
-
-  background: 'gray',
+  width: '4.2rem',
+  height: '4.2rem',
 });
 
 export const Caution = styled('div')({

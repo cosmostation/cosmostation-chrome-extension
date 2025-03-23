@@ -130,3 +130,11 @@ export function addHexPrefix(str: string) {
 export function toUTF8(hex: string) {
   return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
 }
+
+export function getHashIndex(uuid: string, arrayLength: number): number {
+  let hash = 0;
+  for (let i = 0; i < uuid.length; i++) {
+    hash += uuid.charCodeAt(i);
+  }
+  return hash % arrayLength;
+}

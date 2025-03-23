@@ -30,6 +30,4 @@ export const MainContentTitleText = styled(Base1300Text)({
 export const AccountImgContainer = styled('div')({
   width: '5.4rem',
   height: '5.4rem',
-
-  background: 'gray',
 });

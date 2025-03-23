@@ -75,8 +75,6 @@ export const AccountButton = styled('button')(({ theme }) => ({
 export const AccountImgContainer = styled('div')({
   width: '2.8rem',
   height: '2.8rem',
-
-  background: 'gray',
 });
 
 export const AccountLeftContainer = styled('div')({

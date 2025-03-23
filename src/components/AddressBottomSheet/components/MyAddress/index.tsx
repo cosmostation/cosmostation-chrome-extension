@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import type { Account, AccountAddress } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
@@ -138,13 +139,23 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
   if (filteredMnemonicAccounts.length === 0 && privateKeyAddresses.length === 0) {
     return null;
   }
+  console.log('🚀 ~ MnemonicAccount ~ filteredMnemonicAccounts:', filteredMnemonicAccounts);
 
   return (
     <WrapperContainer>
       {filteredMnemonicAccounts.map((item) => {
         const mnemonicName = mnemonicNamesByHashedMnemonic[item.id];
 
-        const flatAddressDetails = item.accounts.map((item) => item.addressDetails.map((addressDetail) => addressDetail)).flat();
+        const flatAddressDetails = item.accounts
+          .map((item) =>
+            item.addressDetails.map((addressDetail) => {
+              return {
+                accountId: item.account.id,
+                ...addressDetail,
+              };
+            }),
+          )
+          .flat();
 
         return (
           <Container key={item.id}>
@@ -166,7 +177,9 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
                     }}
                   >
                     <AccountLeftContainer>
-                      <AccountImgContainer />
+                      <AccountImgContainer>
+                        <AccountImage accountId={addressDetail.accountId} />
+                      </AccountImgContainer>
 
                       <AccountInfoContainer>
                         <TitleContainer>

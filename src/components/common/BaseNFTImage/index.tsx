@@ -1,6 +1,6 @@
 import { convertIpfs } from '@/utils/nft';
 
-import { StyledSkeletonImage } from './styles';
+import { StyledSkeletonImage } from './styled';
 
 import defaultNFTImage from '@/assets/images/default/dappDefault.png';
 

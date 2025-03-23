@@ -95,8 +95,6 @@ export const AccountRightContainer = styled('div')({});
 export const AccountImgContainer = styled('div')({
   width: '2.8rem',
   height: '2.8rem',
-
-  background: 'gray',
 });
 
 export const AccountInfoContainer = styled('div')({

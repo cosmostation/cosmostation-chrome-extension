@@ -1,3 +1,4 @@
+import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -37,7 +38,9 @@ export default function PrivateKeyAccount() {
               }}
             >
               <AccountLeftContainer>
-                <AccountImgContainer />
+                <AccountImgContainer>
+                  <AccountImage accountId={item.id} />
+                </AccountImgContainer>
 
                 <AccountInfoContainer>
                   <Base1300Text variant="b2_M">{accountName}</Base1300Text>
