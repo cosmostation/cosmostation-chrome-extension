@@ -23,7 +23,7 @@ import { Route as ImportNFT } from '@/pages/manage-assets/import/nft';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
-import NFTButtonItem from './-components/NFTButtonItem';
+import NFTButtonItem, { NFTSkeletonButtonItem } from './-components/NFTButtonItem';
 import {
   ButtonWrapper,
   Container,
@@ -265,60 +265,69 @@ export default function Entry() {
             </StickyContainer>
 
             <ButtonWrapper>
-              {!isDebouncing && !isLoading && (
+              {isLoading ? (
                 <>
-                  {sortedByAddedNFTs.map((nftItem) => {
-                    const isAdded = addedNFTIds.includes(nftItem.id || '');
+                  <NFTSkeletonButtonItem />
+                  <NFTSkeletonButtonItem />
+                  <NFTSkeletonButtonItem />
+                  <NFTSkeletonButtonItem />
+                </>
+              ) : (
+                !isDebouncing && (
+                  <>
+                    {sortedByAddedNFTs.map((nftItem) => {
+                      const isAdded = addedNFTIds.includes(nftItem.id || '');
 
-                    const uniqueKey = (() => {
-                      if (nftItem.chainType === 'sui') {
-                        return nftItem.objectId;
-                      } else if (nftItem.chainType === 'evm') {
-                        return `${nftItem.contractAddress}_${nftItem.tokenId}`;
-                      } else if (nftItem.chainType === 'cosmos') {
-                        return `${nftItem.contractAddress}_${nftItem.tokenId}`;
-                      }
-                    })();
+                      const uniqueKey = (() => {
+                        if (nftItem.chainType === 'sui') {
+                          return nftItem.objectId;
+                        } else if (nftItem.chainType === 'evm') {
+                          return `${nftItem.contractAddress}_${nftItem.tokenId}`;
+                        } else if (nftItem.chainType === 'cosmos') {
+                          return `${nftItem.contractAddress}_${nftItem.tokenId}`;
+                        }
+                      })();
 
-                    return (
-                      <NFTButtonItem
-                        key={uniqueKey}
-                        imageURL={nftItem.image}
-                        name={nftItem.name}
-                        subName={nftItem.subName}
-                        chainId={nftItem.chainId}
-                        chainType={nftItem.chainType}
-                        isActive={isAdded}
-                        onClick={() => {
-                          if (isAdded && nftItem.id) {
-                            if (nftItem.chainType === 'evm' && nftItem.isCustom) {
-                              setSupposedDeleteItem(nftItem);
-                            } else if (
-                              nftItem.chainType === 'cosmos' &&
-                              !currentAccountAddibleNFTs.cosmos.some(
-                                (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,
-                              )
-                            ) {
-                              setSupposedDeleteItem(nftItem);
+                      return (
+                        <NFTButtonItem
+                          key={uniqueKey}
+                          imageURL={nftItem.image}
+                          name={nftItem.name}
+                          subName={nftItem.subName}
+                          chainId={nftItem.chainId}
+                          chainType={nftItem.chainType}
+                          isActive={isAdded}
+                          onClick={() => {
+                            if (isAdded && nftItem.id) {
+                              if (nftItem.chainType === 'evm' && nftItem.isCustom) {
+                                setSupposedDeleteItem(nftItem);
+                              } else if (
+                                nftItem.chainType === 'cosmos' &&
+                                !currentAccountAddibleNFTs.cosmos.some(
+                                  (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,
+                                )
+                              ) {
+                                setSupposedDeleteItem(nftItem);
+                              } else {
+                                handleRemoveNFT(nftItem.id);
+                              }
                             } else {
-                              handleRemoveNFT(nftItem.id);
+                              handleAddNFT(nftItem);
                             }
-                          } else {
-                            handleAddNFT(nftItem);
-                          }
+                          }}
+                        />
+                      );
+                    })}
+
+                    {filteredNFTsBySearch?.length > viewLimit - 1 && (
+                      <IntersectionObserver
+                        onIntersect={() => {
+                          setViewLimit((limit) => limit + 30);
                         }}
                       />
-                    );
-                  })}
-
-                  {filteredNFTsBySearch?.length > viewLimit - 1 && (
-                    <IntersectionObserver
-                      onIntersect={() => {
-                        setViewLimit((limit) => limit + 30);
-                      }}
-                    />
-                  )}
-                </>
+                    )}
+                  </>
+                )
               )}
             </ButtonWrapper>
           </Container>

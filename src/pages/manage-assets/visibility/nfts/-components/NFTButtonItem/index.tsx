@@ -11,9 +11,12 @@ import {
   LeftContentsContainer,
   NFTImage,
   NFTImageContainer,
+  NFTImageSkeletonContainer,
   NFTNameTextContainer,
   NFTSubNameTextContainer,
   StyledButton,
+  SubTextSkeletonContainer,
+  TextSkeletonContainer,
 } from './styled';
 
 import AddIcon from '@/assets/images/icons/Add20.svg';
@@ -52,6 +55,30 @@ export default function NFTButtonItem({ name, subName, chainId, chainType, image
       </LeftContainer>
 
       {isActive ? <RemoveIcon /> : <AddIcon />}
+    </StyledButton>
+  );
+}
+
+export function NFTSkeletonButtonItem() {
+  return (
+    <StyledButton disabled>
+      <LeftContainer>
+        <NFTImageContainer>{<NFTImageSkeletonContainer variant="rectangular" />}</NFTImageContainer>
+        <LeftContentsContainer>
+          <NFTNameTextContainer>
+            <TextSkeletonContainer variant="rectangular" />
+          </NFTNameTextContainer>
+          <NFTSubNameTextContainer>
+            <SubTextSkeletonContainer variant="rectangular" />
+          </NFTSubNameTextContainer>
+
+          <div
+            style={{
+              height: '1.6rem',
+            }}
+          />
+        </LeftContentsContainer>
+      </LeftContainer>
     </StyledButton>
   );
 }

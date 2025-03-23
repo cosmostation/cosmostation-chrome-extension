@@ -1,3 +1,4 @@
+import { Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import BaseChainImage from '@/components/common/BaseChainImage';
@@ -59,6 +60,27 @@ export const NFTImageContainer = styled('div')({
     height: '100%',
     objectFit: 'cover',
   },
+});
+
+export const NFTImageSkeletonContainer = styled(Skeleton)({
+  backgroundColor: '#353B48',
+  width: '100%',
+  height: '100%',
+  borderRadius: '0.4rem',
+});
+
+export const TextSkeletonContainer = styled(Skeleton)({
+  backgroundColor: '#353B48',
+  width: '8rem',
+  height: '1rem',
+  borderRadius: '0.7rem',
+});
+
+export const SubTextSkeletonContainer = styled(Skeleton)({
+  backgroundColor: '#353B48',
+  width: '6rem',
+  height: '1rem',
+  borderRadius: '0.7rem',
 });
 
 export const NFTImage = styled(BaseNFTImage)({
