@@ -13,7 +13,7 @@ import { Route as ManageNFTs } from '@/pages/manage-assets/visibility/nfts';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
-import NFTItem from './components/NFTItem';
+import NFTItem, { NFTSkeletonItem } from './components/NFTItem';
 import {
   Contaienr,
   EmptyAssetContainer,
@@ -41,7 +41,7 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
   const [viewLimit, setViewLimit] = useState(30);
 
   const { scrollToTop } = useScroll();
-  const { currentAccountAddNFTsWithMeta } = useCurrentAccountAddedNFTsWithMetaData();
+  const { currentAccountAddNFTsWithMeta, isLoading } = useCurrentAccountAddedNFTsWithMetaData();
 
   const isNFTSearchingDebouncing = !!search && isPending();
 
@@ -72,6 +72,10 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
       setViewLimit(30);
     }
   }, [scrollToTop, search.length]);
+
+  if (isLoading) {
+    return <NFTListSkeleton />;
+  }
 
   return (
     <Contaienr {...reamainder}>
@@ -146,6 +150,44 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
             />
           </EmptyAssetContainer>
         )}
+      </NFTItemWrapper>
+    </Contaienr>
+  );
+}
+
+export function NFTListSkeleton() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  return (
+    <Contaienr>
+      <StickyTabPanelContentsContainer>
+        <FilterContaienr>
+          <Search disabled disableFilter placeholder={t('pages.components.NFTList.index.search')} />
+        </FilterContaienr>
+        <ManageCryptoContainer>
+          <IconTextButton
+            onClick={() => [
+              navigate({
+                to: ManageNFTs.to,
+              }),
+            ]}
+            leadingIcon={<PlusIcon />}
+          >
+            <MarginLeftTypography variant="b3_M">{t('pages.components.NFTList.index.manageNFT')}</MarginLeftTypography>
+          </IconTextButton>
+        </ManageCryptoContainer>
+      </StickyTabPanelContentsContainer>
+
+      <NFTItemWrapper>
+        <NFTGridContainer>
+          <NFTSkeletonItem />
+          <NFTSkeletonItem />
+          <NFTSkeletonItem />
+          <NFTSkeletonItem />
+          <NFTSkeletonItem />
+          <NFTSkeletonItem />
+        </NFTGridContainer>
       </NFTItemWrapper>
     </Contaienr>
   );

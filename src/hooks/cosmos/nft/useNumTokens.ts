@@ -73,7 +73,7 @@ export function useNumTokens({ params, config }: UseNumTokensProps) {
     fetchFunction: fetchNumTokens,
     queryKey: 'useCosmosNumTokens',
     config: {
-      enabled: isValidParams,
+      enabled: isValidParams && !!chainList.cosmosChains?.length,
       ...config,
     },
   });

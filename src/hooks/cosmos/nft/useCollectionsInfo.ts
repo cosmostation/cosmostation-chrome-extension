@@ -79,7 +79,7 @@ export function useCollectionsInfo({ params, config }: UseCollectionsInfoProps) 
     fetchFunction: fetchCollectionsInfo,
     queryKey: 'useCosmosCollectionsInfo',
     config: {
-      enabled: isValidParams,
+      enabled: isValidParams && !!chainList.cosmosChains?.length,
       ...config,
     },
   });

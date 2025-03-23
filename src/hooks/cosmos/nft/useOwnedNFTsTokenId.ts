@@ -86,7 +86,6 @@ export function useOwnedNFTsTokenId({ params, config }: UseOwnedNFTsTokenIdProps
         });
 
       const successResponses = results.filter((result) => result !== null);
-
       if (errors.length > 0 && successResponses.length === 0) {
         setIsAllRequestsFailed(true);
         throw new Error('All requests failed');
@@ -106,7 +105,7 @@ export function useOwnedNFTsTokenId({ params, config }: UseOwnedNFTsTokenIdProps
     config: {
       refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
       retry: 3,
-      enabled: !!isValidParams && !isAllRequestsFailed,
+      enabled: !!isValidParams && !isAllRequestsFailed && !!chainList.cosmosChains?.length,
       ...config,
     },
   });

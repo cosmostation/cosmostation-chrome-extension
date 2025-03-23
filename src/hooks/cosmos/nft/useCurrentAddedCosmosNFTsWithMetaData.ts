@@ -44,8 +44,6 @@ export function useCurrentAddedCosmosNFTsWithMetaData({ accountId }: UseCurrentA
   const { data: nftsMeta } = useNFTsMeta({ params });
 
   const addedCosmosNFTsWithMeta = useMemo(() => {
-    if (ownedNFTs.isLoading) return [];
-
     return currentAddedNFTs.cosmos.map((item) => {
       const currentAddress = currentAccountAddress?.find((address) => address.chainId === item.chainId && address.chainType === item.chainType)?.address;
 
@@ -82,7 +80,7 @@ export function useCurrentAddedCosmosNFTsWithMetaData({ accountId }: UseCurrentA
         metaData: meta,
       };
     });
-  }, [currentAccountAddress, currentAccountId, currentAddedNFTs.cosmos, nftsMeta, ownedNFTs.data, ownedNFTs.isLoading]);
+  }, [currentAccountAddress, currentAccountId, currentAddedNFTs.cosmos, nftsMeta, ownedNFTs.data]);
 
   return { addedCosmosNFTsWithMeta, isLoading: ownedNFTs.isLoading };
 }

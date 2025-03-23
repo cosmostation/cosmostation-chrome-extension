@@ -75,7 +75,7 @@ export function useNFTsURI({ params, config }: UseNFTsURIProps) {
     config: {
       retry: 3,
       refetchInterval: 1000 * 5,
-      enabled: isValidParams,
+      enabled: isValidParams && !!chainList.cosmosChains?.length,
       ...config,
     },
   });

@@ -73,7 +73,7 @@ export function useContractsInfo({ params, config }: UseContractsInfoProps) {
     fetchFunction: fetchContractInfo,
     queryKey: 'useCosmosContractsInfo',
     config: {
-      enabled: isValidParams,
+      enabled: isValidParams && !!chainList.cosmosChains?.length,
       ...config,
     },
   });

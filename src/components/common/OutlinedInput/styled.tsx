@@ -48,6 +48,9 @@ export const StyledInput = styled(OutlinedInput)<OutlinedInputProps>(({ theme, .
   '&:hover': {
     '.MuiOutlinedInput-notchedOutline': {
       border: `0.1rem solid ${theme.palette.accentColor.purple400}`,
+      '&: disabled': {
+        border: `0.1rem solid ${theme.palette.color.base200}`,
+      },
     },
   },
   '&.Mui-focused': {
@@ -60,7 +63,7 @@ export const StyledInput = styled(OutlinedInput)<OutlinedInputProps>(({ theme, .
     borderColor: theme.palette.color.base200,
   },
   '& .MuiInputBase-input.Mui-disabled': {
-    WebkitTextFillColor: theme.palette.color.base1300,
+    WebkitTextFillColor: theme.palette.color.base600,
   },
 }));
 

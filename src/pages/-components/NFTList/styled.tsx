@@ -43,6 +43,7 @@ export const NFTItemWrapper = styled('div')({});
 export const NFTGridContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(16rem, 1fr))',
+  gridAutoRows: 'minmax(20.7rem, auto)',
   rowGap: '1.6rem',
   columnGap: '1rem',
   padding: '0 1.2rem 1.2rem',

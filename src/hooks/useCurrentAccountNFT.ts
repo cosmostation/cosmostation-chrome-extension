@@ -121,13 +121,11 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
 
     const isAlreadyAdded = storedAddedCosmosNFTs.some(
       (item) =>
-        !(
-          item.contractAddress.toLowerCase() === newNFT.contractAddress.toLowerCase() &&
-          item.tokenId.toLowerCase() === newNFT.tokenId.toLowerCase() &&
-          item.tokenType.toLowerCase() === newNFT.tokenType.toLowerCase() &&
-          item.chainId === newNFT.chainId &&
-          item.chainType === newNFT.chainType
-        ),
+        item.contractAddress.toLowerCase() === newNFT.contractAddress.toLowerCase() &&
+        item.tokenId.toLowerCase() === newNFT.tokenId.toLowerCase() &&
+        item.tokenType.toLowerCase() === newNFT.tokenType.toLowerCase() &&
+        item.chainId === newNFT.chainId &&
+        item.chainType === newNFT.chainType,
     );
 
     if (isAlreadyAdded) {
@@ -136,11 +134,13 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
 
     const nonDuplicateAddedNFTs = storedAddedCosmosNFTs.filter(
       (item) =>
-        item.contractAddress.toLowerCase() === newNFT.contractAddress.toLowerCase() &&
-        item.tokenId.toLowerCase() === newNFT.tokenId.toLowerCase() &&
-        item.tokenType.toLowerCase() === newNFT.tokenType.toLowerCase() &&
-        item.chainId === newNFT.chainId &&
-        item.chainType === newNFT.chainType,
+        !(
+          item.contractAddress.toLowerCase() === newNFT.contractAddress.toLowerCase() &&
+          item.tokenId.toLowerCase() === newNFT.tokenId.toLowerCase() &&
+          item.tokenType.toLowerCase() === newNFT.tokenType.toLowerCase() &&
+          item.chainId === newNFT.chainId &&
+          item.chainType === newNFT.chainType
+        ),
     );
 
     const newNFTWithId: CosmosNFT = {

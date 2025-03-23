@@ -1,16 +1,18 @@
+import { Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import BaseChainImage from '@/components/common/BaseChainImage';
 import BaseNFTImage from '@/components/common/BaseNFTImage';
 
-export const StyledButton = styled('button')(({ theme }) => ({
+export const StyledButton = styled('button')({
+  flex: 1,
   width: '100%',
+  height: '100%',
   position: 'relative',
 
+  padding: '0',
   border: 0,
   backgroundColor: 'transparent',
-
-  padding: '0.8rem',
 
   display: 'flex',
   flexDirection: 'column',
@@ -29,11 +31,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
       backgroundColor: 'transparent',
     },
   },
-
-  '&:hover': {
-    backgroundColor: theme.palette.color.base100,
-  },
-}));
+});
 
 export const BodyContainer = styled('div')({});
 
@@ -59,6 +57,17 @@ export const NFTImageContainer = styled('div')({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+  },
+
+  '&:disabled': {
+    cursor: 'default',
+    '&:hover': {
+      opacity: 1,
+    },
+  },
+
+  '&:hover': {
+    opacity: 0.8,
   },
 });
 
@@ -106,3 +115,31 @@ export const BlurredImage = styled('div')(({ theme }) => ({
 
   color: theme.palette.common.white,
 }));
+
+export const NFTImageSkeletonContainer = styled(Skeleton)({
+  backgroundColor: '#353B48',
+  width: '100%',
+  height: '100%',
+  borderRadius: '0.4rem',
+});
+
+export const ChainImageSkeletonContainer = styled(Skeleton)({
+  backgroundColor: '#353B48',
+  width: '1.6rem',
+  height: '1.6rem',
+  borderRadius: '50%',
+});
+
+export const ChainSkeletonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  columnGap: '0.6rem',
+});
+
+export const TextSkeletonContainer = styled(Skeleton)({
+  backgroundColor: '#353B48',
+  width: '8rem',
+  height: '1rem',
+  borderRadius: '0.7rem',
+});

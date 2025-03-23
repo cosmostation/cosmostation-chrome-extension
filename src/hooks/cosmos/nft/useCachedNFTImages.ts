@@ -92,7 +92,7 @@ export function useCachedNFTImages({ params, config }: UseCachedNFTImagesProps) 
     }
   };
 
-  const { data, isLoading, isFetching, error, refetch } = useFetch({
+  const { data, isLoading, isFetching, isFetched, error, refetch } = useFetch({
     queryKey: ['useCachedNFTImages', params],
     fetchFunction: () => fetcher(),
     config: {
@@ -102,5 +102,5 @@ export function useCachedNFTImages({ params, config }: UseCachedNFTImagesProps) 
     },
   });
 
-  return { data, error, refetch, isLoading, isFetching };
+  return { data, error, refetch, isLoading, isFetching, isFetched };
 }

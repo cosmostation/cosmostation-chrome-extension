@@ -11,10 +11,14 @@ import {
   BottomContainer,
   ChainContainer,
   ChainImage,
+  ChainImageSkeletonContainer,
+  ChainSkeletonContainer,
   NFTImage,
   NFTImageContainer,
+  NFTImageSkeletonContainer,
   NFTNameTextContainer,
   StyledButton,
+  TextSkeletonContainer,
 } from './styled';
 
 export type NFTItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
@@ -64,4 +68,22 @@ export default function NFTItem({ name, chainId, chainType, isOwned, imageURL, .
   );
 }
 
-// NOTE 스켈레톤 추가 필요.
+export function NFTSkeletonItem() {
+  return (
+    <StyledButton disabled>
+      <NFTImageSkeletonContainer variant="rectangular" />
+
+      <BottomContainer>
+        <NFTNameTextContainer>
+          <TextSkeletonContainer variant="rectangular" />
+        </NFTNameTextContainer>
+        <ChainSkeletonContainer>
+          <ChainImageSkeletonContainer variant="circular" />
+          <NFTNameTextContainer>
+            <TextSkeletonContainer variant="rectangular" />
+          </NFTNameTextContainer>
+        </ChainSkeletonContainer>
+      </BottomContainer>
+    </StyledButton>
+  );
+}

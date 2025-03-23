@@ -112,32 +112,52 @@ export default function Entry() {
   const { currentAccountNFTs: currentAddedNFTs, addNFT, removeNFT } = useCurrentAccountNFT();
 
   const { addedEVMNFTsWithMeta, isLoading: isCurrentAddedEVMNFTsLoading } = useCurrentAddedEVMNFTsWithMetaData();
-  const { addedCosmosNFTsWithMeta, isLoading: isCurrentAddedCosmosNFTsLoading } = useCurrentAddedCosmosNFTsWithMetaData();
+  const { addedCosmosNFTsWithMeta } = useCurrentAddedCosmosNFTsWithMetaData();
 
-  console.log('🚀 ~ Entry ~ addedCosmosNFTsWithMeta:', addedCosmosNFTsWithMeta);
-  console.log('🚀 ~ wrappedCosmosNFTs ~ currentAccountAddibleNFTs.cosmos:', currentAccountAddibleNFTs.cosmos);
-
-  // NOTE addible코스모스를 추가하면 addedCosmosNFTsWithMeta이 바뀌면서 fetcher가 돌면서 리스트가 잠깐 빈거처럼 사라지게됨.
   const wrappedCosmosNFTs = useMemo(() => {
-    const cosmosNFTs = [...(addedCosmosNFTsWithMeta as CosmosNFTItem[]), ...(currentAccountAddibleNFTs.cosmos as CosmosNFTItem[])];
+    const pureCustomAddedCosmosNFTs = addedCosmosNFTsWithMeta.filter((item) => {
+      return !currentAccountAddibleNFTs.cosmos.some(
+        (addibleItem) => addibleItem.contractAddress === item.contractAddress && addibleItem.tokenId === item.tokenId,
+      );
+    });
 
-    const uniqueCosmosNFTs = cosmosNFTs.filter(
-      (item, index, self) => self.findIndex((t) => t.contractAddress === item.contractAddress && t.tokenId === item.tokenId) === index,
-    );
+    const addedComsosNFTsWithoutReRender = currentAddedNFTs.cosmos
+      .map((item) => {
+        const addibleItem = currentAccountAddibleNFTs.cosmos.find(
+          (addibleItem) => addibleItem.contractAddress === item.contractAddress && addibleItem.tokenId === item.tokenId,
+        );
 
-    return uniqueCosmosNFTs;
-  }, [addedCosmosNFTsWithMeta, currentAccountAddibleNFTs.cosmos]);
+        if (!addibleItem) return null;
+
+        return {
+          ...addibleItem,
+          id: item.id,
+          chainId: item.chainId,
+          chainType: item.chainType,
+          contractAddress: item.contractAddress,
+          tokenId: item.tokenId,
+          tokenType: item.tokenType,
+        };
+      })
+      .filter((item) => item !== null) as CosmosNFTItem[];
+
+    const addibleNFTs = currentAccountAddibleNFTs.cosmos.filter((addibleItem) => {
+      return !addedComsosNFTsWithoutReRender.some((item) => addibleItem.contractAddress === item.contractAddress && addibleItem.tokenId === item.tokenId);
+    });
+
+    return [...addedComsosNFTsWithoutReRender, ...pureCustomAddedCosmosNFTs, ...addibleNFTs] as CosmosNFTItem[];
+  }, [addedCosmosNFTsWithMeta, currentAccountAddibleNFTs.cosmos, currentAddedNFTs.cosmos]);
 
   const isLoading = useMemo(
-    () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading || isCurrentAddedCosmosNFTsLoading,
-    [isCurrentAccountAddibleNFTsLoading, isCurrentAddedCosmosNFTsLoading, isCurrentAddedEVMNFTsLoading],
+    () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading,
+    [isCurrentAccountAddibleNFTsLoading, isCurrentAddedEVMNFTsLoading],
   );
 
   const addedNFTIds = useMemo(() => currentAddedNFTs.flat.map((item) => item.id), [currentAddedNFTs.flat]);
 
   const aggregatedNFTs = useMemo<NFTItem[]>(
     () => [...(currentAccountAddibleNFTs.sui as SuiNFTItem[]), ...(addedEVMNFTsWithMeta as EVMNFTItem[]), ...wrappedCosmosNFTs],
-    [addedEVMNFTsWithMeta, currentAccountAddibleNFTs.sui, wrappedCosmosNFTs],
+    [wrappedCosmosNFTs, addedEVMNFTsWithMeta, currentAccountAddibleNFTs.sui],
   );
 
   const sortedNFTs = useMemo(() => {
@@ -274,7 +294,6 @@ export default function Entry() {
                             if (nftItem.chainType === 'evm' && nftItem.isCustom) {
                               setSupposedDeleteItem(nftItem);
                             } else if (
-                              // NOTE 애초에 nft리스팅 로직을 개편해서 여기서 addible판단 로직이 필요없도록 수정
                               nftItem.chainType === 'cosmos' &&
                               !currentAccountAddibleNFTs.cosmos.some(
                                 (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,

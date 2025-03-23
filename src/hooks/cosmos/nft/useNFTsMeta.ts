@@ -52,16 +52,25 @@ export function useNFTsMeta({ params, config }: UseNFTsMetaProps) {
   );
 
   const nftSourceURI = useNFTsURI({ params, config });
+
   const cachedNFTImages = useCachedNFTImages({ params: filteredSupportedCW721, config });
   const nftCollectionInfo = useCollectionsInfo({ params, config });
   const nftContractInfo = useContractsInfo({ params, config });
   const mintedNFTsCount = useNumTokens({ params, config });
 
-  const isFetchedAll = useMemo(
-    () => nftSourceURI.isFetched && nftCollectionInfo.isFetched && nftContractInfo.isFetched && mintedNFTsCount.isFetched,
+  const isFetchedAll = useMemo(() => {
+    const shouldFetchNFTImages = filteredSupportedCW721 && filteredSupportedCW721.length > 0 ? cachedNFTImages.isFetched : true;
 
-    [mintedNFTsCount.isFetched, nftCollectionInfo.isFetched, nftContractInfo.isFetched, nftSourceURI.isFetched],
-  );
+    return nftSourceURI.isFetched && nftCollectionInfo.isFetched && nftContractInfo.isFetched && mintedNFTsCount.isFetched && shouldFetchNFTImages;
+  }, [
+    cachedNFTImages.isFetched,
+    filteredSupportedCW721,
+    mintedNFTsCount.isFetched,
+    nftCollectionInfo.isFetched,
+    nftContractInfo.isFetched,
+    nftSourceURI.isFetched,
+  ]);
+
   const fetcher = async () => {
     try {
       if (!params) {
@@ -171,7 +180,7 @@ export function useNFTsMeta({ params, config }: UseNFTsMetaProps) {
     fetchFunction: () => fetcher(),
     config: {
       retry: 3,
-      enabled: isValidParams && isFetchedAll,
+      enabled: isValidParams && isFetchedAll && !!chainList.cosmosChains?.length,
       ...config,
     },
   });

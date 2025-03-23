@@ -272,7 +272,7 @@ export default function Entry() {
               </CoinButtonWrapper>
             </StyledTabPanel>
             <StyledTabPanel value={tabValue} index={1}>
-              <NFTList />
+              <NFTList selectedChainId={currentSelectedChainId} />
             </StyledTabPanel>
             <SortBottomSheet
               optionButtonProps={[
