@@ -10,6 +10,7 @@ import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { Route as ManageNFTs } from '@/pages/manage-assets/visibility/nfts';
+import { Route as NFTDetail } from '@/pages/nft-detail/$id';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
@@ -122,14 +123,14 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
                   chainType={nft.chainType}
                   isOwned={nft.isOwned}
                   imageURL={nft.image}
-                  // onClick={() => {
-                  //   navigate({
-                  //     to: destinationRoute,
-                  //     params: {
-                  //       coinId: getCoinId(coin.asset),
-                  //     },
-                  //   });
-                  // }}
+                  onClick={() => {
+                    navigate({
+                      to: NFTDetail.to,
+                      params: {
+                        id: nft.id,
+                      },
+                    });
+                  }}
                 />
               );
             })}

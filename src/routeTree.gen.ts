@@ -24,6 +24,7 @@ import { Route as WalletStakeIndexImport } from './pages/wallet/stake/index'
 import { Route as WalletSendIndexImport } from './pages/wallet/send/index'
 import { Route as WalletReceiveIndexImport } from './pages/wallet/receive/index'
 import { Route as PopupRequestAccountIndexImport } from './pages/popup/request-account/index'
+import { Route as NftDetailIdIndexImport } from './pages/nft-detail/$id/index'
 import { Route as ManageAssetsSwitchAccoutTypeIndexImport } from './pages/manage-assets/switch-accout-type/index'
 import { Route as ManageAssetsCoinTypeSettingIndexImport } from './pages/manage-assets/coin-type-setting/index'
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
@@ -170,6 +171,12 @@ const WalletReceiveIndexRoute = WalletReceiveIndexImport.update({
 const PopupRequestAccountIndexRoute = PopupRequestAccountIndexImport.update({
   id: '/popup/request-account/',
   path: '/popup/request-account/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const NftDetailIdIndexRoute = NftDetailIdIndexImport.update({
+  id: '/nft-detail/$id/',
+  path: '/nft-detail/$id/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -784,6 +791,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageAssetsSwitchAccoutTypeIndexImport
       parentRoute: typeof rootRoute
     }
+    '/nft-detail/$id/': {
+      id: '/nft-detail/$id/'
+      path: '/nft-detail/$id'
+      fullPath: '/nft-detail/$id'
+      preLoaderRoute: typeof NftDetailIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/request-account/': {
       id: '/popup/request-account/'
       path: '/popup/request-account'
@@ -1231,6 +1245,7 @@ export interface FileRoutesByFullPath {
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/manage-assets/coin-type-setting': typeof ManageAssetsCoinTypeSettingIndexRoute
   '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  '/nft-detail/$id': typeof NftDetailIdIndexRoute
   '/popup/request-account': typeof PopupRequestAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
@@ -1315,6 +1330,7 @@ export interface FileRoutesByTo {
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
   '/manage-assets/coin-type-setting': typeof ManageAssetsCoinTypeSettingIndexRoute
   '/manage-assets/switch-accout-type': typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  '/nft-detail/$id': typeof NftDetailIdIndexRoute
   '/popup/request-account': typeof PopupRequestAccountIndexRoute
   '/wallet/receive': typeof WalletReceiveIndexRoute
   '/wallet/send': typeof WalletSendIndexRoute
@@ -1400,6 +1416,7 @@ export interface FileRoutesById {
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
   '/manage-assets/coin-type-setting/': typeof ManageAssetsCoinTypeSettingIndexRoute
   '/manage-assets/switch-accout-type/': typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  '/nft-detail/$id/': typeof NftDetailIdIndexRoute
   '/popup/request-account/': typeof PopupRequestAccountIndexRoute
   '/wallet/receive/': typeof WalletReceiveIndexRoute
   '/wallet/send/': typeof WalletSendIndexRoute
@@ -1486,6 +1503,7 @@ export interface FileRouteTypes {
     | '/manage-account/switch-account'
     | '/manage-assets/coin-type-setting'
     | '/manage-assets/switch-accout-type'
+    | '/nft-detail/$id'
     | '/popup/request-account'
     | '/wallet/receive'
     | '/wallet/send'
@@ -1569,6 +1587,7 @@ export interface FileRouteTypes {
     | '/manage-account/switch-account'
     | '/manage-assets/coin-type-setting'
     | '/manage-assets/switch-accout-type'
+    | '/nft-detail/$id'
     | '/popup/request-account'
     | '/wallet/receive'
     | '/wallet/send'
@@ -1652,6 +1671,7 @@ export interface FileRouteTypes {
     | '/manage-account/switch-account/'
     | '/manage-assets/coin-type-setting/'
     | '/manage-assets/switch-accout-type/'
+    | '/nft-detail/$id/'
     | '/popup/request-account/'
     | '/wallet/receive/'
     | '/wallet/send/'
@@ -1737,6 +1757,7 @@ export interface RootRouteChildren {
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
   ManageAssetsCoinTypeSettingIndexRoute: typeof ManageAssetsCoinTypeSettingIndexRoute
   ManageAssetsSwitchAccoutTypeIndexRoute: typeof ManageAssetsSwitchAccoutTypeIndexRoute
+  NftDetailIdIndexRoute: typeof NftDetailIdIndexRoute
   PopupRequestAccountIndexRoute: typeof PopupRequestAccountIndexRoute
   WalletReceiveIndexRoute: typeof WalletReceiveIndexRoute
   WalletSendIndexRoute: typeof WalletSendIndexRoute
@@ -1825,6 +1846,7 @@ const rootRouteChildren: RootRouteChildren = {
   ManageAssetsCoinTypeSettingIndexRoute: ManageAssetsCoinTypeSettingIndexRoute,
   ManageAssetsSwitchAccoutTypeIndexRoute:
     ManageAssetsSwitchAccoutTypeIndexRoute,
+  NftDetailIdIndexRoute: NftDetailIdIndexRoute,
   PopupRequestAccountIndexRoute: PopupRequestAccountIndexRoute,
   WalletReceiveIndexRoute: WalletReceiveIndexRoute,
   WalletSendIndexRoute: WalletSendIndexRoute,
@@ -1937,6 +1959,7 @@ export const routeTree = rootRoute
         "/manage-account/switch-account/",
         "/manage-assets/coin-type-setting/",
         "/manage-assets/switch-accout-type/",
+        "/nft-detail/$id/",
         "/popup/request-account/",
         "/wallet/receive/",
         "/wallet/send/",
@@ -2061,6 +2084,9 @@ export const routeTree = rootRoute
     },
     "/manage-assets/switch-accout-type/": {
       "filePath": "manage-assets/switch-accout-type/index.tsx"
+    },
+    "/nft-detail/$id/": {
+      "filePath": "nft-detail/$id/index.tsx"
     },
     "/popup/request-account/": {
       "filePath": "popup/request-account/index.tsx"
