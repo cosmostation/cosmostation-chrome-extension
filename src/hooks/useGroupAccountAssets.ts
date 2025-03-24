@@ -31,7 +31,7 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
   const param = accountId || currentAccount.id;
 
   // TODO 서스펜스 처리
-  const { data: currentAccountAssets } = useAccountAssets({ accountId: param });
+  const { data: currentAccountAssets, isLoading } = useAccountAssets({ accountId: param });
 
   const groupAccountAssets = useMemo(() => {
     const assetToSingleOrGroup = currentAccountAssets?.flatAccountAssets.reduce<SingleAndGroupedAssets>(
@@ -117,5 +117,5 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
     };
   }, [currentAccountAssets?.flatAccountAssets]);
 
-  return { groupAccountAssets };
+  return { groupAccountAssets, isLoading };
 }

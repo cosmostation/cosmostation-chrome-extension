@@ -31,6 +31,7 @@ import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import NFTList from './-components/NFTList';
+import SkeletonCoinList from './-components/SkeletonCoinList';
 import {
   // AdCarouselContainer,
   // CarouselImg,
@@ -71,7 +72,7 @@ export default function Entry() {
 
   const [viewLimit, setViewLimit] = useState(30);
 
-  const { groupAccountAssets } = useGroupAccountAssets();
+  const { groupAccountAssets, isLoading } = useGroupAccountAssets();
 
   const computedAssetValues = useMemo(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
@@ -235,33 +236,37 @@ export default function Entry() {
                 </ManageCryptoContainer>
               </StickyTabPanelContentsContainer>
               <CoinButtonWrapper>
-                {filteredAssetsBySearch.map((coin) => {
-                  const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
+                {isLoading ? (
+                  <SkeletonCoinList />
+                ) : (
+                  filteredAssetsBySearch.map((coin) => {
+                    const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
 
-                  const isGroupToken = gt(coin.counts || '0', '1');
-                  const isNativeToken = coin.asset.type === 'native';
-                  return (
-                    <CoinWithMarketTrendButton
-                      key={getCoinId(coin.asset)}
-                      onClick={() => {
-                        navigate({
-                          to: destinationRoute,
-                          params: {
-                            coinId: getCoinId(coin.asset),
-                          },
-                        });
-                      }}
-                      displayAmount={coin.totalDisplayAmount || '0'}
-                      symbol={coin.asset.symbol}
-                      coinGeckoId={coin.asset.coinGeckoId}
-                      coinImageProps={{
-                        imageURL: coin.asset.image,
-                        isAggregatedCoin: gt(coin.counts || '0', '1'),
-                        badgeImageURL: isGroupToken || isNativeToken ? undefined : coin.chain.image || undefined,
-                      }}
-                    />
-                  );
-                })}
+                    const isGroupToken = gt(coin.counts || '0', '1');
+                    const isNativeToken = coin.asset.type === 'native';
+                    return (
+                      <CoinWithMarketTrendButton
+                        key={getCoinId(coin.asset)}
+                        onClick={() => {
+                          navigate({
+                            to: destinationRoute,
+                            params: {
+                              coinId: getCoinId(coin.asset),
+                            },
+                          });
+                        }}
+                        displayAmount={coin.totalDisplayAmount || '0'}
+                        symbol={coin.asset.symbol}
+                        coinGeckoId={coin.asset.coinGeckoId}
+                        coinImageProps={{
+                          imageURL: coin.asset.image,
+                          isAggregatedCoin: gt(coin.counts || '0', '1'),
+                          badgeImageURL: isGroupToken || isNativeToken ? undefined : coin.chain.image || undefined,
+                        }}
+                      />
+                    );
+                  })
+                )}
                 {filteredAssetsBySearch?.length > viewLimit - 1 && (
                   <IntersectionObserver
                     onIntersect={() => {
