@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { gt } from 'lodash';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text';
@@ -10,6 +12,7 @@ import Tooltip from '@/components/common/Tooltip';
 import { useGetNFTBalance } from '@/hooks/evm/nft/useGetNFTBalance';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
+import { Route as NFTSend } from '@/pages/wallet/nft-send/$id';
 import { toDisplayTokenId, toDisplayTokenStandard } from '@/utils/nft';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
@@ -45,6 +48,7 @@ type EVMProps = {
 
 export default function EVM({ id }: EVMProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { chainList } = useChainList();
 
   const { currentAccountAddNFTsWithMeta } = useCurrentAccountAddedNFTsWithMetaData();
@@ -77,7 +81,13 @@ export default function EVM({ id }: EVMProps) {
 
   const chain = chainList.evmChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType);
 
-  const isDiabledSend = !selectedNFT?.isOwned;
+  const errorMessage = useMemo(() => {
+    if (!selectedNFT?.isOwned) {
+      return t('pages.nft-detail.$id.entry.evm.index.notOwnedNFT');
+    }
+
+    return '';
+  }, [selectedNFT, t]);
   return (
     <>
       <BaseBody>
@@ -208,9 +218,21 @@ export default function EVM({ id }: EVMProps) {
         </ContentsContainer>
       </BaseBody>
       <StickyFooterInnerBody>
-        <Tooltip title={t('pages.nft-detail.$id.entry.evm.index.notOwnedNFT')} varient="error" placement="top">
+        <Tooltip title={errorMessage} varient="error" placement="top">
           <div>
-            <Button disabled={isDiabledSend}>{t('pages.nft-detail.$id.entry.evm.index.nftSend')}</Button>
+            <Button
+              onClick={() => {
+                navigate({
+                  to: NFTSend.to,
+                  params: {
+                    id,
+                  },
+                });
+              }}
+              disabled={!!errorMessage}
+            >
+              {t('pages.nft-detail.$id.entry.evm.index.nftSend')}
+            </Button>
           </div>
         </Tooltip>
       </StickyFooterInnerBody>

@@ -23,7 +23,7 @@ import OptionButton from '../FeeSettingBottomSheet/components/OptionButton';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-type FeeOption = BasicFeeOption | EIP1559FeeOption;
+export type FeeOption = BasicFeeOption | EIP1559FeeOption;
 
 type FeeSettingBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   feeOptionDatas: FeeOption[];
@@ -81,7 +81,7 @@ export default function FeeSettingBottomSheet({
           if (item.title === 'Custom' && !item.gas) return null;
 
           const gas = item.gas || '0';
-          const gasRate = item.type === 'BASIC' ? item.gasPrice : item.maxBaseFeePerGas || '0';
+          const gasRate = item.type === 'BASIC' ? item.gasPrice || '0' : item.maxBaseFeePerGas || '0';
           const decimals = item.decimals || 0;
           const symbol = item.symbol || '';
           const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[currency]) || 0;
@@ -108,28 +108,28 @@ export default function FeeSettingBottomSheet({
   }, [customFeeStepKey, feeOptionDatas]);
 
   const defatultCustomGasPrice = useMemo(() => {
-    const customGasRate = feeOptionDatas?.[customFeeStepKey].type === 'BASIC' ? feeOptionDatas?.[customFeeStepKey].gasPrice : undefined;
+    const customGasRate = feeOptionDatas?.[customFeeStepKey]?.type === 'BASIC' ? feeOptionDatas?.[customFeeStepKey]?.gasPrice : undefined;
 
     if (customGasRate) {
       return customGasRate;
     }
 
-    if (feeOptionDatas?.[0].type === 'BASIC') {
-      return feeOptionDatas[0].gasPrice || '0';
+    if (feeOptionDatas?.[0]?.type === 'BASIC') {
+      return feeOptionDatas[0]?.gasPrice || '0';
     }
 
     return '0';
   }, [customFeeStepKey, feeOptionDatas]);
 
   const defatultCustomMaxBaseFeePerGas = useMemo(() => {
-    const customMaxBaseFeePerGas = feeOptionDatas?.[customFeeStepKey].type === 'EIP-1559' ? feeOptionDatas?.[customFeeStepKey].maxBaseFeePerGas : undefined;
+    const customMaxBaseFeePerGas = feeOptionDatas?.[customFeeStepKey]?.type === 'EIP-1559' ? feeOptionDatas?.[customFeeStepKey]?.maxBaseFeePerGas : undefined;
 
     if (customMaxBaseFeePerGas) {
       return customMaxBaseFeePerGas;
     }
 
-    if (feeOptionDatas?.[0].type === 'EIP-1559') {
-      return feeOptionDatas[0].maxBaseFeePerGas || '0';
+    if (feeOptionDatas?.[0]?.type === 'EIP-1559') {
+      return feeOptionDatas[0]?.maxBaseFeePerGas || '0';
     }
 
     return '0';
@@ -137,14 +137,14 @@ export default function FeeSettingBottomSheet({
 
   const defatultCustomMaxPriorityFeePerGas = useMemo(() => {
     const customMaxPriorityFeePerGas =
-      feeOptionDatas?.[customFeeStepKey].type === 'EIP-1559' ? feeOptionDatas?.[customFeeStepKey].maxPriorityFeePerGas : undefined;
+      feeOptionDatas?.[customFeeStepKey]?.type === 'EIP-1559' ? feeOptionDatas?.[customFeeStepKey]?.maxPriorityFeePerGas : undefined;
 
     if (customMaxPriorityFeePerGas) {
       return customMaxPriorityFeePerGas;
     }
 
-    if (feeOptionDatas?.[0].type === 'EIP-1559') {
-      return feeOptionDatas[0].maxPriorityFeePerGas || '0';
+    if (feeOptionDatas?.[0]?.type === 'EIP-1559') {
+      return feeOptionDatas[0]?.maxPriorityFeePerGas || '0';
     }
 
     return '0';

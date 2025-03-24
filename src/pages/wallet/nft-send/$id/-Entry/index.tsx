@@ -1,6 +1,7 @@
-import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
+import { useCurrentAccountNFT } from '@/hooks/useCurrentAccountNFT';
 
 import Cosmos from './Cosmos';
+import EVM from './EVM';
 import Sui from './Sui';
 
 type EntryProps = {
@@ -8,15 +9,18 @@ type EntryProps = {
 };
 
 export default function Entry({ id }: EntryProps) {
-  const { currentAccountAddNFTsWithMeta } = useCurrentAccountAddedNFTsWithMetaData();
+  const { currentAccountNFTs } = useCurrentAccountNFT();
 
-  const selectedNFT = currentAccountAddNFTsWithMeta.flat.find((nft) => nft.id === id);
+  const selectedNFT = currentAccountNFTs.flat.find((nft) => nft.id === id);
 
   if (selectedNFT?.chainType === 'cosmos') {
     return <Cosmos id={id} />;
   }
   if (selectedNFT?.chainType === 'sui') {
     return <Sui id={id} />;
+  }
+  if (selectedNFT?.chainType === 'evm') {
+    return <EVM id={id} />;
   }
 
   return null;

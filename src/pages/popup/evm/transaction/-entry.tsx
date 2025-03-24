@@ -48,7 +48,7 @@ export type BasicFeeOption = {
   symbol: string;
   type: 'BASIC';
   gas?: string;
-  gasPrice: string;
+  gasPrice?: string;
   title: string;
 };
 
@@ -60,8 +60,8 @@ export type EIP1559FeeOption = {
   symbol: string;
   type: 'EIP-1559';
   gas?: string;
-  maxBaseFeePerGas: string;
-  maxPriorityFeePerGas: string;
+  maxBaseFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
   title: string;
 };
 
