@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text';
@@ -8,6 +10,7 @@ import IconButton from '@/components/common/IconButton';
 import Tooltip from '@/components/common/Tooltip';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
+import { Route as NFTSend } from '@/pages/wallet/nft-send/$id';
 import { toDisplayCWTokenStandard, toDisplayTokenId } from '@/utils/nft';
 import { shorterAddress } from '@/utils/string';
 
@@ -42,6 +45,8 @@ type CosmosProps = {
 
 export default function Cosmos({ id }: CosmosProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const { chainList } = useChainList();
 
   const { currentAccountAddNFTsWithMeta } = useCurrentAccountAddedNFTsWithMetaData();
@@ -66,7 +71,13 @@ export default function Cosmos({ id }: CosmosProps) {
 
   const chain = chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType);
 
-  const isDiabledSend = !selectedNFT?.isOwned;
+  const errorMessage = useMemo(() => {
+    if (!selectedNFT?.isOwned) {
+      return t('pages.nft-detail.$id.entry.cosmos.index.notOwnedNFT');
+    }
+
+    return '';
+  }, [selectedNFT, t]);
   return (
     <>
       <BaseBody>
@@ -172,9 +183,21 @@ export default function Cosmos({ id }: CosmosProps) {
         </ContentsContainer>
       </BaseBody>
       <StickyFooterInnerBody>
-        <Tooltip title={t('pages.nft-detail.$id.entry.cosmos.index.notOwnedNFT')} varient="error" placement="top">
+        <Tooltip title={errorMessage} varient="error" placement="top">
           <div>
-            <Button disabled={isDiabledSend}>{t('pages.nft-detail.$id.entry.cosmos.index.nftSend')}</Button>
+            <Button
+              onClick={() => {
+                navigate({
+                  to: NFTSend.to,
+                  params: {
+                    id,
+                  },
+                });
+              }}
+              disabled={!!errorMessage}
+            >
+              {t('pages.nft-detail.$id.entry.cosmos.index.nftSend')}
+            </Button>
           </div>
         </Tooltip>
       </StickyFooterInnerBody>

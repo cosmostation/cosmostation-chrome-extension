@@ -1665,6 +1665,34 @@
             "header": "Cancel Unstaking"
           }
         }
+      },
+      "nft-send": {
+        "$id": {
+          "Entry": {
+            "Cosmos": {
+              "index": {
+                "invalidAddress": "Invalid address",
+                "notFoundNFT": "NFT not found",
+                "notOwnedNFT": "You do not own this NFT",
+                "invalidOwnerAddress": "Invalid owner address",
+                "insufficientAmount": "Insufficient amount",
+                "tokenId": "Token ID: {{tokenId}}",
+                "recipientNetwork": "Recipient Chain",
+                "recipientAddress": "Recipient Address",
+                "memo": "Memo (Option)",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendNFTReview": "Confirm Send NFT",
+                "sendNFTReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "sendNFT": "Send NFT",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+              }
+            }
+          },
+          "layout": {
+            "header": "Send NFT"
+          }
+        }
       }
     },
     "view": {

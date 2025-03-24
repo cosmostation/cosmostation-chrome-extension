@@ -44,6 +44,7 @@ import { Route as WalletSwapCoinIdIndexImport } from './pages/wallet/swap/$coinI
 import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coinId/index'
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
+import { Route as WalletNftSendIdIndexImport } from './pages/wallet/nft-send/$id/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
 import { Route as WalletCancelUnstakingCoinIdIndexImport } from './pages/wallet/cancel-unstaking/$coinId/index'
 import { Route as PopupSuiTransactionIndexImport } from './pages/popup/sui/transaction/index'
@@ -299,6 +300,12 @@ const WalletSendCoinIdIndexRoute = WalletSendCoinIdIndexImport.update({
 const WalletReceiveCoinIdIndexRoute = WalletReceiveCoinIdIndexImport.update({
   id: '/wallet/receive/$coinId/',
   path: '/wallet/receive/$coinId/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WalletNftSendIdIndexRoute = WalletNftSendIdIndexImport.update({
+  id: '/wallet/nft-send/$id/',
+  path: '/wallet/nft-send/$id/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -1050,6 +1057,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletClaimAllRewardsCoinIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/nft-send/$id/': {
+      id: '/wallet/nft-send/$id/'
+      path: '/wallet/nft-send/$id'
+      fullPath: '/wallet/nft-send/$id'
+      preLoaderRoute: typeof WalletNftSendIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/receive/$coinId/': {
       id: '/wallet/receive/$coinId/'
       path: '/wallet/receive/$coinId'
@@ -1282,6 +1296,7 @@ export interface FileRoutesByFullPath {
   '/popup/sui/transaction': typeof PopupSuiTransactionIndexRoute
   '/wallet/cancel-unstaking/$coinId': typeof WalletCancelUnstakingCoinIdIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
+  '/wallet/nft-send/$id': typeof WalletNftSendIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -1367,6 +1382,7 @@ export interface FileRoutesByTo {
   '/popup/sui/transaction': typeof PopupSuiTransactionIndexRoute
   '/wallet/cancel-unstaking/$coinId': typeof WalletCancelUnstakingCoinIdIndexRoute
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
+  '/wallet/nft-send/$id': typeof WalletNftSendIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -1453,6 +1469,7 @@ export interface FileRoutesById {
   '/popup/sui/transaction/': typeof PopupSuiTransactionIndexRoute
   '/wallet/cancel-unstaking/$coinId/': typeof WalletCancelUnstakingCoinIdIndexRoute
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
+  '/wallet/nft-send/$id/': typeof WalletNftSendIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
@@ -1540,6 +1557,7 @@ export interface FileRouteTypes {
     | '/popup/sui/transaction'
     | '/wallet/cancel-unstaking/$coinId'
     | '/wallet/claim-all-rewards/$coinId'
+    | '/wallet/nft-send/$id'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -1624,6 +1642,7 @@ export interface FileRouteTypes {
     | '/popup/sui/transaction'
     | '/wallet/cancel-unstaking/$coinId'
     | '/wallet/claim-all-rewards/$coinId'
+    | '/wallet/nft-send/$id'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -1708,6 +1727,7 @@ export interface FileRouteTypes {
     | '/popup/sui/transaction/'
     | '/wallet/cancel-unstaking/$coinId/'
     | '/wallet/claim-all-rewards/$coinId/'
+    | '/wallet/nft-send/$id/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
     | '/wallet/stake/$coinId/'
@@ -1794,6 +1814,7 @@ export interface RootRouteChildren {
   PopupSuiTransactionIndexRoute: typeof PopupSuiTransactionIndexRoute
   WalletCancelUnstakingCoinIdIndexRoute: typeof WalletCancelUnstakingCoinIdIndexRoute
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
+  WalletNftSendIdIndexRoute: typeof WalletNftSendIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
@@ -1889,6 +1910,7 @@ const rootRouteChildren: RootRouteChildren = {
   PopupSuiTransactionIndexRoute: PopupSuiTransactionIndexRoute,
   WalletCancelUnstakingCoinIdIndexRoute: WalletCancelUnstakingCoinIdIndexRoute,
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
+  WalletNftSendIdIndexRoute: WalletNftSendIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
   WalletStakeCoinIdIndexRoute: WalletStakeCoinIdIndexRoute,
@@ -1996,6 +2018,7 @@ export const routeTree = rootRoute
         "/popup/sui/transaction/",
         "/wallet/cancel-unstaking/$coinId/",
         "/wallet/claim-all-rewards/$coinId/",
+        "/wallet/nft-send/$id/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
         "/wallet/stake/$coinId/",
@@ -2195,6 +2218,9 @@ export const routeTree = rootRoute
     },
     "/wallet/claim-all-rewards/$coinId/": {
       "filePath": "wallet/claim-all-rewards/$coinId/index.tsx"
+    },
+    "/wallet/nft-send/$id/": {
+      "filePath": "wallet/nft-send/$id/index.tsx"
     },
     "/wallet/receive/$coinId/": {
       "filePath": "wallet/receive/$coinId/index.tsx"
