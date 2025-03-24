@@ -108,7 +108,7 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
       </StickyTabPanelContentsContainer>
 
       <NFTItemWrapper>
-        {isLoading || search ? (
+        {isLoading ? (
           <NFTListSkeleton />
         ) : filteredNFTs.length > 0 ? (
           <NFTGridContainer>
