@@ -6,7 +6,7 @@ import type { ApprovedSuiPermissionType } from '@/types/extension';
 import { emitChangedAddressEvent } from '@/utils/event';
 import { emitToWeb } from '@/utils/message';
 import { removeMnemonicName } from '@/utils/mnemonicNames';
-import { deleteKeysContainingString } from '@/utils/storage';
+import { deleteKeysContainingString, getExtensionLocalStorage } from '@/utils/storage';
 import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
 import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
 import { removeInitAccountId, removeInitAccountIds } from '@/utils/zustand/initAccountIds';
@@ -30,6 +30,9 @@ export function useCurrentAccount() {
   const setCurrentAccount = async (id: string) => {
     if (selectedAccountId === id) return;
 
+    const storedAccounts = await getExtensionLocalStorage('accounts');
+    const accounts = storedAccounts ?? [];
+
     const isExist = !!accounts.find((account) => account.id === id);
 
     const newAccountId = isExist ? id : accounts[0].id;
@@ -40,13 +43,23 @@ export function useCurrentAccount() {
   };
 
   const addAccount = async (account: Account) => {
-    await updateExtensionStorageStore('accounts', [...accounts, account]);
+    const storedAccounts = await getExtensionLocalStorage('accounts');
+    const accounts = storedAccounts ?? [];
+
+    const filteredAccounts = accounts.filter((item) => item.id !== account.id);
+
+    await updateExtensionStorageStore('accounts', [...filteredAccounts, account]);
   };
 
   const addAccountWithName = async (accountInfo: AccountWithName) => {
     const { name, ...account } = accountInfo;
 
-    await updateExtensionStorageStore('accounts', [...accounts, account]);
+    const storedAccounts = await getExtensionLocalStorage('accounts');
+    const accounts = storedAccounts ?? [];
+
+    const filteredAccounts = accounts.filter((account) => account.id !== accountInfo.id);
+
+    await updateExtensionStorageStore('accounts', [...filteredAccounts, account]);
     await updateExtensionStorageStore('accountNamesById', { ...accountNamesById, [account.id]: name });
   };
 
