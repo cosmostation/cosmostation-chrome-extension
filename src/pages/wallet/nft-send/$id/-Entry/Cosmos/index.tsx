@@ -62,9 +62,12 @@ export default function Cosmos({ id }: CosmosProps) {
   const { chainList } = useChainList();
   const { addedCosmosNFTsWithMeta, isLoading: isLoadingCosmsoNFTs } = useCurrentAddedCosmosNFTsWithMetaData();
 
-  const selectedNFT = addedCosmosNFTsWithMeta.find((nft) => nft.id === id);
+  const selectedNFT = useMemo(() => addedCosmosNFTsWithMeta.find((nft) => nft.id === id), [addedCosmosNFTsWithMeta, id]);
 
-  const chain = chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType);
+  const chain = useMemo(
+    () => chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType),
+    [chainList.cosmosChains, selectedNFT?.chainId, selectedNFT?.chainType],
+  );
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain?.accountPrefix || '', [39]), [chain?.accountPrefix]);
 
   const nftImage = selectedNFT?.image;
