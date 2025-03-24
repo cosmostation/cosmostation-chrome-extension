@@ -74,10 +74,6 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
     }
   }, [scrollToTop, search.length]);
 
-  if (isLoading) {
-    return <NFTListSkeleton />;
-  }
-
   return (
     <Contaienr {...reamainder}>
       <StickyTabPanelContentsContainer>
@@ -112,7 +108,9 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
       </StickyTabPanelContentsContainer>
 
       <NFTItemWrapper>
-        {filteredNFTs.length > 0 ? (
+        {isLoading || search ? (
+          <NFTListSkeleton />
+        ) : filteredNFTs.length > 0 ? (
           <NFTGridContainer>
             {filteredNFTs.map((nft) => {
               return (
@@ -157,39 +155,16 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
 }
 
 export function NFTListSkeleton() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-
   return (
-    <Contaienr>
-      <StickyTabPanelContentsContainer>
-        <FilterContaienr>
-          <Search disabled disableFilter placeholder={t('pages.components.NFTList.index.search')} />
-        </FilterContaienr>
-        <ManageCryptoContainer>
-          <IconTextButton
-            onClick={() => [
-              navigate({
-                to: ManageNFTs.to,
-              }),
-            ]}
-            leadingIcon={<PlusIcon />}
-          >
-            <MarginLeftTypography variant="b3_M">{t('pages.components.NFTList.index.manageNFT')}</MarginLeftTypography>
-          </IconTextButton>
-        </ManageCryptoContainer>
-      </StickyTabPanelContentsContainer>
-
-      <NFTItemWrapper>
-        <NFTGridContainer>
-          <NFTSkeletonItem />
-          <NFTSkeletonItem />
-          <NFTSkeletonItem />
-          <NFTSkeletonItem />
-          <NFTSkeletonItem />
-          <NFTSkeletonItem />
-        </NFTGridContainer>
-      </NFTItemWrapper>
-    </Contaienr>
+    <NFTItemWrapper>
+      <NFTGridContainer>
+        <NFTSkeletonItem />
+        <NFTSkeletonItem />
+        <NFTSkeletonItem />
+        <NFTSkeletonItem />
+        <NFTSkeletonItem />
+        <NFTSkeletonItem />
+      </NFTGridContainer>
+    </NFTItemWrapper>
   );
 }

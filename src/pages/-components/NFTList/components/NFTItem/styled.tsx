@@ -1,8 +1,8 @@
-import { Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import BaseChainImage from '@/components/common/BaseChainImage';
 import BaseNFTImage from '@/components/common/BaseNFTImage';
+import BaseSkeleton from '@/components/common/BaseSkeleton';
 
 export const StyledButton = styled('button')({
   flex: 1,
@@ -116,15 +116,13 @@ export const BlurredImage = styled('div')(({ theme }) => ({
   color: theme.palette.common.white,
 }));
 
-export const NFTImageSkeletonContainer = styled(Skeleton)({
-  backgroundColor: '#353B48',
+export const NFTImageSkeletonContainer = styled(BaseSkeleton)({
   width: '100%',
   height: '100%',
   borderRadius: '0.4rem',
 });
 
-export const ChainImageSkeletonContainer = styled(Skeleton)({
-  backgroundColor: '#353B48',
+export const ChainImageSkeletonContainer = styled(BaseSkeleton)({
   width: '1.6rem',
   height: '1.6rem',
   borderRadius: '50%',
@@ -137,8 +135,7 @@ export const ChainSkeletonContainer = styled('div')({
   columnGap: '0.6rem',
 });
 
-export const TextSkeletonContainer = styled(Skeleton)({
-  backgroundColor: '#353B48',
+export const TextSkeletonContainer = styled(BaseSkeleton)({
   width: '8rem',
   height: '1rem',
   borderRadius: '0.7rem',

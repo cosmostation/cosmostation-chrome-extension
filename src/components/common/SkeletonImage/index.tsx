@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import Skeleton from '@mui/material/Skeleton';
+
+import BaseSkeleton from '../BaseSkeleton';
 
 import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
 
@@ -26,17 +27,7 @@ export default function SkeletonImage({ src, defaultImgSrc = DefaultCoinImage, a
 
   return (
     <>
-      {!isLoaded && (
-        <Skeleton
-          variant="rectangular"
-          sx={{
-            bgcolor: '#353B48',
-          }}
-          animation="wave"
-          width="100%"
-          height="100%"
-        />
-      )}
+      {!isLoaded && <BaseSkeleton variant="rectangular" width="100%" height="100%" />}
       <img className={className} src={validSrc} alt={alt} onLoad={handleLoad} onError={handleError} style={{ display: isLoaded ? 'block' : 'none' }} />
     </>
   );

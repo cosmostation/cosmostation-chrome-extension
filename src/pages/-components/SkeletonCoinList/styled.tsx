@@ -1,5 +1,6 @@
-import { Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
+import BaseSkeleton from '@/components/common/BaseSkeleton';
 
 export const Container = styled('div')({
   width: '100%',
@@ -31,21 +32,18 @@ export const RightContainer = styled('div')({
   rowGap: '0.8rem',
 });
 
-export const CircleSkeletonContainer = styled(Skeleton)({
-  backgroundColor: '#353B48',
+export const CircleSkeletonContainer = styled(BaseSkeleton)({
   width: '3.2rem',
   height: '3.2rem',
 });
 
-export const TextSkeletonContainer = styled(Skeleton)({
-  backgroundColor: '#353B48',
+export const TextSkeletonContainer = styled(BaseSkeleton)({
   width: '8rem',
   height: '1rem',
   borderRadius: '0.7rem',
 });
 
-export const SmallTextSkeletonContainer = styled(Skeleton)({
-  backgroundColor: '#353B48',
+export const SmallTextSkeletonContainer = styled(BaseSkeleton)({
   width: '6rem',
   height: '1rem',
   borderRadius: '0.7rem',
