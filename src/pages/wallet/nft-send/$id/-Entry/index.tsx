@@ -1,6 +1,7 @@
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 
 import Cosmos from './Cosmos';
+import Sui from './Sui';
 
 type EntryProps = {
   id: string;
@@ -13,6 +14,9 @@ export default function Entry({ id }: EntryProps) {
 
   if (selectedNFT?.chainType === 'cosmos') {
     return <Cosmos id={id} />;
+  }
+  if (selectedNFT?.chainType === 'sui') {
+    return <Sui id={id} />;
   }
 
   return null;

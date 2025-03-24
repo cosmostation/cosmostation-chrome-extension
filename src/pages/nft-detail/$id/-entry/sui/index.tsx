@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text';
@@ -9,6 +10,7 @@ import Tooltip from '@/components/common/Tooltip';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { useCurrentAccountAddresses } from '@/hooks/useCurrentAccountAddresses';
+import { Route as NFTSend } from '@/pages/wallet/nft-send/$id';
 import { shorterAddress } from '@/utils/string';
 
 import {
@@ -36,6 +38,7 @@ type SuiProps = {
 
 export default function Sui({ id }: SuiProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { chainList } = useChainList();
 
   const { data: currentAccountAddresses } = useCurrentAccountAddresses();
@@ -115,7 +118,11 @@ export default function Sui({ id }: SuiProps) {
             </DetailRowContainer>
             <DetailRowContainer>
               <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.sui.index.objectId')}</Base1000Text>
-              <Base1300Text variant="b3_M">{shorterNFTObjectId}</Base1300Text>
+              <Tooltip title={nftObjectId} placement="top">
+                <div>
+                  <Base1300Text variant="b3_M">{shorterNFTObjectId}</Base1300Text>
+                </div>
+              </Tooltip>
             </DetailRowContainer>
           </DetailContainer>
         </ContentsContainer>
@@ -123,7 +130,19 @@ export default function Sui({ id }: SuiProps) {
       <StickyFooterInnerBody>
         <Tooltip title={errorMessage} varient="error" placement="top">
           <div>
-            <Button disabled={!!errorMessage}>{t('pages.nft-detail.$id.entry.sui.index.nftSend')}</Button>
+            <Button
+              onClick={() => {
+                navigate({
+                  to: NFTSend.to,
+                  params: {
+                    id,
+                  },
+                });
+              }}
+              disabled={!!errorMessage}
+            >
+              {t('pages.nft-detail.$id.entry.sui.index.nftSend')}
+            </Button>
           </div>
         </Tooltip>
       </StickyFooterInnerBody>

@@ -1687,6 +1687,21 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed"
               }
+            },
+            "Sui": {
+              "index": {
+                "invalidAddress": "Invalid address",
+                "insufficientAmount": "Insufficient amount",
+                "objectId": "Object ID: {{objectId}}",
+                "recipientNetwork": "Recipient Chain",
+                "recipientAddress": "Recipient Address",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendNFTReview": "Confirm Send NFT",
+                "sendNFTReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "sendNFT": "Send NFT",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+              }
             }
           },
           "layout": {

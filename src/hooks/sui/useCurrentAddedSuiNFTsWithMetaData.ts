@@ -106,7 +106,7 @@ export function useCurrentAddedSuiNFTsWithMetaData({ accountId }: UseAccountSuiN
           chainType: addedNFT.chainType,
           isAdded: true,
           isOwned: false,
-          name: 'Not Owned',
+          name: shorterAddress(addedNFT.objectId, 15),
           subName: '-',
           image: undefined,
           objectId: addedNFT.objectId,
