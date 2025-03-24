@@ -1,8 +1,8 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
-import { BABYLON_TESTNET } from '~/constants/chain/cosmos/babylonTestnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { NILLION } from '~/constants/chain/cosmos/nillion';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -95,9 +95,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.37') {
+        if (extensionManifest.version === '0.8.39') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BABYLON_TESTNET.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), NILLION.id]);
           })();
         }
       }

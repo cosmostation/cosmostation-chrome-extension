@@ -54,6 +54,7 @@ import { MEDIBLOC } from './cosmos/medibloc';
 import { MIGALOO } from './cosmos/migaloo';
 import { NEUTRON } from './cosmos/neutron';
 import { NIBIRU } from './cosmos/nibiru';
+import { NILLION } from './cosmos/nillion';
 import { NOBLE, NOBLE_GAS_RATES } from './cosmos/noble';
 import { NYX, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
@@ -181,6 +182,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MIGALOO,
   NEUTRON,
   NIBIRU,
+  NILLION,
   NOBLE,
   NYX,
   OMNIFLIX,
