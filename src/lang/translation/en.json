@@ -2665,6 +2665,46 @@
           "noNFTDescription": "You can manage your NFTs by adding or deleting them."
         }
       }
+    },
+    "nft-detail": {
+      "$id": {
+        "entry": {
+          "cosmos": {
+            "index": {
+              "network": "Network",
+              "owner": "Owner Address",
+              "contractAddress": "Contract Address",
+              "tokenId": "Token ID",
+              "tokenStandard": "Token Standard",
+              "attributes": "Attributes",
+              "notOwnedNFT": "Ownership required for this feature.",
+              "nftSend": "Send NFT"
+            }
+          },
+          "evm": {
+            "index": {
+              "network": "Network",
+              "owner": "Owner Address",
+              "contractAddress": "Contract Address",
+              "tokenId": "Token ID",
+              "tokenStandard": "Token Standard",
+              "balance": "Balance",
+              "attributes": "Attributes",
+              "notOwnedNFT": "Ownership required for this feature.",
+              "nftSend": "Send NFT"
+            }
+          },
+          "sui": {
+            "index": {
+              "untransferableObject": "This NFT cannot be transferred.",
+              "owner": "Owner Address",
+              "objectId": "Object ID",
+              "nftSend": "Send NFT",
+              "network": "Network"
+            }
+          }
+        }
+      }
     }
   },
   "schema": {

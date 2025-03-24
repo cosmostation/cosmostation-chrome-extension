@@ -80,3 +80,13 @@ export function toDisplayCWTokenStandard(tokenStandard?: string) {
 
   return 'CW-'.concat(standardNumber[0]);
 }
+
+export function toDisplayTokenStandard(tokenStandard?: string) {
+  const standardNumber = tokenStandard?.match(/\d+/g);
+
+  if (!tokenStandard || !standardNumber || standardNumber.length === 0) {
+    return '';
+  }
+
+  return 'ERC-'.concat(standardNumber[0]);
+}

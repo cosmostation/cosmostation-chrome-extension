@@ -1,6 +1,8 @@
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 
 import Cosmos from './cosmos';
+import EVM from './evm';
+import Sui from './sui';
 
 type EntryProps = {
   id: string;
@@ -13,6 +15,12 @@ export default function Entry({ id }: EntryProps) {
 
   if (selectedNFT?.chainType === 'cosmos') {
     return <Cosmos id={id} />;
+  }
+  if (selectedNFT?.chainType === 'sui') {
+    return <Sui id={id} />;
+  }
+  if (selectedNFT?.chainType === 'evm') {
+    return <EVM id={id} />;
   }
 
   return null;

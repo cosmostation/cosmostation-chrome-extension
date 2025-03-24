@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
@@ -39,6 +41,7 @@ type CosmosProps = {
 };
 
 export default function Cosmos({ id }: CosmosProps) {
+  const { t } = useTranslation();
   const { chainList } = useChainList();
 
   const { currentAccountAddNFTsWithMeta } = useCurrentAccountAddedNFTsWithMetaData();
@@ -47,7 +50,7 @@ export default function Cosmos({ id }: CosmosProps) {
 
   const nftImage = selectedNFT?.image;
   const nftName = selectedNFT?.name;
-  const nftDescription = selectedNFT?.metaData?.description;
+  const nftDescription = selectedNFT?.metaData?.description || '-';
 
   const nftContractAddress = selectedNFT?.contractAddress;
   const shorterNFTContractAddress = shorterAddress(nftContractAddress, 14);
@@ -62,6 +65,8 @@ export default function Cosmos({ id }: CosmosProps) {
   const shorterOwnerAddress = shorterAddress(ownerAddress, 14);
 
   const chain = chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType);
+
+  const isDiabledSend = !selectedNFT?.isOwned;
   return (
     <>
       <BaseBody>
@@ -97,29 +102,37 @@ export default function Cosmos({ id }: CosmosProps) {
             }}
           >
             <DetailRowContainer>
-              <Base1000Text variant="b3_R">Network</Base1000Text>
+              <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.cosmos.index.network')}</Base1000Text>
               <ChainContainer>
                 <ChainImage src={chain?.image} />
                 <Base1300Text variant="b3_M">{chain?.name}</Base1300Text>
               </ChainContainer>
             </DetailRowContainer>
             <DetailRowContainer>
-              <Base1000Text variant="b3_R">Owner</Base1000Text>
+              <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.cosmos.index.owner')}</Base1000Text>
 
               <Base1300Text variant="b3_M">{shorterOwnerAddress}</Base1300Text>
             </DetailRowContainer>
             <DetailRowContainer>
-              <Base1000Text variant="b3_R">Contract Address</Base1000Text>
-              <Base1300Text variant="b3_M">{shorterNFTContractAddress}</Base1300Text>
+              <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.cosmos.index.contractAddress')}</Base1000Text>
+              <Tooltip title={nftContractAddress} placement="top">
+                <div>
+                  <Base1300Text variant="b3_M">{shorterNFTContractAddress}</Base1300Text>
+                </div>
+              </Tooltip>
             </DetailRowContainer>
 
             <DetailRowContainer>
-              <Base1000Text variant="b3_R">Token ID</Base1000Text>
-              <Base1300Text variant="b3_M">{nftTokenId}</Base1300Text>
+              <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.cosmos.index.tokenId')}</Base1000Text>
+              <Tooltip title={nftTokenId} placement="top">
+                <div>
+                  <Base1300Text variant="b3_M">{nftTokenId}</Base1300Text>
+                </div>
+              </Tooltip>
             </DetailRowContainer>
 
             <DetailRowContainer>
-              <Base1000Text variant="b3_R">Token Standard</Base1000Text>
+              <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.cosmos.index.tokenStandard')}</Base1000Text>
               <Base1300Text variant="b3_M">{displayTokenType}</Base1300Text>
             </DetailRowContainer>
           </DetailContainer>
@@ -129,7 +142,7 @@ export default function Cosmos({ id }: CosmosProps) {
               <StyledAccordion>
                 <StyledAccordionSummary aria-controls={'advanced-option-aria-control'} id={'advanced-option-id'}>
                   <ItemLeftContainer>
-                    <Base1300Text variant="h3_B">Attributes</Base1300Text>
+                    <Base1300Text variant="h3_B">{t('pages.nft-detail.$id.entry.cosmos.index.attributes')}</Base1300Text>
                   </ItemLeftContainer>
                 </StyledAccordionSummary>
                 <StyledAccordionDetails>
@@ -159,7 +172,11 @@ export default function Cosmos({ id }: CosmosProps) {
         </ContentsContainer>
       </BaseBody>
       <StickyFooterInnerBody>
-        <Button>NFT Send</Button>
+        <Tooltip title={t('pages.nft-detail.$id.entry.cosmos.index.notOwnedNFT')} varient="error" placement="top">
+          <div>
+            <Button disabled={isDiabledSend}>{t('pages.nft-detail.$id.entry.cosmos.index.nftSend')}</Button>
+          </div>
+        </Tooltip>
       </StickyFooterInnerBody>
     </>
   );

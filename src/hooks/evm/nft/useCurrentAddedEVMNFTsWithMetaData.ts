@@ -69,7 +69,7 @@ export function useCurrentAddedEVMNFTsWithMetaData({ accountId }: UseCurrentAdde
         subName,
         image: meta?.metaData?.imageURL || '',
         isCustom: true,
-        metaData: meta,
+        metaData: meta?.metaData || null,
       };
     });
   }, [currentAccountAddress, currentAccountId, currentAddedNFTs.evm, isLoading, nftsMeta]);

@@ -34,10 +34,14 @@ export function useGetNFTsMeta({ params, config }: UseGetNFTsMetaProps) {
   const { chainList } = useChainList();
 
   const isValidParams = useMemo(() => {
-    return params.every((param) => {
-      const { chainId, ownerAddress, contractAddress, tokenId, tokenStandard } = param;
-      return !!chainId && ownerAddress && !!contractAddress && !!tokenId && !!tokenStandard;
-    });
+    return (
+      !!params &&
+      params.length > 0 &&
+      params.every((param) => {
+        const { chainId, ownerAddress, contractAddress, tokenId, tokenStandard } = param;
+        return !!chainId && ownerAddress && !!contractAddress && !!tokenId && !!tokenStandard;
+      })
+    );
   }, [params]);
 
   const fetcher = async (index = 0) => {
@@ -58,7 +62,7 @@ export function useGetNFTsMeta({ params, config }: UseGetNFTsMetaProps) {
           const provider = ethersProvider(rpcURL);
 
           const uri = await (async () => {
-            const aa = await (() => {
+            const nftTokenURI = await (() => {
               try {
                 if (tokenStandard === EVM_NFT_STANDARD.ERC721) {
                   const erc721Contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
@@ -76,19 +80,19 @@ export function useGetNFTsMeta({ params, config }: UseGetNFTsMetaProps) {
             })();
 
             const formattedURI = (() => {
-              if (aa) {
-                if (aa.includes('ipfs:')) {
-                  return convertIpfs(aa);
+              if (nftTokenURI) {
+                if (nftTokenURI.includes('ipfs:')) {
+                  return convertIpfs(nftTokenURI);
                 }
 
-                if (aa.includes('api.opensea.io')) {
-                  return aa.replace('0x{id}', tokenId || '');
+                if (nftTokenURI.includes('api.opensea.io')) {
+                  return nftTokenURI.replace('0x{id}', tokenId || '');
                 }
 
-                if (aa.includes('{id}')) {
-                  return aa.replace('{id}', tokenId || '');
+                if (nftTokenURI.includes('{id}')) {
+                  return nftTokenURI.replace('{id}', tokenId || '');
                 }
-                return aa;
+                return nftTokenURI;
               }
               return '';
             })();

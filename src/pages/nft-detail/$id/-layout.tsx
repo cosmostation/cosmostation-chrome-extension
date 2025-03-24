@@ -16,11 +16,7 @@ export default function Layout({ children }: LayoutProps) {
   const accountName = accountNamesById[currentAccount.id];
 
   return (
-    <BaseLayout
-      header={
-        <Header leftContent={<NavigationPanel isHideBackButton isHideHomeButton />} middleContent={<Base1300Text variant="h4_B">{accountName}</Base1300Text>} />
-      }
-    >
+    <BaseLayout header={<Header leftContent={<NavigationPanel />} middleContent={<Base1300Text variant="h4_B">{accountName}</Base1300Text>} />}>
       {children}
     </BaseLayout>
   );

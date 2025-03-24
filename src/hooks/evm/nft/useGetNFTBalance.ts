@@ -14,7 +14,7 @@ import { ethersProvider } from '@/utils/ethereum/ethers';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 type UseGetNFTBalanceProps = {
-  chainId: UniqueChainId;
+  chainId?: UniqueChainId;
   ownerAddress?: string;
   contractAddress?: string;
   tokenId?: string;
