@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
     <BaseLayout
       header={
         <Header
-          leftContent={<NavigationPanel isHideHomeButton />}
+          leftContent={<NavigationPanel />}
           middleContent={<Base1300Text variant="h4_B">{t('pages.general-setting.wallet-prioritize.header')}</Base1300Text>}
         />
       }

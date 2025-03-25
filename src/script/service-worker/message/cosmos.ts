@@ -41,6 +41,7 @@ import { getMsgSignData } from '@/utils/cosmos/msg';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { CosmosRPCError } from '@/utils/error';
 import { FetchError, get, post } from '@/utils/fetch';
+import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
 
@@ -118,6 +119,8 @@ export async function cosmosProcess(message: CosmosRequest) {
         const chain = getChain(chainName)!;
 
         if (chain.id && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          void refreshOriginConnectionTime(currentAccount.id, origin);
+
           const keyPair = getKeypair(chain, currentAccount, currentPassword);
           const address = getAddress(chain, keyPair?.publicKey);
 

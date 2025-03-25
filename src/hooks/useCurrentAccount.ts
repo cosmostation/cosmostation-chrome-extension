@@ -123,6 +123,16 @@ export function useCurrentAccount() {
     await updateExtensionStorageStore('approvedOrigins', newApporvedOrigins);
   };
 
+  const refreshOriginConnectionTime = async (origin: string) => {
+    const lastConnectedAt = new Date().getTime();
+
+    const newApprovedOrigins = approvedOrigins.map((approvedOrigin) =>
+      approvedOrigin.accountId === currentAccountId && approvedOrigin.origin === origin ? { ...approvedOrigin, lastConnectedAt } : approvedOrigin,
+    );
+
+    await updateExtensionStorageStore('approvedOrigins', newApprovedOrigins);
+  };
+
   const removeApprovedOrigin = async (origin: string) => {
     const newApprovedOrigins = approvedOrigins.filter((approvedOrigin) => !(approvedOrigin.accountId === currentAccountId && approvedOrigin.origin === origin));
 
@@ -175,6 +185,7 @@ export function useCurrentAccount() {
     removeApprovedOrigin,
     removeAllApprovedOrigin,
     addSuiPermissions,
+    refreshOriginConnectionTime,
     removeSuiPermissions,
   };
 }

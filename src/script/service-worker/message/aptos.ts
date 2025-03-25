@@ -13,6 +13,7 @@ import type {
   AptosSignTransaction,
 } from '@/types/message/inject/aptos';
 import { AptosRPCError } from '@/utils/error';
+import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
 
@@ -38,6 +39,8 @@ export async function aptosProcess(message: AptosRequest) {
     if (aptosPopupMethods.includes(method)) {
       if (method === 'aptos_connect' || method === 'aptos_account') {
         if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          void refreshOriginConnectionTime(currentAccount.id, origin);
+
           const keyPair = getKeypair(chain, currentAccount, currentPassword);
           const address = getAddress(chain, keyPair?.publicKey);
 

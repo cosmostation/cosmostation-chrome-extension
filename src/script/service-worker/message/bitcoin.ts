@@ -22,6 +22,7 @@ import type {
 } from '@/types/message/inject/bitcoin';
 import { BitcoinRPCError } from '@/utils/error';
 import { get, post } from '@/utils/fetch';
+import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionLocalStorage, extensionSessionStorage } from '@/utils/storage';
 
@@ -45,6 +46,8 @@ export async function bitcoinProcess(message: BitcoinRequest) {
     if (bitcoinPopupMethods.includes(method)) {
       if (method === 'bit_requestAccount') {
         if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          void refreshOriginConnectionTime(currentAccount.id, origin);
+
           const keyPair = getKeypair(chain, currentAccount, currentPassword);
           const address = getAddress(chain, keyPair?.publicKey);
 

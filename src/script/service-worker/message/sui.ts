@@ -17,6 +17,7 @@ import type {
 } from '@/types/message/inject/sui';
 import type { SuiRpc } from '@/types/sui/api';
 import { SuiRPCError } from '@/utils/error';
+import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { isEqualsIgnoringCase } from '@/utils/string';
@@ -59,6 +60,8 @@ export async function suiProcess(message: SuiRequest) {
           const validatedParams = (await schema.validateAsync(params)) as SuiRequestConnect['params'];
 
           if (currentAccountAllowedOrigins.includes(origin) && validatedParams.every((item) => currentAccountSuiPermissions.includes(item))) {
+            void refreshOriginConnectionTime(currentAccount.id, origin);
+
             const result: SuiRequestConnectResponse = null;
 
             await sendMessage<ResponseAppMessage<SuiRequestConnect>>({
@@ -88,6 +91,8 @@ export async function suiProcess(message: SuiRequest) {
         try {
           if (currentAccountAllowedOrigins.includes(origin) && currentAccountSuiPermissions.includes('viewAccount')) {
             if (currentPassword) {
+              void refreshOriginConnectionTime(currentAccount.id, origin);
+
               const keyPair = getKeypair(suiChain, currentAccount, currentPassword);
               const address = getAddress(suiChain, keyPair?.publicKey);
 

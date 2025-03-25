@@ -36,6 +36,7 @@ import { EthereumRPCError } from '@/utils/error';
 import { requestRPC as ethereumRequestRPC } from '@/utils/ethereum';
 import { ethersProvider } from '@/utils/ethereum/ethers';
 import { signTypedData } from '@/utils/ethereum/sign';
+import { refreshOriginConnectionTime } from '@/utils/origins';
 import { enqueueRequest, processRequest, setQueues } from '@/utils/requestApp';
 import { extensionLocalStorage, extensionSessionStorage } from '@/utils/storage';
 import { isEqualsIgnoringCase, toHex } from '@/utils/string';
@@ -248,6 +249,8 @@ export async function evmProcess(message: EvmRequest) {
 
       if (method === 'eth_requestAccounts' || method === 'wallet_requestPermissions') {
         if (evmChain && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          void refreshOriginConnectionTime(currentAccount.id, origin);
+
           const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
           const address = getAddress(evmChain, keyPair?.publicKey);
 

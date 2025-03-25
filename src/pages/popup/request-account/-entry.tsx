@@ -27,7 +27,7 @@ export default function Entry() {
   const { chainList } = useChainList();
 
   const { currentPassword } = useCurrentPassword();
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, refreshOriginConnectionTime } = useCurrentAccount();
 
   useEffect(() => {
     const handleRequestAccount = async () => {
@@ -54,6 +54,8 @@ export default function Entry() {
                   );
                 })
               : chain;
+
+            void refreshOriginConnectionTime(origin);
 
             const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
             const address = getAddress(updatedChain, keyPair.publicKey);
@@ -91,6 +93,8 @@ export default function Entry() {
           const evmChain = evmChains?.find((item) => item.chainId === '0x1') || evmChains?.[0];
 
           if (evmChain) {
+            void refreshOriginConnectionTime(origin);
+
             const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
             const address = getAddress(evmChain, keyPair.publicKey);
 
@@ -131,6 +135,8 @@ export default function Entry() {
 
           const result: SuiRequestConnectResponse = null;
 
+          void refreshOriginConnectionTime(origin);
+
           sendMessage<ResponseAppMessage<SuiRequestConnect>>({
             target: 'CONTENT',
             method: 'responseApp',
@@ -151,6 +157,8 @@ export default function Entry() {
           const suiChain = suiChains?.find((item) => item.id === 'sui') || suiChains?.[0];
 
           if (suiChain) {
+            void refreshOriginConnectionTime(origin);
+
             const keyPair = getKeypair(suiChain, currentAccount, currentPassword);
             const address = getAddress(suiChain, keyPair.publicKey);
 
@@ -199,6 +207,8 @@ export default function Entry() {
           const { currentBitcoinNetwork } = await extensionLocalStorage();
 
           if (currentBitcoinNetwork) {
+            void refreshOriginConnectionTime(origin);
+
             const keyPair = getKeypair(currentBitcoinNetwork, currentAccount, currentPassword);
             const address = getAddress(currentBitcoinNetwork, keyPair?.publicKey);
 
@@ -226,6 +236,8 @@ export default function Entry() {
           const { currentAptosNetwork } = await extensionLocalStorage();
 
           if (currentAptosNetwork) {
+            void refreshOriginConnectionTime(origin);
+
             const keyPair = getKeypair(currentAptosNetwork, currentAccount, currentPassword);
             const address = getAddress(currentAptosNetwork, keyPair?.publicKey);
 
@@ -252,6 +264,6 @@ export default function Entry() {
     };
 
     handleRequestAccount();
-  }, [chainList?.allCosmosChains, currentAccount, currentPassword, currentPreferAccountType, currentRequestQueue, deQueue]);
+  }, [chainList?.allCosmosChains, currentAccount, currentPassword, currentPreferAccountType, currentRequestQueue, deQueue, refreshOriginConnectionTime]);
   return null;
 }
