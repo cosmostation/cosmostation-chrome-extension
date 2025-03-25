@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -7,6 +7,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import EmptyAsset from '@/components/EmptyAsset';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useSwitchTapStore } from '@/zustand/hooks/useSwitchTabStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
 import PrivateKeyAccount from './-components/PrivateKeyAccount';
@@ -17,16 +18,15 @@ import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
+  const { manageAccountTapIndex, updatedManateAccountTabIndex } = useSwitchTapStore((state) => state);
   const { userAccounts } = useExtensionStorageStore((state) => state);
   const { currentAccount } = useCurrentAccount();
 
   const isMnemonicAccount = currentAccount.type === 'MNEMONIC';
-
-  const [tabValue, setTabValue] = useState(isMnemonicAccount ? 0 : 1);
   const tabLabels = ['Mnenmonic', 'Private Key'];
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
-    setTabValue(newTabValue);
+    updatedManateAccountTabIndex(newTabValue);
   };
 
   const uniqueMnemonicRestoreString = userAccounts
@@ -36,17 +36,26 @@ export default function Entry() {
 
   const filteredPrivateKeyAccounts = userAccounts.filter((item) => item.type === 'PRIVATE_KEY');
 
+  useEffect(() => {
+    if (isMnemonicAccount) {
+      updatedManateAccountTabIndex(0);
+    } else {
+      updatedManateAccountTabIndex(1);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <BaseBody>
       <EdgeAligner>
         <StickyTabContainer>
-          <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
+          <FilledTabs value={manageAccountTapIndex} onChange={handleChange} variant="fullWidth">
             {tabLabels.map((item) => (
               <FilledTab key={item} label={item} />
             ))}
           </FilledTabs>
         </StickyTabContainer>
-        <StyledTabPanel value={tabValue} index={0}>
+        <StyledTabPanel value={manageAccountTapIndex} index={0}>
           <TabPanelContentsContainer>
             {uniqueMnemonicRestoreString.length > 0 ? (
               uniqueMnemonicRestoreString.map((item, i) => <MnemonicAccount key={i} mnemonicRestoreString={item} />)
@@ -61,7 +70,7 @@ export default function Entry() {
             )}
           </TabPanelContentsContainer>
         </StyledTabPanel>
-        <StyledTabPanel value={tabValue} index={1}>
+        <StyledTabPanel value={manageAccountTapIndex} index={1}>
           <TabPanelContentsContainer>
             {filteredPrivateKeyAccounts.length > 0 ? (
               <PrivateKeyAccount />

@@ -3,7 +3,11 @@ import { styled } from '@mui/material/styles';
 
 import OutlinedButton from '@/components/common/OutlinedButton';
 
-export const Container = styled('div')(({ theme }) => ({
+type ContainerProps = {
+  'data-is-dragging': boolean;
+};
+
+export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
   width: '100%',
 
   display: 'flex',
@@ -14,6 +18,7 @@ export const Container = styled('div')(({ theme }) => ({
   paddingBottom: '1.2rem',
 
   borderBottom: `0.06rem solid ${theme.palette.color.base200}`,
+  opacity: props['data-is-dragging'] ? 0 : 0.999,
 }));
 
 export const TopButton = styled('button')(({ theme }) => ({

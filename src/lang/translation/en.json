@@ -1071,12 +1071,6 @@
           "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
         }
       },
-      "mange-wallet-and-account": {
-        "layout": {
-          "header": "Manage Wallet & Account",
-          "save": "Save"
-        }
-      },
       "view": {
         "mnemonic": {
           "entry": {
@@ -1108,6 +1102,12 @@
           "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
           "importPrivateKey": "Import Private Key",
           "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
+        },
+        "layout": {
+          "header": "Manage Wallet & Account",
+          "save": "Save",
+          "saveSuccess": "Account order has been updated",
+          "saveFail": "Failed to update account order"
         }
       },
       "create-account": {

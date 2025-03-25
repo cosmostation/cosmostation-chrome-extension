@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -28,36 +30,79 @@ import {
   TopLeftContainer,
   TopRightContainer,
 } from './styled';
+import { type IndexedMnemonicAccount, MNEMONIC_ACCOUNT_DND_ITEM_TYPE } from '../..';
 
 import MnemonicIcon from '@/assets/images/icons/Mnemonics14.svg';
 import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
 import OrderIcon from 'assets/images/icons/Order20.svg';
 
-type MnemonicAccountProps = {
-  mnemonicRestoreString: string;
+type DraggableMnemonicAccountItemProps = {
+  itemIndex: number;
+  draggableItem: IndexedMnemonicAccount;
+  moveAccountItem: (id: number, atIndex: number) => void;
+  findAccountItem: (id: number) => { index: number };
 };
 
-export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccountProps) {
+export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex, moveAccountItem, findAccountItem }: DraggableMnemonicAccountItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
-
   const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
-  const filteredAccounts = userAccounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicRestoreString);
-
-  const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicRestoreString] || '';
-
+  const filteredAccounts = userAccounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === draggableItem.mnemonicRestoreString);
+  const mnemonicName = mnemonicNamesByHashedMnemonic[draggableItem.mnemonicRestoreString] || '';
   const isNotBackedUp = notBackedUpAccountIds.includes(filteredAccounts.map((item) => item.id)[0]);
 
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: MNEMONIC_ACCOUNT_DND_ITEM_TYPE.MNEMONIC_CARD,
+      item: draggableItem,
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      end: (item, monitor) => {
+        if (!monitor.didDrop()) {
+          moveAccountItem(itemIndex, item.index);
+        }
+      },
+    }),
+    [itemIndex, moveAccountItem],
+  );
+
+  const [, drop] = useDrop(
+    () => ({
+      accept: MNEMONIC_ACCOUNT_DND_ITEM_TYPE.MNEMONIC_CARD,
+      hover: ({ index: draggedId }: IndexedMnemonicAccount, monitor) => {
+        if (draggedId === itemIndex) return;
+
+        if (!ref.current) return;
+        const hoverBoundingRect = ref.current.getBoundingClientRect();
+        if (!hoverBoundingRect) return;
+
+        const hoverMiddleY = (hoverBoundingRect.top + hoverBoundingRect.bottom) / 2;
+        const clientOffset = monitor.getClientOffset();
+        if (!clientOffset) return;
+        const hoverClientY = clientOffset.y;
+
+        if (draggedId < itemIndex && hoverClientY < hoverMiddleY) return;
+        if (draggedId > itemIndex && hoverClientY > hoverMiddleY) return;
+
+        const { index: overIndex } = findAccountItem(itemIndex);
+        moveAccountItem(draggedId, overIndex);
+      },
+    }),
+    [findAccountItem, moveAccountItem],
+  );
+
+  drag(drop(ref));
+
   return (
-    <Container>
+    <Container ref={ref} data-is-dragging={isDragging}>
       <TopButton
         onClick={() => {
           navigate({
             to: MnemonicDetail.to,
-            params: {
-              mnemonicId: mnemonicRestoreString,
-            },
+            params: { mnemonicId: draggableItem.mnemonicRestoreString },
           });
         }}
       >
@@ -83,9 +128,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               onClick={() => {
                 navigate({
                   to: MnemonicAccountDetail.to,
-                  params: {
-                    accountId: item.id,
-                  },
+                  params: { accountId: item.id },
                 });
               }}
             >
@@ -93,7 +136,6 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
                 <AccountImgContainer>
                   <AccountImage accountId={item.id} />
                 </AccountImgContainer>
-
                 <AccountInfoContainer>
                   <Base1300Text variant="b2_M">{accountName}</Base1300Text>
                   <LastHdPathTextContainer>
@@ -124,9 +166,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
               onClick={() => {
                 navigate({
                   to: ManageBackupStep1.to,
-                  params: {
-                    accountId: filteredAccounts[0].id,
-                  },
+                  params: { accountId: filteredAccounts[0].id },
                 });
               }}
             >
