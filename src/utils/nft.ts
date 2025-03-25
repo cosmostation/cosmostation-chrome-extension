@@ -39,10 +39,12 @@ export async function getIpfsData(ipfsURL: string): Promise<{
   try {
     const CID = getIpfsCID(ipfsURL);
 
-    let response = await axios.get<NFTMetaPayload>(CID, { validateStatus: (status) => status < 500 });
+    let response = await axios.get<NFTMetaPayload>(CID, { validateStatus: (status) => status < 500, timeout: 3000 });
 
     if (response.status === 404 && !CID.endsWith('.json')) {
-      response = await axios.get(`${CID}.json`);
+      response = await axios.get(`${CID}.json`, {
+        timeout: 3000,
+      });
     }
 
     if (response.status >= 400) {
