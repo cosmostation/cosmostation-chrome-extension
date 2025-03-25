@@ -30,6 +30,7 @@ import { Route as ManageAssetsCoinTypeSettingIndexImport } from './pages/manage-
 import { Route as ManageAccountSwitchAccountIndexImport } from './pages/manage-account/switch-account/index'
 import { Route as ManageAccountResetWalletIndexImport } from './pages/manage-account/reset-wallet/index'
 import { Route as ManageAccountManageWalletAndAccountIndexImport } from './pages/manage-account/manage-wallet-and-account/index'
+import { Route as GeneralSettingWalletPrioritizeIndexImport } from './pages/general-setting/wallet-prioritize/index'
 import { Route as GeneralSettingManageCustomNetworkIndexImport } from './pages/general-setting/manage-custom-network/index'
 import { Route as GeneralSettingChangePasswordIndexImport } from './pages/general-setting/change-password/index'
 import { Route as GeneralSettingAddressBookIndexImport } from './pages/general-setting/address-book/index'
@@ -213,6 +214,13 @@ const ManageAccountManageWalletAndAccountIndexRoute =
   ManageAccountManageWalletAndAccountIndexImport.update({
     id: '/manage-account/manage-wallet-and-account/',
     path: '/manage-account/manage-wallet-and-account/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const GeneralSettingWalletPrioritizeIndexRoute =
+  GeneralSettingWalletPrioritizeIndexImport.update({
+    id: '/general-setting/wallet-prioritize/',
+    path: '/general-setting/wallet-prioritize/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -763,6 +771,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeneralSettingManageCustomNetworkIndexImport
       parentRoute: typeof rootRoute
     }
+    '/general-setting/wallet-prioritize/': {
+      id: '/general-setting/wallet-prioritize/'
+      path: '/general-setting/wallet-prioritize'
+      fullPath: '/general-setting/wallet-prioritize'
+      preLoaderRoute: typeof GeneralSettingWalletPrioritizeIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/manage-account/manage-wallet-and-account/': {
       id: '/manage-account/manage-wallet-and-account/'
       path: '/manage-account/manage-wallet-and-account'
@@ -1254,6 +1269,7 @@ export interface FileRoutesByFullPath {
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/general-setting/manage-custom-network': typeof GeneralSettingManageCustomNetworkIndexRoute
+  '/general-setting/wallet-prioritize': typeof GeneralSettingWalletPrioritizeIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
@@ -1340,6 +1356,7 @@ export interface FileRoutesByTo {
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/general-setting/manage-custom-network': typeof GeneralSettingManageCustomNetworkIndexRoute
+  '/general-setting/wallet-prioritize': typeof GeneralSettingWalletPrioritizeIndexRoute
   '/manage-account/manage-wallet-and-account': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account': typeof ManageAccountSwitchAccountIndexRoute
@@ -1427,6 +1444,7 @@ export interface FileRoutesById {
   '/general-setting/address-book/': typeof GeneralSettingAddressBookIndexRoute
   '/general-setting/change-password/': typeof GeneralSettingChangePasswordIndexRoute
   '/general-setting/manage-custom-network/': typeof GeneralSettingManageCustomNetworkIndexRoute
+  '/general-setting/wallet-prioritize/': typeof GeneralSettingWalletPrioritizeIndexRoute
   '/manage-account/manage-wallet-and-account/': typeof ManageAccountManageWalletAndAccountIndexRoute
   '/manage-account/reset-wallet/': typeof ManageAccountResetWalletIndexRoute
   '/manage-account/switch-account/': typeof ManageAccountSwitchAccountIndexRoute
@@ -1515,6 +1533,7 @@ export interface FileRouteTypes {
     | '/general-setting/address-book'
     | '/general-setting/change-password'
     | '/general-setting/manage-custom-network'
+    | '/general-setting/wallet-prioritize'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
@@ -1600,6 +1619,7 @@ export interface FileRouteTypes {
     | '/general-setting/address-book'
     | '/general-setting/change-password'
     | '/general-setting/manage-custom-network'
+    | '/general-setting/wallet-prioritize'
     | '/manage-account/manage-wallet-and-account'
     | '/manage-account/reset-wallet'
     | '/manage-account/switch-account'
@@ -1685,6 +1705,7 @@ export interface FileRouteTypes {
     | '/general-setting/address-book/'
     | '/general-setting/change-password/'
     | '/general-setting/manage-custom-network/'
+    | '/general-setting/wallet-prioritize/'
     | '/manage-account/manage-wallet-and-account/'
     | '/manage-account/reset-wallet/'
     | '/manage-account/switch-account/'
@@ -1772,6 +1793,7 @@ export interface RootRouteChildren {
   GeneralSettingAddressBookIndexRoute: typeof GeneralSettingAddressBookIndexRoute
   GeneralSettingChangePasswordIndexRoute: typeof GeneralSettingChangePasswordIndexRoute
   GeneralSettingManageCustomNetworkIndexRoute: typeof GeneralSettingManageCustomNetworkIndexRoute
+  GeneralSettingWalletPrioritizeIndexRoute: typeof GeneralSettingWalletPrioritizeIndexRoute
   ManageAccountManageWalletAndAccountIndexRoute: typeof ManageAccountManageWalletAndAccountIndexRoute
   ManageAccountResetWalletIndexRoute: typeof ManageAccountResetWalletIndexRoute
   ManageAccountSwitchAccountIndexRoute: typeof ManageAccountSwitchAccountIndexRoute
@@ -1860,6 +1882,8 @@ const rootRouteChildren: RootRouteChildren = {
     GeneralSettingChangePasswordIndexRoute,
   GeneralSettingManageCustomNetworkIndexRoute:
     GeneralSettingManageCustomNetworkIndexRoute,
+  GeneralSettingWalletPrioritizeIndexRoute:
+    GeneralSettingWalletPrioritizeIndexRoute,
   ManageAccountManageWalletAndAccountIndexRoute:
     ManageAccountManageWalletAndAccountIndexRoute,
   ManageAccountResetWalletIndexRoute: ManageAccountResetWalletIndexRoute,
@@ -1976,6 +2000,7 @@ export const routeTree = rootRoute
         "/general-setting/address-book/",
         "/general-setting/change-password/",
         "/general-setting/manage-custom-network/",
+        "/general-setting/wallet-prioritize/",
         "/manage-account/manage-wallet-and-account/",
         "/manage-account/reset-wallet/",
         "/manage-account/switch-account/",
@@ -2092,6 +2117,9 @@ export const routeTree = rootRoute
     },
     "/general-setting/manage-custom-network/": {
       "filePath": "general-setting/manage-custom-network/index.tsx"
+    },
+    "/general-setting/wallet-prioritize/": {
+      "filePath": "general-setting/wallet-prioritize/index.tsx"
     },
     "/manage-account/manage-wallet-and-account/": {
       "filePath": "manage-account/manage-wallet-and-account/index.tsx"
