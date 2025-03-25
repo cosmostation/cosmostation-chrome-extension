@@ -38,11 +38,11 @@ type NavigationGateProps = {
 export default function NavigationGate({ children }: NavigationGateProps) {
   const navigate = useNavigate();
 
-  const { accounts, requestQueue } = useExtensionStorageStore((state) => state);
+  const { userAccounts, requestQueue } = useExtensionStorageStore((state) => state);
 
   useEffect(() => {
     void (async () => {
-      if (accounts.length === 0) {
+      if (userAccounts.length === 0) {
         navigate({
           to: Initial.to,
         });
@@ -77,7 +77,7 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         }
       }
     })();
-  }, [accounts.length, navigate, requestQueue]);
+  }, [userAccounts.length, navigate, requestQueue]);
 
   return <>{children}</>;
 }

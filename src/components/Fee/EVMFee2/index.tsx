@@ -41,7 +41,7 @@ export default function EVMFee({
 }: EVMFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const selectedFeeOption = feeOptionDatas[currentSelectedFeeOptionKey] ? feeOptionDatas[currentSelectedFeeOptionKey] : null;
 
@@ -51,7 +51,7 @@ export default function EVMFee({
   const coinGeckoId = selectedFeeOption?.coinGeckoId || '';
   const coinSymbol = selectedFeeOption?.symbol || '';
 
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const feeGasRate = useMemo(() => {
     if (selectedFeeOption?.type === 'EIP-1559') {
@@ -79,14 +79,14 @@ export default function EVMFee({
         >
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={6} isDisableLeadingCurreny>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
                 {displayFeeAmount}
               </NumberTypo>
               &nbsp;
               <Base1300Text variant="h7n_M">{coinSymbol}</Base1300Text>
               &nbsp;
               <Base1300Text variant="b2_M">{'('}</Base1300Text>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                 {value}
               </NumberTypo>
               <Base1300Text variant="b2_M">{')'}</Base1300Text>

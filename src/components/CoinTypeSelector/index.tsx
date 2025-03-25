@@ -20,7 +20,7 @@ type CoinTypeSelectorProps = {
 };
 
 export default function CoinTypeSelector({ accountId, currentPreferAccountTypes, variant = 'default', onClickChainType }: CoinTypeSelectorProps) {
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { flatChainList } = useChainList();
   const { data: multipleAccountTypeWithAddress } = useMultipleAccountTypes({ accountId });
@@ -44,14 +44,14 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
 
               const cosmosValueSum =
                 filteredCosmosAssets?.reduce((totalValue, cur) => {
-                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
                   const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
                   return plus(totalValue, assetValue);
                 }, '0') || '0';
 
               const cw20ValueSum =
                 filteredCW20Assets?.reduce((totalValue, cur) => {
-                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
                   const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
 
                   return plus(totalValue, assetValue);
@@ -71,7 +71,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
 
               const bitcoinValueSum =
                 filteredBitcoinAssets?.reduce((totalValue, cur) => {
-                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
                   const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
                   return plus(totalValue, assetValue);
                 }, '0') || '0';
@@ -101,7 +101,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
     accountAllAssets?.cosmosAccountAssets,
     accountAllAssets?.cw20AccountAssets,
     coinGeckoData,
-    currency,
+    userCurrencyPreference,
     flatChainList,
     multipleAccountTypeWithAddress,
   ]);

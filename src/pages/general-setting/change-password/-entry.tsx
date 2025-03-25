@@ -35,7 +35,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const { history } = useRouter();
 
-  const { accounts, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { userAccounts, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { setCurrentPassword } = useCurrentPassword();
   const [inputPreviousPassword, setInputPreviousPassword] = useState('');
@@ -58,7 +58,7 @@ export default function Entry() {
   const isButtonEnabled = previousPassword && newPassword && repeatNewPassword;
 
   const submit = async (data: ChangePasswordForm) => {
-    const newAccounts = accounts.map((account) => {
+    const newAccounts = userAccounts.map((account) => {
       if (account.type === 'MNEMONIC') {
         const mnemonic = aesDecrypt(account.encryptedMnemonic, inputPreviousPassword);
 
@@ -74,7 +74,7 @@ export default function Entry() {
       return account;
     });
 
-    await updateExtensionStorageStore('accounts', newAccounts);
+    await updateExtensionStorageStore('userAccounts', newAccounts);
 
     await updateExtensionStorageStore('comparisonPasswordHash', sha512(data.newPassword));
 

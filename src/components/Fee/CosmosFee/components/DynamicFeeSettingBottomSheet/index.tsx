@@ -48,7 +48,7 @@ export default function FeeSettingBottomSheet({
 }: FeeSettingBottomSheetProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const [isOpenFeeCustomOverlay, setIsOpenFeeCustomOverlay] = useState(false);
 
@@ -64,7 +64,7 @@ export default function FeeSettingBottomSheet({
           const gasRate = item.gasRate || '0';
           const decimals = item.decimals || 0;
           const symbol = item.symbol || '';
-          const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[currency]) || 0;
+          const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
           const displayFeeAmount = toDisplayDenomAmount(times(gasRate, gas), decimals);
           const value = times(displayFeeAmount, coinPrice);
@@ -81,7 +81,7 @@ export default function FeeSettingBottomSheet({
           };
         })
         .filter((item) => !!item),
-    [coinGeckoPrice, currency, customFeeStepKey, feeOptionDatas],
+    [coinGeckoPrice, userCurrencyPreference, customFeeStepKey, feeOptionDatas],
   );
 
   const defaultCustomGasAmount = useMemo(() => {

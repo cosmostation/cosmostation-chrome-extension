@@ -57,7 +57,7 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { dashboardCoinSortKey, currency, isBalanceVisible, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { dashboardCoinSortKey, userCurrencyPreference, isBalanceVisible, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -95,7 +95,7 @@ export default function Entry() {
     return displayedAssets.map((item) => {
       const displayAmount = item.totalDisplayAmount || '0';
 
-      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
       const value = times(displayAmount, coinPrice);
 
@@ -106,7 +106,7 @@ export default function Entry() {
     });
   }, [
     coinGeckoPrice,
-    currency,
+    userCurrencyPreference,
     currentSelectedChainId,
     debouncedSearch.length,
     groupAccountAssets?.groupAccountAssets,

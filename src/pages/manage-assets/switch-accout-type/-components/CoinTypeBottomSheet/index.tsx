@@ -25,7 +25,7 @@ type CoinTypeBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomShe
 export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, ...remainder }: CoinTypeBottomSheetProps) {
   const { t } = useTranslation();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { currentAccount } = useCurrentAccount();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
@@ -58,14 +58,14 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
 
               const cosmosValueSum =
                 filteredCosmosAssets?.reduce((totalValue, cur) => {
-                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
                   const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
                   return plus(totalValue, assetValue);
                 }, '0') || '0';
 
               const cw20ValueSum =
                 filteredCW20Assets?.reduce((totalValue, cur) => {
-                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
                   const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
 
                   return plus(totalValue, assetValue);
@@ -86,7 +86,7 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
 
               const totalAssetValue =
                 filteredBitcoinAssets?.reduce((totalValue, cur) => {
-                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[currency]) || 0;
+                  const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
                   const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
                   return plus(totalValue, assetValue);
                 }, '0') || '0';
@@ -115,7 +115,7 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
     accountAllAssets?.cw20AccountAssets,
     accountAllAssets?.evmAccountAssets,
     coinGeckoData,
-    currency,
+    userCurrencyPreference,
     flatChainList,
     multipleAccountTypeWithAddress,
   ]);

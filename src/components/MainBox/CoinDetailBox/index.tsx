@@ -45,7 +45,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
@@ -66,7 +66,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const coinGeckoId = currentCoin?.asset.coinGeckoId;
 
   const totalDisplayAmount = toDisplayDenomAmount(currentCoin?.balance || '0', currentCoin?.asset.decimals || 0);
-  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const totalValue = times(totalDisplayAmount, chainPrice);
 

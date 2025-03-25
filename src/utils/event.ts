@@ -5,13 +5,13 @@ import { emitToWeb } from './message';
 import { extensionLocalStorage, extensionSessionStorage } from './storage';
 
 export async function emitChangedAddressEvent(newAccountId: string) {
-  const { accounts, approvedOrigins } = await extensionLocalStorage();
+  const { userAccounts, approvedOrigins } = await extensionLocalStorage();
   const { currentPassword } = await extensionSessionStorage();
   const chainList = await getChains();
 
   const evmChainForAddress = chainList?.evmChains?.[0];
 
-  const ethereumKeyPair = getKeypair(evmChainForAddress!, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+  const ethereumKeyPair = getKeypair(evmChainForAddress!, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const ethereumAddress = getAddress(evmChainForAddress!, ethereumKeyPair?.publicKey);
 
   const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === newAccountId).map((item) => item.origin)));
@@ -27,7 +27,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
 
   const aptosChainForAddress = chainList.aptosChains?.[0];
 
-  const aptosKeyPair = getKeypair(aptosChainForAddress!, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+  const aptosKeyPair = getKeypair(aptosChainForAddress!, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const aptosAddress = getAddress(aptosChainForAddress!, aptosKeyPair?.publicKey);
 
   emitToWeb({ event: 'accountChange', chainType: 'aptos', data: { result: aptosAddress } }, currentAccountOrigins);
@@ -47,7 +47,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
 
   const suiChainForAddress = chainList.suiChains?.[0];
 
-  const suiKeyPair = getKeypair(suiChainForAddress!, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+  const suiKeyPair = getKeypair(suiChainForAddress!, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const suiAddress = getAddress(suiChainForAddress!, suiKeyPair?.publicKey);
 
   emitToWeb({ event: 'accountChange', chainType: 'sui', data: { result: suiAddress } }, currentAccountOrigins);
@@ -58,7 +58,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
 
   const { currentBitcoinNetwork } = await extensionLocalStorage();
 
-  const bitcoinKeyPair = getKeypair(currentBitcoinNetwork, accounts.find((item) => item.id === newAccountId)!, currentPassword);
+  const bitcoinKeyPair = getKeypair(currentBitcoinNetwork, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const bitcoinAddress = getAddress(currentBitcoinNetwork, bitcoinKeyPair?.publicKey);
 
   emitToWeb({ event: 'accountChanged', chainType: 'bitcoin', data: { result: [bitcoinAddress] } }, currentAccountOrigins);

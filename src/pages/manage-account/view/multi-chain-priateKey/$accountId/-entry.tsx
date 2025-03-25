@@ -26,12 +26,12 @@ export default function Entry({ accountId }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const { flatChainList, isLoading } = useChainList();
 
-  const { accounts } = useExtensionStorageStore((state) => state);
+  const { userAccounts } = useExtensionStorageStore((state) => state);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const account = accounts.find((item) => item.id === accountId);
+  const account = userAccounts.find((item) => item.id === accountId);
   const hdPathIndex = account?.type === 'MNEMONIC' ? account.index : '';
 
   // NOTE FOR TEST 어카운트 타입이 없는 체인은 제외

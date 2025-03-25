@@ -19,14 +19,14 @@ type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
 export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
   const { coinGeckoId } = remainder;
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${currency}_24h_change`]) || 0;
+  const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${userCurrencyPreference}_24h_change`]) || 0;
 
   const trend = cap > 0 ? 'upward' : cap < 0 ? 'downward' : 'unchanged';
 
   const coinSymbol = symbol || 'UNKNOWN';
-  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   return (
     <BaseCoinButton

@@ -22,7 +22,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { groupAccountAssets } = useGroupAccountAssets();
 
@@ -32,7 +32,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
   const networkCount = currentGroupCoin?.counts || '1';
   const totalDisplayAmount = currentGroupCoin?.totalDisplayAmount || '0';
 
-  const coinPrice = (currentGroupCoin?.asset?.coinGeckoId && coinGeckoPrice?.[currentGroupCoin.asset.coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (currentGroupCoin?.asset?.coinGeckoId && coinGeckoPrice?.[currentGroupCoin.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
   const totalValue = times(totalDisplayAmount, coinPrice);
 
   return (

@@ -15,10 +15,10 @@ type CurrencyBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomShe
 export default function CurrencyBottomSheet({ onClose, ...remainder }: CurrencyBottomSheetProps) {
   const { t } = useTranslation();
 
-  const { currency, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const onHandleClick = (currencyType: CurrencyType) => {
-    updateExtensionStorageStore('currency', currencyType);
+    updateExtensionStorageStore('userCurrencyPreference', currencyType);
 
     onClose?.({}, 'backdropClick');
   };
@@ -49,7 +49,7 @@ export default function CurrencyBottomSheet({ onClose, ...remainder }: CurrencyB
               <OptionButton
                 key={item}
                 currency={item}
-                isActive={item === currency}
+                isActive={item === userCurrencyPreference}
                 onClickButton={(val) => {
                   onHandleClick(val);
                 }}

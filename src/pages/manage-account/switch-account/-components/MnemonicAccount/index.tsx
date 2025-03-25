@@ -50,9 +50,9 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
 
   const { currentAccount, setCurrentAccount } = useCurrentAccount();
 
-  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
+  const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
-  const filteredAccounts = accounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicRestoreString);
+  const filteredAccounts = userAccounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicRestoreString);
 
   const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicRestoreString] || '';
 

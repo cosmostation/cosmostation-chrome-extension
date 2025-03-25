@@ -107,10 +107,10 @@ export async function v11() {
 
 async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[]) {
   const {
-    accounts: storedAccounts,
+    userAccounts: storedAccounts,
     erc20Assets: storedERC20AssetsV11,
     cw20Assets: storedCW20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['accounts', 'erc20Assets', 'cw20Assets']);
+  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets']);
 
   const storedAccountsList = storedAccounts || [];
   const storedAccountsIds = storedAccountsList.map((account) => account.id);

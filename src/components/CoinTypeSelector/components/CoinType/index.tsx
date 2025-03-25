@@ -51,11 +51,11 @@ export default function CoinTypeSelector({
   onClickChainType,
 }: CoinTypeSelectorProps) {
   const { t } = useTranslation();
-  const { accounts, currency } = useExtensionStorageStore((state) => state);
+  const { userAccounts, userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const isBitcoin = useMemo(() => chain.chainType === 'bitcoin', [chain.chainType]);
 
-  const currentAccount = useMemo(() => accounts.find((account) => account.id === accountId), [accountId, accounts]);
+  const currentAccount = useMemo(() => userAccounts.find((account) => account.id === accountId), [accountId, userAccounts]);
   const currentAccountIndex = useMemo(() => (currentAccount?.type === 'MNEMONIC' ? currentAccount.index : '0'), [currentAccount]);
 
   return (
@@ -123,19 +123,19 @@ export default function CoinTypeSelector({
                 <ValueContainer>
                   {item.totalAssetValue &&
                     (equal(item.totalAssetValue, '0') ? (
-                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={0}>
+                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={0}>
                         {'0'}
                       </NumberTypo>
                     ) : lt(item.totalAssetValue, '0.001') ? (
                       <ValueContainer>
                         <Typography variant="h5n_M">{'<'}</Typography>
                         &nbsp;
-                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                           {item.totalAssetValue}
                         </NumberTypo>
                       </ValueContainer>
                     ) : (
-                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                         {item.totalAssetValue}
                       </NumberTypo>
                     ))}

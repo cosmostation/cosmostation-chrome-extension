@@ -20,13 +20,13 @@ type AptosFeeProps = {
 export default function AptosFee({ displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: AptosFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { data: accountAsset } = useAccountAllAssets();
 
   const selectedFeeAsset = accountAsset?.aptosAccountAssets.find((item) => item.asset.id === APTOS_COIN_TYPE)?.asset;
 
-  const coinPrice = (selectedFeeAsset?.coinGeckoId && coinGeckoPrice?.[selectedFeeAsset.coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (selectedFeeAsset?.coinGeckoId && coinGeckoPrice?.[selectedFeeAsset.coinGeckoId]?.[userCurrencyPreference]) || 0;
   const coinSymbol = selectedFeeAsset?.symbol || '';
 
   const value = times(displayFeeAmount || '0', coinPrice);
@@ -38,14 +38,14 @@ export default function AptosFee({ displayFeeAmount, disableConfirm, isLoading, 
         <FeeCustomButton disabled>
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={6} isDisableLeadingCurreny>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
                 {displayFeeAmount}
               </NumberTypo>
               &nbsp;
               <Base1300Text variant="h7n_M">{coinSymbol}</Base1300Text>
               &nbsp;
               <Base1300Text variant="b2_M">{'('}</Base1300Text>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                 {value}
               </NumberTypo>
               <Base1300Text variant="b2_M">{')'}</Base1300Text>

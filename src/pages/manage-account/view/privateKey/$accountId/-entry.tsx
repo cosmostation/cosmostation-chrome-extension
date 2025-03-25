@@ -39,8 +39,8 @@ export default function Entry({ accountId }: EntryProps) {
 
   const [isViewPrivateKey, setIsViewPrivateKey] = useState(false);
 
-  const { accounts } = useExtensionStorageStore((state) => state);
-  const account = accounts.find((item) => item.id === accountId);
+  const { userAccounts } = useExtensionStorageStore((state) => state);
+  const account = userAccounts.find((item) => item.id === accountId);
 
   const encryptedPrivateKey = account?.type === 'PRIVATE_KEY' ? account.encryptedPrivateKey : '';
   const decryptedPrivateKey = currentPassword ? `0x${aesDecrypt(encryptedPrivateKey, currentPassword)}` : '';

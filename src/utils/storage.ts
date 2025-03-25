@@ -27,14 +27,14 @@ export async function initExtensionLocalStorage() {
     await v11();
   }
 
-  if (!originStorage.language) {
-    setExtensionLocalStorage('language', 'en');
+  if (!originStorage.userLanguagePreference) {
+    setExtensionLocalStorage('userLanguagePreference', 'en');
   }
 
-  if (!originStorage.currency) {
+  if (!originStorage.userCurrencyPreference) {
     const newCurrency = CURRENCY_TYPE.USD;
 
-    await setExtensionLocalStorage('currency', newCurrency);
+    await setExtensionLocalStorage('userCurrencyPreference', newCurrency);
   }
 
   if (!originStorage.dappListSortKey) {
@@ -45,8 +45,8 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
   }
 
-  if (!originStorage.accounts) {
-    await setExtensionLocalStorage('accounts', []);
+  if (!originStorage.userAccounts) {
+    await setExtensionLocalStorage('userAccounts', []);
   }
 
   if (!originStorage.accountNamesById) {
@@ -81,9 +81,9 @@ export async function initExtensionLocalStorage() {
     await setExtensionLocalStorage('addedCustomChainList', []);
   }
 
-  if (!originStorage.selectedAccountId) {
-    const defaultAccountId = originStorage.accounts?.[0]?.id || '';
-    await setExtensionLocalStorage('selectedAccountId', defaultAccountId);
+  if (!originStorage.currentAccountId) {
+    const defaultAccountId = originStorage.userAccounts?.[0]?.id || '';
+    await setExtensionLocalStorage('currentAccountId', defaultAccountId);
   }
 
   if (!originStorage.customAssets) {
@@ -250,7 +250,7 @@ export async function initExtensionLocalStorage() {
 
   if (originStorage.accountNamesById) {
     const accountMissingNames = (() => {
-      const storedAccounts = originStorage.accounts;
+      const storedAccounts = originStorage.userAccounts;
       const accountNameIds = Object.keys(originStorage.accountNamesById);
 
       return storedAccounts.filter((item) => !accountNameIds.includes(item.id));
@@ -272,7 +272,7 @@ export async function initExtensionLocalStorage() {
 
   if (originStorage.mnemonicNamesByHashedMnemonic) {
     const mnemonicAccountsMissingMnemonicNames = (() => {
-      const mnemonicAccounts = originStorage.accounts.filter((item) => item.type === 'MNEMONIC');
+      const mnemonicAccounts = originStorage.userAccounts.filter((item) => item.type === 'MNEMONIC');
       const mnemonicNameKeys = Object.keys(originStorage.mnemonicNamesByHashedMnemonic);
 
       return mnemonicAccounts.filter((item) => !mnemonicNameKeys.includes(item.encryptedRestoreString));
@@ -332,7 +332,7 @@ export async function initExtensionLocalStorage() {
         }
       });
 
-      const updatedPreferAccountType = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
+      const updatedPreferAccountType = originStorage.userAccounts.reduce((acc: PreferAccountType, cur) => {
         const oldPreferAccountType = originStorage.preferAccountType[cur.id];
         const mergedPreferAccountType = { ...oldPreferAccountType, ...newPreferAccountType };
 
@@ -346,7 +346,7 @@ export async function initExtensionLocalStorage() {
 
   // NOTE 마이그레이션 용 로직
   // NOTE accounts는 있지만 preferAccountType이 없는 경우
-  if (originStorage.accounts && originStorage.accounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
+  if (originStorage.userAccounts && originStorage.userAccounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
     const defaultPreferAccountType = Object.values(originStorage.paramsV11)
       .filter((item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1)
       .reduce((acc: ChainToAccountTypeMap, cur) => {
@@ -366,7 +366,7 @@ export async function initExtensionLocalStorage() {
         return acc;
       }, {});
 
-    const updatedPreferAccountType = originStorage.accounts.reduce((acc: PreferAccountType, cur) => {
+    const updatedPreferAccountType = originStorage.userAccounts.reduce((acc: PreferAccountType, cur) => {
       acc[cur.id] = defaultPreferAccountType;
       return acc;
     }, {});
@@ -456,8 +456,8 @@ export async function extensionLocalStorage() {
   const storageWithDefault = { ...initialState, ...storage };
 
   const {
-    accounts,
-    selectedAccountId,
+    userAccounts,
+    currentAccountId,
     accountNamesById,
     approvedOrigins,
     preferAccountType,
@@ -467,8 +467,8 @@ export async function extensionLocalStorage() {
     chosenEthereumNetworkId,
   } = storageWithDefault;
 
-  const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
-  const currentAccountName = accountNamesById[selectedAccountId];
+  const currentAccount = (() => userAccounts.find((account) => account.id === currentAccountId)!)();
+  const currentAccountName = accountNamesById[currentAccountId];
 
   const { evmChains, aptosChains, suiChains, bitcoinChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
@@ -514,7 +514,7 @@ export async function extensionLocalStorage() {
   })();
 
   const currentAccountAllowedOrigins = approvedOrigins
-    .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
+    .filter((allowedOrigin) => allowedOrigin.accountId === currentAccountId)
     .map((allowedOrigin) => allowedOrigin.origin);
 
   return {
@@ -532,7 +532,9 @@ export async function extensionLocalStorage() {
 export async function extensionSessionStorage() {
   const storage = await getAllExtensionSessionStorage();
 
-  const currentPassword = storage.password ? aesDecrypt(storage.password.encryptedPassword, `${storage.password.key}${storage.password.timestamp}`) : null;
+  const currentPassword = storage.sessionPassword
+    ? aesDecrypt(storage.sessionPassword.encryptedPassword, `${storage.sessionPassword.key}${storage.sessionPassword.timestamp}`)
+    : null;
 
   return {
     ...storage,

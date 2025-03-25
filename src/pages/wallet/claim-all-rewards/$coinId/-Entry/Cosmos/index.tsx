@@ -71,7 +71,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const account = useAccount({ coinId });
@@ -175,11 +175,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const displayTotalRewardValue = useMemo(
     () =>
       rewardCoins?.reduce((acc, item) => {
-        const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[currency]) || 0;
+        const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[userCurrencyPreference]) || 0;
         const value = times(coinPrice, item.displayRewardAmount);
         return plus(acc, value);
       }, '0'),
-    [coinGeckoPrice, currency, rewardCoins],
+    [coinGeckoPrice, userCurrencyPreference, rewardCoins],
   );
 
   const alternativeFeeAsset = useMemo(
@@ -516,7 +516,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
                   endAdornment: (
                     <InputAdornment position="end">
                       <EstimatedValueTextContainer>
-                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency} isApporximation>
+                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isApporximation>
                           {displayTotalRewardValue}
                         </NumberTypo>
                       </EstimatedValueTextContainer>

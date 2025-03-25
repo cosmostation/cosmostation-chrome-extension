@@ -23,7 +23,7 @@ type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTML
 
 export default function OptionButton({ fee, isActive, ...remainder }: OptionButtonProps) {
   const { t } = useTranslation();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const amount = fee.amount;
   const value = fee.value;
@@ -52,7 +52,7 @@ export default function OptionButton({ fee, isActive, ...remainder }: OptionButt
             <Base1300Text variant="b4_M">{symbol}</Base1300Text>
           </AmountContainer>
           <ValueContainer>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency}>
+            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {value}
             </NumberTypo>
           </ValueContainer>

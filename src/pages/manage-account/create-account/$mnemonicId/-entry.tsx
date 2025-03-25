@@ -52,14 +52,14 @@ export default function Entry({ mnemonicId }: EntryProps) {
 
   const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
-  const { accounts } = useExtensionStorageStore((state) => state);
+  const { userAccounts } = useExtensionStorageStore((state) => state);
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
 
   const { flatChainList } = useChainList();
 
-  const mnemonicAccount = accounts.find((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === mnemonicId);
+  const mnemonicAccount = userAccounts.find((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === mnemonicId);
 
   const { newAccountForm } = useSchema();
 

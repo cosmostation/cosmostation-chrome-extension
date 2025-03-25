@@ -18,9 +18,9 @@ export type BaseCoinButtonProps = {
 
 export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, leftComponent, rightComponent, isActive, onClick }: BaseCoinButtonProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const value = times(displayAmount, chainPrice);
 
@@ -36,7 +36,7 @@ export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, l
           </RightDisplayAmountContainer>
 
           <RightValueContainer>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency}>
+            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {value}
             </NumberTypo>
           </RightValueContainer>

@@ -40,7 +40,7 @@ type EntryProps = {
 export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { data } = useAccountAssets();
@@ -81,7 +81,7 @@ export default function Entry({ coinId }: EntryProps) {
     const coinDecimals = currentFromCoin?.asset.decimals || 0;
 
     const coinGeckoId = currentFromCoin?.asset.coinGeckoId || '';
-    const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+    const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
     return {
       currentFromCoinSymbol: coinSymbol,
@@ -204,7 +204,7 @@ export default function Entry({ coinId }: EntryProps) {
               <Base1300Text variant="b4_M">
                 <Base1300Text variant="h5n_M">{'1 '}</Base1300Text>
                 {`${currentFromCoinSymbol} ≈ `}
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                   {'0.01'}
                 </NumberTypo>
                 &nbsp;

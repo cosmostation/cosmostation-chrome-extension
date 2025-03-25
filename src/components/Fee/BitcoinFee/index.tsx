@@ -21,13 +21,13 @@ type BitcoinFeeProps = {
 export default function BitcoinFee({ feeCoinId, displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: BitcoinFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { getBitcoinAccountAsset } = useGetAccountAsset({ coinId: feeCoinId });
 
   const selectedFeeAsset = getBitcoinAccountAsset();
 
-  const coinPrice = (selectedFeeAsset?.asset?.coinGeckoId && coinGeckoPrice?.[selectedFeeAsset.asset.coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (selectedFeeAsset?.asset?.coinGeckoId && coinGeckoPrice?.[selectedFeeAsset.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
   const coinSymbol = selectedFeeAsset?.asset?.symbol || '';
 
   const value = useMemo(() => times(displayFeeAmount || '0', coinPrice), [coinPrice, displayFeeAmount]);
@@ -39,14 +39,14 @@ export default function BitcoinFee({ feeCoinId, displayFeeAmount, disableConfirm
         <FeeCustomButton disabled>
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={6} isDisableLeadingCurreny>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6} isDisableLeadingCurreny>
                 {displayFeeAmount}
               </NumberTypo>
               &nbsp;
               <Base1300Text variant="h7n_M">{coinSymbol}</Base1300Text>
               &nbsp;
               <Base1300Text variant="b2_M">{'('}</Base1300Text>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                 {value}
               </NumberTypo>
               <Base1300Text variant="b2_M">{')'}</Base1300Text>

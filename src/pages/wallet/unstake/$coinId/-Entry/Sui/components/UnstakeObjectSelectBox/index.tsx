@@ -43,7 +43,7 @@ type UnstakeObjectSelectBoxProps = React.DetailedHTMLProps<React.ButtonHTMLAttri
 
 export default function UnstakeObjectSelectBox({ isOpenBottomSheet = false, contentData, disabled, ...remainder }: UnstakeObjectSelectBoxProps) {
   const { t } = useTranslation();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const shortedObjectId = shorterAddress(contentData?.objectId, 15);
@@ -55,7 +55,7 @@ export default function UnstakeObjectSelectBox({ isOpenBottomSheet = false, cont
   const displayEarnedAmount = toDisplayDenomAmount(contentData?.earnedAmount || '0', decimals);
   const displayTotalStakedAndEarned = plus(displayStakedAmount, displayEarnedAmount);
 
-  const coinPrice = (contentData?.coinGeckoId && coinGeckoPrice?.[contentData.coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (contentData?.coinGeckoId && coinGeckoPrice?.[contentData.coinGeckoId]?.[userCurrencyPreference]) || 0;
   const totalValue = times(displayTotalStakedAndEarned, coinPrice);
 
   return (
@@ -110,7 +110,7 @@ export default function UnstakeObjectSelectBox({ isOpenBottomSheet = false, cont
               &nbsp;
               <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
             </AmountContainer>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency}>
+            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {totalValue}
             </NumberTypo>
           </StakingInfoTitleRowRightContainer>

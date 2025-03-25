@@ -60,7 +60,7 @@ export type PrioritizedProvider = {
 };
 
 export interface ExtensionStorage {
-  accounts: Account[];
+  userAccounts: Account[];
   paramsV11: Record<string, V11Param>;
   assetsV11: V11Asset[];
   erc20Assets: EvmErc20Asset[];
@@ -89,13 +89,13 @@ export interface ExtensionStorage {
   initCheckLegacyBalanceAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;
   dappListSortKey: DappListSortKeyType;
-  language: string;
+  userLanguagePreference: string;
   comparisonPasswordHash: string;
   accountNamesById: AccountNamesById;
   mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;
-  selectedAccountId: Account['id'];
+  currentAccountId: Account['id'];
   notBackedUpAccountIds: Account['id'][];
-  currency: CurrencyType;
+  userCurrencyPreference: CurrencyType;
   preferAccountType: PreferAccountType;
   addressBookList: AddressInfo[];
   addedCustomChainList: CustomChain[];
@@ -118,7 +118,7 @@ export interface ExtensionStorage {
 export type ExtensionStorageKeys = keyof ExtensionStorage;
 
 export interface ExtensionSessionStorage {
-  password: Password | null;
+  sessionPassword: Password | null;
 }
 
 export type ExtensionSessionStorageKeys = keyof ExtensionSessionStorage;

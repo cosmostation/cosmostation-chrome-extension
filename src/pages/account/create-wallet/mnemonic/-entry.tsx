@@ -42,7 +42,7 @@ export default function Entry() {
 
   const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
-  const { accounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { userAccounts, mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { updateNewAccount } = useNewAccountStore();
   const { currentPassword } = useCurrentPassword();
 
@@ -50,7 +50,7 @@ export default function Entry() {
 
   const { refetch: refetchAccountAssets } = useAccountAssets();
 
-  const isInitialSetup = accounts.length === 0;
+  const isInitialSetup = userAccounts.length === 0;
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
   const [isLoadingBackup, setIsLoadingBackup] = useState(false);

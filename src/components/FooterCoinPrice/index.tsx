@@ -34,7 +34,7 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data } = useAccountAssets();
 
   const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
@@ -42,9 +42,9 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
 
   const { data: coinGeckoHistory } = useCoinGeckoHistory(coinGeckoId);
 
-  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
-  const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${currency}_24h_change`]) || 0;
+  const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${userCurrencyPreference}_24h_change`]) || 0;
 
   const trend = cap > 0 ? 'upward' : cap < 0 ? 'downward' : 'unchanged';
 
@@ -78,7 +78,7 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
           </LineChartContainer>
 
           <RightPriceContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency}>
+            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
               {String(chainPrice)}
             </NumberTypo>
 

@@ -30,14 +30,14 @@ type BaseTxInfoProps = {
 export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = false, onClickFee }: BaseTxInfoProps) {
   const { t } = useTranslation();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { getAccountAsset } = useGetAccountAsset({ coinId: feeCoinId });
 
   const feeCoin = getAccountAsset();
 
-  const coinPrice = (feeCoin?.asset.coinGeckoId && coinGeckoPrice?.[feeCoin.asset.coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (feeCoin?.asset.coinGeckoId && coinGeckoPrice?.[feeCoin.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const displayFeeAmount = useMemo(
     () => (feeBaseAmount ? toDisplayDenomAmount(feeBaseAmount, feeCoin?.asset.decimals || 0) : '0'),
@@ -67,7 +67,7 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = fals
           <FeeCustomButton disabled={disableFee} onClick={onClickFee}>
             {displayFeeAmount ? (
               <EstimatedFeeTextContainer data-is-disabled={disableFee}>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={currency} fixed={6} isDisableLeadingCurreny>
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
                   {displayFeeAmount}
                 </NumberTypo>
                 &nbsp;

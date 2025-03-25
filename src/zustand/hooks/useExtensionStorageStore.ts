@@ -10,7 +10,7 @@ import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store
 import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 export const initialState: ExtensionStorageState = {
-  accounts: [],
+  userAccounts: [],
   paramsV11: {},
   assetsV11: [],
   erc20Assets: [],
@@ -21,14 +21,14 @@ export const initialState: ExtensionStorageState = {
   initCheckLegacyBalanceAccountIds: [],
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
   dappListSortKey: DefaultSortKey.dappListSortKey,
-  language: 'en',
+  userLanguagePreference: 'en',
   comparisonPasswordHash: '',
   accountNamesById: {},
   mnemonicNamesByHashedMnemonic: {},
-  selectedAccountId: '',
+  currentAccountId: '',
   notBackedUpAccountIds: [],
   // TODO language에 따라 초기화
-  currency: CURRENCY_TYPE.USD as CurrencyType,
+  userCurrencyPreference: CURRENCY_TYPE.USD as CurrencyType,
   preferAccountType: {},
   addressBookList: [],
   addedCustomChainList: [],
@@ -72,8 +72,7 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       );
     },
     resetExtensionStorageStore: async () => {
-      const accounts = await getExtensionLocalStorage('accounts');
-      // FIXME 자동으로 키 가져와서 삭제하도록 변경 필요.
+      const accounts = await getExtensionLocalStorage('userAccounts');
       const extensionStorageKeys = Object.keys(initialState);
       const shouldDeleteKeys = extensionStorageKeys.filter((key) => !notDeleteKeys.includes(key));
 

@@ -64,7 +64,7 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
@@ -92,7 +92,7 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
   const chainName = selectedCancelUnstakeCoin?.chain.name || '';
 
   const coinGeckoId = selectedCancelUnstakeCoin?.asset.coinGeckoId || '';
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const displayCancelUnstakeAmountPrice = times(coinPrice, displayCancelUnstakeAmount, 0);
 
@@ -439,7 +439,7 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
                   endAdornment: (
                     <InputAdornment position="end">
                       <EstimatedValueTextContainer>
-                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency} isApporximation>
+                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isApporximation>
                           {displayCancelUnstakeAmountPrice}
                         </NumberTypo>
                       </EstimatedValueTextContainer>

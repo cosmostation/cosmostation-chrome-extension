@@ -51,7 +51,7 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const [inputGasAmount, setInputGasAmount] = useState('');
   const [inputGasRate, setInputGasRate] = useState('');
@@ -68,8 +68,8 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
   const displayFeeAmount = useMemo(() => toDisplayDenomAmount(times(currentGasRate, currentGas), decimals), [currentGas, currentGasRate, decimals]);
 
   const coinPrice = useMemo(
-    () => (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[currency]) || 0,
-    [coinGeckoPrice, currency, selectedFeeCoin?.asset.coinGeckoId],
+    () => (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[userCurrencyPreference]) || 0,
+    [coinGeckoPrice, userCurrencyPreference, selectedFeeCoin?.asset.coinGeckoId],
   );
 
   const value = useMemo(() => times(displayFeeAmount, coinPrice), [coinPrice, displayFeeAmount]);
@@ -132,14 +132,14 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
             {t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.networkFee')}
           </Base1000Text>
           <EstimatedFeeTextContainer>
-            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={currency} fixed={decimals} isDisableLeadingCurreny>
+            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" fixed={decimals} isDisableLeadingCurreny>
               {displayFeeAmount}
             </NumberTypo>
             &nbsp;
             <Base1300Text variant="b2_M">{coinSymbol}</Base1300Text>
             &nbsp;
             <Base1300Text variant="b2_M">{'('}</Base1300Text>
-            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={currency}>
+            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={userCurrencyPreference}>
               {value}
             </NumberTypo>
             <Base1300Text variant="b2_M">{')'}</Base1300Text>

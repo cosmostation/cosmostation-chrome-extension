@@ -6,7 +6,7 @@ import type { ExtensionSessionStorageState, ExtensionSessionStorageStore } from 
 import { getAllExtensionSessionStorage, setExtensionSessionStorage } from '@/utils/storage';
 
 const initialState: ExtensionSessionStorageState = {
-  password: null,
+  sessionPassword: null,
 };
 
 export const useExtensionSessionStorageStore = create<ExtensionSessionStorageStore>()((set) => {
@@ -22,7 +22,7 @@ export const useExtensionSessionStorageStore = create<ExtensionSessionStorageSto
       );
     },
     resetExtensionSessionStorageStore: async () => {
-      await setExtensionSessionStorage('password', null);
+      await setExtensionSessionStorage('sessionPassword', null);
 
       set(initialState);
     },

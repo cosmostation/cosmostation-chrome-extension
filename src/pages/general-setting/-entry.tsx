@@ -34,7 +34,7 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { version } = extension.runtime.getManifest();
 
@@ -168,7 +168,7 @@ export default function Entry() {
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.currency')}</Base1300Text>}
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.currencyDescription')}</Base1000Text>}
-                  rightContent={<Base1000Text variant="h6n_M">{currency.toUpperCase()}</Base1000Text>}
+                  rightContent={<Base1000Text variant="h6n_M">{userCurrencyPreference.toUpperCase()}</Base1000Text>}
                 />
                 <BaseOptionButton
                   leftContent={

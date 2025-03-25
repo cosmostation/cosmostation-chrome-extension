@@ -34,7 +34,7 @@ export default function Entry({ coinId }: EntryProps) {
   const navigate = useNavigate();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -63,7 +63,7 @@ export default function Entry({ coinId }: EntryProps) {
     const computedAssetValues = filteredByChain?.map((item) => {
       const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals);
 
-      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
       const value = times(displayAmount, coinPrice);
 
@@ -97,7 +97,7 @@ export default function Entry({ coinId }: EntryProps) {
       );
     }
     return sortedAssets?.slice(0, viewLimit) || [];
-  }, [baseCoinList, coinGeckoPrice, currency, currentSelectedChainId, debouncedSearch.length, search, sortOption, viewLimit]);
+  }, [baseCoinList, coinGeckoPrice, userCurrencyPreference, currentSelectedChainId, debouncedSearch.length, search, sortOption, viewLimit]);
 
   const chainList = useMemo(() => getfilteredChainsByChainId(baseCoinList), [baseCoinList]);
 

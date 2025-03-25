@@ -54,12 +54,12 @@ export default function Entry({ mnemonicId }: EntryProps) {
 
   const [isOpenDeleteAccountBottomSheet, setIsOpenDeleteAccountBottomSheet] = useState(false);
 
-  const { accounts, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
+  const { userAccounts, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
   const { removeMnemonic } = useCurrentAccount();
   const mnemonicName = mnemonicNamesByHashedMnemonic[mnemonicId];
 
-  const filteredAccounts = accounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicId);
+  const filteredAccounts = userAccounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === mnemonicId);
   const isNotBackedUp = notBackedUpAccountIds.includes(filteredAccounts.map((item) => item.id)[0]);
 
   const editMnemonicName = async (mnemonic: string, newMnemonicName: string) => {
@@ -71,7 +71,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const handleSubmit = async (type: 'removeMnemonic' | 'viewMnemonic') => {
     if (type === 'removeMnemonic') {
       await removeMnemonic(mnemonicId);
-      const accounts = await useExtensionStorageStore.getState().accounts;
+      const accounts = await useExtensionStorageStore.getState().userAccounts;
 
       if (accounts && accounts.length > 0) {
         toastSuccess(t('pages.manage-account.detail.mnemonic.entry.successDeleteMnemonic'));

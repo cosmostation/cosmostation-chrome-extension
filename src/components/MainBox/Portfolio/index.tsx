@@ -57,7 +57,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice, isLoading } = useCoinGeckoPrice();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -83,7 +83,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
     const aggregateValue = filteredAssetsByChainId.reduce((acc, item) => {
       const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals || 0);
-      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
       const value = times(displayAmount, coinPrice);
 
@@ -94,7 +94,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
     if (!isLoading) {
       setIsProcessing(false);
     }
-  }, [accountAllAssets?.flatAccountAssets, coinGeckoPrice, currency, isLoading, selectedChainId]);
+  }, [accountAllAssets?.flatAccountAssets, coinGeckoPrice, userCurrencyPreference, isLoading, selectedChainId]);
 
   return (
     <>
@@ -136,12 +136,12 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                   {isProcessing ? (
                     <Typography variant="h1n_B">{'--'}</Typography>
                   ) : (
-                    <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={currency} isDisableLeadingCurreny>
+                    <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={userCurrencyPreference} isDisableLeadingCurreny>
                       {aggregatedTotalValue}
                     </NumberTypo>
                   )}
                   &nbsp;
-                  <Typography variant="h2_M">{currency.toLocaleUpperCase()}</Typography>
+                  <Typography variant="h2_M">{userCurrencyPreference.toLocaleUpperCase()}</Typography>
                 </TotalBalanceContainer>
               </IconTextButton>
             </BodyTopContainer>

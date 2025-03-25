@@ -7,7 +7,7 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { useRefreshAccountAssets } from './useRefreshAccountAssets';
 
 export function useCustomChain() {
-  const { accounts, addedCustomChainList, customAssets, customErc20Assets, customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore(
+  const { userAccounts, addedCustomChainList, customAssets, customErc20Assets, customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore(
     (state) => state,
   );
 
@@ -32,7 +32,7 @@ export function useCustomChain() {
 
     await updateExtensionStorageStore('addedCustomChainList', updatedAddedCustomChainList);
 
-    const accountIds = accounts.map((account) => account.id);
+    const accountIds = userAccounts.map((account) => account.id);
 
     await Promise.all(
       accountIds.map(async (id) => {

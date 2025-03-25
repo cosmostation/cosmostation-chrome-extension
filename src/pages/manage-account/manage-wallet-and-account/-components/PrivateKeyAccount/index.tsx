@@ -11,9 +11,9 @@ import OrderIcon from 'assets/images/icons/Order20.svg';
 export default function PrivateKeyAccount() {
   const navigate = useNavigate();
 
-  const { accounts, accountNamesById } = useExtensionStorageStore((state) => state);
+  const { userAccounts, accountNamesById } = useExtensionStorageStore((state) => state);
 
-  const filteredAccounts = accounts.filter((item) => item.type === 'PRIVATE_KEY');
+  const filteredAccounts = userAccounts.filter((item) => item.type === 'PRIVATE_KEY');
 
   return (
     <Container>

@@ -50,7 +50,7 @@ export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { accounts, accountNamesById, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
+  const { userAccounts, accountNamesById, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
   const { removeAccount } = useCurrentAccount();
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
@@ -61,7 +61,7 @@ export default function Entry({ accountId }: EntryProps) {
 
   const [isOpenDeleteAccountBottomSheet, setIsOpenDeleteAccountBottomSheet] = useState(false);
 
-  const account = accounts.find((item) => item.id === accountId);
+  const account = userAccounts.find((item) => item.id === accountId);
   const hdPath = account?.type === 'MNEMONIC' ? account.index : '';
   const accountName = accountNamesById[accountId];
 
@@ -76,7 +76,7 @@ export default function Entry({ accountId }: EntryProps) {
   const handleSubmit = async (type: 'removeAccount' | 'viewMnemonic' | 'viewPrivatekey') => {
     if (type === 'removeAccount') {
       await removeAccount(accountId);
-      const accounts = await useExtensionStorageStore.getState().accounts;
+      const accounts = await useExtensionStorageStore.getState().userAccounts;
       if (accounts && accounts.length > 0) {
         toastSuccess(t('pages.manage-account.detail.mnemonic.account.entry.successDeleteAccount'));
         navigate({ to: SwitchWallet.to });

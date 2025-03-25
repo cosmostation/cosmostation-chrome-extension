@@ -26,10 +26,10 @@ export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const { history } = useRouter();
 
-  const { accounts, notBackedUpAccountIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { userAccounts, notBackedUpAccountIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { currentPassword } = useCurrentPassword();
 
-  const account = accounts.find((account) => account.id === accountId) || accounts[accounts.length - 1];
+  const account = userAccounts.find((account) => account.id === accountId) || userAccounts[userAccounts.length - 1];
 
   const decryptedMnemonic = account?.type === 'MNEMONIC' ? aesDecrypt(account.encryptedMnemonic, currentPassword!) : '';
 

@@ -63,7 +63,7 @@ export default function Entry() {
 
   const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { currentHiddenAssetIds, hideAsset, showAsset } = useCurrentHiddenAssetIds();
 
@@ -142,7 +142,7 @@ export default function Entry() {
       baseCoinList?.map((item) => {
         const displayAmount = toDisplayDenomAmount(item.balance, item.asset.decimals);
 
-        const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+        const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
         const value = times(displayAmount, coinPrice, 10);
 
@@ -152,7 +152,7 @@ export default function Entry() {
         };
       }) || []
     );
-  }, [baseCoinList, coinGeckoPrice, currency]);
+  }, [baseCoinList, coinGeckoPrice, userCurrencyPreference]);
 
   const sortedAssets = useMemo(
     () =>

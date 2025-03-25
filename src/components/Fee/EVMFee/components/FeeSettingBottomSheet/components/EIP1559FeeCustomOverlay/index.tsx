@@ -59,7 +59,7 @@ export default function EIP1559FeeCustomOverlay({
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const [inputGasAmount, setInputGasAmount] = useState('');
   const [inputMaxBaseFeeAmount, setInputMaxBaseFeeAmount] = useState('');
@@ -86,8 +86,8 @@ export default function EIP1559FeeCustomOverlay({
   );
 
   const coinPrice = useMemo(
-    () => (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[currency]) || 0,
-    [selectedFeeCoin, coinGeckoPrice, currency],
+    () => (selectedFeeCoin?.asset.coinGeckoId && coinGeckoPrice?.[selectedFeeCoin?.asset.coinGeckoId]?.[userCurrencyPreference]) || 0,
+    [selectedFeeCoin, coinGeckoPrice, userCurrencyPreference],
   );
 
   const value = useMemo(() => times(displayFeeAmount, coinPrice), [coinPrice, displayFeeAmount]);
@@ -156,14 +156,14 @@ export default function EIP1559FeeCustomOverlay({
             {t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.EIP1559FeeCustomOverlay.index.networkFee')}
           </Base1000Text>
           <EstimatedFeeTextContainer>
-            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={currency} fixed={decimals} isDisableLeadingCurreny>
+            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" fixed={decimals} isDisableLeadingCurreny>
               {displayFeeAmount}
             </NumberTypo>
             &nbsp;
             <Base1300Text variant="b2_M">{coinSymbol}</Base1300Text>
             &nbsp;
             <Base1300Text variant="b2_M">{'('}</Base1300Text>
-            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={currency}>
+            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={userCurrencyPreference}>
               {value}
             </NumberTypo>
             <Base1300Text variant="b2_M">{')'}</Base1300Text>

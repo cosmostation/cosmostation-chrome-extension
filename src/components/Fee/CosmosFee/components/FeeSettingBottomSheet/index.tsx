@@ -44,7 +44,7 @@ export default function FeeSettingBottomSheet({
 }: FeeSettingBottomSheetProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const [isOpenFeeCustomOverlay, setIsOpenFeeCustomOverlay] = useState(false);
 
@@ -52,7 +52,7 @@ export default function FeeSettingBottomSheet({
 
   const coinGeckoId = selectedFeeCoin?.asset.coinGeckoId || '';
 
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const customFeeStepKey = gasRates ? gasRates.length - 1 : 0;
 

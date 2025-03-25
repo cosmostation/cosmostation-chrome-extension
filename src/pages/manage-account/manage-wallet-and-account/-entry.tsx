@@ -16,7 +16,7 @@ import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
-  const { accounts } = useExtensionStorageStore((state) => state);
+  const { userAccounts } = useExtensionStorageStore((state) => state);
 
   const [tabValue, setTabValue] = useState(0);
   const tabLabels = ['Mnenmonic', 'Private Key'];
@@ -25,12 +25,12 @@ export default function Entry() {
     setTabValue(newTabValue);
   };
 
-  const uniqueMnemonicRestoreString = accounts
+  const uniqueMnemonicRestoreString = userAccounts
     .filter((item) => item.type === 'MNEMONIC')
     .map((account) => account.encryptedRestoreString)
     .filter((value, index, self) => self.indexOf(value) === index);
 
-  const filteredPrivateKeyAccounts = accounts.filter((item) => item.type === 'PRIVATE_KEY');
+  const filteredPrivateKeyAccounts = userAccounts.filter((item) => item.type === 'PRIVATE_KEY');
 
   return (
     <>

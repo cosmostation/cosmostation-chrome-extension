@@ -62,7 +62,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { currentAccount } = useCurrentAccount();
@@ -125,7 +125,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   })();
 
   const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
   const displayAvailableAmount = useMemo(() => toDisplayDenomAmount(baseAvailableAmount, coinDecimals), [baseAvailableAmount, coinDecimals]);
@@ -771,7 +771,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
                   endAdornment: (
                     <InputAdornment position="end">
                       <EstimatedValueTextContainer>
-                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency} isApporximation>
+                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isApporximation>
                           {displaySendAmountPrice}
                         </NumberTypo>
                       </EstimatedValueTextContainer>

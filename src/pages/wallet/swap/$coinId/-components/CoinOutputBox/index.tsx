@@ -26,7 +26,7 @@ type CoinInputBoxProps = {
 export default function CoinInputBox({ coinId, displayMinReceiveAmount }: CoinInputBoxProps) {
   const { t } = useTranslation();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { data } = useAccountAssets();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -40,7 +40,7 @@ export default function CoinInputBox({ coinId, displayMinReceiveAmount }: CoinIn
   const { name: chainName } = chain || {};
   const { image, symbol, coinGeckoId, decimals } = asset || {};
 
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
   const totalValue = times(coinPrice, displayMinReceiveAmount || '0');
 
   if (!asset) return null;
@@ -77,7 +77,7 @@ export default function CoinInputBox({ coinId, displayMinReceiveAmount }: CoinIn
             <BodyBottomContainer>
               <Base1000Text variant="b3_M">{chainName}</Base1000Text>
 
-              <NumberTypo typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency={currency}>
+              <NumberTypo typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency={userCurrencyPreference}>
                 {totalValue}
               </NumberTypo>
             </BodyBottomContainer>

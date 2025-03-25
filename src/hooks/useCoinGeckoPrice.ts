@@ -8,9 +8,9 @@ import { get } from '@/utils/axios';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCoinGeckoPrice(config?: UseQueryOptions<CoinGeckoPriceResponse>) {
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/prices?currency=${currency}`;
+  const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/prices?currency=${userCurrencyPreference}`;
 
   const fetcher = () => get<CoinGeckoPriceResponse>(requestURL);
   const { data, isLoading, error, refetch } = useQuery({
@@ -28,13 +28,13 @@ export function useCoinGeckoPrice(config?: UseQueryOptions<CoinGeckoPriceRespons
     () =>
       data?.reduce((acc: SimplePrice, item) => {
         acc[item.coinGeckoId] = {
-          [`${currency}`]: item.current_price,
-          [`${currency}_24h_change`]: item.daily_price_change_in_percent,
-          [`${currency}_market_cap`]: item.market_cap,
+          [`${userCurrencyPreference}`]: item.current_price,
+          [`${userCurrencyPreference}_24h_change`]: item.daily_price_change_in_percent,
+          [`${userCurrencyPreference}_market_cap`]: item.market_cap,
         };
         return acc;
       }, {}) || undefined,
-    [currency, data],
+    [userCurrencyPreference, data],
   );
 
   return { data: returnData, error, refetch, isLoading };

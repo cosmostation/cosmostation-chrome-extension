@@ -62,7 +62,7 @@ export default function Entry() {
 
   const [isViewPrivateKey, setIsViewPrivateKey] = useState(false);
 
-  const { accounts, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { userAccounts, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -117,7 +117,7 @@ export default function Entry() {
 
       const privateKey = inputPrivateKeyForm.privateKey.startsWith('0x') ? inputPrivateKeyForm.privateKey.substring(2) : inputPrivateKeyForm.privateKey;
 
-      const privateKeyRestoreStrings = accounts.filter(isPrivateKeyAccount).map((account) => account.encryptedRestoreString);
+      const privateKeyRestoreStrings = userAccounts.filter(isPrivateKeyAccount).map((account) => account.encryptedRestoreString);
 
       if (privateKeyRestoreStrings.includes(sha512(privateKey))) {
         toastError(t('pages.account.restore-wallet.privatekey.index.alreadyExist'));

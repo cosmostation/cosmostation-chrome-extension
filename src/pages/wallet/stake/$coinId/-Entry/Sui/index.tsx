@@ -65,7 +65,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
@@ -88,7 +88,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
   const chainName = selectedStakingCoin?.chain.name || '';
 
   const coinGeckoId = selectedStakingCoin?.asset.coinGeckoId || '';
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[currency]) || 0;
+  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const baseAvailableAmount = selectedStakingCoin?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
@@ -380,7 +380,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
                   endAdornment: (
                     <InputAdornment position="end">
                       <EstimatedValueTextContainer>
-                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={currency} isApporximation>
+                        <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isApporximation>
                           {displaySendAmountPrice}
                         </NumberTypo>
                       </EstimatedValueTextContainer>

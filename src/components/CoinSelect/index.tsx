@@ -46,7 +46,7 @@ export default function CoinSelect({
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { currency } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const isDisableDupeEthermint = variant === 'stake';
 
@@ -106,7 +106,7 @@ export default function CoinSelect({
       baseCoinList?.map((item) => {
         const displayAmount = toDisplayDenomAmount(item.balance, item.asset.decimals);
 
-        const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[currency]) || 0;
+        const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
         const value = times(displayAmount, chainPrice);
 
@@ -133,7 +133,7 @@ export default function CoinSelect({
         };
       }) || []
     );
-  }, [averageAPY, baseCoinList, coinGeckoPrice, currency, variant]);
+  }, [averageAPY, baseCoinList, coinGeckoPrice, userCurrencyPreference, variant]);
 
   const sortedAssets = useMemo(() => {
     const sortedValues = [...computedAssetValues].sort((a, b) => {

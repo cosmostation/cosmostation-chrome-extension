@@ -80,7 +80,7 @@ export default function Entry({ accountId }: EntryProps) {
           onClick={async () => {
             await removeAccount(accountId);
 
-            const accounts = await useExtensionStorageStore.getState().accounts;
+            const accounts = await useExtensionStorageStore.getState().userAccounts;
 
             if (accounts && accounts.length > 0) {
               toastSuccess(t('pages.manage-account.detail.privateKey.account.entry.successDeleteAccount'));

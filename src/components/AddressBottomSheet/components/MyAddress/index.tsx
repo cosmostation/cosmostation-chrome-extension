@@ -49,9 +49,9 @@ interface AccountAddressInfo {
 export default function MnemonicAccount({ chainId, filterAddress, onClickAddress }: MnemonicAccountProps) {
   const { t } = useTranslation();
 
-  const { accounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
+  const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
 
-  const accountIds = useMemo(() => accounts.map((account) => account.id), [accounts]);
+  const accountIds = useMemo(() => userAccounts.map((account) => account.id), [userAccounts]);
 
   const addressesMap = useMemo(
     () =>
@@ -68,20 +68,20 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
   const uniqueMnemonicRestoreString = useMemo(
     () =>
-      accounts
+      userAccounts
         .filter((item) => item.type === 'MNEMONIC')
         .map((account) => account.encryptedRestoreString)
         .filter((value, index, self) => self.indexOf(value) === index),
-    [accounts],
+    [userAccounts],
   );
 
-  const privatekeyAccounts = useMemo(() => accounts.filter((item) => item.type === 'PRIVATE_KEY'), [accounts]);
+  const privatekeyAccounts = useMemo(() => userAccounts.filter((item) => item.type === 'PRIVATE_KEY'), [userAccounts]);
 
   const filteredMnemonicAccounts = useMemo(
     () =>
       uniqueMnemonicRestoreString
         .map((restoreString) => {
-          const filteredMnemonicAccounts = accounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === restoreString);
+          const filteredMnemonicAccounts = userAccounts.filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === restoreString);
 
           const filteredAccountAddresses = filteredMnemonicAccounts
             .map((item) => {
@@ -108,7 +108,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
           };
         })
         .filter((item) => item.accounts.length > 0),
-    [accountNamesById, accounts, addressesMap, chainId, filterAddress, uniqueMnemonicRestoreString],
+    [accountNamesById, userAccounts, addressesMap, chainId, filterAddress, uniqueMnemonicRestoreString],
   );
 
   const filteredPrivatekeyAccounts = useMemo(
@@ -139,7 +139,6 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
   if (filteredMnemonicAccounts.length === 0 && privateKeyAddresses.length === 0) {
     return null;
   }
-  console.log('🚀 ~ MnemonicAccount ~ filteredMnemonicAccounts:', filteredMnemonicAccounts);
 
   return (
     <WrapperContainer>
