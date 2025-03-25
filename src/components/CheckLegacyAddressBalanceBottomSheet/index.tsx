@@ -27,7 +27,7 @@ import Button from '../common/Button';
 import SplitButtonsLayout from '../common/SplitButtonsLayout';
 import InformationPanel from '../InformationPanel';
 
-import SearchIcon from '@/assets/images/icons/Search18.svg';
+import AssetFoundIcon from '@/assets/images/icons/AssetFound82.svg';
 
 type CheckLegacyAddressBalanceBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'>;
 
@@ -126,7 +126,7 @@ export default function CheckLegacyAddressBalanceBottomSheet({ ...remainder }: C
         <Body>
           <ContentsContainer>
             <IconContainer>
-              <SearchIcon />
+              <AssetFoundIcon />
             </IconContainer>
             <TitleText variant="b1_B">{t('components.CheckLegacyAddressBalanceBottomSheet.index.contentTitle')}</TitleText>
             <SubTitleText variant="b3_R_Multiline">{t('components.CheckLegacyAddressBalanceBottomSheet.index.contentBody')}</SubTitleText>
