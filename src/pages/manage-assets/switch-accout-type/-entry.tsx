@@ -30,6 +30,7 @@ export default function Entry() {
 
   const mappedAccountTypes = useMemo(
     () =>
+      currentPreferAccountType &&
       Object.keys(currentPreferAccountType)
         .map((item) => {
           const chain = managedChains.find((chain) => chain.id === item);
@@ -43,7 +44,7 @@ export default function Entry() {
     [currentPreferAccountType, managedChains],
   );
 
-  const networkCount = mappedAccountTypes.length;
+  const networkCount = mappedAccountTypes?.length || 0;
 
   return (
     <>
@@ -62,7 +63,7 @@ export default function Entry() {
           </RowContainer>
         </StickyContainer>
         <EdgeAligner>
-          {mappedAccountTypes.map((item) => {
+          {mappedAccountTypes?.map((item) => {
             const hdPathParts = item.accountType.hdPath.split('/');
             const coinTypeLevel = item.chain?.chainType === 'bitcoin' ? hdPathParts[1] : hdPathParts[2];
 

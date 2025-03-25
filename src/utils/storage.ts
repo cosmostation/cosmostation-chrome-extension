@@ -310,14 +310,19 @@ export async function initExtensionLocalStorage() {
 
     const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.id);
 
-    const notStoredNewMultiAccountTypes = freshMultiAccountChainNames
-      .filter((item) => !Object.keys(Object.values(originStorage.preferAccountType)[0]).includes(item))
+    const notStoredNewMultiAccountChainName = freshMultiAccountChainNames
+      .filter((item) => {
+        const storedAccountTypeSample = Object.values(originStorage.preferAccountType)[0];
+
+        const isNotStoredMultiAccountChainName = storedAccountTypeSample ? !Object.keys(storedAccountTypeSample).includes(item) : true;
+        return isNotStoredMultiAccountChainName;
+      })
       .filter((item) => !!item);
 
-    if (notStoredNewMultiAccountTypes && notStoredNewMultiAccountTypes.length > 0) {
+    if (notStoredNewMultiAccountChainName && notStoredNewMultiAccountChainName.length > 0) {
       const newPreferAccountType: ChainToAccountTypeMap = {};
 
-      notStoredNewMultiAccountTypes.forEach((item) => {
+      notStoredNewMultiAccountChainName.forEach((item) => {
         const newChainAccountType = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
         const defaultAccountType = newChainAccountType?.find((type) => type.is_default !== false);
 
@@ -504,7 +509,7 @@ export async function extensionLocalStorage() {
 
     const network = bitcoinNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? bitcoinNetworks[0];
 
-    const inAppSelectedPubkeyStyle = preferAccountType[currentAccount.id][network.id].pubkeyStyle;
+    const inAppSelectedPubkeyStyle = preferAccountType[currentAccount.id]?.[network.id].pubkeyStyle;
 
     const response = produce(network, (draft) => {
       draft.accountTypes = draft.accountTypes.filter((item) => item.pubkeyStyle === inAppSelectedPubkeyStyle);

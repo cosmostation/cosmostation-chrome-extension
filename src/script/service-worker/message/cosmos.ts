@@ -83,7 +83,7 @@ export async function cosmosProcess(message: CosmosRequest) {
 
     if (!chain) return chain;
 
-    const inAppSelectedPreferAccountType = preferAccountType[currentAccount.id][chain.id];
+    const inAppSelectedPreferAccountType = preferAccountType[currentAccount.id]?.[chain.id];
 
     const response = inAppSelectedPreferAccountType
       ? produce(chain, (draft) => {

@@ -66,10 +66,15 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
 
           const preferredAccountType = storedPreferAccountType[currentAccount.id];
 
-          const updatedPreferAccountType = produce(preferredAccountType, (draft) => {
-            draft[chainId] = accountType;
-          });
+          const updatedPreferAccountType = preferredAccountType
+            ? produce(preferredAccountType, (draft) => {
+                draft[chainId] = accountType;
+              })
+            : preferredAccountType;
 
+          if (!updatedPreferAccountType) {
+            return;
+          }
           await updateCurrentPreferAccountType(updatedPreferAccountType);
           await emitChangedAddressEvent(currentAccount.id);
         }}

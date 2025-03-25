@@ -34,7 +34,7 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
   const { data: accountAllAssets } = useAccountAllAssets();
   const { data: coinGeckoData } = useCoinGeckoPrice();
 
-  const selectedAccountType = useMemo(() => currentPreferAccountType[chain?.id || ''], [chain?.id, currentPreferAccountType]);
+  const selectedAccountType = useMemo(() => currentPreferAccountType?.[chain?.id || ''], [chain?.id, currentPreferAccountType]);
 
   const mappedMultipleAccountTypes = useMemo(() => {
     if (multipleAccountTypeWithAddress && flatChainList) {

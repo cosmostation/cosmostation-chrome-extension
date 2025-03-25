@@ -32,7 +32,7 @@ export function useCurrentBitcoinNetwork() {
       return allNetworks[0];
     }
 
-    const inAppSelectedPubkeyStyle = currentPreferAccountType[network.id].pubkeyStyle;
+    const inAppSelectedPubkeyStyle = currentPreferAccountType?.[network.id].pubkeyStyle;
 
     const response = produce(network, (draft) => {
       draft.accountTypes = draft.accountTypes.filter((item) => item.pubkeyStyle === inAppSelectedPubkeyStyle);

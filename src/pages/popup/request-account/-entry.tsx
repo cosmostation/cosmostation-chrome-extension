@@ -45,7 +45,7 @@ export default function Entry() {
           const chain = allCosmosChains.find((item) => item.name.toLowerCase() === chainName) as CosmosChain | undefined;
 
           if (chain) {
-            const inAppSelectedPreferAccountType = currentPreferAccountType[chain.id];
+            const inAppSelectedPreferAccountType = currentPreferAccountType?.[chain.id];
 
             const updatedChain = inAppSelectedPreferAccountType
               ? produce(chain, (draft) => {

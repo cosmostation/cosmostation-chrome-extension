@@ -41,7 +41,7 @@ export function useChainList() {
   const chainListFilteredByAccountType = useMemo(() => {
     const filteredCosmosChains = data?.cosmosChains
       .map((chain) => {
-        const selectedChainAccountType = accountType[chain.id];
+        const selectedChainAccountType = accountType?.[chain.id];
 
         if (selectedChainAccountType) {
           if (
@@ -69,7 +69,7 @@ export function useChainList() {
 
     const filteredEVMChains = data?.evmChains
       .map((chain) => {
-        const selectedChainAccountType = accountType[chain.id];
+        const selectedChainAccountType = accountType?.[chain.id];
 
         if (selectedChainAccountType) {
           if (
@@ -97,7 +97,7 @@ export function useChainList() {
 
     const filteredBitcoinChains = chainList.bitcoinChains
       ?.map((chain) => {
-        const selectedChainAccountType = accountType[chain.id];
+        const selectedChainAccountType = accountType?.[chain.id];
 
         if (selectedChainAccountType) {
           if (
