@@ -51,6 +51,7 @@ type SuiNFTItem = {
   image: string;
   objectId: string;
   type: string;
+  isOwned: boolean;
 };
 
 type EVMNFTItem = {
@@ -66,6 +67,7 @@ type EVMNFTItem = {
   contractAddress: string;
   tokenType: string;
   isCustom: boolean;
+  isOwned: boolean;
 };
 
 type CosmosNFTItem = {
@@ -80,6 +82,7 @@ type CosmosNFTItem = {
   tokenId: string;
   contractAddress: string;
   tokenType: string;
+  isOwned: boolean;
 };
 
 type NFTItem = SuiNFTItem | EVMNFTItem | CosmosNFTItem;
@@ -316,6 +319,7 @@ export default function Entry() {
                           chainId={nftItem.chainId}
                           chainType={nftItem.chainType}
                           isActive={isAdded}
+                          isOwned={nftItem.isOwned}
                           onClick={() => {
                             if (isAdded && nftItem.id) {
                               const isCustomEVMNFT = nftItem.chainType === 'evm' && nftItem.isCustom;

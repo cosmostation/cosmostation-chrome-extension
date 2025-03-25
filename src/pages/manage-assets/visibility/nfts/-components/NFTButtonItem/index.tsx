@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
+import { Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import { useChainList } from '@/hooks/useChainList';
 
 import {
+  BlurredImage,
   ChainContainer,
   ChainImage,
   LeftContainer,
@@ -28,10 +30,21 @@ export type NFTButtonItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttribu
   chainId: string;
   chainType: string;
   imageURL?: string;
+  isOwned?: boolean;
   isActive?: boolean;
 };
 
-export default function NFTButtonItem({ name, subName, chainId, chainType, imageURL, isActive = false, onClick, ...remainder }: NFTButtonItemProps) {
+export default function NFTButtonItem({
+  name,
+  subName,
+  chainId,
+  chainType,
+  imageURL,
+  isOwned = false,
+  isActive = false,
+  onClick,
+  ...remainder
+}: NFTButtonItemProps) {
   const { flatChainList } = useChainList();
 
   const chain = useMemo(() => flatChainList.find((chain) => chain.id === chainId && chain.chainType === chainType), [chainId, chainType, flatChainList]);
@@ -39,7 +52,16 @@ export default function NFTButtonItem({ name, subName, chainId, chainType, image
   return (
     <StyledButton onClick={onClick} {...remainder}>
       <LeftContainer>
-        <NFTImageContainer>{imageURL ? <NFTImage src={imageURL} /> : <NFTImage />}</NFTImageContainer>
+        <NFTImageContainer>
+          <>
+            {!isOwned && (
+              <BlurredImage>
+                <Typography variant="b4_M">Not Owned NFT</Typography>
+              </BlurredImage>
+            )}
+            {imageURL ? <NFTImage src={imageURL} /> : <NFTImage />}
+          </>
+        </NFTImageContainer>
         <LeftContentsContainer>
           <NFTNameTextContainer>
             <Base1300Text variant="b2_M">{name}</Base1300Text>

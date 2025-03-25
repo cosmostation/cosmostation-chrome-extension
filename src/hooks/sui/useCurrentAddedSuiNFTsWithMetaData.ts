@@ -50,6 +50,7 @@ export function useCurrentAddedSuiNFTsWithMetaData({ accountId }: UseAccountSuiN
               objectId: nftObjects.data?.objectId || '',
               type: nftObjects.data?.type || '',
               originObject: nftObjects,
+              isOwned: true,
             };
 
             if (addedNFT) {

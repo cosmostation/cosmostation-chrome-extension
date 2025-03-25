@@ -127,3 +127,21 @@ export const ChainImage = styled(BaseChainImage)({
   width: '1.6rem',
   height: '1.6rem',
 });
+
+export const BlurredImage = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  zIndex: 1,
+
+  width: '100%',
+  height: '100%',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+
+  backdropFilter: 'blur(0.1rem)',
+
+  color: theme.palette.common.white,
+}));
