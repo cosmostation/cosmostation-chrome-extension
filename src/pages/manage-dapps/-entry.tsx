@@ -117,7 +117,7 @@ export default function Entry() {
                     key={item.origin}
                     origin={item.origin}
                     websiteName={item.title}
-                    totalTxCount={'10'}
+                    totalTxCount={item.txCount}
                     onClickDelete={() => removeApprovedOrigin(item.origin)}
                   />
                 );

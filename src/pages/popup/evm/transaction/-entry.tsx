@@ -73,7 +73,7 @@ export default function Entry({ request }: EntryProps) {
 
   const { currentEVMNetwork } = useCurrentEVMNetwork();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -366,6 +366,8 @@ export default function Entry({ request }: EntryProps) {
           raw: response,
           tx: ethereumTx,
         };
+
+        await incrementTxCountForOrigin(request.origin);
 
         sendMessage<ResponseAppMessage<EthSignTransaction>>({
           target: 'CONTENT',

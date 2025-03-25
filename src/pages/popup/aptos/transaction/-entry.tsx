@@ -56,7 +56,7 @@ export default function Entry({ request }: EntryProps) {
 
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -196,6 +196,8 @@ export default function Entry({ request }: EntryProps) {
       serializer.serialize(response);
       const serializedAccountAuthenticator = Buffer.from(serializer.toUint8Array()).toString('hex');
 
+      await incrementTxCountForOrigin(request.origin);
+
       sendMessage<ResponseAppMessage<AptosSignTransaction>>({
         target: 'CONTENT',
         method: 'responseApp',
@@ -227,7 +229,18 @@ export default function Entry({ request }: EntryProps) {
 
       await deQueue();
     }
-  }, [aptosAccount, deQueue, keyPair, nativeAccountAsset, params.asFeePayer, parsedTx, request.origin, request.requestId, request.tabId]);
+  }, [
+    aptosAccount,
+    deQueue,
+    incrementTxCountForOrigin,
+    keyPair,
+    nativeAccountAsset,
+    params.asFeePayer,
+    parsedTx,
+    request.origin,
+    request.requestId,
+    request.tabId,
+  ]);
 
   return (
     <>

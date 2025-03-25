@@ -119,7 +119,7 @@ export function useCurrentAccount() {
   const addApprovedOrigin = async (origin: string) => {
     const lastConnectedAt = new Date().getTime();
 
-    const newApporvedOrigins = [...approvedOrigins, { origin, accountId: currentAccount?.id, lastConnectedAt }];
+    const newApporvedOrigins = [...approvedOrigins, { origin, accountId: currentAccount?.id, lastConnectedAt, txCount: 0 }];
     await updateExtensionStorageStore('approvedOrigins', newApporvedOrigins);
   };
 
@@ -128,6 +128,16 @@ export function useCurrentAccount() {
 
     const newApprovedOrigins = approvedOrigins.map((approvedOrigin) =>
       approvedOrigin.accountId === currentAccountId && approvedOrigin.origin === origin ? { ...approvedOrigin, lastConnectedAt } : approvedOrigin,
+    );
+
+    await updateExtensionStorageStore('approvedOrigins', newApprovedOrigins);
+  };
+
+  const incrementTxCountForOrigin = async (origin: string) => {
+    const newApprovedOrigins = approvedOrigins.map((approvedOrigin) =>
+      approvedOrigin.accountId === currentAccountId && approvedOrigin.origin === origin
+        ? { ...approvedOrigin, txCount: approvedOrigin.txCount + 1 }
+        : approvedOrigin,
     );
 
     await updateExtensionStorageStore('approvedOrigins', newApprovedOrigins);
@@ -185,7 +195,8 @@ export function useCurrentAccount() {
     removeApprovedOrigin,
     removeAllApprovedOrigin,
     addSuiPermissions,
-    refreshOriginConnectionTime,
     removeSuiPermissions,
+    refreshOriginConnectionTime,
+    incrementTxCountForOrigin,
   };
 }

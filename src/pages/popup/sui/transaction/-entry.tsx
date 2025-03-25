@@ -45,7 +45,7 @@ export default function Entry({ request }: EntryProps) {
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -194,6 +194,8 @@ export default function Entry({ request }: EntryProps) {
           throw new Error('Failed to sign transaction');
         }
 
+        await incrementTxCountForOrigin(request.origin);
+
         sendMessage({
           target: 'CONTENT',
           method: 'responseApp',
@@ -242,6 +244,8 @@ export default function Entry({ request }: EntryProps) {
           throw new Error('Failed to sign and execute transaction');
         }
 
+        await incrementTxCountForOrigin(request.origin);
+
         sendMessage({
           target: 'CONTENT',
           method: 'responseApp',
@@ -274,7 +278,18 @@ export default function Entry({ request }: EntryProps) {
 
       await deQueue();
     }
-  }, [deQueue, keyPair, nativeAccountAsset, parsedTx, request.method, request.origin, request.requestId, request.tabId, transactionBlockResponseOptions]);
+  }, [
+    deQueue,
+    incrementTxCountForOrigin,
+    keyPair,
+    nativeAccountAsset,
+    parsedTx,
+    request.method,
+    request.origin,
+    request.requestId,
+    request.tabId,
+    transactionBlockResponseOptions,
+  ]);
 
   return (
     <>

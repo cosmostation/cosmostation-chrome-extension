@@ -52,7 +52,7 @@ export default function Entry({ request }: EntryProps) {
 
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -176,6 +176,8 @@ export default function Entry({ request }: EntryProps) {
       if (!result) {
         throw new Error('Failed to sign transaction');
       }
+
+      await incrementTxCountForOrigin(request.origin);
 
       sendMessage<ResponseAppMessage<BitSignPsbt>>({
         target: 'CONTENT',

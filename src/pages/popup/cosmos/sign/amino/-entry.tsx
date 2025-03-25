@@ -42,12 +42,10 @@ type EntryProps = {
 
 // TODO 카바케이스 및 커스텀 체인에 대한 테스트 필요.
 export default function Entry({ request, chain }: EntryProps) {
-  console.log('🚀 ~ Entry ~ chain:', chain);
-
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -59,8 +57,6 @@ export default function Entry({ request, chain }: EntryProps) {
     () => accountAllAssets?.allCosmosAccountAssets.find((item) => isSameChain(item.chain, chain)),
     [accountAllAssets?.allCosmosAccountAssets, chain],
   );
-
-  console.log('🚀 ~ Entry ~ accountAsset:', accountAsset);
 
   const accountAssetCoinId = useMemo(() => (accountAsset ? getCoinId(accountAsset.asset) : ''), [accountAsset]);
 
@@ -275,6 +271,8 @@ export default function Entry({ request, chain }: EntryProps) {
         pub_key: pubKey,
         signed_doc: tx,
       };
+
+      await incrementTxCountForOrigin(request.origin);
 
       sendMessage({
         target: 'CONTENT',

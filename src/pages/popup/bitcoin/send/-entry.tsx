@@ -73,7 +73,7 @@ export default function Entry({ request }: EntryProps) {
 
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -330,6 +330,8 @@ export default function Entry({ request }: EntryProps) {
       }
 
       const { result } = response;
+
+      await incrementTxCountForOrigin(request.origin);
 
       sendMessage<ResponseAppMessage<BitSendBitcoin>>({
         target: 'CONTENT',

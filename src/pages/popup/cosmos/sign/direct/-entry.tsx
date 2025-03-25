@@ -51,7 +51,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -328,6 +328,8 @@ export default function Entry({ request, chain }: EntryProps) {
         pub_key: pubKey,
         signed_doc: signedDocArray,
       };
+
+      await incrementTxCountForOrigin(request.origin);
 
       sendMessage({
         target: 'CONTENT',

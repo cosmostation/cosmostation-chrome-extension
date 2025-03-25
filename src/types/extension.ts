@@ -33,7 +33,7 @@ export type AddressInfo = {
   memo?: string;
 };
 
-export type ApprovedOrigin = { accountId: Account['id']; origin: string; lastConnectedAt: number };
+export type ApprovedOrigin = { accountId: Account['id']; origin: string; lastConnectedAt: number; txCount: number };
 
 export type AdPopoverState = {
   isVisiable: boolean;

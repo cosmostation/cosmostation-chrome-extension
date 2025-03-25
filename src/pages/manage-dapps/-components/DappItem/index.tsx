@@ -23,7 +23,7 @@ import WebsiteDefaultImg from 'assets/images/default/websiteDefault.png';
 type DappItemProps = {
   origin: string;
   websiteName: string;
-  totalTxCount: string;
+  totalTxCount: number;
   onClickDelete: () => void;
 };
 
