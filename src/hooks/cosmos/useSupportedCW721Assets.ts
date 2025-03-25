@@ -10,7 +10,7 @@ import { useChainList } from '../useChainList';
 
 export function useSupportedCW721Assets(config?: UseFetchConfig) {
   const { chainList } = useChainList();
-  const supportCW721Chains = useMemo(() => chainList.cosmosChains?.filter((chain) => chain.isCosmwasm || chain.isSupportCW721) || [], [chainList.cosmosChains]);
+  const supportCW721Chains = useMemo(() => chainList.cosmosChains?.filter((chain) => chain.isSupportCW721) || [], [chainList.cosmosChains]);
 
   const fetcher = async () => {
     const response = await Promise.all(
@@ -34,6 +34,7 @@ export function useSupportedCW721Assets(config?: UseFetchConfig) {
     queryKey: ['useSupportedCW721Assets'],
     fetchFunction: () => fetcher(),
     config: {
+      staleTime: Infinity,
       enabled: !!supportCW721Chains.length,
       retry: 0,
       ...config,

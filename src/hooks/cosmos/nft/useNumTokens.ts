@@ -61,7 +61,7 @@ export function useNumTokens({ params, config }: UseNumTokensProps) {
         if (isAxiosError(e) && e.response?.status === 404) {
           return null;
         }
-        console.warn(`Request failed for ${requestURL}, trying next...`);
+        continue;
       }
     }
 
@@ -74,6 +74,7 @@ export function useNumTokens({ params, config }: UseNumTokensProps) {
     queryKey: 'useCosmosNumTokens',
     config: {
       enabled: isValidParams && !!chainList.cosmosChains?.length,
+      staleTime: Infinity,
       ...config,
     },
   });

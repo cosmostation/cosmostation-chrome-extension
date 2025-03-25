@@ -16,12 +16,14 @@ import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useCurrentAddedEVMNFTsWithMetaData } from '@/hooks/evm/nft/useCurrentAddedEVMNFTsWithMetaData';
+import { useCurrentAddedSuiNFTsWithMetaData } from '@/hooks/sui/useCurrentAddedSuiNFTsWithMetaData';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddibleNFTs } from '@/hooks/useCurrentAccountAddibleNFTs';
 import { useCurrentAccountNFT } from '@/hooks/useCurrentAccountNFT';
 import { Route as ImportNFT } from '@/pages/manage-assets/import/nft';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
+import { shorterAddress } from '@/utils/string';
 
 import NFTButtonItem, { NFTSkeletonButtonItem } from './-components/NFTButtonItem';
 import {
@@ -113,30 +115,39 @@ export default function Entry() {
 
   const { addedEVMNFTsWithMeta, isLoading: isCurrentAddedEVMNFTsLoading } = useCurrentAddedEVMNFTsWithMetaData();
   const { addedCosmosNFTsWithMeta } = useCurrentAddedCosmosNFTsWithMetaData();
+  const { addedSuiNFTsWithMeta } = useCurrentAddedSuiNFTsWithMetaData();
 
   const wrappedCosmosNFTs = useMemo(() => {
-    const pureCustomAddedCosmosNFTs = addedCosmosNFTsWithMeta.filter((item) => {
-      return !currentAccountAddibleNFTs.cosmos.some(
-        (addibleItem) => addibleItem.contractAddress === item.contractAddress && addibleItem.tokenId === item.tokenId,
-      );
-    });
-
     const addedComsosNFTsWithoutReRender = currentAddedNFTs.cosmos
       .map((item) => {
         const addibleItem = currentAccountAddibleNFTs.cosmos.find(
           (addibleItem) => addibleItem.contractAddress === item.contractAddress && addibleItem.tokenId === item.tokenId,
         );
 
-        if (!addibleItem) return null;
+        if (addibleItem) {
+          return {
+            ...addibleItem,
+            id: item.id,
+            chainId: item.chainId,
+            chainType: item.chainType,
+            contractAddress: item.contractAddress,
+            tokenId: item.tokenId,
+            tokenType: item.tokenType,
+          };
+        }
+
+        const addedCosmosNFTWithMeta = addedCosmosNFTsWithMeta.find(
+          (addedItem) => addedItem.contractAddress === item.contractAddress && addedItem.tokenId === item.tokenId,
+        );
+
+        if (addedCosmosNFTWithMeta) {
+          return addedCosmosNFTWithMeta;
+        }
 
         return {
-          ...addibleItem,
-          id: item.id,
-          chainId: item.chainId,
-          chainType: item.chainType,
-          contractAddress: item.contractAddress,
-          tokenId: item.tokenId,
-          tokenType: item.tokenType,
+          ...item,
+          name: '-',
+          subName: `Contract : ${shorterAddress(item.contractAddress, 14)}`,
         };
       })
       .filter((item) => item !== null) as CosmosNFTItem[];
@@ -145,8 +156,16 @@ export default function Entry() {
       return !addedComsosNFTsWithoutReRender.some((item) => addibleItem.contractAddress === item.contractAddress && addibleItem.tokenId === item.tokenId);
     });
 
-    return [...addedComsosNFTsWithoutReRender, ...pureCustomAddedCosmosNFTs, ...addibleNFTs] as CosmosNFTItem[];
+    return [...addedComsosNFTsWithoutReRender, ...addibleNFTs] as CosmosNFTItem[];
   }, [addedCosmosNFTsWithMeta, currentAccountAddibleNFTs.cosmos, currentAddedNFTs.cosmos]);
+
+  const wrappedSuiNFTs = useMemo(() => {
+    const addibleNFTs = currentAccountAddibleNFTs.sui.filter((addibleItem) => {
+      return !addedSuiNFTsWithMeta.some((item) => addibleItem.objectId === item.objectId);
+    });
+
+    return [...addedSuiNFTsWithMeta, ...addibleNFTs] as SuiNFTItem[];
+  }, [addedSuiNFTsWithMeta, currentAccountAddibleNFTs.sui]);
 
   const isLoading = useMemo(
     () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading,
@@ -156,8 +175,8 @@ export default function Entry() {
   const addedNFTIds = useMemo(() => currentAddedNFTs.flat.map((item) => item.id), [currentAddedNFTs.flat]);
 
   const aggregatedNFTs = useMemo<NFTItem[]>(
-    () => [...(currentAccountAddibleNFTs.sui as SuiNFTItem[]), ...(addedEVMNFTsWithMeta as EVMNFTItem[]), ...wrappedCosmosNFTs],
-    [wrappedCosmosNFTs, addedEVMNFTsWithMeta, currentAccountAddibleNFTs.sui],
+    () => [...wrappedSuiNFTs, ...(addedEVMNFTsWithMeta as EVMNFTItem[]), ...wrappedCosmosNFTs],
+    [wrappedSuiNFTs, addedEVMNFTsWithMeta, wrappedCosmosNFTs],
   );
 
   const sortedNFTs = useMemo(() => {
@@ -299,14 +318,16 @@ export default function Entry() {
                           isActive={isAdded}
                           onClick={() => {
                             if (isAdded && nftItem.id) {
-                              if (nftItem.chainType === 'evm' && nftItem.isCustom) {
-                                setSupposedDeleteItem(nftItem);
-                              } else if (
+                              const isCustomEVMNFT = nftItem.chainType === 'evm' && nftItem.isCustom;
+                              const isCustomCosmosNFT =
                                 nftItem.chainType === 'cosmos' &&
                                 !currentAccountAddibleNFTs.cosmos.some(
                                   (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,
-                                )
-                              ) {
+                                );
+                              const isCustomSuiNFT =
+                                nftItem.chainType === 'sui' && !currentAccountAddibleNFTs.sui.some((item) => item.objectId === nftItem.objectId);
+
+                              if (isCustomEVMNFT || isCustomCosmosNFT || isCustomSuiNFT) {
                                 setSupposedDeleteItem(nftItem);
                               } else {
                                 handleRemoveNFT(nftItem.id);

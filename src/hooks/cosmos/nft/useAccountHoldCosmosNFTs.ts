@@ -52,6 +52,7 @@ export function useAccountHoldCosmosNFTs({ accountId, config }: UseAccountHoldCo
     config: {
       ...config,
       retry: 2,
+      retryDelay: 1000 * 3,
     },
   });
 
@@ -68,16 +69,16 @@ export function useAccountHoldCosmosNFTs({ accountId, config }: UseAccountHoldCo
 
     const formattedOwnedNFTs = flattendOwnedNFTTokenIDs
       .map((item) => {
-        const aaaa = formatedParams?.find((aaa) => aaa.contractAddress === item.contractAddress);
-        if (!aaaa || !aaaa.chainId || !aaaa.ownerAddress) return undefined;
-        const { id, chainType } = parseUniqueChainId(aaaa.chainId);
+        const matchedNft = formatedParams?.find((aaa) => aaa.contractAddress === item.contractAddress);
+        if (!matchedNft || !matchedNft.chainId || !matchedNft.ownerAddress) return undefined;
+        const { id, chainType } = parseUniqueChainId(matchedNft.chainId);
 
         return {
           chainId: id,
           chainType: chainType,
           contractAddress: item.contractAddress,
           tokenId: item.tokenId,
-          ownerAddress: aaaa.ownerAddress,
+          ownerAddress: matchedNft.ownerAddress,
           tokenType: 'CW721',
         };
       })
@@ -89,6 +90,7 @@ export function useAccountHoldCosmosNFTs({ accountId, config }: UseAccountHoldCo
   const isLoading = useMemo(() => supportedCW721Assets.isLoading || ownedNFTs.isLoading, [ownedNFTs.isLoading, supportedCW721Assets.isLoading]);
   const isFetching = useMemo(() => supportedCW721Assets.isFetching || ownedNFTs.isFetching, [ownedNFTs.isFetching, supportedCW721Assets.isFetching]);
   const error = useMemo(() => supportedCW721Assets.error || ownedNFTs.error, [ownedNFTs.error, supportedCW721Assets.error]);
+
   const refetch = () => {
     supportedCW721Assets.refetch();
     ownedNFTs.refetch();

@@ -62,7 +62,7 @@ export function useNFTsURI({ params, config }: UseNFTsURIProps) {
         if (isAxiosError(e) && e.response?.status === 404) {
           return null;
         }
-        console.warn(`Request failed for ${requestURL}, trying next...`);
+        continue;
       }
     }
     throw new Error('All endpoints failed');
@@ -73,8 +73,8 @@ export function useNFTsURI({ params, config }: UseNFTsURIProps) {
     fetchFunction: fetchNFTInfo,
     queryKey: 'useCosmosNFTsURI',
     config: {
-      retry: 3,
-      refetchInterval: 1000 * 5,
+      retry: 2,
+      retryDelay: 1000 * 5,
       enabled: isValidParams && !!chainList.cosmosChains?.length,
       ...config,
     },

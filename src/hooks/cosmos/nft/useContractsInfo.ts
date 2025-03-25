@@ -61,7 +61,7 @@ export function useContractsInfo({ params, config }: UseContractsInfoProps) {
         if (isAxiosError(e) && e.response?.status === 404) {
           return null;
         }
-        console.warn(`Request failed for ${requestURL}, trying next...`);
+        continue;
       }
     }
 
@@ -74,6 +74,7 @@ export function useContractsInfo({ params, config }: UseContractsInfoProps) {
     queryKey: 'useCosmosContractsInfo',
     config: {
       enabled: isValidParams && !!chainList.cosmosChains?.length,
+      staleTime: Infinity,
       ...config,
     },
   });

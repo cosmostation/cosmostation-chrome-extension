@@ -68,7 +68,7 @@ export function useOwnedNFTsTokenId({ params, config }: UseOwnedNFTsTokenIdProps
           tokens: returnData.data.tokens || [],
         };
       } catch {
-        console.warn(`Request failed for ${requestURL}, trying next...`);
+        continue;
       }
     }
 
