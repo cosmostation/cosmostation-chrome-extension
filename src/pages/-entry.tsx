@@ -19,6 +19,7 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
@@ -57,7 +58,7 @@ export default function Entry() {
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { dashboardCoinSortKey, currency, isBalanceVisible, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-
+  useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 

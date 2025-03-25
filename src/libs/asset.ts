@@ -805,212 +805,153 @@ export async function getSuiNFTs(id: string, option?: GetSuiNFTSOption) {
 
 export async function getSuiKioskNFTs(address: string, chainId: string, chainType: string, option?: SuiObjectResponseQuery) {
   const { suiChains } = await getChains();
-  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!suiChain) throw new Error('Chain not found');
 
   const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
 
-  const kioskNFTs = await Promise.any(
-    rpcUrls.map(async (rpcUrl) => {
-      const suiClient = new SuiClient({
-        url: rpcUrl,
-      });
-
-      const network = (() => {
-        if (suiChain.isTestnet) {
-          return Network.TESTNET;
-        }
-        return Network.MAINNET;
-      })();
-
-      const kioskClient = new KioskClient({
-        client: suiClient,
-        network: network,
-      });
-
+  for (const rpcUrl of rpcUrls) {
+    try {
+      const suiClient = new SuiClient({ url: rpcUrl });
+      const network = suiChain.isTestnet ? Network.TESTNET : Network.MAINNET;
+      const kioskClient = new KioskClient({ client: suiClient, network });
       const { kioskIds } = await kioskClient.getOwnedKiosks({ address });
 
       const kioskDatas = await Promise.all(
         kioskIds.map(async (id) => {
-          const kiosk = await kioskClient.getKiosk({
+          return kioskClient.getKiosk({
             id,
-            options: {
-              withKioskFields: true,
-              withListingPrices: true,
-            },
+            options: { withKioskFields: true, withListingPrices: true },
           });
-
-          return kiosk;
         }),
       );
 
-      const kioskObjectIds = kioskDatas.map((kiosk) => kiosk.itemIds).flat();
+      const kioskObjectIds = kioskDatas.flatMap((kiosk) => kiosk.itemIds);
 
       const kioskNFTObjects = await getMultiObjects(kioskObjectIds, chainId, chainType, option);
 
-      const filteredKioskNFTs = kioskNFTObjects.filter((item) => !!item).filter((item) => getObjectDisplay(item)?.data) || [];
+      const filteredKioskNFTs = kioskNFTObjects.filter((item) => !!item && !!getObjectDisplay(item)?.data) || [];
 
       return filteredKioskNFTs;
-    }),
-  );
-
-  return kioskNFTs;
+    } catch {
+      continue;
+    }
+  }
+  return [];
 }
 
 export async function getSuiDynamicFields(parentObjectId: string, chainId: string, chainType: string) {
   const { suiChains } = await getChains();
-
-  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!suiChain) throw new Error('Chain not found');
 
   const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
-
   let nextKey: string | null = null;
+  const dynamicFieldsInfoResponse: DynamicFieldInfo[][] = [];
 
-  const responseBalances: DynamicFieldInfo[][] = [];
+  do {
+    for (const rpcUrl of rpcUrls) {
+      try {
+        const response: SuiGetDynamicFieldsResponse | undefined = await post<SuiGetDynamicFieldsResponse>(rpcUrl, {
+          jsonrpc: '2.0',
+          method: 'suix_getDynamicFields',
+          params: [parentObjectId, nextKey, null],
+          id: parentObjectId,
+        });
 
-  const promises = rpcUrls.map(async (rpcUrl) => {
-    const response = await post<SuiGetDynamicFieldsResponse>(rpcUrl, {
-      jsonrpc: '2.0',
-      method: 'suix_getDynamicFields',
-      params: [parentObjectId, null, null],
-      id: parentObjectId,
-    });
+        if (response.result) {
+          nextKey = response.result.nextCursor && response.result.hasNextPage ? response.result.nextCursor : null;
+          dynamicFieldsInfoResponse.push(response.result.data ?? []);
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+  } while (nextKey);
 
-    return response.result;
-  });
-
-  const response = await Promise.any(promises);
-
-  nextKey = response?.nextCursor && response.hasNextPage ? response.nextCursor : null;
-
-  responseBalances.push(response?.data ?? []);
-
-  while (nextKey) {
-    const nextPromises = rpcUrls.map(async (rpcUrl) => {
-      const response = await post<SuiGetDynamicFieldsResponse>(rpcUrl, {
-        jsonrpc: '2.0',
-        method: 'suix_getDynamicFields',
-        params: [parentObjectId, nextKey, null],
-        id: parentObjectId,
-      });
-
-      return response.result;
-    });
-
-    const nextResponse = await Promise.any(nextPromises);
-
-    responseBalances.push(nextResponse?.data ?? []);
-    nextKey = nextResponse?.nextCursor && !!nextResponse.hasNextPage ? nextResponse.nextCursor : null;
-  }
-
-  const retrunData = responseBalances.flat();
-
-  return retrunData;
+  return dynamicFieldsInfoResponse.flat();
 }
 
-export async function getObjectsByOwnedAddress(address: string, chainId: string, chainType: string, option?: SuiObjectResponseQuery) {
+export async function getObjectsByOwnedAddress(
+  address: string,
+  chainId: string,
+  chainType: string,
+  option?: SuiObjectResponseQuery,
+): Promise<SuiObjectResponse[]> {
   const { suiChains } = await getChains();
-
-  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!suiChain) throw new Error('Chain not found');
 
   const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
-
   let nextKey: string | null = null;
-
   const suiObjectResponses: SuiObjectResponse[][] = [];
 
-  const promises = rpcUrls.map(async (rpcUrl) => {
-    const response = await post<SuiGetObjectsOwnedByAddressResponse>(rpcUrl, {
-      jsonrpc: '2.0',
-      method: 'suix_getOwnedObjects',
-      params: [
-        address,
-        {
-          ...option,
-        },
-      ],
-      id: address,
-    });
+  do {
+    let success = false;
+    for (const rpcUrl of rpcUrls) {
+      try {
+        const response: SuiGetObjectsOwnedByAddressResponse | undefined = await post<SuiGetObjectsOwnedByAddressResponse>(rpcUrl, {
+          jsonrpc: '2.0',
+          method: 'suix_getOwnedObjects',
+          params: nextKey ? [address, { ...option }, nextKey] : [address, { ...option }],
+          id: address,
+        });
+        if (response.result) {
+          nextKey = response.result.nextCursor && response.result.hasNextPage ? response.result.nextCursor : null;
+          suiObjectResponses.push(response.result.data ?? []);
+          success = true;
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+    if (!success) break;
+  } while (nextKey);
 
-    return response.result;
-  });
-
-  const response = await Promise.any(promises);
-
-  nextKey = response?.nextCursor && response.hasNextPage ? response.nextCursor : null;
-
-  suiObjectResponses.push(response?.data ?? []);
-
-  while (nextKey) {
-    const nextPromises = rpcUrls.map(async (rpcUrl) => {
-      const response = await post<SuiGetObjectsOwnedByAddressResponse>(rpcUrl, {
-        jsonrpc: '2.0',
-        method: 'suix_getOwnedObjects',
-        params: [
-          address,
-          {
-            ...option,
-          },
-          nextKey,
-        ],
-        id: address,
-      });
-
-      return response.result;
-    });
-
-    const nextResponse = await Promise.any(nextPromises);
-
-    suiObjectResponses.push(nextResponse?.data ?? []);
-    nextKey = nextResponse?.nextCursor && !!nextResponse.hasNextPage ? nextResponse.nextCursor : null;
-  }
-
-  const retrunData = suiObjectResponses.flat();
-
-  return retrunData;
+  return suiObjectResponses.flat();
 }
 
-export async function getMultiObjects(objectIds: string[], chainId: string, chainType: string, option?: SuiObjectResponseQuery) {
+export async function getMultiObjects(objectIds: string[], chainId: string, chainType: string, option?: SuiObjectResponseQuery): Promise<SuiObjectResponse[]> {
   const { suiChains } = await getChains();
-
-  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId)!;
+  const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!suiChain) throw new Error('Chain not found');
 
   const rpcUrls = suiChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
-
   const chunkedArray = chunkArray(objectIds, 50);
+  const multiGetObjectResponses: SuiObjectResponse[][] = [];
 
-  const multiGetObjectResults = await Promise.all(
-    chunkedArray
-      .map(async (chunk) => {
-        const response = await Promise.any(
-          rpcUrls.map(async (rpcUrl) => {
-            const requestUrl = rpcUrl;
+  for (const chunk of chunkedArray) {
+    let success = false;
+    for (const rpcUrl of rpcUrls) {
+      try {
+        const response = await post<SuiGetObjectsResponse>(rpcUrl, {
+          jsonrpc: '2.0',
+          method: 'sui_multiGetObjects',
+          params: [
+            [...chunk],
+            {
+              ...option,
+              showType: true,
+              showContent: true,
+              showOwner: true,
+              showDisplay: true,
+            },
+          ],
+          id: 'getMultiObjects',
+        });
+        if (response.result) {
+          multiGetObjectResponses.push(response.result ?? []);
+          success = true;
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+    if (!success) break;
+  }
 
-            const response = await post<SuiGetObjectsResponse>(requestUrl, {
-              jsonrpc: '2.0',
-              method: 'sui_multiGetObjects',
-              params: [
-                [...chunk],
-                {
-                  ...option,
-                  showType: true,
-                  showContent: true,
-                  showOwner: true,
-                  showDisplay: true,
-                },
-              ],
-              id: objectIds.join(','),
-            });
-
-            return response.result;
-          }),
-        );
-
-        return response;
-      })
-      .filter((aa) => !!aa),
-  );
-
-  const objects = multiGetObjectResults.flat().filter((item) => !!item);
-
-  return objects;
+  return multiGetObjectResponses.flat();
 }
