@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 
 import { BodyContainer, StyledButton, TopContainer } from './styled';
 
-type UnstakeItemButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+export type UnstakeItemButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   isActive?: boolean;
   headerContent?: React.ReactNode;
   bodyContent?: React.ReactNode;

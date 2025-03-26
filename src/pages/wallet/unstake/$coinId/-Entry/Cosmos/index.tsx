@@ -42,6 +42,17 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import ValidatorBottomSheet from './components/ValidatorBottomSheet';
 import { ChainNameContainer, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper, LockDateTextSpan } from './styled';
 
+export type UnstakeValidator = {
+  validatorName: string;
+  validatorAddress: string;
+  votingPower: string;
+  commission: string;
+  stakedAmount: string;
+  rewardAmount: string;
+  rewardTokenCounts?: string;
+  validatorImage?: string;
+};
+
 type CosmosProps = {
   coinId: string;
   validatorAddress: string;
@@ -105,7 +116,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState(validatorAddress);
 
-  const availableValidators = useMemo(
+  const availableValidators = useMemo<UnstakeValidator[]>(
     () =>
       delegationInfo.delegationInfo
         .map((item) => {
@@ -114,17 +125,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
             disableMark: true,
           });
 
+          const rewardAmount = item.rewardInfo?.reward.find((reward) => reward.denom === selectedUnstakingCoin?.asset.id)?.amount || '0';
+
+          const restRewards = item.rewardInfo?.reward.filter((reward) => reward.denom !== selectedUnstakingCoin?.asset.id).length || 0;
+          const restRewardCounts = gt(restRewards, '0') ? restRewards.toString() : undefined;
+
           return {
             validatorName: item.validatorInfo?.description.moniker || shorterAddress(item.validatorAddress, 12) || '',
             validatorAddress: item.validatorAddress,
             votingPower: votinPower,
             commission: commission,
             stakedAmount: item.totalDelegationAmount,
+            rewardAmount,
+            rewardTokenCounts: restRewardCounts,
             validatorImage: item.validatorInfo?.monikerImage,
           };
         })
         .sort((a, b) => (gt(a.votingPower, b.votingPower) ? -1 : 1)),
-    [delegationInfo.delegationInfo, selectedUnstakingCoin?.asset.decimals],
+    [delegationInfo.delegationInfo, selectedUnstakingCoin?.asset.decimals, selectedUnstakingCoin?.asset.id],
   );
 
   const currentStakingInfo = useMemo(
