@@ -126,7 +126,7 @@ export const LastHdPathIndexText = styled('div')(({ theme }) => ({
 
 export const OutlinedButtonContainer = styled('div')({
   width: '100%',
-  padding: '0 1.6rem',
+  padding: '0.8rem 1.6rem 0',
   boxSizing: 'border-box',
 });
 
