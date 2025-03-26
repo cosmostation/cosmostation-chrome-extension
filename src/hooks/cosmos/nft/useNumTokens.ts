@@ -75,6 +75,7 @@ export function useNumTokens({ params, config }: UseNumTokensProps) {
     config: {
       enabled: isValidParams && !!chainList.cosmosChains?.length,
       staleTime: Infinity,
+      retry: 0,
       ...config,
     },
   });

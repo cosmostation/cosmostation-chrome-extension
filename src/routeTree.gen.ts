@@ -55,6 +55,7 @@ import { Route as PopupEvmSwitchNetworkIndexImport } from './pages/popup/evm/swi
 import { Route as PopupEvmAddTokenIndexImport } from './pages/popup/evm/add-token/index'
 import { Route as PopupEvmAddChainIndexImport } from './pages/popup/evm/add-chain/index'
 import { Route as PopupCosmosAddTokenIndexImport } from './pages/popup/cosmos/add-token/index'
+import { Route as PopupCosmosAddNftsIndexImport } from './pages/popup/cosmos/add-nfts/index'
 import { Route as PopupCosmosAddChainIndexImport } from './pages/popup/cosmos/add-chain/index'
 import { Route as PopupBitcoinSwitchNetworkIndexImport } from './pages/popup/bitcoin/switch-network/index'
 import { Route as PopupBitcoinSignPsbtsIndexImport } from './pages/popup/bitcoin/sign-psbts/index'
@@ -372,6 +373,12 @@ const PopupEvmAddChainIndexRoute = PopupEvmAddChainIndexImport.update({
 const PopupCosmosAddTokenIndexRoute = PopupCosmosAddTokenIndexImport.update({
   id: '/popup/cosmos/add-token/',
   path: '/popup/cosmos/add-token/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupCosmosAddNftsIndexRoute = PopupCosmosAddNftsIndexImport.update({
+  id: '/popup/cosmos/add-nfts/',
+  path: '/popup/cosmos/add-nfts/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -1009,6 +1016,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupCosmosAddChainIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/cosmos/add-nfts/': {
+      id: '/popup/cosmos/add-nfts/'
+      path: '/popup/cosmos/add-nfts'
+      fullPath: '/popup/cosmos/add-nfts'
+      preLoaderRoute: typeof PopupCosmosAddNftsIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/cosmos/add-token/': {
       id: '/popup/cosmos/add-token/'
       path: '/popup/cosmos/add-token'
@@ -1303,6 +1317,7 @@ export interface FileRoutesByFullPath {
   '/popup/bitcoin/sign-psbts': typeof PopupBitcoinSignPsbtsIndexRoute
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
+  '/popup/cosmos/add-nfts': typeof PopupCosmosAddNftsIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
   '/popup/evm/add-chain': typeof PopupEvmAddChainIndexRoute
   '/popup/evm/add-token': typeof PopupEvmAddTokenIndexRoute
@@ -1390,6 +1405,7 @@ export interface FileRoutesByTo {
   '/popup/bitcoin/sign-psbts': typeof PopupBitcoinSignPsbtsIndexRoute
   '/popup/bitcoin/switch-network': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain': typeof PopupCosmosAddChainIndexRoute
+  '/popup/cosmos/add-nfts': typeof PopupCosmosAddNftsIndexRoute
   '/popup/cosmos/add-token': typeof PopupCosmosAddTokenIndexRoute
   '/popup/evm/add-chain': typeof PopupEvmAddChainIndexRoute
   '/popup/evm/add-token': typeof PopupEvmAddTokenIndexRoute
@@ -1478,6 +1494,7 @@ export interface FileRoutesById {
   '/popup/bitcoin/sign-psbts/': typeof PopupBitcoinSignPsbtsIndexRoute
   '/popup/bitcoin/switch-network/': typeof PopupBitcoinSwitchNetworkIndexRoute
   '/popup/cosmos/add-chain/': typeof PopupCosmosAddChainIndexRoute
+  '/popup/cosmos/add-nfts/': typeof PopupCosmosAddNftsIndexRoute
   '/popup/cosmos/add-token/': typeof PopupCosmosAddTokenIndexRoute
   '/popup/evm/add-chain/': typeof PopupEvmAddChainIndexRoute
   '/popup/evm/add-token/': typeof PopupEvmAddTokenIndexRoute
@@ -1567,6 +1584,7 @@ export interface FileRouteTypes {
     | '/popup/bitcoin/sign-psbts'
     | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-chain'
+    | '/popup/cosmos/add-nfts'
     | '/popup/cosmos/add-token'
     | '/popup/evm/add-chain'
     | '/popup/evm/add-token'
@@ -1653,6 +1671,7 @@ export interface FileRouteTypes {
     | '/popup/bitcoin/sign-psbts'
     | '/popup/bitcoin/switch-network'
     | '/popup/cosmos/add-chain'
+    | '/popup/cosmos/add-nfts'
     | '/popup/cosmos/add-token'
     | '/popup/evm/add-chain'
     | '/popup/evm/add-token'
@@ -1739,6 +1758,7 @@ export interface FileRouteTypes {
     | '/popup/bitcoin/sign-psbts/'
     | '/popup/bitcoin/switch-network/'
     | '/popup/cosmos/add-chain/'
+    | '/popup/cosmos/add-nfts/'
     | '/popup/cosmos/add-token/'
     | '/popup/evm/add-chain/'
     | '/popup/evm/add-token/'
@@ -1827,6 +1847,7 @@ export interface RootRouteChildren {
   PopupBitcoinSignPsbtsIndexRoute: typeof PopupBitcoinSignPsbtsIndexRoute
   PopupBitcoinSwitchNetworkIndexRoute: typeof PopupBitcoinSwitchNetworkIndexRoute
   PopupCosmosAddChainIndexRoute: typeof PopupCosmosAddChainIndexRoute
+  PopupCosmosAddNftsIndexRoute: typeof PopupCosmosAddNftsIndexRoute
   PopupCosmosAddTokenIndexRoute: typeof PopupCosmosAddTokenIndexRoute
   PopupEvmAddChainIndexRoute: typeof PopupEvmAddChainIndexRoute
   PopupEvmAddTokenIndexRoute: typeof PopupEvmAddTokenIndexRoute
@@ -1925,6 +1946,7 @@ const rootRouteChildren: RootRouteChildren = {
   PopupBitcoinSignPsbtsIndexRoute: PopupBitcoinSignPsbtsIndexRoute,
   PopupBitcoinSwitchNetworkIndexRoute: PopupBitcoinSwitchNetworkIndexRoute,
   PopupCosmosAddChainIndexRoute: PopupCosmosAddChainIndexRoute,
+  PopupCosmosAddNftsIndexRoute: PopupCosmosAddNftsIndexRoute,
   PopupCosmosAddTokenIndexRoute: PopupCosmosAddTokenIndexRoute,
   PopupEvmAddChainIndexRoute: PopupEvmAddChainIndexRoute,
   PopupEvmAddTokenIndexRoute: PopupEvmAddTokenIndexRoute,
@@ -2034,6 +2056,7 @@ export const routeTree = rootRoute
         "/popup/bitcoin/sign-psbts/",
         "/popup/bitcoin/switch-network/",
         "/popup/cosmos/add-chain/",
+        "/popup/cosmos/add-nfts/",
         "/popup/cosmos/add-token/",
         "/popup/evm/add-chain/",
         "/popup/evm/add-token/",
@@ -2219,6 +2242,9 @@ export const routeTree = rootRoute
     },
     "/popup/cosmos/add-chain/": {
       "filePath": "popup/cosmos/add-chain/index.tsx"
+    },
+    "/popup/cosmos/add-nfts/": {
+      "filePath": "popup/cosmos/add-nfts/index.tsx"
     },
     "/popup/cosmos/add-token/": {
       "filePath": "popup/cosmos/add-token/index.tsx"

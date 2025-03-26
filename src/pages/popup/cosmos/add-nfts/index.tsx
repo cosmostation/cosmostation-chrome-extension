@@ -3,17 +3,17 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import type { RequestQueue } from '@/types/extension';
-import type { CosAddTokensCW20Internal } from '@/types/message/inject/cosmos';
+import type { CosAddNFTsCW721 } from '@/types/message/inject/cosmos';
 
 import Entry from './-entry';
 import Layout from './-layout';
 import AccessRequest from '../../-components/requests/AccessRequest';
 
-export const Route = createFileRoute('/popup/cosmos/add-token/')({
-  component: CosmosAddToken,
+export const Route = createFileRoute('/popup/cosmos/add-nfts/')({
+  component: CosmosAddNFTs,
 });
 
-function CosmosAddToken() {
+function CosmosAddNFTs() {
   const { currentRequestQueue } = useCurrentRequestQueue();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -21,7 +21,7 @@ function CosmosAddToken() {
     disableDupeEthermint: true,
   });
 
-  if (currentRequestQueue && isCosAddTokens(currentRequestQueue)) {
+  if (currentRequestQueue && isCosAddNFTs(currentRequestQueue)) {
     const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) => asset.chain.name === currentRequestQueue.params.chainName);
 
     if (selectedAsset?.chain) {
@@ -37,6 +37,6 @@ function CosmosAddToken() {
   return null;
 }
 
-function isCosAddTokens(queue: RequestQueue): queue is CosAddTokensCW20Internal {
-  return queue.method === 'cos_addTokensCW20Internal';
+function isCosAddNFTs(queue: RequestQueue): queue is CosAddNFTsCW721 {
+  return queue.method === 'cos_addNFTsCW721';
 }

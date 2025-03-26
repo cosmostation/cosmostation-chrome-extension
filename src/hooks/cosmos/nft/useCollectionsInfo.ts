@@ -81,6 +81,7 @@ export function useCollectionsInfo({ params, config }: UseCollectionsInfoProps) 
     config: {
       enabled: isValidParams && !!chainList.cosmosChains?.length,
       staleTime: Infinity,
+      retry: 0,
       ...config,
     },
   });

@@ -330,7 +330,7 @@ export async function cosmosProcess(message: CosmosRequest) {
       if (method === 'cos_addNFTsCW721') {
         const { params } = message;
 
-        const cosmWasmChains = allCosmosChains.filter((item) => item.isCosmwasm);
+        const cosmWasmChains = allCosmosChains.filter((item) => item.isCosmwasm || item.isSupportCW721);
         const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.name.toLowerCase());
 
         const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);

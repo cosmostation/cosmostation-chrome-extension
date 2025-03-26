@@ -2447,6 +2447,15 @@
             "reject": "Reject",
             "addToken": "Add Token"
           }
+        },
+        "add-nfts": {
+          "entry": {
+            "addSuggestedNFTs": "Add Suggested NFTs",
+            "reject": "Reject",
+            "addNFT": "Add NFT",
+            "networkError": "Network Error",
+            "notOwned": "Not Owned"
+          }
         }
       },
       "evm": {

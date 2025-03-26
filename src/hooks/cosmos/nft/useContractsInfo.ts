@@ -75,6 +75,7 @@ export function useContractsInfo({ params, config }: UseContractsInfoProps) {
     config: {
       enabled: isValidParams && !!chainList.cosmosChains?.length,
       staleTime: Infinity,
+      retry: 0,
       ...config,
     },
   });

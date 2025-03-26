@@ -43,7 +43,7 @@ export function useFetchFailover<T>({ params, fetchFunction, queryKey, config }:
     fetchFunction: fetcher,
     config: {
       ...config,
-      enabled: !isAllRequestsFailed || config?.enabled,
+      enabled: !isAllRequestsFailed && !!config?.enabled,
     },
   });
 
