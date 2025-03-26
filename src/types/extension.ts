@@ -16,6 +16,7 @@ import type {
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
 import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './asset';
+import type { LockupTimeOptions } from './autoLock';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
 import type { Request } from './message/inject';
@@ -113,6 +114,8 @@ export interface ExtensionStorage {
   currentWindowId: number | null;
   prioritizedProvider: PrioritizedProvider;
   pinnedDappIds: number[];
+  autoLockTimeInMinutes: LockupTimeOptions;
+  autoLockTimeStampAt: number | null;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

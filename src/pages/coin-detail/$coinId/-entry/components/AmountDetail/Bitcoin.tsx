@@ -35,7 +35,6 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   const currentBitcoinTypeBalance = currentAccountBalance?.find((item) => isEqualsIgnoringCase(item.address, address));
 
   const pendingReceiveDisplayAmount = toDisplayDenomAmount(currentBitcoinTypeBalance?.balance?.mempoolStats?.funded_txo_sum || '0', decimal);
-  const pedningSendDisplayAmount = toDisplayDenomAmount(currentBitcoinTypeBalance?.balance?.mempoolStats?.spent_txo_sum || '0', decimal);
 
   return (
     <Container>
@@ -48,16 +47,6 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
               {availableDisplayAmount}
             </NumberTypo>
           </ValueText>
-        </DetailRow>
-        <DetailRow>
-          <PendingAmountContainer>
-            <Typography variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Bitcoin.pendingSent')}</Typography>
-          </PendingAmountContainer>
-          <PendingAmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
-              {pedningSendDisplayAmount}
-            </NumberTypo>
-          </PendingAmountContainer>
         </DetailRow>
         <DetailRow>
           <PendingAmountContainer>

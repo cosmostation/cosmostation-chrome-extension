@@ -55,6 +55,8 @@ export const initialState: ExtensionStorageState = {
     aptos: false,
   },
   pinnedDappIds: [],
+  autoLockTimeInMinutes: '30',
+  autoLockTimeStampAt: null,
 };
 
 const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets'];

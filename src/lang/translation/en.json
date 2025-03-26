@@ -42,12 +42,12 @@
         "Cosmos": {
           "index": {
             "title": "Stake & Earn {{symbol}}",
-            "available": "Available",
             "reward": "Reward",
             "stake": "Stake",
-            "claimAll": "Claim All",
-            "compountAll": "Compount All",
-            "unstake": "Unstake"
+            "claim": "Claim",
+            "compound": "Compound",
+            "unstake": "Unstake",
+            "staked": "Staked"
           }
         },
         "Sui": {
@@ -1788,7 +1788,9 @@
         "guide": "Guide",
         "guideDescription": "Learn how to use the wallet",
         "about": "About",
-        "aboutDescription": "Check wallet version & info"
+        "aboutDescription": "Check wallet version & info",
+        "min": "{{minutes}} min",
+        "never": "Never"
       },
       "layout": {
         "header": "Setting"
@@ -1820,6 +1822,20 @@
                 "eu": "Euro"
               }
             }
+          }
+        },
+        "SetAutoLockBottomSheet": {
+          "components": {
+            "OptionButton": {
+              "index": {
+                "minutes": "{{minutes}} Minutes",
+                "never": "Never",
+                "notRecommended": "Not Recommended"
+              }
+            }
+          },
+          "index": {
+            "title": "Set Auto Lock"
           }
         }
       },

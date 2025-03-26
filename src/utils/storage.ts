@@ -400,6 +400,10 @@ export async function initExtensionLocalStorage() {
   if (!originStorage.pinnedDappIds) {
     await setExtensionLocalStorage('pinnedDappIds', []);
   }
+
+  if (!originStorage.autoLockTimeInMinutes) {
+    await setExtensionLocalStorage('autoLockTimeInMinutes', '30');
+  }
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {

@@ -7,6 +7,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import { NEVER_LOCK_KEY } from '@/constants/autoLock';
 import { Route as About } from '@/pages/general-setting/about';
 import { Route as AddressBook } from '@/pages/general-setting/address-book';
 import { Route as BackupWallet } from '@/pages/general-setting/backup-wallet';
@@ -18,6 +19,7 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import CurrencyBottomSheet from './-components/CurrencyBottomSheet';
 import LanguageBottomSheet from './-components/LanguageBottomSheet';
+import SetAutoLockBottomSheet from './-components/SetAutoLockBottomSheet';
 import { Container, OptionButtonContainer, OptionButtonIconContainer, SectionContainer, SectionTitleContainer } from './-styled';
 
 import AbountIcon from '@/assets/images/icons/About28.svg';
@@ -39,7 +41,7 @@ export default function Entry() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, autoLockTimeInMinutes } = useExtensionStorageStore((state) => state);
 
   const currentSelectedLang = i18n.resolvedLanguage ? LangMap[i18n.resolvedLanguage] : '';
 
@@ -47,6 +49,7 @@ export default function Entry() {
 
   const [isOpenLanguageBottomSheet, setIsOpenLanguageBottomSheet] = useState(false);
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
+  const [isOpenAutoLockBottomSheet, setIsOpenAutoLockBottomSheet] = useState(false);
 
   return (
     <>
@@ -88,6 +91,9 @@ export default function Entry() {
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.changePasswordDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
+                  onClick={() => {
+                    setIsOpenAutoLockBottomSheet(true);
+                  }}
                   leftContent={
                     <OptionButtonIconContainer>
                       <AutoLockIcon />
@@ -95,7 +101,15 @@ export default function Entry() {
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.setAutoLock')}</Base1300Text>}
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.setAutoLockDescription')}</Base1000Text>}
-                  rightContent={<Base1000Text variant="h6n_M">{'60 Min'}</Base1000Text>}
+                  rightContent={
+                    <Base1000Text variant="h6n_M">
+                      {autoLockTimeInMinutes === NEVER_LOCK_KEY
+                        ? t('pages.general-setting.entry.never')
+                        : t('pages.general-setting.entry.min', {
+                            minutes: autoLockTimeInMinutes,
+                          })}
+                    </Base1000Text>
+                  }
                 />
               </OptionButtonContainer>
             </SectionContainer>
@@ -236,6 +250,7 @@ export default function Entry() {
       </BaseBody>
       <LanguageBottomSheet open={isOpenLanguageBottomSheet} onClose={() => setIsOpenLanguageBottomSheet(false)} />
       <CurrencyBottomSheet open={isOpenCurrencyBottomSheet} onClose={() => setIsOpenCurrencyBottomSheet(false)} />
+      <SetAutoLockBottomSheet open={isOpenAutoLockBottomSheet} onClose={() => setIsOpenAutoLockBottomSheet(false)} />
     </>
   );
 }

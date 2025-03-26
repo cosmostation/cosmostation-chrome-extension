@@ -35,12 +35,12 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const { delegationInfo } = useDelegationInfo({ coinId });
 
-  const { rewardAmount } = useAmount(coinId);
+  const { delegationAmount, rewardAmount } = useAmount(coinId);
   const reward = useReward({ coinId });
 
   const symbol = currentCoin?.asset.symbol;
   const decimals = currentCoin?.asset.decimals;
-  const availableAmount = toDisplayDenomAmount(currentCoin?.balance || '0', decimals || 0);
+  const totalStakedDisplayAmount = toDisplayDenomAmount(delegationAmount, decimals || 0);
 
   const rewardsDisplayAmount = toDisplayDenomAmount(rewardAmount, decimals || 0);
   const rewardsCoinCounts = reward?.data?.total?.length || 0;
@@ -60,10 +60,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
         body={
           <BodyContainer>
             <BodyContentsContainer>
-              <Base1000Text variant="b2_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.available')}</Base1000Text>
+              <Base1000Text variant="b2_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.staked')}</Base1000Text>
               <AmountContainer>
                 <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
-                  {availableAmount}
+                  {totalStakedDisplayAmount}
                 </NumberTypo>
                 &nbsp;
                 <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
@@ -122,10 +122,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
               leadingIcon={<ClaimRewardIcon />}
               direction="vertical"
             >
-              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.claimAll')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.claim')}</SpacedTypography>
             </StyledIconTextButton>
             <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
-              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.compountAll')}</SpacedTypography>
+              <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.compound')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>
         }

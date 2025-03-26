@@ -6,12 +6,14 @@ import type { ServiceWorkerMessage } from '@/types/message/service-worker';
 
 import { initExtensionView } from './initialize';
 import { process } from './message';
+import { startAutoLockTimer } from './passwordManage';
 import { address, customChainAddress } from './update/address';
 import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance } from './update/balance';
 import { v11 } from './update/v11';
 
 initExtensionView();
 
+startAutoLockTimer();
 // const response = await chrome.runtime.sendMessage({ })
 
 chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
