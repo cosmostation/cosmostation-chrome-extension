@@ -71,7 +71,19 @@ export default function Entry({ accountId }: EntryProps) {
               </IconTextButton>
             </TopContainer>
 
-            <OutlinedInput multiline minRows={5} type={isViewPrivateKey ? 'text' : 'password'} hideViewIcon disabled value={decryptedPrivateKey} />
+            <OutlinedInput
+              multiline
+              minRows={5}
+              type={isViewPrivateKey ? 'text' : 'password'}
+              hideViewIcon
+              disabled
+              value={decryptedPrivateKey}
+              sx={{
+                '& .MuiInputBase-input.Mui-disabled': {
+                  WebkitTextFillColor: 'white',
+                },
+              }}
+            />
 
             <ControlInputButtonContainer>
               <StyledIconTextButton

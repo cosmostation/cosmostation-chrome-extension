@@ -9,6 +9,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import { Route as About } from '@/pages/general-setting/about';
 import { Route as AddressBook } from '@/pages/general-setting/address-book';
+import { Route as BackupWallet } from '@/pages/general-setting/backup-wallet';
 import { Route as ChangePassword } from '@/pages/general-setting/change-password';
 import { Route as ManageCustomNetwork } from '@/pages/general-setting/manage-custom-network';
 import { Route as WalletPrioritize } from '@/pages/general-setting/wallet-prioritize';
@@ -31,11 +32,16 @@ import ManageCustomNetworkIcon from '@/assets/images/icons/ManageCustomNetwork28
 import PriceChangeColorIcon from '@/assets/images/icons/PriceChangeColor28.svg';
 import PrioritizeIcon from '@/assets/images/icons/PriotizeWallet28.svg';
 
+const LangMap: Record<string, string> = {
+  en: 'English',
+};
 export default function Entry() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+
+  const currentSelectedLang = i18n.resolvedLanguage ? LangMap[i18n.resolvedLanguage] : '';
 
   const { version } = extension.runtime.getManifest();
 
@@ -54,6 +60,11 @@ export default function Entry() {
               </SectionTitleContainer>
               <OptionButtonContainer>
                 <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: BackupWallet.to,
+                    });
+                  }}
                   leftContent={
                     <OptionButtonIconContainer>
                       <BackupWalletIcon />
@@ -157,6 +168,7 @@ export default function Entry() {
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.language')}</Base1300Text>}
                   leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.languageDescription')}</Base1000Text>}
+                  rightContent={<Base1000Text variant="h6n_M">{currentSelectedLang}</Base1000Text>}
                 />
                 <BaseOptionButton
                   onClick={() => {
