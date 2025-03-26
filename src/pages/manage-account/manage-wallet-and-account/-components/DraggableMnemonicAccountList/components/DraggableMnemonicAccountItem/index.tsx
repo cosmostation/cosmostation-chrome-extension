@@ -16,7 +16,6 @@ import {
   AccountImgContainer,
   AccountInfoContainer,
   AccountLeftContainer,
-  AccountRightContainer,
   BodyContainer,
   Container,
   LastHdPathIndexText,
@@ -147,9 +146,6 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
                   </LastHdPathTextContainer>
                 </AccountInfoContainer>
               </AccountLeftContainer>
-              <AccountRightContainer>
-                <OrderIcon />
-              </AccountRightContainer>
             </AccountButton>
           );
         })}

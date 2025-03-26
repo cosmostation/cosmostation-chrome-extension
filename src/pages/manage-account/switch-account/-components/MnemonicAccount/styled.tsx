@@ -138,7 +138,7 @@ export const ActiveBadge = styled('div')(({ theme }) => ({
 
 export const OutlinedButtonContainer = styled('div')({
   width: '100%',
-  padding: '1.6rem 1.6rem 0',
+  padding: '0 1.6rem',
   boxSizing: 'border-box',
 });
 

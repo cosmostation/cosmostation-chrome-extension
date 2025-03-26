@@ -89,7 +89,14 @@ export default function Layout({ children }: LayoutProps) {
           ? privateKeyAccounts.sort((a, b) => newSortedPrivateKeyAccountIds.indexOf(a.id) - newSortedPrivateKeyAccountIds.indexOf(b.id))
           : privateKeyAccounts;
 
-        updateExtensionStorageStore('userAccounts', [...sortedMnemonicAccounts, ...sortedPrivateKeyAccounts]);
+        const sortedAccounts = [...sortedMnemonicAccounts, ...sortedPrivateKeyAccounts];
+        const isSortIntegrityMaintained =
+          JSON.stringify([...sortedAccounts].sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))) ===
+          JSON.stringify([...userAccounts].sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0)));
+
+        if (isSortIntegrityMaintained) {
+          updateExtensionStorageStore('userAccounts', sortedAccounts);
+        }
       }
 
       toastSuccess(t('pages.manage-account.manage-wallet-and-account.layout.saveSuccess'));
