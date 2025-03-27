@@ -201,53 +201,6 @@ export async function initExtensionLocalStorage() {
     });
   }
 
-  if (!originStorage.initCheckLegacyBalanceAccountIds) {
-    await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
-  }
-
-  if (originStorage.isBalanceVisible === undefined) {
-    await setExtensionLocalStorage('isBalanceVisible', true);
-  }
-
-  if (!originStorage.adPopoverState) {
-    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
-      acc[cur] = {
-        isVisiable: false,
-      };
-      return acc;
-    }, {});
-
-    await setExtensionLocalStorage('adPopoverState', defaultState);
-  }
-
-  if (originStorage.adPopoverState) {
-    const adPopoverState = originStorage.adPopoverState;
-
-    AD_POPOVER_IDS.forEach(async (id) => {
-      if (adPopoverState[id]) {
-        const dropPopoverState = adPopoverState[id];
-
-        if (dropPopoverState.isVisiable) {
-          const newState = produce(adPopoverState, (draft) => {
-            draft[id].isVisiable = false;
-          });
-
-          await setExtensionLocalStorage('adPopoverState', newState);
-        }
-      }
-
-      if (!adPopoverState[id]) {
-        const newState = produce(adPopoverState, (draft) => {
-          draft[id] = {
-            isVisiable: false,
-          };
-        });
-
-        await setExtensionLocalStorage('adPopoverState', newState);
-      }
-    });
-  }
-
   if (originStorage.accountNamesById) {
     const accountMissingNames = (() => {
       const storedAccounts = originStorage.userAccounts;
