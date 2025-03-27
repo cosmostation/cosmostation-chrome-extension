@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { Contract, ethers } from 'ethers';
+import { MulticallWrapper } from 'ethers-multicall-provider';
 import { PromisePool } from '@supercharge/promise-pool';
 
-import { ETHERS_PROVIDER_TIMEOUT, NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { chainToDeploymentMap, MULICALL_CONTRACT_ADDRESS } from '@/constants/evm/mutlicall3';
 import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
@@ -20,6 +23,7 @@ import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } 
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { ExtensionStorage } from '@/types/extension';
 import type { SuiRpcGetBalanceResponse } from '@/types/sui/api';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
 const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
 const defaultEvmCoinList = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
@@ -258,7 +262,9 @@ async function cosmosBalances(id: string, { isMinimal = false } = {}) {
         const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
         const requestUrl = `${url}${urlPath}?${urlQuery}`;
 
-        const response = await axios.get<CosmosBalanceResponse>(requestUrl);
+        const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+          timeout: BALANCE_FETCH_TIME_OUT_MS,
+        });
 
         return response.data;
       });
@@ -274,7 +280,9 @@ async function cosmosBalances(id: string, { isMinimal = false } = {}) {
           const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
           const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
 
-          const response = await axios.get<CosmosBalanceResponse>(requestUrl);
+          const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+            timeout: BALANCE_FETCH_TIME_OUT_MS,
+          });
 
           return response.data;
         });
@@ -323,7 +331,9 @@ async function customCosmosBalances(id: string) {
         const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
         const requestUrl = `${url}${urlPath}?${urlQuery}`;
 
-        const response = await axios.get<CosmosBalanceResponse>(requestUrl);
+        const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+          timeout: BALANCE_FETCH_TIME_OUT_MS,
+        });
 
         return response.data;
       });
@@ -339,7 +349,9 @@ async function customCosmosBalances(id: string) {
           const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
           const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
 
-          const response = await axios.get<CosmosBalanceResponse>(requestUrl);
+          const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+            timeout: BALANCE_FETCH_TIME_OUT_MS,
+          });
 
           return response.data;
         });
@@ -391,7 +403,9 @@ async function evmBalances(id: string, { isMinimal = false } = {}) {
       const promises = rpcUrls.map(async (rpcUrl) => {
         const url = rpcUrl.url;
 
-        const response = await axios.post<EvmRpcGetBalanceResponse>(url, body);
+        const response = await axios.post<EvmRpcGetBalanceResponse>(url, body, {
+          timeout: BALANCE_FETCH_TIME_OUT_MS,
+        });
 
         return response.data;
       });
@@ -438,7 +452,9 @@ async function customEvmBalances(id: string) {
       const promises = rpcUrls.map(async (rpcUrl) => {
         const url = rpcUrl.url;
 
-        const response = await axios.post<EvmRpcGetBalanceResponse>(url, body);
+        const response = await axios.post<EvmRpcGetBalanceResponse>(url, body, {
+          timeout: BALANCE_FETCH_TIME_OUT_MS,
+        });
 
         return response.data;
       });
@@ -476,7 +492,9 @@ async function bitcoinBalances(id: string) {
 
       const url = `${mempoolURL}/address/${address}`;
 
-      const response = await axios.get<AccountDetail>(url);
+      const response = await axios.get<AccountDetail>(url, {
+        timeout: BALANCE_FETCH_TIME_OUT_MS,
+      });
 
       const balance = {
         chainStats: response.data?.chain_stats || undefined,
@@ -514,7 +532,9 @@ async function aptosBalances(id: string) {
         const url = rpcUrl.url.endsWith('/') ? rpcUrl.url.slice(0, -1) : rpcUrl.url;
         const requestUrl = `${url}${urlPath}`;
 
-        const response = await axios.get<AptosResourceResponse[]>(requestUrl);
+        const response = await axios.get<AptosResourceResponse[]>(requestUrl, {
+          timeout: BALANCE_FETCH_TIME_OUT_MS,
+        });
 
         return response.data;
       });
@@ -559,7 +579,9 @@ async function suiBalances(id: string) {
       const promises = rpcUrls.map(async (rpcUrl) => {
         const url = rpcUrl.url;
 
-        const response = await axios.post<SuiRpcGetBalanceResponse>(url, body);
+        const response = await axios.post<SuiRpcGetBalanceResponse>(url, body, {
+          timeout: BALANCE_FETCH_TIME_OUT_MS,
+        });
 
         return response.data;
       });
@@ -613,43 +635,105 @@ async function erc20Balance(id: string) {
       const { rpcUrls } = chain;
       const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const providers = rpcUrls.map((rpcUrl) => {
-        const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
-          batchMaxCount: 1,
-          polling: false,
-          staticNetwork: true,
+      const chainIdDecimal = parseInt(chain.chainId, 16).toString();
+
+      const isMulticallEnabled =
+        !!chainToDeploymentMap[chainIdDecimal] && isEqualsIgnoringCase(chainToDeploymentMap[chainIdDecimal], MULICALL_CONTRACT_ADDRESS);
+
+      if (isMulticallEnabled) {
+        const providers = rpcUrls.map((rpcUrl) => {
+          const provider = new ethers.JsonRpcProvider(rpcUrl.url);
+
+          provider._getConnection().timeout = BALANCE_FETCH_TIME_OUT_MS;
+
+          return MulticallWrapper.wrap(provider);
         });
 
-        provider._getConnection().timeout = ETHERS_PROVIDER_TIMEOUT;
+        const allBalances = await Promise.any(
+          providers.map(async (provider) => {
+            const tokenContracts = assets.map((asset) => {
+              return {
+                contractAddress: asset.id,
+                erc20ContractInstance: new Contract(asset.id, ERC20_READ_ABI, provider),
+              };
+            });
 
-        return provider;
-      });
+            const settledTokenBalances = await Promise.allSettled(
+              tokenContracts.map(async ({ contractAddress, erc20ContractInstance }) => {
+                const response: bigint = await erc20ContractInstance.balanceOf(address);
 
-      const { results: allBalances } = await PromisePool.withConcurrency(10)
-        .for(assets)
-        .process(async (asset) => {
-          const { id: contractAddress } = asset;
-          const promises = providers.map(async (provider) => {
-            const contract = new Contract(contractAddress, ERC20_READ_ABI, provider);
-            const response: bigint = await contract.balanceOf(address);
+                const balance = response.toString();
 
-            const balance = response.toString();
-            return balance;
+                const result = { contract: contractAddress, balance };
+
+                return result;
+              }),
+            );
+
+            const filteredAllBalances = settledTokenBalances
+              .map((balance) => {
+                if (balance.status === 'fulfilled') {
+                  return balance.value;
+                } else {
+                  return undefined;
+                }
+              })
+              .filter((item) => !!item);
+
+            if (filteredAllBalances.length === 0) {
+              throw new Error('No balance');
+            }
+
+            return filteredAllBalances;
+          }),
+        );
+
+        const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+        providers.forEach((provider) => provider.destroy());
+
+        const result = { id, chainId, chainType, address, balances };
+
+        return result;
+      } else {
+        const providers = rpcUrls.map((rpcUrl) => {
+          const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
+            batchMaxCount: 1,
+            polling: false,
+            staticNetwork: true,
           });
 
-          const balance = await Promise.any(promises);
+          provider._getConnection().timeout = BALANCE_FETCH_TIME_OUT_MS;
 
-          const result = { contract: contractAddress, balance };
-
-          return result;
+          return provider;
         });
 
-      providers.forEach((provider) => provider.destroy());
+        const { results: allBalances } = await PromisePool.withConcurrency(10)
+          .for(assets)
+          .process(async (asset) => {
+            const { id: contractAddress } = asset;
+            const promises = providers.map(async (provider) => {
+              const contract = new Contract(contractAddress, ERC20_READ_ABI, provider);
+              const response: bigint = await contract.balanceOf(address);
 
-      const balances = allBalances.filter((balance) => balance.balance !== '0');
+              const balance = response.toString();
+              return balance;
+            });
 
-      const result = { id, chainId, chainType, address, balances };
-      return result;
+            const balance = await Promise.any(promises);
+
+            const result = { contract: contractAddress, balance };
+
+            return result;
+          });
+
+        providers.forEach((provider) => provider.destroy());
+
+        const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+        const result = { id, chainId, chainType, address, balances };
+        return result;
+      }
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${id}-balance-erc20`]: results });
@@ -678,43 +762,108 @@ async function customErc20Balance(id: string) {
       const { rpcUrls } = chain;
       const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const providers = rpcUrls.map((rpcUrl) => {
-        const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
-          batchMaxCount: 1,
-          polling: false,
-          staticNetwork: true,
-        });
+      const chainIdDecimal = parseInt(chain.chainId, 16).toString();
 
-        provider._getConnection().timeout = ETHERS_PROVIDER_TIMEOUT;
+      const isMulticallEnabled =
+        !!chainToDeploymentMap[chainIdDecimal] && isEqualsIgnoringCase(chainToDeploymentMap[chainIdDecimal], MULICALL_CONTRACT_ADDRESS);
 
-        return provider;
-      });
-
-      const { results: allBalances } = await PromisePool.withConcurrency(10)
-        .for(assets)
-        .process(async (asset) => {
-          const { id: contractAddress } = asset;
-          const promises = providers.map(async (provider) => {
-            const contract = new Contract(contractAddress, ERC20_READ_ABI, provider);
-            const response: bigint = await contract.balanceOf(address);
-
-            const balance = response.toString();
-            return balance;
+      if (isMulticallEnabled) {
+        const providers = rpcUrls.map((rpcUrl) => {
+          const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
+            batchMaxCount: 1,
+            polling: false,
+            staticNetwork: true,
           });
 
-          const balance = await Promise.any(promises);
+          provider._getConnection().timeout = BALANCE_FETCH_TIME_OUT_MS;
 
-          const result = { contract: contractAddress, balance };
-
-          return result;
+          return MulticallWrapper.wrap(provider);
         });
 
-      providers.forEach((provider) => provider.destroy());
+        const allBalances = await Promise.any(
+          providers.map(async (provider) => {
+            const tokenContracts = assets.map((asset) => {
+              return {
+                contractAddress: asset.id,
+                erc20ContractInstance: new Contract(asset.id, ERC20_READ_ABI, provider),
+              };
+            });
 
-      const balances = allBalances.filter((balance) => balance.balance !== '0');
+            const settledTokenBalances = await Promise.allSettled(
+              tokenContracts.map(async ({ contractAddress, erc20ContractInstance }) => {
+                const response: bigint = await erc20ContractInstance.balanceOf(address);
 
-      const result = { id, chainId, chainType, address, balances };
-      return result;
+                const balance = response.toString();
+
+                const result = { contract: contractAddress, balance };
+
+                return result;
+              }),
+            );
+
+            const filteredAllBalances = settledTokenBalances
+              .map((balance) => {
+                if (balance.status === 'fulfilled') {
+                  return balance.value;
+                } else {
+                  return undefined;
+                }
+              })
+              .filter((item) => !!item);
+
+            if (filteredAllBalances.length === 0) {
+              throw new Error('No balance');
+            }
+
+            return filteredAllBalances;
+          }),
+        );
+
+        const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+        providers.forEach((provider) => provider.destroy());
+
+        const result = { id, chainId, chainType, address, balances };
+        return result;
+      } else {
+        const providers = rpcUrls.map((rpcUrl) => {
+          const provider = new ethers.JsonRpcProvider(rpcUrl.url, undefined, {
+            batchMaxCount: 1,
+            polling: false,
+            staticNetwork: true,
+          });
+
+          provider._getConnection().timeout = BALANCE_FETCH_TIME_OUT_MS;
+
+          return provider;
+        });
+
+        const { results: allBalances } = await PromisePool.withConcurrency(10)
+          .for(assets)
+          .process(async (asset) => {
+            const { id: contractAddress } = asset;
+            const promises = providers.map(async (provider) => {
+              const contract = new Contract(contractAddress, ERC20_READ_ABI, provider);
+              const response: bigint = await contract.balanceOf(address);
+
+              const balance = response.toString();
+              return balance;
+            });
+
+            const balance = await Promise.any(promises);
+
+            const result = { contract: contractAddress, balance };
+
+            return result;
+          });
+
+        providers.forEach((provider) => provider.destroy());
+
+        const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+        const result = { id, chainId, chainType, address, balances };
+        return result;
+      }
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: results });
@@ -761,7 +910,7 @@ async function cw20Balance(id: string) {
             const requestUrl = `${url}${urlPath}`;
 
             const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl, {
-              timeout: 1000 * 2,
+              timeout: BALANCE_FETCH_TIME_OUT_MS,
             });
 
             return response.data?.data?.balance ?? '0';
@@ -817,7 +966,9 @@ async function customCw20Balance(id: string) {
             const urlPath = `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${btoa(`{"balance":{"address":"${address}"}}`)}`;
             const requestUrl = `${url}${urlPath}`;
 
-            const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl);
+            const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl, {
+              timeout: BALANCE_FETCH_TIME_OUT_MS,
+            });
 
             return response.data?.data?.balance ?? '0';
           });

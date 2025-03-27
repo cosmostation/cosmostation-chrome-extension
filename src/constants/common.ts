@@ -13,3 +13,5 @@ export const COSMOSTATION_RDNS = 'io.cosmostation';
 export const MOONPAY_API_URL = 'https://buy.moonpay.com';
 
 export const MOONPAY_API_KEY = 'pk_live_zbG1BOGMVTcfKibboIE2K3vduJBTuuCn';
+
+export const BALANCE_FETCH_TIME_OUT_MS = 1000 * 2;
