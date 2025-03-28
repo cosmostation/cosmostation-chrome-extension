@@ -1771,7 +1771,9 @@
           }
         },
         "entry": {
-          "searchPlaceholder": "Search Network (Ex. Bitcoin)"
+          "searchPlaceholder": "Search Network (Ex. Bitcoin)",
+          "noSearchTitle": "No Result",
+          "noSearchSubTitle": "Please check the network name and try again"
         }
       }
     },
@@ -1893,7 +1895,7 @@
             "confirm": "Confirm",
             "memoInfo": "Enter Memo",
             "unversalAddressInfo": "Universal Address",
-            "memoInfoDescription": "Description Description Description Description Description Description Description Description Description Description",
+            "memoInfoDescription": "Depositing Cosmos ecosystem coins to a centralized exchange without a memo may result in loss of funds.",
             "unversalAddressInfoDescription": "Indicates that a specific address can be used simultaneously across multiple EVM-based networks.",
             "universal": "Universal",
             "failedToGetChainId": "Failed to get chain ID",

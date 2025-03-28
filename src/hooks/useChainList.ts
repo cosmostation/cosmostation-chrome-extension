@@ -102,18 +102,12 @@ export function useChainList() {
         if (selectedChainAccountType) {
           if (
             chain.accountTypes.some(
-              (accountType) =>
-                accountType.hdPath === selectedChainAccountType.hdPath &&
-                accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle &&
-                accountType.pubkeyType === selectedChainAccountType.pubkeyType,
+              (accountType) => accountType.hdPath === selectedChainAccountType.hdPath && accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle,
             )
           ) {
             return produce(chain, (draft) => {
               draft.accountTypes = draft.accountTypes.filter(
-                (item) =>
-                  item.hdPath === selectedChainAccountType.hdPath &&
-                  item.pubkeyStyle === selectedChainAccountType.pubkeyStyle &&
-                  item.pubkeyType === selectedChainAccountType.pubkeyType,
+                (item) => item.hdPath === selectedChainAccountType.hdPath && item.pubkeyStyle === selectedChainAccountType.pubkeyStyle,
               );
             });
           }
@@ -144,9 +138,13 @@ export function useChainList() {
   const flatChainList = useMemo(
     () =>
       chainList
-        ? Object.values(chainList)
-            .flat()
-            .sort((a, b) => a.name.localeCompare(b.name))
+        ? [
+            ...(chainList.allCosmosChains || []),
+            ...(chainList.allEVMChains || []),
+            ...(chainList.aptosChains || []),
+            ...(chainList.suiChains || []),
+            ...(chainList.bitcoinChains || []),
+          ].sort((a, b) => a.name.localeCompare(b.name))
         : [],
     [chainList],
   );

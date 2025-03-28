@@ -14,6 +14,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
+import { useCurrentMultiChainPK } from '@/hooks/current/useCurrentMultiChainPK';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as SwitchWallet } from '@/pages/manage-account/switch-account';
@@ -50,6 +51,7 @@ export default function Entry({ accountId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  useCurrentMultiChainPK();
   const { userAccounts, accountNamesById, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
   const { removeAccount } = useCurrentAccount();
 
