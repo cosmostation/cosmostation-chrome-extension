@@ -8,13 +8,11 @@ import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type LanguageBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'>;
 
+const SUPPORT_LANGUAGES = ['en', 'ko', 'ja'];
+
 export default function LanguageBottomSheet({ onClose, ...remainder }: LanguageBottomSheetProps) {
   const { t } = useTranslation();
   const i18 = useTranslation();
-
-  const language = i18.i18n.language.trim();
-
-  const supportLanguage = ['en'];
 
   const onHandleClick = (val: string) => {
     i18.i18n.changeLanguage(val);
@@ -43,12 +41,12 @@ export default function LanguageBottomSheet({ onClose, ...remainder }: LanguageB
           </StyledButton>
         </Header>
         <Body>
-          {supportLanguage.map((item) => {
+          {SUPPORT_LANGUAGES.map((item) => {
             return (
               <OptionButton
                 key={item}
                 language={item}
-                isActive={language.includes(item)}
+                isActive={i18.i18n.resolvedLanguage === item}
                 onClickButton={(val) => {
                   onHandleClick(val);
                 }}
