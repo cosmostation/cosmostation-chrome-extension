@@ -14,7 +14,7 @@ export function useCurrentHiddenAssetIds() {
 
   const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const currentHiddenAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-hidden-assetIds`];
+  const currentHiddenAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-hidden-assetIds`] || [];
 
   const hideAsset = async (assetId: AssetId) => {
     const storedHiddenAssetIds = await getHiddenAssets(currentAccount.id);

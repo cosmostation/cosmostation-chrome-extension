@@ -14,7 +14,7 @@ export function useCurrentVisibleAssetIds() {
 
   const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const currentVisibleAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-visible-assetIds`];
+  const currentVisibleAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-visible-assetIds`] || [];
 
   const addVisibleAsset = async (assetId: AssetId) => {
     const storedVisibleAssetIds = await getVisibleAssets(currentAccount.id);
