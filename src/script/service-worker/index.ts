@@ -2,7 +2,9 @@
 // import { getAccountAssets } from '@/libs/asset';
 
 // import { addressToStorage, balanceToStorage, chainsAndAssetstoStorage } from './storage';
+import type { RequestQueue } from '@/types/extension';
 import type { ServiceWorkerMessage } from '@/types/message/service-worker';
+import { extension } from '@/utils/browser';
 
 import { initExtensionView } from './initialize';
 import { process } from './message';
@@ -15,6 +17,16 @@ initExtensionView();
 
 startAutoLockTimer();
 // const response = await chrome.runtime.sendMessage({ })
+
+extension.storage.onChanged.addListener((changes) => {
+  for (const [key, { newValue }] of Object.entries(changes)) {
+    if (key === 'requestQueue') {
+      const newQueues = newValue as RequestQueue[] | undefined;
+      const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
+      void extension.action.setBadgeText({ text });
+    }
+  }
+});
 
 chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
   (async () => {
@@ -80,7 +92,19 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
 });
 
 chrome.runtime.onInstalled.addListener(async () => {
+  // const isMigrationRequired = await isMigrationRequired_V1_0_0();
+
+  // console.log('🚀 ~ chrome.runtime.onInstalled.addListener ~ isMigrationRequired:', isMigrationRequired);
+
+  // if (isMigrationRequired) {
+  //   await migrateData();
+  // } else {
+  //   await v11();
+  // }
   await v11();
+
+  void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
+  void extension.action.setBadgeText({ text: '' });
 });
 
 // chrome.alarms.create('my5MinuteAlarm', { periodInMinutes: 1 });

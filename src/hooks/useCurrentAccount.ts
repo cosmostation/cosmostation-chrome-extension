@@ -19,13 +19,12 @@ export function useCurrentAccount() {
     (state) => state,
   );
 
-  const selectedAccount = userAccounts.find((account) => account.id === currentAccountId);
+  const selectedAccount = useMemo(() => userAccounts.find((account) => account.id === currentAccountId), [currentAccountId, userAccounts]);
 
-  const currentAccount = selectedAccount || userAccounts[0];
+  const currentAccount = useMemo(() => selectedAccount || userAccounts[0], [selectedAccount, userAccounts]);
 
-  const currentAccountName = accountNamesById[currentAccount?.id] ?? '';
-
-  const currentAccountWithName = { ...currentAccount, name: currentAccountName };
+  const currentAccountName = useMemo(() => accountNamesById[currentAccount?.id] ?? '', [accountNamesById, currentAccount?.id]);
+  const currentAccountWithName = useMemo(() => ({ ...currentAccount, name: currentAccountName }), [currentAccount, currentAccountName]);
 
   const setCurrentAccount = async (id: string) => {
     if (currentAccountId === id) return;

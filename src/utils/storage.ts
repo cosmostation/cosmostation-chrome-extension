@@ -21,342 +21,20 @@ import { aesDecrypt } from './crypto';
 import { getUniqueChainId, isMatchingUniqueChainId } from './queryParamGenerator';
 
 export async function initExtensionLocalStorage() {
-  const originStorage = await getAllExtensionLocalStorage();
+  await initializeStorageDefaults();
 
-  if (!originStorage.paramsV11 || !originStorage.assetsV11) {
-    await v11();
-  }
+  await initializeCurrentAccountId();
+  await initializeChosenNetworks();
 
-  if (!originStorage.userLanguagePreference) {
-    setExtensionLocalStorage('userLanguagePreference', 'en');
-  }
+  await setMissingAdPopoverState();
 
-  if (!originStorage.userCurrencyPreference) {
-    const newCurrency = CURRENCY_TYPE.USD;
+  await setMissingAccountNames();
 
-    await setExtensionLocalStorage('userCurrencyPreference', newCurrency);
-  }
+  await setMissingMnemonicNames();
 
-  if (!originStorage.dappListSortKey) {
-    await setExtensionLocalStorage('dappListSortKey', DefaultSortKey.dappListSortKey);
-  }
+  await setMissingPreferAccountType();
 
-  if (!originStorage.dashboardCoinSortKey) {
-    await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
-  }
-
-  if (!originStorage.userAccounts) {
-    await setExtensionLocalStorage('userAccounts', []);
-  }
-
-  if (!originStorage.accountNamesById) {
-    await setExtensionLocalStorage('accountNamesById', {});
-  }
-
-  if (!originStorage.mnemonicNamesByHashedMnemonic) {
-    await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
-  }
-
-  if (!originStorage.notBackedUpAccountIds) {
-    await setExtensionLocalStorage('notBackedUpAccountIds', []);
-  }
-
-  if (!originStorage.preferAccountType) {
-    await setExtensionLocalStorage('preferAccountType', {});
-  }
-
-  if (!originStorage.customErc20Assets) {
-    await setExtensionLocalStorage('customErc20Assets', []);
-  }
-
-  if (!originStorage.customCw20Assets) {
-    await setExtensionLocalStorage('customCw20Assets', []);
-  }
-
-  if (!originStorage.addressBookList) {
-    await setExtensionLocalStorage('addressBookList', []);
-  }
-
-  if (!originStorage.addedCustomChainList) {
-    await setExtensionLocalStorage('addedCustomChainList', []);
-  }
-
-  if (!originStorage.currentAccountId) {
-    const defaultAccountId = originStorage.userAccounts?.[0]?.id || '';
-    await setExtensionLocalStorage('currentAccountId', defaultAccountId);
-  }
-
-  if (!originStorage.customAssets) {
-    await setExtensionLocalStorage('customAssets', []);
-  }
-
-  if (!originStorage.customHiddenAssetIds) {
-    await setExtensionLocalStorage('customHiddenAssetIds', []);
-  }
-
-  if (!originStorage.customErc20Assets) {
-    await setExtensionLocalStorage('customErc20Assets', []);
-  }
-
-  if (!originStorage.customCw20Assets) {
-    await setExtensionLocalStorage('customCw20Assets', []);
-  }
-
-  if (!originStorage.approvedOrigins) {
-    await setExtensionLocalStorage('approvedOrigins', []);
-  }
-
-  if (!originStorage.requestQueue) {
-    await setExtensionLocalStorage('requestQueue', []);
-  }
-
-  if (!originStorage.approvedSuiPermissions) {
-    await setExtensionLocalStorage('approvedSuiPermissions', []);
-  }
-
-  if (!originStorage.chosenEthereumNetworkId) {
-    const { evmChains } = await getChains();
-
-    const defaultEVMNetwork = evmChains.find((item) => item.id === 'ethereum') || evmChains[0];
-
-    const defaultEVMNetworkId = getUniqueChainId(defaultEVMNetwork);
-
-    await setExtensionLocalStorage('chosenEthereumNetworkId', defaultEVMNetworkId);
-  }
-
-  if (!originStorage.chosenAptosNetworkId) {
-    const { aptosChains } = await getChains();
-
-    const defaultAptosNetwork = aptosChains.find((item) => item.id === 'aptos') || aptosChains[0];
-
-    const defaultAptosNetworkId = getUniqueChainId(defaultAptosNetwork);
-
-    await setExtensionLocalStorage('chosenAptosNetworkId', defaultAptosNetworkId);
-  }
-
-  if (!originStorage.chosenSuiNetworkId) {
-    const { suiChains } = await getChains();
-
-    const defaultSuiNetwork = suiChains.find((item) => item.id === 'sui') || suiChains[0];
-
-    const defaultSuiNetworkId = getUniqueChainId(defaultSuiNetwork);
-
-    await setExtensionLocalStorage('chosenSuiNetworkId', defaultSuiNetworkId);
-  }
-
-  if (!originStorage.chosenBitcoinNetworkId) {
-    const { bitcoinChains } = await getChains();
-
-    const defaultBitcoinNetwork = bitcoinChains.find((item) => item.id === 'bitcoin') || bitcoinChains[0];
-
-    const defaultBitcoinNetworkId = getUniqueChainId(defaultBitcoinNetwork);
-
-    await setExtensionLocalStorage('chosenBitcoinNetworkId', defaultBitcoinNetworkId);
-  }
-
-  if (!originStorage.initCheckLegacyBalanceAccountIds) {
-    await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
-  }
-
-  if (originStorage.isBalanceVisible === undefined) {
-    await setExtensionLocalStorage('isBalanceVisible', true);
-  }
-
-  if (!originStorage.adPopoverState) {
-    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
-      acc[cur] = {
-        isVisiable: false,
-      };
-      return acc;
-    }, {});
-
-    await setExtensionLocalStorage('adPopoverState', defaultState);
-  }
-
-  if (originStorage.adPopoverState) {
-    const adPopoverState = originStorage.adPopoverState;
-
-    AD_POPOVER_IDS.forEach(async (id) => {
-      if (adPopoverState[id]) {
-        const dropPopoverState = adPopoverState[id];
-
-        if (dropPopoverState.isVisiable) {
-          const newState = produce(adPopoverState, (draft) => {
-            draft[id].isVisiable = false;
-          });
-
-          await setExtensionLocalStorage('adPopoverState', newState);
-        }
-      }
-
-      if (!adPopoverState[id]) {
-        const newState = produce(adPopoverState, (draft) => {
-          draft[id] = {
-            isVisiable: false,
-          };
-        });
-
-        await setExtensionLocalStorage('adPopoverState', newState);
-      }
-    });
-  }
-
-  if (originStorage.accountNamesById) {
-    const accountMissingNames = (() => {
-      const storedAccounts = originStorage.userAccounts;
-      const accountNameIds = Object.keys(originStorage.accountNamesById);
-
-      return storedAccounts.filter((item) => !accountNameIds.includes(item.id));
-    })();
-
-    if (accountMissingNames.length > 0) {
-      const oldPreferAccountType = originStorage.accountNamesById;
-
-      const generatedAccountNames = accountMissingNames.reduce((acc: AccountNamesById, cur, i) => {
-        acc[cur.id] = `Account ${i + 1}`;
-        return acc;
-      }, {});
-
-      const mergedAccountNamesById = { ...oldPreferAccountType, ...generatedAccountNames };
-
-      await setExtensionLocalStorage('accountNamesById', mergedAccountNamesById);
-    }
-  }
-
-  if (originStorage.mnemonicNamesByHashedMnemonic) {
-    const mnemonicAccountsMissingMnemonicNames = (() => {
-      const mnemonicAccounts = originStorage.userAccounts.filter((item) => item.type === 'MNEMONIC');
-      const mnemonicNameKeys = Object.keys(originStorage.mnemonicNamesByHashedMnemonic);
-
-      return mnemonicAccounts.filter((item) => !mnemonicNameKeys.includes(item.encryptedRestoreString));
-    })();
-
-    if (mnemonicAccountsMissingMnemonicNames.length > 0) {
-      const oldMnemonicNamesByHashedMnemonic = originStorage.mnemonicNamesByHashedMnemonic;
-
-      const updatedMnemonicNamesByHashedMnemonic = mnemonicAccountsMissingMnemonicNames.reduce((acc: AccountNamesById, cur, i) => {
-        acc[cur.encryptedRestoreString] = `Mnemonic ${i + 1}`;
-        return acc;
-      }, {});
-
-      const mergedMnemonicNamesByHashedMnemonic = { ...oldMnemonicNamesByHashedMnemonic, ...updatedMnemonicNamesByHashedMnemonic };
-
-      await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', mergedMnemonicNamesByHashedMnemonic);
-    }
-  }
-
-  // NOTE 이미 저장된 상태. 새 체인파람에 멀티 어카운트 타입이 감지가 됐는데 이게 스토리지에는 저장이 안되어있을때
-  if (originStorage.preferAccountType && Object.keys(originStorage.preferAccountType).length > 0) {
-    const chainIds = Object.keys(originStorage.paramsV11);
-    const chainInfos = chainIds.map((chainId) => {
-      const chainInfo = originStorage.paramsV11[chainId];
-
-      return {
-        id: chainId,
-        ...chainInfo,
-      };
-    });
-
-    const filteredAccountTypes = chainInfos.filter(
-      (item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1,
-    );
-
-    const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.id);
-
-    const notStoredNewMultiAccountChainName = freshMultiAccountChainNames
-      .filter((item) => {
-        const storedAccountTypeSample = Object.values(originStorage.preferAccountType)[0];
-
-        const isNotStoredMultiAccountChainName = storedAccountTypeSample ? !Object.keys(storedAccountTypeSample).includes(item) : true;
-        return isNotStoredMultiAccountChainName;
-      })
-      .filter((item) => !!item);
-
-    if (notStoredNewMultiAccountChainName && notStoredNewMultiAccountChainName.length > 0) {
-      const newPreferAccountType: ChainToAccountTypeMap = {};
-
-      notStoredNewMultiAccountChainName.forEach((item) => {
-        const newChainAccountType = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
-        const defaultAccountType = newChainAccountType?.find((type) => type.is_default !== false);
-
-        if (defaultAccountType) {
-          const type = {
-            hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
-            pubkeyStyle: defaultAccountType.pubkey_style,
-            isDefault: defaultAccountType.is_default,
-            pubkeyType: defaultAccountType.pubkey_type,
-          };
-          newPreferAccountType[item] = type;
-        }
-      });
-
-      const updatedPreferAccountType = originStorage.userAccounts.reduce((acc: PreferAccountType, cur) => {
-        const oldPreferAccountType = originStorage.preferAccountType[cur.id];
-        const mergedPreferAccountType = { ...oldPreferAccountType, ...newPreferAccountType };
-
-        acc[cur.id] = mergedPreferAccountType;
-        return acc;
-      }, {});
-
-      await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
-    }
-  }
-
-  // NOTE 마이그레이션 용 로직
-  // NOTE accounts는 있지만 preferAccountType이 없는 경우
-  if (originStorage.userAccounts && originStorage.userAccounts.length > 0 && Object.keys(originStorage.preferAccountType).length < 1) {
-    const defaultPreferAccountType = Object.values(originStorage.paramsV11)
-      .filter((item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1)
-      .reduce((acc: ChainToAccountTypeMap, cur) => {
-        const defaultAccountType = cur.params.chainlist_params.account_type?.find((type) => type.is_default !== false);
-
-        if (defaultAccountType) {
-          const type = {
-            hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
-            pubkeyStyle: defaultAccountType.pubkey_style,
-            isDefault: defaultAccountType.is_default,
-            pubkeyType: defaultAccountType.pubkey_type,
-          };
-
-          acc[cur.params.chainlist_params.api_name] = type;
-        }
-
-        return acc;
-      }, {});
-
-    const updatedPreferAccountType = originStorage.userAccounts.reduce((acc: PreferAccountType, cur) => {
-      acc[cur.id] = defaultPreferAccountType;
-      return acc;
-    }, {});
-
-    await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
-  }
-
-  if (!originStorage.currentWindowId) {
-    await setExtensionLocalStorage('currentWindowId', null);
-  }
-
-  if (
-    originStorage.prioritizedProvider?.aptos === undefined ||
-    originStorage.prioritizedProvider?.metamask === undefined ||
-    originStorage.prioritizedProvider?.keplr === undefined
-  ) {
-    const newProviders: PrioritizedProvider = {
-      aptos: originStorage.prioritizedProvider?.aptos === undefined ? false : originStorage.prioritizedProvider?.aptos,
-      keplr: originStorage.prioritizedProvider?.keplr === undefined ? false : originStorage.prioritizedProvider?.keplr,
-      metamask: originStorage.prioritizedProvider?.metamask === undefined ? false : originStorage.prioritizedProvider?.metamask,
-    };
-
-    await setExtensionLocalStorage('prioritizedProvider', newProviders);
-  }
-
-  if (!originStorage.pinnedDappIds) {
-    await setExtensionLocalStorage('pinnedDappIds', []);
-  }
-
-  if (!originStorage.autoLockTimeInMinutes) {
-    await setExtensionLocalStorage('autoLockTimeInMinutes', '30');
-  }
+  await initializePreferAccountType();
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {
@@ -502,4 +180,384 @@ export async function extensionSessionStorage() {
     ...storage,
     currentPassword,
   };
+}
+
+async function initializeStorageDefaults() {
+  const originStorage = await getAllExtensionLocalStorage();
+
+  if (!originStorage.paramsV11 || !originStorage.assetsV11) {
+    await v11();
+  }
+
+  if (!originStorage.userLanguagePreference) {
+    setExtensionLocalStorage('userLanguagePreference', 'en');
+  }
+  if (!originStorage.userCurrencyPreference) {
+    const newCurrency = CURRENCY_TYPE.USD;
+
+    await setExtensionLocalStorage('userCurrencyPreference', newCurrency);
+  }
+  if (!originStorage.dappListSortKey) {
+    await setExtensionLocalStorage('dappListSortKey', DefaultSortKey.dappListSortKey);
+  }
+
+  if (!originStorage.dashboardCoinSortKey) {
+    await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
+  }
+
+  if (!originStorage.userAccounts) {
+    await setExtensionLocalStorage('userAccounts', []);
+  }
+
+  if (!originStorage.accountNamesById) {
+    await setExtensionLocalStorage('accountNamesById', {});
+  }
+
+  if (!originStorage.mnemonicNamesByHashedMnemonic) {
+    await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', {});
+  }
+
+  if (!originStorage.notBackedUpAccountIds) {
+    await setExtensionLocalStorage('notBackedUpAccountIds', []);
+  }
+
+  if (!originStorage.preferAccountType) {
+    await setExtensionLocalStorage('preferAccountType', {});
+  }
+
+  if (!originStorage.customErc20Assets) {
+    await setExtensionLocalStorage('customErc20Assets', []);
+  }
+
+  if (!originStorage.customCw20Assets) {
+    await setExtensionLocalStorage('customCw20Assets', []);
+  }
+
+  if (!originStorage.addressBookList) {
+    await setExtensionLocalStorage('addressBookList', []);
+  }
+
+  if (!originStorage.addedCustomChainList) {
+    await setExtensionLocalStorage('addedCustomChainList', []);
+  }
+
+  if (!originStorage.customAssets) {
+    await setExtensionLocalStorage('customAssets', []);
+  }
+
+  if (!originStorage.customHiddenAssetIds) {
+    await setExtensionLocalStorage('customHiddenAssetIds', []);
+  }
+
+  if (!originStorage.customErc20Assets) {
+    await setExtensionLocalStorage('customErc20Assets', []);
+  }
+
+  if (!originStorage.customCw20Assets) {
+    await setExtensionLocalStorage('customCw20Assets', []);
+  }
+
+  if (!originStorage.approvedOrigins) {
+    await setExtensionLocalStorage('approvedOrigins', []);
+  }
+
+  if (!originStorage.requestQueue) {
+    await setExtensionLocalStorage('requestQueue', []);
+  }
+
+  if (!originStorage.approvedSuiPermissions) {
+    await setExtensionLocalStorage('approvedSuiPermissions', []);
+  }
+
+  if (!originStorage.initCheckLegacyBalanceAccountIds) {
+    await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
+  }
+
+  if (!originStorage.isBalanceVisible) {
+    await setExtensionLocalStorage('isBalanceVisible', true);
+  }
+
+  if (!originStorage.adPopoverState) {
+    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
+      acc[cur] = {
+        isVisiable: false,
+      };
+      return acc;
+    }, {});
+
+    await setExtensionLocalStorage('adPopoverState', defaultState);
+  }
+
+  if (!originStorage.currentWindowId) {
+    await setExtensionLocalStorage('currentWindowId', null);
+  }
+
+  if (
+    originStorage.prioritizedProvider?.aptos === undefined ||
+    originStorage.prioritizedProvider?.metamask === undefined ||
+    originStorage.prioritizedProvider?.keplr === undefined
+  ) {
+    const newProviders: PrioritizedProvider = {
+      aptos: originStorage.prioritizedProvider?.aptos === undefined ? false : originStorage.prioritizedProvider?.aptos,
+      keplr: originStorage.prioritizedProvider?.keplr === undefined ? false : originStorage.prioritizedProvider?.keplr,
+      metamask: originStorage.prioritizedProvider?.metamask === undefined ? false : originStorage.prioritizedProvider?.metamask,
+    };
+
+    await setExtensionLocalStorage('prioritizedProvider', newProviders);
+  }
+
+  if (!originStorage.pinnedDappIds) {
+    await setExtensionLocalStorage('pinnedDappIds', []);
+  }
+
+  if (!originStorage.autoLockTimeInMinutes) {
+    await setExtensionLocalStorage('autoLockTimeInMinutes', '30');
+  }
+}
+
+async function initializeChosenNetworks() {
+  const storedChosenEthereumNetworkId = await getExtensionLocalStorage('chosenEthereumNetworkId');
+  const storedChosenAptosNetworkId = await getExtensionLocalStorage('chosenAptosNetworkId');
+  const storedChosenSuiNetworkId = await getExtensionLocalStorage('chosenSuiNetworkId');
+  const storedChosenBitcoinNetworkId = await getExtensionLocalStorage('chosenBitcoinNetworkId');
+  const { evmChains, aptosChains, suiChains, bitcoinChains } = await getChains();
+
+  if (!storedChosenEthereumNetworkId) {
+    const defaultEVMNetwork = evmChains.find((item) => item.id === 'ethereum') || evmChains[0];
+
+    const defaultEVMNetworkId = getUniqueChainId(defaultEVMNetwork);
+
+    await setExtensionLocalStorage('chosenEthereumNetworkId', defaultEVMNetworkId);
+  }
+
+  if (!storedChosenAptosNetworkId) {
+    const defaultAptosNetwork = aptosChains.find((item) => item.id === 'aptos') || aptosChains[0];
+
+    const defaultAptosNetworkId = getUniqueChainId(defaultAptosNetwork);
+
+    await setExtensionLocalStorage('chosenAptosNetworkId', defaultAptosNetworkId);
+  }
+
+  if (!storedChosenSuiNetworkId) {
+    const defaultSuiNetwork = suiChains.find((item) => item.id === 'sui') || suiChains[0];
+
+    const defaultSuiNetworkId = getUniqueChainId(defaultSuiNetwork);
+
+    await setExtensionLocalStorage('chosenSuiNetworkId', defaultSuiNetworkId);
+  }
+
+  if (!storedChosenBitcoinNetworkId) {
+    const defaultBitcoinNetwork = bitcoinChains.find((item) => item.id === 'bitcoin') || bitcoinChains[0];
+
+    const defaultBitcoinNetworkId = getUniqueChainId(defaultBitcoinNetwork);
+
+    await setExtensionLocalStorage('chosenBitcoinNetworkId', defaultBitcoinNetworkId);
+  }
+}
+
+async function initializeCurrentAccountId() {
+  const storedCurrentAccountId = await getExtensionLocalStorage('currentAccountId');
+  const storedUserAccounts = await getExtensionLocalStorage('userAccounts');
+
+  const defaultAccountId = storedCurrentAccountId || (storedUserAccounts && storedUserAccounts.length > 0 ? storedUserAccounts[0]?.id || '' : '');
+
+  await setExtensionLocalStorage('currentAccountId', defaultAccountId);
+}
+
+async function setMissingMnemonicNames() {
+  const mnemonicNamesStorage = await getExtensionLocalStorage('mnemonicNamesByHashedMnemonic');
+  const userAccounts = await getExtensionLocalStorage('userAccounts');
+
+  if (mnemonicNamesStorage && userAccounts && userAccounts.length > 0) {
+    const mnemonicNameKeys = Object.keys(mnemonicNamesStorage);
+
+    const mnemonicAccountsMissingMnemonicNames = userAccounts
+      .filter((item) => item.type === 'MNEMONIC')
+      .filter((item) => !mnemonicNameKeys.includes(item.encryptedRestoreString));
+
+    if (mnemonicAccountsMissingMnemonicNames.length > 0) {
+      const totalMnemonicNames = mnemonicNameKeys.length;
+
+      const uniqueEncryptedRestoreStrings = [...new Set(mnemonicAccountsMissingMnemonicNames.map((item) => item.encryptedRestoreString))];
+
+      const updatedMnemonicNamesByHashedMnemonic = uniqueEncryptedRestoreStrings.reduce((acc: AccountNamesById, cur, i) => {
+        acc[cur] = `Mnemonic ${totalMnemonicNames + i + 1}`;
+        return acc;
+      }, {});
+
+      const mergedMnemonicNamesByHashedMnemonic = { ...mnemonicNamesStorage, ...updatedMnemonicNamesByHashedMnemonic };
+
+      await setExtensionLocalStorage('mnemonicNamesByHashedMnemonic', mergedMnemonicNamesByHashedMnemonic);
+    }
+  }
+}
+
+async function setMissingAccountNames() {
+  const userAccounts = await getExtensionLocalStorage('userAccounts');
+  const accountNameMap = await getExtensionLocalStorage('accountNamesById');
+
+  const canCheckMissingAccountNames = accountNameMap && userAccounts && userAccounts.length > 0;
+
+  if (canCheckMissingAccountNames) {
+    const accountNameKeys = Object.keys(accountNameMap);
+
+    const missingNameAccounts = userAccounts.filter((item) => !accountNameKeys.includes(item.id));
+
+    if (missingNameAccounts.length > 0) {
+      const totalAccountNames = accountNameKeys.length;
+
+      const uniqueMissingNamesAccountIds = [...new Set(missingNameAccounts.map((item) => item.id))];
+
+      const newAccountNameMapping = uniqueMissingNamesAccountIds.reduce((acc: AccountNamesById, cur, i) => {
+        acc[cur] = `Account ${totalAccountNames + i + 1}`;
+        return acc;
+      }, {});
+
+      const mergedAccountNamesById = { ...accountNameMap, ...newAccountNameMapping };
+
+      await setExtensionLocalStorage('accountNamesById', mergedAccountNamesById);
+    }
+  }
+}
+
+async function setMissingAdPopoverState() {
+  const adPopoverState = await getExtensionLocalStorage('adPopoverState');
+
+  if (adPopoverState) {
+    AD_POPOVER_IDS.forEach(async (id) => {
+      if (adPopoverState[id]) {
+        const adPopoverStateItem = adPopoverState[id];
+
+        if (adPopoverStateItem.isVisiable) {
+          const newState = produce(adPopoverState, (draft) => {
+            draft[id].isVisiable = false;
+          });
+
+          await setExtensionLocalStorage('adPopoverState', newState);
+        }
+      }
+
+      if (!adPopoverState[id]) {
+        const newState = produce(adPopoverState, (draft) => {
+          draft[id] = {
+            isVisiable: false,
+          };
+        });
+
+        await setExtensionLocalStorage('adPopoverState', newState);
+      }
+    });
+  }
+}
+
+async function setMissingPreferAccountType() {
+  const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');
+  const paramsV11 = await getExtensionLocalStorage('paramsV11');
+  const userAccounts = await getExtensionLocalStorage('userAccounts');
+
+  if (!storedPreferAccountType || (storedPreferAccountType && Object.keys(storedPreferAccountType).length < 1) || !paramsV11 || !userAccounts) {
+    return;
+  }
+
+  const chainIds = Object.keys(paramsV11);
+  const chainInfos = chainIds.map((chainId) => {
+    const chainInfo = paramsV11[chainId];
+
+    return {
+      id: chainId,
+      ...chainInfo,
+    };
+  });
+
+  const filteredAccountTypes = chainInfos.filter((item) => item.params.chainlist_params?.account_type && item.params.chainlist_params.account_type.length > 1);
+
+  const freshMultiAccountChainNames = filteredAccountTypes.map((item) => item.id);
+
+  const notStoredNewMultiAccountChainName = freshMultiAccountChainNames
+    .filter((item) => {
+      const storedAccountTypeSample = Object.values(storedPreferAccountType)[0];
+
+      const isNotStoredMultiAccountChainName = storedAccountTypeSample ? !Object.keys(storedAccountTypeSample).includes(item) : true;
+      return isNotStoredMultiAccountChainName;
+    })
+    .filter((item) => !!item);
+
+  if (notStoredNewMultiAccountChainName && notStoredNewMultiAccountChainName.length > 0) {
+    const newPreferAccountType: ChainToAccountTypeMap = {};
+
+    notStoredNewMultiAccountChainName.forEach((item) => {
+      const newChainAccountType = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
+      const defaultAccountType = newChainAccountType?.find((type) => type.is_default !== false);
+
+      if (defaultAccountType) {
+        const type = {
+          hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
+          pubkeyStyle: defaultAccountType.pubkey_style,
+          isDefault: defaultAccountType.is_default,
+          pubkeyType: defaultAccountType.pubkey_type,
+        };
+        newPreferAccountType[item] = type;
+      }
+    });
+
+    const updatedPreferAccountType = userAccounts.reduce((acc: PreferAccountType, cur) => {
+      const oldPreferAccountType = storedPreferAccountType[cur.id];
+      const mergedPreferAccountType = { ...oldPreferAccountType, ...newPreferAccountType };
+
+      acc[cur.id] = mergedPreferAccountType;
+      return acc;
+    }, {});
+
+    await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
+  }
+}
+
+async function initializePreferAccountType() {
+  const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');
+  const paramsV11 = await getExtensionLocalStorage('paramsV11');
+  const userAccounts = await getExtensionLocalStorage('userAccounts');
+
+  if (
+    userAccounts &&
+    userAccounts.length > 0 &&
+    paramsV11 &&
+    (!storedPreferAccountType || (storedPreferAccountType && Object.keys(storedPreferAccountType).length < 1))
+  ) {
+    const formattedMulitpleAccountTypesParams = Object.entries(paramsV11)
+      .filter((item) => {
+        const accountType = item[1].params.chainlist_params?.account_type;
+        return accountType && accountType.length > 1;
+      })
+      .map((item) => {
+        const v11Param = item[1];
+        return {
+          apiId: item[0],
+          ...v11Param,
+        };
+      });
+
+    const defaultPreferAccountType = formattedMulitpleAccountTypesParams.reduce((acc: ChainToAccountTypeMap, cur) => {
+      const defaultAccountType = cur.params.chainlist_params.account_type?.find((type) => type.is_default !== false);
+
+      if (defaultAccountType) {
+        const type = {
+          hdPath: defaultAccountType.hd_path.replace('X', '${index}'),
+          pubkeyStyle: defaultAccountType.pubkey_style,
+          isDefault: defaultAccountType.is_default,
+          pubkeyType: defaultAccountType.pubkey_type,
+        };
+
+        acc[cur.apiId] = type;
+      }
+
+      return acc;
+    }, {});
+
+    const updatedPreferAccountType = userAccounts.reduce((acc: PreferAccountType, cur) => {
+      acc[cur.id] = defaultPreferAccountType;
+      return acc;
+    }, {});
+
+    await setExtensionLocalStorage('preferAccountType', updatedPreferAccountType);
+  }
 }

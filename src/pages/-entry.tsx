@@ -237,7 +237,7 @@ export default function Entry() {
                 </ManageCryptoContainer>
               </StickyTabPanelContentsContainer>
               <CoinButtonWrapper>
-                {isLoading ? (
+                {isLoading || (filteredAssetsBySearch && filteredAssetsBySearch.length === 0) ? (
                   <SkeletonCoinList />
                 ) : (
                   filteredAssetsBySearch.map((coin) => {

@@ -677,6 +677,20 @@
         "evmSubtitle": "Use this option for 0x address",
         "title": "Select Send Type"
       }
+    },
+    "Wrapper": {
+      "components": {
+        "MigrationChecker": {
+          "index": {
+            "migration": "Migration",
+            "migrationInProgress": "Migration in Progress",
+            "migrationDescription": "We are updating the Cosmostation extension!\nPlease wait while we safely transfer your data.\n\n Do not close the browser or exit the extension\nuntil the migration is complete.",
+            "completed": "{{percent}}% Completed",
+            "migrationError": "Migration Error, Please try again",
+            "retry": "Retry Migration"
+          }
+        }
+      }
     }
   },
   "pages": {

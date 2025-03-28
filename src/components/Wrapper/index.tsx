@@ -1,5 +1,6 @@
 import Init from './components/Init';
 import Lock from './components/Lock';
+import MigrationChecker from './components/MigrationChecker';
 import NavigationGate from './components/NavigationGate';
 import RefetchController from './components/RefetchController';
 import Scaffold from './components/Scaffold';
@@ -14,19 +15,21 @@ type WrapperProps = {
 export default function Wrapper({ children }: WrapperProps) {
   return (
     <Scaffold>
-      <Init>
-        <Lock>
-          <RefetchController>
-            <NavigationGate>
-              <>
-                <ScrollProvider>{children}</ScrollProvider>
-                <LoadingOverlay />
-                <AdPopoverIndex />
-              </>
-            </NavigationGate>
-          </RefetchController>
-        </Lock>
-      </Init>
+      <MigrationChecker>
+        <Init>
+          <Lock>
+            <RefetchController>
+              <NavigationGate>
+                <>
+                  <ScrollProvider>{children}</ScrollProvider>
+                  <LoadingOverlay />
+                  <AdPopoverIndex />
+                </>
+              </NavigationGate>
+            </RefetchController>
+          </Lock>
+        </Init>
+      </MigrationChecker>
     </Scaffold>
   );
 }
