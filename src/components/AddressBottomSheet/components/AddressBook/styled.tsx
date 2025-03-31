@@ -4,6 +4,8 @@ import BaseChainImage from '@/components/common/BaseChainImage';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 
 export const Container = styled('div')({
+  flex: '1',
+  height: '100%',
   width: '100%',
 
   display: 'flex',
@@ -70,4 +72,15 @@ export const ChainContainer = styled('div')({
 export const ChainImage = styled(BaseChainImage)({
   width: '1.6rem',
   height: '1.6rem',
+});
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  height: '100%',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '2rem 0',
 });

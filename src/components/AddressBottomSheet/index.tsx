@@ -59,7 +59,7 @@ export default function AddressBottomSheet({ chainId, headerTitle, filterAddress
           ))}
         </FilledTabs>
         <Body>
-          <StyledTabPanel value={tabValue} index={0}>
+          <StyledTabPanel value={tabValue} index={0} data-is-active={tabValue === 0}>
             <TabPanelContentsContainer>
               <MyAddress
                 chainId={chainId}
@@ -70,7 +70,7 @@ export default function AddressBottomSheet({ chainId, headerTitle, filterAddress
               />
             </TabPanelContentsContainer>
           </StyledTabPanel>
-          <StyledTabPanel value={tabValue} index={1}>
+          <StyledTabPanel value={tabValue} index={1} data-is-active={tabValue === 1}>
             <TabPanelContentsContainer>
               <AddressBookItem
                 chainId={chainId}

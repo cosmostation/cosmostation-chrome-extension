@@ -342,12 +342,16 @@
         "title": "Select Address"
       },
       "components": {
-        "PrivatekeyAccount": "Private Key"
+        "PrivatekeyAccount": "Private Key",
+        "noAccounts": "No addresses available",
+        "noAccountsDescription": "Add or import an address to see it here."
       }
     },
     "AddressBook": {
       "index": {
-        "memo": "Memo :"
+        "memo": "Memo :",
+        "noAddressBookItem": "No saved addresses",
+        "noAddressBookItemDescription": "No addresses added yet. Save frequently used ones for quick access"
       }
     },
     "CheckLegacyAddressBalanceBottomSheet": {

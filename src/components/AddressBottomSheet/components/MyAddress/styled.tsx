@@ -121,3 +121,13 @@ export const Badge = styled('div')<BadgeProps>(({ theme, ...props }) => ({
 export const AddressText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1200,
 }));
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '2rem 0',
+});

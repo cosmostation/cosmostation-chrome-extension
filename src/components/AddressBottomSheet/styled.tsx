@@ -8,6 +8,7 @@ export const Container = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
+  flex: '1',
 });
 
 export const Header = styled('div')(({ theme }) => ({
@@ -29,6 +30,10 @@ export const HeaderTitle = styled('div')(({ theme }) => ({
 export const Body = styled('div')({
   width: '100%',
   overflow: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  flex: '1',
+  height: '100%',
 });
 
 export const StyledBottomSheet = styled(BottomSheet)({
@@ -54,14 +59,21 @@ export const StyledButton = styled('button')(({ theme }) => ({
 }));
 
 export const TabPanelContentsContainer = styled('div')({
+  flex: '1',
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
   height: '100%',
 });
 
-export const StyledTabPanel = styled(FilledTabPanel)({
+type StyledTabPanelProps = {
+  'data-is-active': boolean;
+};
+
+export const StyledTabPanel = styled(FilledTabPanel)<StyledTabPanelProps>(({ ...props }) => ({
   marginTop: '0',
   display: 'flex',
   flexDirection: 'column',
-});
+  flex: props['data-is-active'] ? '1' : '0',
+  height: '100%',
+}));

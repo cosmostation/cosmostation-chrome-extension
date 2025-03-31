@@ -172,7 +172,11 @@ export default function Entry() {
   return (
     <>
       <BaseBody>
-        <EdgeAligner>
+        <EdgeAligner
+          style={{
+            flex: '1',
+          }}
+        >
           <Container>
             <PortFolio
               selectedChainId={currentSelectedChainId}
@@ -188,7 +192,7 @@ export default function Entry() {
                 ))}
               </Tabs>
             </StickyTabContainer>
-            <StyledTabPanel value={tabValue} index={0}>
+            <StyledTabPanel value={tabValue} index={0} data-is-active={tabValue === 0}>
               <StickyTabPanelContentsContainer>
                 <FilterContaienr>
                   <Search
@@ -277,7 +281,7 @@ export default function Entry() {
                 )}
               </CoinButtonWrapper>
             </StyledTabPanel>
-            <StyledTabPanel value={tabValue} index={1}>
+            <StyledTabPanel value={tabValue} index={1} data-is-active={tabValue === 1}>
               <NFTList selectedChainId={currentSelectedChainId} />
             </StyledTabPanel>
             <SortBottomSheet

@@ -6,6 +6,10 @@ import { TabPanel } from '@/components/common/Tab';
 
 export const Container = styled('div')({
   width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  flex: '1',
 });
 
 export const HeaderRightContainer = styled('div')({
@@ -17,11 +21,17 @@ export const HeaderRightContainer = styled('div')({
   columnGap: '0.8rem',
 });
 
-export const StyledTabPanel = styled(TabPanel)({
+type StyledTabPanelProps = {
+  'data-is-active': boolean;
+};
+
+export const StyledTabPanel = styled(TabPanel)<StyledTabPanelProps>(({ ...props }) => ({
   marginTop: '0',
   display: 'flex',
   flexDirection: 'column',
-});
+  flex: props['data-is-active'] ? '1' : '0',
+  height: '100%',
+}));
 
 export const MarginTopTypography = styled(BaseTypography)(({ theme }) => ({
   marginTop: '0.4rem',

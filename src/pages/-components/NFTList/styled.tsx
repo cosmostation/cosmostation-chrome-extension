@@ -3,6 +3,10 @@ import { styled } from '@mui/material/styles';
 
 export const Contaienr = styled('div')({
   width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  flex: '1',
 });
 
 export const StickyTabPanelContentsContainer = styled('div')(({ theme }) => ({
@@ -38,7 +42,13 @@ export const MarginLeftTypography = styled(BaseTypography)(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const NFTItemWrapper = styled('div')({});
+export const NFTItemWrapper = styled('div')({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  flex: '1',
+});
 
 export const NFTGridContainer = styled('div')({
   display: 'grid',
@@ -50,9 +60,12 @@ export const NFTGridContainer = styled('div')({
 });
 
 export const EmptyAssetContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
+  flex: 1,
 
+  display: 'flex',
+  height: '100%',
+  flexDirection: 'column',
   alignItems: 'center',
-  paddingTop: '5rem',
+  justifyContent: 'center',
+  padding: '2rem 0',
 });

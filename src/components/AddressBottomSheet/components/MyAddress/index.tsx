@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 
 import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
-import type { Account, AccountAddress } from '@/types/account';
+import EmptyAsset from '@/components/EmptyAsset';
+import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
+import type { Account, AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
@@ -18,6 +20,7 @@ import {
   Badge,
   BodyContainer,
   Container,
+  EmptyAssetContainer,
   TitleContainer,
   TopContainer,
   TopLeftContainer,
@@ -25,6 +28,7 @@ import {
 } from './styled';
 
 import MnemonicIcon from '@/assets/images/icons/Mnemonics14.svg';
+import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PrivatekeyIcon from '@/assets/images/icons/PrivateKey14.svg';
 
 type MnemonicAccountProps = {
@@ -50,7 +54,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
   const { t } = useTranslation();
 
   const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
-
+  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const accountIds = useMemo(() => userAccounts.map((account) => account.id), [userAccounts]);
 
   const addressesMap = useMemo(
@@ -85,14 +89,15 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
           const filteredAccountAddresses = filteredMnemonicAccounts
             .map((item) => {
-              const addressList = addressesMap[item.id];
+              const addressList: AccountAddress[] | undefined = addressesMap[item.id];
 
-              const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress);
+              const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress, currentPreferAccountType);
+
+              if (!matchingAddresses || matchingAddresses.length === 0) return null;
 
               const matchingAddressesWithBadge = matchingAddresses.map((addressInfo) => ({
                 ...addressInfo,
                 name: accountNamesById[item.id],
-                badge: getBadgeDetail(addressInfo),
               }));
 
               return {
@@ -108,21 +113,22 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
           };
         })
         .filter((item) => item.accounts.length > 0),
-    [accountNamesById, userAccounts, addressesMap, chainId, filterAddress, uniqueMnemonicRestoreString],
+    [uniqueMnemonicRestoreString, userAccounts, addressesMap, chainId, filterAddress, currentPreferAccountType, accountNamesById],
   );
 
   const filteredPrivatekeyAccounts = useMemo(
     () =>
       privatekeyAccounts
         .map((item) => {
-          const addressList = addressesMap[item.id];
+          const addressList: AccountAddress[] | undefined = addressesMap[item.id];
 
           const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress);
+
+          if (!matchingAddresses || matchingAddresses.length === 0) return null;
 
           const matchingAddressesWithBadge = matchingAddresses.map((addressInfo) => ({
             ...addressInfo,
             name: accountNamesById[item.id],
-            badge: getBadgeDetail(addressInfo),
           }));
 
           return {
@@ -137,7 +143,15 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
   const privateKeyAddresses = useMemo(() => filteredPrivatekeyAccounts.map((item) => item.addressDetails).flat(), [filteredPrivatekeyAccounts]);
 
   if (filteredMnemonicAccounts.length === 0 && privateKeyAddresses.length === 0) {
-    return null;
+    return (
+      <EmptyAssetContainer>
+        <EmptyAsset
+          icon={<NoListIcon />}
+          title={t('components.AddressBottomSheet.components.noAccounts')}
+          subTitle={t('components.AddressBottomSheet.components.noAccountsDescription')}
+        />
+      </EmptyAssetContainer>
+    );
   }
 
   return (
@@ -256,56 +270,32 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
   );
 }
 
-function filterMatchingAddresses(addressList: AccountAddress[], chainId: UniqueChainId, filterAddress?: string) {
-  const matchingAddresses = addressList
-    ?.filter((address) => getUniqueChainIdWithManual(address.chainId, address.chainType) === chainId)
-    .filter((item) => {
-      const isFilterCurrentAddress = isEqualsIgnoringCase(item.address || '', filterAddress);
+function filterMatchingAddresses(
+  addressList: AccountAddress[] | undefined,
+  chainId: UniqueChainId,
+  filterAddress?: string,
+  preferAccountType?: ChainToAccountTypeMap,
+) {
+  return addressList?.filter((address) => {
+    const isDifferentChain = getUniqueChainIdWithManual(address.chainId, address.chainType) !== chainId;
 
-      if (isFilterCurrentAddress) {
-        return null;
+    if (isDifferentChain) {
+      return false;
+    }
+
+    if (preferAccountType) {
+      const preferredType = preferAccountType[address.chainId];
+
+      const isDifferentAccountType =
+        preferredType && (address.accountType.hdPath !== preferredType.hdPath || address.accountType.pubkeyStyle !== preferredType.pubkeyStyle);
+
+      if (isDifferentAccountType) {
+        return false;
       }
-
-      return true;
-    });
-
-  return matchingAddresses;
-}
-
-function getBadgeDetail(accountAddress: AccountAddress) {
-  if (accountAddress.chainType === 'bitcoin') {
-    const pubkeyStyle = accountAddress.accountType.pubkeyStyle;
-    if (pubkeyStyle === 'p2tr') {
-      return {
-        text: 'Taproot',
-        color: '#F2C94C',
-      };
     }
-    if (pubkeyStyle === 'p2wpkh') {
-      return {
-        text: 'Native Segwit',
-        color: '#2D9CDB',
-      };
-    }
-    if (pubkeyStyle === 'p2pkh')
-      return {
-        text: 'Legacy',
-        color: '#EB5757',
-      };
-    if (pubkeyStyle === 'p2wpkhSh')
-      return {
-        text: 'Segwit',
-        color: '#27AE60',
-      };
-  }
 
-  if (accountAddress.chainType === 'cosmos') {
-    if (accountAddress.accountType.isDefault === false) {
-      return {
-        text: 'Old',
-        color: '#6d5b5b',
-      };
-    }
-  }
-  return null;
+    const isSameWithCurrentAddress = isEqualsIgnoringCase(address.address || '', filterAddress);
+
+    return !isSameWithCurrentAddress;
+  });
 }
