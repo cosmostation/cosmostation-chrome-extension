@@ -11,7 +11,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import Fee from '@/components/Fee/CosmosFee2';
+import Fee from '@/components/Fee/CosmosFee';
 import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';

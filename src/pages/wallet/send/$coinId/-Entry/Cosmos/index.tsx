@@ -34,7 +34,7 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
 import { isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
@@ -82,11 +82,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [cusotmFeeCoinId, setCustomFeeCoinId] = useState('');
 
-  const currentFeeAsset = useMemo(
+  const alternativeFeeAsset = useMemo(
     () => (cusotmFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, cusotmFeeCoinId)) : feeAssets[0]),
     [cusotmFeeCoinId, feeAssets],
   );
-  const currentFeeCoinId = useMemo(() => (currentFeeAsset?.asset ? getCoinId(currentFeeAsset.asset) : ''), [currentFeeAsset?.asset]);
+  const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
+
+  const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 
   const selectedCoinToSend = getCosmosAccountAsset();
 
@@ -257,15 +259,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
     [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
 
-  const currentFeeCoinGasRateList = useMemo(() => [...(currentFeeAsset?.gasRate || []), customGasRate], [currentFeeAsset?.gasRate, customGasRate]);
-
-  const currentFeeGasRateValue = useMemo(() => currentFeeCoinGasRateList[currentFeeStepKey] || '0', [currentFeeCoinGasRateList, currentFeeStepKey]);
-
   const memoizedSendAminoTx = useMemo(() => {
     if (selectedCoinToSend) {
       if (isIBCSend) {
         if (revisionNumber && revisionHeight) {
-          if (account.data?.value.account_number && currentRecipientAsset && gt(displaySendAmount || '0', '0') && currentFeeAsset) {
+          if (account.data?.value.account_number && currentRecipientAsset && gt(displaySendAmount || '0', '0') && alternativeFeeAsset) {
             const sequence = String(account.data?.value.sequence || '0');
 
             if (selectedCoinToSend?.asset.type === 'cw20') {
@@ -276,9 +274,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
                 fee: {
                   amount: [
                     {
-                      denom: currentFeeAsset.asset.id,
+                      denom: alternativeFeeAsset.asset.id,
                       amount: selectedCoinToSend?.chain.isEvm
-                        ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                        ? times(alternativeGasRate?.[0] || '0', selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
                         : '1',
                     },
                   ],
@@ -316,9 +314,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
                 fee: {
                   amount: [
                     {
-                      denom: currentFeeAsset.asset.id,
+                      denom: alternativeFeeAsset.asset.id,
                       amount: selectedCoinToSend?.chain.isEvm
-                        ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                        ? times(alternativeGasRate?.[0] || '0', selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
                         : '1',
                     },
                   ],
@@ -352,7 +350,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         return undefined;
       }
 
-      if (account.data?.value.account_number && addressRegex.test(recipientAddress) && gt(displaySendAmount || '0', '0') && currentFeeAsset?.asset.id) {
+      if (account.data?.value.account_number && addressRegex.test(recipientAddress) && gt(displaySendAmount || '0', '0') && alternativeFeeAsset) {
         const sequence = String(account.data?.value.sequence || '0');
 
         if (selectedCoinToSend?.asset.type === 'cw20') {
@@ -363,9 +361,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
             fee: {
               amount: [
                 {
-                  denom: currentFeeAsset.asset.id,
+                  denom: alternativeFeeAsset.asset.id,
                   amount: selectedCoinToSend?.chain.isEvm
-                    ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                    ? times(alternativeGasRate?.[0] || '0', selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
                     : '1',
                 },
               ],
@@ -398,9 +396,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
           fee: {
             amount: [
               {
-                denom: currentFeeAsset.asset.id,
+                denom: alternativeFeeAsset.asset.id,
                 amount: selectedCoinToSend?.chain.isEvm
-                  ? times(currentFeeGasRateValue, selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                  ? times(alternativeGasRate?.[0] || '0', selectedCoinToSend.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
                   : '1',
               },
             ],
@@ -426,8 +424,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
     account.data?.value.account_number,
     account.data?.value.sequence,
     addressRegex,
-    currentFeeAsset,
-    currentFeeGasRateValue,
+    alternativeFeeAsset,
+    alternativeGasRate,
     currentRecipientAsset,
     displaySendAmount,
     inputMemo,
@@ -457,40 +455,77 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const simulate = useSimulate({ coinId, txBytes: sendProtoTx?.tx_bytes });
 
-  const currentGasList = useMemo(() => {
+  const alternativeGas = useMemo(() => {
     const gasCoefficient = selectedCoinToSend?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
     const simulatedGas = simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasCoefficient, 0) : undefined;
 
     const baseEstimateGas = simulatedGas || String(selectedCoinToSend?.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS;
 
-    const defaultGasStepCount = currentFeeAsset?.gasRate.length || 0;
+    return baseEstimateGas;
+  }, [selectedCoinToSend?.chain.feeInfo.defaultGasLimit, selectedCoinToSend?.chain.feeInfo.gasCoefficient, simulate.data?.gas_info?.gas_used]);
 
-    return [...Array(defaultGasStepCount).fill(baseEstimateGas), customGasAmount];
+  const feeOptions = useMemo(() => {
+    const customOption = {
+      gas: customGasAmount,
+      gasRate: customGasRate,
+      coinId: alternativeFeeCoinId,
+      decimals: alternativeFeeAsset?.asset.decimals || 0,
+      balance: alternativeFeeAsset?.balance || '0',
+      denom: alternativeFeeAsset?.asset.id,
+      coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
+      symbol: alternativeFeeAsset?.asset.symbol || '',
+      title: 'Custom',
+    };
+
+    const alternativeFeeOptions = alternativeGasRate
+      ? alternativeGasRate.map((item) => ({
+          gas: alternativeGas,
+          gasRate: item,
+          coinId: alternativeFeeCoinId,
+          decimals: alternativeFeeAsset?.asset.decimals || 0,
+          balance: alternativeFeeAsset?.balance || '0',
+          denom: alternativeFeeAsset?.asset.id,
+          coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
+          symbol: alternativeFeeAsset?.asset.symbol || '',
+          title: 'From Extension',
+        }))
+      : [];
+
+    return [...alternativeFeeOptions, customOption];
   }, [
-    currentFeeAsset?.gasRate.length,
+    alternativeFeeAsset?.asset.coinGeckoId,
+    alternativeFeeAsset?.asset.decimals,
+    alternativeFeeAsset?.asset.id,
+    alternativeFeeAsset?.asset.symbol,
+    alternativeFeeAsset?.balance,
+    alternativeFeeCoinId,
+    alternativeGas,
+    alternativeGasRate,
     customGasAmount,
-    selectedCoinToSend?.chain.feeInfo.defaultGasLimit,
-    selectedCoinToSend?.chain.feeInfo.gasCoefficient,
-    simulate.data?.gas_info?.gas_used,
+    customGasRate,
   ]);
 
-  const currentGas = currentGasList[currentFeeStepKey] || '0';
+  const selectedFeeOption = useMemo(() => {
+    return feeOptions[currentFeeStepKey];
+  }, [currentFeeStepKey, feeOptions]);
 
-  const currentFeeAmount = useMemo(() => times(currentGas, currentFeeGasRateValue), [currentFeeGasRateValue, currentGas]);
+  const currentGas = selectedFeeOption.gas || '0';
+
+  const currentFeeAmount = useMemo(() => times(currentGas, selectedFeeOption.gasRate || '0'), [currentGas, selectedFeeOption.gasRate]);
 
   const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
 
   const currentDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(currentCeilFeeAmount, currentFeeAsset?.asset.decimals || 0),
-    [currentCeilFeeAmount, currentFeeAsset?.asset.decimals],
+    () => toDisplayDenomAmount(currentCeilFeeAmount, selectedFeeOption.decimals || 0),
+    [currentCeilFeeAmount, selectedFeeOption.decimals],
   );
   const currentFeeCoinDisplayAvailableAmount = useMemo(
-    () => toDisplayDenomAmount(currentFeeAsset?.balance || '0', currentFeeAsset?.asset.decimals || 0),
-    [currentFeeAsset?.asset.decimals, currentFeeAsset?.balance],
+    () => toDisplayDenomAmount(selectedFeeOption?.balance || '0', selectedFeeOption?.decimals || 0),
+    [selectedFeeOption?.balance, selectedFeeOption.decimals],
   );
 
   const handleOnClickMax = () => {
-    if (selectedCoinToSend && currentFeeAsset && isSameCoin(selectedCoinToSend?.asset, currentFeeAsset?.asset)) {
+    if (selectedCoinToSend && selectedFeeOption && isMatchingCoinId(selectedCoinToSend?.asset, selectedFeeOption.coinId)) {
       const maxAmount = minus(displayAvailableAmount, currentDisplayFeeAmount);
 
       setDisplaySendAmount(gt(maxAmount, '0') ? maxAmount : '0');
@@ -515,7 +550,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const sendAmountInputErrorMessage = useMemo(() => {
     if (displaySendAmount) {
-      if (selectedCoinToSend?.asset.id === currentFeeAsset?.asset.id) {
+      if (selectedCoinToSend?.asset.id === selectedFeeOption.denom) {
         const totalCoastAmount = plus(displaySendAmount, currentDisplayFeeAmount);
 
         if (gt(totalCoastAmount, currentFeeCoinDisplayAvailableAmount)) {
@@ -534,11 +569,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
     return '';
   }, [
     currentDisplayFeeAmount,
-    currentFeeAsset?.asset.id,
     currentFeeCoinDisplayAvailableAmount,
     displayAvailableAmount,
     displaySendAmount,
     selectedCoinToSend?.asset.id,
+    selectedFeeOption.denom,
     t,
   ]);
 
@@ -608,14 +643,14 @@ export default function Cosmos({ coinId }: CosmosProps) {
         throw new Error('Failed to calculate final transaction');
       }
 
-      if (!currentFeeAsset) {
+      if (!selectedFeeOption || !selectedFeeOption.denom) {
         throw new Error('Failed to get current fee asset');
       }
 
       const finalizedTransaction = {
         ...memoizedSendAminoTx,
         fee: {
-          amount: [{ denom: currentFeeAsset?.asset.id, amount: currentCeilFeeAmount }],
+          amount: [{ denom: selectedFeeOption.denom, amount: currentCeilFeeAmount }],
           gas: currentGas,
         },
       };
@@ -683,7 +718,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
     coinId,
     currentAccount,
     currentCeilFeeAmount,
-    currentFeeAsset,
     currentGas,
     currentPassword,
     memoizedSendAminoTx,
@@ -691,6 +725,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     recipientAddress,
     selectedCoinToSend?.address.accountType.pubkeyType,
     selectedCoinToSend?.chain,
+    selectedFeeOption,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
@@ -799,14 +834,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <Divider />
           </EdgeAligner>
           <Fee
-            feeAssets={feeAssets}
-            feeStepKey={currentFeeStepKey}
-            selectedFeeCoinId={currentFeeCoinId}
-            gases={currentGasList}
-            gasRates={currentFeeCoinGasRateList}
-            onClickFeeStep={(index) => {
-              setInputFeeStepKey(index);
-            }}
+            feeOptionDatas={feeOptions}
+            availableFeeAssets={feeAssets}
+            selectedCustomFeeCoinId={alternativeFeeCoinId}
+            currentSelectedFeeOptionKey={currentFeeStepKey}
             onChangeGas={(gas) => {
               setCustomGasAmount(gas);
             }}
@@ -816,9 +847,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
             onChangeFeeCoinId={(feeCoinId) => {
               setCustomFeeCoinId(feeCoinId);
             }}
+            onClickFeeStep={(val) => {
+              setInputFeeStepKey(val);
+            }}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}
+            errorMessage={errorMessage}
             disableConfirm={isDisabled || !!errorMessage}
             isLoading={isDisabled}
           />

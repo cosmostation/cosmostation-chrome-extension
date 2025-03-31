@@ -9,7 +9,7 @@ import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import Fee from '@/components/Fee/CosmosFee2';
+import Fee from '@/components/Fee/CosmosFee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';

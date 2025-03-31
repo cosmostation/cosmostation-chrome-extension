@@ -41,5 +41,5 @@ export const FeeCustomContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   columnGap: '0.6rem',
-  marginTop: '2.2rem 0',
+  margin: '2.2rem 0',
 });

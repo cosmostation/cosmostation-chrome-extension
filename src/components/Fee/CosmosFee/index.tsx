@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Tooltip from '@/components/common/Tooltip';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { CosmosFeeAsset } from '@/types/cosmos/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import FeeSettingBottomSheet from './components/FeeSettingBottomSheet';
@@ -13,13 +13,20 @@ import Base1300Text from '../../common/Base1300Text';
 import NumberTypo from '../../common/NumberTypo';
 
 type FeeProps = {
-  feeAssets: CosmosFeeAsset[];
-  feeStepKey: number;
-  selectedFeeCoinId: string;
-  gases: string[];
-  gasRates: string[];
+  feeOptionDatas: {
+    gas?: string;
+    gasRate: string;
+    decimals: number;
+    symbol: string;
+    coinGeckoId?: string;
+    title?: string;
+  }[];
+  availableFeeAssets: CosmosFeeAsset[];
+  selectedCustomFeeCoinId: string;
+  currentSelectedFeeOptionKey: number;
   disableConfirm?: boolean;
   isLoading?: boolean;
+  errorMessage?: string;
   onClickConfirm: () => void;
   onClickFeeStep: (gasRateKey: number) => void;
   onChangeGas: (gas: string) => void;
@@ -28,13 +35,13 @@ type FeeProps = {
 };
 
 export default function Fee({
-  feeAssets,
-  feeStepKey,
-  selectedFeeCoinId,
-  gases,
-  gasRates,
+  feeOptionDatas,
+  availableFeeAssets,
+  selectedCustomFeeCoinId,
+  currentSelectedFeeOptionKey,
   disableConfirm,
   isLoading,
+  errorMessage,
   onClickConfirm,
   onClickFeeStep,
   onChangeGas,
@@ -47,16 +54,16 @@ export default function Fee({
 
   const [isOpenFeeCustomBottomSheet, setIsOpenFeeCustomBottomSheet] = useState(false);
 
-  const selectedFeeCoin = useMemo(() => feeAssets.find((item) => isMatchingCoinId(item.asset, selectedFeeCoinId)), [feeAssets, selectedFeeCoinId]);
+  const selectedFee = feeOptionDatas[currentSelectedFeeOptionKey];
 
-  const decimals = selectedFeeCoin?.asset.decimals || 0;
-  const coinGeckoId = selectedFeeCoin?.asset.coinGeckoId || '';
-  const coinSymbol = selectedFeeCoin?.asset.symbol || '';
+  const decimals = selectedFee.decimals || 0;
+  const coinGeckoId = selectedFee.coinGeckoId || '';
+  const coinSymbol = selectedFee.symbol || '';
 
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
-  const currentGas = gases?.[feeStepKey] || '0';
-  const currnetGasRate = gasRates?.[feeStepKey] || '0';
+  const currentGas = selectedFee.gas || '0';
+  const currnetGasRate = selectedFee.gasRate || '0';
 
   const baseFeeAmount = useMemo(() => times(currnetGasRate, currentGas), [currentGas, currnetGasRate]);
   const displayFeeAmount = useMemo(() => toDisplayDenomAmount(baseFeeAmount, decimals), [baseFeeAmount, decimals]);
@@ -74,7 +81,7 @@ export default function Fee({
         >
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6} isDisableLeadingCurreny>
+              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
                 {displayFeeAmount}
               </NumberTypo>
               &nbsp;
@@ -93,17 +100,20 @@ export default function Fee({
       </LeftContentContainer>
       <RightContentContainer>
         {
-          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.CosmosFee.index.continue')}
-          </StyledButton>
+          <Tooltip title={errorMessage} varient="error" placement="top">
+            <div>
+              <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+                {t('components.Fee.CosmosFee.index.continue')}
+              </StyledButton>
+            </div>
+          </Tooltip>
         }
       </RightContentContainer>
       <FeeSettingBottomSheet
-        feeAssets={feeAssets}
-        selectedFeeCoinId={selectedFeeCoinId}
-        gases={gases}
-        gasRates={gasRates}
-        currentSelectedFeeOptionKey={feeStepKey}
+        feeOptionDatas={feeOptionDatas}
+        availableFeeAssets={availableFeeAssets}
+        selectedCustomFeeCoinId={selectedCustomFeeCoinId}
+        currentSelectedFeeOptionKey={currentSelectedFeeOptionKey}
         open={isOpenFeeCustomBottomSheet}
         onClose={() => setIsOpenFeeCustomBottomSheet(false)}
         onChangeGas={(gas) => {

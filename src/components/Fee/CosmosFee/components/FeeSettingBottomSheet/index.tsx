@@ -8,20 +8,25 @@ import TextButton from '@/components/common/TextButton';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { CosmosFeeAsset } from '@/types/cosmos/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import FeeCustomOverlay from './components/FeeCustomOverlay';
-import OptionButton from './components/OptionButton';
 import { Body, Container, FeeCustomContainer, Header, HeaderTitle, StyledBottomSheet } from './styled';
+import FeeCustomOverlay from '../FeeSettingBottomSheet/components/FeeCustomOverlay';
+import OptionButton from '../FeeSettingBottomSheet/components/OptionButton';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type FeeSettingBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  selectedFeeCoinId: string;
-  gases: string[];
-  gasRates: string[];
-  feeAssets: CosmosFeeAsset[];
+  feeOptionDatas: {
+    gas?: string;
+    gasRate: string;
+    decimals: number;
+    symbol: string;
+    coinGeckoId?: string;
+    title?: string;
+  }[];
+  availableFeeAssets: CosmosFeeAsset[];
+  selectedCustomFeeCoinId: string;
   currentSelectedFeeOptionKey: number;
   onSelectOption?: (id: number) => void;
   onChangeGas?: (gas: string) => void;
@@ -30,11 +35,10 @@ type FeeSettingBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomS
 };
 
 export default function FeeSettingBottomSheet({
-  feeAssets,
-  selectedFeeCoinId,
-  gases,
-  gasRates,
+  feeOptionDatas,
+  availableFeeAssets,
   currentSelectedFeeOptionKey,
+  selectedCustomFeeCoinId,
   onClose,
   onSelectOption,
   onChangeGas,
@@ -48,51 +52,49 @@ export default function FeeSettingBottomSheet({
 
   const [isOpenFeeCustomOverlay, setIsOpenFeeCustomOverlay] = useState(false);
 
-  const selectedFeeCoin = feeAssets.find((item) => isMatchingCoinId(item.asset, selectedFeeCoinId));
-
-  const coinGeckoId = selectedFeeCoin?.asset.coinGeckoId || '';
-
-  const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
-
-  const customFeeStepKey = gasRates ? gasRates.length - 1 : 0;
+  const customFeeStepKey = feeOptionDatas ? feeOptionDatas.length - 1 : 0;
 
   const feeOptions = useMemo(
     () =>
-      gasRates
-        .map((gasRate, index) => {
-          if (!gasRate) return null;
+      feeOptionDatas
+        .map((item, index) => {
+          if (item.title === 'Custom' && !item.gas) return null;
 
-          const gas = gases?.[index] || '0';
+          const gas = item.gas || '0';
+          const gasRate = item.gasRate || '0';
+          const decimals = item.decimals || 0;
+          const symbol = item.symbol || '';
+          const coinPrice = (item.coinGeckoId && coinGeckoPrice?.[item.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
-          const displayFeeAmount = toDisplayDenomAmount(times(gasRate || '0', gas), selectedFeeCoin?.asset.decimals || 0);
+          const displayFeeAmount = toDisplayDenomAmount(times(gasRate, gas), decimals);
           const value = times(displayFeeAmount, coinPrice);
 
           // TODO 정책 설정 필요.
-          const title = index === customFeeStepKey ? 'Custom' : 'Default';
+          const title = item.title || (index === customFeeStepKey ? 'Custom' : 'Default');
 
           return {
             id: index,
             title,
             amount: displayFeeAmount,
-            symbol: selectedFeeCoin?.asset.symbol || '',
+            symbol: symbol,
             value: value,
           };
         })
         .filter((item) => !!item),
-    [coinPrice, customFeeStepKey, gasRates, gases, selectedFeeCoin?.asset.decimals, selectedFeeCoin?.asset.symbol],
+    [coinGeckoPrice, userCurrencyPreference, customFeeStepKey, feeOptionDatas],
   );
 
   const defaultCustomGasAmount = useMemo(() => {
-    const customGasAmount = gases?.[customFeeStepKey];
+    const customGasAmount = feeOptionDatas?.[customFeeStepKey].gas;
 
-    return customGasAmount || gases?.[0] || '0';
-  }, [customFeeStepKey, gases]);
+    return customGasAmount || feeOptionDatas?.[0].gas || '0';
+  }, [customFeeStepKey, feeOptionDatas]);
 
   const defatulCustomGasRate = useMemo(() => {
-    const customGasRate = gasRates?.[customFeeStepKey];
+    const customGasRate = feeOptionDatas?.[customFeeStepKey].gasRate;
 
-    return customGasRate || gasRates?.[0] || '0';
-  }, [customFeeStepKey, gasRates]);
+    return customGasRate || feeOptionDatas?.[0].gasRate || '0';
+  }, [customFeeStepKey, feeOptionDatas]);
 
   const onHandelClose = () => {
     setIsOpenFeeCustomOverlay(false);
@@ -149,8 +151,8 @@ export default function FeeSettingBottomSheet({
           }}
           baseGasAmount={defaultCustomGasAmount}
           baseGasRate={defatulCustomGasRate}
-          feeAssets={feeAssets}
-          feeCoinId={selectedFeeCoinId}
+          feeAssets={availableFeeAssets}
+          feeCoinId={selectedCustomFeeCoinId}
           onConfirm={(feeCoinId, gasAmount, gasRate) => {
             onChangeFeeCoinId?.(feeCoinId);
             onChangeGas?.(gasAmount);

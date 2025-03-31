@@ -11,7 +11,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.ts
 import ChainSelectBox from '@/components/ChainSelectBox';
 import IconButton from '@/components/common/IconButton';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import Fee from '@/components/Fee/CosmosFee2';
+import Fee from '@/components/Fee/CosmosFee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
