@@ -81,7 +81,17 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const [currentFeeStepKey, setCurrentFeeStepKey] = useState<number>(0);
+  const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
+
+  const { feeAssets, defaultGasRateKey } = useFees({ coinId: coinId });
+
+  const currentFeeStepKey = useMemo(() => {
+    if (inputFeeStepKey !== undefined) {
+      return inputFeeStepKey;
+    }
+
+    return defaultGasRateKey;
+  }, [defaultGasRateKey, inputFeeStepKey]);
 
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
@@ -165,8 +175,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
     return monthlyReward;
   }, [apr, currentValidator, displayStakeAmount]);
-
-  const { feeAssets } = useFees({ coinId: coinId });
 
   const alternativeFeeAsset = useMemo(
     () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
@@ -626,7 +634,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
               setCustomFeeCoinId(feeCoinId);
             }}
             onClickFeeStep={(val) => {
-              setCurrentFeeStepKey(val);
+              setInputFeeStepKey(val);
             }}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
