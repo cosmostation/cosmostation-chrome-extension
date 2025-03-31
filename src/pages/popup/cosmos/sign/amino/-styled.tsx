@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import { TabPanel } from '@/components/common/Tab';
+
 export const Divider = styled('div')(({ theme }) => ({
   width: '100%',
   borderBottom: `0.1rem solid ${theme.palette.color.base100}`,
@@ -50,3 +52,9 @@ export const SticktFooterInnerBody = styled('div')(({ theme }) => ({
 
   backgroundColor: theme.palette.color.base50,
 }));
+
+export const StyledTabPanel = styled(TabPanel)({
+  marginTop: '0',
+  display: 'flex',
+  flexDirection: 'column',
+});

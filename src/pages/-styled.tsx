@@ -22,7 +22,7 @@ export const HeaderRightContainer = styled('div')({
 });
 
 type StyledTabPanelProps = {
-  'data-is-active'?: boolean;
+  'data-is-active': boolean;
 };
 
 export const StyledTabPanel = styled(TabPanel)<StyledTabPanelProps>(({ ...props }) => ({

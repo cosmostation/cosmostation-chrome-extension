@@ -22,7 +22,6 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import { StickyTabContainer, StyledTabPanel } from '@/pages/-styled';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import MemoInput from '@/pages/popup/-components/MemoInput';
@@ -38,7 +37,7 @@ import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGene
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
-import { InformationContainer } from './-styled';
+import { InformationContainer, StickyTabContainer, StyledTabPanel } from './-styled';
 import { Divider, DividerContainer, LineDivider, RawTxContainer, SticktFooterInnerBody, TxBaseInfoContainer } from '../amino/-styled';
 
 type EntryProps = {

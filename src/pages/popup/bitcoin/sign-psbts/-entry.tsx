@@ -20,7 +20,6 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import { StyledTabPanel } from '@/pages/-styled';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import type { ResponseAppMessage } from '@/types/message/content';
@@ -38,6 +37,7 @@ import {
   RawTxMessage,
   SticktFooterInnerBody,
   StickyTabContainer,
+  StyledTabPanel,
   TxBaseInfoContainer,
 } from './-styled';
 import TxMessage from '../-components/TxMessage';

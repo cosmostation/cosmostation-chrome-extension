@@ -19,7 +19,6 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import { StyledTabPanel } from '@/pages/-styled';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import MemoInput from '@/pages/popup/-components/MemoInput';
@@ -33,7 +32,16 @@ import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGene
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
-import { Divider, DividerContainer, LineDivider, RawTxContainer, SticktFooterInnerBody, StickyTabContainer, TxBaseInfoContainer } from './-styled';
+import {
+  Divider,
+  DividerContainer,
+  LineDivider,
+  RawTxContainer,
+  SticktFooterInnerBody,
+  StickyTabContainer,
+  StyledTabPanel,
+  TxBaseInfoContainer,
+} from './-styled';
 
 type EntryProps = {
   request: CosSignAmino;

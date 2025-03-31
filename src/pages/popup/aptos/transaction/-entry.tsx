@@ -21,7 +21,6 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import { StyledTabPanel } from '@/pages/-styled';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import type { AptosSimulationPayload } from '@/types/aptos/tx';
@@ -43,6 +42,7 @@ import {
   RawTxMessage,
   SticktFooterInnerBody,
   StickyTabContainer,
+  StyledTabPanel,
   TxBaseInfoContainer,
 } from './-styled';
 

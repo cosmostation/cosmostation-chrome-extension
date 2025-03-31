@@ -27,7 +27,6 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import { StyledTabPanel } from '@/pages/-styled';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import {
   AddressContainer,
@@ -57,6 +56,7 @@ import {
   RawTxMessage,
   SticktFooterInnerBody,
   StickyTabContainer,
+  StyledTabPanel,
   TxBaseInfoContainer,
   TxMessageContainer,
 } from './-styled';

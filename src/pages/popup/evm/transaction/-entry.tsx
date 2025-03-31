@@ -22,7 +22,6 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getAddress, getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
-import { StyledTabPanel } from '@/pages/-styled';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import RawTx from '@/pages/popup/-components/RawTx';
@@ -35,7 +34,16 @@ import { hexOrDecimalToDecimal, isEqualsIgnoringCase, toHex } from '@/utils/stri
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
-import { Divider, DividerContainer, LineDivider, RawTxContainer, SticktFooterInnerBody, StickyTabContainer, TxBaseInfoContainer } from './-styled';
+import {
+  Divider,
+  DividerContainer,
+  LineDivider,
+  RawTxContainer,
+  SticktFooterInnerBody,
+  StickyTabContainer,
+  StyledTabPanel,
+  TxBaseInfoContainer,
+} from './-styled';
 
 type EntryProps = {
   request: EthSignTransaction | EthSendTransaction;
