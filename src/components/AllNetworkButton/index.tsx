@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { TypoVariantKeys } from '@/styles/theme';
 import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
@@ -9,13 +8,11 @@ import { ChainImageContainer, ChevronIconContainer, GridMenuIconContainer, Style
 import ChainListBottomSheet from '../ChainListBottomSheet';
 import type { IconTextButtonProps } from '../common/IconTextButton';
 
+import AllNetworkIcon from '@/assets/images/icons/AllNetwork36.svg';
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-import GridMenuIcon from '@/assets/images/icons/GridMenu14.svg';
 
 type AllNetworkButtonprops = IconTextButtonProps & {
-  typoVarient?: TypoVariantKeys;
   variant?: 'normal' | 'chip';
-  sizeVariant?: 'small' | 'medium' | 'large';
   currentChainId?: UniqueChainId;
   chainList?: ChainBase[];
   isManageAssets?: boolean;
@@ -23,8 +20,6 @@ type AllNetworkButtonprops = IconTextButtonProps & {
 };
 
 export default function AllNetworkButton({
-  typoVarient = 'b4_M',
-  sizeVariant = 'small',
   variant = 'normal',
   currentChainId,
   chainList,
@@ -43,15 +38,15 @@ export default function AllNetworkButton({
         variants={variant}
         leadingIcon={
           currentChain ? (
-            <ChainImageContainer sizeVariant={sizeVariant} src={currentChain.image || ''} />
+            <ChainImageContainer sizeVariant={'large'} src={currentChain.image || ''} />
           ) : (
-            <GridMenuIconContainer sizeVariant={sizeVariant}>
-              <GridMenuIcon />
+            <GridMenuIconContainer sizeVariant={'large'}>
+              <AllNetworkIcon />
             </GridMenuIconContainer>
           )
         }
         trailingIcon={
-          <ChevronIconContainer sizeVariant={sizeVariant} data-is-open={isOpenChainListBottomSheet}>
+          <ChevronIconContainer sizeVariant={'medium'} data-is-open={isOpenChainListBottomSheet}>
             <BottomFilledChevronIcon />
           </ChevronIconContainer>
         }
@@ -60,7 +55,7 @@ export default function AllNetworkButton({
         }}
         {...remainder}
       >
-        <TextContainer variant={typoVarient}>{currentChain ? currentChain.name : t('components.AllNetworkButton.index.allNetwork')}</TextContainer>
+        <TextContainer variant={'b2_M'}>{currentChain ? currentChain.name : t('components.AllNetworkButton.index.allNetwork')}</TextContainer>
       </StyledIconButton>
       <ChainListBottomSheet
         currentChainId={currentChainId}

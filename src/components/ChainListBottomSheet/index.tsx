@@ -33,7 +33,7 @@ import ChangeIcon from 'assets/images/icons/Change14.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 import CustomNetworkIcon from 'assets/images/icons/CustomNetwork28.svg';
 
-import GridMenuImage from 'assets/images/GridMenu.png';
+import AllNetworkImage from 'assets/images/network.png';
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   chainList: ChainBase[];
@@ -172,7 +172,7 @@ export default function ChainListBottomSheet({
                 handleClose();
               }}
               name={t('components.ChainListBottomSheet.index.allNetwork')}
-              image={GridMenuImage}
+              image={AllNetworkImage}
               id={AllNetworkOptionId}
             />
           )}

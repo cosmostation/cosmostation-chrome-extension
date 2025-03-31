@@ -135,8 +135,6 @@ export default function Entry({ coinId }: EntryProps) {
             </FilterContaienr>
 
             <AllNetworkButton
-              sizeVariant="medium"
-              typoVarient="b2_M"
               chainList={chainList}
               currentChainId={currentSelectedChainId}
               selectChainOption={(chainId) => {

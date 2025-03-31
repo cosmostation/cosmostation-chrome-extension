@@ -277,8 +277,6 @@ export default function Entry() {
             </CarouselWrapper>
             <SortConditionContainer>
               <AllNetworkButton
-                sizeVariant="medium"
-                typoVarient="b2_M"
                 currentChainId={currentSelectedChainId}
                 chainList={flatChainList}
                 selectChainOption={(id) => {

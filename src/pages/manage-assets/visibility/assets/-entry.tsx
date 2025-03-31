@@ -376,8 +376,6 @@ export default function Entry() {
 
               <RowContainer>
                 <AllNetworkButton
-                  sizeVariant="medium"
-                  typoVarient="b2_M"
                   currentChainId={currentSelectedChainId}
                   chainList={chainList}
                   selectChainOption={(id) => {

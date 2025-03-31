@@ -206,8 +206,6 @@ export default function CoinSelect({
         </FilterContaienr>
 
         <AllNetworkButton
-          sizeVariant="medium"
-          typoVarient="b2_M"
           currentChainId={currentSelectedChainId}
           chainList={baseChainList}
           selectChainOption={(id) => {
