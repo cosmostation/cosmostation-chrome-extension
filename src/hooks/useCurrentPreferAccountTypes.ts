@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import type { ChainToAccountTypeMap } from '@/types/account';
 import { updatePreferAccountType } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -13,7 +15,7 @@ export function useCurrentPreferAccountTypes() {
   const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
-  const currentPreferAccountType = preferAccountType[currentAccount.id];
+  const currentPreferAccountType = useMemo(() => preferAccountType[currentAccount.id], [currentAccount.id, preferAccountType]);
 
   const updateCurrentPreferAccountType = async (preferAccountType: ChainToAccountTypeMap) => {
     await updatePreferAccountType(currentAccount.id, preferAccountType);

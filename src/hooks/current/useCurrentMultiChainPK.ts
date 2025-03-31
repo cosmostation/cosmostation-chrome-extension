@@ -55,7 +55,7 @@ export function useCurrentMultiChainPK() {
     error,
     refetch,
   } = useFetch({
-    queryKey: ['useCurrentMultiChainPK', currentAccount],
+    queryKey: ['useCurrentMultiChainPK', currentAccount, chainList],
     fetchFunction: () => fetcher(),
     config: {
       staleTime: Infinity,
