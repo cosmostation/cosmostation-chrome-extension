@@ -11,9 +11,9 @@ import type {
   BitSignPsbtResposne,
   BitSignPsbtsResposne,
 } from '@/types/message/inject/bitcoin';
-import { formatPsbtHex } from '@/utils/bitcoin/tx';
 
 import { bitcoinRequestApp } from '../request';
+import { formatPsbtHex } from '../utils';
 
 const connectWallet = async () => {
   const addressList = (await bitcoinRequestApp({ method: 'bit_requestAccount', params: undefined })) as BitRequestAccountResponse;

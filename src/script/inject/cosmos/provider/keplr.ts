@@ -11,9 +11,9 @@ import type {
   CosSupportedChainIdsResponse,
   CosVerifyMessageResponse,
 } from '@/types/message/inject/cosmos';
-import { toUint8Array } from '@/utils/crypto';
 
 import { wrappedCosmosRequestApp } from './cosmostation';
+import { toUint8Array } from '../utils';
 
 const keplrEnable: KeplrInterface['enable'] = async (chainIds?: string[] | string) => {
   if (!chainIds) {

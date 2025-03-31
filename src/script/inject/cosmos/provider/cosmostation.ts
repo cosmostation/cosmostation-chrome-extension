@@ -12,10 +12,10 @@ import type {
   CosSignDirectResponse,
   CosSupportedChainIdsResponse,
 } from '@/types/message/inject/cosmos';
-import { toUint8Array } from '@/utils/crypto';
 import { CosmosRPCError } from '@/utils/error';
 
 import { cosmosRequestApp } from '../request';
+import { toUint8Array } from '../utils';
 
 function isCosRequestAccounts(message: BaseRequest): message is CosRequestAccounts {
   return message.method === 'cos_requestAccounts';
@@ -135,10 +135,6 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
 
 export class CosmostaionCosmos implements CosmosProvider {
   private static instance: CosmostaionCosmos;
-
-  isMetaMask = false;
-  chainId?: string;
-  networkVersion?: string;
 
   private accountChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 

@@ -1,4 +1,5 @@
-import { resolve } from 'path';
+import fs from 'fs';
+import path, { resolve } from 'path';
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -26,13 +27,13 @@ export default defineConfig(({ mode }) => {
         include: ['stream', 'assert', 'os', 'url', 'http', 'https', 'crypto'],
       }),
       {
-        name: 'replace-global',
-        transform(code, id) {
-          if (id.endsWith('.js')) {
-            return {
-              code: code.replace(/_global/g, '_cosmostationGlobal'),
-              map: null,
-            };
+        name: 'replace-global-variable',
+        writeBundle() {
+          const filePath = path.resolve(__dirname, 'dist-dev/js/inject.js');
+          if (fs.existsSync(filePath)) {
+            let content = fs.readFileSync(filePath, 'utf-8');
+            content = content.replace(/_global/g, '_cosmostationGlobal');
+            fs.writeFileSync(filePath, content);
           }
         },
       },
