@@ -298,7 +298,7 @@ export default function Entry({ request, chain }: EntryProps) {
             throw new Error('key does not exist');
           }
 
-          const signedDoc = { ...doc, body_bytes: bodyBytes.buffer, auth_info_bytes: authInfoBytes.buffer };
+          const signedDoc = { ...doc, body_bytes: [...Array.from(bodyBytes)], auth_info_bytes: [...Array.from(authInfoBytes)] };
 
           const privateKeyBuffer = Buffer.from(keyPair.privateKey, 'hex');
 
@@ -309,7 +309,7 @@ export default function Entry({ request, chain }: EntryProps) {
       })();
       const base64Signature = Buffer.from(signature).toString('base64');
 
-      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+      const base64PublicKey = Buffer.from(keyPair.publicKey, 'hex').toString('base64');
 
       const publicKeyType = accountAsset.address.accountType.pubkeyType
         ? getPublicKeyType(accountAsset.address.accountType.pubkeyType)
