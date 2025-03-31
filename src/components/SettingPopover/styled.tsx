@@ -15,6 +15,7 @@ export const StyledIconTextButton = styled(IconTextButton)(({ theme }) => ({
 
   '&:hover': {
     backgroundColor: theme.palette.color.base200,
+    opacity: '1',
   },
 }));
 

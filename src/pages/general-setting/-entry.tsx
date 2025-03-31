@@ -198,6 +198,9 @@ export default function Entry() {
                   rightContent={<Base1000Text variant="h6n_M">{userCurrencyPreference.toUpperCase()}</Base1000Text>}
                 />
                 <BaseOptionButton
+                  style={{
+                    display: 'none',
+                  }}
                   leftContent={
                     <OptionButtonIconContainer>
                       <PriceChangeColorIcon />

@@ -146,7 +146,12 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              <IconTextButton leadingIcon={<HistoryIcon />}>
+              <IconTextButton
+                style={{
+                  visibility: 'hidden',
+                }}
+                leadingIcon={<HistoryIcon />}
+              >
                 <HistoryButtonTypo variant="b3_M">{t('components.MainBox.Portfolio.index.history')}</HistoryButtonTypo>
               </IconTextButton>
               <BodyBottomChipButtonContainer>

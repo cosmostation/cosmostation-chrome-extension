@@ -61,7 +61,11 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
         <LeftContainer>
           <IconTextButton
             trailingIcon={
-              <RightChevronIconContainer>
+              <RightChevronIconContainer
+                sx={{
+                  visibility: 'hidden',
+                }}
+              >
                 <RightChevronIcon />
               </RightChevronIconContainer>
             }

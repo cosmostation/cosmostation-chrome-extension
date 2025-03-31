@@ -9,7 +9,6 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
-import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import Search from '@/components/Search';
@@ -56,8 +55,6 @@ export default function Entry() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
   const isDebouncing = !!search && isPending();
-
-  const [isViewTestnet, setIsViewTestnet] = useState(false);
 
   const baseCustomChainList = useMemo(
     () => (!isLoading ? [...(managedCustomChains || []), ...userDefinedCustomChains] : []),
@@ -148,14 +145,10 @@ export default function Entry() {
               />
 
               <RowContainer>
-                <CheckBoxTextButton
-                  isChecked={isViewTestnet}
-                  onClick={() => {
-                    setIsViewTestnet(!isViewTestnet);
-                  }}
-                >
-                  <Base1000Text variant="b3_R">{t('pages.manage-assets.visibility.network.entry.viewTestnet')}</Base1000Text>
-                </CheckBoxTextButton>
+                <NetworkCountContainer>
+                  <Base1300Text variant="h4_B">{t('pages.manage-assets.visibility.network.entry.network')}</Base1300Text>
+                  <Base1000Text variant="h4_B">{customChainListCount}</Base1000Text>
+                </NetworkCountContainer>
 
                 <IconTextButton
                   onClick={() => {
@@ -173,12 +166,6 @@ export default function Entry() {
                     <Typography variant="b3_M">{t('pages.manage-assets.visibility.network.entry.importNetwork')}</Typography>
                   </ImportTextContainer>
                 </IconTextButton>
-              </RowContainer>
-              <RowContainer>
-                <NetworkCountContainer>
-                  <Base1300Text variant="h4_B">{t('pages.manage-assets.visibility.network.entry.network')}</Base1300Text>
-                  <Base1000Text variant="h4_B">{customChainListCount}</Base1000Text>
-                </NetworkCountContainer>
               </RowContainer>
             </StickyContainer>
 

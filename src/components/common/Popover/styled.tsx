@@ -25,7 +25,6 @@ export const StyledPopover = styled(Popover)(({ theme }) => ({
     borderRadius: '0.4rem',
 
     marginTop: '0.4rem',
-    // NOTE 기존 팝오버 색상이 헤더와 겹쳐서 주석처리
-    // backgroundImage: 'none',
+    backgroundImage: 'none',
   },
 }));
