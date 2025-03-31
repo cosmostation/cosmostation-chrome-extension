@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { gt } from 'lodash';
 import { Typography } from '@mui/material';
-import { useNavigate } from '@tanstack/react-router';
 
 import CoinSelectBox from '@/components/CoinSelectBox';
 import Base1000Text from '@/components/common/Base1000Text';
@@ -16,7 +15,6 @@ import InformationPanel from '@/components/InformationPanel';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
-import { Route as Home } from '@/pages/index';
 import { isDecimal, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -33,7 +31,6 @@ import {
   Overlay,
 } from './styled';
 
-import HomeIcon from '@/assets/images/icons/Home14.svg';
 import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
 
 type GasPriceCustomOverlayProps = {
@@ -47,7 +44,6 @@ type GasPriceCustomOverlayProps = {
 
 export default function GasPriceCustomOverlay({ open = false, baseGasAmount, baseGasPrice, feeCoinId, onClose, onConfirm }: GasPriceCustomOverlayProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
@@ -119,17 +115,6 @@ export default function GasPriceCustomOverlay({ open = false, baseGasAmount, bas
               <IconButton onClick={reset}>
                 <IconContainer>
                   <ArrowBackIcon />
-                </IconContainer>
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  navigate({
-                    to: Home.to,
-                  });
-                }}
-              >
-                <IconContainer>
-                  <HomeIcon />
                 </IconContainer>
               </IconButton>
             </HeaderLeftContainer>

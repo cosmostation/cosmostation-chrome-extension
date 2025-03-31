@@ -6,7 +6,8 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
-import FeeSettingBottomSheet from '@/components/Fee/EVMFee/components/DynamicFeeSettingBottomSheet';
+import type { BasicFeeOption, EIP1559FeeOption } from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
+import FeeSettingBottomSheet from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { DEFAULT_GAS_MULTIPLY, EVM_DEFAULT_GAS } from '@/constants/evm/fee';
@@ -39,33 +40,6 @@ import { Divider, DividerContainer, LineDivider, RawTxContainer, SticktFooterInn
 type EntryProps = {
   request: EthSignTransaction | EthSendTransaction;
 };
-
-export type BasicFeeOption = {
-  coinId: string;
-  decimals: number;
-  denom: string;
-  coinGeckoId?: string;
-  symbol: string;
-  type: 'BASIC';
-  gas?: string;
-  gasPrice?: string;
-  title: string;
-};
-
-export type EIP1559FeeOption = {
-  coinId: string;
-  decimals: number;
-  denom: string;
-  coinGeckoId?: string;
-  symbol: string;
-  type: 'EIP-1559';
-  gas?: string;
-  maxBaseFeePerGas?: string;
-  maxPriorityFeePerGas?: string;
-  title: string;
-};
-
-export type FeeOption = BasicFeeOption | EIP1559FeeOption;
 
 export default function Entry({ request }: EntryProps) {
   const { t } = useTranslation();

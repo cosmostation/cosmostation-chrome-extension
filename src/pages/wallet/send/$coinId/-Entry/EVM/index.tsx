@@ -13,14 +13,16 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.ts
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
+import type { BasicFeeOption, EIP1559FeeOption, FeeOption } from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet/index.tsx';
 import EVMFee from '@/components/Fee/EVMFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
 import { ERC20_ABI } from '@/constants/evm/abi.ts';
-import { DEFAULT_GAS_MULTIPLY } from '@/constants/evm/fee.ts';
+import { DEFAULT_GAS_MULTIPLY, EVM_DEFAULT_GAS } from '@/constants/evm/fee.ts';
 import { useENS } from '@/hooks/evm/useENS.ts';
 import { useEstimateGas } from '@/hooks/evm/useEstimateGas.ts';
 import { useFee } from '@/hooks/evm/useFee.ts';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
@@ -29,8 +31,8 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { ethersProvider } from '@/utils/ethereum/ethers.ts';
 import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign.ts';
-import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { getCoinId, getUniqueChainId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase, shorterAddress, toHex } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
@@ -64,6 +66,12 @@ export default function EVM({ coinId }: EVMProps) {
 
   const [isDisabled, setIsDisabled] = useState(false);
 
+  const [currentFeeStepKey, setCurrentFeeStepKey] = useState<number>(1);
+  const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
+  const [customGasPrice, setCustomGasPrice] = useState('');
+  const [customMaxBaseFeeAmount, setCustomMaxBaseFeeAmount] = useState('');
+  const [customPriorityFeeAmount, setCustomPriorityFeeAmount] = useState('');
+
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
   const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
@@ -80,6 +88,18 @@ export default function EVM({ coinId }: EVMProps) {
       chainType: chainType,
     });
   })();
+
+  const { data: accountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+    disableDupeEthermint: true,
+  });
+
+  const nativeAccountAsset = useMemo(
+    () =>
+      accountAllAssets?.allEVMAccountAssets.find((item) => isMatchingUniqueChainId(item.chain, selectedChainId) && item.asset.id === NATIVE_EVM_COIN_ADDRESS),
+    [accountAllAssets?.allEVMAccountAssets, selectedChainId],
+  );
+  const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
 
   const coinImageURL = selectedCoinToSend?.asset.image || '';
   const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
@@ -101,7 +121,7 @@ export default function EVM({ coinId }: EVMProps) {
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
-  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
+  const displayAvailableAmount = useMemo(() => toDisplayDenomAmount(baseAvailableAmount, coinDecimals), [baseAvailableAmount, coinDecimals]);
 
   const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
@@ -159,95 +179,136 @@ export default function EVM({ coinId }: EVMProps) {
 
   const fee = useFee({ coinId });
 
-  const estimateGas = useEstimateGas({ coinId, bodyParams: debouncedSendTx && [debouncedSendTx] });
+  const estimateGas = useEstimateGas({ coinId: nativeAccountAssetCoinId, bodyParams: debouncedSendTx && [debouncedSendTx] });
 
-  const [currentFeeStepKey, setCurrentFeeStepKey] = useState(1);
+  const alternativeGas = useMemo(() => {
+    const gasCoefficient = nativeAccountAsset?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
 
-  const [customGasPrice, setCustomGasPrice] = useState('');
+    const baseEstimateGas = times(BigInt(estimateGas.data?.result || EVM_DEFAULT_GAS).toString(10), gasCoefficient);
 
-  const [customMaxBaseFeeAmount, setCustomMaxBaseFeeAmount] = useState('');
-  const [customPriorityFeeAmount, setCustomPriorityFeeAmount] = useState('');
+    return ceil(baseEstimateGas);
+  }, [estimateGas.data?.result, nativeAccountAsset?.chain.feeInfo.gasCoefficient]);
 
-  const currentEIP1559Fee = useMemo(() => {
-    if (fee.type === 'EIP-1559') {
-      const customFeeStep = {
-        maxBaseFeePerGas: customMaxBaseFeeAmount,
-        maxPriorityFeePerGas: customPriorityFeeAmount,
-      };
+  const feeOptions = useMemo(() => {
+    const defaultFeeOption = {
+      coinId: nativeAccountAsset?.asset ? getCoinId(nativeAccountAsset.asset) : '',
+      decimals: nativeAccountAsset?.asset.decimals || 0,
+      denom: nativeAccountAsset?.asset.id,
+      coinGeckoId: nativeAccountAsset?.asset.coinGeckoId,
+      symbol: nativeAccountAsset?.asset.symbol || '',
+    };
 
-      return [...(fee?.currentFee || []), customFeeStep][currentFeeStepKey];
+    const customOption = (() => {
+      if (fee.type === 'BASIC') {
+        return {
+          ...defaultFeeOption,
+          type: 'BASIC',
+          gas: customGasAmount,
+          gasPrice: customGasPrice,
+          title: 'Custom',
+        } as BasicFeeOption;
+      }
+
+      if (fee.type === 'EIP-1559') {
+        return {
+          ...defaultFeeOption,
+          type: 'EIP-1559',
+          gas: customGasAmount,
+          maxBaseFeePerGas: customMaxBaseFeeAmount,
+          maxPriorityFeePerGas: customPriorityFeeAmount,
+          title: 'Custom',
+        } as EIP1559FeeOption;
+      }
+    })();
+
+    const alternativeFeeOptions = (() => {
+      if (fee.type === 'BASIC') {
+        const baseGasPrice = fee.currentGasPrice || '0';
+
+        const gasPrices = [baseGasPrice, times(baseGasPrice, '1.2'), times(baseGasPrice, '2')];
+
+        return gasPrices.map(
+          (item) =>
+            ({
+              ...defaultFeeOption,
+              type: 'BASIC',
+              gas: alternativeGas,
+              gasPrice: item,
+              title: 'From Extension',
+            }) as BasicFeeOption,
+        );
+      }
+
+      if (fee.type === 'EIP-1559') {
+        const eipFeeList = fee.currentFee || [];
+
+        return eipFeeList.map(
+          (item) =>
+            ({
+              ...defaultFeeOption,
+              type: 'EIP-1559',
+              gas: alternativeGas,
+              maxBaseFeePerGas: item.maxBaseFeePerGas,
+              maxPriorityFeePerGas: item.maxPriorityFeePerGas,
+              title: 'From Extension',
+            }) as EIP1559FeeOption,
+        );
+      }
+
+      return [];
+    })();
+
+    return [...alternativeFeeOptions, customOption].filter((item) => !!item);
+  }, [
+    alternativeGas,
+    customGasAmount,
+    customGasPrice,
+    customMaxBaseFeeAmount,
+    customPriorityFeeAmount,
+    fee.currentFee,
+    fee.currentGasPrice,
+    fee.type,
+    nativeAccountAsset?.asset,
+  ]);
+
+  const currentFeeOption = useMemo<FeeOption | undefined>(() => feeOptions[currentFeeStepKey], [feeOptions, currentFeeStepKey]);
+
+  const estimatedFeeBaseAmount = useMemo(() => {
+    if (currentFeeOption?.type === 'BASIC') {
+      return times(currentFeeOption?.gas || '0', currentFeeOption?.gasPrice || '0', 0);
+    }
+    if (currentFeeOption?.type === 'EIP-1559') {
+      return times(currentFeeOption?.gas || '0', currentFeeOption.maxBaseFeePerGas || '0', 0);
     }
 
-    return undefined;
-  }, [currentFeeStepKey, customMaxBaseFeeAmount, customPriorityFeeAmount, fee?.currentFee, fee.type]);
-
-  const gasRateList = useMemo(() => {
-    if (fee.type === 'BASIC') {
-      const baseGasPrice = fee.currentGasPrice || '0';
-
-      return [baseGasPrice, times(baseGasPrice, '1.2'), times(baseGasPrice, '2'), customGasPrice];
-    }
-
-    if (fee.type === 'EIP-1559') {
-      const defaultMaxBaseFeePerGasList = fee.currentFee?.map((item) => item.maxBaseFeePerGas) || [];
-
-      return [...defaultMaxBaseFeePerGasList, customMaxBaseFeeAmount];
-    }
-
-    return undefined;
-  }, [customGasPrice, customMaxBaseFeeAmount, fee.currentFee, fee.currentGasPrice, fee.type]);
-
-  const currentGasRate = (() => {
-    return gasRateList?.[currentFeeStepKey] || '0';
-  })();
-
-  const [customGasAmount, setGasAmount] = useState('');
-
-  const gasMultiplier = selectedCoinToSend?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
-
-  const baseEstimateGas = useMemo(
-    () => times(BigInt(estimateGas.data?.result || '21000').toString(10) || '0', gasMultiplier),
-    [estimateGas.data?.result, gasMultiplier],
-  );
-
-  const gasList = useMemo(() => [...Array(3).fill(baseEstimateGas), customGasAmount], [baseEstimateGas, customGasAmount]);
-
-  const currentGas = useMemo(() => gasList[currentFeeStepKey] || '0', [currentFeeStepKey, gasList]);
-
-  const defaultFeeOption = useMemo(
-    () => ({
-      maxBaseFeePerGas: customMaxBaseFeeAmount || fee.currentFee?.[0].maxBaseFeePerGas,
-      maxPriorityFeePerGas: customPriorityFeeAmount || fee.currentFee?.[0].maxPriorityFeePerGas,
-      gasPrice: customGasPrice || gasRateList?.[0],
-      gas: customGasAmount || gasList?.[0],
-    }),
-    [customGasAmount, customGasPrice, customMaxBaseFeeAmount, customPriorityFeeAmount, fee.currentFee, gasList, gasRateList],
-  );
-
-  const estimatedFeeBaseAmount = useMemo(() => times(currentGasRate, currentGas), [currentGas, currentGasRate]);
+    return '0';
+  }, [currentFeeOption]);
 
   const finalizedTransaction = useMemo(() => {
-    if (!debouncedSendTx || !gt(currentGas, '0') || !gt(currentGasRate, '0') || !fee.type || !selectedCoinToSend?.chain.chainId) {
+    if (!debouncedSendTx || !selectedCoinToSend || !currentFeeOption || !gt(currentFeeOption.gas || '0', '0')) {
       return null;
     }
 
-    if (fee.type === 'EIP-1559' && (!currentEIP1559Fee || !currentEIP1559Fee.maxBaseFeePerGas || !currentEIP1559Fee.maxPriorityFeePerGas)) {
+    if (currentFeeOption.type === 'BASIC' && (!currentFeeOption.gasPrice || !gt(currentFeeOption.gasPrice, '0'))) {
       return null;
     }
 
+    if (currentFeeOption.type === 'EIP-1559' && (!currentFeeOption || !currentFeeOption.maxBaseFeePerGas || !currentFeeOption.maxPriorityFeePerGas)) {
+      return null;
+    }
     return {
       from: debouncedSendTx.from,
       to: debouncedSendTx.to,
       data: debouncedSendTx.data,
       value: BigInt(debouncedSendTx.value || '0').toString(10),
-      gasLimit: currentGas,
+      gasLimit: currentFeeOption.gas,
       chainId: BigInt(selectedCoinToSend.chain.chainId).toString(10),
-      type: fee.type === 'EIP-1559' ? 2 : undefined,
-      gasPrice: fee.type === 'BASIC' ? BigInt(currentGasRate).toString(10) : undefined,
-      maxFeePerGas: fee.type === 'EIP-1559' ? BigInt(currentEIP1559Fee?.maxBaseFeePerGas || '0').toString(10) : undefined,
-      maxPriorityFeePerGas: fee.type === 'EIP-1559' ? BigInt(currentEIP1559Fee?.maxPriorityFeePerGas || '0').toString(10) : undefined,
+      type: currentFeeOption.type === 'EIP-1559' ? 2 : undefined,
+      gasPrice: currentFeeOption?.type === 'BASIC' ? currentFeeOption.gasPrice : undefined,
+      maxFeePerGas: currentFeeOption?.type === 'EIP-1559' ? currentFeeOption.maxBaseFeePerGas : undefined,
+      maxPriorityFeePerGas: currentFeeOption?.type === 'EIP-1559' ? currentFeeOption.maxPriorityFeePerGas : undefined,
     };
-  }, [currentEIP1559Fee, currentGas, currentGasRate, debouncedSendTx, fee.type, selectedCoinToSend?.chain.chainId]);
+  }, [currentFeeOption, debouncedSendTx, selectedCoinToSend]);
 
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
@@ -292,7 +353,7 @@ export default function EVM({ coinId }: EVMProps) {
     return '';
   }, [baseAvailableAmount, baseSendAmount, estimatedFeeBaseAmount, selectedCoinToSend?.asset.id, sendDisplayAmount, t]);
 
-  const errorMessages = useMemo(() => {
+  const errorMessage = useMemo(() => {
     if (selectedCoinToSend?.chain.isDiableSend) {
       return t('pages.wallet.send.$coinId.Entry.EVM.index.bankLocked');
     }
@@ -476,22 +537,11 @@ export default function EVM({ coinId }: EVMProps) {
             <Divider />
           </EdgeAligner>
           <EVMFee
-            feeStepKey={currentFeeStepKey}
-            gasRate={gasRateList}
-            gas={currentGas}
-            defaultFeeOption={defaultFeeOption}
-            chainId={selectedChainId}
-            feeType={fee.type}
-            disableConfirm={!!errorMessages || isDisabled || !finalizedTransaction}
-            isLoading={isDisabled}
-            onClickConfirm={() => {
-              setIsOpenReviewBottomSheet(true);
-            }}
-            onClickFeeStep={(index) => {
-              setCurrentFeeStepKey(index);
-            }}
+            feeOptionDatas={feeOptions}
+            currentSelectedFeeOptionKey={currentFeeStepKey}
+            errorMessage={errorMessage}
             onChangeGas={(gas) => {
-              setGasAmount(gas);
+              setCustomGasAmount(gas);
             }}
             onChangeGasPrice={(gasPrice) => {
               setCustomGasPrice(gasPrice);
@@ -502,6 +552,14 @@ export default function EVM({ coinId }: EVMProps) {
             onChangePriorityFee={(priorityFee) => {
               setCustomPriorityFeeAmount(priorityFee);
             }}
+            onClickFeeStep={(val) => {
+              setCurrentFeeStepKey(val);
+            }}
+            onClickConfirm={() => {
+              setIsOpenReviewBottomSheet(true);
+            }}
+            disableConfirm={isDisabled || !!errorMessage}
+            isLoading={isDisabled}
           />
         </>
       </BaseFooter>

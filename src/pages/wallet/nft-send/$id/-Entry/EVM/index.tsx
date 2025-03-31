@@ -13,8 +13,8 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.ts
 import ChainSelectBox from '@/components/ChainSelectBox';
 import IconButton from '@/components/common/IconButton';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
-import type { FeeOption } from '@/components/Fee/EVMFee/components/DynamicFeeSettingBottomSheet';
-import EVMFee from '@/components/Fee/EVMFee2';
+import EVMFee from '@/components/Fee/EVMFee';
+import type { BasicFeeOption, EIP1559FeeOption, FeeOption } from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { ERC721_ABI, ERC1155_ABI } from '@/constants/evm/abi';
@@ -29,7 +29,6 @@ import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
-import type { BasicFeeOption, EIP1559FeeOption } from '@/pages/popup/evm/transaction/-entry';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { ethersProvider } from '@/utils/ethereum/ethers';

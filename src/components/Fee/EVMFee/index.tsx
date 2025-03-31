@@ -1,34 +1,23 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import Tooltip from '@/components/common/Tooltip';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
-import type { UniqueChainId } from '@/types/chain';
-import type { FeeType } from '@/types/evm/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import FeeSettingBottomSheet from './components/FeeSettingBottomSheet';
 import { Container, EstimatedFeeTextContainer, FeeCustomButton, LeftContentContainer, NetworkFeeText, RightContentContainer, StyledButton } from './styled';
 import Base1300Text from '../../common/Base1300Text';
 import NumberTypo from '../../common/NumberTypo';
+import type { FeeOption } from '../EVMFee/components/FeeSettingBottomSheet';
+import FeeSettingBottomSheet from '../EVMFee/components/FeeSettingBottomSheet';
 
 type EVMFeeProps = {
-  feeStepKey: number;
-  gasRate?: string[];
-  gas: string;
-  chainId: UniqueChainId;
-  feeType: FeeType | null;
-  defaultFeeOption: {
-    maxBaseFeePerGas: string | undefined;
-    maxPriorityFeePerGas: string | undefined;
-    gasPrice: string | undefined;
-    gas: string;
-  };
+  feeOptionDatas: FeeOption[];
+  currentSelectedFeeOptionKey: number;
   disableConfirm?: boolean;
   isLoading?: boolean;
+  errorMessage?: string;
   onClickConfirm: () => void;
   onClickFeeStep: (gasRateKey: number) => void;
   onChangeGas: (gas: string) => void;
@@ -38,14 +27,11 @@ type EVMFeeProps = {
 };
 
 export default function EVMFee({
-  feeStepKey,
-  gasRate,
-  gas,
-  chainId,
-  feeType,
-  defaultFeeOption,
+  feeOptionDatas,
+  currentSelectedFeeOptionKey,
   disableConfirm,
   isLoading,
+  errorMessage,
   onClickConfirm,
   onClickFeeStep,
   onChangeGas,
@@ -57,26 +43,24 @@ export default function EVMFee({
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const parsedChainId = parseUniqueChainId(chainId);
-  const feeCoinId = getCoinId({
-    id: NATIVE_EVM_COIN_ADDRESS,
-    chainId: parsedChainId.id,
-    chainType: parsedChainId.chainType,
-  });
-
-  const { getEVMAccountAsset } = useGetAccountAsset({ coinId: feeCoinId });
-
-  const selectedFeeCoin = getEVMAccountAsset();
+  const selectedFeeOption = feeOptionDatas[currentSelectedFeeOptionKey] ? feeOptionDatas[currentSelectedFeeOptionKey] : null;
 
   const [isOpenFeeCustomBottomSheet, setIsOpenFeeCustomBottomSheet] = useState(false);
 
-  const decimals = selectedFeeCoin?.asset.decimals || 0;
-  const coinGeckoId = selectedFeeCoin?.asset.coinGeckoId || '';
-  const coinSymbol = selectedFeeCoin?.asset.symbol || '';
+  const decimals = selectedFeeOption?.decimals || 0;
+  const coinGeckoId = selectedFeeOption?.coinGeckoId || '';
+  const coinSymbol = selectedFeeOption?.symbol || '';
 
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
-  const feeGasRate = gasRate?.[feeStepKey] || '0';
+  const feeGasRate = useMemo(() => {
+    if (selectedFeeOption?.type === 'EIP-1559') {
+      return selectedFeeOption.maxBaseFeePerGas || '0';
+    }
+    return selectedFeeOption?.gasPrice || '0';
+  }, [selectedFeeOption]);
+
+  const gas = selectedFeeOption?.gas || '0';
 
   const baseFeeAmount = useMemo(() => times(feeGasRate, gas), [feeGasRate, gas]);
 
@@ -114,31 +98,32 @@ export default function EVMFee({
       </LeftContentContainer>
       <RightContentContainer>
         {
-          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.EVMFee.index.continue')}
-          </StyledButton>
+          <Tooltip title={errorMessage} varient="error" placement="top">
+            <div>
+              <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+                {t('components.Fee.EVMFee.index.continue')}
+              </StyledButton>
+            </div>
+          </Tooltip>
         }
       </RightContentContainer>
       <FeeSettingBottomSheet
-        gasRate={gasRate}
-        feeCoinId={feeCoinId}
-        gas={gas}
-        defaultFeeOption={defaultFeeOption}
-        currentSelectedFeeOptionKey={feeStepKey}
-        feeType={feeType}
+        feeOptionDatas={feeOptionDatas}
+        feeType={selectedFeeOption?.type || null}
+        currentSelectedFeeOptionKey={currentSelectedFeeOptionKey}
         open={isOpenFeeCustomBottomSheet}
         onClose={() => setIsOpenFeeCustomBottomSheet(false)}
         onChangeGas={(gas) => {
-          onChangeGas?.(gas);
+          onChangeGas(gas);
         }}
-        onChangeGasPrice={(gasPrice) => {
-          onChangeGasPrice?.(gasPrice);
+        onChangeGasPrice={(price) => {
+          onChangeGasPrice?.(price);
         }}
-        onChangeMaxBaseFee={(maxBaseFee) => {
-          onChangeMaxBaseFee?.(maxBaseFee);
+        onChangeMaxBaseFee={(fee) => {
+          onChangeMaxBaseFee?.(fee);
         }}
-        onChangePriorityFee={(priorityFee) => {
-          onChangePriorityFee?.(priorityFee);
+        onChangePriorityFee={(fee) => {
+          onChangePriorityFee?.(fee);
         }}
         onSelectOption={(val) => {
           onClickFeeStep(val);

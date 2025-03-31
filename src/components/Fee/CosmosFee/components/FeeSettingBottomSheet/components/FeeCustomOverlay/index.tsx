@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
-import { useNavigate } from '@tanstack/react-router';
 
 import CoinSelectBox from '@/components/CoinSelectBox';
 import Base1000Text from '@/components/common/Base1000Text';
@@ -13,7 +12,6 @@ import StandardInput from '@/components/common/StandardInput';
 import Header from '@/components/Header';
 import InformationPanel from '@/components/InformationPanel';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { Route as Home } from '@/pages/index';
 import type { CosmosFeeAsset } from '@/types/cosmos/fee';
 import { gt, isDecimal, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -32,7 +30,6 @@ import {
   Overlay,
 } from './styled';
 
-import HomeIcon from '@/assets/images/icons/Home14.svg';
 import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
 
 type FeeCustomOverlayProps = {
@@ -47,7 +44,6 @@ type FeeCustomOverlayProps = {
 
 export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasRate, feeAssets, feeCoinId, onClose, onConfirm }: FeeCustomOverlayProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
@@ -109,17 +105,6 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
               <IconButton onClick={reset}>
                 <IconContainer>
                   <ArrowBackIcon />
-                </IconContainer>
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  navigate({
-                    to: Home.to,
-                  });
-                }}
-              >
-                <IconContainer>
-                  <HomeIcon />
                 </IconContainer>
               </IconButton>
             </HeaderLeftContainer>
