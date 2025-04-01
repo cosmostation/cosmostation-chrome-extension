@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
       {
         name: 'replace-global-variable',
         writeBundle() {
-          const filePath = path.resolve(__dirname, 'dist-dev/js/inject.js');
+          const filePath = path.resolve(__dirname, `${outDir}/js/inject.js`);
           if (fs.existsSync(filePath)) {
             let content = fs.readFileSync(filePath, 'utf-8');
             content = content.replace(/_global/g, '_cosmostationGlobal');
