@@ -10,9 +10,10 @@ import type { Account as NewAccount, AccountNamesById, MnemonicAccount as NewMne
 import type { CustomCosmosAsset, CustomEvmAsset } from '@/types/asset';
 import type { CustomCosmosChain, CustomEvmChain } from '@/types/chain';
 import type { CurrencyType as NewCurrencyType } from '@/types/currency';
-import type { PrioritizedProvider } from '@/types/extension';
+import type { ExtensionStorageKeys, PrioritizedProvider } from '@/types/extension';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { initialState, notDeleteKeys } from '@/zustand/hooks/useExtensionStorageStore';
 import { setLoadingProgressBarStore } from '@/zustand/hooks/useLoadingProgressBar';
 
 export const ACCOUNT_TYPE = {
@@ -328,19 +329,25 @@ export async function isMigrationRequired_V1_0_0() {
   const { accounts } = legacyStorage;
 
   const isLegacyDataExist = !!accounts && accounts.length > 0;
-  const userAccounts = await getExtensionLocalStorage('userAccounts');
-  const prioritizedProvider = await getExtensionLocalStorage('prioritizedProvider');
 
-  const isMigrationComplete = (() => {
-    const firstMigrationComplete = !!userAccounts && userAccounts.length > 0;
-    const lastMigrationComplete = !!prioritizedProvider && Object.keys(prioritizedProvider).length > 0;
-
-    return firstMigrationComplete && lastMigrationComplete;
-  })();
+  const migrationStatus = await getExtensionLocalStorage('migrationStatus');
+  const isMigrationComplete = migrationStatus?.['1.0.0'];
 
   const isMigrationNeeded = isLegacyDataExist && !isMigrationComplete;
 
   return isMigrationNeeded;
+}
+
+export async function skipMigration() {
+  const extensionStorageKeys = Object.keys(initialState);
+  const shouldDeleteKeys = extensionStorageKeys.filter((key) => !notDeleteKeys.includes(key));
+
+  const resetPromises = shouldDeleteKeys.map((key) => setExtensionLocalStorage(key as ExtensionStorageKeys, initialState[key as ExtensionStorageKeys]));
+  await Promise.all(resetPromises);
+
+  await setExtensionLocalStorage('migrationStatus', {
+    '1.0.0': true,
+  });
 }
 
 export async function migrateData() {
@@ -393,9 +400,12 @@ export async function migrateData() {
 
       await migrateSelectedBitcoinNetworkId();
 
-      setLoadingProgressBarStore(100);
-
       await migrateProviders(legacyStorage);
+      await setExtensionLocalStorage('migrationStatus', {
+        '1.0.0': true,
+      });
+
+      setLoadingProgressBarStore(100);
     }
   } catch (error) {
     console.error('Fail to Migrate', error);

@@ -7,7 +7,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import LinearProgressBar from '@/components/common/LinearProgressBar';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
-import { isMigrationRequired_V1_0_0, migrateData } from '@/utils/storageMigration/v1/migration';
+import { isMigrationRequired_V1_0_0, migrateData, skipMigration } from '@/utils/storageMigration/v1/migration';
 import { toastError } from '@/utils/toast';
 import { setLoadingProgressBarStore, useLoadingProgressBarStore } from '@/zustand/hooks/useLoadingProgressBar';
 
@@ -24,8 +24,8 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
   const { progressValue } = useLoadingProgressBarStore((state) => state);
   const [isMigrateComplete, setIsMigrateComplete] = useState<boolean | undefined>();
   const [isFailToMigrate, setIsFailToMigrate] = useState(false);
+  const [failCount, setFailCount] = useState(0);
 
-  // TODO 에러 리트라이 3번 이상 실패 시 초기화 옵션 제공.
   const handleRetry = async () => {
     try {
       setIsMigrateComplete(false);
@@ -39,6 +39,17 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
 
       setLoadingProgressBarStore(0);
       setIsFailToMigrate(true);
+      setFailCount((previousState) => previousState + 1);
+    }
+  };
+
+  const handleSkipMigration = async () => {
+    try {
+      await skipMigration();
+
+      setIsMigrateComplete(true);
+    } catch {
+      toastError(t('components.Wrapper.components.MigrationChecker.index.migrationError'));
     }
   };
 
@@ -61,6 +72,7 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
 
         setLoadingProgressBarStore(0);
         setIsFailToMigrate(true);
+        setFailCount((previousState) => previousState + 1);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,6 +118,13 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
                 <RetryButton>
                   <Base1300Text variant="h4_B" onClick={handleRetry}>
                     {t('components.Wrapper.components.MigrationChecker.index.retry')}
+                  </Base1300Text>
+                </RetryButton>
+              )}
+              {failCount > 2 && (
+                <RetryButton>
+                  <Base1300Text variant="h4_B" onClick={handleSkipMigration}>
+                    {t('components.Wrapper.components.MigrationChecker.index.startWithMigration')}
                   </Base1300Text>
                 </RetryButton>
               )}

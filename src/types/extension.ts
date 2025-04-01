@@ -60,6 +60,8 @@ export type PrioritizedProvider = {
   aptos: boolean;
 };
 
+export type MigrationStatus = Record<string, boolean>;
+
 export interface ExtensionStorage {
   userAccounts: Account[];
   paramsV11: Record<string, V11Param>;
@@ -116,6 +118,7 @@ export interface ExtensionStorage {
   pinnedDappIds: number[];
   autoLockTimeInMinutes: LockupTimeOptions;
   autoLockTimeStampAt: number | null;
+  migrationStatus: MigrationStatus | null;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

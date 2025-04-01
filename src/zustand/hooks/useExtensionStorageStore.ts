@@ -57,9 +57,10 @@ export const initialState: ExtensionStorageState = {
   pinnedDappIds: [],
   autoLockTimeInMinutes: '30',
   autoLockTimeStampAt: null,
+  migrationStatus: null,
 };
 
-const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets'];
+export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {
