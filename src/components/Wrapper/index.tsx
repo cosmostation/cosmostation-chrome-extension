@@ -5,6 +5,7 @@ import NavigationGate from './components/NavigationGate';
 import RefetchController from './components/RefetchController';
 import Scaffold from './components/Scaffold';
 import ScrollProvider from './components/ScrollProvider';
+import SidePanelStateObserver from './components/SidePanelNavigation';
 import AdPopoverIndex from '../Overlay/AdPopoverIndex';
 import LoadingOverlay from '../Overlay/Loading';
 
@@ -16,19 +17,21 @@ export default function Wrapper({ children }: WrapperProps) {
   return (
     <Scaffold>
       <MigrationChecker>
-        <Init>
-          <Lock>
-            <RefetchController>
-              <NavigationGate>
-                <>
-                  <ScrollProvider>{children}</ScrollProvider>
-                  <LoadingOverlay />
-                  <AdPopoverIndex />
-                </>
-              </NavigationGate>
-            </RefetchController>
-          </Lock>
-        </Init>
+        <SidePanelStateObserver>
+          <Init>
+            <Lock>
+              <RefetchController>
+                <NavigationGate>
+                  <>
+                    <ScrollProvider>{children}</ScrollProvider>
+                    <LoadingOverlay />
+                    <AdPopoverIndex />
+                  </>
+                </NavigationGate>
+              </RefetchController>
+            </Lock>
+          </Init>
+        </SidePanelStateObserver>
       </MigrationChecker>
     </Scaffold>
   );

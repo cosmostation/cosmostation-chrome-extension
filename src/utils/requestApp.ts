@@ -1,6 +1,7 @@
 import { debounce } from 'lodash';
 
-// import { sendMessage } from '@/libs/extension';
+import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
 
 import { getExtensionLocalStorage, setExtensionLocalStorage } from './storage';
@@ -10,37 +11,53 @@ let localQueues: RequestQueue[] = [];
 
 export const setQueues = debounce(
   async () => {
-    const queues = localQueues;
-    localQueues = [];
+    const queuesBackup = [...localQueues];
+    try {
+      const queues = localQueues;
+      localQueues = [];
 
-    const currentRequestQueue = await getExtensionLocalStorage('requestQueue');
+      const currentRequestQueue = await getExtensionLocalStorage('requestQueue');
 
-    // FIXME 사이드패널 사인요청 팝업 오픈안되는 이슈 해결전까지 주석처리
-    // const isSidePanelDefault = (await chrome.sidePanel.getPanelBehavior()).openPanelOnActionClick;
+      let sidePanelStatusResponse;
+      try {
+        if (__APP_BROWSER__ === 'chrome') {
+          sidePanelStatusResponse = await chrome.runtime.sendMessage({ type: 'side-panel-state' });
+        } else {
+          sidePanelStatusResponse = await browser.runtime.sendMessage({ type: 'side-panel-state' });
+        }
+      } catch (e) {
+        console.error(e);
+      }
 
-    // const lastQueueItem = queues[queues.length - 1];
-    // if (isSidePanelDefault) {
-    //   await sendMessage({
-    //     target: 'CONTENT',
-    //     method: 'openSidePanel',
-    //     origin: lastQueueItem.origin,
-    //     requestId: lastQueueItem.requestId,
-    //     tabId: lastQueueItem.tabId,
-    //     params: {
-    //       id: lastQueueItem.id,
-    //     },
-    //   });
-    //   await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);
-    // } else {
+      const isSidePanelActive = sidePanelStatusResponse?.type === 'side-panel-state' && sidePanelStatusResponse?.message?.enabled === true;
 
-    // }
-
-    const window = await openPopupWindow();
-
-    await setExtensionLocalStorage('requestQueue', [
-      ...currentRequestQueue.map((item) => ({ ...item, windowId: window?.id })),
-      ...queues.map((item) => ({ ...item, windowId: window?.id })),
-    ]);
+      if (isSidePanelActive) {
+        await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);
+      } else {
+        const window = await openPopupWindow();
+        await setExtensionLocalStorage('requestQueue', [
+          ...currentRequestQueue.map((item) => ({ ...item, windowId: window?.id })),
+          ...queues.map((item) => ({ ...item, windowId: window?.id })),
+        ]);
+      }
+    } catch {
+      queuesBackup.forEach((queue) =>
+        sendMessage({
+          target: 'CONTENT',
+          method: 'responseApp',
+          origin,
+          requestId: queue.requestId,
+          tabId: queue.tabId,
+          params: {
+            id: queue.requestId,
+            error: {
+              code: RPC_ERROR.INTERNAL,
+              message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+            },
+          },
+        }),
+      );
+    }
   },
   500,
   { leading: true },
