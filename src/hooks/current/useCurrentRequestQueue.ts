@@ -1,8 +1,9 @@
 import { useNavigate } from '@tanstack/react-router';
 
-// import { Route as Home } from '@/pages/index';
+import { Route as Home } from '@/pages/index';
 import type { RequestQueue } from '@/types/extension';
-import { closePopupWindow, closeSidePanel } from '@/utils/view/controlView';
+import { closePopupWindow } from '@/utils/view/controlView';
+import { isSidePanelView } from '@/utils/view/sidepanel';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentRequestQueue() {
@@ -18,11 +19,9 @@ export function useCurrentRequestQueue() {
     await updateExtensionStorageStore('requestQueue', newQueues);
 
     if (newQueues.length === 0) {
-      const isSidePanelDefault = (await chrome.sidePanel.getPanelBehavior()).openPanelOnActionClick;
-
-      // FIXME 요청이 완료된 이후 비교적 창이 느리게 내려가는 감이 있음.
-      if (isSidePanelDefault) {
-        await closeSidePanel();
+      if (isSidePanelView()) {
+        navigate({ to: path ?? Home.to });
+        return;
       } else {
         await closePopupWindow();
       }
