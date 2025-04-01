@@ -14,7 +14,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { toPercentages } from '@/utils/string';
@@ -90,7 +90,7 @@ export default function CoinSelect({
   }, [coinList, data?.flatAccountAssets, variant]);
 
   const baseChainList = useMemo(
-    () => chainList || getfilteredChainsByChainId(baseCoinList, { disableDupeEthermint: isDisableDupeEthermint }),
+    () => chainList || getFilteredChainsByChainId(baseCoinList, { disableDupeEthermint: isDisableDupeEthermint }),
     [baseCoinList, chainList, isDisableDupeEthermint],
   );
 

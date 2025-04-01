@@ -28,7 +28,7 @@ import { Route as ImportToken } from '@/pages/manage-assets/import/assets';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
 import { gt, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
@@ -128,7 +128,7 @@ export default function Entry() {
 
   const baseCoinList = useMemo(() => currentAccountAllAssets?.flatAccountAssets || [], [currentAccountAllAssets?.flatAccountAssets]);
 
-  const chainList = useMemo(() => getfilteredChainsByChainId(baseCoinList), [baseCoinList]);
+  const chainList = useMemo(() => getFilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
   const currentSelectedChain = useMemo(
     () => chainList.find((item) => isMatchingUniqueChainId(item, currentSelectedChainId)),

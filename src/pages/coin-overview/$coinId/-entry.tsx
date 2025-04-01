@@ -18,7 +18,7 @@ import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -99,7 +99,7 @@ export default function Entry({ coinId }: EntryProps) {
     return sortedAssets?.slice(0, viewLimit) || [];
   }, [baseCoinList, coinGeckoPrice, userCurrencyPreference, currentSelectedChainId, debouncedSearch.length, search, sortOption, viewLimit]);
 
-  const chainList = useMemo(() => getfilteredChainsByChainId(baseCoinList), [baseCoinList]);
+  const chainList = useMemo(() => getFilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
   const currentSelectedChain = useMemo(
     () => chainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),

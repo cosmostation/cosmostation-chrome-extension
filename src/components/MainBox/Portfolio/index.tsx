@@ -15,7 +15,7 @@ import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
-import { getFilteredAssetsByChainId, getfilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -70,7 +70,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
 
-  const chainList = useMemo(() => getfilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
+  const chainList = useMemo(() => getFilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
 
   useEffect(() => {
     setIsProcessing(true);

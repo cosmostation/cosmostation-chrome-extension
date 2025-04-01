@@ -16,25 +16,26 @@ export function filterAccountAssetByChainId<T extends FlatAccountAssets>(account
   );
 }
 
-export function getfilteredChainsByChainId<T extends FlatAccountAssets>(accountAssets?: T[], option?: { disableDupeEthermint?: boolean }) {
-  if (!accountAssets || accountAssets.length === 0) return [];
+export function getFilteredChainsByChainId<T extends FlatAccountAssets>(accountAssets?: T[], option?: { disableDupeEthermint?: boolean }) {
+  if (!accountAssets?.length) return [];
+
+  const ethermintEVMChainIdMap = new Map<string, boolean>();
+  accountAssets.forEach((asset) => {
+    if (asset.chain.chainType === 'evm' && asset.chain.isCosmos) {
+      ethermintEVMChainIdMap.set(asset.chain.id, true);
+    }
+  });
 
   return accountAssets
-    .filter(
-      (asset, index, self) =>
-        self.findIndex((t) => {
-          if (
-            !option?.disableDupeEthermint &&
-            asset.address.accountType.pubkeyStyle === 'keccak256' &&
-            asset.chain.chainType === 'cosmos' &&
-            asset.chain.isEvm
-          ) {
-            return asset.chain.id !== t.chain.id;
-          } else {
-            return isSameChain(t.chain, asset.chain);
-          }
-        }) === index,
-    )
+    .filter((asset, index, self) => {
+      const isEthermintCosmosChain = asset.address.accountType.pubkeyStyle === 'keccak256' && asset.chain.chainType === 'cosmos' && asset.chain.isEvm;
+      const isEthermintEVMChainExisting = ethermintEVMChainIdMap.has(asset.chain.id);
+      if (!option?.disableDupeEthermint && isEthermintCosmosChain && isEthermintEVMChainExisting) {
+        return false;
+      }
+
+      return self.findIndex((t) => isSameChain(t.chain, asset.chain)) === index;
+    })
     .map((item) => item.chain);
 }
 
