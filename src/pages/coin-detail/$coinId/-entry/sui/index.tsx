@@ -4,7 +4,6 @@ import { useNavigate } from '@tanstack/react-router';
 import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
-import { SUI_COIN_TYPE } from '@/constants/sui';
 import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
@@ -32,6 +31,8 @@ export default function Sui({ coinId }: SuiProps) {
 
   const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
 
+  const isSuiMainCoin = parseCoinId(coinId).id === selectedCoin?.chain.mainAssetDenom;
+
   return (
     <BaseBody>
       <StyledEdgeAligner>
@@ -39,7 +40,7 @@ export default function Sui({ coinId }: SuiProps) {
 
         <SectionWrapper>
           <SectionContainer>
-            {parseCoinId(coinId).id === SUI_COIN_TYPE && (
+            {isSuiMainCoin && (
               <StakePromotion
                 symbol={symbol}
                 apr={averageAPY}
@@ -54,9 +55,11 @@ export default function Sui({ coinId }: SuiProps) {
               />
             )}
           </SectionContainer>
-          <SectionContainer>
-            <AmountDetail coinId={coinId} />
-          </SectionContainer>
+          {isSuiMainCoin && (
+            <SectionContainer>
+              <AmountDetail coinId={coinId} />
+            </SectionContainer>
+          )}
           <SectionContainer
             style={{
               flex: 1,

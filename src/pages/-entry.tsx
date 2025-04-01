@@ -115,48 +115,32 @@ export default function Entry() {
     search,
   ]);
 
-  const hideSmallValueAssets = useMemo(() => {
-    if (!isBalanceVisible) {
-      return computedAssetValues.filter((coin) => {
-        return gte(coin.value, '0.001');
-      });
-    }
+  const filteredSortedAssets = useMemo(() => {
+    const visibleAssets = isBalanceVisible ? computedAssetValues : computedAssetValues.filter((coin) => gte(coin.value, '0.001'));
 
-    return computedAssetValues;
-  }, [computedAssetValues, isBalanceVisible]);
+    const sortedAssets = [...visibleAssets].sort((a, b) => {
+      if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+        return Number(minus(b.value, a.value));
+      }
+      if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+        return a.asset.symbol.localeCompare(b.asset.symbol);
+      }
+      return 0;
+    });
 
-  const sortedAssets = useMemo(
-    () =>
-      hideSmallValueAssets.sort((a, b) => {
-        if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-          return Number(minus(b.value, a.value));
-        }
-
-        if (dashboardCoinSortKey === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-          return a.asset.symbol.localeCompare(b.asset.symbol);
-        }
-
-        return 0;
-      }),
-    [dashboardCoinSortKey, hideSmallValueAssets],
-  );
-
-  const filteredAssetsBySearch = useMemo(() => {
-    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
+    const filteredByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
 
     if (!!search && debouncedSearch.length > 1) {
-      return (
-        filterdByChain
-          .filter((asset) => {
-            const condition = [asset.asset.symbol, asset.asset.id];
-
-            return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-          })
-          .slice(0, viewLimit) || []
-      );
+      return filteredByChain
+        .filter((asset) => {
+          const condition = [asset.asset.symbol, asset.asset.id];
+          return condition.some((item) => item.toLowerCase().includes(debouncedSearch.toLowerCase()));
+        })
+        .slice(0, viewLimit);
     }
-    return filterdByChain.slice(0, viewLimit);
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets, viewLimit]);
+
+    return filteredByChain.slice(0, viewLimit);
+  }, [computedAssetValues, isBalanceVisible, dashboardCoinSortKey, currentSelectedChainId, debouncedSearch, search, viewLimit]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -241,10 +225,10 @@ export default function Entry() {
                 </ManageCryptoContainer>
               </StickyTabPanelContentsContainer>
               <CoinButtonWrapper>
-                {isLoading || (filteredAssetsBySearch && filteredAssetsBySearch.length === 0) ? (
+                {isLoading || (filteredSortedAssets && filteredSortedAssets.length === 0) ? (
                   <SkeletonCoinList />
                 ) : (
-                  filteredAssetsBySearch.map((coin) => {
+                  filteredSortedAssets.map((coin) => {
                     const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
 
                     const isGroupToken = gt(coin.counts || '0', '1');
@@ -272,7 +256,7 @@ export default function Entry() {
                     );
                   })
                 )}
-                {filteredAssetsBySearch?.length > viewLimit - 1 && (
+                {(filteredSortedAssets?.length || 0) > viewLimit - 1 && (
                   <IntersectionObserver
                     onIntersect={() => {
                       setViewLimit((limit) => limit + 30);
