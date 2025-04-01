@@ -2549,7 +2549,8 @@
                 "Interact": {
                   "index": {
                     "contractAddress": "Contract",
-                    "data": "Data"
+                    "data": "Data",
+                    "function": "Function"
                   }
                 },
                 "NFT": {

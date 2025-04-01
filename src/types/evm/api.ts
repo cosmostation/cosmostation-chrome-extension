@@ -31,3 +31,19 @@ export interface EvmEstimateGasResponse extends EvmRpc<string> {}
 export interface EvmTxInfoResponse extends EvmRpc<TransactionReceipt> {}
 
 export interface EvmTransactionCountResponse extends EvmRpc<string> {}
+
+export interface ParseFuntionNameResponse {
+  count: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: (
+    | {
+        id: number;
+        created_at: string;
+        text_signature: string;
+        hex_signature: string;
+        bytes_signature: string;
+      }
+    | undefined
+  )[];
+}
