@@ -116,6 +116,25 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
     )
   ).filter((item) => item !== undefined);
 
+  const width = 375;
+  const height = 640;
+
+  let left = 0;
+  let top = 0;
+
+  try {
+    const res = await extension.windows.getLastFocused();
+
+    if (res.width && res.left) {
+      left = Math.round(res.width - width + res.left);
+    }
+    if (res.height && res.top) {
+      top = res.top;
+    }
+  } catch (e) {
+    console.error(`Failed to determine popup position: ${(e as Error)?.message ?? e}`);
+  }
+
   return new Promise((res, rej) => {
     if (currentWindows.length > 0) {
       res(currentWindows[0]);
@@ -125,11 +144,8 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
       return;
     }
 
-    const width = 375;
-    const height = 640;
-
     if (__APP_BROWSER__ === 'chrome') {
-      chrome.windows.create({ width, height, url, type: 'popup' }, (window) => {
+      chrome.windows.create({ width, height, top, left, url, type: 'popup' }, (window) => {
         void (async () => {
           if (extension.runtime.lastError) {
             rej(extension.runtime.lastError);
@@ -139,7 +155,7 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
         })();
       });
     } else {
-      void browser.windows.create({ width, height, url, type: 'popup' }).then((window) => {
+      void browser.windows.create({ width, height, top, left, url, type: 'popup' }).then((window) => {
         void (async () => {
           if (extension.runtime.lastError) {
             rej(extension.runtime.lastError);
