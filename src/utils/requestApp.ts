@@ -21,15 +21,15 @@ export const setQueues = debounce(
       let sidePanelStatusResponse;
       try {
         if (__APP_BROWSER__ === 'chrome') {
-          sidePanelStatusResponse = await chrome.runtime.sendMessage({ type: 'side-panel-state' });
+          sidePanelStatusResponse = await chrome.runtime.sendMessage({ type: 'sidePanelState' });
         } else {
-          sidePanelStatusResponse = await browser.runtime.sendMessage({ type: 'side-panel-state' });
+          sidePanelStatusResponse = await browser.runtime.sendMessage({ type: 'sidePanelState' });
         }
       } catch (e) {
         console.error(e);
       }
 
-      const isSidePanelActive = sidePanelStatusResponse?.type === 'side-panel-state' && sidePanelStatusResponse?.message?.enabled === true;
+      const isSidePanelActive = sidePanelStatusResponse?.type === 'sidePanelState' && sidePanelStatusResponse?.message?.enabled === true;
 
       if (isSidePanelActive) {
         await setExtensionLocalStorage('requestQueue', [...currentRequestQueue.map((item) => ({ ...item })), ...queues.map((item) => ({ ...item }))]);

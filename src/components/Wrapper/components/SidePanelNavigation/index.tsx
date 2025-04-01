@@ -12,7 +12,7 @@ export default function SidePanelStateObserver({ children }: SidePanelStateObser
     extension.runtime.onMessage.addListener((request, _, sendResponse) => {
       if (!request?.type) return true;
 
-      if (request.type === 'side-panel-state') {
+      if (request.type === 'sidePanelState') {
         if (isSidePanelView()) {
           try {
             sendResponse({ type: request.type, message: { enabled: true } });
