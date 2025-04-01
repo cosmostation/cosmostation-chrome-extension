@@ -704,7 +704,9 @@
       "manageCrypto": "Manage Crypto",
       "valueHighOrder": "Value High Order",
       "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
-      "searchPlaceholder": "Search Crypto (Ex. BTC)"
+      "searchPlaceholder": "Search Crypto (Ex. BTC)",
+      "noTokensDescription": "Try adjusting your search or filters",
+      "noTokens": "No Assets Found"
     },
     "account": {
       "initial": {

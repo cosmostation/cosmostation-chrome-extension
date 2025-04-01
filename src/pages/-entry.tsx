@@ -13,6 +13,7 @@ import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import { Tab, Tabs } from '@/components/common/Tab';
+import EmptyAsset from '@/components/EmptyAsset';
 import PortFolio from '@/components/MainBox/Portfolio';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
@@ -38,6 +39,7 @@ import {
   // CarouselImg,
   CoinButtonWrapper,
   Container,
+  EmptyAssetContainer,
   FilterContaienr,
   ManageCryptoContainer,
   MarginLeftTypography,
@@ -46,6 +48,7 @@ import {
   StyledTabPanel,
 } from './-styled';
 
+import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
 // import testAdImg from '@/assets/images/test-ad.png';
@@ -240,9 +243,9 @@ export default function Entry() {
                 </ManageCryptoContainer>
               </StickyTabPanelContentsContainer>
               <CoinButtonWrapper>
-                {isLoading || (filteredAssetsBySearch && filteredAssetsBySearch.length === 0) ? (
+                {isLoading ? (
                   <SkeletonCoinList />
-                ) : (
+                ) : filteredAssetsBySearch.length > 0 ? (
                   filteredAssetsBySearch.map((coin) => {
                     const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
 
@@ -270,6 +273,10 @@ export default function Entry() {
                       />
                     );
                   })
+                ) : (
+                  <EmptyAssetContainer>
+                    <EmptyAsset icon={<NoListIcon />} title={t('pages.index.noTokens')} subTitle={t('pages.index.noTokensDescription')} />
+                  </EmptyAssetContainer>
                 )}
                 {(filteredAssetsBySearch?.length || 0) > viewLimit - 1 && (
                   <IntersectionObserver

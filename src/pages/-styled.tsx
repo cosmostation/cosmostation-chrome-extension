@@ -77,6 +77,7 @@ export const ManageCryptoContainer = styled('div')({
 });
 
 export const CoinButtonWrapper = styled('div')({
+  flex: '1',
   width: '100%',
 });
 
@@ -94,7 +95,7 @@ export const StickyTabPanelContentsContainer = styled('div')(({ theme }) => ({
   width: '100%',
   height: 'fit-content',
   position: 'sticky',
-  top: '7.8rem',
+  top: '7.9rem',
 
   padding: '0.8rem 1.2rem',
 
@@ -103,3 +104,14 @@ export const StickyTabPanelContentsContainer = styled('div')(({ theme }) => ({
   zIndex: 1,
   backgroundColor: theme.palette.color.base50,
 }));
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  height: '100%',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '2rem 0',
+});
