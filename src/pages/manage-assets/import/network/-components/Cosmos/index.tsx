@@ -77,7 +77,6 @@ export default function Cosmos() {
     reValidateMode: 'onSubmit',
   });
 
-  // FIXME 현재 가스레이트값 입력 정상처리 안됨. 수정필요.
   const gasRateError = useMemo(() => {
     const error = errors[''];
     if (error?.type === 'object.and') {

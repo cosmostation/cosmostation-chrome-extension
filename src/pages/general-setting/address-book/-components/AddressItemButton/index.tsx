@@ -22,7 +22,6 @@ type AddressItemButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes
 export default function AddressItemButton({ id, address, label, memo, chainName, chainImage, onSelectOption, ...remainder }: AddressItemButtonProps) {
   const { t } = useTranslation();
 
-  // FIXME 조건 수정 필요
   const isBadge = !!memo;
 
   const badgeContent = (() => {

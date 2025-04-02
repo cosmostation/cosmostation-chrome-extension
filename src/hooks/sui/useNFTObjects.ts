@@ -46,9 +46,7 @@ export function useNFTObjects({ coinId, options, config }: UseNFTObjectsProps) {
   });
 
   const nftObjects = useMemo(() => {
-    const suiObjectResponses = objects
-      ?.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), [])
-      .filter((item) => item);
+    const suiObjectResponses = objects?.reduce((acc: SuiObjectResponse[], item) => (item ? [...acc, item] : acc), []).filter((item) => item);
 
     return suiObjectResponses?.filter((item) => getObjectDisplay(item)?.data) || [];
   }, [objects]);
@@ -87,7 +85,7 @@ export function useNFTObjects({ coinId, options, config }: UseNFTObjectsProps) {
 
   const kioskNFTObjects = useMemo(() => {
     const suiKioskObjectResponses = kioskObjects
-      ? kioskObjects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
+      ? kioskObjects.reduce((acc: SuiObjectResponse[], item) => (item ? [...acc, item] : acc), []).filter((item) => item)
       : [];
 
     return suiKioskObjectResponses.filter((item) => getObjectDisplay(item)?.data) || [];

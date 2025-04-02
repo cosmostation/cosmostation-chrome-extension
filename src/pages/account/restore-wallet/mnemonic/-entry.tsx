@@ -214,8 +214,6 @@ export default function Entry() {
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
 
-      // TODO
-      // await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
       await loadExtensionStorageStoreFromStorage();
 
       await refetchAccountAssets();

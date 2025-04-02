@@ -66,8 +66,6 @@ export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: Co
   return signatureBuffer;
 }
 
-// NOTE 예전에는  PUBLIC_KEY_TYPE.INJ_SECP256K1이 값들을 썼었는데 이걸 레거시 호환을 시켜줘야하는가?.. 흠.
-// NOTE 케플러는 어떻게 내려주는지 확인해보고 케플러 인터페이스쪽에만 수정을 해주던가 해야지.
 export const getPublicKeyType = (pubkeyType: string) => {
   if (pubkeyType === '/injective.crypto.v1beta1.ethsecp256k1.PubKey') {
     return PUBLIC_KEY_TYPE.INJ_SECP256K1;

@@ -35,7 +35,6 @@ type EntryProps = {
   chain: CosmosChain;
 };
 
-// TODO 기존에 등록되 있는 토큰은 화이트리스트에 추가, 없던 코인은 새로 추가
 export default function Entry({ request, chain }: EntryProps) {
   const { t } = useTranslation();
 

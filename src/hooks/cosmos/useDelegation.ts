@@ -32,7 +32,6 @@ export function useDelegation({ coinId, config }: UseDelegationProps) {
     return delegationEndpoints;
   }, [asset?.address.address, asset?.chain.lcdUrls, coinId]);
 
-  // FIXME 이 방법은 매 요청마다 불필요한 요청이 포함되긴 함.  -> 성공하기 전 엔드포인트 모두에 불필요하게 요청하고있으니꼐
   const fetcher = async (index = 0) => {
     try {
       if (!asset?.chain.isSupportStaking) return null;

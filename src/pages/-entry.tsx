@@ -8,7 +8,6 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import CheckLegacyAddressBalanceBottomSheet from '@/components/CheckLegacyAddressBalanceBottomSheet';
 import CoinWithMarketTrendButton from '@/components/CoinWithMarketTrendButton';
-// import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
@@ -35,8 +34,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import NFTList from './-components/NFTList';
 import SkeletonCoinList from './-components/SkeletonCoinList';
 import {
-  // AdCarouselContainer,
-  // CarouselImg,
   CoinButtonWrapper,
   Container,
   EmptyAssetContainer,
@@ -50,8 +47,6 @@ import {
 
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
-
-// import testAdImg from '@/assets/images/test-ad.png';
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -214,13 +209,6 @@ export default function Entry() {
                     }}
                   />
                 </FilterContaienr>
-                {/* NOTE Remove */}
-                {/* <AdCarouselContainer>
-                  <Carousel>
-                    <CarouselImg src={testAdImg} />
-                    <CarouselImg src={testAdImg} />
-                  </Carousel>
-                </AdCarouselContainer> */}
                 <ManageCryptoContainer>
                   <CheckBoxTextButton
                     isChecked={isHideSmalValue}

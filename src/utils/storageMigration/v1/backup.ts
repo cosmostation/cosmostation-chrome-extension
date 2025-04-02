@@ -59,14 +59,6 @@ export async function backupDataWithDownload() {
   downloadLink.href = url;
   downloadLink.download = filename;
   downloadLink.click();
-
-  //     const blob = new Blob([json], { type: "application/json" });
-  //     const url = URL.createObjectURL(blob);
-  //     chrome.downloads.download({
-  //       url: url,
-  //       filename: "backup.json",
-  //     });
-  //   });
 }
 
 export async function ensureBackupData(): Promise<boolean> {

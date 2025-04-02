@@ -8,12 +8,9 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.ts
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
-// import Fee from '@/components/Fee';
 import InformationPanel from '@/components/InformationPanel/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
-import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
-import { toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
@@ -41,7 +38,6 @@ export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { data } = useAccountAssets();
 
@@ -72,21 +68,14 @@ export default function Entry({ coinId }: EntryProps) {
       return data?.aptosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
 
-    // TODO bitcoin...
     return undefined;
   })();
 
-  const { currentFromCoinSymbol, currentFromCoinDecimals, currentFromCoinPrice } = (() => {
+  const { currentFromCoinSymbol } = (() => {
     const coinSymbol = currentFromCoin?.asset.symbol || '';
-    const coinDecimals = currentFromCoin?.asset.decimals || 0;
-
-    const coinGeckoId = currentFromCoin?.asset.coinGeckoId || '';
-    const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
     return {
       currentFromCoinSymbol: coinSymbol,
-      currentFromCoinDecimals: coinDecimals,
-      currentFromCoinPrice: coinPrice,
     };
   })();
 
@@ -115,30 +104,12 @@ export default function Entry({ coinId }: EntryProps) {
       return data?.aptosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
     }
 
-    // TODO bitcoin...
     return undefined;
   })();
-
-  const baseAvailableAmount = currentFromCoin?.balance || '0';
-  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, currentFromCoinDecimals);
-
-  console.log('🚀 ~ Entry ~ currentFromCoinPrice:', currentFromCoinPrice);
-  console.log('🚀 ~ Entry ~ displayAvailableAmount:', displayAvailableAmount);
-
-  // FIXME: 밸런스 그대로를 입력할 지 예상 가스비를 제외한 값을 맥스값으로 설정할 지 결정 필요.
-  // const maxAmount = '1000000000000';
-
-  // const [recipientAddress, setRecipientAddress] = useState('');
-  // const [sendDisplayAmount, setSendDisplayAmount] = useState('');
-
-  // const displaySendAmountPrice = sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0';
 
   const [inputDisplayAmount, setInputDisplayAmount] = useState<string>('');
 
   const estimatedMinReceivedAmount = '0.01';
-
-  // TODO
-  // const recipientChainList =
 
   const informTitleErrorMessage = useMemo(() => {
     return t('pages.wallet.swap.$coinId.entry.invalidFee');
@@ -223,11 +194,6 @@ export default function Entry({ coinId }: EntryProps) {
           <EdgeAligner>
             <Divider />
           </EdgeAligner>
-          {/* <Fee
-            onClickConfirm={() => {
-              setIsOpenReviewBottomSheet(true);
-            }}
-          /> */}
         </>
       </BaseFooter>
       <ReviewBottomSheet

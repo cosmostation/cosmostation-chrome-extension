@@ -32,7 +32,6 @@ export default function Entry() {
   useEffect(() => {
     const handleRequestAccount = async () => {
       try {
-        // FIXME 락걸린 상태에서 + 오리진 없는 경우에서 계정 연결 요청 완료 후 팝업 내리는 시간이 오래걸림.
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
           const { tabId, requestId, origin, params } = currentRequestQueue;
 

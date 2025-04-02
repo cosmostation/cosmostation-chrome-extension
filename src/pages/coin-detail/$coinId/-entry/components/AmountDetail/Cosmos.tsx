@@ -83,7 +83,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
             </BalanceDisplay>
           </ValueText>
         </DetailRow>
-        {/* FIXME 현재는 60패스에서 코스모스쪽 코인을 디리스팅하고 있어서 카바 60이면 얘 안나옴 */}
         {selectedCoin?.chain.id === KAVA_CHAINLIST_ID && (
           <DetailRow>
             <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.incentive')}</LabelText>

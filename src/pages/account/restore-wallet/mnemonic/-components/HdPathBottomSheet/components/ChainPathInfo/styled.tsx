@@ -21,7 +21,6 @@ export const LeftContainer = styled('div')({
   textAlign: 'left',
 });
 
-// TODO Base1300Text로 교체
 export const ChainNameText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1300,
 

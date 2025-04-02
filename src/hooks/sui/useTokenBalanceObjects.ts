@@ -45,9 +45,7 @@ export function useTokenBalanceObjects({ coinId, options, config }: UseTokenBala
   });
 
   const tokenBalanceObjects = useMemo<TokenBalanceObject[]>(() => {
-    const suiObjectResponses = objects
-      ?.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), [])
-      .filter((item) => item);
+    const suiObjectResponses = objects?.reduce((acc: SuiObjectResponse[], item) => (item ? [...acc, item] : acc), []).filter((item) => item);
 
     const coinObjectsTypeList = Array.from(
       new Set([

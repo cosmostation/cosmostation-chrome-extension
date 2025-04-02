@@ -13,8 +13,6 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps) {
-  //   const { t } = useTranslation();
-
   return (
     <BaseLayout
       header={

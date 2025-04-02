@@ -29,7 +29,6 @@ export async function getPassword() {
   return decryptedPassword;
 }
 
-// test
 export async function addAccount(account: Account) {
   const storedAccounts = await getExtensionLocalStorage('userAccounts');
 

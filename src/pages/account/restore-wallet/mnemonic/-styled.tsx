@@ -156,7 +156,6 @@ export const HdPathContainer = styled('div')({
   marginBottom: '2.4rem',
 });
 
-// TODO Base1300 컴포넌트로 교체 필요.
 export const HdPathDescription = styled(Typography)(({ theme }) => ({
   marginRight: '0.6rem',
   color: theme.palette.color.base1300,

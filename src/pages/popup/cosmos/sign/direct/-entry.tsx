@@ -45,7 +45,6 @@ type EntryProps = {
   chain: CosmosChain;
 };
 
-// TODO 카바케이스 및 커스텀 체인에 대한 테스트 필요.
 export default function Entry({ request, chain }: EntryProps) {
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();

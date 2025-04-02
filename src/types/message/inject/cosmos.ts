@@ -217,33 +217,6 @@ export interface CosSignDirectResponse {
   signed_doc: SignDirectDoc;
 }
 
-// export interface SignDirectDocWebToApp {
-//   chain_id: string;
-//   body_bytes: string;
-//   auth_info_bytes: string;
-//   account_number: string;
-// }
-
-// export interface CosSignDirectWebToAppParams extends CosSignOptions {
-//   chainName: string;
-//   doc: SignDirectDocWebToApp;
-// }
-
-// export interface CosSignDirectWebToApp extends RequestBase {
-//   chainType: Extract<ChainType, 'cosmos'>;
-//   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SIGN_DIRECT;
-//   params: CosSignDirectWebToAppParams;
-// }
-
-// export type CosSignDirectResponseWebToApp = {
-//   signature: string;
-//   pub_key: {
-//     type: PublicKeyType;
-//     value: string;
-//   };
-//   signed_doc: SignDirectDocWebToApp;
-// };
-
 export interface CosAddTokensCW20Token {
   contractAddress: string;
   imageURL?: string;

@@ -1,5 +1,4 @@
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import AptosAccountTxHistory from './components/Aptos';
 import BitcoinAccountTxHistory from './components/Bitcoin';
@@ -12,10 +11,10 @@ type AccountTxHistoryProps = {
 };
 
 export default function AccountTxHistory({ coinId }: AccountTxHistoryProps) {
-  const { data } = useAccountAssets();
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAccountAsset } = useGetAccountAsset({ coinId: coinId || '' });
 
-  // NOTE Full History
+  const currentCoin = getAccountAsset();
+
   if (!coinId) return null;
 
   if (currentCoin?.asset.chainType === 'cosmos' || (currentCoin?.chain.chainType === 'evm' && currentCoin.chain.isCosmos)) {

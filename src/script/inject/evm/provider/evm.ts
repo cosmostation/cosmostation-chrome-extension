@@ -100,12 +100,5 @@ export class CosmostaionEthereum implements EthereumProvider {
     }
   }
 
-  // send = () => {
-  //   console.log('send');
-  // };
-  // sendAsync = () => {
-  //   console.log('send');
-  // };
-
   enable = () => evmRequestApp({ method: 'eth_requestAccounts' }) as Promise<EthRequestAccountsResponse>;
 }

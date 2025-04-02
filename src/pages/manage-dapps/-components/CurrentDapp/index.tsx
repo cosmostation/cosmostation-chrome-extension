@@ -1,4 +1,3 @@
-// import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1000Text from '@/components/common/Base1000Text';

@@ -112,7 +112,6 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
   const { address, label } = watch();
   const isButtonEnabled = address && label;
 
-  // TODO : Implement submit function
   const submit = async (data: AddressBookForm) => {
     if (!currentChainId) {
       toastError(t('pages.general-setting.address-book.add-address.entry.failedToGetChainId'));

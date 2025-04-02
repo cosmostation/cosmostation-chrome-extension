@@ -1,5 +1,5 @@
 import { KioskClient, Network } from '@mysten/kiosk';
-import type { DynamicFieldInfo, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
+import type { DynamicFieldInfo, SuiObjectDataOptions, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
 import { SuiClient } from '@mysten/sui/client';
 import PromisePool from '@supercharge/promise-pool';
 
@@ -759,7 +759,7 @@ export async function getSuiNFTs(id: string, option?: GetSuiNFTSOption) {
 
           const objectIdList = objectsOwnedByAddress.map((object) => object.data?.objectId || '');
 
-          const objects = await getMultiObjects(objectIdList, chain.id, chainType, option?.objectResponseQuery);
+          const objects = await getMultiObjects(objectIdList, chain.id, chainType, option?.objectResponseQuery?.options);
 
           const nftObjects = objects?.filter((item) => getObjectDisplay(item)?.data) || [];
 
@@ -782,7 +782,7 @@ export async function getSuiNFTs(id: string, option?: GetSuiNFTSOption) {
 
           const kioskDynamicFieldsObjectIds = flatDynamicFields?.map((item) => item.objectId) || [];
 
-          const kioskObjects = await getMultiObjects(kioskDynamicFieldsObjectIds, chainId, chainType, option?.objectResponseQuery);
+          const kioskObjects = await getMultiObjects(kioskDynamicFieldsObjectIds, chainId, chainType, option?.objectResponseQuery?.options);
           const filteredKioskObjects = kioskObjects.filter((item) => getObjectDisplay(item)?.data);
 
           return filteredKioskObjects;
@@ -828,7 +828,7 @@ export async function getSuiKioskNFTs(address: string, chainId: string, chainTyp
 
       const kioskObjectIds = kioskDatas.flatMap((kiosk) => kiosk.itemIds);
 
-      const kioskNFTObjects = await getMultiObjects(kioskObjectIds, chainId, chainType, option);
+      const kioskNFTObjects = await getMultiObjects(kioskObjectIds, chainId, chainType, option?.options);
 
       const filteredKioskNFTs = kioskNFTObjects.filter((item) => !!item && !!getObjectDisplay(item)?.data) || [];
 
@@ -913,7 +913,12 @@ export async function getObjectsByOwnedAddress(
   return suiObjectResponses.flat();
 }
 
-export async function getMultiObjects(objectIds: string[], chainId: string, chainType: string, option?: SuiObjectResponseQuery): Promise<SuiObjectResponse[]> {
+export async function getMultiObjects(
+  objectIds: string[],
+  chainId: string,
+  chainType: string,
+  option?: SuiObjectDataOptions | null,
+): Promise<SuiObjectResponse[]> {
   const { suiChains } = await getChains();
   const suiChain = suiChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
   if (!suiChain) throw new Error('Chain not found');

@@ -29,7 +29,6 @@ const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cos
 const defaultEvmCoinList = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
 const defaultBitcoinCoinList = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
 
-// FIXME 체인리스트에 별도의 키를 설정해서 디폴트 코인을 설정하도록 변경.
 const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
 
 export async function updateDefaultAssetsBalance(id: string) {
@@ -64,12 +63,9 @@ export async function updateDefaultAssetsBalance(id: string) {
 export async function updateActiveAssetsBalance(id: string) {
   console.time(`balance-${id}`);
   try {
-    // NOTE 선언 이유? account가 정상적으로 저장, 불러오기 되는지 확인하기 위해?
     await getAccount(id);
-    // TODO 디폴트 토큰만 냅두고 나머지를 히든 토큰에 밀어넣는 로직만 있으면 될듯
     await initAssests(id);
 
-    // TODO init 밸런스 페칭에서는 타잉아웃 (2초 지나면 요청 취소) 설정이 필요할듯. // 궁극적으로 타임아웃은 있어도 좋을듯.
     await updateBalance(id);
 
     await initAccount(id);
@@ -84,7 +80,6 @@ export async function updateActiveAssetsBalance(id: string) {
   }
 }
 
-// FIXME 이게 지금 한번 더 호출되면서 이상함.
 export async function updateBalance(id: string) {
   console.time(`update-balance-${id}`);
   try {
@@ -145,7 +140,6 @@ export async function initAccount(id: string) {
         return { id: asset.asset.id, chainId: asset.asset.chainId, chainType: asset.asset.chainType };
       });
 
-    // NOTE 앞서 is_preload가 false인 erc20, cw20을 넣어놨으니 그거와 명합하는 과정
     const uniqueHiddenAssetIds = [...storedHiddenAssetIds, ...hiddenAssetIds].filter(
       (v, i, a) => a.findIndex((t) => t.id === v.id && t.chainId === v.chainId && t.chainType === v.chainType) === i,
     );
@@ -162,9 +156,6 @@ export async function initAccount(id: string) {
       await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
     }
 
-    // NOTE 이 로직을 살리면 히든처리가 2번 들어가는 거임
-    // NOTE 1. preload기준
-    // NOTE 히든처리 제외 나머지 전체 밸런스 페칭 후 밸런스 0인 애들 히든 처리.
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
@@ -208,7 +199,6 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   }
 }
 
-// NOTE 기본 코인 및 디폴트 토큰(erc20. cw20의 preload만)만 냅두고 나머지는 히든처리작업
 export async function initAssests(id: string) {
   await getAccount(id);
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
@@ -227,7 +217,6 @@ export async function initAssests(id: string) {
   }
 }
 
-// TODO 요청에 대하 2초 타임아웃 설정 필요.
 async function cosmosBalances(id: string, { isMinimal = false } = {}) {
   const address = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
@@ -236,13 +225,11 @@ async function cosmosBalances(id: string, { isMinimal = false } = {}) {
     ? address.filter((addr) => defaultCosmosCoinList.some((chain) => chain.chainId === addr.chainId && chain.chainType === addr.chainType))
     : address;
 
-  // NOTE 랩핑된 코스모스 체인 정보, 주소정보
   const addressWithChain = addressList
     .map((addr) => {
       const chain = cosmosChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
-    // NOTE 코스모스 체인만 필터링해서 쓸 수 있도록
     .filter((addr) => addr.chain);
 
   const { results } = await PromisePool.withConcurrency(10)

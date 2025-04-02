@@ -1,6 +1,5 @@
 import type { Amount } from './common';
 
-// NOTE PublicKeyType에서 string으로 변경
 export type PubKey = { type: string; value: string };
 
 export type Height = {

@@ -2867,7 +2867,8 @@
         "max": "Please enter less than {#limit} characters.",
         "min": "Please enter at least {#limit} or more characters.",
         "pattern": {
-          "invalidRange": "Please enter a value less than 10"
+          "invalidRange": "Please enter a value less than 10",
+          "invalidType": "Please enter number"
         }
       },
       "any": {

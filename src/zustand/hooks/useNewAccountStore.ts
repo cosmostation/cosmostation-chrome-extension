@@ -8,7 +8,6 @@ const initialState: NewAccountState = {
   account: {} as Account,
 };
 
-// TODO deprecated
 export const useNewAccountStore = create<NewAccountStore>()((set) => ({
   ...initialState,
   updateNewAccount: async (account) => {

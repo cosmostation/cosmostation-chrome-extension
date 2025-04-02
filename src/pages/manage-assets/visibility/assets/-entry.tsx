@@ -67,7 +67,6 @@ export default function Entry() {
 
   const { currentHiddenAssetIds, hideAsset, showAsset } = useCurrentHiddenAssetIds();
 
-  // NOTE 화이트 리스트 관리에서 커스텀 코인들은 어떻게?? 같이 해 아니면 따로해
   const { currentVisibleAssetIds, removeVisibleAsset, addVisibleAsset } = useCurrentVisibleAssetIds();
 
   const { customHiddenAssetIds, hideCustomAsset, showCustomAsset } = useCustomAssets();
@@ -246,9 +245,6 @@ export default function Entry() {
     [baseCoinList, hiddenAssetCoinIds, hiddenCustomAssetCoinIds, visibleAssetCoinIds],
   );
 
-  // FIXME 포폴에 보여지는 코인이 1개도 없을때는 히든 처리 방지.
-  // TODO 디바운싱 혹은 플래그를 통해서 무작위 클릭 방지. // 플래그를 통해서 버튼 disable 처리도 가능.
-  // NOTE 큐 형식으로 처리하는 방식 고려.
   const handleAssetVisibility = async (assetId: string, isBalanceZero: boolean) => {
     const isCustomERC20Token = currentCustomERC20Tokens.some((item) => isMatchingCoinId(item, assetId));
     const isCustomCW20Token = currentCustomCW20Tokens.some((item) => isMatchingCoinId(item, assetId));
@@ -288,15 +284,12 @@ export default function Entry() {
       const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(assetId);
 
       if (isHiddenState) {
-        // NOTE 블랙리스트에 있을때
         if (isHiddenCustomAsset) {
           await showCustomAsset(parseCoinId(assetId));
-          // NOTE 블랙리스트에 있는데 밸런스도 없는 케이스는? => 단순히 블랙리스트에서 뺸다고 해도 리스팅되지 않을것 => 화이트리스트 추가
           if (isBalanceZero) {
             await addVisibleAsset(parseCoinId(assetId));
           }
         } else {
-          // NOTE 블랙리스트에 없는데 밸런스가 없어서 안보여지고 있는 상태
           await addVisibleAsset(parseCoinId(assetId));
         }
       } else {
@@ -346,7 +339,6 @@ export default function Entry() {
     }
   };
 
-  // FIXME 체인 필터링이 걸리는 케이스도 스크롤 탑해야함.
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
       scrollToTop();

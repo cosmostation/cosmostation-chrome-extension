@@ -69,7 +69,6 @@ export default function FeeSettingBottomSheet({
           const displayFeeAmount = toDisplayDenomAmount(times(gasRate, gas), decimals);
           const value = times(displayFeeAmount, coinPrice);
 
-          // TODO 정책 설정 필요.
           const title = item.title || (index === customFeeStepKey ? 'Custom' : 'Default');
 
           return {

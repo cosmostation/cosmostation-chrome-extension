@@ -23,7 +23,6 @@ type UseAccountAssets =
     }
   | undefined;
 
-// FIXME props에 옵션 열고 useAccountAllAssets훅 삭제
 export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
   const { currentAccount } = useCurrentAccount();
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
@@ -34,8 +33,6 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
 
   const fetcher = async () => {
     try {
-      // NOTE 스토리지 갱신 로직 이 자리에 추가. -> 갱신 생애주기가 살아있을때만 갱신.
-      // await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [param] });
       const accountAssets = await getAccountAssets(param);
       const accountCustomAssets = await getAccountCustomAssets(param);
       return {
@@ -178,8 +175,6 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
       return true;
     });
 
-    // TODO Bitcoin도 preferAccountType별 필터링 필요.
-
     const filteredAccountAssets = produce(data, (draft) => {
       draft.cosmosAccountAssets = filteredCosmos;
       draft.cw20AccountAssets = filteredCW20;
@@ -206,5 +201,3 @@ export function useAccountAssets({ accountId, config }: UseAccountAssets = {}) {
 
   return { data: returnData, isLoading, error, refetch };
 }
-
-// NOTE 최상위에서 훅이 콜 안되어도 갱신될 수 있도록 하는 컴포넌트(주기적으로 useAccountAssets를 호출하는). 뮤테이트.

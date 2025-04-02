@@ -248,7 +248,6 @@ export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey, mode = cosmo
   });
 }
 
-// TODO 펍키 베이스64형태 모두 헥스 형태로 변환할 것.
 export function getPubKey(pubKey: PubKey) {
   const bufferPubKey = Buffer.from(pubKey.value, 'base64');
   const publicKey = new cosmos.crypto.secp256k1.PubKey({ key: bufferPubKey });
@@ -322,10 +321,6 @@ export function isDirectIBCSend(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgTransfer
 export function isDirectExecuteContract(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgExecuteContract> {
   return msg.type_url === '/cosmwasm.wasm.v1.MsgExecuteContract';
 }
-
-// export function isDirectCustom(msg: ProtoMsg): msg is ProtoMsg {
-//   return true;
-// }
 
 export function convertDirectMsgTypeToAminoMsgType(typeUrl: string) {
   if (typeUrl === '/cosmos.bank.v1beta1.MsgSend') {

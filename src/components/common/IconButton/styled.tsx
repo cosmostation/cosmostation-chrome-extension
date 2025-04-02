@@ -9,11 +9,4 @@ export const StyledIconButton = styled(IconButton)({
   },
 
   cursor: 'pointer',
-
-  //   '& svg': {
-  //     fill: theme.colors.base06,
-  //     '& > path': {
-  //       fill: theme.colors.base06,
-  //     },
-  //   },
 });

@@ -40,8 +40,6 @@ export function useCustomChain() {
       }),
     );
 
-    // TODO 추가적으로 해당 체인의 기본 코인도 추가해주어야함.
-
     await refreshAccountAssets();
   };
 

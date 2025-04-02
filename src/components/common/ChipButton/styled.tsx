@@ -29,7 +29,6 @@ export const StyledChipButton = styled('button')<StyledChipButtonProps>(({ ...pr
 
   padding: '0.5rem 0',
 
-  // NOTE 뒷배경이 보이는 문제 발생.
   '&:hover': {
     opacity: 0.7,
   },

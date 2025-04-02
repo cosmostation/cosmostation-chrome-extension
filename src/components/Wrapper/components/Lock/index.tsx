@@ -67,7 +67,6 @@ export default function Lock({ children }: LockProps) {
     }
   }, [location.pathname]);
 
-  // FIXME 계정을 다 지운 상태로 완전 새로고침을 했을 때 Lock페이지로 안가고 이니셜 페이지로 가서 비밀번호를 입력하는과정이 패싱됨.
   if (isDisableLock) {
     return children;
   }

@@ -16,7 +16,6 @@ import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14
 
 import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
-// TODO 제거
 export type Validator = {
   validatorName: string;
   validatorAddress: string;

@@ -28,7 +28,6 @@ export function setPopupAsDefaultView() {
   }
 }
 
-// NOTE 여기에도 팝업처럼 윈도우 id집어넣어야하는지 고려필요.
 export async function openSidePanel(path?: string) {
   const currentWindow = await getCurrentWindowInfo();
 

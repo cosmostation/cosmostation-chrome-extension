@@ -27,7 +27,6 @@ export const initialState: ExtensionStorageState = {
   mnemonicNamesByHashedMnemonic: {},
   currentAccountId: '',
   notBackedUpAccountIds: [],
-  // TODO language에 따라 초기화
   userCurrencyPreference: CURRENCY_TYPE.USD as CurrencyType,
   preferAccountType: {},
   addressBookList: [],
