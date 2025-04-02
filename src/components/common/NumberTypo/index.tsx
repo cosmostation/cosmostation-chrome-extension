@@ -33,7 +33,7 @@ export default function NumberTypo({
       {splitedNumber?.[0] && (
         <Typography variant={typoOfIntegers}>
           {isApporximation && '≈ '}
-          {currency && !isDisableLeadingCurreny && `${CURRENCY_SYMBOL[currency]} `}
+          <Typography variant={typoOfDecimals}>{currency && !isDisableLeadingCurreny && `${CURRENCY_SYMBOL[currency]} `}</Typography>
           {splitedNumber[0].replace(/(.)(?=(\d{3})+$)/g, '$1,')}
         </Typography>
       )}

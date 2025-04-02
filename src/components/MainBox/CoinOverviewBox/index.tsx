@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { times } from '@/utils/numbers';
@@ -47,17 +47,17 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
           <BodyContainer>
             <BodyTopContainer>
               <Base1300Text variant="h1_B">{symbol}</Base1300Text>
-              <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M">
+              <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
-              </NumberTypo>
+              </BalanceDisplay>
             </BodyTopContainer>
             <BodyBottomContainer>
               <Typography variant="b3_M">
                 {`${t('components.MainBox.CoinOverview.index.in')} ${networkCount} ${t('components.MainBox.CoinOverview.index.networks')}`}
               </Typography>
-              <NumberTypo typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency="usd">
+              <BalanceDisplay typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency={userCurrencyPreference}>
                 {totalValue}
-              </NumberTypo>
+              </BalanceDisplay>
             </BodyBottomContainer>
           </BodyContainer>
         }

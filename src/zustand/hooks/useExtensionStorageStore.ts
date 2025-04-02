@@ -43,6 +43,7 @@ export const initialState: ExtensionStorageState = {
     return acc;
   }, {}),
   isBalanceVisible: true,
+  isHideSmalValue: false,
   approvedSuiPermissions: [],
   chosenEthereumNetworkId: '',
   chosenSuiNetworkId: '',

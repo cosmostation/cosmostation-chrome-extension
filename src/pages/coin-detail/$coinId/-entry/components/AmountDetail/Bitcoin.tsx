@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import NumberTypo from '@/components/common/NumberTypo';
+import BalanceDisplay from '@/components/BalanceDisplay';
 import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { toDisplayDenomAmount } from '@/utils/numbers';
@@ -43,9 +43,9 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Bitcoin.available')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {availableDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
         <DetailRow>
@@ -53,9 +53,9 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
             <Typography variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Bitcoin.pendingReceive')}</Typography>
           </PendingAmountContainer>
           <PendingAmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {pendingReceiveDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </PendingAmountContainer>
         </DetailRow>
       </AmountDetailWrapper>

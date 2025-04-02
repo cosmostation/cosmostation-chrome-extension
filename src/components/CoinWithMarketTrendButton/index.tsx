@@ -5,12 +5,14 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { ChangeRateContainer, ChevronIconContainer, CoinValueContainer, ContentsContainer, SymbolTypograpy, ValueContainer } from './styled';
+import BalanceDisplay from '../BalanceDisplay';
 import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
 import BaseCoinButton from '../common/BaseCoinButton';
 import type { BaseCoinImageProps } from '../common/BaseCoinImage';
 import BaseCoinImage from '../common/BaseCoinImage';
 
-import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
+import BottomFilledChevronIcon from '@/assets/images/icons/BoffomFilledChevron8.svg';
+import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
 
 type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
   coinImageProps: BaseCoinImageProps;
@@ -36,13 +38,11 @@ export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...r
           <ContentsContainer>
             <SymbolTypograpy variant="b2_M">{coinSymbol}</SymbolTypograpy>
             <CoinValueContainer>
-              <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency="usd">
+              <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>
                 {String(chainPrice)}
-              </NumberTypo>
+              </BalanceDisplay>
               <ChangeRateContainer trend={trend}>
-                <ChevronIconContainer trend={trend}>
-                  <BottomFilledChevronIcon />
-                </ChevronIconContainer>
+                <ChevronIconContainer trend={trend}>{trend === 'downward' ? <BottomFilledChevronIcon /> : <TopFilledChevronIcon />}</ChevronIconContainer>
                 <ValueContainer>
                   <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>
                     {String(Math.abs(cap))}

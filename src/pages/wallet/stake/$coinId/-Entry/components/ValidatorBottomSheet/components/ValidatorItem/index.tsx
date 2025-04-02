@@ -44,7 +44,7 @@ const ValidatorButton = forwardRef<HTMLButtonElement, ValidatorButtonProps>(({ v
             {`${t('pages.wallet.stake.$coinId.components.ValidatorBottomSheet.components.ValidatorItem.index.votingPower')} :`}
           </Base1000Text>
           &nbsp;
-          <Base1300Text variant="h7n_M">{votingPower}</Base1300Text>
+          <NumberTypo typoOfIntegers="h7n_M">{votingPower}</NumberTypo>
         </VotinPowerContainer>
       }
       rightContent={

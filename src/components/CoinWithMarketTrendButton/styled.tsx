@@ -73,8 +73,6 @@ export const ChevronIconContainer = styled('div')<ChevronIconProps>(({ ...props 
   },
 
   display: props['trend'] === 'unchanged' ? 'none' : 'block',
-
-  transform: props['trend'] === 'upward' ? 'rotate(180deg)' : 'rotate(0deg)',
 }));
 
 export const ValueContainer = styled('div')({

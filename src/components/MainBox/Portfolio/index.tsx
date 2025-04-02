@@ -4,9 +4,9 @@ import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
+import BalanceDisplay from '@/components/BalanceDisplay';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as DappList } from '@/pages/dapp-list';
@@ -34,6 +34,7 @@ import {
   TopLeftContainer,
   TopRightContainer,
   TotalBalanceContainer,
+  ViewIconContainer,
   ViewTotalValueText,
 } from './styled';
 import MainBox from '..';
@@ -45,6 +46,7 @@ import MoreIcon from '@/assets/images/icons/More22.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 import SwapIcon from '@/assets/images/icons/Swap22.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
+import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 
 import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
 
@@ -57,7 +59,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, isBalanceVisible, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice, isLoading } = useCoinGeckoPrice();
 
   const { data: accountAllAssets } = useAccountAllAssets({
@@ -102,7 +104,12 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
         top={
           <TopContainer>
             <TopLeftContainer>
-              <IconTextButton trailingIcon={<ViewIcon />}>
+              <IconTextButton
+                onClick={() => {
+                  updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
+                }}
+                trailingIcon={<ViewIconContainer>{isBalanceVisible ? <ViewIcon /> : <ViewHideIcon />}</ViewIconContainer>}
+              >
                 <ViewTotalValueText variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</ViewTotalValueText>
               </IconTextButton>
             </TopLeftContainer>
@@ -136,9 +143,9 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                   {isProcessing ? (
                     <Typography variant="h1n_B">{'--'}</Typography>
                   ) : (
-                    <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={userCurrencyPreference} isDisableLeadingCurreny>
+                    <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={userCurrencyPreference} isDisableLeadingCurreny>
                       {aggregatedTotalValue}
-                    </NumberTypo>
+                    </BalanceDisplay>
                   )}
                   &nbsp;
                   <Typography variant="h2_M">{userCurrencyPreference.toLocaleUpperCase()}</Typography>

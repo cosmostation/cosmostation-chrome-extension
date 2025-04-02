@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
@@ -49,7 +50,6 @@ export default function StakingItem({
   validatorName,
   commission,
   symbol,
-  decimals,
   stakedAmount,
   rewardAmount,
   rewardCounts,
@@ -98,9 +98,9 @@ export default function StakingItem({
           <StakingInfoRowContainer>
             <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.staked')}</Base1000Text>
             <AmountContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                 {stakedAmount}
-              </NumberTypo>
+              </BalanceDisplay>
               &nbsp;
               <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
             </AmountContainer>
@@ -110,9 +110,9 @@ export default function StakingItem({
               {`${t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.reward')} ${rewardCounts ? `+ ${rewardCounts}` : ''}`}
             </Base1000Text>
             <AmountContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                 {rewardAmount}
-              </NumberTypo>
+              </BalanceDisplay>
               &nbsp;
               <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
             </AmountContainer>

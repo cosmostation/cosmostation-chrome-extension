@@ -4,9 +4,9 @@ import copy from 'copy-to-clipboard';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconButton from '@/components/common/IconButton';
-import NumberTypo from '@/components/common/NumberTypo';
 import TextButton from '@/components/common/TextButton';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
@@ -156,15 +156,15 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
           <BodyContainer>
             <BodyTopContainer>
               <Base1300Text variant="h1_B">{symbol}</Base1300Text>
-              <NumberTypo typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
+              <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
-              </NumberTypo>
+              </BalanceDisplay>
             </BodyTopContainer>
             <BodyBottomContainer>
               <Typography variant="b3_M">{chainName}</Typography>
-              <NumberTypo typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency="usd">
+              <BalanceDisplay typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency={userCurrencyPreference}>
                 {totalValue}
-              </NumberTypo>
+              </BalanceDisplay>
             </BodyBottomContainer>
           </BodyContainer>
         }

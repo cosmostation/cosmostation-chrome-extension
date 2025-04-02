@@ -2,9 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useDelegations } from '@/hooks/sui/useDelegations';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
@@ -69,9 +69,9 @@ export default function Sui({ coinId }: SuiProps) {
             <BodyContentsContainer>
               <Base1000Text variant="b2_M">{t('components.MainBox.StakeDetailBox.Sui.index.totalStaked')}</Base1000Text>
               <AmountContainer>
-                <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
+                <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
                   {displayTotalStakedAndEarned}
-                </NumberTypo>
+                </BalanceDisplay>
                 &nbsp;
                 <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
               </AmountContainer>
@@ -84,9 +84,9 @@ export default function Sui({ coinId }: SuiProps) {
               </LabelLeftContainer>
 
               <ValueAttributeText>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
+                <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                   {displayTotalStakedAmount}
-                </NumberTypo>
+                </BalanceDisplay>
                 <Typography variant="b4_M">{symbol}</Typography>
               </ValueAttributeText>
             </BodyContentsContainer>
@@ -98,9 +98,9 @@ export default function Sui({ coinId }: SuiProps) {
               </LabelLeftContainer>
 
               <ValueAttributeText>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={decimals}>
+                <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                   {displayTotalEarnedAmount}
-                </NumberTypo>
+                </BalanceDisplay>
                 <Typography variant="b4_M">{symbol}</Typography>
               </ValueAttributeText>
             </BodyContentsContainer>

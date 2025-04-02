@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import NumberTypo from '@/components/common/NumberTypo';
+import BalanceDisplay from '@/components/BalanceDisplay';
 import { useDelegations } from '@/hooks/sui/useDelegations';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
@@ -52,17 +52,17 @@ export default function Sui({ coinId }: SuiProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Sui.available')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {availableDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Sui.totalStaked')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {totalStakedDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
       </AmountDetailWrapper>
@@ -74,9 +74,9 @@ export default function Sui({ coinId }: SuiProps) {
           </LabelLeftContainer>
 
           <ValueAttributeText>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={6}>
               {stakedDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueAttributeText>
         </DetailRow>
         <DetailRow>
@@ -86,9 +86,9 @@ export default function Sui({ coinId }: SuiProps) {
           </LabelLeftContainer>
 
           <ValueAttributeText>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={6}>
               {earnedDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueAttributeText>
         </DetailRow>
       </AmountDetailAttributeWrapper>

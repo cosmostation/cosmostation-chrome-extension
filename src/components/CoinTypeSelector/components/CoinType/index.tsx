@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { PUBKEY_STYLE_MAP } from '@/constants/bitcoin/common';
 import type { Chain, ChainAccountType } from '@/types/chain';
-import { equal, lt } from '@/utils/numbers';
+import { equal } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -123,21 +122,15 @@ export default function CoinTypeSelector({
                 <ValueContainer>
                   {item.totalAssetValue &&
                     (equal(item.totalAssetValue, '0') ? (
-                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={0}>
+                      <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={0}>
                         {'0'}
-                      </NumberTypo>
-                    ) : lt(item.totalAssetValue, '0.001') ? (
-                      <ValueContainer>
-                        <Typography variant="h5n_M">{'<'}</Typography>
-                        &nbsp;
-                        <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                          {item.totalAssetValue}
-                        </NumberTypo>
-                      </ValueContainer>
+                      </BalanceDisplay>
                     ) : (
-                      <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                        {item.totalAssetValue}
-                      </NumberTypo>
+                      <ValueContainer>
+                        <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+                          {item.totalAssetValue}
+                        </BalanceDisplay>
+                      </ValueContainer>
                     ))}
                 </ValueContainer>
               </ButtonBottomContainer>

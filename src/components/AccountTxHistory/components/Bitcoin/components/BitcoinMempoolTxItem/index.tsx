@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import type { AccountTx } from '@/types/bitcoin/txs';
 import { gt, minus, plus, toDisplayDenomAmount } from '@/utils/numbers';
@@ -97,9 +97,9 @@ export default function BitcoinMempoolTxItem({ tx, coinId }: BitcoinMempoolTxIte
       rightTop={
         detail.amount && gt(detail.amount, '0') ? (
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {detail.amount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <SymbolText variant="b4_M">{currentAsset?.asset.symbol}</SymbolText>
           </AmountContainer>

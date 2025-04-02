@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useAmount } from '@/hooks/cosmos/useAmount';
 import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useReward } from '@/hooks/cosmos/useReward';
@@ -43,7 +43,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const totalStakedDisplayAmount = toDisplayDenomAmount(delegationAmount, decimals || 0);
 
   const rewardsDisplayAmount = toDisplayDenomAmount(rewardAmount, decimals || 0);
-  const rewardsCoinCounts = reward?.data?.total?.length || 0;
+  const rewardsCoinCounts = reward?.data?.total?.length && reward.data.total.length > 1 ? reward.data.total.length - 1 : 0;
 
   return (
     <>
@@ -62,9 +62,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <BodyContentsContainer>
               <Base1000Text variant="b2_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.staked')}</Base1000Text>
               <AmountContainer>
-                <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
+                <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
                   {totalStakedDisplayAmount}
-                </NumberTypo>
+                </BalanceDisplay>
                 &nbsp;
                 <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
               </AmountContainer>
@@ -74,9 +74,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
                 {`${t('components.MainBox.StakeDetailBox.Cosmos.index.reward')} ${rewardsCoinCounts ? `+ ${rewardsCoinCounts}` : ''}`}
               </Base1000Text>
               <AmountContainer>
-                <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={decimals}>
+                <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
                   {rewardsDisplayAmount}
-                </NumberTypo>
+                </BalanceDisplay>
                 &nbsp;
                 <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
               </AmountContainer>

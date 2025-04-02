@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import TxDetail from '@/components/AccountTxHistory/components/Common/TxDetail';
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
 import type { FaucetTransactionInfo } from '@/types/sui/parseTx';
 import { isUnixTimestamp } from '@/utils/date';
@@ -83,9 +83,9 @@ export default function SuiFaucetTxItem({ tx: faucetTransactionInfo, digest, tim
       rightTop={
         detail.amount ? (
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {detail.amount.displayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <SymbolText variant="b4_M">{detail.amount.symbol}</SymbolText>
           </AmountContainer>

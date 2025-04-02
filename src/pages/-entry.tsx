@@ -60,7 +60,7 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { dashboardCoinSortKey, userCurrencyPreference, isBalanceVisible, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -119,14 +119,14 @@ export default function Entry() {
   ]);
 
   const hideSmallValueAssets = useMemo(() => {
-    if (!isBalanceVisible) {
+    if (isHideSmalValue) {
       return computedAssetValues.filter((coin) => {
         return gte(coin.value, '0.001');
       });
     }
 
     return computedAssetValues;
-  }, [computedAssetValues, isBalanceVisible]);
+  }, [computedAssetValues, isHideSmalValue]);
 
   const sortedAssets = useMemo(
     () =>
@@ -223,9 +223,9 @@ export default function Entry() {
                 </AdCarouselContainer> */}
                 <ManageCryptoContainer>
                   <CheckBoxTextButton
-                    isChecked={!isBalanceVisible}
+                    isChecked={isHideSmalValue}
                     onClick={() => {
-                      updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
+                      updateExtensionStorageStore('isHideSmalValue', !isHideSmalValue);
                     }}
                   >
                     <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>

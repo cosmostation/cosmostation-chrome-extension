@@ -107,6 +107,7 @@ export interface ExtensionStorage {
   approvedOrigins: ApprovedOrigin[];
   adPopoverState: AdPopoverStateMap;
   isBalanceVisible: boolean;
+  isHideSmalValue: boolean;
   approvedSuiPermissions: ApprovedSuiPermission[];
   requestQueue: RequestQueue[];
   chosenEthereumNetworkId: string;

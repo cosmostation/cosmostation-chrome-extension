@@ -273,8 +273,12 @@ async function initializeStorageDefaults() {
     await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
   }
 
-  if (!originStorage.isBalanceVisible) {
+  if (originStorage.isBalanceVisible === undefined || originStorage.isBalanceVisible === null) {
     await setExtensionLocalStorage('isBalanceVisible', true);
+  }
+
+  if (originStorage.isHideSmalValue === undefined || originStorage.isHideSmalValue === null) {
+    await setExtensionLocalStorage('isHideSmalValue', false);
   }
 
   if (!originStorage.adPopoverState) {

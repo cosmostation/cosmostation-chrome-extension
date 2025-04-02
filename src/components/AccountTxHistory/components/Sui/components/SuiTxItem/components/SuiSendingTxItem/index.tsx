@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import TxDetail from '@/components/AccountTxHistory/components/Common/TxDetail';
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { SUI_COIN_TYPE, SUI_TOKEN_TEMPORARY_DECIMALS } from '@/constants/sui';
 import { useGetCoinMetadata } from '@/hooks/sui/useGetCoinMetadata';
 import { useAccountAssets } from '@/hooks/useAccountAssets';
@@ -114,9 +114,9 @@ export default function SuiSendingTxItem({ tx, digest, timestampMs, coinId }: Su
           <AmountContainer>
             <Base1300Text variant="h5n_M">{detail.amount.balanceChangedMark}</Base1300Text>
             &nbsp;
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {detail.amount.displayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <SymbolText variant="b4_M">{detail.amount.symbol}</SymbolText>
           </AmountContainer>

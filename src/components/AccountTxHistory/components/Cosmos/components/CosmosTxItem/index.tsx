@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinList } from '@/hooks/useCoinList';
 import type { AccountTx } from '@/types/cosmos/txs';
@@ -89,9 +89,9 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
       rightTop={
         <AmountContainer>
           {displayAmount ? (
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {displayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           ) : (
             <Base1000Text variant="h5n_M">-</Base1000Text>
           )}

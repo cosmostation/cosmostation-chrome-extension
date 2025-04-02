@@ -74,7 +74,7 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = fals
                 <Base1300Text variant="h7n_M">{feeCoin?.asset.symbol}</Base1300Text>
                 &nbsp;
                 <Base1300Text variant="b2_M">{'('}</Base1300Text>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency="usd">
+                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                   {value}
                 </NumberTypo>
                 <Base1300Text variant="b2_M">{')'}</Base1300Text>

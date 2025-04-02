@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import NumberTypo from '@/components/common/NumberTypo';
+import BalanceDisplay from '@/components/BalanceDisplay';
 import { KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { useAmount } from '@/hooks/cosmos/useAmount';
 import { useReward } from '@/hooks/cosmos/useReward';
@@ -44,7 +44,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const stakedDisplayAmount = toDisplayDenomAmount(delegationAmount, decimal);
   const unstakingDisplayAmount = toDisplayDenomAmount(unbondingAmount, decimal);
   const rewardsDisplayAmount = toDisplayDenomAmount(rewardAmount, decimal);
-  const rewardsCoinCounts = reward?.data?.total?.length || 0;
+  const rewardsCoinCounts = reward?.data?.total?.length && reward.data.total.length > 1 ? reward.data.total.length - 1 : 0;
   const incentiveDisplayAmount = toDisplayDenomAmount(incentiveAmount, decimal);
 
   return (
@@ -54,33 +54,33 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.available')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {availableDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.staked')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {stakedDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
         <DetailRow>
           <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.unstaking')}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {unstakingDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
         <DetailRow>
-          <LabelText variant="b3_R">{`${t('pages.coin-detail.components.AmountDetail.Cosmos.rewards')} + ${rewardsCoinCounts}`}</LabelText>
+          <LabelText variant="b3_R">{`${t('pages.coin-detail.components.AmountDetail.Cosmos.rewards')} ${rewardsCoinCounts ? `+ ${rewardsCoinCounts}` : ''}`}</LabelText>
           <ValueText>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {rewardsDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueText>
         </DetailRow>
         {/* FIXME 현재는 60패스에서 코스모스쪽 코인을 디리스팅하고 있어서 카바 60이면 얘 안나옴 */}
@@ -88,9 +88,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
           <DetailRow>
             <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.incentive')}</LabelText>
             <ValueText>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                 {incentiveDisplayAmount}
-              </NumberTypo>
+              </BalanceDisplay>
             </ValueText>
           </DetailRow>
         )}

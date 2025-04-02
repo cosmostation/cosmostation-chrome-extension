@@ -1,9 +1,9 @@
+import BalanceDisplay from '@/components/BalanceDisplay';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { times } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { LeftContainer, RightContainer, RightDisplayAmountContainer, RightTextContainer, RightValueContainer, StyledButton } from './styled';
-import NumberTypo from '../NumberTypo';
 
 export type BaseCoinButtonProps = {
   displayAmount: string;
@@ -30,15 +30,15 @@ export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, l
       <RightContainer>
         <RightTextContainer>
           <RightDisplayAmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {displayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
           </RightDisplayAmountContainer>
 
           <RightValueContainer>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
+            <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {value}
-            </NumberTypo>
+            </BalanceDisplay>
           </RightValueContainer>
         </RightTextContainer>
         {rightComponent && rightComponent}
