@@ -8,6 +8,7 @@ import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import IconTextButton from '@/components/common/IconTextButton';
+import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList';
@@ -17,9 +18,19 @@ import type { ChainType, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
 import AddressItemButton from './-components/AddressItemButton';
-import { AddressItemWrapper, AddTextContainer, Container, PurpleContainer, RowContainer, StickyContainer } from './-styled';
+import {
+  AddressItemWrapper,
+  AddTextContainer,
+  Container,
+  ContentsContainer,
+  EmptyAssetContainer,
+  PurpleContainer,
+  RowContainer,
+  StickyContainer,
+} from './-styled';
 import { UNIVERSAL_EVM_NETWORK_ID } from './add-address/-entry';
 
+import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
 import EVMImage from '@/assets/images/chain/evm.png';
@@ -68,7 +79,11 @@ export default function Entry() {
 
   return (
     <BaseBody>
-      <EdgeAligner>
+      <EdgeAligner
+        style={{
+          flex: '1',
+        }}
+      >
         <Container>
           <StickyContainer>
             <Search
@@ -111,33 +126,46 @@ export default function Entry() {
               </IconTextButton>
             </RowContainer>
           </StickyContainer>
-          <AddressItemWrapper>
+          <ContentsContainer>
             {!isDebouncing &&
-              filteredAddresses.map((item) => {
-                const chain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, item.chainId));
+              (filteredAddresses.length > 0 ? (
+                <AddressItemWrapper>
+                  {!isDebouncing &&
+                    filteredAddresses.map((item) => {
+                      const chain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, item.chainId));
 
-                const chainName = chain?.id === UNIVERSAL_EVM_NETWORK_ID ? `${chain.name} (Universal)` : chain?.name || 'Unknown';
-                return (
-                  <AddressItemButton
-                    key={item.id}
-                    id={item.id}
-                    label={item.label}
-                    address={item.address}
-                    memo={item.memo}
-                    chainName={chainName}
-                    chainImage={chain?.image || ''}
-                    onClick={() => {
-                      navigate({
-                        to: EditAddress.to,
-                        params: {
-                          id: item.id,
-                        },
-                      });
-                    }}
+                      const chainName = chain?.id === UNIVERSAL_EVM_NETWORK_ID ? `${chain.name} (Universal)` : chain?.name || 'Unknown';
+                      return (
+                        <AddressItemButton
+                          key={item.id}
+                          id={item.id}
+                          label={item.label}
+                          address={item.address}
+                          memo={item.memo}
+                          chainName={chainName}
+                          chainImage={chain?.image || ''}
+                          onClick={() => {
+                            navigate({
+                              to: EditAddress.to,
+                              params: {
+                                id: item.id,
+                              },
+                            });
+                          }}
+                        />
+                      );
+                    })}
+                </AddressItemWrapper>
+              ) : (
+                <EmptyAssetContainer>
+                  <EmptyAsset
+                    icon={<NoListIcon />}
+                    title={t('pages.general-setting.address-book.entry.noList')}
+                    subTitle={t('pages.general-setting.address-book.entry.noListSubtitle')}
                   />
-                );
-              })}
-          </AddressItemWrapper>
+                </EmptyAssetContainer>
+              ))}
+          </ContentsContainer>
         </Container>
       </EdgeAligner>
     </BaseBody>

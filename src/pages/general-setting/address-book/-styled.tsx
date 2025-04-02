@@ -1,7 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
 });
 
 export const StickyContainer = styled('div')(({ theme }) => ({
@@ -45,6 +48,12 @@ export const Divider = styled('div')(({ theme }) => ({
   borderBottom: `0.1rem solid ${theme.palette.color.base100}`,
 }));
 
+export const ContentsContainer = styled('div')({
+  flex: '1',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 export const AddressItemWrapper = styled('div')(({ theme }) => ({
   width: '100%',
 
@@ -52,3 +61,13 @@ export const AddressItemWrapper = styled('div')(({ theme }) => ({
     borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
   },
 }));
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '2rem 0',
+});

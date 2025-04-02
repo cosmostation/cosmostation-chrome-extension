@@ -1882,7 +1882,9 @@
           }
         },
         "entry": {
-          "addAddress": "Add Address"
+          "addAddress": "Add Address",
+          "noList": "No addresses available",
+          "noListSubtitle": "Your address book is empty. Add a new address to get started"
         },
         "header": "Address Book",
         "add-address": {
