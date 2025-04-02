@@ -55,8 +55,9 @@ export const VotingPowerTextContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const VotinPowerContainer = styled('div')({
+export const VotinPowerContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-});
+  color: theme.palette.color.base1300,
+}));

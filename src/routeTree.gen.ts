@@ -14,10 +14,8 @@ import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
 import { Route as ManageDappsIndexImport } from './pages/manage-dapps/index'
 import { Route as GeneralSettingIndexImport } from './pages/general-setting/index'
-import { Route as DashboardIndexImport } from './pages/dashboard/index'
 import { Route as DappListIndexImport } from './pages/dapp-list/index'
 import { Route as BuyCoinIndexImport } from './pages/buy-coin/index'
-import { Route as AboutIndexImport } from './pages/about/index'
 import { Route as WalletTxResultIndexImport } from './pages/wallet/tx-result/index'
 import { Route as WalletSwapIndexImport } from './pages/wallet/swap/index'
 import { Route as WalletStakeIndexImport } from './pages/wallet/stake/index'
@@ -118,12 +116,6 @@ const GeneralSettingIndexRoute = GeneralSettingIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const DappListIndexRoute = DappListIndexImport.update({
   id: '/dapp-list/',
   path: '/dapp-list/',
@@ -133,12 +125,6 @@ const DappListIndexRoute = DappListIndexImport.update({
 const BuyCoinIndexRoute = BuyCoinIndexImport.update({
   id: '/buy-coin/',
   path: '/buy-coin/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AboutIndexRoute = AboutIndexImport.update({
-  id: '/about/',
-  path: '/about/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -681,13 +667,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about/': {
-      id: '/about/'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/buy-coin/': {
       id: '/buy-coin/'
       path: '/buy-coin'
@@ -700,13 +679,6 @@ declare module '@tanstack/react-router' {
       path: '/dapp-list'
       fullPath: '/dapp-list'
       preLoaderRoute: typeof DappListIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
     '/general-setting/': {
@@ -1283,10 +1255,8 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutIndexRoute
   '/buy-coin': typeof BuyCoinIndexRoute
   '/dapp-list': typeof DappListIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
   '/manage-dapps': typeof ManageDappsIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
@@ -1372,10 +1342,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutIndexRoute
   '/buy-coin': typeof BuyCoinIndexRoute
   '/dapp-list': typeof DappListIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
   '/manage-dapps': typeof ManageDappsIndexRoute
   '/account/add-wallet': typeof AccountAddWalletIndexRoute
@@ -1462,10 +1430,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/about/': typeof AboutIndexRoute
   '/buy-coin/': typeof BuyCoinIndexRoute
   '/dapp-list/': typeof DappListIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/general-setting/': typeof GeneralSettingIndexRoute
   '/manage-dapps/': typeof ManageDappsIndexRoute
   '/account/add-wallet/': typeof AccountAddWalletIndexRoute
@@ -1553,10 +1519,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/buy-coin'
     | '/dapp-list'
-    | '/dashboard'
     | '/general-setting'
     | '/manage-dapps'
     | '/account/add-wallet'
@@ -1641,10 +1605,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/buy-coin'
     | '/dapp-list'
-    | '/dashboard'
     | '/general-setting'
     | '/manage-dapps'
     | '/account/add-wallet'
@@ -1729,10 +1691,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/about/'
     | '/buy-coin/'
     | '/dapp-list/'
-    | '/dashboard/'
     | '/general-setting/'
     | '/manage-dapps/'
     | '/account/add-wallet/'
@@ -1819,10 +1779,8 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutIndexRoute: typeof AboutIndexRoute
   BuyCoinIndexRoute: typeof BuyCoinIndexRoute
   DappListIndexRoute: typeof DappListIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   GeneralSettingIndexRoute: typeof GeneralSettingIndexRoute
   ManageDappsIndexRoute: typeof ManageDappsIndexRoute
   AccountAddWalletIndexRoute: typeof AccountAddWalletIndexRoute
@@ -1908,10 +1866,8 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutIndexRoute: AboutIndexRoute,
   BuyCoinIndexRoute: BuyCoinIndexRoute,
   DappListIndexRoute: DappListIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   GeneralSettingIndexRoute: GeneralSettingIndexRoute,
   ManageDappsIndexRoute: ManageDappsIndexRoute,
   AccountAddWalletIndexRoute: AccountAddWalletIndexRoute,
@@ -2030,10 +1986,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about/",
         "/buy-coin/",
         "/dapp-list/",
-        "/dashboard/",
         "/general-setting/",
         "/manage-dapps/",
         "/account/add-wallet/",
@@ -2120,17 +2074,11 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
-    "/about/": {
-      "filePath": "about/index.tsx"
-    },
     "/buy-coin/": {
       "filePath": "buy-coin/index.tsx"
     },
     "/dapp-list/": {
       "filePath": "dapp-list/index.tsx"
-    },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx"
     },
     "/general-setting/": {
       "filePath": "general-setting/index.tsx"

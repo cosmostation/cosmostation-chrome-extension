@@ -125,7 +125,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
   const [isOpenValidatorBottomSheet, setIsOpenValidatorBottomSheet] = useState(false);
 
-  const [currentValidaotrAddress, setCurrentValidaotrAddress] = useState(validatorAddress || '');
+  const [currentValidatorAddress, setCurrentValidatorAddress] = useState(validatorAddress || '');
 
   const stakerAddress = useMemo(() => selectedStakingCoin?.address.address, [selectedStakingCoin?.address.address]);
 
@@ -152,8 +152,8 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   );
 
   const currentValidator = useMemo(
-    () => availableValidators.find((validator) => isEqualsIgnoringCase(validator.validatorAddress, currentValidaotrAddress)),
-    [availableValidators, currentValidaotrAddress],
+    () => availableValidators.find((validator) => isEqualsIgnoringCase(validator.validatorAddress, currentValidatorAddress)),
+    [availableValidators, currentValidatorAddress],
   );
 
   const apr =
@@ -191,7 +191,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         account.data?.value.account_number &&
         gt(displayStakeAmount || '0', '0') &&
         alternativeFeeAsset?.asset.id &&
-        currentValidaotrAddress &&
+        currentValidatorAddress &&
         stakerAddress
       ) {
         const sequence = String(account.data?.value.sequence || '0');
@@ -217,7 +217,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
               type: 'cosmos-sdk/MsgDelegate',
               value: {
                 delegator_address: stakerAddress,
-                validator_address: currentValidaotrAddress,
+                validator_address: currentValidatorAddress,
                 amount: { denom: selectedStakingCoin.asset.id, amount: baseStakeAmount },
               },
             },
@@ -233,7 +233,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     alternativeFeeAsset?.asset.id,
     alternativeGasRate,
     baseStakeAmount,
-    currentValidaotrAddress,
+    currentValidatorAddress,
     displayStakeAmount,
     inputMemo,
     nodeInfo.data?.default_node_info?.network,
@@ -502,6 +502,16 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     debouncedEnabled();
   }, [debouncedEnabled, memoizedStakeAminoTx, simulate.isFetching]);
 
+  useEffect(() => {
+    if (!currentValidatorAddress && availableValidators.length > 0) {
+      const cosmostationValidator = availableValidators.find((validator) => validator.validatorName.toLocaleLowerCase().includes('cosmostation'));
+
+      if (cosmostationValidator) {
+        setCurrentValidatorAddress(cosmostationValidator.validatorAddress);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableValidators]);
   return (
     <>
       <BaseBody>
@@ -521,7 +531,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
           <InputWrapper>
             <ValidatorSelectBox
               validatorList={availableValidators}
-              currentValidatorAddress={currentValidaotrAddress}
+              currentValidatorAddress={currentValidatorAddress}
               onClickItem={() => {
                 setIsOpenValidatorBottomSheet(true);
               }}
@@ -657,9 +667,9 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         validatorList={availableValidators}
         open={isOpenValidatorBottomSheet}
         onClose={() => setIsOpenValidatorBottomSheet(false)}
-        currentValidatorId={currentValidaotrAddress}
+        currentValidatorId={currentValidatorAddress}
         onClickItem={(validatorAddress) => {
-          setCurrentValidaotrAddress(validatorAddress);
+          setCurrentValidatorAddress(validatorAddress);
         }}
       />
       <TxProcessingOverlay

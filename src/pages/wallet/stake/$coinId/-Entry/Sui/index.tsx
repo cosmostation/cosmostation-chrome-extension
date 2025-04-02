@@ -320,6 +320,17 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
     debouncedEnabled();
   }, [debouncedEnabled, stakeTx, isDryRunTransactionLoading, isDryRunTransactionFetching]);
 
+  useEffect(() => {
+    if (!currentValidatorAddress && !!availableValidators?.length) {
+      const cosmostationValidator = availableValidators.find((validator) => validator.validatorName.toLocaleLowerCase().includes('cosmostation'));
+
+      if (cosmostationValidator) {
+        setCurrentValidatorAddress(cosmostationValidator.validatorAddress);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableValidators]);
+
   return (
     <>
       <BaseBody>
