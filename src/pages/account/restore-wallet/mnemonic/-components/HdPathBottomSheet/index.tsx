@@ -26,7 +26,6 @@ import {
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-// TODO 훅폼 적용 필요
 type HdPathBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   currentHdPathIndex: string;
   onChangeHdPathIndex?: (val: string) => void;
@@ -36,7 +35,7 @@ export default function HdPathBottomSheet({ currentHdPathIndex, onClose, onChang
   const { t } = useTranslation();
   const { flatChainList } = useChainList();
 
-  const { newAccountForm } = useSchema();
+  const { restoreAccountForm } = useSchema();
 
   const {
     register,
@@ -45,7 +44,7 @@ export default function HdPathBottomSheet({ currentHdPathIndex, onClose, onChang
     formState: { errors },
     reset,
   } = useForm<HdPathIndexForm>({
-    resolver: joiResolver(newAccountForm),
+    resolver: joiResolver(restoreAccountForm),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: {
