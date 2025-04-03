@@ -31,9 +31,12 @@ export type V11Param = {
       chain_id_evm?: string;
       chain_name: string;
       chain_image: string;
-      main_asset_denom: string;
-      main_asset_symbol: string;
-      main_asset_image: string;
+      staking_asset_denom?: string;
+      staking_asset_symbol?: string;
+      staking_asset_image?: string;
+      main_asset_denom?: string;
+      main_asset_symbol?: string;
+      main_asset_image?: string;
       gas_asset_denom?: string;
       gas_asset_symbol?: string;
       gas_asset_image?: string;

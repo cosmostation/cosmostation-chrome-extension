@@ -86,7 +86,8 @@ export async function getAssets() {
   const bitcoinChainIds = bitcoinChains.map((chain) => chain.id);
 
   const filteredEvmAssets = assets.filter((asset) => {
-    const gasCoinDenom = chains?.[asset.chain]?.params?.chainlist_params?.gas_asset_denom || chains?.[asset.chain]?.params?.chainlist_params?.main_asset_denom;
+    const gasCoinDenom =
+      chains?.[asset.chain]?.params?.chainlist_params?.gas_asset_denom || chains?.[asset.chain]?.params?.chainlist_params?.staking_asset_denom;
 
     return evmChainIds.includes(asset.chain) && asset.type === 'native' && gasCoinDenom === asset.denom;
   });

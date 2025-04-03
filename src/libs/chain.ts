@@ -1,3 +1,5 @@
+import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
+import { SUI_COIN_TYPE } from '@/constants/sui';
 import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -35,7 +37,7 @@ export async function getChains() {
     const name = chain.params.chainlist_params.chain_name;
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
-    const mainAssetDenom = chain.params.chainlist_params.main_asset_denom;
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom || '';
 
     const isCosmwasm = chain.params.chainlist_params?.is_support_cw20 ?? false;
     const isSupportCW721 = chain.params.chainlist_params?.is_support_cw721 ?? false;
@@ -120,10 +122,9 @@ export async function getChains() {
     const chainId = chain.params.chainlist_params.chain_id_evm!;
     const name = chain.params.chainlist_params.chain_name;
     const image = chain.params.chainlist_params?.chain_image ?? null;
-    const mainAssetDenom = chain.params?.chainlist_params?.main_asset_denom ?? null;
-
     const isCosmos = chain.params.chainlist_params?.chain_type?.includes('cosmos') ?? false;
 
+    const mainAssetDenom = (isCosmos ? chain.params?.chainlist_params?.staking_asset_denom : chain.params?.chainlist_params?.main_asset_denom) ?? null;
     const feeInfo = {
       isEip1559: chain.params.chainlist_params?.evm_fee_info?.is_eip1559 ?? false,
       gasCoefficient: chain.params.chainlist_params?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
@@ -198,7 +199,7 @@ export async function getChains() {
     const name = chain.params.chainlist_params.chain_name;
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
-    const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? SUI_COIN_TYPE;
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
@@ -251,7 +252,7 @@ export async function getChains() {
     const name = chain.params.chainlist_params.chain_name;
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
-    const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? APTOS_COIN_TYPE;
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
@@ -304,11 +305,11 @@ export async function getChains() {
     const name = chain.params.chainlist_params.chain_name;
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
-    const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom ?? null;
-
     const { coinTypeLevel } = parsingHdPath(chain.params?.chainlist_params?.account_type?.[0].hd_path || '');
 
     const isTestnet = coinTypeLevel.replace(/[^0-9]/g, '') === `1`;
+
+    const mainAssetDenom = (chain.params.chainlist_params?.main_asset_denom ?? isTestnet) ? 'sbtc' : 'btc';
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint ??

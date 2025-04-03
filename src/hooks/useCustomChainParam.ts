@@ -2,6 +2,7 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { CHAINLIST_RESOURCE_URL } from '@/constants/common';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { CustomChainAsset, CustomChainParamResponse, CustomCosmosChainAsset, CustomEvmChainAsset } from '@/types/customChain';
 import { get } from '@/utils/axios';
 
@@ -22,11 +23,11 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const name = chain.chain_name;
       const image = chain?.chain_image ?? null;
 
-      const mainAssetDenom = chain.main_asset_denom;
-      const mainAssetSymbol = chain.main_asset_symbol;
-      const mainAssetDecimals = chain.main_asset_decimals || 6;
-      const mainAssetImage = chain.main_asset_image || null;
-      const mainAssetCoinGeckoId = chain.main_asset_coin_gecko_id || null;
+      const mainAssetDenom = chain?.staking_asset_denom || '';
+      const mainAssetSymbol = chain.staking_asset_symbol || 'UNKNOWN';
+      const mainAssetDecimals = chain?.staking_asset_decimals || 6;
+      const mainAssetImage = chain?.staking_asset_image || null;
+      const mainAssetCoinGeckoId = chain?.staking_asset_coin_gecko_id || null;
 
       const isCosmwasm = chain?.is_support_cw20 ?? false;
       const isSupportCW721 = chain.is_support_cw721 ?? false;
@@ -87,11 +88,11 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const name = chain.chain_name;
       const image = chain?.chain_image ?? null;
 
-      const mainAssetDenom = chain?.gas_asset_denom ?? chain?.main_asset_denom ?? null;
-      const mainAssetSymbol = chain.gas_asset_symbol ?? chain?.main_asset_symbol ?? null;
-      const mainAssetDecimals = chain.gas_asset_decimals ?? chain?.main_asset_decimals ?? 18;
-      const mainAssetImage = chain.gas_asset_image ?? chain?.main_asset_image ?? null;
-      const mainAssetCoinGeckoId = chain.gas_asset_coin_gecko_id ?? chain?.main_asset_coin_gecko_id ?? null;
+      const mainAssetDenom = chain?.gas_asset_denom ?? chain?.main_asset_denom ?? NATIVE_EVM_COIN_ADDRESS;
+      const mainAssetSymbol = chain?.gas_asset_symbol ?? chain?.main_asset_symbol ?? 'UNKNOWN';
+      const mainAssetDecimals = chain?.gas_asset_decimals ?? chain?.main_asset_decimals ?? 18;
+      const mainAssetImage = chain?.gas_asset_image ?? chain?.main_asset_image ?? null;
+      const mainAssetCoinGeckoId = chain?.gas_asset_coin_gecko_id ?? chain?.main_asset_coin_gecko_id ?? null;
 
       const isCosmos = chain?.chain_type?.includes('cosmos') ?? false;
 

@@ -7,9 +7,14 @@ export interface CustomChainParam {
   chain_id_evm?: string;
   chain_name: string;
   chain_image: string;
-  main_asset_denom: string;
-  main_asset_symbol: string;
-  main_asset_image: string | null;
+  staking_asset_denom?: string;
+  staking_asset_symbol?: string;
+  staking_asset_image?: string | null;
+  staking_asset_decimals?: number;
+  staking_asset_coin_gecko_id?: string;
+  main_asset_denom?: string;
+  main_asset_symbol?: string;
+  main_asset_image?: string | null;
   main_asset_decimals?: number;
   main_asset_coin_gecko_id?: string;
   gas_asset_denom?: string;
