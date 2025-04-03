@@ -100,6 +100,12 @@ const h7n_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.1rem',
 const h8n_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 const h8n_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 
+const nh1_B = { fontFamily: 'Inter700', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3rem', letterSpacing: 'normal' };
+const nh3_B = { fontFamily: 'Inter700', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
+const nh4_B = { fontFamily: 'Inter700', fontStyle: 'normal', fontSize: '1.4rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
+const nh5_B = { fontFamily: 'Inter700', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
+const nh6_B = { fontFamily: 'Inter700', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
+
 export const typoVariants = {
   h1_B,
   h2_B,
@@ -139,11 +145,14 @@ export const numberTypoVariants = {
   h8n_R,
 };
 
+export const numberHideTypoVariants = { nh1_B, nh3_B, nh4_B, nh5_B, nh6_B };
+
 export type TypoVariantKeys = keyof typeof typoVariants;
 export type NumberTypoVariants = keyof typeof numberTypoVariants;
+export type NumberHideTypoVariants = keyof typeof numberHideTypoVariants;
 
-export type TypoVariants = Record<TypoVariantKeys | NumberTypoVariants, React.CSSProperties>;
-export type TypeVariantsTrue = Record<TypoVariantKeys | NumberTypoVariants, true>;
+export type TypoVariants = Record<TypoVariantKeys | NumberTypoVariants | NumberHideTypoVariants, React.CSSProperties>;
+export type TypeVariantsTrue = Record<TypoVariantKeys | NumberTypoVariants | NumberHideTypoVariants, true>;
 
 export const theme = createTheme({
   colorSchemes: {
@@ -157,5 +166,6 @@ export const theme = createTheme({
   typography: {
     ...typoVariants,
     ...numberTypoVariants,
+    ...numberHideTypoVariants,
   },
 });

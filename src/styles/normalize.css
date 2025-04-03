@@ -23,6 +23,11 @@
   src:url(../assets/fonts//SpoqaHanSansNeo-Bold.ttf) format('truetype')
 }
 
+@font-face {
+  font-family: Inter700;
+  src:url(../assets/fonts//Inter-Bold.otf) format('opentype')
+}
+
 html {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */

@@ -16,6 +16,7 @@ import { Route as ManageDappsIndexImport } from './pages/manage-dapps/index'
 import { Route as GeneralSettingIndexImport } from './pages/general-setting/index'
 import { Route as DappListIndexImport } from './pages/dapp-list/index'
 import { Route as BuyCoinIndexImport } from './pages/buy-coin/index'
+import { Route as AllHistoryIndexImport } from './pages/all-history/index'
 import { Route as WalletTxResultIndexImport } from './pages/wallet/tx-result/index'
 import { Route as WalletSwapIndexImport } from './pages/wallet/swap/index'
 import { Route as WalletStakeIndexImport } from './pages/wallet/stake/index'
@@ -125,6 +126,12 @@ const DappListIndexRoute = DappListIndexImport.update({
 const BuyCoinIndexRoute = BuyCoinIndexImport.update({
   id: '/buy-coin/',
   path: '/buy-coin/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AllHistoryIndexRoute = AllHistoryIndexImport.update({
+  id: '/all-history/',
+  path: '/all-history/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -665,6 +672,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/all-history/': {
+      id: '/all-history/'
+      path: '/all-history'
+      fullPath: '/all-history'
+      preLoaderRoute: typeof AllHistoryIndexImport
       parentRoute: typeof rootRoute
     }
     '/buy-coin/': {
@@ -1255,6 +1269,7 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/all-history': typeof AllHistoryIndexRoute
   '/buy-coin': typeof BuyCoinIndexRoute
   '/dapp-list': typeof DappListIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
@@ -1342,6 +1357,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/all-history': typeof AllHistoryIndexRoute
   '/buy-coin': typeof BuyCoinIndexRoute
   '/dapp-list': typeof DappListIndexRoute
   '/general-setting': typeof GeneralSettingIndexRoute
@@ -1430,6 +1446,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/all-history/': typeof AllHistoryIndexRoute
   '/buy-coin/': typeof BuyCoinIndexRoute
   '/dapp-list/': typeof DappListIndexRoute
   '/general-setting/': typeof GeneralSettingIndexRoute
@@ -1519,6 +1536,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/all-history'
     | '/buy-coin'
     | '/dapp-list'
     | '/general-setting'
@@ -1605,6 +1623,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/all-history'
     | '/buy-coin'
     | '/dapp-list'
     | '/general-setting'
@@ -1691,6 +1710,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/all-history/'
     | '/buy-coin/'
     | '/dapp-list/'
     | '/general-setting/'
@@ -1779,6 +1799,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AllHistoryIndexRoute: typeof AllHistoryIndexRoute
   BuyCoinIndexRoute: typeof BuyCoinIndexRoute
   DappListIndexRoute: typeof DappListIndexRoute
   GeneralSettingIndexRoute: typeof GeneralSettingIndexRoute
@@ -1866,6 +1887,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AllHistoryIndexRoute: AllHistoryIndexRoute,
   BuyCoinIndexRoute: BuyCoinIndexRoute,
   DappListIndexRoute: DappListIndexRoute,
   GeneralSettingIndexRoute: GeneralSettingIndexRoute,
@@ -1986,6 +2008,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/all-history/",
         "/buy-coin/",
         "/dapp-list/",
         "/general-setting/",
@@ -2073,6 +2096,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/all-history/": {
+      "filePath": "all-history/index.tsx"
     },
     "/buy-coin/": {
       "filePath": "buy-coin/index.tsx"

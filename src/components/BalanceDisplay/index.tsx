@@ -17,6 +17,26 @@ type BalanceDisplayProps = {
   isDisableHidden?: boolean;
 };
 
+const NUMBER_HIDE_TYPO_MAP = {
+  h1n_B: 'nh1_B',
+  h2n_M: 'nh1_B',
+  h3n_B: 'nh3_B',
+  h3n_M: 'nh3_B',
+  h4n_M: 'nh4_B',
+  h5n_M: 'nh5_B',
+  h5n_R: 'nh5_B',
+  h6n_M: 'nh6_B',
+  h6n_R: 'nh6_B',
+  h7n_M: 'nh6_B',
+  h7n_R: 'nh6_B',
+  h8n_M: 'nh6_B',
+  h8n_R: 'nh6_B',
+} as const;
+
+export type NumberHideTypoVariants = keyof typeof NUMBER_HIDE_TYPO_MAP;
+
+type NumberHideTypoMappedVariants = (typeof NUMBER_HIDE_TYPO_MAP)[NumberHideTypoVariants];
+
 export default function BalanceDisplay({
   children,
   typoOfIntegers = 'h3n_B',
@@ -39,10 +59,12 @@ export default function BalanceDisplay({
 
   const [integerPart, decimalPart] = number.split('.');
 
+  const numberHideTypoVarient: NumberHideTypoMappedVariants = NUMBER_HIDE_TYPO_MAP[typoOfIntegers];
+
   return (
     <span>
       {!isBalanceVisible && !isDisableHidden ? (
-        <Typography variant={typoOfIntegers}>****</Typography>
+        <Typography variant={numberHideTypoVarient}>****</Typography>
       ) : (
         <span>
           <Typography variant={typoOfIntegers} component="span">

@@ -18,7 +18,7 @@ export type BaseCoinButtonProps = {
 
 export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, leftComponent, rightComponent, isActive, onClick }: BaseCoinButtonProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, isBalanceVisible } = useExtensionStorageStore((state) => state);
 
   const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
@@ -35,7 +35,11 @@ export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, l
             </BalanceDisplay>
           </RightDisplayAmountContainer>
 
-          <RightValueContainer>
+          <RightValueContainer
+            style={{
+              visibility: !isBalanceVisible ? 'hidden' : 'visible',
+            }}
+          >
             <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {value}
             </BalanceDisplay>

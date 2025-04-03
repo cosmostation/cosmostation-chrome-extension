@@ -9,6 +9,7 @@ import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { Route as AllHistory } from '@/pages/all-history';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
@@ -153,13 +154,17 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              <IconTextButton
-                style={{
-                  visibility: 'hidden',
-                }}
-                leadingIcon={<HistoryIcon />}
-              >
-                <HistoryButtonTypo variant="b3_M">{t('components.MainBox.Portfolio.index.history')}</HistoryButtonTypo>
+              <IconTextButton leadingIcon={<HistoryIcon />}>
+                <HistoryButtonTypo
+                  onClick={() => {
+                    navigate({
+                      to: AllHistory.to,
+                    });
+                  }}
+                  variant="b3_M"
+                >
+                  {t('components.MainBox.Portfolio.index.history')}
+                </HistoryButtonTypo>
               </IconTextButton>
               <BodyBottomChipButtonContainer>
                 <ChipButton
