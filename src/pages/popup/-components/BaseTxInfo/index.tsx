@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -67,16 +67,23 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, disableFee = fals
           <FeeCustomButton disabled={disableFee} onClick={onClickFee}>
             {displayFeeAmount ? (
               <EstimatedFeeTextContainer data-is-disabled={disableFee}>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
+                <BalanceDisplay
+                  typoOfIntegers="h5n_M"
+                  typoOfDecimals="h7n_R"
+                  currency={userCurrencyPreference}
+                  fixed={6}
+                  isDisableLeadingCurreny
+                  isDisableHidden
+                >
                   {displayFeeAmount}
-                </NumberTypo>
+                </BalanceDisplay>
                 &nbsp;
                 <Base1300Text variant="h7n_M">{feeCoin?.asset.symbol}</Base1300Text>
                 &nbsp;
                 <Base1300Text variant="b2_M">{'('}</Base1300Text>
-                <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+                <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
                   {value}
-                </NumberTypo>
+                </BalanceDisplay>
                 <Base1300Text variant="b2_M">{')'}</Base1300Text>
               </EstimatedFeeTextContainer>
             ) : (

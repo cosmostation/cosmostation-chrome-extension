@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { MAX_APPROVE_AMOUNT } from '@/constants/evm/common';
 import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -78,9 +78,9 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
               <Base1300Text variant="h3n_B">{'Infinte'}</Base1300Text>
             ) : (
               <LongAmountContainer>
-                <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+                <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
                   {displayAmount}
-                </NumberTypo>
+                </BalanceDisplay>
               </LongAmountContainer>
             )}
             &nbsp;

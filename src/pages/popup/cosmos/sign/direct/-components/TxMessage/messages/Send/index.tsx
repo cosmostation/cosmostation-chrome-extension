@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import PaginationControls from '@/components/PaginationControls';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import {
@@ -77,9 +77,9 @@ export default function Send({ msg, chain, currentStep, totalSteps, onPageChange
                 const symbolColor = coinAsset && ('color' in coinAsset ? coinAsset.color : undefined);
                 return (
                   <AmountContainer key={index}>
-                    <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+                    <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
                       {displayAmount}
-                    </NumberTypo>
+                    </BalanceDisplay>
                     &nbsp;
                     <SymbolText data-symbol-color={symbolColor} variant="b2_B">
                       {symbol}

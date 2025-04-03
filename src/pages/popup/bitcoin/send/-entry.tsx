@@ -5,13 +5,13 @@ import { networks, payments, Psbt } from 'bitcoinjs-lib';
 import { isTaprootInput, toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
 import { Typography } from '@mui/material';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
-import NumberTypo from '@/components/common/NumberTypo';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import EmptyAsset from '@/components/EmptyAsset';
@@ -412,9 +412,9 @@ export default function Entry({ request }: EntryProps) {
                   </Base1000Text>
                   <AmountWrapper>
                     <AmountContainer>
-                      <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={8}>
+                      <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={8} isDisableHidden>
                         {displaySendAmount}
-                      </NumberTypo>
+                      </BalanceDisplay>
                       &nbsp;
                       <SymbolText data-symbol-color={symbolColor} variant="b2_B">
                         {symbol}

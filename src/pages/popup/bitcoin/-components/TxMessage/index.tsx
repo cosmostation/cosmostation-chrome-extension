@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { networks, Psbt } from 'bitcoinjs-lib';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import PaginationControls from '@/components/PaginationControls';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -119,9 +119,9 @@ export default function TxMessage({ psbtHex, currentStep, totalSteps, title, onP
                     </AddressContainer>
 
                     <AmountContainer>
-                      <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+                      <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
                         {displayAmount}
-                      </NumberTypo>
+                      </BalanceDisplay>
                       &nbsp;
                       <SymbolText data-symbol-color={symbolColor} variant="b2_B">
                         {nativeAccountAsset?.asset.symbol}
@@ -162,9 +162,9 @@ export default function TxMessage({ psbtHex, currentStep, totalSteps, title, onP
                     </AddressContainer>
 
                     <AmountContainer>
-                      <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+                      <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
                         {displayAmount}
-                      </NumberTypo>
+                      </BalanceDisplay>
                       &nbsp;
                       <SymbolText data-symbol-color={symbolColor} variant="b2_B">
                         {nativeAccountAsset?.asset.symbol}

@@ -23,7 +23,7 @@ export function useFee({ coinId, config }: UseFeeProps) {
 
   const evmAccountAsset = getEVMAccountAsset();
 
-  const isSupportEIP1559 = evmAccountAsset?.chain.feeInfo.isEip1559 || false;
+  const isNeedDefaultEip1559 = evmAccountAsset?.chain.feeInfo.isEip1559 || false;
 
   const feeHistory = useFeeHistory({ coinId, bodyParams: [BLOCK_COUNT, 'latest', REWARD_PERCENTILES], config });
 
@@ -53,12 +53,23 @@ export function useFee({ coinId, config }: UseFeeProps) {
     return Array.from({ length: 3 }).reduce((acc: EIP1559Configuration[], _, index) => {
       const { minBaseFeePerGas, minMaxPriorityFeePerGas } = GAS_SETTINGS_BY_GAS_RATE_KEY[index];
 
-      const maxPriorityFeePerGas = averageReward[index] && gt(averageReward[index], minMaxPriorityFeePerGas) ? averageReward[index] : minMaxPriorityFeePerGas;
+      const maxPriorityFeePerGas = (() => {
+        if (isNeedDefaultEip1559) {
+          return averageReward[index] && gt(averageReward[index], minMaxPriorityFeePerGas) ? averageReward[index] : minMaxPriorityFeePerGas;
+        } else {
+          return averageReward[index];
+        }
+      })();
 
-      const maxBaseFeePerGas = plus(
-        baseFeePercentiles[index] && gt(baseFeePercentiles[index], minBaseFeePerGas) ? baseFeePercentiles[index] : minBaseFeePerGas,
-        maxPriorityFeePerGas,
-      );
+      const baseFeePerGas = (() => {
+        if (isNeedDefaultEip1559) {
+          return baseFeePercentiles[index] && gt(baseFeePercentiles[index], minBaseFeePerGas) ? baseFeePercentiles[index] : minBaseFeePerGas;
+        } else {
+          return baseFeePercentiles[index];
+        }
+      })();
+
+      const maxBaseFeePerGas = plus(baseFeePerGas, maxPriorityFeePerGas);
 
       return [
         ...acc,
@@ -68,15 +79,15 @@ export function useFee({ coinId, config }: UseFeeProps) {
         },
       ];
     }, []);
-  }, [feeHistory]);
+  }, [feeHistory.data?.result, isNeedDefaultEip1559]);
 
   const type = useMemo<FeeType | null>(() => {
     if (!currentFee && !currentGasPrice) {
       return null;
     }
 
-    return currentFee && isSupportEIP1559 ? 'EIP-1559' : 'BASIC';
-  }, [currentFee, currentGasPrice, isSupportEIP1559]);
+    return currentFee ? 'EIP-1559' : 'BASIC';
+  }, [currentFee, currentGasPrice]);
 
   const refetch = useCallback(async () => {
     await feeHistory.refetch();

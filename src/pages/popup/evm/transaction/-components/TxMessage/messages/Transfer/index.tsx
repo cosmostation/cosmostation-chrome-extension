@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toChecksumAddress } from 'ethereumjs-util';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import {
@@ -77,9 +77,9 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
             {t('pages.popup.evm.transaction.components.TxMessage.messages.Transfer.index.sendAmount')}
           </Base1000Text>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
               {displayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <SymbolText variant="b2_B">{symbol}</SymbolText>
           </AmountContainer>

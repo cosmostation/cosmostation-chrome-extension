@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import NumberTypo from '@/components/common/NumberTypo';
 import PaginationControls from '@/components/PaginationControls';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import {
@@ -95,9 +95,9 @@ export default function Swap({ msg, chain, currentStep, totalSteps, onPageChange
             {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Swap.index.input')}
           </Base1000Text>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
               {inputDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <SymbolText data-symbol-color={inputCoinSymbolColor} variant="b2_B">
               {inputCoinSymbol}
@@ -115,9 +115,9 @@ export default function Swap({ msg, chain, currentStep, totalSteps, onPageChange
             {t('pages.popup.cosmos.sign.amino.components.TxMessage.messages.Swap.index.output')}
           </Base1000Text>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isApporximation>
+            <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isApporximation isDisableHidden>
               {outputDisplayAmount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <SymbolText data-symbol-color={outputCoinSymbolColor} variant="b2_B">
               {outputCoinSymbol}
