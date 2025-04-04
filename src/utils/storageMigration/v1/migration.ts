@@ -396,16 +396,11 @@ export async function migrateData() {
       await migrateSelectedAptosNetworkId();
       await migrateSelectedSuiNetworkId();
 
-      setLoadingProgressBarStore(85);
-
       await migrateSelectedBitcoinNetworkId();
 
       await migrateProviders(legacyStorage);
-      await setExtensionLocalStorage('migrationStatus', {
-        '1.0.0': true,
-      });
 
-      setLoadingProgressBarStore(100);
+      setLoadingProgressBarStore(80);
     }
   } catch (error) {
     console.error('Fail to Migrate', error);

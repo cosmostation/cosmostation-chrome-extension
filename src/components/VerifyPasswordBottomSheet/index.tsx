@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -15,15 +16,22 @@ import StandardInput from '../common/StandardInput';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type VerifyPasswordBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  onSubmit: () => void;
+  encryptedPassword?: string;
+  title?: string;
+  description?: string;
+  onSubmit: (inputPassword?: string) => void;
 };
 
-export default function VerifyPasswordBottomSheet({ onClose, onSubmit, ...remainder }: VerifyPasswordBottomSheetProps) {
+export default function VerifyPasswordBottomSheet({ encryptedPassword, title, description, onClose, onSubmit, ...remainder }: VerifyPasswordBottomSheetProps) {
   const { t } = useTranslation();
 
   const { comparisonPasswordHash } = useExtensionStorageStore((state) => state);
 
-  const { passwordForm } = useSchema({ comparisonPasswordHash: comparisonPasswordHash! });
+  const passwordHash = encryptedPassword || comparisonPasswordHash;
+
+  const [inputPassword, setInputPassword] = useState('');
+
+  const { passwordForm } = useSchema({ comparisonPasswordHash: passwordHash! });
 
   const {
     register,
@@ -41,8 +49,9 @@ export default function VerifyPasswordBottomSheet({ onClose, onSubmit, ...remain
   const isButtonEnabled = !!password;
 
   const submit = () => {
-    onSubmit();
+    onSubmit(inputPassword);
     reset();
+    onClose?.({}, 'backdropClick');
   };
 
   return (
@@ -55,7 +64,7 @@ export default function VerifyPasswordBottomSheet({ onClose, onSubmit, ...remain
       <FormContainer onSubmit={handleSubmit(submit)}>
         <Header>
           <HeaderTitle>
-            <Typography variant="h2_B">{t('components.VerifyPasswordBottomSheet.index.title')}</Typography>
+            <Typography variant="h2_B">{title || t('components.VerifyPasswordBottomSheet.index.title')}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {
@@ -67,7 +76,9 @@ export default function VerifyPasswordBottomSheet({ onClose, onSubmit, ...remain
         </Header>
         <Body>
           <DescriptionContainer>
-            <DescriptionSubTitle variant="b3_R_Multiline">{t('components.VerifyPasswordBottomSheet.index.descriptionSubTitle')}</DescriptionSubTitle>
+            <DescriptionSubTitle variant="b3_R_Multiline">
+              {description || t('components.VerifyPasswordBottomSheet.index.descriptionSubTitle')}
+            </DescriptionSubTitle>
           </DescriptionContainer>
           <StandardInput
             label={t('components.VerifyPasswordBottomSheet.index.password')}
@@ -78,6 +89,7 @@ export default function VerifyPasswordBottomSheet({ onClose, onSubmit, ...remain
               input: {
                 ...register('password', {
                   setValueAs: (v: string) => {
+                    setInputPassword(v);
                     return v ? sha512(v) : '';
                   },
                 }),

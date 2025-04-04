@@ -6,7 +6,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useMultipleAccountTypes } from '@/hooks/useMultipleAccountTypes';
 import type { ChainToAccountTypeMap } from '@/types/account';
 import type { ChainAccountType } from '@/types/chain';
-import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import CoinType from './components/CoinType';
@@ -59,10 +59,13 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
 
               const totalAssetValue = plus(cosmosValueSum, cw20ValueSum);
 
+              const isHaveBalance = filteredCosmosAssets?.some((item) => gt(item.balance, '0')) || filteredCW20Assets?.some((item) => gt(item.balance, '0'));
+
               return {
                 accountType: i.accountType,
                 address: i.address,
                 totalAssetValue,
+                isHaveBalance: isHaveBalance || false,
               };
             }
 
@@ -78,10 +81,13 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
 
               const totalAssetValue = bitcoinValueSum;
 
+              const isHaveBalance = filteredBitcoinAssets?.some((item) => gt(item.balance, '0')) || false;
+
               return {
                 accountType: i.accountType,
                 address: i.address,
                 totalAssetValue,
+                isHaveBalance,
               };
             }
 
@@ -89,6 +95,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
               accountType: i.accountType,
               address: i.address,
               totalAssetValue: '0',
+              isHaveBalance: false,
             };
           }),
         };
@@ -108,9 +115,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
 
   const filteredAccountTypes = useMemo(() => {
     if (variant === 'filtered') {
-      return mappedMultipleAccountTypes.filter((item) =>
-        item.accountTypes.some((account) => account.accountType.isDefault === false && account.totalAssetValue !== '0'),
-      );
+      return mappedMultipleAccountTypes.filter((item) => item.accountTypes.some((account) => account.accountType.isDefault === false && account.isHaveBalance));
     }
 
     return mappedMultipleAccountTypes;

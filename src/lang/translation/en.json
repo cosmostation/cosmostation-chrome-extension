@@ -687,7 +687,12 @@
             "completed": "{{percent}}% Completed",
             "migrationError": "Migration Error, Please try again",
             "retry": "Retry Migration",
-            "startWithMigration": "Skip migration"
+            "startWithMigration": "Start migration",
+            "skipMigration": "Skip migration",
+            "migrationRequired": "Migration Required",
+            "verifyPasswordBottomSheetDescription": "Please enter your password to proceed. This step is required to securely access sensitive information",
+            "migrationRequiredDescription": "As the extension has been updated to the latest version, a migration process is required to safely transfer existing data. \n\n Please proceed with the migration for seamless service.",
+            "errorOccurred": "Error has occurred"
           }
         }
       }
