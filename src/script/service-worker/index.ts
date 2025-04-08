@@ -2,9 +2,14 @@
 // import { getAccountAssets } from '@/libs/asset';
 
 // import { addressToStorage, balanceToStorage, chainsAndAssetstoStorage } from './storage';
+import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
 import type { ServiceWorkerMessage } from '@/types/message/service-worker';
 import { extension } from '@/utils/browser';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { openTab } from '@/utils/view/controlView';
+import { closeWindow } from '@/utils/view/window';
 
 import { initExtensionView } from './initialize';
 import { process } from './message';
@@ -91,7 +96,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
   return true;
 });
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener((details) => {
   // const isMigrationRequired = await isMigrationRequired_V1_0_0();
 
   // console.log('🚀 ~ chrome.runtime.onInstalled.addListener ~ isMigrationRequired:', isMigrationRequired);
@@ -101,52 +106,56 @@ chrome.runtime.onInstalled.addListener(async () => {
   // } else {
   //   await v11();
   // }
-  await v11();
 
-  void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
-  void extension.action.setBadgeText({ text: '' });
+  void (async () => {
+    await v11();
+
+    if (details.reason === 'install') {
+      await openTab();
+    }
+  })();
 });
 
-// chrome.alarms.create('my5MinuteAlarm', { periodInMinutes: 1 });
+void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
+void extension.action.setBadgeText({ text: '' });
 
-// Set up a listener for the alarm event
-// chrome.alarms.onAlarm.addListener(async (alarm) => {
-//   if (alarm.name === 'my5MinuteAlarm') {
-//     await addAccount({
-//       id: '656fcd0b-90de-4fde-afdc-2ad6033c5224',
-//       index: '0',
-//       type: 'MNEMONIC',
-//       mnemonic:
-//         'now actor question craft ship link monster foot finger brain salmon sudden catch reunion remind wedding equal home scorpion cupboard awesome recycle gain reflect',
-//     });
+extension.windows.onRemoved.addListener((windowId) => {
+  void (async () => {
+    const queues = await getExtensionLocalStorage('requestQueue');
 
-//     await balance('656fcd0b-90de-4fde-afdc-2ad6033c5224');
+    const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
 
-//     const accountAssets = await getAccountAssets('656fcd0b-90de-4fde-afdc-2ad6033c5224');
+    const currentWindowId = await getExtensionLocalStorage('currentWindowId');
 
-//     chrome.storage.local.set({ accountAssets });
-//   }
-// });
+    if (typeof currentWindowId === 'number') {
+      currentWindowIds.push(currentWindowId);
+    }
 
-// import { initExtensionView } from './initialize';
+    const windowIds = Array.from(new Set(currentWindowIds));
 
-// function main() {
-//   initExtensionView();
-// }
+    await setExtensionLocalStorage('currentWindowId', null);
 
-// main();
+    if (windowIds.includes(windowId)) {
+      queues.forEach((queue) => {
+        sendMessage({
+          target: 'CONTENT',
+          method: 'responseApp',
+          origin: queue.origin,
+          requestId: queue.requestId,
+          tabId: queue.tabId,
+          params: {
+            id: queue.requestId,
+            error: {
+              code: RPC_ERROR.INVALID_INPUT,
+              message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]}`,
+            },
+          },
+        });
 
-// function startServiceWorker() {
-//   init();
-//   handleStorageUpdate();
-// }
+        void closeWindow(queue.windowId);
+      });
 
-// startServiceWorker();
-
-// import { initExtensionView } from './initialize';
-
-// function main() {
-//   initExtensionView();
-// }
-
-// main();
+      await setExtensionLocalStorage('requestQueue', []);
+    }
+  })();
+});

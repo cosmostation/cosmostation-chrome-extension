@@ -1,4 +1,5 @@
 import { extension } from '../browser';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
 export function getWindow(windowId: number): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
   return new Promise((res, rej) => {
@@ -43,5 +44,27 @@ export function getCurrentWindowInfo(): Promise<chrome.windows.Window | browser.
         res(windows);
       });
     }
+  });
+}
+
+export async function closeWindow(id?: number): Promise<void> {
+  const windowId = typeof id === 'number' ? id : await getExtensionLocalStorage('currentWindowId');
+  await setExtensionLocalStorage('currentWindowId', null);
+
+  const currentWindow = windowId ? await getWindow(windowId) : undefined;
+
+  return new Promise((res, rej) => {
+    if (!currentWindow?.id) {
+      res();
+      return;
+    }
+
+    void extension.windows.remove(currentWindow.id, () => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
+      }
+
+      res();
+    });
   });
 }
