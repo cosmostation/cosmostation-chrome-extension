@@ -2107,7 +2107,8 @@
           "infoDescription": "Please set a type for one coin. The assets of the selected coin type will be displayed in the portfolio, and using the default type is recommended.",
           "network": "Network",
           "selected": "Selected :",
-          "type": "{{accountType}} TYPE"
+          "type": "{{accountType}} TYPE",
+          "successSwitch": "Switched HD path. Your wallet address has been updated"
         },
         "components": {
           "coinTypeBottomSheet": {

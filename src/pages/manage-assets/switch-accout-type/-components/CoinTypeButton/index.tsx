@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
+import { useNavigate } from '@tanstack/react-router';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
@@ -8,9 +9,11 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
+import { Route as Home } from '@/pages/index';
 import type { Chain } from '@/types/chain';
 import { emitChangedAddressEvent } from '@/utils/event';
 import { getExtensionLocalStorage } from '@/utils/storage';
+import { toastSuccess } from '@/utils/toast';
 
 import { AccountTypeTextContainer, ChainImage } from './styled';
 import CoinTypeBottomSheet from '../CoinTypeBottomSheet';
@@ -22,6 +25,7 @@ type CoinTypeButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HT
 
 export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: CoinTypeButtonProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { currentAccount } = useCurrentAccount();
   const { updateCurrentPreferAccountType } = useCurrentPreferAccountTypes();
 
@@ -77,6 +81,12 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
           }
           await updateCurrentPreferAccountType(updatedPreferAccountType);
           await emitChangedAddressEvent(currentAccount.id);
+
+          navigate({
+            to: Home.to,
+          });
+
+          toastSuccess(t('pages.manage-assets.switch-account-type.entry.successSwitch'));
         }}
       />
     </>
