@@ -22,7 +22,8 @@ export const LabelContainer = styled('div')({
 });
 
 export const AddressContainer = styled('div')(({ theme }) => ({
-  maxWidth: '80%',
+  display: 'flex',
+  maxWidth: '95%',
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
   marginBottom: '1rem',
