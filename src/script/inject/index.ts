@@ -19,6 +19,8 @@ if (!window.__cosmostationInjected__) {
   window.__cosmostationInjected__ = true;
 
   void (() => {
+    if (typeof window === 'undefined') return;
+
     if (!window.cosmostation) {
       window.cosmostation = {
         version: __APP_VERSION__,
@@ -38,12 +40,7 @@ if (!window.__cosmostationInjected__) {
 
       registerSuiWallet(new SuiStandard());
       registerCosmosWallet(cosmosWallet);
-
-      (function () {
-        if (typeof window === 'undefined') return;
-
-        registerAptosWallet(CosmostationAptos.getInstance());
-      })();
+      registerAptosWallet(CosmostationAptos.getInstance());
 
       announceEip6963Provider();
 

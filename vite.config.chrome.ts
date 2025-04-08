@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
     : {
         include: ['src/**', 'browser/**'],
         exclude: ['src/proto/**'],
+        buildDelay: 300,
       };
 
   const manifestPath = resolve(__dirname, 'browser/chrome/manifest.json');

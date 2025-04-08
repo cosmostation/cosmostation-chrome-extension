@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
     ? null
     : {
         include: ['src/script/service-worker/**'],
+        exclude: ['src/proto/**'],
       };
 
   return {
