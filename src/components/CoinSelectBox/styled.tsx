@@ -37,6 +37,9 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
 
       color: theme.palette.color.base1300,
     },
+    '& .MuiInputBase-input.Mui-disabled': {
+      WebkitTextFillColor: theme.palette.color.base1300,
+    },
   },
 
   '& .MuiInput-underline': {
@@ -51,6 +54,22 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
 
     ':hover:not(.Mui-focused):before': {
       borderBottom: `0.2rem solid ${theme.palette.color.base600}`,
+      transition: 'none',
+    },
+  },
+
+  '& .MuiInput-underline.Mui-disabled': {
+    '&:before': {
+      borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+    },
+
+    '&:after': {
+      borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
+      transition: 'none',
+    },
+
+    ':hover:not(.Mui-focused):before': {
+      borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
       transition: 'none',
     },
   },
