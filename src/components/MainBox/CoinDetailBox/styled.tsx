@@ -57,6 +57,16 @@ export const StyledIconTextButton = styled(IconTextButton)({
   },
 });
 
+export const IconContainer = styled('div')({
+  width: '2.2rem',
+  height: '2.2rem',
+
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+  },
+});
+
 export const SpacedTypography = styled(Base1300Text)({
   marginTop: '0.4rem',
 });

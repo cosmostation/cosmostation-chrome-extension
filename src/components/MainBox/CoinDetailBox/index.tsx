@@ -13,6 +13,7 @@ import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -26,6 +27,7 @@ import {
   BodyTopContainer,
   BottomButtonContainer,
   ChangeAddressIconButtonContainer,
+  IconContainer,
   SpacedTypography,
   StyledIconTextButton,
   TopContainer,
@@ -33,7 +35,10 @@ import {
 import MainBox from '..';
 
 import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
-import StakeIcon from '@/assets/images/icons/Stake22.svg';
+import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
+import SendIcon from '@/assets/images/icons/Send22.svg';
+import SwapIcon from '@/assets/images/icons/Swap22.svg';
+import VoteIcon from '@/assets/images/icons/Vote28.svg';
 
 import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
 
@@ -113,6 +118,13 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     }
   };
 
+  const hanldeOnClickReceive = () => {
+    navigate({
+      to: Receive.to,
+      params: { coinId: coinId },
+    });
+  };
+
   const hanldeOnEthermintSend = useCallback(
     (val: 'cosmos' | 'evm') => {
       if (!currentCoin) return;
@@ -170,13 +182,39 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
         }
         bottom={
           <BottomButtonContainer>
-            <StyledIconTextButton onClick={hanldeOnClickSend} leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              onClick={hanldeOnClickSend}
+              leadingIcon={
+                <IconContainer>
+                  <SendIcon />
+                </IconContainer>
+              }
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.send')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              onClick={hanldeOnClickReceive}
+              leadingIcon={
+                <IconContainer>
+                  <ReceiveIcon />
+                </IconContainer>
+              }
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.receive')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              onClick={() => {
+                window.open('https://www.mintscan.io/wallet/swap', '_blank');
+              }}
+              leadingIcon={
+                <IconContainer>
+                  <SwapIcon />
+                </IconContainer>
+              }
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
             {formattedVoteURL && (
@@ -184,7 +222,11 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
                 onClick={() => {
                   window.open(formattedVoteURL, '_blank');
                 }}
-                leadingIcon={<StakeIcon />}
+                leadingIcon={
+                  <IconContainer>
+                    <VoteIcon />
+                  </IconContainer>
+                }
                 direction="vertical"
               >
                 <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.vote')}</SpacedTypography>
