@@ -1,11 +1,10 @@
 import type { SuiTransactionBlockResponse } from '@mysten/sui/client';
 
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 import { analyzeTransactions, getHumanReadable } from '@/utils/sui/parseTx';
 
 import { useTransactionBlocks } from './useTransactionBlocks';
 import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseAccountTxsProps = {
   coinId: string;
@@ -13,9 +12,8 @@ type UseAccountTxsProps = {
 };
 
 export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
-  const { data: accountAssets } = useAccountAssets();
-
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getSuiAccountAsset();
 
   const address = accountAsset?.address.address || '';
 

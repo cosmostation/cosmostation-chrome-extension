@@ -10,7 +10,7 @@ import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import InformationPanel from '@/components/InformationPanel/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
-import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
@@ -39,7 +39,7 @@ export default function Entry({ coinId }: EntryProps) {
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const { data } = useAccountAssets();
+  const { data } = useAccountAllAssets();
 
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 

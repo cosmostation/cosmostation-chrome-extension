@@ -4,11 +4,10 @@ import TxDetail from '@/components/AccountTxHistory/components/Common/TxDetail';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import type { FaucetTransactionInfo } from '@/types/sui/parseTx';
 import { isUnixTimestamp } from '@/utils/date';
 import { toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { AmountContainer, SymbolText } from './styled';
 import { TitleContainer } from '../../../../styled';
@@ -23,8 +22,8 @@ type SuiFaucetTxItemProps = {
 export default function SuiFaucetTxItem({ tx: faucetTransactionInfo, digest, timestampMs, coinId }: SuiFaucetTxItemProps) {
   const { t } = useTranslation();
 
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getSuiAccountAsset();
 
   const { amount } = faucetTransactionInfo;
 

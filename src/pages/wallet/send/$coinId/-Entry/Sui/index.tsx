@@ -20,14 +20,14 @@ import { DEFAULT_GAS_BUDGET, DEFAULT_GAS_BUDGET_MULTIPLY } from '@/constants/sui
 import { SUI_COIN_TYPE } from '@/constants/sui/index.ts';
 import { useDryRunTransaction } from '@/hooks/sui/useDryRunTransaction.ts';
 import { useGetCoins } from '@/hooks/sui/useGetCoins.ts';
-import { useAccountAssets } from '@/hooks/useAccountAssets.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { getCoinType } from '@/utils/sui/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign.ts';
@@ -55,20 +55,13 @@ export default function Sui({ coinId }: SuiProps) {
   const [isDisabled, setIsDisabled] = useState(false);
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
-  const { data } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
-  const parsedCoinId = parseCoinId(coinId);
+  const selectedCoinToSend = getSuiAccountAsset();
 
-  const selectedCoinToSend = (() => {
-    if (!data) return undefined;
+  const { getSuiAccountAsset: getSuiAccountMainAsset } = useGetAccountAsset({ coinId: SUI_COIN_TYPE });
 
-    if (parsedCoinId.chainType === 'sui') {
-      return data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-    }
-    return undefined;
-  })();
-
-  const feeCoinAsset = data?.suiAccountAssets.find(({ asset }) => asset.id === SUI_COIN_TYPE)?.asset;
+  const feeCoinAsset = getSuiAccountMainAsset()?.asset;
 
   const feeCoinDecimals = feeCoinAsset?.decimals || 9;
 

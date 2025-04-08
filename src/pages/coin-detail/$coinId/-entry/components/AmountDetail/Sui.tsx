@@ -2,9 +2,8 @@ import { useTranslation } from 'react-i18next';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { useDelegations } from '@/hooks/sui/useDelegations';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import {
   AmountDetailAttributeWrapper,
@@ -28,15 +27,11 @@ type SuiProps = {
 export default function Sui({ coinId }: SuiProps) {
   const { t } = useTranslation();
 
-  const { data } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
   const { delegation } = useDelegations({ coinId });
 
-  const selectedCoin = (() => {
-    if (!data) return undefined;
-
-    return data.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-  })();
+  const selectedCoin = getSuiAccountAsset();
 
   const decimal = selectedCoin?.asset.decimals || 0;
 

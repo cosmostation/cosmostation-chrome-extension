@@ -4,12 +4,10 @@ import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useAccountAllAssets } from './useAccountAllAssets';
-import { useAccountAssets } from './useAccountAssets';
 
 export function useCurrentCustomERC20Tokens() {
   const { customErc20Assets, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const { refetch: refetchAccountAssets } = useAccountAssets();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
   const currentCustomERC20Tokens = customErc20Assets;
@@ -30,7 +28,6 @@ export function useCurrentCustomERC20Tokens() {
 
     await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
 
-    await refetchAccountAssets();
     await refetchAccountAllAssets();
   };
 
@@ -54,7 +51,6 @@ export function useCurrentCustomERC20Tokens() {
 
     await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
 
-    await refetchAccountAssets();
     await refetchAccountAllAssets();
   };
 
@@ -64,7 +60,6 @@ export function useCurrentCustomERC20Tokens() {
 
     await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
 
-    await refetchAccountAssets();
     await refetchAccountAllAssets();
   };
 

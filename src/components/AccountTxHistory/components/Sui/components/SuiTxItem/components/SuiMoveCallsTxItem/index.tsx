@@ -1,10 +1,9 @@
 import TxDetail from '@/components/AccountTxHistory/components/Common/TxDetail';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import type { MoveCallTransactionInfo } from '@/types/sui/parseTx';
 import { isUnixTimestamp } from '@/utils/date';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { capitalize } from '@/utils/string';
 
 import { TitleContainer } from '../../../../styled';
@@ -17,8 +16,8 @@ type SuiMoveCallsTxItemProps = {
 };
 
 export default function SuiMoveCallsTxItem({ tx: moveCallTransactionInfo, digest, timestampMs, coinId }: SuiMoveCallsTxItemProps) {
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getSuiAccountAsset();
 
   const { moduleName, functionName } = moveCallTransactionInfo;
 

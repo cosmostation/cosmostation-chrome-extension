@@ -11,7 +11,7 @@ import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
 import OutlinedInput from '@/components/common/OutlinedInput';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
@@ -53,7 +53,7 @@ export default function Entry() {
 
   const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
-  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAssets } = useAccountAllAssets();
 
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
   const [isLoadingSetUp, setIsLoadingSetUp] = useState(false);

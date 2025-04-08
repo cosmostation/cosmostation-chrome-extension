@@ -4,9 +4,8 @@ import BalanceDisplay from '@/components/BalanceDisplay';
 import { KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { useAmount } from '@/hooks/cosmos/useAmount';
 import { useReward } from '@/hooks/cosmos/useReward';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { AmountDetailWrapper, Container, DetailRow, LabelText, TitleText, ValueText } from './styled';
 
@@ -17,7 +16,7 @@ type CosmosProps = {
 export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
 
-  const { data } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const { delegationAmount, unbondingAmount, rewardAmount, incentiveAmount } = useAmount(coinId);
 
@@ -25,18 +24,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     coinId,
   });
 
-  const selectedCoin = (() => {
-    if (!data) return undefined;
-
-    const aggregatedCosmosAccountAssets = [
-      ...data.cosmosAccountAssets,
-      ...data.cosmosAccountCustomAssets,
-      ...data.cw20AccountAssets,
-      ...data.customCw20AccountAssets,
-    ];
-
-    return aggregatedCosmosAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-  })();
+  const selectedCoin = getCosmosAccountAsset();
 
   const decimal = selectedCoin?.asset.decimals || 0;
 

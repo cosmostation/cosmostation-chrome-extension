@@ -6,11 +6,10 @@ import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import { useDelegations } from '@/hooks/sui/useDelegations';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
 import { Route as Unstake } from '@/pages/wallet/unstake/$coinId';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import {
   AmountContainer,
@@ -40,10 +39,10 @@ export default function Sui({ coinId }: SuiProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data } = useAccountAssets();
   const { delegation, suiCosmostationValidator, activeDelegationDetails } = useDelegations({ coinId });
 
-  const currentCoin = data?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const currentCoin = getSuiAccountAsset();
 
   const symbol = currentCoin?.asset.symbol;
   const decimals = currentCoin?.asset.decimals;

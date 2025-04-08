@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import type { AccountTx } from '@/types/bitcoin/txs';
 import { gt, minus, plus, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
 
 import { AmountContainer, StatusContainer, SymbolText, TitleContainer } from './styled';
@@ -20,8 +19,8 @@ type BitcoinMempoolTxItemProps = {
 export default function BitcoinMempoolTxItem({ tx, coinId }: BitcoinMempoolTxItemProps) {
   const { t } = useTranslation();
 
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.bitcoinAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getBitcoinAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getBitcoinAccountAsset();
 
   const address = currentAsset?.address.address || '';
 

@@ -4,21 +4,22 @@ import Big from 'big.js';
 import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
 import { gt, plus } from '@/utils/numbers';
-import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
 import { useAccount } from './useAccount';
 import { useDelegation } from './useDelegation';
 import { useIncentive } from './useIncentive';
 import { useReward } from './useReward';
 import { useUndelegation } from './useUndelegation';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 export function useAmount(coinId: string) {
   const account = useAccount({
     coinId,
   });
 
-  const { data: accountAssets } = useAccountAssets();
+  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAssets = getCosmosAccountAsset();
 
   const delegation = useDelegation({
     coinId,
@@ -35,7 +36,7 @@ export function useAmount(coinId: string) {
 
   const { id: denom, chainId } = parseCoinId(coinId);
 
-  const availableAmount = accountAssets?.cosmosAccountAssets.find((accountAsset) => isMatchingCoinId(accountAsset.asset, coinId))?.balance || '0';
+  const availableAmount = accountAssets?.balance || '0';
 
   const delegationAmount =
     delegation?.data

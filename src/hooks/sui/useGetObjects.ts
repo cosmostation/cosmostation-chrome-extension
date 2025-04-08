@@ -2,11 +2,11 @@ import type { SuiObjectDataOptions } from '@mysten/sui/client';
 
 import { getMultiObjects } from '@/libs/asset';
 import { isAxiosError } from '@/utils/axios';
-import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGetObjectsProps = {
   coinId: string;
@@ -16,9 +16,8 @@ type UseGetObjectsProps = {
 };
 
 export function useGetObjects({ coinId, objectIds, options, config }: UseGetObjectsProps) {
-  const { data: accountAssets } = useAccountAssets();
-
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getSuiAccountAsset();
 
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 

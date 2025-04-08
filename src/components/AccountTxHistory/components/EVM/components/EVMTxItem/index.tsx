@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import type { AccountTx } from '@/types/evm/txs';
 import { isUnixTimestamp } from '@/utils/date';
 import { gt } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { AmountContainer, SymbolText } from './styled';
@@ -21,8 +20,8 @@ type EVMTxItemProps = {
 export default function EVMTxItem({ tx, coinId }: EVMTxItemProps) {
   const { t } = useTranslation();
 
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.evmAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getEVMAccountAsset();
 
   const address = currentAsset?.address.address || '';
 

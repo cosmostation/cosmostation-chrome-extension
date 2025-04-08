@@ -12,7 +12,7 @@ import MnemnicBackupChecker from '@/components/MnemnicBackupChecker';
 import type { MnemonicCheckForm } from '@/components/MnemnicBackupChecker/useSchema';
 import { useSchema } from '@/components/MnemnicBackupChecker/useSchema';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
@@ -39,7 +39,7 @@ export default function Entry() {
   const { mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { setCurrentAccount, addAccountWithName } = useCurrentAccount();
-  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAssets } = useAccountAllAssets();
   const { account } = useNewAccountStore();
 
   const { currentPassword } = useCurrentPassword();

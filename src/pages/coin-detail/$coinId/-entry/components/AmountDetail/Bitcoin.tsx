@@ -3,9 +3,8 @@ import { Typography } from '@mui/material';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { useBalance } from '@/hooks/bitcoin/useBalance';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { AmountDetailWrapper, Container, DetailRow, LabelText, PendingAmountContainer, TitleText, ValueText } from './styled';
@@ -17,14 +16,10 @@ type BitcoinProps = {
 export default function Bitcoin({ coinId }: BitcoinProps) {
   const { t } = useTranslation();
 
-  const { data } = useAccountAssets();
+  const { getBitcoinAccountAsset } = useGetAccountAsset({ coinId });
   const { data: currentAccountBalance } = useBalance();
 
-  const selectedCoin = (() => {
-    if (!data) return undefined;
-
-    return data.bitcoinAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
-  })();
+  const selectedCoin = getBitcoinAccountAsset();
 
   const address = selectedCoin?.address.address || '';
 

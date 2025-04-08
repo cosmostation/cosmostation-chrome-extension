@@ -2,15 +2,10 @@ import { getHiddenAssets } from '@/libs/asset';
 import type { AssetId } from '@/types/asset';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
-import { useAccountAssets } from './useAccountAssets';
 import { useCurrentAccount } from './useCurrentAccount';
 
 export function useCurrentHiddenAssetIds() {
   const { currentAccount } = useCurrentAccount();
-
-  const { refetch: refetchAccountAssets } = useAccountAssets();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
   const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
@@ -30,9 +25,6 @@ export function useCurrentHiddenAssetIds() {
     const updatedHiddenAssetIds = [...storedHiddenAssetIds, assetId];
 
     await updateExtensionStorageStore(`${currentAccount.id}-hidden-assetIds`, updatedHiddenAssetIds);
-
-    await refetchAccountAssets();
-    await refetchAccountAllAssets();
   };
 
   const showAsset = async (assetId: AssetId) => {
@@ -43,9 +35,6 @@ export function useCurrentHiddenAssetIds() {
     );
 
     await updateExtensionStorageStore(`${currentAccount.id}-hidden-assetIds`, updatedHiddenAssetIds);
-
-    await refetchAccountAssets();
-    await refetchAccountAllAssets();
   };
 
   return { currentHiddenAssetIds, hideAsset, showAsset };

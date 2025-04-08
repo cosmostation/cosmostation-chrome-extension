@@ -7,10 +7,9 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
 import MainBox from '@/components/MainBox';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { times } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { BodyBottomContainer, BodyContainer, BodyTopContainer, ChevronIconContainer, MinReceivedAmountTextContainer, SymbolText, TopContainer } from './styled';
@@ -28,12 +27,12 @@ export default function CoinInputBox({ coinId, displayMinReceiveAmount }: CoinIn
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const { data } = useAccountAssets();
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const [isOpenCoinBottomSheet, setisOpenCoinBottomSheet] = useState(false);
 
-  const coin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const coin = getAccountAsset();
 
   const { asset, chain } = coin || {};
 

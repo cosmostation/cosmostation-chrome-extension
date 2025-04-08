@@ -3,11 +3,10 @@ import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 
 import { isAxiosError } from '@/utils/axios';
 import { times } from '@/utils/numbers';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useInfiniteFetch } from '../common/useInfiniteFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGetAccountTransactionsProps = {
   coinId: string;
@@ -17,9 +16,8 @@ type UseGetAccountTransactionsProps = {
 const limit = 25;
 
 export function useGetAccountTransactions({ coinId, config }: UseGetAccountTransactionsProps) {
-  const { data: accountAssets } = useAccountAssets();
-
-  const accountAsset = accountAssets?.aptosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const { getAptosAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getAptosAccountAsset();
 
   const address = accountAsset?.address.address || '';
 

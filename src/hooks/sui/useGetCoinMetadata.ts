@@ -4,9 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { SuiRpcGetCoinMetaDataResponse } from '@/types/sui/api';
 import { isAxiosError, post } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGetCoinMetadataProps = {
   coinType: string;
@@ -15,11 +14,11 @@ type UseGetCoinMetadataProps = {
 };
 
 export function useGetCoinMetadata({ coinType, coinId, config }: UseGetCoinMetadataProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
 
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const accountAsset = getSuiAccountAsset();
 
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 

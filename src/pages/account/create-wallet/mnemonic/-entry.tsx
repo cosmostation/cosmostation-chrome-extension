@@ -10,7 +10,7 @@ import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import MnemonicViewer from '@/components/MnemonicViewer';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
@@ -48,7 +48,7 @@ export default function Entry() {
 
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
 
-  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAssets } = useAccountAllAssets();
 
   const isInitialSetup = userAccounts.length === 0;
 

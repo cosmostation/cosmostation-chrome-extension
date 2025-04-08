@@ -4,7 +4,11 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
+import type { AccountAddress } from '@/types/account';
 import type { AccountAssets as AccountAllAssets, AllCosmosAccountAssets, AllEVMAccountAssets, FlatAccountAssets } from '@/types/accountAssets';
+import type { AssetId } from '@/types/asset';
+import { gt } from '@/utils/numbers';
+import { isEqualsIgnoringCase } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useCurrentAccount } from './useCurrentAccount';
@@ -35,15 +39,15 @@ export function useAccountAllAssets({
   config,
 }: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
-  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
+  const extensionStorageState = useExtensionStorageStore((state) => state);
 
   const param = accountId || currentAccount.id;
-  const accountType = preferAccountType[param];
+  const accountType = extensionStorageState.preferAccountType[param];
 
   const fetcher = async () => {
     try {
-      const accountAssets = await getAccountAssets(param, { disableFilterHidden: disableHiddenFilter, disableBalanceFilter: disableBalanceFilter });
-      const accountCustomAssets = await getAccountCustomAssets(param, { disableFilterHidden: disableHiddenFilter, disableBalanceFilter: disableBalanceFilter });
+      const accountAssets = await getAccountAssets(param, { disableFilterHidden: true, disableBalanceFilter: true });
+      const accountCustomAssets = await getAccountCustomAssets(param, { disableFilterHidden: true, disableBalanceFilter: true });
       return {
         ...accountAssets,
         ...accountCustomAssets,
@@ -54,7 +58,7 @@ export function useAccountAllAssets({
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['accountAllAssets', param, disableHiddenFilter, disableBalanceFilter],
+    queryKey: ['accountAllAssets', param],
     queryFn: fetcher,
     enabled: !!param,
     staleTime: 1000 * 14,
@@ -62,11 +66,71 @@ export function useAccountAllAssets({
     ...config,
   });
 
-  const returnData = useMemo(() => {
+  const hiddenAssetIds = useMemo(() => extensionStorageState[`${param}-hidden-assetIds`] || [], [extensionStorageState, param]);
+  const visibleAssetIds = useMemo(() => extensionStorageState[`${param}-visible-assetIds`] || [], [extensionStorageState, param]);
+
+  const bitcoinBalanceInfo = useMemo(() => extensionStorageState[`${param}-balance-bitcoin`] || [], [extensionStorageState, param]);
+
+  const filteredByVisibleList = useMemo(() => {
     if (!data) return null;
 
+    const shouldShowAsset = (asset: AssetId, balance: string, address: AccountAddress) => {
+      const isVisible = visibleAssetIds.some(
+        (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
+      );
+
+      if (isVisible) return true;
+
+      const isHidden = disableHiddenFilter
+        ? false
+        : hiddenAssetIds.some((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType);
+
+      if (isHidden) return false;
+
+      const isBalanceGreaterThanZero = (() => {
+        if (asset.chainType === 'bitcoin') {
+          const balanceInfo = bitcoinBalanceInfo?.find(
+            (balance) =>
+              isEqualsIgnoringCase(balance.address, address.address) && balance.chainId === address.chainId && balance.chainType === address.chainType,
+          );
+
+          const pendingFundedAmount = balanceInfo?.balance.chainStats?.funded_txo_sum || '0';
+          const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
+
+          const isBalanceGreaterThanZero = gt(balance, '0');
+
+          return isBalanceGreaterThanZero || isPendingReceiveBalanceGreaterThanZero;
+        } else {
+          return gt(balance, '0');
+        }
+      })();
+
+      return disableBalanceFilter ? true : isBalanceGreaterThanZero;
+    };
+
+    const filterAssetList = <T extends { asset: AssetId; balance: string; address: AccountAddress }>(list: T[]): T[] =>
+      list.filter(({ asset, balance, address }) => shouldShowAsset(asset, balance, address));
+
+    return {
+      cosmosAccountAssets: filterAssetList(data.cosmosAccountAssets),
+      cosmosAccountCustomAssets: filterAssetList(data.cosmosAccountCustomAssets),
+      evmAccountAssets: filterAssetList(data.evmAccountAssets),
+      evmAccountCustomAssets: filterAssetList(data.evmAccountCustomAssets),
+      aptosAccountAssets: filterAssetList(data.aptosAccountAssets),
+      suiAccountAssets: filterAssetList(data.suiAccountAssets),
+      cw20AccountAssets: filterAssetList(data.cw20AccountAssets),
+      erc20AccountAssets: filterAssetList(data.erc20AccountAssets),
+      customErc20AccountAssets: filterAssetList(data.customErc20AccountAssets),
+      customCw20AccountAssets: filterAssetList(data.customCw20AccountAssets),
+      bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
+    };
+  }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, visibleAssetIds]);
+
+  const returnData = useMemo(() => {
+    if (!filteredByVisibleList) return null;
+
     if (filterByPreferAccountType) {
-      const filteredCosmos = data.cosmosAccountAssets
+      const filteredCosmos = filteredByVisibleList.cosmosAccountAssets
         .filter((item) => {
           const selectedChainAccountType = accountType?.[item.chain.id];
 
@@ -94,7 +158,7 @@ export function useAccountAllAssets({
             item.chain.chainType === 'cosmos' &&
             item.chain.isEvm &&
             item.chain.mainAssetDenom === item.asset.id &&
-            data.evmAccountAssets.some((evmAsset) => {
+            filteredByVisibleList.evmAccountAssets.some((evmAsset) => {
               const isSameAssetChain = evmAsset.chain.id === item.chain.id;
 
               const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
@@ -110,7 +174,7 @@ export function useAccountAllAssets({
           return true;
         });
 
-      const filteredCW20 = data.cw20AccountAssets.filter((item) => {
+      const filteredCW20 = filteredByVisibleList.cw20AccountAssets.filter((item) => {
         const selectedChainAccountType = accountType?.[item.chain.id];
 
         if (selectedChainAccountType) {
@@ -130,7 +194,7 @@ export function useAccountAllAssets({
         return true;
       });
 
-      const filteredEVM = data.evmAccountAssets.filter((item) => {
+      const filteredEVM = filteredByVisibleList.evmAccountAssets.filter((item) => {
         const selectedChainAccountType = accountType?.[item.chain.id];
 
         if (selectedChainAccountType) {
@@ -150,7 +214,7 @@ export function useAccountAllAssets({
         return true;
       });
 
-      const filteredERC20Assets = data.erc20AccountAssets.filter((item) => {
+      const filteredERC20Assets = filteredByVisibleList.erc20AccountAssets.filter((item) => {
         const selectedChainAccountType = accountType?.[item.chain.id];
 
         if (selectedChainAccountType) {
@@ -169,7 +233,7 @@ export function useAccountAllAssets({
         return true;
       });
 
-      const filteredBitcoin = data.bitcoinAccountAssets.filter((item) => {
+      const filteredBitcoin = filteredByVisibleList.bitcoinAccountAssets.filter((item) => {
         const selectedChainAccountType = accountType?.[item.chain.id];
 
         if (selectedChainAccountType) {
@@ -189,7 +253,7 @@ export function useAccountAllAssets({
         return true;
       });
 
-      const filteredAccountAssets = produce(data, (draft) => {
+      const filteredAccountAssets = produce(filteredByVisibleList, (draft) => {
         draft.cosmosAccountAssets = filteredCosmos;
         draft.cw20AccountAssets = filteredCW20;
         draft.evmAccountAssets = filteredEVM;
@@ -218,18 +282,28 @@ export function useAccountAllAssets({
 
       return returnData;
     } else {
-      const flatAccountAssets = Object.values(data).flat();
+      const flatAccountAssets = Object.values(filteredByVisibleList).flat();
 
       const returnData: UseAccountAssetsResponse = {
-        ...data,
+        ...filteredByVisibleList,
         flatAccountAssets: flatAccountAssets,
-        allCosmosAccountAssets: [...data.cosmosAccountAssets, ...data.cosmosAccountCustomAssets, ...data.cw20AccountAssets, ...data.customCw20AccountAssets],
-        allEVMAccountAssets: [...data.evmAccountAssets, ...data.evmAccountCustomAssets, ...data.erc20AccountAssets, ...data.customErc20AccountAssets],
+        allCosmosAccountAssets: [
+          ...filteredByVisibleList.cosmosAccountAssets,
+          ...filteredByVisibleList.cosmosAccountCustomAssets,
+          ...filteredByVisibleList.cw20AccountAssets,
+          ...filteredByVisibleList.customCw20AccountAssets,
+        ],
+        allEVMAccountAssets: [
+          ...filteredByVisibleList.evmAccountAssets,
+          ...filteredByVisibleList.evmAccountCustomAssets,
+          ...filteredByVisibleList.erc20AccountAssets,
+          ...filteredByVisibleList.customErc20AccountAssets,
+        ],
       };
 
       return returnData;
     }
-  }, [accountType, data, disableDupeEthermint, filterByPreferAccountType]);
+  }, [accountType, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
 
   return { data: returnData, isLoading, error, refetch };
 }

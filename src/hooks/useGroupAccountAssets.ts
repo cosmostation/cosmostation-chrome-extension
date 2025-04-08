@@ -5,7 +5,7 @@ import type { FlatAccountAssets, SingleOrGroupAccountAssets } from '@/types/acco
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
-import { useAccountAssets } from './useAccountAssets';
+import { useAccountAllAssets } from './useAccountAllAssets';
 import { useCurrentAccount } from './useCurrentAccount';
 
 export type SingleAndGroupedAssets = {
@@ -30,7 +30,12 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
 
   const param = accountId || currentAccount.id;
 
-  const { data: currentAccountAssets, isLoading } = useAccountAssets({ accountId: param });
+  const { data: currentAccountAssets, isLoading } = useAccountAllAssets({
+    accountId: param,
+    disableBalanceFilter: false,
+    disableHiddenFilter: false,
+    filterByPreferAccountType: true,
+  });
 
   const groupAccountAssets = useMemo(() => {
     const assetToSingleOrGroup = currentAccountAssets?.flatAccountAssets.reduce<SingleAndGroupedAssets>(

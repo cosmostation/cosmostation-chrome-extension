@@ -1,11 +1,10 @@
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { AccountTxsPayload } from '@/types/evm/txs';
 import { get } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useInfiniteFetch } from '../common/useInfiniteFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseAccountTxsProps = {
   coinId: string;
@@ -13,9 +12,8 @@ type UseAccountTxsProps = {
 };
 
 export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
-  const { data: accountAssets } = useAccountAssets();
-
-  const accountAsset = accountAssets?.evmAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getEVMAccountAsset();
 
   const chainId = accountAsset?.chain.id || '';
 

@@ -7,11 +7,10 @@ import Base1300Text from '@/components/common/Base1300Text';
 import { SUI_COIN_TYPE, SUI_TOKEN_TEMPORARY_DECIMALS } from '@/constants/sui';
 import { useGetCoinMetadata } from '@/hooks/sui/useGetCoinMetadata';
 import { useGetLatestSuiSystemState } from '@/hooks/sui/useGetLatestSuiSystemState';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import type { StakingTransactionInfo } from '@/types/sui/parseTx';
 import { isUnixTimestamp } from '@/utils/date';
 import { toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { AmountContainer, SymbolText } from './styled';
@@ -27,8 +26,8 @@ type SuiStakingTxItemProps = {
 export default function SuiStakingTxItem({ tx: stakingTransactionInfo, digest, timestampMs, isTxFail, coinId }: SuiStakingTxItemProps) {
   const { t } = useTranslation();
 
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getSuiAccountAsset();
 
   const { validatorAddress, amount, coinType, isUnstaking } = stakingTransactionInfo;
 

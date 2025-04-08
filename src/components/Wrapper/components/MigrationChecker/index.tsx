@@ -11,7 +11,7 @@ import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 import OutlinedChipButton from '@/components/OutlinedChipButton';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
 import { extension } from '@/utils/browser';
@@ -50,7 +50,7 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
   const { setCurrentPassword } = useCurrentPassword();
   const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
 
-  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAssets } = useAccountAllAssets();
 
   const [isOpenVerifyBottomSheet, setIsOpenVerifyBottomSheet] = useState(false);
   const [encryptedPassword, setEncryptedPassword] = useState<string | undefined>();

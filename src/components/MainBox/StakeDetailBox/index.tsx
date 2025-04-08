@@ -1,5 +1,4 @@
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import Cosmos from './Cosmos';
 import Sui from './Sui';
@@ -9,8 +8,8 @@ type StakeDetailBoxProps = {
 };
 
 export default function StakeDetailBox({ coinId }: StakeDetailBoxProps) {
-  const { data } = useAccountAssets();
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
+  const currentCoin = getAccountAsset();
 
   if (currentCoin?.asset.chainType === 'cosmos') {
     return <Cosmos coinId={coinId} />;

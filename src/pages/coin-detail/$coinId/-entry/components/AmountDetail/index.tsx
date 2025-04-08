@@ -1,5 +1,4 @@
-import { useAccountAssets } from '@/hooks/useAccountAssets';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import Bitcoin from './Bitcoin';
 import Cosmos from './Cosmos';
@@ -10,8 +9,8 @@ type AmountDetailProps = {
 };
 
 export default function AmountDetail({ coinId }: AmountDetailProps) {
-  const { data } = useAccountAssets();
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
+  const currentCoin = getAccountAsset();
 
   if (currentCoin?.chain.chainType === 'cosmos') {
     const isStakeable = currentCoin?.chain.isSupportStaking && currentCoin.asset.id === currentCoin.chain.mainAssetDenom;

@@ -1,10 +1,9 @@
 import TxDetail from '@/components/AccountTxHistory/components/Common/TxDetail';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import type { BasicTransactionInfo } from '@/types/sui/parseTx';
 import { isUnixTimestamp } from '@/utils/date';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { TitleContainer } from '../../../../styled';
 
@@ -16,8 +15,8 @@ type SuiBasicTxItemProps = {
 };
 
 export default function SuiBasicTxItem({ tx: basicTransactionInfo, digest, timestampMs, coinId }: SuiBasicTxItemProps) {
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.suiAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getSuiAccountAsset();
 
   const { commands, type } = basicTransactionInfo;
 

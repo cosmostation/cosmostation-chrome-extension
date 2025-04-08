@@ -3,10 +3,9 @@ import type { SuiObjectResponseQuery } from '@mysten/sui/client';
 
 import type { SuiGetObjectsOwnedByAddressResponse } from '@/types/sui/api';
 import { isAxiosError, post } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import { useFetch, type UseFetchConfig } from '../common/useFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGetObjectsOwnedByAddressProps = {
   coinId: string;
@@ -15,11 +14,10 @@ type UseGetObjectsOwnedByAddressProps = {
 };
 
 export function useGetObjectsOwnedByAddress({ coinId, queryOptions, config }: UseGetObjectsOwnedByAddressProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getSuiAccountAsset();
 
   const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
-
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
 
   const address = accountAsset?.address.address || '';
 

@@ -2,10 +2,9 @@ import type { SuiTransactionBlockResponseQuery } from '@mysten/sui/client';
 
 import type { SuiRpcGetTransactionBlocksResponse } from '@/types/sui/api';
 import { isAxiosError, post } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import { useInfiniteFetch, type UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseTransactionBlocksProps = {
   coinId: string;
@@ -18,9 +17,8 @@ const limit = 30;
 const isOrderByLatest = true;
 
 export function useTransactionBlocks({ coinId, queryOptions, config }: UseTransactionBlocksProps) {
-  const { data: accountAssets } = useAccountAssets();
-
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getSuiAccountAsset();
 
   const address = accountAsset?.address.address || '';
 

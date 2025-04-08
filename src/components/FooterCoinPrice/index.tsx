@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import { useAccountAssets } from '@/hooks/useAccountAssets';
 import { useCoinGeckoHistory } from '@/hooks/useCoinGeckoHistory';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -35,9 +34,10 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
-  const { data } = useAccountAssets();
 
-  const currentCoin = data?.flatAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAccountAsset } = useGetAccountAsset({ coinId });
+  const currentCoin = getAccountAsset();
+
   const coinGeckoId = currentCoin?.asset.coinGeckoId;
 
   const { data: coinGeckoHistory } = useCoinGeckoHistory(coinGeckoId);

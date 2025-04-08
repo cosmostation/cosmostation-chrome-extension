@@ -3,9 +3,8 @@ import { isPendingTransactionResponse, type TransactionResponse } from '@aptos-l
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getLocalTime } from '@/utils/aptos/tx';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { StatusContainer, TitleContainer } from './styled';
 import TxDetail from '../../../Common/TxDetail';
@@ -18,8 +17,8 @@ type AptosPendingTxItemProps = {
 export default function AptosPendingTxItem({ tx, coinId }: AptosPendingTxItemProps) {
   const { t } = useTranslation();
 
-  const { data: accountAssets } = useAccountAssets();
-  const currentAsset = accountAssets?.evmAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const { getAptosAccountAsset } = useGetAccountAsset({ coinId });
+  const currentAsset = getAptosAccountAsset();
 
   const pendingTx = isPendingTransactionResponse(tx) ? tx : null;
 

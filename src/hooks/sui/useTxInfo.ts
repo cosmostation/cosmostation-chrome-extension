@@ -3,11 +3,10 @@ import type { SuiTransactionBlockResponseOptions } from '@mysten/sui/client';
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
 import type { SuiTxInfoResponse } from '@/types/sui/api';
 import { isAxiosError, post } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
-import { useAccountAssets } from '../useAccountAssets';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseTxInfoProps = {
   coinId: string;
@@ -17,9 +16,9 @@ type UseTxInfoProps = {
 };
 
 export function useTxInfo({ coinId, digest, queryOptions, config }: UseTxInfoProps) {
-  const { data: accountAssets } = useAccountAssets();
+  const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
-  const accountAsset = accountAssets?.suiAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const accountAsset = getSuiAccountAsset();
 
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 

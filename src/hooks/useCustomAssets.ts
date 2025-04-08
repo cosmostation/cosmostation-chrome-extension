@@ -3,12 +3,12 @@ import { isMatchingCoinId, isSameCoin } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useRefreshAccountAssets } from './useRefreshAccountAssets';
+import { useAccountAllAssets } from './useAccountAllAssets';
 
 export function useCustomAssets() {
   const { customAssets, customHiddenAssetIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
-  const { refreshAccountAssets } = useRefreshAccountAssets();
+  const { refetch } = useAccountAllAssets();
 
   const addCustomAsset = async (newAsset: CustomAsset) => {
     const storedCustomAssets = await getExtensionLocalStorage('customAssets');
@@ -25,7 +25,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refreshAccountAssets();
+    await refetch();
   };
 
   const removeCustomAsset = async (coinId: string) => {
@@ -35,7 +35,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refreshAccountAssets();
+    await refetch();
   };
 
   const editCustomAsset = async (coinId: string, newAsset: CustomAsset) => {
@@ -45,7 +45,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refreshAccountAssets();
+    await refetch();
   };
 
   const hideCustomAsset = async (targetAsset: AssetId) => {
@@ -55,7 +55,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
-    await refreshAccountAssets();
+    await refetch();
   };
 
   const showCustomAsset = async (assetId: AssetId) => {
@@ -65,7 +65,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
-    await refreshAccountAssets();
+    await refetch();
   };
 
   return {

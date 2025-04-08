@@ -1,10 +1,9 @@
 import type { AccountTxPayload } from '@/types/bitcoin/txs';
 import { get } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+import { sortByLatestDate } from '@/utils/date';
 
 import { useInfiniteFetch, type UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
-import { useAccountAssets } from '../useAccountAssets';
-import { sortByLatestDate } from '@/utils/date';
+import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseAccountTxsProps = {
   coinId: string;
@@ -12,8 +11,8 @@ type UseAccountTxsProps = {
 };
 
 export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
-  const { data: accountAssets } = useAccountAssets();
-  const accountAsset = accountAssets?.bitcoinAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+  const { getBitcoinAccountAsset } = useGetAccountAsset({ coinId });
+  const accountAsset = getBitcoinAccountAsset();
 
   const mempoolSpaceURL = accountAsset?.chain.mempoolURL || '';
   const address = accountAsset?.address.address || '';

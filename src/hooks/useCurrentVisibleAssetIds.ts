@@ -2,15 +2,10 @@ import { getVisibleAssets } from '@/libs/asset';
 import type { AssetId } from '@/types/asset';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
-import { useAccountAssets } from './useAccountAssets';
 import { useCurrentAccount } from './useCurrentAccount';
 
 export function useCurrentVisibleAssetIds() {
   const { currentAccount } = useCurrentAccount();
-
-  const { refetch: refetchAccountAssets } = useAccountAssets();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
   const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
@@ -30,9 +25,6 @@ export function useCurrentVisibleAssetIds() {
     const updatedVisibleAssetIds = [...storedVisibleAssetIds, assetId];
 
     await updateExtensionStorageStore(`${currentAccount.id}-visible-assetIds`, updatedVisibleAssetIds);
-
-    await refetchAccountAssets();
-    await refetchAccountAllAssets();
   };
 
   const removeVisibleAsset = async (assetId: AssetId) => {
@@ -43,9 +35,6 @@ export function useCurrentVisibleAssetIds() {
     );
 
     await updateExtensionStorageStore(`${currentAccount.id}-visible-assetIds`, updatedVisibleAssetIds);
-
-    await refetchAccountAssets();
-    await refetchAccountAllAssets();
   };
 
   return { currentVisibleAssetIds, addVisibleAsset, removeVisibleAsset };

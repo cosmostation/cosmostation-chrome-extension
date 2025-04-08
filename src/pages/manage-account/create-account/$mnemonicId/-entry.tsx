@@ -11,7 +11,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
-import { useAccountAssets } from '@/hooks/useAccountAssets';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { sendMessage } from '@/libs/extension';
@@ -55,7 +55,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const { userAccounts } = useExtensionStorageStore((state) => state);
   const { addAccountWithName, setCurrentAccount } = useCurrentAccount();
 
-  const { refetch: refetchAccountAssets } = useAccountAssets();
+  const { refetch: refetchAccountAssets } = useAccountAllAssets();
 
   const { flatChainList } = useChainList();
 
