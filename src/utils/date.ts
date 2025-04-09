@@ -166,3 +166,21 @@ export function getDayFromSeconds(second: string) {
 
   return day;
 }
+
+export function getLast24HoursRange() {
+  const now = new Date();
+  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24시간 전
+
+  const format = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}`;
+  };
+
+  return {
+    startDate: format(oneDayAgo),
+    endDate: format(now),
+  };
+}

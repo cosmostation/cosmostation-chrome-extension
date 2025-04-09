@@ -4,18 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { CoinGeckoHistoryResponse } from '@/types/coinGecko';
 import { get } from '@/utils/axios';
-import { formatToYearMonthDay } from '@/utils/date';
+import { getLast24HoursRange } from '@/utils/date';
 
 export function useCoinGeckoHistory(coinGeckoId?: string, config?: UseQueryOptions<CoinGeckoHistoryResponse>) {
-  const today = new Date();
-  const oneMonthAgo = new Date();
+  const { startDate, endDate } = getLast24HoursRange();
 
-  const formattedToday = formatToYearMonthDay(today.toISOString());
-
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  const formattedOneMonthAgo = formatToYearMonthDay(oneMonthAgo.toISOString());
-
-  const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/history/range/daily/${coinGeckoId}?start_date=${formattedOneMonthAgo}&end_date=${formattedToday}`;
+  const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/history/range/hourly/${coinGeckoId}?start_date=${startDate}&end_date=${endDate}`;
 
   const fetcher = () => get<CoinGeckoHistoryResponse>(requestURL);
   const { data, isLoading, error, refetch } = useQuery({
@@ -23,8 +17,6 @@ export function useCoinGeckoHistory(coinGeckoId?: string, config?: UseQueryOptio
     queryFn: fetcher,
     enabled: !!coinGeckoId,
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 14,
-    refetchInterval: 1000 * 15,
     retry: 3,
     retryDelay: 1000 * 15,
     ...config,
