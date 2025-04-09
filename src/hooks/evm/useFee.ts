@@ -23,7 +23,7 @@ export function useFee({ coinId, config }: UseFeeProps) {
 
   const evmAccountAsset = getEVMAccountAsset();
 
-  const isNeedDefaultEip1559 = evmAccountAsset?.chain.feeInfo.isEip1559 || false;
+  const skipDefaultFeeOverride = evmAccountAsset?.chain.feeInfo.isEip1559 || false;
 
   const feeHistory = useFeeHistory({ coinId, bodyParams: [BLOCK_COUNT, 'latest', REWARD_PERCENTILES], config });
 
@@ -54,18 +54,18 @@ export function useFee({ coinId, config }: UseFeeProps) {
       const { minBaseFeePerGas, minMaxPriorityFeePerGas } = GAS_SETTINGS_BY_GAS_RATE_KEY[index];
 
       const maxPriorityFeePerGas = (() => {
-        if (isNeedDefaultEip1559) {
-          return averageReward[index] && gt(averageReward[index], minMaxPriorityFeePerGas) ? averageReward[index] : minMaxPriorityFeePerGas;
-        } else {
+        if (skipDefaultFeeOverride) {
           return averageReward[index];
+        } else {
+          return averageReward[index] && gt(averageReward[index], minMaxPriorityFeePerGas) ? averageReward[index] : minMaxPriorityFeePerGas;
         }
       })();
 
       const baseFeePerGas = (() => {
-        if (isNeedDefaultEip1559) {
-          return baseFeePercentiles[index] && gt(baseFeePercentiles[index], minBaseFeePerGas) ? baseFeePercentiles[index] : minBaseFeePerGas;
-        } else {
+        if (skipDefaultFeeOverride) {
           return baseFeePercentiles[index];
+        } else {
+          return baseFeePercentiles[index] && gt(baseFeePercentiles[index], minBaseFeePerGas) ? baseFeePercentiles[index] : minBaseFeePerGas;
         }
       })();
 
@@ -79,7 +79,7 @@ export function useFee({ coinId, config }: UseFeeProps) {
         },
       ];
     }, []);
-  }, [feeHistory.data?.result, isNeedDefaultEip1559]);
+  }, [feeHistory.data?.result, skipDefaultFeeOverride]);
 
   const type = useMemo<FeeType | null>(() => {
     if (!currentFee && !currentGasPrice) {

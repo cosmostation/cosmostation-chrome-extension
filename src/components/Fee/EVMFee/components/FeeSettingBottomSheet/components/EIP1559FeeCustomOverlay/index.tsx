@@ -15,6 +15,7 @@ import InformationPanel from '@/components/InformationPanel';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isDecimal, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
+import { trimTrailingZeros } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -68,8 +69,8 @@ export default function EIP1559FeeCustomOverlay({
   const coinSymbol = selectedFeeCoin?.asset.symbol;
   const decimals = selectedFeeCoin?.asset.decimals || 0;
 
-  const baseMaxBaseFeeAmountInGwei = toDisplayDenomAmount(baseMaxBaseFeeAmount, 9);
-  const basePriorityFeeAmountInGwei = toDisplayDenomAmount(basePriorityFeeAmount, 9);
+  const baseMaxBaseFeeAmountInGwei = trimTrailingZeros(toDisplayDenomAmount(baseMaxBaseFeeAmount, 9));
+  const basePriorityFeeAmountInGwei = trimTrailingZeros(toDisplayDenomAmount(basePriorityFeeAmount, 9));
 
   const currentMaxBaseFeeAmount = inputMaxBaseFeeAmount || baseMaxBaseFeeAmountInGwei || '0';
   const currentPriorityFeeAmount = inputPriorityFeeAmount || basePriorityFeeAmountInGwei || '0';
@@ -77,7 +78,7 @@ export default function EIP1559FeeCustomOverlay({
   const currentGas = inputGasAmount || baseGasAmount;
 
   const displayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(toBaseDenomAmount(currentMaxBaseFeeAmount, 9), currentGas), decimals),
+    () => trimTrailingZeros(toDisplayDenomAmount(times(toBaseDenomAmount(currentMaxBaseFeeAmount, 9), currentGas), decimals)),
     [currentGas, currentMaxBaseFeeAmount, decimals],
   );
 
@@ -141,7 +142,7 @@ export default function EIP1559FeeCustomOverlay({
             {t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.EIP1559FeeCustomOverlay.index.networkFee')}
           </Base1000Text>
           <EstimatedFeeTextContainer>
-            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" fixed={decimals} isDisableLeadingCurreny>
+            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" isDisableLeadingCurreny>
               {displayFeeAmount}
             </NumberTypo>
             &nbsp;
@@ -159,6 +160,7 @@ export default function EIP1559FeeCustomOverlay({
             coinList={selectedFeeCoin ? [selectedFeeCoin] : []}
             currentCoinId={feeCoinId}
             label={t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.EIP1559FeeCustomOverlay.index.feeToken')}
+            disabled
           />
           <StandardInput
             label={t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.EIP1559FeeCustomOverlay.index.gasAmount')}

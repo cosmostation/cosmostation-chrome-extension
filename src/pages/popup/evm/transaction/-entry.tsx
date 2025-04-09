@@ -66,10 +66,10 @@ export default function Entry({ request }: EntryProps) {
   const nativeAccountAsset = useMemo(
     () =>
       currentEVMNetwork &&
-      accountAllAssets?.allEVMAccountAssets.find(
+      [...(accountAllAssets?.evmAccountAssets || []), ...(accountAllAssets?.evmAccountCustomAssets || [])].find(
         (item) => isSameChain(item.chain, currentEVMNetwork) && isEqualsIgnoringCase(item.asset.id, NATIVE_EVM_COIN_ADDRESS),
       ),
-    [accountAllAssets?.allEVMAccountAssets, currentEVMNetwork],
+    [accountAllAssets?.evmAccountAssets, accountAllAssets?.evmAccountCustomAssets, currentEVMNetwork],
   );
 
   const accountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
@@ -127,7 +127,27 @@ export default function Entry({ request }: EntryProps) {
     return ceil(baseEstimateGas);
   }, [nativeAccountAsset?.chain.feeInfo.gasCoefficient, dappFromGas]);
 
-  const [currentFeeStepKey, setCurrentFeeStepKey] = useState<number>(0);
+  const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
+
+  const currentFeeStepKey = useMemo(() => {
+    if (customFeeStepKey) return customFeeStepKey;
+
+    const isDappFeePositive = (() => {
+      if (originEthereumTx.gasPrice) {
+        const gasPrice = originEthereumTx.gasPrice ? hexOrDecimalToDecimal(originEthereumTx.gasPrice) : '0';
+        const dappSuggestedFee = times(gasPrice, dappFromGas);
+        return gt(dappSuggestedFee, '0');
+      }
+      if (originEthereumTx.maxFeePerGas) {
+        const maxBaseFeePerGas = originEthereumTx.maxFeePerGas ? hexOrDecimalToDecimal(originEthereumTx.maxFeePerGas) : '0';
+        const dappSuggestedFee = times(maxBaseFeePerGas, dappFromGas);
+        return gt(dappSuggestedFee, '0');
+      }
+      return false;
+    })();
+
+    return isDappFeePositive ? 0 : 1;
+  }, [customFeeStepKey, dappFromGas, originEthereumTx.gasPrice, originEthereumTx.maxFeePerGas]);
 
   const feeOptions = useMemo(() => {
     const defaultFeeOption = {
@@ -145,7 +165,7 @@ export default function Entry({ request }: EntryProps) {
           type: 'BASIC',
           gas: dappFromGas,
           gasPrice: originEthereumTx.gasPrice ? hexOrDecimalToDecimal(originEthereumTx.gasPrice) : '0',
-          title: 'From Dapp',
+          title: 'Suggested (Dapp)',
         } as BasicFeeOption;
       }
       if (originEthereumTx.maxFeePerGas) {
@@ -155,17 +175,11 @@ export default function Entry({ request }: EntryProps) {
           gas: dappFromGas,
           maxBaseFeePerGas: originEthereumTx.maxFeePerGas ? hexOrDecimalToDecimal(originEthereumTx.maxFeePerGas) : '0',
           maxPriorityFeePerGas: originEthereumTx.maxPriorityFeePerGas ? hexOrDecimalToDecimal(originEthereumTx.maxPriorityFeePerGas) : '0',
-          title: 'From Dapp',
+          title: 'Suggested (Dapp)',
         } as EIP1559FeeOption;
       }
 
-      return {
-        ...defaultFeeOption,
-        type: 'BASIC',
-        gas: dappFromGas,
-        gasPrice: '0',
-        title: 'From Dapp',
-      } as BasicFeeOption;
+      return undefined;
     })();
 
     const customOption = (() => {
@@ -519,7 +533,7 @@ export default function Entry({ request }: EntryProps) {
           setCustomPriorityFeeAmount(fee);
         }}
         onSelectOption={(val) => {
-          setCurrentFeeStepKey(val);
+          setCustomFeeStepKey(val);
         }}
       />
     </>

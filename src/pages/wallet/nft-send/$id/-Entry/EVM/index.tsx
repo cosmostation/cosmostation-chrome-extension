@@ -100,8 +100,12 @@ export default function EVM({ id }: EVMProps) {
   });
 
   const nativeAccountAsset = useMemo(
-    () => chain && accountAllAssets?.allEVMAccountAssets.find((item) => isSameChain(item.chain, chain) && item.asset.id === chain.mainAssetDenom),
-    [accountAllAssets?.allEVMAccountAssets, chain],
+    () =>
+      chain &&
+      [...(accountAllAssets?.evmAccountAssets || []), ...(accountAllAssets?.evmAccountCustomAssets || [])].find(
+        (item) => isSameChain(item.chain, chain) && item.asset.id === chain.mainAssetDenom,
+      ),
+    [accountAllAssets?.evmAccountAssets, accountAllAssets?.evmAccountCustomAssets, chain],
   );
 
   const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);

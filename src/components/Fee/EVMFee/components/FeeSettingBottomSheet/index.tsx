@@ -92,10 +92,10 @@ export default function FeeSettingBottomSheet({
 
     const chainId = parsedCoinId ? getUniqueChainIdWithManual(parsedCoinId.chainId, parsedCoinId.chainType) : undefined;
 
-    return accountAllAssets?.allEVMAccountAssets.find(
+    return [...(accountAllAssets?.evmAccountAssets || []), ...(accountAllAssets?.evmAccountCustomAssets || [])].find(
       (item) => isMatchingUniqueChainId(item.chain, chainId) && isEqualsIgnoringCase(item.asset.id, NATIVE_EVM_COIN_ADDRESS),
     );
-  }, [accountAllAssets?.allEVMAccountAssets, curretFeeOption?.coinId]);
+  }, [accountAllAssets?.evmAccountAssets, accountAllAssets?.evmAccountCustomAssets, curretFeeOption?.coinId]);
   const feeCoinId = nativeAccountAsset?.asset ? getCoinId(nativeAccountAsset?.asset) : '';
 
   const customFeeStepKey = feeOptionDatas ? feeOptionDatas.length - 1 : 0;

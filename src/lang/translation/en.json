@@ -188,7 +188,8 @@
                   "maxbaseFee": "Max Base Fee",
                   "inform": "How Network Fees are paid",
                   "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
-                  "done": "Setup Complete"
+                  "done": "Setup Complete",
+                  "gasPrice": "Gas Price"
                 }
               }
             }

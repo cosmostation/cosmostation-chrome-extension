@@ -96,8 +96,10 @@ export default function EVM({ coinId }: EVMProps) {
 
   const nativeAccountAsset = useMemo(
     () =>
-      accountAllAssets?.allEVMAccountAssets.find((item) => isMatchingUniqueChainId(item.chain, selectedChainId) && item.asset.id === NATIVE_EVM_COIN_ADDRESS),
-    [accountAllAssets?.allEVMAccountAssets, selectedChainId],
+      [...(accountAllAssets?.evmAccountAssets || []), ...(accountAllAssets?.evmAccountCustomAssets || [])].find(
+        (item) => isMatchingUniqueChainId(item.chain, selectedChainId) && item.asset.id === NATIVE_EVM_COIN_ADDRESS,
+      ),
+    [accountAllAssets?.evmAccountAssets, accountAllAssets?.evmAccountCustomAssets, selectedChainId],
   );
   const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
 

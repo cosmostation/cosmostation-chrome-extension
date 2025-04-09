@@ -163,7 +163,7 @@ export default function Entry({ request, chain }: EntryProps) {
       denom: dappFromFeeAsset?.asset.id,
       coinGeckoId: dappFromFeeAsset?.asset.coinGeckoId,
       symbol: dappFromFeeAsset?.asset.symbol || '',
-      title: 'From Dapp',
+      title: 'Suggested (Dapp)',
     };
 
     const customOption = {

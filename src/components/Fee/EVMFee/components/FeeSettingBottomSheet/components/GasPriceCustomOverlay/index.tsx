@@ -16,6 +16,7 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isDecimal, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
+import { trimTrailingZeros } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -65,11 +66,11 @@ export default function GasPriceCustomOverlay({ open = false, baseGasAmount, bas
 
   const currentGas = inputGasAmount || baseGasAmount;
 
-  const baseGasPriceInGwei = toDisplayDenomAmount(baseGasPrice, 9);
+  const baseGasPriceInGwei = trimTrailingZeros(toDisplayDenomAmount(baseGasPrice, 9));
   const currentGasPrice = inputGasPrice || baseGasPriceInGwei || '0';
 
   const displayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(toBaseDenomAmount(currentGasPrice, 9), currentGas), decimals),
+    () => trimTrailingZeros(toDisplayDenomAmount(times(toBaseDenomAmount(currentGasPrice, 9), currentGas), decimals)),
     [currentGas, currentGasPrice, decimals],
   );
 
@@ -127,7 +128,7 @@ export default function GasPriceCustomOverlay({ open = false, baseGasAmount, bas
             {t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.GasPriceCustomOverlay.index.networkFee')}
           </Base1000Text>
           <EstimatedFeeTextContainer>
-            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" currency={userCurrencyPreference} fixed={decimals} isDisableLeadingCurreny>
+            <NumberTypo typoOfIntegers="h3n_M" typoOfDecimals="h5n_R" isDisableLeadingCurreny>
               {displayFeeAmount}
             </NumberTypo>
             &nbsp;
@@ -167,7 +168,7 @@ export default function GasPriceCustomOverlay({ open = false, baseGasAmount, bas
             }}
           />
           <StandardInput
-            label={t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.GasPriceCustomOverlay.index.maxbaseFee')}
+            label={t('components.Fee.EVMFee.Components.FeeSettingBottomSheet.components.GasPriceCustomOverlay.index.gasPrice')}
             placeholder={baseGasPriceInGwei}
             error={!!inputGasPriceErrorMsg}
             helperText={inputGasPriceErrorMsg}

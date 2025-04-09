@@ -138,3 +138,12 @@ export function getHashIndex(uuid: string, arrayLength: number): number {
   }
   return hash % arrayLength;
 }
+
+export function trimTrailingZeros(decimalStr: string): string {
+  if (!decimalStr.includes('.')) return decimalStr;
+
+  const [intPart, decimalPart] = decimalStr.split('.');
+  const trimmedDecimal = decimalPart.replace(/0+$/, '');
+
+  return trimmedDecimal.length > 0 ? `${intPart}.${trimmedDecimal}` : intPart;
+}
