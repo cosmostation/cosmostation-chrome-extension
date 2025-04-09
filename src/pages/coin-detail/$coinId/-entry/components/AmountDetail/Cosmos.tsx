@@ -1,13 +1,20 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@tanstack/react-router';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { useAmount } from '@/hooks/cosmos/useAmount';
+import { useCommission } from '@/hooks/cosmos/useCommission';
 import { useReward } from '@/hooks/cosmos/useReward';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
-import { toDisplayDenomAmount } from '@/utils/numbers';
+import { Route as ClaimCommission } from '@/pages/wallet/claim-commission/$coinId';
+import { convertToValidatorAddress } from '@/utils/cosmos/address';
+import { gt, toDisplayDenomAmount } from '@/utils/numbers';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
-import { AmountDetailWrapper, Container, DetailRow, LabelText, TitleText, ValueText } from './styled';
+import { AmountDetailWrapper, Container, DetailRow, IconContainer, LabelText, StyledTextButton, StyledTextButtonWrapper, TitleText, ValueText } from './styled';
+
+import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
 type CosmosProps = {
   coinId: string;
@@ -15,6 +22,7 @@ type CosmosProps = {
 
 export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
@@ -26,6 +34,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const selectedCoin = getCosmosAccountAsset();
 
+  const validatorAddress = convertToValidatorAddress(selectedCoin?.address.address, selectedCoin?.chain.validatorAccountPrefix);
+  const commission = useCommission({ coinId, validatorAddress });
+  const isValidatorAccount = gt(commission.data?.commission?.commission?.length || 0, '0');
+
   const decimal = selectedCoin?.asset.decimals || 0;
 
   const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
@@ -34,6 +46,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const rewardsDisplayAmount = toDisplayDenomAmount(rewardAmount, decimal);
   const rewardsCoinCounts = reward?.data?.total?.length && reward.data.total.length > 1 ? reward.data.total.length - 1 : 0;
   const incentiveDisplayAmount = toDisplayDenomAmount(incentiveAmount, decimal);
+  const commissionDisplayAmount = toDisplayDenomAmount(
+    commission.data?.commission.commission.find((item) => isEqualsIgnoringCase(item.denom, selectedCoin?.chain.mainAssetDenom))?.amount || '0',
+    decimal,
+  );
 
   return (
     <Container>
@@ -71,6 +87,35 @@ export default function Cosmos({ coinId }: CosmosProps) {
             </BalanceDisplay>
           </ValueText>
         </DetailRow>
+        {isValidatorAccount && (
+          <DetailRow>
+            <StyledTextButtonWrapper>
+              <StyledTextButton
+                onClick={() => {
+                  navigate({
+                    to: ClaimCommission.to,
+                    params: {
+                      coinId: coinId,
+                    },
+                  });
+                }}
+                variant="underline"
+                typoVarient="b3_R"
+              >
+                {t('pages.coin-detail.components.AmountDetail.Cosmos.commission')}
+              </StyledTextButton>
+              <IconContainer>
+                <RightChevronIcon />
+              </IconContainer>
+            </StyledTextButtonWrapper>
+
+            <ValueText>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+                {commissionDisplayAmount}
+              </BalanceDisplay>
+            </ValueText>
+          </DetailRow>
+        )}
         {selectedCoin?.chain.id === KAVA_CHAINLIST_ID && (
           <DetailRow>
             <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.incentive')}</LabelText>

@@ -876,7 +876,8 @@
             "staked": "Staked",
             "unstaking": "Unstaking",
             "rewards": "Rewards",
-            "incentive": "Incentive"
+            "incentive": "Incentive",
+            "commission": "Commission"
           },
           "Sui": {
             "title": "Coin Details",
@@ -1766,6 +1767,35 @@
           },
           "layout": {
             "header": "Send NFT"
+          }
+        }
+      },
+      "claim-commission": {
+        "$coinId": {
+          "layout": {
+            "header": "Claim Commissions"
+          },
+          "Entry": {
+            "Cosmos": {
+              "index": {
+                "noCommission": "No Claimable Coins",
+                "insufficientAmount": "Insufficient amount for pay fee",
+                "failedToCalculateTransaction": "Failed to build transaction",
+                "subtitle": "{{symbol}} + {{coinCount}} Coins",
+                "stakingCoin": "{{chainName}} Staking Coin",
+                "validator": "Validator",
+                "commissionAmount": "Amount to claim",
+                "memo": "Memo (Option)",
+                "inform": "Commission Address",
+                "informDescription": "{{address}}\ncommissions will be sent to the above address.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "claimCommissions": "Claim Commissions",
+                "claimSymbolCommissions": "Claim {{symbol}} Commissions",
+                "claimCommissionsReview": "Confirm Claim Commissions",
+                "claimCommissionsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed."
+              }
+            }
           }
         }
       }

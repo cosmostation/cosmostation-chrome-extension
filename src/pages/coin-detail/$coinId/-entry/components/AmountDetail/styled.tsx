@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
+import TextButton from '@/components/common/TextButton';
 
 export const Container = styled('div')({
   display: 'flex',
@@ -36,6 +37,29 @@ export const DetailRow = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
 });
+
+export const StyledTextButtonWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const StyledTextButton = styled(TextButton)(({ theme }) => ({
+  color: theme.palette.color.base1000,
+}));
+
+export const IconContainer = styled('div')(({ theme }) => ({
+  width: '1.4rem',
+  height: '1.4rem',
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+    fill: theme.palette.color.base1000,
+
+    '& > path': {
+      fill: theme.palette.color.base1000,
+    },
+  },
+}));
 
 export const LabelLeftContainer = styled('div')(({ theme }) => ({
   display: 'flex',

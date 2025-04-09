@@ -64,6 +64,7 @@ export async function getChains() {
         };
 
     const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
+    const validatorAccountPrefix = chain.params.chainlist_params.bech_validator_prefix;
 
     const feeInfo = {
       isSimulable: chain.params.chainlist_params?.cosmos_fee_info?.is_simulable ?? false,
@@ -102,6 +103,7 @@ export async function getChains() {
       mainAssetDenom,
       isCosmwasm,
       accountPrefix,
+      validatorAccountPrefix,
       isEvm,
       lcdUrls,
       explorer,

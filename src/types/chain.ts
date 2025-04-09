@@ -52,6 +52,7 @@ export interface CosmosChain extends ChainBase {
   chainId: string;
   mainAssetDenom: string;
   accountPrefix: string;
+  validatorAccountPrefix?: string;
   isCosmwasm: boolean;
   isEvm: boolean;
   lcdUrls: ChainEndpoint[];
@@ -78,6 +79,7 @@ export interface CustomCosmosChain extends ChainBase {
   chainId: string;
   mainAssetDenom: string;
   accountPrefix: string;
+  validatorAccountPrefix?: string;
   isCosmwasm: boolean;
   isEvm: boolean;
   lcdUrls: ChainEndpoint[];

@@ -38,6 +38,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const explorer = chain?.explorer ?? null;
 
       const accountPrefix = chain.bech_account_prefix ?? '';
+      const validatorAccountPrefix = chain.bech_validator_prefix ?? '';
 
       const feeInfo = {
         isSimulable: chain?.cosmos_fee_info?.is_simulable ?? false,
@@ -73,6 +74,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
         isCosmwasm,
         isSupportCW721,
         accountPrefix,
+        validatorAccountPrefix,
         isEvm,
         lcdUrls,
         explorer,
