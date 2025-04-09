@@ -394,6 +394,10 @@ async function evmBalances(id: string, { isMinimal = false } = {}) {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
 
+        if (response.data.error) {
+          throw new Error(`[RPC Error] URL: ${url}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+        }
+
         return response.data;
       });
 
@@ -442,6 +446,10 @@ async function customEvmBalances(id: string) {
         const response = await axios.post<EvmRpcGetBalanceResponse>(url, body, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
+
+        if (response.data.error) {
+          throw new Error(`[RPC Error] URL: ${url}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+        }
 
         return response.data;
       });
@@ -569,6 +577,10 @@ async function suiBalances(id: string) {
         const response = await axios.post<SuiRpcGetBalanceResponse>(url, body, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
+
+        if (response.data.error) {
+          throw new Error(`[RPC Error] URL: ${url}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+        }
 
         return response.data;
       });

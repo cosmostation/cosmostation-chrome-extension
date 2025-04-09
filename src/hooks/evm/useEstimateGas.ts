@@ -35,6 +35,10 @@ export function useEstimateGas({ coinId, bodyParams, config }: UseEstimateGasPro
 
       const response = await requestRPC<EvmEstimateGasResponse>('eth_estimateGas', bodyParams, '1', requestURL);
 
+      if (response.error) {
+        throw new Error(`[RPC Error] URL: ${requestURL}, Method: eth_estimateGas, Message: ${response.error?.message}`);
+      }
+
       return response;
     } catch (e) {
       if (index >= rpcURLs.length) {

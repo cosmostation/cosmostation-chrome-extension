@@ -34,7 +34,13 @@ export function useFeeHistory({ coinId, bodyParams, config }: UseFeeHistoryProps
 
       const requestBody = { method: 'eth_feeHistory', params: bodyParams };
 
-      return await post<EvmFeeHistoryResponse>(requestURL, { ...requestBody, id: 1, jsonrpc: '2.0' });
+      const response = await post<EvmFeeHistoryResponse>(requestURL, { ...requestBody, id: 1, jsonrpc: '2.0' });
+
+      if (response.error) {
+        throw new Error(`[RPC Error] URL: ${requestURL}, Method: eth_feeHistory, Message: ${response.error?.message}`);
+      }
+
+      return response;
     } catch (e) {
       if (index >= rpcURLs.length) {
         throw new Error('All endpoints failed');

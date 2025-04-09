@@ -27,7 +27,13 @@ export function useGasPrice({ coinId, config }: UseGasPriceProps) {
 
       const requestBody = { method: 'eth_gasPrice', params: [] };
 
-      return await post<EvmGasPriceResponse>(requestURL, { ...requestBody, id: 1, jsonrpc: '2.0' });
+      const response = await post<EvmGasPriceResponse>(requestURL, { ...requestBody, id: 1, jsonrpc: '2.0' });
+
+      if (response.error) {
+        throw new Error(`[RPC Error] URL: ${requestURL}, Method: eth_gasPrice, Message: ${response.error?.message}`);
+      }
+
+      return response;
     } catch (e) {
       if (index >= rpcURLs.length) {
         throw new Error('All endpoints failed');

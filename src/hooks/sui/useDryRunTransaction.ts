@@ -47,12 +47,18 @@ export function useDryRunTransaction({ coinId, transaction, config }: UseDryRunT
 
       const buildedTransaction = await originTransaction.build({ client });
 
-      return await post<SuiDryRunTransactionBlockResponse>(requestURL, {
+      const response = await post<SuiDryRunTransactionBlockResponse>(requestURL, {
         jsonrpc: '2.0',
         method: 'sui_dryRunTransactionBlock',
         params: [toBase64(buildedTransaction)],
         id: toBase64(buildedTransaction),
       });
+
+      if (response.error) {
+        throw new Error(`[RPC Error] URL: ${requestURL}, Method: sui_dryRunTransactionBlock, Message: ${response.error?.message}`);
+      }
+
+      return response;
     } catch (e) {
       if (index >= rpcURLs.length) {
         throw new Error('All endpoints failed');

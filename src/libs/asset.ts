@@ -859,7 +859,9 @@ export async function getSuiDynamicFields(parentObjectId: string, chainId: strin
           params: [parentObjectId, nextKey, null],
           id: parentObjectId,
         });
-
+        if (response.error) {
+          throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: suix_getDynamicFields, Message: ${response.error?.message}`);
+        }
         if (response.result) {
           nextKey = response.result.nextCursor && response.result.hasNextPage ? response.result.nextCursor : null;
           dynamicFieldsInfoResponse.push(response.result.data ?? []);
@@ -898,6 +900,10 @@ export async function getObjectsByOwnedAddress(
           params: nextKey ? [address, { ...option }, nextKey] : [address, { ...option }],
           id: address,
         });
+        if (response.error) {
+          throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: suix_getOwnedObjects, Message: ${response.error?.message}`);
+        }
+
         if (response.result) {
           nextKey = response.result.nextCursor && response.result.hasNextPage ? response.result.nextCursor : null;
           suiObjectResponses.push(response.result.data ?? []);
@@ -947,6 +953,10 @@ export async function getMultiObjects(
           ],
           id: 'getMultiObjects',
         });
+        if (response.error) {
+          throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: sui_multiGetObjects, Message: ${response.error?.message}`);
+        }
+
         if (response.result) {
           multiGetObjectResponses.push(response.result ?? []);
           success = true;

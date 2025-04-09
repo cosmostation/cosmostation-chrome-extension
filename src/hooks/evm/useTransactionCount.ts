@@ -25,7 +25,13 @@ export function useTransactionCount({ bodyParam, config }: UseTransactionCountPr
 
       const requestBody = { method: 'eth_getTransactionCount', params: bodyParam };
 
-      return await post<EvmTransactionCountResponse>(requestURL, { ...requestBody, id: 1, jsonrpc: '2.0' });
+      const response = await post<EvmTransactionCountResponse>(requestURL, { ...requestBody, id: 1, jsonrpc: '2.0' });
+
+      if (response.error) {
+        throw new Error(`[RPC Error] URL: ${requestURL}, Method: eth_getTransactionCount, Message: ${response.error?.message}`);
+      }
+
+      return response;
     } catch (e) {
       if (index >= rpcURLs.length) {
         throw new Error('All endpoints failed');
