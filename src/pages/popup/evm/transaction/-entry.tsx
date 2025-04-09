@@ -6,6 +6,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import Tooltip from '@/components/common/Tooltip';
 import type { BasicFeeOption, EIP1559FeeOption } from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
 import FeeSettingBottomSheet from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
@@ -508,9 +509,13 @@ export default function Entry({ request }: EntryProps) {
             </Button>
           }
           confirmButton={
-            <Button isProgress={isProcessing} disabled={!!errorMessage} onClick={handleOnSign}>
-              {t('pages.popup.evm.transaction.entry.sign')}
-            </Button>
+            <Tooltip title={errorMessage} varient="error" placement="top">
+              <div>
+                <Button isProgress={isProcessing} disabled={!!errorMessage} onClick={handleOnSign}>
+                  {t('pages.popup.evm.transaction.entry.sign')}
+                </Button>
+              </div>
+            </Tooltip>
           }
         />
       </SticktFooterInnerBody>

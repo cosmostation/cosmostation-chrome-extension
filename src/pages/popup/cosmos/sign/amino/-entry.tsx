@@ -6,6 +6,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import Tooltip from '@/components/common/Tooltip';
 import FeeSettingBottomSheet from '@/components/Fee/CosmosFee/components/FeeSettingBottomSheet';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
@@ -394,9 +395,13 @@ export default function Entry({ request, chain }: EntryProps) {
             </Button>
           }
           confirmButton={
-            <Button isProgress={isProcessing} disabled={!!errorMessage} onClick={handleOnSign}>
-              {t('pages.popup.cosmos.sign.amino.entry.sign')}
-            </Button>
+            <Tooltip title={errorMessage} varient="error" placement="top">
+              <div>
+                <Button isProgress={isProcessing} disabled={!!errorMessage} onClick={handleOnSign}>
+                  {t('pages.popup.cosmos.sign.amino.entry.sign')}
+                </Button>
+              </div>
+            </Tooltip>
           }
         />
       </SticktFooterInnerBody>

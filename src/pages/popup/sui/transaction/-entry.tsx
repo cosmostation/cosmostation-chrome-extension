@@ -359,9 +359,11 @@ export default function Entry({ request }: EntryProps) {
           }
           confirmButton={
             <Tooltip title={errorMessage} varient="error" placement="top">
-              <Button isProgress={isProcessing} disabled={isDiabled} onClick={handleOnSign}>
-                {t('pages.popup.sui.transaction.entry.sign')}
-              </Button>
+              <div>
+                <Button isProgress={isProcessing} disabled={isDiabled || !!errorMessage} onClick={handleOnSign}>
+                  {t('pages.popup.sui.transaction.entry.sign')}
+                </Button>
+              </div>
             </Tooltip>
           }
         />
