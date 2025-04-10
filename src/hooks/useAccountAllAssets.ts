@@ -57,7 +57,7 @@ export function useAccountAllAssets({
     }
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ['accountAllAssets', param],
     queryFn: fetcher,
     enabled: !!param,
@@ -305,5 +305,5 @@ export function useAccountAllAssets({
     }
   }, [accountType, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
 
-  return { data: returnData, isLoading, error, refetch };
+  return { data: returnData, isLoading, isFetching, error, refetch };
 }

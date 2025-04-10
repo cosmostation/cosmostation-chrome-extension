@@ -60,7 +60,7 @@ export const initialState: ExtensionStorageState = {
   migrationStatus: null,
 };
 
-export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets'];
+export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {

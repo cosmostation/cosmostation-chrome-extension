@@ -30,7 +30,11 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
 
   const param = accountId || currentAccount.id;
 
-  const { data: currentAccountAssets, isLoading } = useAccountAllAssets({
+  const {
+    data: currentAccountAssets,
+    isLoading,
+    isFetching,
+  } = useAccountAllAssets({
     accountId: param,
     disableBalanceFilter: false,
     disableHiddenFilter: false,
@@ -121,5 +125,5 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
     };
   }, [currentAccountAssets?.flatAccountAssets]);
 
-  return { groupAccountAssets, isLoading };
+  return { groupAccountAssets, isLoading, isFetching };
 }

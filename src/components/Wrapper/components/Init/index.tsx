@@ -21,7 +21,7 @@ export default function Init({ children }: InitProps) {
         const keys = Object.keys(changes) as ExtensionStorageKeys[];
 
         for (const key of keys) {
-          if (key === 'requestQueue' || key === 'approvedOrigins' || key === 'approvedSuiPermissions') {
+          if (key === 'requestQueue' || key === 'approvedOrigins' || key === 'approvedSuiPermissions' || key.includes('visible-assetIds')) {
             await loadAllStoreFromStorage();
           }
         }
