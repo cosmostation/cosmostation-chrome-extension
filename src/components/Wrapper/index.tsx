@@ -1,4 +1,3 @@
-import BalanceInitializer from './components/BalanceInitializer';
 import Init from './components/Init';
 import Lock from './components/Lock';
 import MigrationChecker from './components/MigrationChecker';
@@ -22,15 +21,13 @@ export default function Wrapper({ children }: WrapperProps) {
           <Init>
             <Lock>
               <RefetchController>
-                <BalanceInitializer>
-                  <NavigationGate>
-                    <>
-                      <ScrollProvider>{children}</ScrollProvider>
-                      <LoadingOverlay />
-                      <AdPopoverIndex />
-                    </>
-                  </NavigationGate>
-                </BalanceInitializer>
+                <NavigationGate>
+                  <>
+                    <ScrollProvider>{children}</ScrollProvider>
+                    <LoadingOverlay />
+                    <AdPopoverIndex />
+                  </>
+                </NavigationGate>
               </RefetchController>
             </Lock>
           </Init>

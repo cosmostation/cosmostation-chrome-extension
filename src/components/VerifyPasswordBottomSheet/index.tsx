@@ -39,6 +39,7 @@ export default function VerifyPasswordBottomSheet({ encryptedPassword, title, de
     watch,
     formState: { errors },
     reset,
+    clearErrors,
   } = useForm<PasswordForm>({
     resolver: joiResolver(passwordForm),
     mode: 'onSubmit',
@@ -50,27 +51,23 @@ export default function VerifyPasswordBottomSheet({ encryptedPassword, title, de
 
   const submit = () => {
     onSubmit(inputPassword);
+    close();
+  };
+
+  const close = () => {
     reset();
+    clearErrors();
     onClose?.({}, 'backdropClick');
   };
 
   return (
-    <StyledBottomSheet
-      {...remainder}
-      onClose={() => {
-        onClose?.({}, 'backdropClick');
-      }}
-    >
+    <StyledBottomSheet {...remainder} onClose={close}>
       <FormContainer onSubmit={handleSubmit(submit)}>
         <Header>
           <HeaderTitle>
             <Typography variant="h2_B">{title || t('components.VerifyPasswordBottomSheet.index.title')}</Typography>
           </HeaderTitle>
-          <StyledButton
-            onClick={() => {
-              onClose?.({}, 'escapeKeyDown');
-            }}
-          >
+          <StyledButton onClick={close}>
             <Close24Icon />
           </StyledButton>
         </Header>

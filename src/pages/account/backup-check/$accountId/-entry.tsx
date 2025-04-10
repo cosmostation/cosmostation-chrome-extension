@@ -12,18 +12,15 @@ import MnemnicBackupChecker from '@/components/MnemnicBackupChecker';
 import type { MnemonicCheckForm } from '@/components/MnemnicBackupChecker/useSchema';
 import { useSchema } from '@/components/MnemnicBackupChecker/useSchema';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
-import { sendMessage } from '@/libs/extension';
 import { Route as Dashboard } from '@/pages/index';
 import type { AccountWithName } from '@/types/account';
 import { aesDecrypt } from '@/utils/crypto';
 import { sha512 } from '@/utils/crypto/password';
 import { toastError } from '@/utils/toast';
 import { addPreferAccountType } from '@/utils/zustand/preferAccountType';
-import { loadExtensionStorageStoreFromStorage, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
-import { useLoadingOverlayStore } from '@/zustand/hooks/useLoadingOverlayStore';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewAccountStore } from '@/zustand/hooks/useNewAccountStore';
 
 import { DescriptionContainer, DescriptionSubTitle, DescriptionTitle, FormContainer } from './-styled';
@@ -32,14 +29,11 @@ export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
-
   const [isOpenSetAccountNameBottomSheet, setIsOpenSetAccountNameBottomSheet] = useState(false);
 
-  const { mnemonicNamesByHashedMnemonic, comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { comparisonPasswordHash, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { setCurrentAccount, addAccountWithName } = useCurrentAccount();
-  const { refetch: refetchAccountAssets } = useAccountAllAssets();
   const { account } = useNewAccountStore();
 
   const { currentPassword } = useCurrentPassword();
@@ -110,30 +104,15 @@ export default function Entry() {
 
       await setCurrentAccount(newAccount.id);
 
-      await updateExtensionStorageStore('mnemonicNamesByHashedMnemonic', {
-        ...mnemonicNamesByHashedMnemonic,
-        [newAccount.encryptedRestoreString]: `Mnemonic ${Object.keys(mnemonicNamesByHashedMnemonic).length + 1}`,
-      });
-
       navigate({
         to: Dashboard.to,
       });
-
-      startLoadingOverlay(t('pages.account.backup-check.entry.loadingOverlayTitle'), t('pages.account.backup-check.entry.loadingOverlayMessage'));
-
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [newAccount.id] });
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [newAccount.id] });
-
-      await loadExtensionStorageStoreFromStorage();
-
-      await refetchAccountAssets();
 
       reset();
     } catch {
       toastError(t('pages.account.backup-check.entry.setupError'));
     } finally {
       setIsLoadingBackup(false);
-      stopLoadingOverlay();
     }
   };
 
