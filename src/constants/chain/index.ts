@@ -16,6 +16,7 @@ import { ASI_ALLIANCE } from './cosmos/asiAlliance';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { ATOM_ONE } from './cosmos/atomOne';
 import { AXELAR } from './cosmos/axelar';
+import { BABYLON } from './cosmos/babylon';
 import { BABYLON_TESTNET } from './cosmos/babylonTestnet';
 import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
@@ -47,6 +48,7 @@ import { KI } from './cosmos/ki';
 import { KYVE } from './cosmos/kyve';
 import { LAVA } from './cosmos/lava';
 import { LIKE_COIN } from './cosmos/likeCoin';
+import { LOMBARD, LOMBARD_GAS_RATES } from './cosmos/lombard';
 import { LUM } from './cosmos/lum';
 import { MANTRA } from './cosmos/mantra';
 import { MARS } from './cosmos/mars';
@@ -145,6 +147,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   ASSET_MANTLE,
   ATOM_ONE,
   AXELAR,
+  BABYLON,
   BABYLON_TESTNET,
   BAND,
   BITCANNA,
@@ -175,6 +178,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   KYVE,
   LAVA,
   LIKE_COIN,
+  LOMBARD,
   LUM,
   MANTRA,
   MARS,
@@ -217,7 +221,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   XION,
 ];
 
-export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES, ...PRYZM_GAS_RATES];
+export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES, ...PRYZM_GAS_RATES, ...LOMBARD_GAS_RATES];
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 

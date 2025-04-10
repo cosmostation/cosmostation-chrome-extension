@@ -29,4 +29,5 @@ export const BABYLON_TESTNET: CosmosChain = {
     average: '0.002',
   },
   gas: { send: '100000' },
+  cosmWasm: true,
 };
