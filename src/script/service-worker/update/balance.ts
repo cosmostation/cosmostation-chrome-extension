@@ -253,37 +253,56 @@ async function cosmosBalances(id: string, { isMinimal = false } = {}) {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
 
+        if (response.data.balances.length === 0) {
+          throw Error('no Balance');
+        }
+
         return response.data;
       });
 
-      const response = await Promise.any(promises);
+      try {
+        const response = await Promise.any(promises);
 
-      nextKey = response?.pagination?.next_key ?? null;
+        nextKey = response?.pagination?.next_key ?? null;
 
-      responseBalances.push(response?.balances ?? []);
+        responseBalances.push(response?.balances ?? []);
 
-      while (nextKey) {
-        const nextPromises = lcdUrls.map(async (lcdUrl) => {
-          const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-          const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
+        while (nextKey) {
+          const nextPromises = lcdUrls.map(async (lcdUrl) => {
+            const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
+            const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
 
-          const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
-            timeout: BALANCE_FETCH_TIME_OUT_MS,
+            const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+              timeout: BALANCE_FETCH_TIME_OUT_MS,
+            });
+
+            if (response.data.balances.length === 0) {
+              throw Error('no Balance');
+            }
+
+            return response.data;
           });
 
-          return response.data;
-        });
-        const nextResponse = await Promise.any(nextPromises);
+          try {
+            const nextResponse = await Promise.any(nextPromises);
 
-        responseBalances.push(nextResponse?.balances ?? []);
-        nextKey = nextResponse?.pagination?.next_key ?? null;
+            responseBalances.push(nextResponse?.balances ?? []);
+            nextKey = nextResponse?.pagination?.next_key ?? null;
+          } catch {
+            nextKey = null;
+          }
+        }
+
+        const balances = responseBalances.flat();
+
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: [] };
+
+        return result;
       }
-
-      const balances = responseBalances.flat();
-
-      const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
-
-      return result;
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: results });
@@ -322,37 +341,56 @@ async function customCosmosBalances(id: string) {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
 
+        if (response.data.balances.length === 0) {
+          throw Error('no Balance');
+        }
+
         return response.data;
       });
 
-      const response = await Promise.any(promises);
+      try {
+        const response = await Promise.any(promises);
 
-      nextKey = response?.pagination?.next_key ?? null;
+        nextKey = response?.pagination?.next_key ?? null;
 
-      responseBalances.push(response?.balances ?? []);
+        responseBalances.push(response?.balances ?? []);
 
-      while (nextKey) {
-        const nextPromises = lcdUrls.map(async (lcdUrl) => {
-          const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-          const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
+        while (nextKey) {
+          const nextPromises = lcdUrls.map(async (lcdUrl) => {
+            const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
+            const requestUrl = `${url}${urlPath}?${urlQuery}&pagination.key=${nextKey}`;
 
-          const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
-            timeout: BALANCE_FETCH_TIME_OUT_MS,
+            const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+              timeout: BALANCE_FETCH_TIME_OUT_MS,
+            });
+
+            if (response.data.balances.length === 0) {
+              throw Error('no Balance');
+            }
+
+            return response.data;
           });
 
-          return response.data;
-        });
-        const nextResponse = await Promise.any(nextPromises);
+          try {
+            const nextResponse = await Promise.any(nextPromises);
 
-        responseBalances.push(nextResponse?.balances ?? []);
-        nextKey = nextResponse?.pagination?.next_key ?? null;
+            responseBalances.push(nextResponse?.balances ?? []);
+            nextKey = nextResponse?.pagination?.next_key ?? null;
+          } catch {
+            nextKey = null;
+          }
+        }
+
+        const balances = responseBalances.flat();
+
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: [] };
+
+        return result;
       }
-
-      const balances = responseBalances.flat();
-
-      const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
-
-      return result;
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${id}-custom-balance-cosmos`]: results });
