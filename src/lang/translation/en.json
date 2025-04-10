@@ -695,6 +695,12 @@
             "migrationRequiredDescription": "As the extension has been updated to the latest version, a migration process is required to safely transfer existing data. \n\n Please proceed with the migration for seamless service.",
             "errorOccurred": "Error has occurred"
           }
+        },
+        "BalanceInitializer": {
+          "index": {
+            "loadingOverlayTitle": "Syncing your wallet assets...",
+            "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
+          }
         }
       }
     }

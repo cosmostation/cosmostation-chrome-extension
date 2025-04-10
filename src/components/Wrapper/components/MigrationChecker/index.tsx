@@ -11,14 +11,12 @@ import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 import OutlinedChipButton from '@/components/OutlinedChipButton';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { sendMessage } from '@/libs/extension';
 import { extension } from '@/utils/browser';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { isMigrationRequired_V1_0_0, migrateData, skipMigration } from '@/utils/storageMigration/v1/migration';
 import { toastError } from '@/utils/toast';
-import { useLoadingOverlayStore } from '@/zustand/hooks/useLoadingOverlayStore';
 import { setLoadingProgressBarStore, useLoadingProgressBarStore } from '@/zustand/hooks/useLoadingProgressBar';
 
 import {
@@ -48,9 +46,6 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
   const { progressValue } = useLoadingProgressBarStore((state) => state);
 
   const { setCurrentPassword } = useCurrentPassword();
-  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
-
-  const { refetch: refetchAccountAssets } = useAccountAllAssets();
 
   const [isOpenVerifyBottomSheet, setIsOpenVerifyBottomSheet] = useState(false);
   const [encryptedPassword, setEncryptedPassword] = useState<string | undefined>();
@@ -83,26 +78,26 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
 
       await migrateData();
 
-      startLoadingOverlay(
-        t('pages.account.restore-wallet.mnemonic.index.loadingOverlayTitle'),
-        t('pages.account.restore-wallet.mnemonic.index.loadingOverlayMessage'),
-      );
-
       const accounts = await getExtensionLocalStorage('userAccounts');
-      const currentAccountId = await getExtensionLocalStorage('currentAccountId');
 
-      const currentAccount = accounts.find((account) => account.id === currentAccountId);
-      const accountId = currentAccount ? currentAccount.id : accounts[0]?.id;
+      setLoadingProgressBarStore(70);
 
-      setLoadingProgressBarStore(85);
+      const accountIds = accounts.map((item) => item.id) ?? [];
 
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
-      setLoadingProgressBarStore(90);
+      const total = accountIds.length;
 
-      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [accountId] });
-      setLoadingProgressBarStore(100);
+      for (let i = 0; i < total; i++) {
+        const id = accountIds[i];
 
-      await refetchAccountAssets();
+        await sendMessage({
+          target: 'SERVICE_WORKER',
+          method: 'updateAddress',
+          params: [id],
+        });
+
+        const progress = 70 + ((i + 1) / total) * (100 - 70);
+        setLoadingProgressBarStore(Math.floor(progress));
+      }
 
       await setExtensionLocalStorage('migrationStatus', {
         '1.0.0': true,
@@ -113,8 +108,6 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
       toastError(t('components.Wrapper.components.MigrationChecker.index.migrationError'));
 
       setIsFailToMigrate(true);
-    } finally {
-      stopLoadingOverlay();
     }
   };
 

@@ -8,7 +8,7 @@ export function useUpdateBalance() {
   const { currentAccount } = useCurrentAccount();
 
   const fetcher = async () => {
-    await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
+    return await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
   };
 
   const { data, isLoading, error } = useQuery({

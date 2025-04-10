@@ -18,6 +18,7 @@ import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
@@ -53,6 +54,7 @@ export default function Entry() {
   const navigate = useNavigate();
 
   const { scrollToTop } = useScroll();
+  const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
@@ -71,7 +73,10 @@ export default function Entry() {
 
   const [viewLimit, setViewLimit] = useState(30);
 
-  const { groupAccountAssets, isLoading } = useGroupAccountAssets();
+  const { groupAccountAssets, isLoading: isGroupAssetsLoading } = useGroupAccountAssets();
+
+  const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
+  const isLoading = isFirstBalanceLoading || isGroupAssetsLoading;
 
   const computedAssetValues = useMemo(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];

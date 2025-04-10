@@ -390,7 +390,7 @@ export async function migrateData() {
 
       await migrateAdditionalEVMChains(legacyStorage);
 
-      setLoadingProgressBarStore(75);
+      setLoadingProgressBarStore(60);
 
       await migrateSelectedEthereumNetworkId();
       await migrateSelectedAptosNetworkId();
@@ -400,7 +400,7 @@ export async function migrateData() {
 
       await migrateProviders(legacyStorage);
 
-      setLoadingProgressBarStore(80);
+      setLoadingProgressBarStore(65);
     }
   } catch (error) {
     console.error('Fail to Migrate', error);
