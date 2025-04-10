@@ -6,7 +6,7 @@ import FloatingContents from '@/components/FloatingButton/components/FloatingCon
 import FooterCoinPrice from '@/components/FooterCoinPrice';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
-import { DROP_POPOVER_ID } from '@/constants/adPopover';
+import { BABYLON_POPOVER_ID, DROP_POPOVER_ID } from '@/constants/adPopover';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isStillBlocked } from '@/utils/date';
@@ -18,6 +18,7 @@ import { FloatingButtonContainer, FooterContainer } from './-styled';
 
 import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 
+import BabylonFloatingImage from '@/assets/images/ad/babylonFloating.png';
 import DropFloatingImage from '@/assets/images/ad/dropFloating.png';
 
 type LayoutProps = {
@@ -35,7 +36,7 @@ export default function Layout({ children, coinId }: LayoutProps) {
   const explorerUrl = currentCoin?.chain.explorer?.account.replace('${address}', currentCoin.address.address);
 
   const floatingContents = (() => {
-    const { id, chainId } = parseCoinId(coinId);
+    const { id, chainId, chainType } = parseCoinId(coinId);
 
     if (id === 'uatom' && chainId === 'cosmos') {
       return {
@@ -46,7 +47,21 @@ export default function Layout({ children, coinId }: LayoutProps) {
           endColor: '#302659',
         },
         launchFunc: () => {
-          window.open('https://app.drop.money/stake', '_blank');
+          window.open('https://app.drop.money/dashboard?referral_code=dropmaga', '_blank');
+        },
+      };
+    }
+
+    if ((id === 'ubbn' && (chainId === 'babylon' || chainId === 'babylon-testnet')) || chainType === 'bitcoin') {
+      return {
+        popOverId: BABYLON_POPOVER_ID,
+        image: BabylonFloatingImage,
+        borderColor: {
+          startColor: '#FF7C2B',
+          endColor: '#56C4C8',
+        },
+        launchFunc: () => {
+          window.open('https://btcstaking.babylonlabs.io/', '_blank');
         },
       };
     }

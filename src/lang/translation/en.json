@@ -373,7 +373,12 @@
         "components": {
           "DropDialog": {
             "index": {
-              "launch": "Launch App"
+              "launch": "Go to Liquid Staking"
+            }
+          },
+          "BabylonPopover": {
+            "index": {
+              "launch": "Stake Now"
             }
           }
         }

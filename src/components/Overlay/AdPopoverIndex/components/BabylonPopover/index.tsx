@@ -3,36 +3,36 @@ import { useTranslation } from 'react-i18next';
 
 import EventDialogUI from '@/components/Overlay/components/AdPopoverUI';
 import Backdrop from '@/components/Overlay/components/Backdrop';
-import { DROP_POPOVER_ID } from '@/constants/adPopover';
+import { BABYLON_POPOVER_ID } from '@/constants/adPopover';
 import { turnOffAdPopover } from '@/utils/zustand/adPopoverState';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { StyledButton } from './styled';
 
-import DropPopoverImage from 'assets/images/ad/dropPopup.png';
+import babylonPopoverImage from 'assets/images/ad/babylonPopup.png';
 
-export default function DropPopover() {
+export default function BabylonPopover() {
   const { t } = useTranslation();
 
   const { adPopoverState } = useExtensionStorageStore((state) => state);
 
   const [isHide7days, setIsHide7days] = useState(false);
 
-  const { isVisiable } = adPopoverState[DROP_POPOVER_ID];
+  const { isVisiable } = adPopoverState[BABYLON_POPOVER_ID];
 
   const isOpen = isVisiable;
 
   const handleLaunch = () => {
-    window.open('https://app.drop.money/dashboard?referral_code=dropmaga', '_blank');
+    window.open('https://btcstaking.babylonlabs.io/', '_blank');
   };
 
   const handleClose = async (isHide: boolean) => {
     if (isHide) {
       const lastClosed = new Date().getTime();
 
-      await turnOffAdPopover(DROP_POPOVER_ID, lastClosed);
+      await turnOffAdPopover(BABYLON_POPOVER_ID, lastClosed);
     } else {
-      await turnOffAdPopover(DROP_POPOVER_ID);
+      await turnOffAdPopover(BABYLON_POPOVER_ID);
     }
   };
 
@@ -45,7 +45,7 @@ export default function DropPopover() {
       >
         <EventDialogUI
           open={isOpen}
-          backgroundImage={DropPopoverImage}
+          backgroundImage={babylonPopoverImage}
           hideDuration={7}
           isHide={isHide7days}
           onClickHide={(value) => {
@@ -61,7 +61,7 @@ export default function DropPopover() {
                 handleClose(isHide7days);
               }}
             >
-              {t('components.Overlay.EventDialog.components.DropDialog.index.launch')}
+              {t('components.Overlay.EventDialog.components.BabylonPopover.index.launch')}
             </StyledButton>
           }
         />

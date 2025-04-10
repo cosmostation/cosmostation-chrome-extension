@@ -1,3 +1,4 @@
 export const DROP_POPOVER_ID = '126d3ff3-e72e-4cce-a792-81a292cfb299';
+export const BABYLON_POPOVER_ID = '07df5620-0c50-4f4e-9286-93eaab71bde1';
 
-export const AD_POPOVER_IDS = [DROP_POPOVER_ID];
+export const AD_POPOVER_IDS = [DROP_POPOVER_ID, BABYLON_POPOVER_ID];
