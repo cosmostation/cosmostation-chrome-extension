@@ -50,7 +50,16 @@ export default function AddressItemButton({ id, address, label, memo, chainName,
         <Container>
           <LabelContainer>
             <Base1300Text variant="b2_M">{label}</Base1300Text>
-            {badgeContent && <Badge name={badgeContent.name} image={badgeContent.image} colorHex={badgeContent.color} />}
+            {badgeContent && (
+              <Badge
+                style={{
+                  visibility: 'hidden',
+                }}
+                name={badgeContent.name}
+                image={badgeContent.image}
+                colorHex={badgeContent.color}
+              />
+            )}
           </LabelContainer>
           <AddressContainer>
             <Typography variant="b4_M">{address}</Typography>
