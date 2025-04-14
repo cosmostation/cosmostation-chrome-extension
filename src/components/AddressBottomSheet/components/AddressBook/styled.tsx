@@ -4,7 +4,6 @@ import BaseChainImage from '@/components/common/BaseChainImage';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 
 export const Container = styled('div')({
-  flex: '1',
   height: '100%',
   width: '100%',
 
@@ -57,7 +56,8 @@ export const MemoContainer = styled('div')({
 });
 
 export const MemoContentsContainer = styled('div')({
-  width: '80%',
+  display: 'flex',
+  maxWidth: '27rem',
   wordBreak: 'break-all',
   wordWrap: 'break-word',
   textAlign: 'left',

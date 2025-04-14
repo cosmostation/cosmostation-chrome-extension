@@ -37,75 +37,86 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
 
   const filteredAddress = useMemo(() => addressBookList.filter((item) => item.chainId === chainId), [addressBookList, chainId]);
 
+  if (filteredAddress.length === 0) {
+    return (
+      <EmptyAssetContainer>
+        <EmptyAsset
+          icon={<NoListIcon />}
+          title={t('components.AddressBook.index.noAddressBookItem')}
+          subTitle={t('components.AddressBook.index.noAddressBookItemDescription')}
+        />
+      </EmptyAssetContainer>
+    );
+  }
+
   return (
     <Container>
-      {filteredAddress.length > 0 ? (
-        filteredAddress.map((item) => {
-          const { label, address, memo } = item;
-          const isBadge = !!memo;
+      {filteredAddress.map((item) => {
+        const { label, address, memo } = item;
+        const isBadge = !!memo;
 
-          const shortAddress = shorterAddress(address, 20);
+        const shortAddress = shorterAddress(address, 20);
 
-          const badgeContent = (() => {
-            if (isBadge) {
-              const isENS = memo?.includes('ENS');
+        const badgeContent = (() => {
+          if (isBadge) {
+            const isENS = memo?.includes('ENS');
 
-              if (isENS) {
-                return {
-                  name: 'ENS',
-                  image: ENS,
-                  color: '#508FFF',
-                };
-              }
-
+            if (isENS) {
               return {
-                name: 'UPBIT EXCHANGE',
+                name: 'ENS',
+                image: ENS,
+                color: '#508FFF',
               };
             }
 
-            return null;
-          })();
+            return {
+              name: 'UPBIT EXCHANGE',
+            };
+          }
 
-          return (
-            <StyledOptionButton
-              key={item.id}
-              leftContent={
-                <ContentsContainer>
-                  <LabelContainer>
-                    <Base1300Text variant="b2_M">{label}</Base1300Text>
-                    {badgeContent && <Badge name={badgeContent.name} image={badgeContent.image} colorHex={badgeContent.color} />}
-                  </LabelContainer>
-                  <AddressContainer>
-                    <Typography variant="b4_M">{shortAddress}</Typography>
-                  </AddressContainer>
+          return null;
+        })();
 
-                  {memo && (
-                    <MemoContainer>
-                      <Base1000Text variant="b3_R">{t('components.AddressBook.index.memo')}</Base1000Text>
-                      &nbsp;
-                      <MemoContentsContainer>
-                        <Base1000Text variant="b3_R">{memo}</Base1000Text>
-                      </MemoContentsContainer>
-                    </MemoContainer>
+        return (
+          <StyledOptionButton
+            key={item.id}
+            leftContent={
+              <ContentsContainer>
+                <LabelContainer>
+                  <Base1300Text variant="b2_M">{label}</Base1300Text>
+                  {badgeContent && (
+                    <Badge
+                      style={{
+                        visibility: 'hidden',
+                      }}
+                      name={badgeContent.name}
+                      image={badgeContent.image}
+                      colorHex={badgeContent.color}
+                    />
                   )}
-                </ContentsContainer>
-              }
-              disableRightChevron
-              onClick={() => {
-                onClickAddress?.(address, memo);
-              }}
-            />
-          );
-        })
-      ) : (
-        <EmptyAssetContainer>
-          <EmptyAsset
-            icon={<NoListIcon />}
-            title={t('components.AddressBook.index.noAddressBookItem')}
-            subTitle={t('components.AddressBook.index.noAddressBookItemDescription')}
+                </LabelContainer>
+                <AddressContainer>
+                  <Typography variant="b4_M">{shortAddress}</Typography>
+                </AddressContainer>
+
+                {memo && (
+                  <MemoContainer>
+                    <Base1000Text variant="b3_R">{t('components.AddressBook.index.memo')}</Base1000Text>
+                    &nbsp;
+                    <MemoContentsContainer>
+                      <Base1000Text variant="b3_R">{memo}</Base1000Text>
+                    </MemoContentsContainer>
+                  </MemoContainer>
+                )}
+              </ContentsContainer>
+            }
+            disableRightChevron
+            onClick={() => {
+              onClickAddress?.(address, memo);
+            }}
           />
-        </EmptyAssetContainer>
-      )}
+        );
+      })}
     </Container>
   );
 }
