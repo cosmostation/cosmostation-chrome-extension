@@ -1,7 +1,10 @@
+import { lazy, Suspense } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 
-import Entry from './-entry';
+import EntrySkeleton from './-entry-skeleton';
 import Layout from './-layout';
+
+const Entry = lazy(() => import('./-entry'));
 
 export const Route = createFileRoute('/manage-account/view/multi-chain-priateKey/$accountId/')({
   component: MultiChainPrivateKey,
@@ -12,7 +15,9 @@ function MultiChainPrivateKey() {
 
   return (
     <Layout accountId={params.accountId}>
-      <Entry accountId={params.accountId} />
+      <Suspense fallback={<EntrySkeleton />}>
+        <Entry accountId={params.accountId} />
+      </Suspense>
     </Layout>
   );
 }

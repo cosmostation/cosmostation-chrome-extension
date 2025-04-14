@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 import { getKeypair } from '@/libs/address';
 
@@ -42,7 +41,7 @@ export function useCurrentMultiChainPK() {
       .map((item) => {
         const keypair = getKeypair(item, currentAccount, currentPassword);
         return {
-          id: uuidv4(),
+          id: `${item.id}-${currentAccount.id}`,
           privateKey: `0x${keypair.privateKey}`,
           chain: item,
         };
