@@ -86,7 +86,7 @@ export default function CoinSelectBox({
             shrink: !!currentSelectedCoin,
           },
         }}
-        onClick={handleInputClick}
+        onClick={!remainder.disabled ? handleInputClick : undefined}
         value={currentSelectedCoin?.asset.symbol}
         {...remainder}
       />

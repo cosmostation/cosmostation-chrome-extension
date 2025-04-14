@@ -88,7 +88,7 @@ export default function ChainSelectBox({
             shrink: !!currentChainId,
           },
         }}
-        onClick={handleInputClick}
+        onClick={!remainder.disabled ? handleInputClick : undefined}
         value={currentSelectedChain?.name}
         {...remainder}
       />

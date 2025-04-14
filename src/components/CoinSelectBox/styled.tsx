@@ -36,8 +36,12 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
       letterSpacing: theme.typography.b1_R.letterSpacing,
 
       color: theme.palette.color.base1300,
+      '&: disabled': {
+        cursor: 'not-allowed !important',
+      },
     },
     '& .MuiInputBase-input.Mui-disabled': {
+      cursor: 'not-allowed !important',
       WebkitTextFillColor: theme.palette.color.base1300,
     },
   },
