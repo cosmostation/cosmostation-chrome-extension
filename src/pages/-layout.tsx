@@ -21,8 +21,8 @@ export default function Layout({ children }: LayoutProps) {
           middleContent={<AccountButton />}
           rightContent={
             <HeaderRightContainer>
-              <GeneralSettingButton />
               <HandleExtensionViewButton />
+              <GeneralSettingButton />
             </HeaderRightContainer>
           }
         />
