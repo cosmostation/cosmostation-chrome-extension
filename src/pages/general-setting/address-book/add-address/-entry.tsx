@@ -11,9 +11,9 @@ import { useRouter } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
-import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
+import EthermintFilterChainSelectBox from '@/components/EthermintFilterChainSelectBox';
 import InformationPanel from '@/components/InformationPanel';
 import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList.ts';
@@ -135,9 +135,9 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
     <FormContainer onSubmit={handleSubmit(submit)}>
       <BaseBody>
         <Container>
-          <ChainSelectBox
+          <EthermintFilterChainSelectBox
             chainList={baseChainList}
-            currentChainId={currentChainId}
+            currentSelectedChain={currentChain}
             onClickChain={(chainId) => {
               setCurrentChainId(chainId);
             }}

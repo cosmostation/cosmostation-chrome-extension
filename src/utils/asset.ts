@@ -1,16 +1,16 @@
 import type { FlatAccountAssets } from '@/types/accountAssets';
-import type { UniqueChainId } from '@/types/chain';
+import type { Chain, UniqueChainId } from '@/types/chain';
 
 import { isMatchingUniqueChainId, isSameChain, parseUniqueChainId } from './queryParamGenerator';
 
-export function filterAccountAssetByChainId<T extends FlatAccountAssets>(accountAssets: T[]): T[] {
-  return accountAssets.filter(
+export function filterChainsByChainId<T extends Chain>(chains: T[]): T[] {
+  return chains.filter(
     (asset, index, self) =>
       self.findIndex((t) => {
-        if (asset.chain.chainType === 'cosmos' && asset.chain.isEvm) {
-          return asset.chain.id !== t.chain.id;
+        if (asset.chainType === 'cosmos' && asset.isEvm) {
+          return asset.id !== t.id;
         } else {
-          return isSameChain(t.chain, asset.chain);
+          return isSameChain(t, asset);
         }
       }) === index,
   );

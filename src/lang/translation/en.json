@@ -1947,7 +1947,18 @@
             "cosmwasm": "Cosmwasm",
             "pubkeyStyle": "Pubkey Style"
           },
-          "header": "Add Address Book"
+          "header": "Add Address Book",
+          "components": {
+            "EthermintSelectBottomSheet": {
+              "index": {
+                "evmTitle": "EVM Style Address",
+                "evmSubtitle": "Register addresses in '0x...' format",
+                "cosmosSubtitle": "Register addresses in '{{bech32Prefix}}...' format",
+                "cosmosTitle": "COSMOS Style Address",
+                "title": "Select Address Type"
+              }
+            }
+          }
         },
         "edit-address": {
           "$id": {

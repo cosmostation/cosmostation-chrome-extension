@@ -15,7 +15,8 @@ import { useChainList } from '@/hooks/useChainList';
 import { Route as AddAddress } from '@/pages/general-setting/address-book/add-address';
 import { Route as EditAddress } from '@/pages/general-setting/address-book/edit-address/$id';
 import type { ChainType, UniqueChainId } from '@/types/chain';
-import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { filterChainsByChainId } from '@/utils/asset';
+import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 
 import AddressItemButton from './-components/AddressItemButton';
 import {
@@ -43,6 +44,16 @@ export default function Entry() {
 
   const { flatChainList } = useChainList();
 
+  const filteredUniqueChains = [
+    {
+      id: UNIVERSAL_EVM_NETWORK_ID,
+      name: 'EVM Network',
+      image: EVMImage,
+      chainType: 'evm' as ChainType,
+    },
+    ...filterChainsByChainId(flatChainList),
+  ];
+
   const baseChainList = [
     {
       id: UNIVERSAL_EVM_NETWORK_ID,
@@ -61,7 +72,9 @@ export default function Entry() {
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
   const filteredAddressesWithChain = (() => {
-    return currentSelectedChainId ? addressBookList.filter((item) => item.chainId === currentSelectedChainId) || [] : addressBookList || [];
+    return currentSelectedChainId
+      ? addressBookList.filter((item) => parseUniqueChainId(item.chainId).id === parseUniqueChainId(currentSelectedChainId).id) || []
+      : addressBookList || [];
   })();
 
   const filteredAddresses = (() => {
@@ -102,7 +115,7 @@ export default function Entry() {
             <RowContainer>
               <AllNetworkButton
                 currentChainId={currentSelectedChainId}
-                chainList={baseChainList}
+                chainList={filteredUniqueChains}
                 selectChainOption={(id) => {
                   setCurrentSelectedChainId(id);
                 }}
