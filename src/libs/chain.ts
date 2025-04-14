@@ -34,7 +34,7 @@ export async function getChains() {
     const chainType = 'cosmos';
     const chainId = chain.params.chainlist_params.chain_id_cosmos!;
 
-    const name = chain.params.chainlist_params.chain_name;
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom || '';
@@ -122,7 +122,7 @@ export async function getChains() {
     const id = chain.id;
     const chainType = 'evm';
     const chainId = chain.params.chainlist_params.chain_id_evm!;
-    const name = chain.params.chainlist_params.chain_name;
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
     const isCosmos = chain.params.chainlist_params?.chain_type?.includes('cosmos') ?? false;
 
@@ -198,7 +198,7 @@ export async function getChains() {
     const chainType = 'sui';
     const chainId = chain.params.chainlist_params.chain_id!;
 
-    const name = chain.params.chainlist_params.chain_name;
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? SUI_COIN_TYPE;
@@ -251,7 +251,7 @@ export async function getChains() {
     const chainType = 'aptos';
     const chainId = chain.params.chainlist_params.chain_id!;
 
-    const name = chain.params.chainlist_params.chain_name;
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? APTOS_COIN_TYPE;
@@ -304,7 +304,7 @@ export async function getChains() {
     const chainType = 'bitcoin';
     const chainId = chain.params.chainlist_params.chain_id || chain.id;
 
-    const name = chain.params.chainlist_params.chain_name;
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const { coinTypeLevel } = parsingHdPath(chain.params?.chainlist_params?.account_type?.[0].hd_path || '');
