@@ -2000,7 +2000,10 @@
       "manage-custom-network": {
         "entry": {
           "search": "Search Network (Ex. Bitcoin)",
-          "network": "Network"
+          "network": "Network",
+          "noCustomChains": "No Chains",
+          "noCustomChainsDescription": "There are no chains to display at the moment",
+          "goToAdd": "Go to add"
         },
         "header": "Manage Custom Network",
         "edit": {
@@ -2126,7 +2129,9 @@
             "searchPlaceholder": "Search Network (Ex. Bitcoin)",
             "viewTestnet": "View Testnet",
             "importNetwork": "Import Network",
-            "network": "Network"
+            "network": "Network",
+            "noCustomChains": "No Custom Chains",
+            "noCustomChainsDescription": "You can manage custom chains by adding or deleting them."
           },
           "layout": {
             "header": "Manage Custom Network"

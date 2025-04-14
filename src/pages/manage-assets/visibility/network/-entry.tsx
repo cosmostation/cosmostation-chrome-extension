@@ -11,6 +11,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
+import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { useCustomAssets } from '@/hooks/useCustomAssets';
@@ -26,6 +27,7 @@ import {
   ButtonWrapper,
   ChainImage,
   Container,
+  EmptyAssetContainer,
   IconContainer,
   ImportTextContainer,
   NetworkCountContainer,
@@ -35,6 +37,7 @@ import {
 } from './-styled';
 
 import AddIcon from '@/assets/images/icons/Add20.svg';
+import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 import RemoveIcon from '@/assets/images/icons/Remove20.svg';
 
@@ -60,8 +63,6 @@ export default function Entry() {
     () => (!isLoading ? [...(managedCustomChains || []), ...userDefinedCustomChains] : []),
     [isLoading, managedCustomChains, userDefinedCustomChains],
   );
-
-  const customChainListCount = baseCustomChainList?.length || 0;
 
   const sortedBaseCustomChainList = baseCustomChainList.sort((a, b) => {
     if (a.name > b.name) {
@@ -93,6 +94,8 @@ export default function Entry() {
 
     return [...addedCustomChains, ...notAddedCustomChains].slice(0, viewLimit);
   }, [addedCustomChainList, filteredCustomChainBySearch, viewLimit]);
+
+  const customChainListCount = sortedCoinListByHidden?.length || 0;
 
   const addCustom = async (customChainAsset: CustomChainAsset) => {
     const mainCoin: CustomAsset = {
@@ -126,7 +129,11 @@ export default function Entry() {
   return (
     <>
       <BaseBody>
-        <EdgeAligner>
+        <EdgeAligner
+          style={{
+            flex: 1,
+          }}
+        >
           <Container>
             <StickyContainer>
               <Search
@@ -172,6 +179,16 @@ export default function Entry() {
             <ButtonWrapper>
               {!isDebouncing && (
                 <>
+                  {sortedCoinListByHidden.length === 0 && (
+                    <EmptyAssetContainer>
+                      <EmptyAsset
+                        icon={<NoListIcon />}
+                        title={t('pages.manage-assets.visibility.network.entry.noCustomChains')}
+                        subTitle={t('pages.manage-assets.visibility.network.entry.noCustomChainsDescription')}
+                      />
+                    </EmptyAssetContainer>
+                  )}
+
                   {sortedCoinListByHidden.map((customChainAsset) => {
                     const isAdded = addedCustomChainList.some((addedCustomChain) => getUniqueChainId(addedCustomChain) === getUniqueChainId(customChainAsset));
 

@@ -3,7 +3,10 @@ import { styled } from '@mui/material/styles';
 import BaseChainImage from '@/components/common/BaseChainImage';
 
 export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
 });
 
 export const StickyContainer = styled('div')(({ theme }) => ({
@@ -33,7 +36,19 @@ export const NetworkCounts = styled('span')(({ theme }) => ({
 }));
 
 export const ButtonWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  flex: '1',
+});
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 export const ChainImage = styled(BaseChainImage)({
@@ -41,3 +56,25 @@ export const ChainImage = styled(BaseChainImage)({
   height: '3.6rem',
   marginRight: '-0.6rem',
 });
+
+export const ChipButtonContentsContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const IconContainer = styled('div')(({ theme }) => ({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  marginLeft: '0.4rem',
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+
+    fill: theme.palette.color.base1000,
+
+    '& > path': {
+      fill: theme.palette.color.base1000,
+    },
+  },
+}));

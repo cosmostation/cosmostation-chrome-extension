@@ -3,7 +3,10 @@ import { styled } from '@mui/material/styles';
 import BaseChainImage from '@/components/common/BaseChainImage';
 
 export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
 });
 
 export const StickyContainer = styled('div')(({ theme }) => ({
@@ -48,7 +51,19 @@ export const NetworkCountContainer = styled('div')({
 });
 
 export const ButtonWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  flex: '1',
+});
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 export const ChainImage = styled(BaseChainImage)({

@@ -8,13 +8,28 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import { useCustomChain } from '@/hooks/useCustomChain';
 import { useCustomChainParam } from '@/hooks/useCustomChainParam';
 import { Route as EditCustomNetwork } from '@/pages/general-setting/manage-custom-network/edit/$id';
+import { Route as ImportNetwork } from '@/pages/manage-assets/import/network';
 import { getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator';
 
-import { ButtonWrapper, ChainImage, Container, NetworkCounts, RowContainer, StickyContainer } from './-styled';
+import {
+  ButtonWrapper,
+  ChainImage,
+  ChipButtonContentsContainer,
+  Container,
+  EmptyAssetContainer,
+  IconContainer,
+  NetworkCounts,
+  RowContainer,
+  StickyContainer,
+} from './-styled';
+
+import NoListIcon from '@/assets/images/icons/NoList70.svg';
+import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -47,7 +62,11 @@ export default function Entry() {
 
   return (
     <BaseBody>
-      <EdgeAligner>
+      <EdgeAligner
+        style={{
+          flex: 1,
+        }}
+      >
         <Container>
           <StickyContainer>
             <Search
@@ -73,9 +92,34 @@ export default function Entry() {
             </RowContainer>
           </StickyContainer>
           <ButtonWrapper>
-            {!isDebouncing &&
-              filteredCustomChains.map((item) => {
-                return (
+            {!isDebouncing && (
+              <>
+                {filteredCustomChains.length === 0 && (
+                  <EmptyAssetContainer>
+                    <EmptyAsset
+                      icon={<NoListIcon />}
+                      title={t('pages.general-setting.manage-custom-network.entry.noCustomChains')}
+                      subTitle={t('pages.general-setting.manage-custom-network.entry.noCustomChainsDescription')}
+                      chipButtonProps={{
+                        onClick: () => {
+                          navigate({
+                            to: ImportNetwork.to,
+                          });
+                        },
+                        children: (
+                          <ChipButtonContentsContainer>
+                            <Base1300Text variant="b3_M">{t('pages.general-setting.manage-custom-network.entry.goToAdd')}</Base1300Text>
+                            <IconContainer>
+                              <RightArrowIcon />
+                            </IconContainer>
+                          </ChipButtonContentsContainer>
+                        ),
+                      }}
+                    />
+                  </EmptyAssetContainer>
+                )}
+
+                {filteredCustomChains.map((item) => (
                   <BaseOptionButton
                     key={item.id}
                     leftContent={<ChainImage src={item.image} />}
@@ -88,8 +132,9 @@ export default function Entry() {
                       });
                     }}
                   />
-                );
-              })}
+                ))}
+              </>
+            )}
           </ButtonWrapper>
         </Container>
       </EdgeAligner>
