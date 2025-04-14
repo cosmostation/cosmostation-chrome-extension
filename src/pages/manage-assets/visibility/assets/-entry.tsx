@@ -99,31 +99,13 @@ export default function Entry() {
 
   const [initVisibleAssetCoinIds, setInitVisibleAssetCoinIds] = useState<string[] | undefined>(undefined);
 
-  useEffect(() => {
-    if (initVisibleAssetCoinIds === undefined && currentVisibleAssetIds?.length > 0) {
-      setInitVisibleAssetCoinIds(currentVisibleAssetIds.map((item) => getCoinIdWithManual(item)));
-    }
-  }, [currentVisibleAssetIds, initVisibleAssetCoinIds]);
-
   const hiddenAssetCoinIds = useMemo(() => currentHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [currentHiddenAssetIds]);
 
   const [initHiddenAssetCoinIds, setInitHiddenAssetCoinIds] = useState<string[] | undefined>(undefined);
 
-  useEffect(() => {
-    if (initHiddenAssetCoinIds === undefined && currentHiddenAssetIds?.length > 0) {
-      setInitHiddenAssetCoinIds(currentHiddenAssetIds.map((item) => getCoinIdWithManual(item)));
-    }
-  }, [currentHiddenAssetIds, initHiddenAssetCoinIds]);
-
   const hiddenCustomAssetCoinIds = useMemo(() => customHiddenAssetIds?.map((item) => getCoinIdWithManual(item)), [customHiddenAssetIds]);
 
   const [initHiddenCustomAssetCoinIds, setInitHiddenCustomAssetCoinIds] = useState<string[] | undefined>(undefined);
-
-  useEffect(() => {
-    if (initHiddenCustomAssetCoinIds === undefined && customHiddenAssetIds?.length > 0) {
-      setInitHiddenCustomAssetCoinIds(customHiddenAssetIds.map((item) => getCoinIdWithManual(item)));
-    }
-  }, [customHiddenAssetIds, initHiddenCustomAssetCoinIds]);
 
   const baseCoinList = useMemo(() => currentAccountAllAssets?.flatAccountAssets || [], [currentAccountAllAssets?.flatAccountAssets]);
 
@@ -300,13 +282,11 @@ export default function Entry() {
 
         if (isVisibleAsset) {
           await removeVisibleAsset(parseCoinId(assetId));
-
-          if (!isBalanceZero) {
-            await hideCustomAsset(parseCoinId(assetId));
-          }
         }
 
-        await hideCustomAsset(parseCoinId(assetId));
+        if (!isBalanceZero) {
+          await hideCustomAsset(parseCoinId(assetId));
+        }
         return;
       }
     }
@@ -329,15 +309,31 @@ export default function Entry() {
 
       if (isVisibleAsset) {
         await removeVisibleAsset(parseCoinId(assetId));
-
-        if (!isBalanceZero) {
-          await hideAsset(parseCoinId(assetId));
-        }
       }
 
-      await hideAsset(parseCoinId(assetId));
+      if (!isBalanceZero) {
+        await hideAsset(parseCoinId(assetId));
+      }
     }
   };
+
+  useEffect(() => {
+    if (initVisibleAssetCoinIds === undefined && currentVisibleAssetIds?.length > 0) {
+      setInitVisibleAssetCoinIds(currentVisibleAssetIds.map((item) => getCoinIdWithManual(item)));
+    }
+  }, [currentVisibleAssetIds, initVisibleAssetCoinIds]);
+
+  useEffect(() => {
+    if (initHiddenAssetCoinIds === undefined && currentHiddenAssetIds?.length > 0) {
+      setInitHiddenAssetCoinIds(currentHiddenAssetIds.map((item) => getCoinIdWithManual(item)));
+    }
+  }, [currentHiddenAssetIds, initHiddenAssetCoinIds]);
+
+  useEffect(() => {
+    if (initHiddenCustomAssetCoinIds === undefined && customHiddenAssetIds?.length > 0) {
+      setInitHiddenCustomAssetCoinIds(customHiddenAssetIds.map((item) => getCoinIdWithManual(item)));
+    }
+  }, [customHiddenAssetIds, initHiddenCustomAssetCoinIds]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {

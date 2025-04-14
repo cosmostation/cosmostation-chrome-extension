@@ -51,6 +51,12 @@ export function useCustomAssets() {
   const hideCustomAsset = async (targetAsset: AssetId) => {
     const storedCustomHiddenAssetIds = await getExtensionLocalStorage('customHiddenAssetIds');
 
+    const isAlreadyAdded = storedCustomHiddenAssetIds.some((item) => isSameCoin(item, targetAsset));
+
+    if (isAlreadyAdded) {
+      return;
+    }
+
     const updatedCustomHiddenAssetIds = [...storedCustomHiddenAssetIds, targetAsset];
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);

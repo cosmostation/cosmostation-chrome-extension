@@ -67,6 +67,7 @@ export function useAccountAllAssets({
   });
 
   const hiddenAssetIds = useMemo(() => extensionStorageState[`${param}-hidden-assetIds`] || [], [extensionStorageState, param]);
+  const hiddenCustomAssetIds = useMemo(() => extensionStorageState['customHiddenAssetIds'] || [], [extensionStorageState, param]);
   const visibleAssetIds = useMemo(() => extensionStorageState[`${param}-visible-assetIds`] || [], [extensionStorageState, param]);
 
   const bitcoinBalanceInfo = useMemo(() => extensionStorageState[`${param}-balance-bitcoin`] || [], [extensionStorageState, param]);
@@ -83,8 +84,8 @@ export function useAccountAllAssets({
 
       const isHidden = disableHiddenFilter
         ? false
-        : hiddenAssetIds.some((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType);
-
+        : hiddenAssetIds.some((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType) ||
+          hiddenCustomAssetIds.some((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType);
       if (isHidden) return false;
 
       const isBalanceGreaterThanZero = (() => {
