@@ -16,44 +16,44 @@ import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/stor
 import { initialState, notDeleteKeys } from '@/zustand/hooks/useExtensionStorageStore';
 import { setLoadingProgressBarStore } from '@/zustand/hooks/useLoadingProgressBar';
 
-export const ACCOUNT_TYPE = {
+const ACCOUNT_TYPE = {
   MNEMONIC: 'MNEMONIC',
   PRIVATE_KEY: 'PRIVATE_KEY',
   LEDGER: 'LEDGER',
 } as const;
 
-export const LANGUAGE_TYPE = {
-  KO: 'ko',
-  EN: 'en',
-} as const;
+type LANGUAGE_TYPE = {
+  KO: 'ko';
+  EN: 'en';
+};
 
-export const CURRENCY_TYPE = {
-  USD: 'usd',
-  KRW: 'krw',
-  EUR: 'eur',
-  JPY: 'jpy',
-  CNY: 'cny',
-  BTC: 'btc',
-  ETH: 'eth',
-} as const;
+type CURRENCY_TYPE = {
+  USD: 'usd';
+  KRW: 'krw';
+  EUR: 'eur';
+  JPY: 'jpy';
+  CNY: 'cny';
+  BTC: 'btc';
+  ETH: 'eth';
+};
 
-export const HOME_TAB_INDEX_TYPE = {
-  ETHEREUM: 'ethereum',
-  COSMOS: 'cosmos',
-  SUI: 'sui',
-  APTOS: 'aptos',
-  BITCOIN: 'bitcoin',
-} as const;
+type HOME_TAB_INDEX_TYPE = {
+  ETHEREUM: 'ethereum';
+  COSMOS: 'cosmos';
+  SUI: 'sui';
+  APTOS: 'aptos';
+  BITCOIN: 'bitcoin';
+};
 
-export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
-export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
-export type HomeTabPath = ValueOf<typeof HOME_TAB_INDEX_TYPE>;
+type CurrencyType = CURRENCY_TYPE[keyof CURRENCY_TYPE];
+type LanguageType = LANGUAGE_TYPE[keyof LANGUAGE_TYPE];
+type HomeTabPath = HOME_TAB_INDEX_TYPE[keyof HOME_TAB_INDEX_TYPE];
 
-export type AccountCommon = {
+type AccountCommon = {
   id: string;
 };
 
-export type BIP44 = {
+type BIP44 = {
   purpose: string;
   coinType: string;
   account: string;
@@ -61,7 +61,7 @@ export type BIP44 = {
   addressIndex: string;
 };
 
-export type MnemonicAccount = {
+type MnemonicAccount = {
   type: typeof ACCOUNT_TYPE.MNEMONIC;
   encryptedMnemonic: string;
   bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
@@ -69,14 +69,14 @@ export type MnemonicAccount = {
   encryptedRestoreString: string;
 };
 
-export type PrivateKeyAccount = {
+type PrivateKeyAccount = {
   type: typeof ACCOUNT_TYPE.PRIVATE_KEY;
   encryptedPrivateKey: string;
   encryptedPassword: string;
   encryptedRestoreString: string;
 };
 
-export type LedgerAccount = {
+type LedgerAccount = {
   type: typeof ACCOUNT_TYPE.LEDGER;
   bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
 
@@ -88,21 +88,21 @@ export type LedgerAccount = {
   bitcoinPublicKey?: string;
 };
 
-export type LegacyAccount = AccountCommon & (MnemonicAccount | PrivateKeyAccount | LedgerAccount);
+type LegacyAccount = AccountCommon & (MnemonicAccount | PrivateKeyAccount | LedgerAccount);
 
-export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
+type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
 
-export type AccountName = Record<AccountCommon['id'], string>;
-export const LINE_TYPE = {
-  BITCOIN: 'BITCOIN',
-  COSMOS: 'COSMOS',
-  ETHEREUM: 'ETHEREUM',
-  APTOS: 'APTOS',
-  SUI: 'SUI',
-  COMMON: 'COMMON',
-} as const;
+type AccountName = Record<AccountCommon['id'], string>;
+type LINE_TYPE = {
+  BITCOIN: 'BITCOIN';
+  COSMOS: 'COSMOS';
+  ETHEREUM: 'ETHEREUM';
+  APTOS: 'APTOS';
+  SUI: 'SUI';
+  COMMON: 'COMMON';
+};
 
-export type CommonChain = {
+type CommonChain = {
   id: string;
   chainName: string;
   bip44: Omit<BIP44, 'addressIndex'>;
@@ -110,14 +110,14 @@ export type CommonChain = {
   imageURL?: string;
 };
 
-export const COSMOS_TYPE = {
-  BASIC: '',
-  ETHERMINT: 'ETHERMINT',
-} as const;
-export type CosmosType = ValueOf<typeof COSMOS_TYPE>;
+type COSMOS_TYPE = {
+  BASIC: '';
+  ETHERMINT: 'ETHERMINT';
+};
+type CosmosType = COSMOS_TYPE[keyof COSMOS_TYPE];
 
-export type CosmosChain = {
-  line: typeof LINE_TYPE.COSMOS;
+type CosmosChain = {
+  line: LINE_TYPE['COSMOS'];
   isTerminated?: boolean;
   type: CosmosType;
   chainId: string;
@@ -136,26 +136,24 @@ export type CosmosChain = {
   custom?: 'no-stake';
 } & CommonChain;
 
-export type GasRate = {
+type GasRate = {
   tiny: string;
   low: string;
   average: string;
 };
 
-export type GasRateKey = keyof GasRate;
-
-export type Gas = {
+type Gas = {
   send?: string;
   ibcSend?: string;
   transfer?: string;
   ibcTransfer?: string;
 };
 
-export type EthereumChain = {
-  line: typeof LINE_TYPE.ETHEREUM;
+type EthereumChain = {
+  line: LINE_TYPE['ETHEREUM'];
 } & CommonChain;
 
-export type EthereumNetwork = {
+type EthereumNetwork = {
   id: string;
   chainId: string;
   networkName: string;
@@ -168,17 +166,17 @@ export type EthereumNetwork = {
   coinGeckoId?: string;
 };
 
-export type AptosChain = {
-  line: typeof LINE_TYPE.APTOS;
+type AptosChain = {
+  line: LINE_TYPE['APTOS'];
 } & CommonChain;
 
-export type SuiChain = {
-  line: typeof LINE_TYPE.SUI;
+type SuiChain = {
+  line: LINE_TYPE['SUI'];
   chainName: string;
 } & CommonChain;
 
-export type BitcoinChain = {
-  line: typeof LINE_TYPE.BITCOIN;
+type BitcoinChain = {
+  line: LINE_TYPE['BITCOIN'];
   chainName: string;
   rpcURL: string;
   displayDenom: string;
@@ -191,9 +189,9 @@ export type BitcoinChain = {
   isSignet?: boolean;
 } & CommonChain;
 
-export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain | BitcoinChain;
+type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain | BitcoinChain;
 
-export type AddressInfo = {
+type AddressInfo = {
   id: string;
   chainId: CommonChain['id'];
   label: string;
@@ -201,33 +199,33 @@ export type AddressInfo = {
   memo?: string;
 };
 
-export const TOKEN_TYPE = {
-  ERC20: 'ERC20',
-  ERC721: 'ERC721',
-  ERC1155: 'ERC1155',
-} as const;
+type TOKEN_TYPE = {
+  ERC20: 'ERC20';
+  ERC721: 'ERC721';
+  ERC1155: 'ERC1155';
+};
 
-export type EthereumERC721Token = {
+type EthereumERC721Token = {
   id: string;
   tokenId: string;
   ethereumNetworkId: string;
-  tokenType: typeof TOKEN_TYPE.ERC721;
+  tokenType: TOKEN_TYPE['ERC721'];
   ownerAddress: string;
   address: string;
 };
 
-export type EthereumERC1155Token = {
+type EthereumERC1155Token = {
   id: string;
   tokenId: string;
   ethereumNetworkId: string;
-  tokenType: typeof TOKEN_TYPE.ERC1155;
+  tokenType: TOKEN_TYPE['ERC1155'];
   ownerAddress: string;
   address: string;
 };
 
-export type EthereumNFT = EthereumERC721Token | EthereumERC1155Token;
+type EthereumNFT = EthereumERC721Token | EthereumERC1155Token;
 
-export type CosmosCW20Token = {
+type CosmosCW20Token = {
   id: string;
   chainId: CosmosChain['id'];
   tokenType: 'CW20';
@@ -240,9 +238,9 @@ export type CosmosCW20Token = {
   default?: boolean;
 };
 
-export type CosmosToken = CosmosCW20Token;
+type CosmosToken = CosmosCW20Token;
 
-export type EthereumERC20Token = {
+type EthereumERC20Token = {
   id: string;
   ethereumNetworkId: string;
   tokenType: 'ERC20';
@@ -255,9 +253,9 @@ export type EthereumERC20Token = {
   default?: boolean;
 };
 
-export type EthereumToken = EthereumERC20Token;
+type EthereumToken = EthereumERC20Token;
 
-export type CosmosNFT = {
+type CosmosNFT = {
   id: string;
   tokenId: string;
   baseChainUUID: string;
@@ -266,7 +264,7 @@ export type CosmosNFT = {
   address: string;
 };
 
-export type Providers = {
+type Providers = {
   keplr: boolean;
   metamask: boolean;
   aptos: boolean;
