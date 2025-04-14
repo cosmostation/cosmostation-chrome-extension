@@ -27,7 +27,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const mainAssetSymbol = chain.staking_asset_symbol || 'UNKNOWN';
       const mainAssetDecimals = chain?.staking_asset_decimals || 6;
       const mainAssetImage = chain?.staking_asset_image || null;
-      const mainAssetCoinGeckoId = chain?.staking_asset_coin_gecko_id || null;
+      const mainAssetCoinGeckoId = chain?.staking_asset_coingecko_id || null;
 
       const isCosmwasm = chain?.is_support_cw20 ?? false;
       const isSupportCW721 = chain.is_support_cw721 ?? false;
