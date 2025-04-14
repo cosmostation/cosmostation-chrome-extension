@@ -2131,7 +2131,9 @@
             "importNetwork": "Import Network",
             "network": "Network",
             "noCustomChains": "No Custom Chains",
-            "noCustomChainsDescription": "You can manage custom chains by adding or deleting them."
+            "noCustomChainsDescription": "You can manage custom chains by adding or deleting them.",
+            "chainId": "Chain ID : ",
+            "deleteCustomChainDescription": "Do you want to delete this custom network? \nYou'll need to re-enter the info to add it again"
           },
           "layout": {
             "header": "Manage Custom Network"

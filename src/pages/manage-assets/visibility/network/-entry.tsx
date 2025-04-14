@@ -11,6 +11,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
+import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
@@ -19,14 +20,18 @@ import { useCustomChain } from '@/hooks/useCustomChain';
 import { useCustomChainParam } from '@/hooks/useCustomChainParam';
 import { Route as ImportNetwork } from '@/pages/manage-assets/import/network';
 import type { CustomAsset } from '@/types/asset';
-import type { UniqueChainId } from '@/types/chain';
+import type { CustomChain, UniqueChainId } from '@/types/chain';
 import type { CustomChainAsset } from '@/types/customChain';
 import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 
 import {
   ButtonWrapper,
+  ChainContainer,
+  ChainDetailContainer,
+  ChainIdContainer,
   ChainImage,
   Container,
+  DeleteChainImage,
   EmptyAssetContainer,
   IconContainer,
   ImportTextContainer,
@@ -58,6 +63,8 @@ export default function Entry() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
   const isDebouncing = !!search && isPending();
+
+  const [suppoesdDeleteChain, setSuppoesdDeleteChain] = useState<CustomChain | undefined>();
 
   const baseCustomChainList = useMemo(
     () => (!isLoading ? [...(managedCustomChains || []), ...userDefinedCustomChains] : []),
@@ -116,7 +123,12 @@ export default function Entry() {
   };
 
   const removeCustom = async (chainId: UniqueChainId) => {
-    await removeCustomChain(chainId);
+    const userDefinedCustomChain = userDefinedCustomChains.find((item) => isMatchingUniqueChainId(item, chainId));
+    if (userDefinedCustomChain) {
+      setSuppoesdDeleteChain(userDefinedCustomChain);
+    } else {
+      await removeCustomChain(chainId);
+    }
   };
 
   useEffect(() => {
@@ -237,6 +249,30 @@ export default function Entry() {
           </Container>
         </EdgeAligner>
       </BaseBody>
+      <DeleteConfirmBottomSheet
+        open={!!suppoesdDeleteChain}
+        onClose={() => setSuppoesdDeleteChain(undefined)}
+        contents={
+          <ChainContainer>
+            <DeleteChainImage src={suppoesdDeleteChain?.image} />
+            <ChainDetailContainer>
+              <Base1300Text variant="b1_B">{suppoesdDeleteChain?.name}</Base1300Text>
+              <ChainIdContainer>
+                <Base1000Text variant="b4_R">{t('pages.manage-assets.visibility.network.entry.chainId')}</Base1000Text>
+                &nbsp;
+                <Base1000Text variant="b3_M">{suppoesdDeleteChain?.chainId}</Base1000Text>
+              </ChainIdContainer>
+            </ChainDetailContainer>
+          </ChainContainer>
+        }
+        descriptionText={t('pages.manage-assets.visibility.network.entry.deleteCustomChainDescription')}
+        onClickConfirm={async () => {
+          if (suppoesdDeleteChain) {
+            await removeCustomChain(getUniqueChainId(suppoesdDeleteChain));
+            setSuppoesdDeleteChain(undefined);
+          }
+        }}
+      />
     </>
   );
 }

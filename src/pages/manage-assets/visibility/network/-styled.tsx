@@ -87,3 +87,27 @@ export const InfoIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const ChainContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  rowGap: '0.8rem',
+});
+
+export const DeleteChainImage = styled(BaseChainImage)({
+  width: '5.2rem',
+  height: '5.2rem',
+});
+
+export const ChainDetailContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  rowGap: '0.2rem',
+});
+
+export const ChainIdContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
