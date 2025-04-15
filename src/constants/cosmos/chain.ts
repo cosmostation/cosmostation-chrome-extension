@@ -5,3 +5,6 @@ export const COSMOS_CHAINLIST_ID = 'cosmos';
 export const GRAVITY_BRDIGE_CHAINLIST_ID = 'gravity-bridge';
 
 export const PERSISTENCE_CHAINLIST_ID = 'persistence';
+
+export const NEUTRON_CHAINLIST_ID = 'neutron';
+export const NEUTRON_TESTNET_CHAINLIST_ID = 'neutron-testnet';

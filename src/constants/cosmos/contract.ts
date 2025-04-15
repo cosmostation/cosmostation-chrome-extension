@@ -1,0 +1,2 @@
+export const NEUTRON_STAKE_CONTRACT_ADDRESS = 'neutron1gqq3c735pj6ese3yru5xr6ud0fvxgltxesygvyyzpsrt74v6yg4sgkrgwq';
+export const NEUTRON_TESTNET_STAKE_CONTRACT_ADDRESS = 'neutron1h62p45vv3fg2q6sm00r93gqgmhqt9tfgq5hz33qyrhq8f0pqqj0s36wgc3';

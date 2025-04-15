@@ -58,3 +58,12 @@ export type ContractInfoResponse = {
     symbol: string;
   };
 };
+
+export type NTRNRewardsResponse = {
+  data: {
+    pending_rewards: {
+      denom: string;
+      amount: string;
+    };
+  };
+};

@@ -42,6 +42,7 @@ type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLB
   commission?: string;
   rewardCounts?: string;
   validatorImage?: string;
+  isHideReward?: boolean;
 };
 
 export default function StakingItem({
@@ -54,6 +55,7 @@ export default function StakingItem({
   rewardAmount,
   rewardCounts,
   validatorImage,
+  isHideReward = false,
   ...remainder
 }: StakingItemProps) {
   const { t } = useTranslation();
@@ -86,7 +88,7 @@ export default function StakingItem({
             <CommissionContainer>
               <Base1000Text variant="b4_R">
                 {`${t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.commission')} : `}
-                <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h6n_M" fixed={2}>
+                <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>
                   {commission}
                 </NumberTypo>
                 %
@@ -105,18 +107,20 @@ export default function StakingItem({
               <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
             </AmountContainer>
           </StakingInfoRowContainer>
-          <StakingInfoRowContainer>
-            <Base1000Text variant="b3_R">
-              {`${t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.reward')} ${rewardCounts ? `+ ${rewardCounts}` : ''}`}
-            </Base1000Text>
-            <AmountContainer>
-              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
-                {rewardAmount}
-              </BalanceDisplay>
-              &nbsp;
-              <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
-            </AmountContainer>
-          </StakingInfoRowContainer>
+          {!isHideReward && (
+            <StakingInfoRowContainer>
+              <Base1000Text variant="b3_R">
+                {`${t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.StakingItem.index.reward')} ${rewardCounts ? `+ ${rewardCounts}` : ''}`}
+              </Base1000Text>
+              <AmountContainer>
+                <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+                  {rewardAmount}
+                </BalanceDisplay>
+                &nbsp;
+                <Base1300Text variant="b4_M">{symbol}</Base1300Text>
+              </AmountContainer>
+            </StakingInfoRowContainer>
+          )}
         </StakingInfoContainer>
       </StyledButton>
       <StakingOptionBottomSheet
@@ -164,6 +168,9 @@ export default function StakingItem({
           }
         />
         <BaseOptionButton
+          style={{
+            display: isHideReward ? 'none' : 'initial',
+          }}
           onClick={() => {
             navigate({
               to: ClaimRewards.to,

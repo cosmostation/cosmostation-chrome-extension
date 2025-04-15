@@ -8,6 +8,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import { Tab, Tabs } from '@/components/common/Tab';
 import EmptyAsset from '@/components/EmptyAsset';
 import StakeDetailBox from '@/components/MainBox/StakeDetailBox';
+import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useUndelegation } from '@/hooks/cosmos/useUndelegation';
 import { useValidators } from '@/hooks/cosmos/useValidators';
@@ -53,6 +54,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const validators = useValidators({ coinId });
   const delegationInfo = useDelegationInfo({ coinId });
   const undelegation = useUndelegation({ coinId });
+
+  const isNTRN = [NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID].some((item) => item === parseCoinId(coinId).chainId);
 
   const stakingItems = useMemo(
     () =>
@@ -133,7 +136,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <StyledTabPanel value={tabValue} index={0}>
               <StakingItemContainer>
                 {stakingItems.length > 0 ? (
-                  stakingItems.map((item, index) => <StakingItem key={index} {...item} />)
+                  stakingItems.map((item, index) => <StakingItem key={index} {...item} isHideReward={isNTRN} />)
                 ) : (
                   <EmptyAssetContainer>
                     <EmptyAsset

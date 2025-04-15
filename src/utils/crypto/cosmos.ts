@@ -29,5 +29,7 @@ export function cosmosURL(lcdURL: string, chainId: string) {
     getCommission: (validatorAddress: string) => `${lcdURL}/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`,
     getFeemarket: (denom?: string) => `${lcdURL}/feemarket/v1/gas_prices${denom ? `/${denom}` : ''}`,
     getValidators: () => `${lcdURL}/cosmos/staking/v1beta1/validators?pagination.limit=10000`,
+    getNTRNRewards: (contractAddress: string, address: string) =>
+      `${lcdURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"rewards":{"user":"${address}"}}`)}`,
   };
 }

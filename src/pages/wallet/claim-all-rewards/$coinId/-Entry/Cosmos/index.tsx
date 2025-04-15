@@ -13,11 +13,14 @@ import Fee from '@/components/Fee/CosmosFee';
 import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
+import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { NEUTRON_STAKE_CONTRACT_ADDRESS, NEUTRON_TESTNET_STAKE_CONTRACT_ADDRESS } from '@/constants/cosmos/contract';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { useAccount } from '@/hooks/cosmos/useAccount';
 import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
+import { useNTRNReward } from '@/hooks/cosmos/useNTRNReward';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCoinList } from '@/hooks/useCoinList';
@@ -28,7 +31,7 @@ import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
-import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
+import type { MsgExecuteContract, MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
@@ -93,18 +96,31 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const mainRewardCoin = getCosmosAccountAsset();
 
+  const isNTRN = [NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID].some((item) => item === parseCoinId(coinId).chainId);
+
+  const { data: ntrnRewards } = useNTRNReward({ coinId: isNTRN ? coinId : undefined });
+
   const coinSymbol = mainRewardCoin?.asset.symbol || '';
   const chainName = mainRewardCoin?.chain.name || '';
 
   const accumulatedRewards = (() => {
+    if (isNTRN) {
+      return [
+        {
+          denom: ntrnRewards?.data.pending_rewards.denom || parseCoinId(coinId).id,
+          amount: ntrnRewards?.data.pending_rewards.amount || '0',
+        },
+      ];
+    }
+
     const flattenedRewards = delegationInfo.delegationInfo.flatMap((entry) => entry.rewardInfo?.reward || []);
 
     const denomTotalAmountMap = flattenedRewards.reduce((acc: Record<string, string>, { denom, amount }) => {
       if (!acc[denom]) {
         acc[denom] = '0';
       }
-      const aaaa = plus(acc[denom], amount);
-      acc[denom] = aaaa;
+      const sum = plus(acc[denom], amount);
+      acc[denom] = sum;
       return acc;
     }, {});
 
@@ -119,7 +135,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     () =>
       delegationInfo.delegationInfo
         .map((item) => {
-          const votinPower = ceil(toDisplayDenomAmount(item.validatorInfo?.tokens || '0', selectedRewardCoin?.asset.decimals || 0));
+          const votingPower = ceil(toDisplayDenomAmount(item.validatorInfo?.tokens || '0', selectedRewardCoin?.asset.decimals || 0));
           const commission = toPercentages(item.validatorInfo?.commission.commission_rates.rate || '0', {
             disableMark: true,
           });
@@ -127,7 +143,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
           return {
             validatorName: item.validatorInfo?.description.moniker || shorterAddress(item.validatorAddress, 12) || '',
             validatorAddress: item.validatorAddress,
-            votingPower: votinPower,
+            votingPower: votingPower,
             commission: commission,
             stakedAmount: item.totalDelegationAmount,
             validatorImage: item.validatorInfo?.monikerImage,
@@ -191,7 +207,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 
-  const memoizedRewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
+  const memoizedRewardAminoTx = useMemo<SignAminoDoc<MsgReward> | SignAminoDoc<MsgExecuteContract> | undefined>(() => {
     if (selectedRewardCoin) {
       if (
         account.data?.value.account_number &&
@@ -201,6 +217,46 @@ export default function Cosmos({ coinId }: CosmosProps) {
         rewardReceiptAddress
       ) {
         const sequence = String(account.data?.value.sequence || '0');
+
+        if (isNTRN) {
+          const contractAddress = (() => {
+            if (selectedRewardCoin.chain.id === NEUTRON_CHAINLIST_ID) return NEUTRON_STAKE_CONTRACT_ADDRESS;
+
+            if (selectedRewardCoin.chain.id === NEUTRON_TESTNET_CHAINLIST_ID) return NEUTRON_TESTNET_STAKE_CONTRACT_ADDRESS;
+            return NEUTRON_STAKE_CONTRACT_ADDRESS;
+          })();
+
+          return {
+            account_number: String(account.data.value.account_number),
+            sequence,
+            chain_id: nodeInfo.data?.default_node_info?.network ?? selectedRewardCoin.chain.chainId,
+            fee: {
+              amount: [
+                {
+                  denom: alternativeFeeAsset.asset.id,
+                  amount: selectedRewardCoin.chain.isEvm
+                    ? times(alternativeGasRate?.[0] || '0', selectedRewardCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                    : '1',
+                },
+              ],
+              gas: String(selectedRewardCoin.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
+            },
+            memo: inputMemo,
+            msgs: [
+              {
+                type: 'wasm/MsgExecuteContract',
+                value: {
+                  sender: selectedRewardCoin.address.address,
+                  contract: contractAddress,
+                  msg: {
+                    claim_rewards: {},
+                  },
+                  funds: [],
+                },
+              },
+            ],
+          };
+        }
 
         return {
           account_number: String(account.data.value.account_number),
@@ -238,6 +294,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     delegationInfo.delegationInfo,
     displayMainCoinRewardAmount,
     inputMemo,
+    isNTRN,
     nodeInfo.data?.default_node_info?.network,
     rewardReceiptAddress,
     selectedRewardCoin,
@@ -245,7 +302,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [rewardAminoTx] = useDebounce(memoizedRewardAminoTx, 700);
 
-  const unstakeProtoTx = useMemo(() => {
+  const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
       const pTx = protoTx(
         rewardAminoTx,
@@ -259,7 +316,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     return null;
   }, [selectedRewardCoin?.address.accountType.pubkeyType, rewardAminoTx]);
 
-  const simulate = useSimulate({ coinId, txBytes: unstakeProtoTx?.tx_bytes });
+  const simulate = useSimulate({ coinId, txBytes: rewardProtoTx?.tx_bytes });
 
   const alternativeGas = useMemo(() => {
     const gasCoefficient = selectedRewardCoin?.chain.feeInfo.gasCoefficient || DEFAULT_GAS_MULTIPLY;
