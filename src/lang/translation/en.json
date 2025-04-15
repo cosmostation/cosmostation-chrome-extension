@@ -64,7 +64,10 @@
           "send": "Send",
           "receive": "Receive",
           "swap": "Swap",
-          "vote": "Vote"
+          "vote": "Vote",
+          "more": "more",
+          "vault": "Vault",
+          "dao": "Dao"
         }
       }
     },
@@ -902,7 +905,9 @@
         }
       },
       "entry": {
-        "history": "History"
+        "history": "History",
+        "denom": "Denom",
+        "copiedDenom": "IBC denom is successfully copied"
       },
       "$coinId": {
         "manage-stake": {

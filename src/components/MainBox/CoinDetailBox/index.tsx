@@ -9,6 +9,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconButton from '@/components/common/IconButton';
 import TextButton from '@/components/common/TextButton';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
+import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -16,11 +17,12 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash, shorterAddress } from '@/utils/string';
 import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
 import {
   BodyBottomContainer,
   BodyContainer,
@@ -35,6 +37,7 @@ import {
 import MainBox from '..';
 
 import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
+import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
 import SendIcon from '@/assets/images/icons/Send22.svg';
 import SwapIcon from '@/assets/images/icons/Swap22.svg';
@@ -47,6 +50,8 @@ type CoinDetailBoxProps = {
 };
 
 export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
+  const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
+
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -97,6 +102,31 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   const voteURL = currentCoin?.chain.explorer?.proposal;
   const formattedVoteURL = voteURL && removeTrailingSlash(removeTemplateLiteral(voteURL));
+
+  const isNTRN = [NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID].some((item) => item === parseCoinId(coinId || '').chainId);
+
+  const moreOptionProps = (() => {
+    if (isNTRN) {
+      return [
+        {
+          icon: <VoteIcon />,
+          title: t('components.MainBox.CoinDetailBox.index.vault'),
+          onClick: () => {
+            window.open(`https://www.mintscan.io/${parseCoinId(coinId || '').chainId}/dao/vault?sector=vault`, '_blank');
+          },
+        },
+        {
+          icon: <VoteIcon />,
+          title: t('components.MainBox.CoinDetailBox.index.dao'),
+          onClick: () => {
+            window.open(`https://www.mintscan.io/${parseCoinId(coinId || '').chainId}/dao/vault?sector=proposals`, '_blank');
+          },
+        },
+      ];
+    }
+
+    return undefined;
+  })();
 
   const copyToClipboard = () => {
     copy(address);
@@ -232,6 +262,21 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
                 <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.vote')}</SpacedTypography>
               </StyledIconTextButton>
             )}
+            {moreOptionProps && (
+              <StyledIconTextButton
+                onClick={() => {
+                  setIsOpenMoreOptionBottomSheet(true);
+                }}
+                leadingIcon={
+                  <IconContainer>
+                    <MoreIcon />
+                  </IconContainer>
+                }
+                direction="vertical"
+              >
+                <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.more')}</SpacedTypography>
+              </StyledIconTextButton>
+            )}
           </BottomButtonContainer>
         }
         className="circleGradient"
@@ -244,6 +289,9 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
           bech32AddressPrefix={cosmosStyleCoin.chain.accountPrefix + 1}
           onSelectOption={hanldeOnEthermintSend}
         />
+      )}
+      {moreOptionProps && (
+        <MoreOptionBottomSheet open={isOpenMoreOptionBottomSheet} onClose={() => setIsOpenMoreOptionBottomSheet(false)} buttonProps={moreOptionProps} />
       )}
     </>
   );

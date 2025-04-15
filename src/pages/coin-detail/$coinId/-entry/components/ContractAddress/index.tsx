@@ -4,15 +4,17 @@ import copy from 'copy-to-clipboard';
 import IconTextButton from '@/components/common/IconTextButton';
 import { toastSuccess } from '@/utils/toast';
 
-import { Container, FullContractAddressText, IconContainer, TitleText } from './styled';
+import { Container, FullContractAddressText, FullContractAddressTextContainer, IconContainer, TitleText } from './styled';
 
 import PasteIcon from '@/assets/images/icons/Paste18.svg';
 
 type ContractAddressProps = {
   contractAddress: string;
+  title?: string;
+  toastText?: string;
 };
 
-export default function ContractAddress({ contractAddress }: ContractAddressProps) {
+export default function ContractAddress({ contractAddress, title, toastText }: ContractAddressProps) {
   const { t } = useTranslation();
 
   return (
@@ -20,7 +22,7 @@ export default function ContractAddress({ contractAddress }: ContractAddressProp
       <IconTextButton
         onClick={() => {
           copy(contractAddress);
-          toastSuccess(t('pages.coin-detail.components.ContractAddress.index.copied'));
+          toastSuccess(toastText || t('pages.coin-detail.components.ContractAddress.index.copied'));
         }}
         trailingIcon={
           <IconContainer>
@@ -28,9 +30,11 @@ export default function ContractAddress({ contractAddress }: ContractAddressProp
           </IconContainer>
         }
       >
-        <TitleText variant="h3_B">{t('pages.coin-detail.components.ContractAddress.index.contract')}</TitleText>
+        <TitleText variant="h3_B">{title || t('pages.coin-detail.components.ContractAddress.index.contract')}</TitleText>
       </IconTextButton>
-      <FullContractAddressText variant="b3_M">{contractAddress}</FullContractAddressText>
+      <FullContractAddressTextContainer>
+        <FullContractAddressText variant="b3_M">{contractAddress}</FullContractAddressText>
+      </FullContractAddressTextContainer>
     </Container>
   );
 }

@@ -33,6 +33,19 @@ export const IconContainer = styled('div')(({ theme }) => ({
   },
 }));
 
+export const FullContractAddressTextContainer = styled('div')({
+  display: 'flex',
+
+  maxWidth: '100%',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const FullContractAddressText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1100,
 }));

@@ -28,7 +28,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const selectedCoin = getCosmosAccountAsset();
 
-  const contractAddress = selectedCoin?.asset.type === 'cw20' ? selectedCoin.asset.id : undefined;
+  const contractAddress = selectedCoin?.asset.type === 'cw20' || selectedCoin?.asset.type === 'ibc' ? selectedCoin.asset.id : undefined;
   const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
 
   const isStakeable = selectedCoin?.chain.isSupportStaking && selectedCoin.asset.id === selectedCoin.chain.mainAssetDenom;
@@ -43,7 +43,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <SectionWrapper>
           {contractAddress && (
             <SectionContainer>
-              <ContractAddress contractAddress={contractAddress} />
+              <ContractAddress
+                contractAddress={contractAddress}
+                title={selectedCoin?.asset.type === 'ibc' ? t('pages.coin-detail.entry.denom') : undefined}
+                toastText={selectedCoin?.asset.type === 'ibc' ? t('pages.coin-detail.entry.copiedDenom') : undefined}
+              />
             </SectionContainer>
           )}
           {isStakeable && (
