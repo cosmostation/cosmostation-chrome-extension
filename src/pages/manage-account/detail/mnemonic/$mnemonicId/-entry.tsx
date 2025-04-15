@@ -37,7 +37,7 @@ import MainContentsLayout from '../../-components/MainContentsLayout';
 
 import CautionIcon from '@/assets/images/icons/Caution16.svg';
 import EditIcon from '@/assets/images/icons/Edit18.svg';
-import MnemonicIcon from '@/assets/images/icons/Mnemonics14.svg';
+import MnemonicIcon from '@/assets/images/icons/Mnemonic52.svg';
 import MnemonicViewIcon from '@/assets/images/icons/MnemonicView28.svg';
 
 type EntryProps = {

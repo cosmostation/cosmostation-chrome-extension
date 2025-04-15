@@ -124,7 +124,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.claim')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton leadingIcon={<StakeIcon />} direction="vertical">
+            <StyledIconTextButton
+              style={{
+                display: 'none',
+              }}
+              leadingIcon={<StakeIcon />}
+              direction="vertical"
+            >
               <SpacedTypography variant="b3_M">{t('components.MainBox.StakeDetailBox.Cosmos.index.compound')}</SpacedTypography>
             </StyledIconTextButton>
           </BottomButtonContainer>

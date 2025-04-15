@@ -184,6 +184,9 @@ export default function StakingItem({
           }
         />
         <BaseOptionButton
+          style={{
+            display: 'none',
+          }}
           onClick={() => {
             setIsOpenStakingOptionBottomSheet(false);
           }}
