@@ -4,6 +4,7 @@ import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import type { RequestQueue } from '@/types/extension';
 import type { CosAddTokensCW20Internal } from '@/types/message/inject/cosmos';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
 import Entry from './-entry';
 import Layout from './-layout';
@@ -22,7 +23,9 @@ function CosmosAddToken() {
   });
 
   if (currentRequestQueue && isCosAddTokens(currentRequestQueue)) {
-    const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) => asset.chain.name === currentRequestQueue.params.chainName);
+    const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) =>
+      isEqualsIgnoringCase(asset.chain.name, currentRequestQueue.params.chainName),
+    );
 
     if (selectedAsset?.chain) {
       return (

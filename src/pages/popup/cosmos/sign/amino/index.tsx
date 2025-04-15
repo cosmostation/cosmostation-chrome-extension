@@ -6,6 +6,7 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import AccessRequest from '@/pages/popup/-components/requests/AccessRequest';
 import type { RequestQueue } from '@/types/extension';
 import type { CosSignAmino } from '@/types/message/inject/cosmos';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
 import Entry from './-entry';
 import Layout from './-layout';
@@ -23,7 +24,9 @@ function CosmosSignAmino() {
   });
 
   if (currentRequestQueue && isCosSignAmino(currentRequestQueue)) {
-    const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) => asset.chain.name === currentRequestQueue.params.chainName);
+    const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find((asset) =>
+      isEqualsIgnoringCase(asset.chain.name, currentRequestQueue.params.chainName),
+    );
 
     if (selectedAsset) {
       const updatedChain = produce(selectedAsset.chain, (draft) => {
