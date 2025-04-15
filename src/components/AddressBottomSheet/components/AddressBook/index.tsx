@@ -5,7 +5,9 @@ import { Typography } from '@mui/material';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import EmptyAsset from '@/components/EmptyAsset';
+import { UNIVERSAL_EVM_NETWORK_ID } from '@/pages/general-setting/address-book/add-address/-entry';
 import type { UniqueChainId } from '@/types/chain';
+import { getUniqueChainIdWithManual, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -35,7 +37,17 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
 
   const { addressBookList } = useExtensionStorageStore((state) => state);
 
-  const filteredAddress = useMemo(() => addressBookList.filter((item) => item.chainId === chainId), [addressBookList, chainId]);
+  const filteredAddress = useMemo(
+    () =>
+      addressBookList.filter((item) => {
+        if (parseUniqueChainId(chainId).chainType === 'evm') {
+          return item.chainId === chainId || item.chainId === getUniqueChainIdWithManual(UNIVERSAL_EVM_NETWORK_ID, 'evm');
+        }
+
+        return item.chainId === chainId;
+      }),
+    [addressBookList, chainId],
+  );
 
   if (filteredAddress.length === 0) {
     return (
