@@ -10,26 +10,23 @@ import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton }
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type EthermintSelectBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  bech32AddressPrefix?: string;
+  textProps?: {
+    title: {
+      evm: string;
+      cosmos: string;
+    };
+    subtitle: {
+      evm: string;
+      cosmos: string;
+    };
+  };
   onSelectOption?: (val: 'cosmos' | 'evm') => void;
 };
 
-export default function EthermintSelectBottomSheet({ bech32AddressPrefix, onClose, onSelectOption, ...remainder }: EthermintSelectBottomSheetProps) {
+export default function EthermintSelectBottomSheet({ textProps, onClose, onSelectOption, ...remainder }: EthermintSelectBottomSheetProps) {
   const { t } = useTranslation();
 
   const options = ['evm', 'cosmos'] as const;
-
-  const titleTextMap = {
-    evm: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.evmTitle'),
-    cosmos: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.cosmosTitle'),
-  };
-
-  const subtitleTextMap = {
-    evm: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.evmSubtitle'),
-    cosmos: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.cosmosSubtitle', {
-      bech32Prefix: bech32AddressPrefix,
-    }),
-  };
 
   const onHandleClick = (val: 'cosmos' | 'evm') => {
     onSelectOption?.(val);
@@ -63,8 +60,8 @@ export default function EthermintSelectBottomSheet({ bech32AddressPrefix, onClos
               onClick={() => {
                 onHandleClick(item);
               }}
-              leftSecondHeader={<Base1300Text variant="b2_M">{titleTextMap[item]}</Base1300Text>}
-              leftSecondBody={<Base1000Text variant="b4_R">{subtitleTextMap[item]}</Base1000Text>}
+              leftSecondHeader={<Base1300Text variant="b2_M">{textProps?.title[item] || item.toUpperCase()}</Base1300Text>}
+              leftSecondBody={<Base1000Text variant="b4_R">{textProps?.subtitle[item] || ''}</Base1000Text>}
               disableRightChevron
             />
           ))}

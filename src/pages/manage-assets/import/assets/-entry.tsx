@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
+import EthermintFilterChainSelectBox from '@/components/EthermintFilterChainSelectBox/index.tsx';
 import { useChainList } from '@/hooks/useChainList.ts';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
@@ -33,15 +33,16 @@ export default function Entry() {
   return (
     <BaseBody>
       <Container>
-        <ChainSelectBox
+        <EthermintFilterChainSelectBox
           chainList={mergedChainList}
-          currentChainId={currentChainId}
+          currentSelectedChain={currentChain}
           onClickChain={(chainId) => {
             setCurrentChainId(chainId);
           }}
           label={t('pages.manage-assets.import.assets.entry.network')}
           bottomSheetTitle={t('pages.manage-assets.import.assets.entry.selectNetwork')}
           bottomSheetSearchPlaceholder={t('pages.manage-assets.import.assets.entry.searchNetwork')}
+          customVarient="contract-token"
         />
       </Container>
       {currentChain?.chainType === 'evm' ? (

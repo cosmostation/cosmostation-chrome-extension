@@ -706,6 +706,14 @@
           }
         }
       }
+    },
+    "EthermintFilterChainSelectBox": {
+      "index": {
+        "evmTokenTitle": "Add ERC20 token",
+        "cosmosTokenTitle": "Add CW20 token",
+        "evmTokenSubtitle": "For Ethereum-style tokens (0x address)",
+        "cosmosTokenSubtitle": "For tokens on CosmWasm chains (starts with {{prefix}})"
+      }
     }
   },
   "pages": {

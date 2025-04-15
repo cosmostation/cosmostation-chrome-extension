@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
 import type { ChainBase, CosmosChain, EvmChain, UniqueChainId } from '@/types/chain';
@@ -26,7 +27,18 @@ type ChainSelectBoxProps = TextFieldProps & {
   rightAdornmentComponent?: JSX.Element;
   bottomSheetTitle?: string;
   bottomSheetSearchPlaceholder?: string;
+  ethermintSelectTextProps?: {
+    title: {
+      evm: string;
+      cosmos: string;
+    };
+    subtitle: {
+      evm: string;
+      cosmos: string;
+    };
+  };
   disableSortChain?: boolean;
+  customVarient?: 'default' | 'contract-token';
   onClickChain?: (id?: UniqueChainId) => void;
 };
 
@@ -39,9 +51,13 @@ export default function EthermintFilterChainSelectBox({
   bottomSheetTitle,
   bottomSheetSearchPlaceholder,
   disableSortChain = false,
+  ethermintSelectTextProps,
+  customVarient = 'default',
   onClickChain,
   ...remainder
 }: ChainSelectBoxProps) {
+  const { t } = useTranslation();
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -56,6 +72,38 @@ export default function EthermintFilterChainSelectBox({
     const { id } = parseUniqueChainId(pendingChainId);
     return chainList.find((chain): chain is CosmosChain => chain.id === id && chain.chainType === 'cosmos');
   }, [pendingChainId, chainList]);
+
+  const ethermintSelectionText = (() => {
+    if (ethermintSelectTextProps) return ethermintSelectTextProps;
+
+    if (customVarient === 'contract-token') {
+      return {
+        title: {
+          evm: t('components.EthermintFilterChainSelectBox.index.evmTokenTitle'),
+          cosmos: t('components.EthermintFilterChainSelectBox.index.cosmosTokenTitle'),
+        },
+        subtitle: {
+          evm: t('components.EthermintFilterChainSelectBox.index.evmTokenSubtitle'),
+          cosmos: t('components.EthermintFilterChainSelectBox.index.cosmosTokenSubtitle', {
+            prefix: (tempCosmosChain?.accountPrefix ?? '') + 1,
+          }),
+        },
+      };
+    }
+
+    return {
+      title: {
+        evm: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.evmTitle'),
+        cosmos: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.cosmosTitle'),
+      },
+      subtitle: {
+        evm: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.evmSubtitle'),
+        cosmos: t('pages.general-setting.address-book.add-address.components.EthermintSelectBottomSheet.index.cosmosSubtitle', {
+          bech32Prefix: (tempCosmosChain?.accountPrefix ?? '') + 1,
+        }),
+      },
+    };
+  })();
 
   const handleInputClick = useCallback(() => {
     setBottomSheetOpen(true);
@@ -74,17 +122,50 @@ export default function EthermintFilterChainSelectBox({
       const parsed = parseUniqueChainId(chainId);
       const selected = chainList.find((c) => isMatchingUniqueChainId(c, chainId));
 
-      const isCosmosLikeEvm = parsed.chainType === 'evm' && (selected as EvmChain)?.isCosmos;
-      const isEvmLikeCosmos = parsed.chainType === 'cosmos' && (selected as CosmosChain)?.isEvm;
+      if (customVarient === 'contract-token') {
+        if (parsed.chainType === 'evm') {
+          const sameIdInCosmosChain = chainList.find((c) => isMatchingUniqueChainId(c, getUniqueChainIdWithManual(parsed.id, 'cosmos')));
 
-      if (isCosmosLikeEvm || isEvmLikeCosmos) {
-        setPendingChainId(chainId);
-      } else {
+          const supportCW20 = (sameIdInCosmosChain as CosmosChain)?.isCosmwasm;
+
+          if (!!sameIdInCosmosChain && !!supportCW20) {
+            setPendingChainId(chainId);
+          } else {
+            onClickChain?.(chainId);
+            setBottomSheetOpen(false);
+          }
+          return;
+        }
+
+        if (parsed.chainType === 'cosmos') {
+          const sameIdInEVM = chainList.find((c) => isMatchingUniqueChainId(c, getUniqueChainIdWithManual(parsed.id, 'evm')));
+
+          const supportCW20 = (selected as CosmosChain)?.isCosmwasm;
+
+          if (!!sameIdInEVM && supportCW20) {
+            setPendingChainId(chainId);
+          } else {
+            onClickChain?.(chainId);
+            setBottomSheetOpen(false);
+          }
+          return;
+        }
+
         onClickChain?.(chainId);
         setBottomSheetOpen(false);
+      } else {
+        const isCosmosLikeEvm = parsed.chainType === 'evm' && (selected as EvmChain)?.isCosmos;
+        const isEvmLikeCosmos = parsed.chainType === 'cosmos' && (selected as CosmosChain)?.isEvm;
+
+        if (isCosmosLikeEvm || isEvmLikeCosmos) {
+          setPendingChainId(chainId);
+        } else {
+          onClickChain?.(chainId);
+          setBottomSheetOpen(false);
+        }
       }
     },
-    [chainList, onClickChain],
+    [chainList, customVarient, onClickChain],
   );
 
   const handleTypeSelect = useCallback(
@@ -153,12 +234,7 @@ export default function EthermintFilterChainSelectBox({
         onClickChain={handleChainSelect}
       />
 
-      <EthermintSelectBottomSheet
-        open={!!pendingChainId}
-        onClose={closeBottomSheets}
-        bech32AddressPrefix={(tempCosmosChain?.accountPrefix ?? '') + 1}
-        onSelectOption={handleTypeSelect}
-      />
+      <EthermintSelectBottomSheet open={!!pendingChainId} onClose={closeBottomSheets} textProps={ethermintSelectionText} onSelectOption={handleTypeSelect} />
     </Container>
   );
 }
