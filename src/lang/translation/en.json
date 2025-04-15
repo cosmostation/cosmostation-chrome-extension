@@ -86,7 +86,8 @@
         "twelveWords": "12 Words",
         "twentyFourWords": "24 Words",
         "copy": "Copy to Clipboard",
-        "copied": "Copied to Clipboard"
+        "copied": "Copied to Clipboard",
+        "words": "{{wordCounts}} words"
       }
     },
     "AllNetworkButton": {
@@ -830,7 +831,8 @@
             "MnemonicBitPopover": {
               "index": {
                 "twelveWords": "12 Words",
-                "twentyWords": "24 Words"
+                "twentyWords": "24 Words",
+                "eighteenWords": "18 words"
               }
             }
           }

@@ -105,6 +105,11 @@ export default function Entry() {
       newValues = Array(24).fill('');
     }
 
+    if (words.length === 18) {
+      setValues(Array(18).fill(''));
+      newValues = Array(18).fill('');
+    }
+
     if (words.length > 1) {
       words.forEach((word, i) => {
         if (i < newValues.length) {
@@ -124,6 +129,12 @@ export default function Entry() {
     setValues(newValues);
   };
 
+  const set18Words = () => {
+    const newValues = [...values.slice(0, 12), ...Array(6).fill('')];
+
+    setValues(newValues);
+  };
+
   const set12Words = () => {
     setValues(values.slice(0, 12));
   };
@@ -131,6 +142,8 @@ export default function Entry() {
   const handleMnemonicBitChange = (bits: MnemonicBits) => {
     if (bits === 128) {
       set12Words();
+    } else if (bits === 192) {
+      set18Words();
     } else {
       set24Words();
     }
@@ -145,6 +158,8 @@ export default function Entry() {
   const clearAll = () => {
     if (values.length === 12) {
       setValues(Array(12).fill(''));
+    } else if (values.length === 18) {
+      setValues(Array(18).fill(''));
     } else {
       setValues(Array(24).fill(''));
     }
@@ -226,9 +241,7 @@ export default function Entry() {
                   </BottomChevronIconContainer>
                 }
               >
-                <MarginRightTypography variant="b3_M">
-                  {values.length === 12 ? t('components.MnemonicViewer.index.twelveWords') : t('components.MnemonicViewer.index.twentyFourWords')}
-                </MarginRightTypography>
+                <MarginRightTypography variant="b3_M">{t('components.MnemonicViewer.index.words', { wordCounts: values.length })}</MarginRightTypography>
               </IconTextButton>
             </TopContainer>
             <MnemonicInputContainer>

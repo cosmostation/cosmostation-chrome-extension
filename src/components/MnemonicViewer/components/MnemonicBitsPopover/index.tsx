@@ -25,6 +25,14 @@ export default function MnemonicBitsPopover({ onClose, onClickMnemonicBits, ...r
       </StyledIconTextButton>
       <StyledIconTextButton
         onClick={() => {
+          onClickMnemonicBits(192);
+          onClose?.({}, 'backdropClick');
+        }}
+      >
+        <Base1300Text variant="b3_M">{t('pages.account.create-mnemonic.mnemonic.components.MnemonicBitPopover.index.eighteenWords')}</Base1300Text>
+      </StyledIconTextButton>
+      <StyledIconTextButton
+        onClick={() => {
           onClickMnemonicBits(256);
           onClose?.({}, 'backdropClick');
         }}

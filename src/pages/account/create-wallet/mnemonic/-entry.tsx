@@ -28,6 +28,7 @@ import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle } fro
 
 const mnemonicBits = {
   12: 128,
+  18: 192,
   24: 256,
 } as const;
 

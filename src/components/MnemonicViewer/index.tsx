@@ -80,9 +80,7 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
                 </BottomChevronIconContainer>
               }
             >
-              <MarginRightTypography variant="b3_M">
-                {mnemonicWordCounts === 12 ? t('components.MnemonicViewer.index.twelveWords') : t('components.MnemonicViewer.index.twentyFourWords')}
-              </MarginRightTypography>
+              <MarginRightTypography variant="b3_M">{t('components.MnemonicViewer.index.words', { wordCounts: mnemonicWordCounts })}</MarginRightTypography>
             </IconTextButton>
           </TopContainer>
         )}
