@@ -37,10 +37,12 @@ import {
 import MainBox from '..';
 
 import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
+import DaoIcon from '@/assets/images/icons/Dao28.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
 import SendIcon from '@/assets/images/icons/Send22.svg';
 import SwapIcon from '@/assets/images/icons/Swap22.svg';
+import VaultIcon from '@/assets/images/icons/Vault28.svg';
 import VoteIcon from '@/assets/images/icons/Vote28.svg';
 
 import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
@@ -109,15 +111,17 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     if (isNTRN) {
       return [
         {
-          icon: <VoteIcon />,
+          icon: <VaultIcon />,
           title: t('components.MainBox.CoinDetailBox.index.vault'),
+          subTitle: t('components.MainBox.CoinDetailBox.index.vaultDescription'),
           onClick: () => {
             window.open(`https://www.mintscan.io/${parseCoinId(coinId || '').chainId}/dao/vault?sector=vault`, '_blank');
           },
         },
         {
-          icon: <VoteIcon />,
+          icon: <DaoIcon />,
           title: t('components.MainBox.CoinDetailBox.index.dao'),
+          subTitle: t('components.MainBox.CoinDetailBox.index.daoDescription'),
           onClick: () => {
             window.open(`https://www.mintscan.io/${parseCoinId(coinId || '').chainId}/dao/vault?sector=proposals`, '_blank');
           },
@@ -183,7 +187,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
         top={
           <TopContainer>
             <TextButton onClick={copyToClipboard} variant="underline" typoVarient="h6n_M">
-              {shorterAddress(address)}
+              {shorterAddress(address, 16)}
             </TextButton>
             {cosmosStyleCoin && (
               <ChangeAddressIconButtonContainer onClick={handleOnClickChangeAddress}>

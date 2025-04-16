@@ -68,12 +68,13 @@ export const BodyText = styled(Typography)(({ theme }) => ({
   maxWidth: '90%',
   textAlign: 'left',
   wordBreak: 'break-word',
-  color: theme.palette.color.base1000,
+  color: theme.palette.color.base900,
 
   display: '-webkit-box',
   WebkitBoxOrient: 'vertical',
   WebkitLineClamp: 2,
   overflow: 'hidden',
+  marginBottom: '0.2rem',
 }));
 
 export const OneChainContainer = styled('div')({

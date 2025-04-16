@@ -42,7 +42,7 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
     <Container>
       <TopContainer>
         <TopLeftContainer>
-          <Base1300Text variant="b3_M">{t('pages.manage-account.detail.mnemonic.components.MnemonicAccount.myAccount')}</Base1300Text>
+          <Base1300Text variant="h3_B">{t('pages.manage-account.detail.mnemonic.components.MnemonicAccount.myAccount')}</Base1300Text>
           <Base1000Text variant="h6n_M">{accountsCount}</Base1000Text>
         </TopLeftContainer>
       </TopContainer>

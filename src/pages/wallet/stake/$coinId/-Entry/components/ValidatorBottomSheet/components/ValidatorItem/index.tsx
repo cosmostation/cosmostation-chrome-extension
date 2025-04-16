@@ -8,7 +8,7 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
 
-import { ImageContainer, ValidatorNameContainer, VotinPowerContainer } from './styled';
+import { ImageContainer, ValidatorNameContainer, VotingPowerContainer } from './styled';
 
 import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
@@ -39,13 +39,13 @@ const ValidatorButton = forwardRef<HTMLButtonElement, ValidatorButtonProps>(({ v
         </ValidatorNameContainer>
       }
       leftSecondBody={
-        <VotinPowerContainer>
+        <VotingPowerContainer>
           <Base1000Text variant="b4_R">
             {`${t('pages.wallet.stake.$coinId.components.ValidatorBottomSheet.components.ValidatorItem.index.votingPower')} :`}
           </Base1000Text>
           &nbsp;
           <NumberTypo typoOfIntegers="h7n_M">{votingPower}</NumberTypo>
-        </VotinPowerContainer>
+        </VotingPowerContainer>
       }
       rightContent={
         <Base1300Text variant="b2_M">

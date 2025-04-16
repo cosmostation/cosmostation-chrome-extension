@@ -77,7 +77,7 @@ export const AccountButton = styled('button')(({ theme }) => ({
 
   cursor: 'pointer',
 
-  padding: '1.3rem 1.6rem',
+  padding: '1.3rem 1.6rem 1.2rem',
 
   '&:hover': {
     backgroundColor: theme.palette.color.base200,
@@ -107,7 +107,7 @@ export const AccountInfoContainer = styled('div')({
   alignItems: 'flex-start',
   justifyContent: 'center',
 
-  rowGap: '0.4rem',
+  rowGap: '0.3rem',
 });
 
 export const LastHdPathTextContainer = styled('div')({

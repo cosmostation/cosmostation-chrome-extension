@@ -8,7 +8,7 @@ export const ContentsContainer = styled('div')({
 
   gridTemplateColumns: '1fr',
 
-  rowGap: '0.2rem',
+  rowGap: '0.3rem',
 });
 
 export const SymbolTypography = styled(Typography)(({ theme }) => ({

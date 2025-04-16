@@ -8,6 +8,7 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab/index.tsx';
+import TextButton from '@/components/common/TextButton/index.tsx';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
@@ -132,10 +133,10 @@ export default function Entry({ coinId }: EntryProps) {
 
   const shortCoinDenom = shorterAddress(coinDenom, 16);
 
-  const badgeImageURL = selectedCoin?.asset.type !== 'native' ? selectedCoin?.chain.image || '' : '';
+  const badgeImageURL = selectedCoin?.chain.image || '';
 
-  const copyToClipboard = () => {
-    copy(selectedCoin?.address.address || '');
+  const copyToClipboard = (copyString?: string) => {
+    copy(copyString || '');
     toastSuccess(t('pages.wallet.receive.$coinId.entry.copied'));
   };
 
@@ -160,7 +161,14 @@ export default function Entry({ coinId }: EntryProps) {
           <CoinDenomContainer>
             {coinTypeText && <Typography variant="b4_R">{`${coinTypeText}`}</Typography>}
             &nbsp;
-            <Typography variant="b3_M">{shortCoinDenom}</Typography>
+            <TextButton
+              typoVarient="b3_M"
+              onClick={() => {
+                copyToClipboard(coinDenom);
+              }}
+            >
+              {shortCoinDenom}
+            </TextButton>
           </CoinDenomContainer>
         </CoinContainer>
         <QRBorderContainer>
@@ -203,7 +211,11 @@ export default function Entry({ coinId }: EntryProps) {
             <AddressBodyContainer>
               <AddressText variant="b3_M_Multiline">{chainAddress}</AddressText>
 
-              <StyledIconButton onClick={copyToClipboard}>
+              <StyledIconButton
+                onClick={() => {
+                  copyToClipboard(selectedCoin?.address.address);
+                }}
+              >
                 <CopyIcon />
               </StyledIconButton>
             </AddressBodyContainer>

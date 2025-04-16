@@ -169,6 +169,7 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
             label={t('pages.general-setting.address-book.add-address.entry.address')}
             error={!!errors.address}
             helperText={errors.address?.message}
+            inputVarient="address"
             slotProps={{
               input: {
                 ...register('address'),

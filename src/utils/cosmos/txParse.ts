@@ -734,10 +734,10 @@ export function getMsgSendDetail(tx: AccountTx, address: string) {
       const receiverAddr = msgValue?.to_address as string;
 
       if (senderAddr === address) {
-        return `To ${shorterAddress(receiverAddr, 16)}`;
+        return `To : ${shorterAddress(receiverAddr, 16)}`;
       }
       if (receiverAddr === address) {
-        return `From ${shorterAddress(senderAddr, 16)}`;
+        return `From : ${shorterAddress(senderAddr, 16)}`;
       }
     }
   }

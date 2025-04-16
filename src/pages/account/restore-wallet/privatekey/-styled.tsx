@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
+import OutlinedInput from '@/components/common/OutlinedInput';
 
 export const FormContainer = styled('form')({
   display: 'flex',
@@ -40,6 +41,18 @@ export const BottomChevronIconContainer = styled('div')({
     height: '1.4rem',
   },
 });
+
+export const StyledOutlinedInput = styled(OutlinedInput)(({ theme }) => ({
+  '.MuiOutlinedInput-input': {
+    '&::placeholder': {
+      fontFamily: theme.typography.b2_M.fontFamily,
+      fontStyle: theme.typography.b2_M.fontStyle,
+      fontSize: theme.typography.b2_M.fontSize,
+      lineHeight: theme.typography.b2_M.lineHeight,
+      letterSpacing: theme.typography.b2_M.letterSpacing,
+    },
+  },
+}));
 
 export const MarginRightTypography = styled(Base1300Text)({
   marginRight: '0.2rem',

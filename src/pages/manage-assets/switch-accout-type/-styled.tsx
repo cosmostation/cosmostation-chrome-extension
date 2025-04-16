@@ -18,5 +18,5 @@ export const RowContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   columnGap: '0.2rem',
-  margin: '1.2rem 0.8rem',
+  margin: '0 0.8rem 1.2rem',
 });

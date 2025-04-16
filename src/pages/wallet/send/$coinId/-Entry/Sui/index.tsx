@@ -322,6 +322,7 @@ export default function Sui({ coinId }: SuiProps) {
               helperText={addressInputErrorMessage}
               value={recipientAddress}
               onChange={(e) => setRecipientAddress(e.target.value)}
+              inputVarient="address"
               slotProps={{
                 input: {
                   endAdornment: (

@@ -72,6 +72,20 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
 
   const txDetail = getMsgDetail(tx, address) || '-';
 
+  const msgSendDetail = (() => {
+    const splitted = txDetail.split(':');
+    const isMsgSend = splitted[0].trim() === 'To' || splitted[0].trim() === 'From';
+
+    if (isMsgSend) {
+      return {
+        prefix: splitted[0].trim(),
+        address: splitted[1].trim(),
+      };
+    }
+
+    return undefined;
+  })();
+
   const amountData = getDpCoin(tx, mainAssetDenom, address);
 
   const firstAmountData = amountData?.[0] && coinList?.cosmosAssets.find((item) => item.id === amountData[0].denom);
@@ -101,7 +115,16 @@ export default function CosmosTxItem({ tx, coinId }: CosmosTxItemProps) {
           </SymbolText>
         </AmountContainer>
       }
-      leftBottom={<Base1000Text variant="b4_M">{txDetail}</Base1000Text>}
+      leftBottom={
+        msgSendDetail ? (
+          <Base1000Text variant="b4_M">
+            {`${msgSendDetail.prefix} : `}
+            <Base1000Text variant="b4_R">{msgSendDetail.address}</Base1000Text>
+          </Base1000Text>
+        ) : (
+          <Base1000Text variant="b4_M">{txDetail}</Base1000Text>
+        )
+      }
       rightBottom={<Base1000Text variant="h7n_R">{formattedTimestamp}</Base1000Text>}
     />
   );

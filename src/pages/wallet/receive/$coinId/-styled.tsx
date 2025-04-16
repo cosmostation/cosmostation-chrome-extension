@@ -22,7 +22,7 @@ export const CoinContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
 
-  margin: '1.4rem 0 1.2rem',
+  marginTop: '1.4rem',
 });
 
 export const CoinImage = styled(BaseCoinImage)({
@@ -46,7 +46,11 @@ export const CoinDenomContainer = styled('div')(({ theme }) => ({
 
   marginTop: '0.4rem',
 
-  color: theme.palette.color.base1000,
+  color: `${theme.palette.color.base1000} !important`,
+
+  '& *': {
+    color: `${theme.palette.color.base1000} !important`,
+  },
 }));
 
 export const QRBorderContainer = styled('div')(({ theme }) => ({
@@ -166,6 +170,7 @@ export const AddressBottomContainer = styled('div')({
 export const InfoIconContainer = styled('div')(({ theme }) => ({
   width: '1.4rem',
   height: '1.4rem',
+  marginRight: '0.2rem',
   '& > svg': {
     width: '1.4rem',
     height: '1.4rem',

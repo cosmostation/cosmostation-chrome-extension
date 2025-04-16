@@ -68,7 +68,7 @@ export default function SetNameBottomSheet({
         <Container>
           <Header>
             <HeaderTitle>
-              <Typography variant="h3_B">{headerTitleText || t('components.SetNameBottomSheet.index.header')}</Typography>
+              <Typography variant="h2_B">{headerTitleText || t('components.SetNameBottomSheet.index.header')}</Typography>
             </HeaderTitle>
             <StyledButton onClick={onHandleClose}>
               <Close24Icon />

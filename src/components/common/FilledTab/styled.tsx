@@ -37,11 +37,11 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
     textTransform: 'none',
     color: theme.palette.color.base600,
 
-    fontFamily: theme.typography.h3_B.fontFamily,
-    fontStyle: theme.typography.h3_B.fontStyle,
-    fontSize: theme.typography.h3_B.fontSize,
-    lineHeight: theme.typography.h3_B.lineHeight,
-    letterSpacing: theme.typography.h3_B.letterSpacing,
+    fontFamily: theme.typography.h4_B.fontFamily,
+    fontStyle: theme.typography.h4_B.fontStyle,
+    fontSize: theme.typography.h4_B.fontSize,
+    lineHeight: theme.typography.h4_B.lineHeight,
+    letterSpacing: theme.typography.h4_B.letterSpacing,
   },
 
   '&.Mui-selected': { opacity: 1, color: theme.palette.color.base1300 },

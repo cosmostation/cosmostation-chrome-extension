@@ -52,7 +52,7 @@ export default function CoinWithChainNameButton({
                     <Base1000Text variant="h6n_M">{`-`}</Base1000Text>
                   )}
                   &nbsp;
-                  <Typography variant="b4_R">{`%`}</Typography>
+                  <Typography variant="h8n_R">{`%`}</Typography>
                 </APRText>
               </APRTextContainer>
             ) : (

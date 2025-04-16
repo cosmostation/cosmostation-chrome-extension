@@ -14,7 +14,7 @@ export const Header = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  padding: '1.3rem 1.6rem',
+  padding: '1.6rem',
 
   flexShrink: 0,
 });
@@ -52,7 +52,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
 export const FilterContaienr = styled('div')({
   width: '100%',
 
-  padding: '0.8rem 1.2rem 1.2rem',
+  padding: '0rem 1.2rem 1.2rem',
 
   boxSizing: 'border-box',
 });

@@ -47,7 +47,6 @@ export const MarginLeftTypography = styled(BaseTypography)(({ theme }) => ({
 
 export const FilterContaienr = styled('div')({
   width: '100%',
-  marginTop: '0.8rem',
 });
 
 export const AdCarouselContainer = styled('div')({

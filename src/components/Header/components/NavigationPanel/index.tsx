@@ -4,8 +4,8 @@ import { Route as Home } from '@/pages/index';
 
 import { LeftNavigatorContainer, StyledIconButton } from './styled';
 
-import HomeIcon from '@/assets/images/icons/Home14.svg';
-import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
+import HomeIcon from '@/assets/images/icons/Home16.svg';
+import ArrowBackIcon from '@/assets/images/icons/LeftArrow16.svg';
 
 type NavigationPanelProps = {
   isHideBackButton?: boolean;

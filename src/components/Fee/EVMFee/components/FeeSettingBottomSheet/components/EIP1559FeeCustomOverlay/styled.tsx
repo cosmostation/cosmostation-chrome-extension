@@ -51,25 +51,23 @@ export const FeeContainer = styled('div')({
   flexDirection: 'column',
   alignItems: 'center',
   rowGap: '0.6rem',
-  margin: '0.4rem 0 1.6rem',
+  margin: '0.4rem 0 2.2rem',
 });
 
 export const InputContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  rowGap: '1.2rem',
+  rowGap: '2.2rem',
 });
 
 export const BottomContainer = styled('div')({
   marginTop: 'auto',
 });
 
-export const EstimatedFeeTextContainer = styled('div')(({ theme }) => ({
+export const EstimatedFeeTextContainer = styled('div')({
   display: 'flex',
   alignItems: 'baseline',
-
-  borderBottom: `0.1rem solid ${theme.palette.color.base1300}`,
-}));
+});
 
 export const InformationContainer = styled('div')({
   marginBottom: '1.6rem',

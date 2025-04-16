@@ -5,7 +5,7 @@ import IconButton from '../common/IconButton';
 import type { OutlinedInputProps } from '../common/OutlinedInput';
 
 import DeleteIcon from '@/assets/images/icons/Delete14.svg';
-import FilterSettingIcon from '@/assets/images/icons/FilterSetting20.svg';
+import FilterSettingIcon from '@/assets/images/icons/FilterSetting18.svg';
 import SearchIcon from '@/assets/images/icons/Search18.svg';
 
 export type SearchProps = OutlinedInputProps & {
@@ -21,7 +21,12 @@ export default function Search({ searchPlaceholder, disableFilter, isPending, on
     <Container>
       <StyledInput
         startAdornment={
-          <InputAdornment position="start">
+          <InputAdornment
+            position="start"
+            sx={{
+              marginRight: '0.6rem',
+            }}
+          >
             <SearchIcon />
           </InputAdornment>
         }

@@ -13,7 +13,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   const borderColor = (() => {
     const variants = props['variants'];
     if (variants === 'light') {
-      return theme.palette.accentColor.purple200;
+      return theme.palette.accentColor.purple400;
     }
     if (variants === 'dark' || variants === 'primaryHoverGray') {
       return theme.palette.color.base300;
@@ -21,14 +21,14 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     if (variants === 'red') {
       return theme.palette.accentColor.red200;
     }
-    return theme.palette.accentColor.purple200;
+    return theme.palette.accentColor.purple400;
   })();
 
   const hoverBorderColor = (() => {
     const variants = props['variants'];
 
     if (variants === 'light' || variants === 'primaryHoverGray') {
-      return theme.palette.accentColor.purple300;
+      return theme.palette.accentColor.purple500;
     }
     if (variants === 'dark') {
       return theme.palette.color.base400;
@@ -36,14 +36,14 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     if (variants === 'red') {
       return theme.palette.accentColor.red300;
     }
-    return theme.palette.accentColor.purple300;
+    return theme.palette.accentColor.purple500;
   })();
 
   return {
     width: '100%',
     height: '4.8rem',
 
-    borderRadius: '0.8rem',
+    borderRadius: '0.4rem',
 
     backgroundColor: 'transparent',
     color: theme.palette.color.base1300,

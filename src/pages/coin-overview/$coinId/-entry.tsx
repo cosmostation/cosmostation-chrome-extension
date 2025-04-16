@@ -157,7 +157,7 @@ export default function Entry({ coinId }: EntryProps) {
                   assetId={item.asset.id}
                   coinImageProps={{
                     imageURL: item.asset.image,
-                    badgeImageURL: item.asset.type === 'native' ? '' : item.chain.image || '',
+                    badgeImageURL: item.chain.image || '',
                   }}
                   displayAssetId={isShowAssetId}
                   onClick={() => {

@@ -13,4 +13,5 @@ export const ChainImage = styled(BaseChainImage)({
 
 export const AccountTypeTextContainer = styled('div')({
   display: 'flex',
+  alignItems: 'center',
 });

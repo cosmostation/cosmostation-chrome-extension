@@ -469,6 +469,7 @@ export default function EVM({ id }: EVMProps) {
               helperText={addressInputErrorMessage}
               value={recipientAddress}
               onChange={(e) => setRecipientAddress(e.target.value)}
+              inputVarient="address"
               slotProps={{
                 input: {
                   endAdornment: (

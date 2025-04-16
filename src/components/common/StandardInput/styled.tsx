@@ -8,7 +8,11 @@ export const Container = styled('div')({
   width: '100%',
 });
 
-export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props }) => ({
+type StyledInputProps = {
+  'data-input-varient'?: 'default' | 'address';
+};
+
+export const StyledInput = styled(TextField)<TextFieldProps & StyledInputProps>(({ theme, ...props }) => ({
   width: '100%',
 
   '& .MuiInput-root': {
@@ -38,11 +42,11 @@ export const StyledInput = styled(TextField)<TextFieldProps>(({ theme, ...props 
 
       height: 'fit-content',
 
-      fontFamily: theme.typography.b1_R.fontFamily,
-      fontStyle: theme.typography.b1_R.fontStyle,
-      fontSize: theme.typography.b1_R.fontSize,
-      lineHeight: theme.typography.b1_R.lineHeight,
-      letterSpacing: theme.typography.b1_R.letterSpacing,
+      fontFamily: props['data-input-varient'] === 'address' ? theme.typography.b3_M.fontFamily : theme.typography.b1_R.fontFamily,
+      fontStyle: props['data-input-varient'] === 'address' ? theme.typography.b3_M.fontStyle : theme.typography.b1_R.fontStyle,
+      fontSize: props['data-input-varient'] === 'address' ? theme.typography.b3_M.fontSize : theme.typography.b1_R.fontSize,
+      lineHeight: props['data-input-varient'] === 'address' ? theme.typography.b3_M.lineHeight : theme.typography.b1_R.lineHeight,
+      letterSpacing: props['data-input-varient'] === 'address' ? theme.typography.b3_M.letterSpacing : theme.typography.b1_R.letterSpacing,
 
       color: theme.palette.color.base1300,
 

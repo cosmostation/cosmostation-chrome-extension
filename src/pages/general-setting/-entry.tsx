@@ -74,7 +74,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.backupWallet')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.backupWalletDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.backupWalletDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
                   onClick={() => {
@@ -88,7 +88,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.changePassword')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.changePasswordDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.changePasswordDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
                   onClick={() => {
@@ -100,7 +100,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.setAutoLock')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.setAutoLockDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.setAutoLockDescription')}</Base1000Text>}
                   rightContent={
                     <Base1000Text variant="h6n_M">
                       {autoLockTimeInMinutes === NEVER_LOCK_KEY
@@ -132,7 +132,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.addressBook')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.addressBookDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.addressBookDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
                   onClick={() => {
@@ -146,7 +146,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.manageCustomNetwork')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.manageCustomNetworkDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.manageCustomNetworkDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
                   onClick={() => {
@@ -160,7 +160,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.prioritize')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.prioritizeDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.prioritizeDescription')}</Base1000Text>}
                 />
               </OptionButtonContainer>
             </SectionContainer>
@@ -181,7 +181,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.language')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.languageDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.languageDescription')}</Base1000Text>}
                   rightContent={<Base1000Text variant="h6n_M">{currentSelectedLang}</Base1000Text>}
                 />
                 <BaseOptionButton
@@ -194,7 +194,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.currency')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.currencyDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.currencyDescription')}</Base1000Text>}
                   rightContent={<Base1000Text variant="h6n_M">{userCurrencyPreference.toUpperCase()}</Base1000Text>}
                 />
                 <BaseOptionButton
@@ -207,7 +207,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.priceChangeColor')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.priceChangeColorDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.priceChangeColorDescription')}</Base1000Text>}
                   rightContent={<Base1000Text variant="h6n_M">{'60 Min'}</Base1000Text>}
                 />
               </OptionButtonContainer>
@@ -229,7 +229,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.guide')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.guideDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.guideDescription')}</Base1000Text>}
                 />
                 <BaseOptionButton
                   onClick={() => {
@@ -243,7 +243,7 @@ export default function Entry() {
                     </OptionButtonIconContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.about')}</Base1300Text>}
-                  leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.entry.aboutDescription')}</Base1000Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.aboutDescription')}</Base1000Text>}
                   rightContent={<Base1000Text variant="h6n_M">{`V ${version}`}</Base1000Text>}
                 />
               </OptionButtonContainer>

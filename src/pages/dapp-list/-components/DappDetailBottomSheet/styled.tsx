@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import BaseChainImage from '@/components/common/BaseChainImage';
@@ -43,12 +44,16 @@ export const TypeBadge = styled('div')(({ theme }) => ({
   borderRadius: '0.2rem',
 }));
 
+export const DescriptionText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.color.base1100,
+}));
+
 export const Header = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  padding: '1.3rem 1.6rem',
+  padding: '1.6rem',
   marginBottom: '1.2rem',
 
   borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
@@ -154,8 +159,8 @@ export const ThumbnailImageContainer = styled(Image)({
 });
 
 export const PinButton = styled('button')({
-  width: '1.6rem',
-  height: '1.6rem',
+  width: '1.8rem',
+  height: '1.8rem',
   padding: '0',
   border: 'none',
   backgroundColor: 'transparent',
@@ -166,17 +171,21 @@ export const PinButton = styled('button')({
   },
 });
 
-export const PinnedIconContainer = styled('div')(({ theme }) => ({
-  width: '1.6rem',
-  height: '1.6rem',
-  '& > svg': {
-    width: '100%',
-    height: '100%',
+type PinnedIconContainerProps = {
+  'data-is-active': boolean;
+};
 
-    fill: theme.palette.accentColor.yellow300,
+export const PinnedIconContainer = styled('div')<PinnedIconContainerProps>(({ theme, ...props }) => ({
+  width: '1.8rem',
+  height: '1.8rem',
+  '& > svg': {
+    width: '1.8rem',
+    height: '1.8rem',
+
+    fill: props['data-is-active'] ? theme.palette.accentColor.yellow300 : 'null',
 
     '& > path': {
-      fill: theme.palette.accentColor.yellow300,
+      fill: props['data-is-active'] ? theme.palette.accentColor.yellow300 : 'null',
     },
   },
 }));

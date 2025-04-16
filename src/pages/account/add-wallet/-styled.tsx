@@ -18,7 +18,7 @@ export const OptionButtonsContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
 
-  marginTop: '0.8rem',
+  marginTop: '1.6rem',
 });
 
 export const DescriptionText = styled(Base1300Text)({

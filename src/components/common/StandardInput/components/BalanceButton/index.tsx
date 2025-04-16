@@ -28,7 +28,7 @@ export default function BalanceButton({ coin, balance, leftComponent, ...remaind
           {displayAvailableAmount}
         </NumberTypo>
         &nbsp;
-        <Typography variant="h8n_R">{symbol}</Typography>
+        <Typography variant="h8n_M">{symbol}</Typography>
       </AmountContainer>
     </SideTextButton>
   );

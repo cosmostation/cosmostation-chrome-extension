@@ -407,6 +407,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
               helperText={addressInputErrorMessage}
               value={recipientAddress}
               onChange={(e) => setRecipientAddress(e.target.value)}
+              inputVarient="address"
               slotProps={{
                 input: {
                   endAdornment: (

@@ -96,12 +96,12 @@ export default function CoinTypeSelector({
                   <CoinTypeNameTextContainer>
                     <Base1300Text variant="b2_M">{pubketStyleLabel}</Base1300Text>
                     &nbsp;
-                    {isDefaultAccountType && <DefaultText variant="b2_M">{'(Default)'}</DefaultText>}
+                    {isDefaultAccountType && <DefaultText variant="b2_M">{'(DEFAULT)'}</DefaultText>}
                   </CoinTypeNameTextContainer>
 
                   {isDefaultAccountType && (
                     <Badge>
-                      <Base1300Text>{'RECOMMENDED'}</Base1300Text>
+                      <Base1300Text variant="c2_B">{'SUGGESTED'}</Base1300Text>
                     </Badge>
                   )}
                 </CoinTypeNameContainer>

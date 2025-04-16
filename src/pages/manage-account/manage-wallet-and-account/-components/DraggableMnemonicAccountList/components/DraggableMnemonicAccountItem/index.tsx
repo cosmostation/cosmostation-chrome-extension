@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
@@ -6,6 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
 import { Route as MnemonicDetail } from '@/pages/manage-account/detail/mnemonic/$mnemonicId';
 import { Route as MnemonicAccountDetail } from '@/pages/manage-account/detail/mnemonic/account/$accountId';
@@ -46,6 +47,9 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const [supposedToBackupAccountId, setSupposedToBackupAccountId] = useState<string | undefined>();
+
   const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
   const filteredAccounts = userAccounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === draggableItem.mnemonicRestoreString);
@@ -153,17 +157,14 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
           <OutlinedButtonContainer>
             <StyledOutlinedButton
               variant="dark"
-              typoVarient="h4_B"
+              typoVarient="b4_M"
               trailingIcon={
                 <RightArrowIconContainer>
                   <RightArrowIcon />
                 </RightArrowIconContainer>
               }
               onClick={() => {
-                navigate({
-                  to: ManageBackupStep1.to,
-                  params: { accountId: filteredAccounts[0].id },
-                });
+                setSupposedToBackupAccountId(filteredAccounts[0].id);
               }}
             >
               {t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.backUpNow')}
@@ -171,6 +172,18 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
           </OutlinedButtonContainer>
         )}
       </BodyContainer>
+      <VerifyPasswordBottomSheet
+        open={!!supposedToBackupAccountId}
+        onClose={() => setSupposedToBackupAccountId(undefined)}
+        onSubmit={() => {
+          navigate({
+            to: ManageBackupStep1.to,
+            params: {
+              accountId: supposedToBackupAccountId || '',
+            },
+          });
+        }}
+      />
     </Container>
   );
 }

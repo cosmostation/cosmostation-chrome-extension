@@ -13,7 +13,7 @@ const darkThemeColor = {
   base700: '#636A79',
   base800: '#777F91',
   base900: '#838B9C',
-  base1000: '#949BA8',
+  base1000: '#8D96A8',
   base1100: '#ABB0BA',
   base1200: '#C7CAD1',
   base1300: '#F7F7F8',
@@ -71,8 +71,8 @@ const h2_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.6rem', 
 const h3_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.4rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const h3_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.4rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const h4_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
-const b1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2rem', letterSpacing: 'normal' };
-const b1_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2rem', letterSpacing: 'normal' };
+const b1_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2rem', letterSpacing: 'normal' };
+const b1_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2rem', letterSpacing: 'normal' };
 const b2_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const b2_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const b2_M_Multiline = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '2rem', letterSpacing: 'normal' };

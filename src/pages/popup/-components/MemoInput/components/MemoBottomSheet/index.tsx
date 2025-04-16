@@ -27,7 +27,7 @@ export default function MemoBottomSheet({ currentMemo, onChangeMemo, onClose, ..
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h3_B">{t('pages.popup.components.MemoInput.components.MemoBottomSheet.index.enterMemo')}</Typography>
+            <Typography variant="h2_B">{t('pages.popup.components.MemoInput.components.MemoBottomSheet.index.enterMemo')}</Typography>
           </HeaderTitle>
           <StyledButton onClick={onHandleClose}>
             <Close24Icon />

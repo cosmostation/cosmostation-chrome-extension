@@ -4,7 +4,7 @@ import type { IconButtonProps, PopoverProps } from '@mui/material';
 import IconButton from '@/components/common/IconButton';
 import SettingPopover from '@/components/SettingPopover';
 
-import SettingIcon from '@/assets/images/icons/Setting14.svg';
+import SettingIcon from '@/assets/images/icons/Setting16.svg';
 
 type GeneralSettingButtonProps = {
   iconButtonProps?: IconButtonProps;

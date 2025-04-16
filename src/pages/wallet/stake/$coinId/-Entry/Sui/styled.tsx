@@ -11,7 +11,7 @@ export const CoinContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
 
-  margin: '1.6rem 0 1.2rem',
+  margin: '1.6rem 0 2.2rem',
 });
 
 export const CoinImage = styled(BaseCoinImage)({
@@ -41,7 +41,7 @@ export const InputWrapper = styled('div')({
 });
 
 export const Divider = styled('div')(({ theme }) => ({
-  margin: '1.2rem 0',
+  margin: '0.6rem 0',
   borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
 }));
 

@@ -20,6 +20,7 @@ type StandardInputProps = TextFieldProps & {
   helperText?: string;
   isLoadingHelperText?: boolean;
   rightBottomAdornment?: React.ReactNode;
+  inputVarient?: 'default' | 'address';
 };
 
 export default function StandardInput({
@@ -29,6 +30,7 @@ export default function StandardInput({
   isLoadingHelperText = false,
   rightBottomAdornment,
   slotProps,
+  inputVarient = 'default',
   ...remainder
 }: StandardInputProps) {
   const [textFieldType, setTextFieldType] = useState<HTMLInputTypeAttribute | undefined>(type);
@@ -39,6 +41,7 @@ export default function StandardInput({
     <Container>
       <StyledInput
         variant="standard"
+        data-input-varient={inputVarient}
         autoComplete="off"
         type={type === 'password' ? textFieldType : type}
         slotProps={{

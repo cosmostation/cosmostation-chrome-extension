@@ -76,7 +76,7 @@ export default function GridDappItem({ dappItemInfo, ...remainer }: GridDappItem
         <BodyContainer>
           <BodyTopContainer>
             <DappNameContainer>
-              <Base1300Text variant="h2_B">{dappItemInfo.name}</Base1300Text>
+              <Base1300Text variant="b2_B">{dappItemInfo.name}</Base1300Text>
             </DappNameContainer>
             <PinButton
               onClick={(e) => {
@@ -93,7 +93,7 @@ export default function GridDappItem({ dappItemInfo, ...remainer }: GridDappItem
               )}
             </PinButton>
           </BodyTopContainer>
-          <BodyText variant="b4_R">{dappItemInfo.description}</BodyText>
+          <BodyText variant="b4_R_Multiline">{dappItemInfo.description}</BodyText>
 
           {isOneChainSupported ? (
             <OneChainContainer>

@@ -98,8 +98,8 @@ export const BottomButtonContainer = styled('div')({
 
   width: '100%',
   backgroundColor: 'rgba(255, 255, 255, 0.01)',
-  backdropFilter: 'blur(1rem)',
-  WebkitBackdropFilter: 'blur(1rem)',
+  backdropFilter: 'blur(0.4rem)',
+  WebkitBackdropFilter: 'blur(0.4rem)',
 
   borderTop: '0.1rem solid rgba(255, 255, 255, 0.01)',
   borderBottom: '0.1rem solid rgba(255, 255, 255, 0.01)',

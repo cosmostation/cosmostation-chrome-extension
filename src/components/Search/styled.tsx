@@ -14,6 +14,7 @@ export const Container = styled('div')({
 
 export const StyledInput = styled(OutlinedInput)({
   height: '3.2rem',
+  paddingLeft: '0.8rem',
 });
 
 export const FilterIconButton = styled(IconButton)(({ theme }) => ({

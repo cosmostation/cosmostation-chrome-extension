@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -5,6 +6,7 @@ import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
+import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as Home } from '@/pages/index';
 import { Route as ManageBackupStep1 } from '@/pages/manage-account/backup-wallet/step1/$accountId';
@@ -47,6 +49,8 @@ type MnemonicAccountProps = {
 export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccountProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const [supposedToBackupAccountId, setSupposedToBackupAccountId] = useState<string | undefined>();
 
   const { currentAccount, setCurrentAccount } = useCurrentAccount();
 
@@ -141,19 +145,14 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
           <OutlinedButtonContainer>
             <StyledOutlinedButton
               variant="dark"
-              typoVarient="h4_B"
+              typoVarient="b4_M"
               trailingIcon={
                 <RightArrowIconContainer>
                   <RightArrowIcon />
                 </RightArrowIconContainer>
               }
               onClick={() => {
-                navigate({
-                  to: ManageBackupStep1.to,
-                  params: {
-                    accountId: filteredAccounts[0].id,
-                  },
-                });
+                setSupposedToBackupAccountId(filteredAccounts[0].id);
               }}
             >
               {t('pages.manage-account.switch-account.components.backUpNow')}
@@ -161,6 +160,18 @@ export default function MnemonicAccount({ mnemonicRestoreString }: MnemonicAccou
           </OutlinedButtonContainer>
         )}
       </BodyContainer>
+      <VerifyPasswordBottomSheet
+        open={!!supposedToBackupAccountId}
+        onClose={() => setSupposedToBackupAccountId(undefined)}
+        onSubmit={() => {
+          navigate({
+            to: ManageBackupStep1.to,
+            params: {
+              accountId: supposedToBackupAccountId || '',
+            },
+          });
+        }}
+      />
     </Container>
   );
 }

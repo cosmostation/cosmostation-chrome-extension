@@ -13,7 +13,7 @@ export const Header = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  padding: '1.3rem 1.6rem',
+  padding: '1.6rem',
   borderBottom: `0.1rem solid ${theme.palette.color.base200}`,
 
   flexShrink: 0,

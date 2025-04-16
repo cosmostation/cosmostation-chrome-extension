@@ -132,7 +132,10 @@ export default function Entry({ accountId }: EntryProps) {
                   >
                     <MainContentTitleText variant="h2_B">{accountName}</MainContentTitleText>
                   </IconTextButton>
-                  <MainContentSubtitleText variant="b3_R">{`${t('pages.manage-account.detail.mnemonic.account.entry.lastHdPath')} : ${hdPath}`}</MainContentSubtitleText>
+                  <MainContentSubtitleText variant="b3_R">
+                    {`${t('pages.manage-account.detail.mnemonic.account.entry.lastHdPath')} : `}
+                    <MainContentSubtitleText variant="h5n_M">{hdPath}</MainContentSubtitleText>
+                  </MainContentSubtitleText>
                 </MainContentBody>
               }
             />

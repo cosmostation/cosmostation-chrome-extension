@@ -489,6 +489,7 @@ export default function EVM({ coinId }: EVMProps) {
               isLoadingHelperText={ens.isLoading}
               value={inputRecipientAddress}
               onChange={(e) => setInputRecipientAddress(e.target.value)}
+              inputVarient="address"
               slotProps={{
                 input: {
                   endAdornment: (

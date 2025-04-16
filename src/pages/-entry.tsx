@@ -243,7 +243,6 @@ export default function Entry() {
                     const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
 
                     const isGroupToken = gt(coin.counts || '0', '1');
-                    const isNativeToken = coin.asset.type === 'native';
                     return (
                       <CoinWithMarketTrendButton
                         key={getCoinId(coin.asset)}
@@ -261,7 +260,7 @@ export default function Entry() {
                         coinImageProps={{
                           imageURL: coin.asset.image,
                           isAggregatedCoin: gt(coin.counts || '0', '1'),
-                          badgeImageURL: isGroupToken || isNativeToken ? undefined : coin.chain.image || undefined,
+                          badgeImageURL: isGroupToken ? undefined : coin.chain.image || undefined,
                         }}
                       />
                     );

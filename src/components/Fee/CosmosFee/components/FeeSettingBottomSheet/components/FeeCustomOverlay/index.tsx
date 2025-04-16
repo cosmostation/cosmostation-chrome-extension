@@ -30,7 +30,7 @@ import {
   Overlay,
 } from './styled';
 
-import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
+import ArrowBackIcon from '@/assets/images/icons/LeftArrow16.svg';
 
 type FeeCustomOverlayProps = {
   baseGasAmount: string;

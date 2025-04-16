@@ -67,7 +67,9 @@
           "vote": "Vote",
           "more": "more",
           "vault": "Vault",
-          "dao": "Dao"
+          "dao": "Dao",
+          "vaultDescription": "Vault to put $NTRN to get voting power",
+          "daoDescription": "Participate in decisions through DAO voting"
         }
       }
     },
@@ -833,7 +835,7 @@
             "passwordNotSet": "Password not set",
             "success": "Success",
             "failed": "Failed",
-            "setUpLater": "Set Up Later",
+            "setUpLater": "Later",
             "backup": "Back Up Now",
             "loadingOverlayTitle": "Syncing your wallet assets...",
             "loadingOverlayMessage": "Checking your assets. This process may take some time.\nPlease wait a moment."
@@ -877,7 +879,7 @@
         "ContractAddress": {
           "index": {
             "copied": "Contract address successfully copied",
-            "contract": "Contract Address"
+            "contract": "Contract"
           }
         },
         "StakePromotion": {
@@ -889,7 +891,7 @@
         },
         "AmountDetail": {
           "Cosmos": {
-            "title": "Coin Details",
+            "title": "My Coin Details",
             "available": "Available",
             "staked": "Staked",
             "unstaking": "Unstaking",
@@ -898,14 +900,14 @@
             "commission": "Commission"
           },
           "Sui": {
-            "title": "Coin Details",
+            "title": "My Coin Details",
             "available": "Available",
             "totalStaked": "Total Staked",
             "staked": "Staked",
             "earned": "Earned"
           },
           "Bitcoin": {
-            "title": "Coin Details",
+            "title": "My Coin Details",
             "available": "Available",
             "pendingReceive": "Pending Receive",
             "pendingSent": "Pending Sent"
@@ -1097,7 +1099,7 @@
       "switch-account": {
         "components": {
           "lastHdPath": "Last HD Path",
-          "createNewWallet": "Create New Wallet",
+          "createNewWallet": "Create New Account",
           "backUpNow": "Back Up Now",
           "switchAccountSuccess": "Switched to Account {{accountName}}",
           "notBackedUp": "(Not Backed Up)"
@@ -1404,7 +1406,7 @@
             "contract": "Contract",
             "ibc": "IBC",
             "denom": "Denom",
-            "copied": "Address successfully copied",
+            "copied": "Successfully copied",
             "addressDescription1": "Send",
             "addressDescription2": "Network assets Only",
             "myAddress": "My Address"

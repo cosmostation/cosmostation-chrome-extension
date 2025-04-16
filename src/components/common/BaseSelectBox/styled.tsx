@@ -25,11 +25,11 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
 
       height: 'fit-content',
 
-      fontFamily: theme.typography.b1_R.fontFamily,
-      fontStyle: theme.typography.b1_R.fontStyle,
-      fontSize: theme.typography.b1_R.fontSize,
-      lineHeight: theme.typography.b1_R.lineHeight,
-      letterSpacing: theme.typography.b1_R.letterSpacing,
+      fontFamily: theme.typography.b2_M.fontFamily,
+      fontStyle: theme.typography.b2_M.fontStyle,
+      fontSize: theme.typography.b2_M.fontSize,
+      lineHeight: theme.typography.b2_M.lineHeight,
+      letterSpacing: theme.typography.b2_M.letterSpacing,
 
       color: theme.palette.color.base1300,
     },

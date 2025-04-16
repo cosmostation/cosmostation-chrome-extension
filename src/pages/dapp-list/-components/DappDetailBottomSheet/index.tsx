@@ -20,6 +20,7 @@ import {
   DappDescriptionContainer,
   DappNameContainer,
   DappTopContainer,
+  DescriptionText,
   Divider,
   Footer,
   FooterContentsContainer,
@@ -132,16 +133,12 @@ export default function DappDetailBottomSheet({ dappInfo, onClose, ...remainder 
                     onPinButtonClick();
                   }}
                 >
-                  {isPinned ? (
-                    <PinnedIconContainer>
-                      <UnFavoriteIcon />
-                    </PinnedIconContainer>
-                  ) : (
+                  <PinnedIconContainer data-is-active={isPinned}>
                     <UnFavoriteIcon />
-                  )}
+                  </PinnedIconContainer>
                 </PinButton>
               </DappTopContainer>
-              <Base1000Text variant="b3_R">{dappInfo.description}</Base1000Text>
+              <DescriptionText variant="b3_R_Multiline">{dappInfo.description}</DescriptionText>
             </DappDescriptionContainer>
 
             <Divider />

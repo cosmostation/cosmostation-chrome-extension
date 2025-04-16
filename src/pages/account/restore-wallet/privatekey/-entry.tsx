@@ -9,7 +9,6 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Button from '@/components/common/Button';
 import IconTextButton from '@/components/common/IconTextButton';
-import OutlinedInput from '@/components/common/OutlinedInput';
 import SetAccountNameBottomSheet from '@/components/SetNameBottomSheet';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -33,6 +32,7 @@ import {
   MarginRightTypography,
   PrivateKeyInputWrapper,
   StyledIconTextButton,
+  StyledOutlinedInput,
   TopContainer,
   ViewIconContainer,
 } from './-styled';
@@ -177,7 +177,7 @@ export default function Entry() {
                 </IconTextButton>
               </TopContainer>
 
-              <OutlinedInput
+              <StyledOutlinedInput
                 placeholder={t('pages.account.restore-wallet.privatekey.index.enterPrivateKey')}
                 multiline
                 minRows={5}

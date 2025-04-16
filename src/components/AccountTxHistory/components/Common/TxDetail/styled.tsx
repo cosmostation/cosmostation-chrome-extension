@@ -27,7 +27,7 @@ export const RowLeftContainer = styled('div')({
 
   display: 'flex',
 
-  maxWidth: '10rem',
+  maxWidth: '15rem',
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
 

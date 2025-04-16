@@ -6,7 +6,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  padding: '1.2rem 1.6rem',
+  padding: '1.4rem 1.6rem',
 
   backgroundColor: 'transparent',
   border: 'none',

@@ -31,6 +31,9 @@ export const RowContainer = styled('div')({
 });
 
 export const PurpleContainer = styled('div')(({ theme }) => ({
+  width: '1.2rem',
+  height: '1.2rem',
+
   '& > svg': {
     fill: theme.palette.accentColor.purple400,
     '& > path': {

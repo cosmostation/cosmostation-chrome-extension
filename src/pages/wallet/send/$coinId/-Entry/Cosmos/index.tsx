@@ -777,6 +777,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
               helperText={addressInputErrorMessage}
               value={recipientAddress}
               onChange={(e) => setRecipientAddress(e.target.value)}
+              inputVarient="address"
               slotProps={{
                 input: {
                   endAdornment: (

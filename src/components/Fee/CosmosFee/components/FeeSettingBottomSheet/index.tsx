@@ -111,7 +111,7 @@ export default function FeeSettingBottomSheet({
         <Container>
           <Header>
             <HeaderTitle>
-              <Typography variant="h3_B">{t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.title')}</Typography>
+              <Typography variant="h2_B">{t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.title')}</Typography>
             </HeaderTitle>
 
             <IconTextButton onClick={onHandelClose}>

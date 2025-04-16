@@ -16,7 +16,7 @@ export default function OptionButton({ icon, titleText, bodyText, ...remainder }
       </LeftContainer>
       <MiddleContainer>
         <TitleText variant="b2_B">{titleText}</TitleText>
-        <BodyText variant="b4_R">{bodyText}</BodyText>
+        <BodyText variant="b4_R_Multiline">{bodyText}</BodyText>
       </MiddleContainer>
       <RightContainer>
         <RightChevronIcon />

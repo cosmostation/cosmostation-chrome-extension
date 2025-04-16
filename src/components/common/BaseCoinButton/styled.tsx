@@ -11,7 +11,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   backgroundColor: props['data-is-active'] ? theme.palette.color.base200 : 'transparent',
 
-  padding: '1.4rem 1.6rem',
+  padding: '1.3rem 1.6rem',
 
   display: 'flex',
   justifyContent: 'space-between',
@@ -53,7 +53,7 @@ export const RightTextContainer = styled('div')({
 
   gridTemplateColumns: '1fr',
 
-  rowGap: '0.3rem',
+  rowGap: '0.2rem',
 });
 
 export const RightDisplayAmountContainer = styled('div')(({ theme }) => ({

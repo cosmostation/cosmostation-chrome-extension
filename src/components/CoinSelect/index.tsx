@@ -231,7 +231,7 @@ export default function CoinSelect({
               displayAssetId={isShowAssetId}
               coinImageProps={{
                 imageURL: coin.asset.image,
-                badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
+                badgeImageURL: coin.chain.image || '',
               }}
               onClick={() => {
                 onSelectCoin(getCoinId(coin.asset));

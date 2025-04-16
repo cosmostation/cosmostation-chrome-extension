@@ -125,44 +125,44 @@ export default function ChainListBottomSheet({
             }}
           />
         </FilterContaienr>
-        {customType === 'manageAssets' && (
-          <ManageAssetsContaienr>
-            <CustomNetworkButton
-              onClick={() => {
-                navigate({
-                  to: ManageCustomNetwork.to,
-                });
-              }}
-              leftContent={<CustomNetworkIcon />}
-              leftSecondBody={
-                <CustomNetworkTextContaienr>
-                  <Base1300Text variant="b3_M_Multiline">{t('components.ChainListBottomSheet.index.customNetwork')}</Base1300Text>
-                </CustomNetworkTextContaienr>
-              }
-            />
-            <NetworkInfoContainer>
-              <Base1300Text variant="b3_M">
-                {t('components.ChainListBottomSheet.index.network')}
-                &nbsp;
-                <NetworkCounts>{chainsCount}</NetworkCounts>
-              </Base1300Text>
-
-              <IconTextButton
+        <Body>
+          {customType === 'manageAssets' && (
+            <ManageAssetsContaienr>
+              <CustomNetworkButton
                 onClick={() => {
                   navigate({
-                    to: SwitchAccountType.to,
+                    to: ManageCustomNetwork.to,
                   });
                 }}
-                leadingIcon={<ChangeIcon />}
-              >
-                <SwtichCoinType>
-                  <Typography variant="b3_M">{t('components.ChainListBottomSheet.index.switchCoinType')}</Typography>
-                </SwtichCoinType>
-              </IconTextButton>
-            </NetworkInfoContainer>
-          </ManageAssetsContaienr>
-        )}
-        <Body>
+                leftContent={<CustomNetworkIcon />}
+                leftSecondBody={
+                  <CustomNetworkTextContaienr>
+                    <Base1300Text variant="b3_M_Multiline">{t('components.ChainListBottomSheet.index.customNetwork')}</Base1300Text>
+                  </CustomNetworkTextContaienr>
+                }
+              />
+              <NetworkInfoContainer>
+                <Base1300Text variant={'h4_B'}>
+                  {t('components.ChainListBottomSheet.index.network')}
+                  &nbsp;
+                  <NetworkCounts>{chainsCount}</NetworkCounts>
+                </Base1300Text>
+
+                <IconTextButton
+                  onClick={() => {
+                    navigate({
+                      to: SwitchAccountType.to,
+                    });
+                  }}
+                  leadingIcon={<ChangeIcon />}
+                >
+                  <SwtichCoinType>
+                    <Typography variant="b3_M">{t('components.ChainListBottomSheet.index.switchCoinType')}</Typography>
+                  </SwtichCoinType>
+                </IconTextButton>
+              </NetworkInfoContainer>
+            </ManageAssetsContaienr>
+          )}
           {!disableAllNetwork && !isDebouncing && (
             <OptionButton
               key={'all-network'}

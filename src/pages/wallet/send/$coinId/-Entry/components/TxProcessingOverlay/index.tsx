@@ -22,8 +22,8 @@ import {
   TitleText,
 } from './styled';
 
-import HomeIcon from '@/assets/images/icons/Home14.svg';
-import ArrowBackIcon from '@/assets/images/icons/LeftArrow14.svg';
+import HomeIcon from '@/assets/images/icons/Home16.svg';
+import ArrowBackIcon from '@/assets/images/icons/LeftArrow16.svg';
 
 import animationData from '@/assets/animation/loading.json';
 

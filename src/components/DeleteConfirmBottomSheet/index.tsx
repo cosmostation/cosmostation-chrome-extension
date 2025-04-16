@@ -24,7 +24,7 @@ export default function DeleteConfirmBottomSheet({ contents, descriptionText, on
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h3_B">{t('components.DeleteConfirmBottomSheet.index.header')}</Typography>
+            <Typography variant="h2_B">{t('components.DeleteConfirmBottomSheet.index.header')}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {

@@ -19,7 +19,9 @@ export const DateLineContainer = styled('div')({
   marginBottom: '0.6rem',
 });
 
-export const TxDetailContainer = styled('div')({});
+export const TxDetailContainer = styled('div')({
+  marginBottom: '1.2rem',
+});
 
 export const StyledCircularProgressContainer = styled('div')({
   display: 'flex',

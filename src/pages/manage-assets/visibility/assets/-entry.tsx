@@ -428,7 +428,7 @@ export default function Entry() {
                           displayAssetId={isShowAssetId}
                           coinImageProps={{
                             imageURL: coin.asset.image,
-                            badgeImageURL: coin.asset.type === 'native' ? '' : coin.chain.image || '',
+                            badgeImageURL: coin.chain.image || '',
                           }}
                           rightComponent={
                             isHiddenState ? (
