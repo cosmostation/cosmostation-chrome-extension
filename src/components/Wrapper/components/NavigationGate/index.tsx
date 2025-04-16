@@ -101,7 +101,7 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
       return CosmosSignMessage.to;
 
     default:
-      return '';
+      return '/';
   }
 };
 
@@ -131,7 +131,7 @@ const getNavigationPathForEvmRequest = (requestQueue: EvmRequest) => {
       return EVMAddToken.to;
 
     default:
-      return '';
+      return '/';
   }
 };
 
@@ -155,7 +155,7 @@ const getNavigationPathForSuiRequest = (requestQueue: SuiRequest) => {
       return SuiSignMessage.to;
 
     default:
-      return '';
+      return '/';
   }
 };
 
@@ -175,7 +175,7 @@ const getNavigationPathForBitcoinRequest = (requestQueue: BitcoinRequest) => {
       return BitcoinSignMessage.to;
 
     default:
-      return '';
+      return '/';
   }
 };
 
@@ -191,6 +191,6 @@ const getNavigationPathForAptosRequest = (requestQueue: AptosRequest) => {
       return AptosSignMessage.to;
 
     default:
-      return '';
+      return '/';
   }
 };

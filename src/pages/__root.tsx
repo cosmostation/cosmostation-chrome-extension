@@ -11,7 +11,7 @@ export const Route = createRootRoute({
     <Wrapper>
       <>
         <Outlet />
-        <TanStackRouterDevtools />
+        {__APP_MODE__ === 'development' && <TanStackRouterDevtools />}
       </>
     </Wrapper>
   ),

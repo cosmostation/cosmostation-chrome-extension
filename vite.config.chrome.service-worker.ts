@@ -6,7 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
-  const outDir = isProduction ? 'dist' : 'dist-dev';
+  const outDir = isProduction ? 'dist/chrome/prod' : 'dist/chrome/dev';
 
   const watch = isProduction
     ? null

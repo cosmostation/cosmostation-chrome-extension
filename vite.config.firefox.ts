@@ -13,7 +13,7 @@ import { firefoxManifestPlugin } from './vite.plugin/manifest';
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
-  const outDir = isProduction ? 'dist' : 'dist-dev';
+  const outDir = isProduction ? 'dist/firefox/prod' : 'dist/firefox/dev';
 
   const webSocketPort = 5959;
 

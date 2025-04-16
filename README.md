@@ -1,50 +1,45 @@
-# React + TypeScript + Vite
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<p align="center">
+  <a href="https://www.cosmostation.io" target="_blank" rel="noopener noreferrer"><img width="100" src="https://user-images.githubusercontent.com/5284226/167563110-1a28e9eb-1628-42f1-a189-71b4d389d4fa.png" alt="Cosmostation logo"></a>
+</p>
+<h1 align="center">Cosmostation Chrome Extension</h1>
+<h3 align="center">Welcome to Cosmostation's Open Source Chrome Extension!</h3>
 
-Currently, two official plugins are available:
+[![MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://github.com/cosmostation/cosmostation-chrome-extension/blob/develop/LICENSE)
+[![Twitter Follow](https://img.shields.io/twitter/follow/CosmostationVD.svg?label=Follow&style=social)](https://twitter.com/CosmostationVD)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+_:rocket: Developed / Developing by [Cosmostation](https://www.cosmostation.io/)_
 
-## Expanding the ESLint configuration
+## About
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Cosmostation is a non-custodial multi-chain cryptocurrency browser extension wallet for the Cosmos Interchain, Ethereum, ETH Layer 2, and EVM ecosystems.
 
-- Configure the top-level `parserOptions` property like this:
+Cosmostation allows secure access to your personal crypto wallet and provides a gateway for seamless interaction with distributed applications that are deployed on the Interchain, Ethereum, Layer 2 networks. Connect your Cosmostation wallet to access crypto assets, DeFi protocols, cross-chain bridges, NFTs and more.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+With Cosmostation, users can create personal crypto wallets, safely sign on-chain transaction locally and manage multiple types of crypto assets on a number of supported blockchains.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Downloads
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- [Chrome Extension](https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf)
+- [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/cosmostation-wallet)
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Guides
+
+- [User](https://docs.cosmostation.io/extension/guide/account/intro)
+- [Developer](https://docs.cosmostation.io/extension/integration/cosmos/typescript)
+
+## Cosmostation's Services and Community
+
+- [Official Website](https://www.cosmostation.io)
+- [Mintscan Explorer](https://www.mintscan.io)
+- [Android Wallet](https://play.google.com/store/apps/details?id=wannabit.io.cosmostaion)
+- [iOS Wallet](https://apps.apple.com/us/app/cosmostation/id1459830339)
+- [Kakao - Korean](https://open.kakao.com/o/g6KKSe5)
+
+## License
+
+Copyright © Cosmostation, Inc. All rights reserved.
+
+Licensed under the [MIT](LICENSE).

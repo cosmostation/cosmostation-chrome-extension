@@ -13,7 +13,7 @@ import { chromeManifestPlugin } from './vite.plugin/manifest';
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
-  const outDir = isProduction ? 'dist' : 'dist-dev';
+  const outDir = isProduction ? 'dist/chrome/prod' : 'dist/chrome/dev';
 
   const webSocketPort = 5959;
 
