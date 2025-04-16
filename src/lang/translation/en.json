@@ -2945,6 +2945,26 @@
       "layout": {
         "header": "Select Coin"
       }
+    },
+    "error": {
+      "index": {
+        "error": "Error",
+        "errorTitle": "Error!",
+        "errorSubtitle": "Something went wrong",
+        "feedback": "Feedback?",
+        "sendReportEmail": "Send Report Email",
+        "backToHome": "Back to Home"
+      }
+    },
+    "notFound": {
+      "index": {
+        "notFound": "Not Found",
+        "pageNotFound": "Page not found",
+        "pageNotFoundSubtitle": "We couldn't find the page you're looking for. Let's head back home",
+        "feedback": "Feedback?",
+        "sendReportEmail": "Send Report Email",
+        "backToHome": "Back to Home"
+      }
     }
   },
   "schema": {

@@ -3,6 +3,9 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import Wrapper from '@/components/Wrapper';
 
+import Error from './-error';
+import NotFound from './-notFound';
+
 export const Route = createRootRoute({
   component: () => (
     <Wrapper>
@@ -12,4 +15,10 @@ export const Route = createRootRoute({
       </>
     </Wrapper>
   ),
+  errorComponent: ({ error, reset }) => {
+    return <Error error={error} reset={reset} />;
+  },
+  notFoundComponent: () => {
+    return <NotFound />;
+  },
 });

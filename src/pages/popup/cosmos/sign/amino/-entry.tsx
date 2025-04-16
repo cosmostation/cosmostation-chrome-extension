@@ -28,7 +28,7 @@ import type { CosmosChain } from '@/types/chain';
 import type { CosSignAmino, CosSignAminoResponse } from '@/types/message/inject/cosmos';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
-import { ceil, divide, gte, times } from '@/utils/numbers';
+import { ceil, divide, gt, gte, times } from '@/utils/numbers';
 import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
@@ -151,6 +151,10 @@ export default function Entry({ request, chain }: EntryProps) {
 
     return baseEstimateGas;
   }, [accountAsset?.chain.feeInfo.defaultGasLimit, accountAsset?.chain.feeInfo.gasCoefficient, simulate.data?.gas_info?.gas_used]);
+
+  if (gt(alternativeGas, '0')) {
+    throw Error('asdfsdf');
+  }
 
   const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 

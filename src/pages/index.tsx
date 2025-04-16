@@ -6,7 +6,6 @@ import Layout from './-layout';
 
 export const Route = createFileRoute('/')({
   component: Index,
-  errorComponent: () => <div>Failed to load</div>,
 });
 
 function Index() {
