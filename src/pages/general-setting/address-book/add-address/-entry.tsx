@@ -20,7 +20,8 @@ import { useChainList } from '@/hooks/useChainList.ts';
 import type { ChainType, CosmosChain, UniqueChainId } from '@/types/chain.ts';
 import type { AddressInfo } from '@/types/extension';
 import { isBitcoinChain } from '@/utils/chain';
-import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
+import { getAddressPrefix } from '@/utils/cosmos/address';
+import { getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex, getCosmosAddressRegex } from '@/utils/regex';
 import { toastError, toastSuccess } from '@/utils/toast';
 
@@ -44,7 +45,7 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
 
   const { addAddressItem } = useAddressBook();
 
-  const { flatChainList } = useChainList();
+  const { flatChainList, chainList } = useChainList();
 
   const baseChainList = [
     {
@@ -57,7 +58,21 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
   ];
 
   const defaultChain = baseChainList[0] || undefined;
-  const defaultChainId = chainId || (defaultChain ? getUniqueChainId(defaultChain) : undefined);
+  const defaultChainId = (() => {
+    if (chainId) {
+      if (parseUniqueChainId(chainId).chainType === 'cosmos') {
+        const targetChain = chainList.allCosmosChains.find((cosmosChain) => cosmosChain.accountPrefix === getAddressPrefix(inputAddress));
+
+        if (targetChain) {
+          return getUniqueChainId(targetChain);
+        }
+      }
+
+      return chainId;
+    }
+
+    return defaultChain ? getUniqueChainId(defaultChain) : undefined;
+  })();
 
   const [currentChainId, setCurrentChainId] = useState<UniqueChainId | undefined>(defaultChainId);
   const currentChain = baseChainList.find((chain) => isMatchingUniqueChainId(chain, currentChainId));

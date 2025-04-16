@@ -16,3 +16,13 @@ export function convertToValidatorAddress(address?: string, validatorPrefix?: st
   const { words } = bech32.decode(address);
   return bech32.encode(validatorPrefix, words);
 }
+
+export function getAddressPrefix(address?: string) {
+  try {
+    if (!address) return address;
+
+    return bech32.decode(address).prefix;
+  } catch {
+    return undefined;
+  }
+}
