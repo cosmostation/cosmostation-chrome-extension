@@ -15,7 +15,7 @@ import ServiceIcon from '@/assets/images/icons/Service28.svg';
 import WebsiteIcon from '@/assets/images/icons/Website28.svg';
 import XIcon from '@/assets/images/icons/X28.svg';
 
-import AppIconImage from '@/assets/images/logos/AppIcon.png';
+import appIconImage from '@/assets/images/logos/appIcon.png';
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -28,7 +28,7 @@ export default function Entry() {
         <Container>
           <StickyContainer>
             <AppContainer>
-              <AppIconImageContainer src={AppIconImage} />
+              <AppIconImageContainer src={appIconImage} />
               <AppVersionText variant="h2_B">{'COSMOSTATION'}</AppVersionText>
               <Base1000Text variant="b3_M">{`V ${version}`}</Base1000Text>
             </AppContainer>

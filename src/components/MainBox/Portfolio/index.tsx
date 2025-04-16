@@ -49,7 +49,7 @@ import SwapIcon from '@/assets/images/icons/Swap22.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
 import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 
-import CosmostationLogoImg from '@/assets/images/logos/GreyCosmostationLogo.png';
+import cosmostationLogoImg from '@/assets/images/logos/greyCosmostationLogo.png';
 
 type PortFolioProps = {
   selectedChainId?: UniqueChainId;
@@ -237,7 +237,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
           </BottomButtonContainer>
         }
         className="portfoiloBackground"
-        backgroundImage={CosmostationLogoImg}
+        backgroundImage={cosmostationLogoImg}
       />
       <CurrencyBottomSheet open={isOpenCurrencyBottomSheet} onClose={() => setIsOpenCurrencyBottomSheet(false)} />
       <MoreOptionBottomSheet open={isOpenMoreOptionBottomSheet} onClose={() => setIsOpenMoreOptionBottomSheet(false)} />

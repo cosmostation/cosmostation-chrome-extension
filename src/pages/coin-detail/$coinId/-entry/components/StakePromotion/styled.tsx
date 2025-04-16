@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import Base1300Text from '@/components/common/Base1300Text';
 import { theme } from '@/styles/theme';
 
-import StakePromotionImage from '@/assets/images/StakePromotion.png';
+import stakePromotionImage from '@/assets/images/stakePromotion.png';
 
 export const StyledButton = styled('button')({
   width: '100%',
@@ -24,7 +24,7 @@ export const StyledButton = styled('button')({
 
   cursor: 'pointer',
 
-  background: `url(${StakePromotionImage}) no-repeat center right/ 11.2rem auto, ${theme.palette.commonColor.commonBlack}}`,
+  background: `url(${stakePromotionImage}) no-repeat center right/ 11.2rem auto, ${theme.palette.commonColor.commonBlack}}`,
 });
 
 export const TitleText = styled(Base1300Text)({

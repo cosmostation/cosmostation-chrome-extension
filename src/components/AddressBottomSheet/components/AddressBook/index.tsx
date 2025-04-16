@@ -25,7 +25,7 @@ import {
 
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 
-import ENS from '@/assets/images/logos/ENS.png';
+import ensImage from '@/assets/images/logos/ens.png';
 
 type PrivatekeyAccountProps = {
   chainId: UniqueChainId;
@@ -76,7 +76,7 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
             if (isENS) {
               return {
                 name: 'ENS',
-                image: ENS,
+                image: ensImage,
                 color: '#508FFF',
               };
             }

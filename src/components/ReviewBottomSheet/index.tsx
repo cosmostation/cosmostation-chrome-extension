@@ -7,7 +7,7 @@ import { Body, Container, ContentsContainer, Footer, Header, HeaderTitle, ImageC
 import Button from '../common/Button';
 import SplitButtonsLayout from '../common/SplitButtonsLayout';
 
-import FinalReviewImage from '@/assets/images/etc/FinalReview.png';
+import finalReviewImage from '@/assets/images/etc/finalReview.png';
 
 type ReviewBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   image?: string;
@@ -55,7 +55,7 @@ export default function ReviewBottomSheet({
         <Body>
           <ContentsContainer>
             <ImageContainer>
-              <Image src={image || FinalReviewImage} />
+              <Image src={image || finalReviewImage} />
             </ImageContainer>
             {contentsTitle && <TitleText variant="b1_B">{contentsTitle}</TitleText>}
             {contentsSubTitle && <SubTitleText variant="b3_R_Multiline">{contentsSubTitle}</SubTitleText>}

@@ -6,7 +6,7 @@ import Image from '@/components/common/Image';
 
 import { Body, Container, ContentsContainer, Footer, Header, HeaderTitle, ImageContainer, StyledBottomSheet, SubTitleText } from './styled';
 
-import GithubImage from '@/assets/images/logos/github.png';
+import githubImage from '@/assets/images/logos/github.png';
 
 type GithubBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   headerTitle: string;
@@ -38,7 +38,7 @@ export default function GithubBottomSheet({ headerTitle, contentsSubTitle, onCli
         <Body>
           <ContentsContainer>
             <ImageContainer>
-              <Image src={GithubImage} />
+              <Image src={githubImage} />
             </ImageContainer>
             <SubTitleText variant="b3_R_Multiline">{contentsSubTitle}</SubTitleText>
           </ContentsContainer>

@@ -22,8 +22,8 @@ import { Container, ExplorerIconContainer, FooterContainer, StyledOutlinedChipBu
 
 import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 
-import TxFailedImage from '@/assets/images/tx/TxFailed.png';
-import TxSuccessImage from '@/assets/images/tx/TxSuccess.png';
+import txFailedImage from '@/assets/images/tx/txFailed.png';
+import txSuccessImage from '@/assets/images/tx/txSuccess.png';
 
 import animationData from '@/assets/animation/loading.json';
 
@@ -82,10 +82,10 @@ export default function Cosmos({ coinId, txHash, address }: CosmosProps) {
 
   const txStatusIndicator = (() => {
     if (isTxConfirmed) {
-      return <Image src={TxSuccessImage} />;
+      return <Image src={txSuccessImage} />;
     }
     if (isTxFailed) {
-      return <Image src={TxFailedImage} />;
+      return <Image src={txFailedImage} />;
     }
 
     return (
