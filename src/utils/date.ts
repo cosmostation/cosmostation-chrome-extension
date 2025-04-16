@@ -127,7 +127,7 @@ export function getDDay(dateString: string) {
   const date = new Date(dateString);
   const now = new Date();
   const diff = date.getTime() - now.getTime();
-  const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+  const diffDays = Math.floor(diff / (1000 * 3600 * 24));
 
   return diffDays;
 }
