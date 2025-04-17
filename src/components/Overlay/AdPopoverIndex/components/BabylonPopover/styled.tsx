@@ -4,7 +4,7 @@ import Button from '@/components/common/Button';
 
 export const StyledButton = styled(Button)({
   width: '40%',
-  height: '3.6rem',
+  height: '4rem',
   backgroundColor: '#FF872C',
   '&:hover': {
     opacity: '0.8',

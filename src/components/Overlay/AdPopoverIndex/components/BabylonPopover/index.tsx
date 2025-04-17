@@ -56,6 +56,7 @@ export default function BabylonPopover() {
           }}
           buttonComponent={
             <StyledButton
+              typoVarient="b2_B"
               onClick={() => {
                 handleLaunch();
                 handleClose(isHide7days);
