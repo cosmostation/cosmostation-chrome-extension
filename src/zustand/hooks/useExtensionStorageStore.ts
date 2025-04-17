@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
+import { PRICE_TREND_TYPE } from '@/constants/price';
 import type { CurrencyType } from '@/types/currency';
 import type { AdPopoverStateMap, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
@@ -58,6 +59,7 @@ export const initialState: ExtensionStorageState = {
   autoLockTimeInMinutes: '30',
   autoLockTimeStampAt: null,
   migrationStatus: null,
+  userPriceTrendPreference: PRICE_TREND_TYPE.GREEN_UP,
 };
 
 export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];

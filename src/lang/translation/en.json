@@ -379,7 +379,7 @@
         "components": {
           "DropDialog": {
             "index": {
-              "launch": "Go to Liquid Staking"
+              "launch": "Liquid Stake"
             }
           },
           "BabylonPopover": {
@@ -1851,7 +1851,7 @@
         "languageDescription": "Select the language to use",
         "currency": "Currency",
         "currencyDescription": "Select the currency to use",
-        "priceChangeColor": "Price Change Color",
+        "priceChangeColor": "Price Trend Color",
         "priceChangeColorDescription": "Select the color of the price change",
         "wallet": "Wallet",
         "addressBook": "Address Book",
@@ -1912,6 +1912,23 @@
           },
           "index": {
             "title": "Set Auto Lock"
+          }
+        },
+        "PriceColorSettionBottomSheet": {
+          "components": {
+            "OptionButton": {
+              "index": {
+                "style1": "Style 1",
+                "style2": "Style 2",
+                "style1Description": "Green means increase, Red means decrease",
+                "style2escription": "Red means increase, Red means decrease"
+              }
+            }
+          }
+        },
+        "PriceColorSettingBottomSheet": {
+          "index": {
+            "title": "Price Change Color"
           }
         }
       },

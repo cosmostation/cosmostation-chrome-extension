@@ -1,6 +1,9 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import { PRICE_TREND_TYPE } from '@/constants/price';
+import type { PriceTrendType } from '@/types/price';
+
 import Base1300Text from '../common/Base1300Text';
 
 export const LeftContainer = styled('div')({
@@ -53,46 +56,59 @@ export const RightPriceContainer = styled('div')(({ theme }) => ({
 }));
 
 type ChangeRateContainerProps = {
-  trend?: 'upward' | 'downward' | 'unchanged';
+  trend: 'upward' | 'downward' | 'unchanged';
+  'data-price-trend-color': PriceTrendType;
 };
 
-export const ChangeRateContainer = styled('div')<ChangeRateContainerProps>(({ theme, ...props }) => ({
-  display: 'flex',
-  alignItems: 'center',
+export const ChangeRateContainer = styled('div')<ChangeRateContainerProps>(({ ...props }) => {
+  const selectedFillColor = props['data-price-trend-color'] === PRICE_TREND_TYPE.GREEN_UP ? greenUpfillColors : redUpfillColors;
 
-  columnGap: '0.2rem',
+  return {
+    display: 'flex',
+    alignItems: 'center',
 
-  color: props['trend'] === 'downward' ? 'rgba(231, 69, 95, 1)' : props['trend'] === 'upward' ? 'rgba(47, 190, 136, 1)' : theme.palette.color.base1000,
-}));
+    columnGap: '0.2rem',
+
+    color: selectedFillColor[props['trend']],
+  };
+});
 
 type ChevronIconProps = {
   trend: 'upward' | 'downward' | 'unchanged';
+  'data-price-trend-color': PriceTrendType;
 };
 
-const fillColors = {
+const redUpfillColors = {
+  upward: 'rgba(231, 69, 95, 1)',
+  downward: 'rgba(47, 190, 136, 1)',
+  unchanged: 'rgba(128, 128, 128, 1)',
+};
+
+const greenUpfillColors = {
   upward: 'rgba(47, 190, 136, 1)',
   downward: 'rgba(231, 69, 95, 1)',
   unchanged: 'rgba(128, 128, 128, 1)',
 };
 
-export const ChevronIconContainer = styled('div')<ChevronIconProps>(({ ...props }) => ({
-  width: '1rem',
-  height: '1rem',
+export const ChevronIconContainer = styled('div')<ChevronIconProps>(({ ...props }) => {
+  const selectedFillColor = props['data-price-trend-color'] === PRICE_TREND_TYPE.GREEN_UP ? greenUpfillColors : redUpfillColors;
+  return {
+    width: '1rem',
+    height: '1rem',
 
-  '& > svg': {
-    width: '100%',
-    height: '100%',
-    fill: fillColors[props['trend']],
+    '& > svg': {
+      width: '100%',
+      height: '100%',
+      fill: selectedFillColor[props['trend']],
 
-    '& > path': {
-      fill: fillColors[props['trend']],
+      '& > path': {
+        fill: selectedFillColor[props['trend']],
+      },
     },
-  },
 
-  display: props['trend'] === 'unchanged' ? 'none' : 'block',
-
-  transform: props['trend'] === 'upward' ? 'rotate(180deg)' : 'rotate(0deg)',
-}));
+    display: props['trend'] === 'unchanged' ? 'none' : 'block',
+  };
+});
 
 export const ValueContainer = styled('div')({
   display: 'flex',

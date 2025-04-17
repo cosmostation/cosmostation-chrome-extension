@@ -22,6 +22,7 @@ import type { CurrencyType } from './currency';
 import type { Request } from './message/inject';
 import type { CosmosNFT, EvmNFT, SuiNFT } from './nft';
 import type { Password } from './password';
+import type { PriceTrendType } from './price';
 import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
 
 export type ApprovedSuiPermissionType = ValueOf<typeof PERMISSION>;
@@ -120,6 +121,7 @@ export interface ExtensionStorage {
   autoLockTimeInMinutes: LockupTimeOptions;
   autoLockTimeStampAt: number | null;
   migrationStatus: MigrationStatus | null;
+  userPriceTrendPreference: PriceTrendType;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

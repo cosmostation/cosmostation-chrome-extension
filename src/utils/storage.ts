@@ -3,6 +3,7 @@ import { produce } from 'immer';
 import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
+import { PRICE_TREND_TYPE } from '@/constants/price';
 import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
@@ -197,6 +198,10 @@ async function initializeStorageDefaults() {
 
     await setExtensionLocalStorage('userCurrencyPreference', newCurrency);
   }
+  if (!originStorage.userPriceTrendPreference) {
+    await setExtensionLocalStorage('userPriceTrendPreference', PRICE_TREND_TYPE.GREEN_UP);
+  }
+
   if (!originStorage.dappListSortKey) {
     await setExtensionLocalStorage('dappListSortKey', DefaultSortKey.dappListSortKey);
   }

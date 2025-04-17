@@ -21,7 +21,7 @@ type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
 export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
   const { coinGeckoId } = remainder;
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, userPriceTrendPreference } = useExtensionStorageStore((state) => state);
 
   const cap = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[`${userCurrencyPreference}_24h_change`]) || 0;
 
@@ -41,8 +41,10 @@ export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...r
               <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>
                 {String(chainPrice)}
               </BalanceDisplay>
-              <ChangeRateContainer trend={trend}>
-                <ChevronIconContainer trend={trend}>{trend === 'downward' ? <BottomFilledChevronIcon /> : <TopFilledChevronIcon />}</ChevronIconContainer>
+              <ChangeRateContainer trend={trend} data-price-trend-color={userPriceTrendPreference}>
+                <ChevronIconContainer trend={trend} data-price-trend-color={userPriceTrendPreference}>
+                  {trend === 'downward' ? <BottomFilledChevronIcon /> : <TopFilledChevronIcon />}
+                </ChevronIconContainer>
                 <ValueContainer>
                   <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>
                     {String(Math.abs(cap))}

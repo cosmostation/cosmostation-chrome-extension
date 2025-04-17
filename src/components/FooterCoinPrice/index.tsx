@@ -25,6 +25,7 @@ import NumberTypo from '../common/NumberTypo';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
+import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
 
 type FooterCoinPriceProps = {
   coinId: string;
@@ -33,7 +34,7 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, userPriceTrendPreference } = useExtensionStorageStore((state) => state);
 
   const { getAccountAsset } = useGetAccountAsset({ coinId });
   const currentCoin = getAccountAsset();
@@ -86,9 +87,9 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
               {String(chainPrice)}
             </NumberTypo>
 
-            <ChangeRateContainer trend={trend}>
-              <ChevronIconContainer trend={trend}>
-                <BottomFilledChevronIcon />
+            <ChangeRateContainer trend={trend} data-price-trend-color={userPriceTrendPreference}>
+              <ChevronIconContainer trend={trend} data-price-trend-color={userPriceTrendPreference}>
+                {trend === 'downward' ? <BottomFilledChevronIcon /> : <TopFilledChevronIcon />}
               </ChevronIconContainer>
               <ValueContainer>
                 <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" fixed={2}>
