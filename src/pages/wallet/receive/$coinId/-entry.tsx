@@ -9,6 +9,7 @@ import Base1000Text from '@/components/common/Base1000Text/index.tsx';
 import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab/index.tsx';
 import TextButton from '@/components/common/TextButton/index.tsx';
+import CopyButton from '@/components/CopyButton/index.tsx';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
@@ -34,14 +35,12 @@ import {
   InfoIconContainer,
   QRBorderContainer,
   QRContainer,
-  StyledIconButton,
   TopLeftCornerContainer,
   TopRightCornerContainer,
 } from './-styled.tsx';
 
 import BottomLeftCornerStrokeIcon from '@/assets/images/icons/BorderStroke27.svg';
 import InformationIcon from '@/assets/images/icons/Information14.svg';
-import CopyIcon from '@/assets/images/icons/Paste20.svg';
 
 type EntryProps = {
   coinId: string;
@@ -211,13 +210,7 @@ export default function Entry({ coinId }: EntryProps) {
             <AddressBodyContainer>
               <AddressText variant="b3_M_Multiline">{chainAddress}</AddressText>
 
-              <StyledIconButton
-                onClick={() => {
-                  copyToClipboard(selectedCoin?.address.address);
-                }}
-              >
-                <CopyIcon />
-              </StyledIconButton>
+              <CopyButton sx={{ width: '2rem', height: '2rem' }} copyString={selectedCoin?.address.address} />
             </AddressBodyContainer>
           </AddressTopContainer>
           <AddressBottomContainer>

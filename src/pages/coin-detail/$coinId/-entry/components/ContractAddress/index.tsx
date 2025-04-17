@@ -1,12 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import copy from 'copy-to-clipboard';
 
-import IconTextButton from '@/components/common/IconTextButton';
-import { toastSuccess } from '@/utils/toast';
+import CopyButton from '@/components/CopyButton';
 
-import { Container, FullContractAddressText, FullContractAddressTextContainer, IconContainer, TitleText } from './styled';
-
-import PasteIcon from '@/assets/images/icons/Paste18.svg';
+import { Container, FullContractAddressText, FullContractAddressTextContainer, TitleText } from './styled';
 
 type ContractAddressProps = {
   contractAddress: string;
@@ -14,24 +10,20 @@ type ContractAddressProps = {
   toastText?: string;
 };
 
-export default function ContractAddress({ contractAddress, title, toastText }: ContractAddressProps) {
+export default function ContractAddress({ contractAddress, title }: ContractAddressProps) {
   const { t } = useTranslation();
 
   return (
     <Container>
-      <IconTextButton
-        onClick={() => {
-          copy(contractAddress);
-          toastSuccess(toastText || t('pages.coin-detail.components.ContractAddress.index.copied'));
+      <CopyButton
+        varient="dark"
+        iconSize={{
+          width: 1.6,
+          height: 1.6,
         }}
-        trailingIcon={
-          <IconContainer>
-            <PasteIcon />
-          </IconContainer>
-        }
-      >
-        <TitleText variant="h3_B">{title || t('pages.coin-detail.components.ContractAddress.index.contract')}</TitleText>
-      </IconTextButton>
+        copyString={contractAddress}
+        leading={<TitleText variant="h3_B">{title || t('pages.coin-detail.components.ContractAddress.index.contract')}</TitleText>}
+      />
       <FullContractAddressTextContainer>
         <FullContractAddressText variant="b3_M">{contractAddress}</FullContractAddressText>
       </FullContractAddressTextContainer>

@@ -2,7 +2,6 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
-import IconTextButton from '@/components/common/IconTextButton';
 
 export const Body = styled('div')({
   paddingTop: '2.4rem',
@@ -58,8 +57,6 @@ export const CopyContainer = styled('div')({
   marginBottom: '0.8rem',
 });
 
-export const StyledIconTextButton = styled(IconTextButton)({});
-
 export const ControlInputButtonContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
@@ -67,22 +64,6 @@ export const ControlInputButtonContainer = styled('div')({
 
   marginTop: '1.2rem',
 });
-
-export const IconContainer = styled('div')(({ theme }) => ({
-  width: '1.8rem',
-  height: '1.8rem',
-
-  '& > svg': {
-    width: '100%',
-    height: '100%',
-
-    fill: theme.palette.color.base800,
-
-    '& > path': {
-      fill: theme.palette.color.base800,
-    },
-  },
-}));
 
 export const CopyText = styled(Typography)(({ theme }) => ({
   marginLeft: '0.2rem',

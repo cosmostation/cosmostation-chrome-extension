@@ -2,7 +2,6 @@ import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseCoinImage from '@/components/common/BaseCoinImage';
-import IconButton from '@/components/common/IconButton';
 
 export const Container = styled('div')({
   width: '100%',
@@ -140,25 +139,6 @@ export const AddressText = styled(Base1300Text)({
   width: '90%',
   wordBreak: 'break-all',
 });
-
-export const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  width: '2rem',
-  height: '2rem',
-  '& > svg': {
-    width: '2rem',
-    height: '2rem',
-    '& > path': {
-      fill: theme.palette.accentColor.purple400,
-    },
-  },
-
-  '&:hover': {
-    opacity: '1',
-    '& > svg > path': {
-      fill: theme.palette.accentColor.purple500,
-    },
-  },
-}));
 
 export const AddressBottomContainer = styled('div')({
   display: 'flex',

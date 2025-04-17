@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import Image from 'components/common/Image';
-import copy from 'copy-to-clipboard';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import { toastSuccess } from '@/utils/toast';
+import CopyButton from '@/components/CopyButton';
 
 import {
   ItemLeftContainer,
@@ -16,10 +15,7 @@ import {
   StyledChainAccordion,
   StyledChainAccordionDetails,
   StyledChainAccordionSummary,
-  StyledIconButton,
 } from './styled';
-
-import CopyIcon from '@/assets/images/icons/Paste20.svg';
 
 type PrivateKeyAccordion = {
   name: string;
@@ -32,11 +28,6 @@ type PrivateKeyAccordion = {
 
 export default function PrivateKeyAccordion({ name, image, hdPath, privateKey, arialControls, id }: PrivateKeyAccordion) {
   const { t } = useTranslation();
-
-  const copyToClipboard = () => {
-    copy(privateKey);
-    toastSuccess(t('pages.view.multi-chain-privateKey.components.index.copied'));
-  };
 
   return (
     <StyledChainAccordion>
@@ -59,9 +50,7 @@ export default function PrivateKeyAccordion({ name, image, hdPath, privateKey, a
         <PrivateKeyViewer>
           <PrivateKeyText variant="b3_M_Multiline">{privateKey}</PrivateKeyText>
 
-          <StyledIconButton onClick={copyToClipboard}>
-            <CopyIcon />
-          </StyledIconButton>
+          <CopyButton sx={{ width: '2rem', height: '2rem' }} copyString={privateKey} />
         </PrivateKeyViewer>
       </StyledChainAccordionDetails>
     </StyledChainAccordion>

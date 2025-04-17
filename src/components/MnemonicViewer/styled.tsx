@@ -2,7 +2,6 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '../common/Base1300Text';
-import IconTextButton from '../common/IconTextButton';
 
 export const Container = styled('div')({});
 
@@ -57,24 +56,6 @@ export const ControlInputButtonContainer = styled('div')({
 
   marginTop: '1.2rem',
 });
-
-export const StyledIconTextButton = styled(IconTextButton)({});
-
-export const IconContainer = styled('div')(({ theme }) => ({
-  width: '1.8rem',
-  height: '1.8rem',
-
-  '& > svg': {
-    width: '100%',
-    height: '100%',
-
-    fill: theme.palette.color.base800,
-
-    '& > path': {
-      fill: theme.palette.color.base800,
-    },
-  },
-}));
 
 export const ControlInputText = styled(Typography)(({ theme }) => ({
   marginLeft: '0.2rem',

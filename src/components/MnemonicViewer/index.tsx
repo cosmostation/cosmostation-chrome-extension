@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import copy from 'copy-to-clipboard';
 
 import type { MnemonicBits } from '@/pages/account/create-wallet/mnemonic/-entry';
-import { toastSuccess } from '@/utils/toast';
 
 import MnemonicBitsPopover from './components/MnemonicBitsPopover';
 import MnemonicWord from './components/MnemonicWord';
@@ -12,17 +10,15 @@ import {
   Container,
   ControlInputButtonContainer,
   ControlInputText,
-  IconContainer,
   MarginRightTypography,
   MnemonicContainer,
-  StyledIconTextButton,
   TopContainer,
   ViewIconContainer,
 } from './styled';
 import IconTextButton from '../common/IconTextButton';
+import CopyButton from '../CopyButton';
 
 import BottomChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-import PasteIcon from '@/assets/images/icons/Paste18.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
 import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
 
@@ -50,11 +46,6 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
   })();
 
   const mnemonicWordCounts = displayMnemonic.length;
-
-  const copyToClipboard = () => {
-    copy(rawMnemonic);
-    toastSuccess(t('components.MnemonicViewer.index.copied'));
-  };
 
   return (
     <>
@@ -102,16 +93,15 @@ export default function MnemonicViewer({ rawMnemonic, variants = 'create', onCli
           ))}
         </MnemonicContainer>
         <ControlInputButtonContainer>
-          <StyledIconTextButton
-            leadingIcon={
-              <IconContainer>
-                <PasteIcon />
-              </IconContainer>
-            }
-            onClick={copyToClipboard}
-          >
-            <ControlInputText variant="b3_R">{t('components.MnemonicViewer.index.copy')}</ControlInputText>
-          </StyledIconTextButton>
+          <CopyButton
+            varient="dark"
+            iconSize={{
+              width: 1.8,
+              height: 1.8,
+            }}
+            copyString={rawMnemonic}
+            trailing={<ControlInputText variant="b3_R">{t('components.MnemonicViewer.index.copy')}</ControlInputText>}
+          />
         </ControlInputButtonContainer>
       </Container>
       <MnemonicBitsPopover

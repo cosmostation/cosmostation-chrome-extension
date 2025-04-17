@@ -47,7 +47,7 @@ import {
 import type { MnemonicBits } from '../../create-wallet/mnemonic/-entry';
 
 import BottomChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-import CloseIcon from '@/assets/images/icons/Close24.svg';
+import ClearIcon from '@/assets/images/icons/Clear16.svg';
 import PasteIcon from '@/assets/images/icons/Paste18.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
 import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
@@ -274,7 +274,7 @@ export default function Entry() {
                 <StyledIconTextButton
                   leadingIcon={
                     <IconContainer>
-                      <CloseIcon />
+                      <ClearIcon />
                     </IconContainer>
                   }
                   onClick={clearAll}

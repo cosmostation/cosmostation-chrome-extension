@@ -39,7 +39,7 @@ import {
 import type { PrivateKeyForm } from './-useSchema';
 import { useSchema } from './-useSchema';
 
-import CloseIcon from '@/assets/images/icons/Close24.svg';
+import ClearIcon from '@/assets/images/icons/Clear16.svg';
 import PasteIcon from '@/assets/images/icons/Paste18.svg';
 import ViewIcon from '@/assets/images/icons/View12.svg';
 import ViewHideIcon from '@/assets/images/icons/ViewHide20.svg';
@@ -193,7 +193,7 @@ export default function Entry() {
                   <StyledIconTextButton
                     leadingIcon={
                       <IconContainer>
-                        <CloseIcon />
+                        <ClearIcon />
                       </IconContainer>
                     }
                     onClick={clearAll}

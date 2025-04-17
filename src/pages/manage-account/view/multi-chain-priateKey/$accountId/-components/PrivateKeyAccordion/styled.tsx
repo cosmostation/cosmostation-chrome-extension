@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 
 import Accordion, { AccordionDetails, AccordionSummary } from '@/components/common/Accordion';
 import Base1300Text from '@/components/common/Base1300Text';
-import IconButton from '@/components/common/IconButton';
 
 import BottomChevronIcon from '@/assets/images/icons/BottomChevron18.svg';
 
@@ -75,22 +74,3 @@ export const PrivateKeyText = styled(Base1300Text)({
   width: '90%',
   wordBreak: 'break-all',
 });
-
-export const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  width: '2rem',
-  height: '2rem',
-  '& > svg': {
-    width: '2rem',
-    height: '2rem',
-    '& > path': {
-      fill: theme.palette.accentColor.purple400,
-    },
-  },
-
-  '&:hover': {
-    opacity: '1',
-    '& > svg > path': {
-      fill: theme.palette.accentColor.purple500,
-    },
-  },
-}));
