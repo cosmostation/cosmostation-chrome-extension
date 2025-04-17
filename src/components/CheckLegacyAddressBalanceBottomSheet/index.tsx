@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useMultipleAccountTypes } from '@/hooks/useMultipleAccountTypes';
@@ -34,6 +35,7 @@ type CheckLegacyAddressBalanceBottomSheetProps = Omit<React.ComponentProps<typeo
 export default function CheckLegacyAddressBalanceBottomSheet({ ...remainder }: CheckLegacyAddressBalanceBottomSheetProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
   const { initCheckLegacyBalanceAccountIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
@@ -61,7 +63,7 @@ export default function CheckLegacyAddressBalanceBottomSheet({ ...remainder }: C
   };
 
   useEffect(() => {
-    if (!isShow && !isAlreayChecked && multipleAccountTypeWithAddress) {
+    if (!isShow && !isAlreayChecked && multipleAccountTypeWithAddress && !isUpdateBalnaceLoading) {
       const multipleAccountTypes = Object.values(multipleAccountTypeWithAddress);
 
       const isLegacyAddressHasBalance = multipleAccountTypes.some((item) => {
