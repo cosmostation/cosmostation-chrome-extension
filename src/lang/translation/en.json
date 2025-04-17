@@ -230,20 +230,6 @@
         }
       },
       "CosmosFee": {
-        "CosmosFee": {
-          "components": {
-            "FeeSettingBottomSheet": {
-              "components": {
-                "FeeCustomOverlay": {
-                  "index": {
-                    "inputGasAmountError": "invalid gas amount",
-                    "inputGasRateError": "invalid gas rate"
-                  }
-                }
-              }
-            }
-          }
-        },
         "components": {
           "FeeSettingBottomSheet": {
             "components": {
@@ -256,7 +242,9 @@
                   "gasRate": "Gas Rate",
                   "inform": "How Network Fees are paid",
                   "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
-                  "done": "Setup Complete"
+                  "done": "Setup Complete",
+                  "inputGasAmountError": "invalid gas amount",
+                  "inputGasRateError": "invalid gas rate"
                 }
               }
             }

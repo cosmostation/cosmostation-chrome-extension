@@ -72,13 +72,13 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
 
   const inputGasAmountErrorMsg = useMemo(() => {
     if (inputGasAmount && (!isDecimal(inputGasAmount, decimals) || !gt(inputGasAmount, '0'))) {
-      return t('components.Fee.CosmosFee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inputGasAmountError');
+      return t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inputGasAmountError');
     }
   }, [decimals, inputGasAmount, t]);
 
   const inputGasRateErrorMsg = useMemo(() => {
     if (inputGasRate && (!isDecimal(inputGasRate, decimals) || !gt(inputGasRate, '0'))) {
-      return t('components.Fee.CosmosFee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inputGasRateError');
+      return t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.inputGasRateError');
     }
   }, [decimals, inputGasRate, t]);
 
