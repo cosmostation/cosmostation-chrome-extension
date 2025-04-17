@@ -2397,7 +2397,10 @@
         "BaseTxInfo": {
           "index": {
             "network": "Network",
-            "networkFee": "Network Fee"
+            "networkFee": "Network Fee",
+            "totalFee": "Total Fee",
+            "additionalFee": "Additional Fee",
+            "uncertainFee": "Uncertain Fee"
           }
         },
         "MemoInput": {

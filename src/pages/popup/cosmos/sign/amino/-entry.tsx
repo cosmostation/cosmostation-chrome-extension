@@ -12,6 +12,7 @@ import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
+import { useAdditionalFee } from '@/hooks/cosmos/useAdditionalFee';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -28,7 +29,7 @@ import type { CosmosChain } from '@/types/chain';
 import type { CosSignAmino, CosSignAminoResponse } from '@/types/message/inject/cosmos';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
-import { ceil, divide, gt, gte, times } from '@/utils/numbers';
+import { ceil, divide, gte, times } from '@/utils/numbers';
 import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
@@ -152,10 +153,6 @@ export default function Entry({ request, chain }: EntryProps) {
     return baseEstimateGas;
   }, [accountAsset?.chain.feeInfo.defaultGasLimit, accountAsset?.chain.feeInfo.gasCoefficient, simulate.data?.gas_info?.gas_used]);
 
-  if (gt(alternativeGas, '0')) {
-    throw Error('asdfsdf');
-  }
-
   const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 
   const feeOptions = useMemo(() => {
@@ -241,6 +238,8 @@ export default function Entry({ request, chain }: EntryProps) {
 
     return '';
   }, [baseFee, alternativeFeeAsset?.balance, doc.fee.granter, doc.fee.payer, isCheckBalance, t]);
+
+  const additionalFee = useAdditionalFee({ chain, msgs: tx.msgs, currentStep: txMessagePage });
 
   const handleOnSign = async () => {
     try {
@@ -329,6 +328,7 @@ export default function Entry({ request, chain }: EntryProps) {
               feeCoinId={selectedFeeOption.coinId}
               feeBaseAmount={currentFee}
               disableFee={!isEditFee}
+              additionalFees={additionalFee}
               onClickFee={() => {
                 setIsOpenFeeCustomBottomSheet(true);
               }}

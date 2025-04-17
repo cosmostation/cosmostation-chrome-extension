@@ -14,6 +14,7 @@ import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
+import { useAdditionalFee } from '@/hooks/cosmos/useAdditionalFee';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useProtoBuilderDecoder } from '@/hooks/cosmos/useProtoBuilderDecoder';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
@@ -29,6 +30,7 @@ import MemoInput from '@/pages/popup/-components/MemoInput';
 import RawTx from '@/pages/popup/-components/RawTx';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
+import type { Msg } from '@/types/cosmos/direct';
 import type { CosSignDirect, CosSignDirectResponse } from '@/types/message/inject/cosmos';
 import { getPublicKeyType, signDirect } from '@/utils/cosmos/msg';
 import { decodeProtobufMessage, protoTxBytes } from '@/utils/cosmos/proto';
@@ -261,6 +263,8 @@ export default function Entry({ request, chain }: EntryProps) {
     [decodedChangedAuthInfoBytes, decodedChangedBodyBytes, doc, msgs],
   );
 
+  const additionalFee = useAdditionalFee({ chain, msgs: decodedTxData.data?.body.messages as Msg[], currentStep: txMessagePage });
+
   const decodedByProtoBuilderTx = useMemo(
     () =>
       decodedTxData.data && {
@@ -374,6 +378,7 @@ export default function Entry({ request, chain }: EntryProps) {
               feeCoinId={selectedFeeOption.coinId}
               feeBaseAmount={currentFee}
               disableFee={!isEditFee}
+              additionalFees={additionalFee}
               onClickFee={() => {
                 setIsOpenFeeCustomBottomSheet(true);
               }}

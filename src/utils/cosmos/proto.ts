@@ -1,7 +1,10 @@
+import { COSMOS_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { COSMOS_EUREKA_CONTRCT_LIST } from '@/constants/cosmos/eureka';
 import { cosmos, google } from '@/proto/cosmos-sdk-v0.47.4.js';
 import { cosmwasm } from '@/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '@/proto/ibc-v7.1.0.js';
 import { osmosis } from '@/proto/osmosis-v13.1.2.js';
+import type { CosmosChain } from '@/types/chain';
 import type {
   Msg,
   MsgCancelUnbondingDelegation,
@@ -17,6 +20,7 @@ import type {
 } from '@/types/cosmos/amino';
 import type { SendTransactionPayload } from '@/types/cosmos/common';
 import type {
+  EurekaContract,
   Msg as ProtoMsg,
   MsgCommission as ProtoMsgCommission,
   MsgExecuteContract as ProtoMsgExecuteContract,
@@ -320,6 +324,18 @@ export function isDirectIBCSend(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgTransfer
 
 export function isDirectExecuteContract(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgExecuteContract> {
   return msg.type_url === '/cosmwasm.wasm.v1.MsgExecuteContract';
+}
+
+export function isDirectExecuteEurekaContract(chain: CosmosChain, msg: ProtoMsg): msg is ProtoMsg<ProtoMsgExecuteContract<EurekaContract>> {
+  const isContract = isDirectExecuteContract(msg);
+
+  if (isContract) {
+    const isCosmosChain = chain.id == COSMOS_CHAINLIST_ID;
+    const isEurekaContract = COSMOS_EUREKA_CONTRCT_LIST.includes(msg.value.contract);
+    return isCosmosChain && isEurekaContract;
+  }
+
+  return false;
 }
 
 export function convertDirectMsgTypeToAminoMsgType(typeUrl: string) {

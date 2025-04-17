@@ -40,6 +40,32 @@ export type MsgExecuteContract<T = unknown> = {
   funds: Amount[];
 };
 
+export type EurekaContract = {
+  action: {
+    timeout_timestamp: number;
+    action: {
+      ibc_transfer: {
+        ibc_info: {
+          source_channel: string;
+          receiver: string;
+          memo?: string;
+          recover_address: string;
+          encoding: string;
+          eureka_fee: {
+            coin: {
+              denom: string;
+              amount: string;
+            };
+            receiver: string;
+            timeout_timestamp: string;
+          };
+        };
+      };
+    };
+    exact_out: boolean;
+  };
+};
+
 export type ProtoTxBytesProps = {
   signatures: string[];
   txBodyBytes: Uint8Array;

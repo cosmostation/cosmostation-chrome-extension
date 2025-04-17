@@ -5,6 +5,8 @@ import sortKeys from 'sort-keys';
 import ecc from '@bitcoinerlab/secp256k1';
 
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
+import { COSMOS_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { COSMOS_EUREKA_CONTRCT_LIST } from '@/constants/cosmos/eureka';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type {
@@ -21,7 +23,7 @@ import type {
   MsgUndelegation,
   SignAminoDoc,
 } from '@/types/cosmos/amino';
-import type { SignDirectDoc } from '@/types/cosmos/direct';
+import type { EurekaContract, SignDirectDoc } from '@/types/cosmos/direct';
 
 import { toUint8Array } from '../crypto';
 
@@ -112,6 +114,18 @@ export function isAminoSwapExactAmountIn(msg: Msg): msg is Msg<MsgSwapExactAmoun
 
 export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {
   return msg.type === 'wasm/MsgExecuteContract';
+}
+
+export function isAminoExecuteEurekaContract(chain: CosmosChain, msg: Msg): msg is Msg<MsgExecuteContract<EurekaContract>> {
+  const isContract = isAminoExecuteContract(msg);
+
+  if (isContract) {
+    const isCosmosChain = chain.chainId == COSMOS_CHAINLIST_ID;
+    const isEurekaContract = COSMOS_EUREKA_CONTRCT_LIST.includes(msg.value.contract);
+    return isCosmosChain && isEurekaContract;
+  }
+
+  return false;
 }
 
 export function isAminoMsgSignData(msg: Msg): msg is Msg<MsgSignData> {
