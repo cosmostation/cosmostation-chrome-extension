@@ -140,7 +140,7 @@ export async function getChains() {
 
     const filteredAccountTypes = chain.params.chainlist_params?.account_type
       ?.filter((item) => {
-        return item.hd_path.includes(`m/44'/60'/0'/0/`);
+        return item.hd_path.includes(`m/44'/60'/0'/0/`) && item.pubkey_style === 'keccak256';
       })
       .map((item) => {
         return {

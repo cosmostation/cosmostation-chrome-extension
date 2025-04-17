@@ -67,7 +67,7 @@ export function useAccountAllAssets({
   });
 
   const hiddenAssetIds = useMemo(() => extensionStorageState[`${param}-hidden-assetIds`] || [], [extensionStorageState, param]);
-  const hiddenCustomAssetIds = useMemo(() => extensionStorageState['customHiddenAssetIds'] || [], [extensionStorageState, param]);
+  const hiddenCustomAssetIds = useMemo(() => extensionStorageState['customHiddenAssetIds'] || [], [extensionStorageState]);
   const visibleAssetIds = useMemo(() => extensionStorageState[`${param}-visible-assetIds`] || [], [extensionStorageState, param]);
 
   const bitcoinBalanceInfo = useMemo(() => extensionStorageState[`${param}-balance-bitcoin`] || [], [extensionStorageState, param]);
@@ -125,7 +125,7 @@ export function useAccountAllAssets({
       customCw20AccountAssets: filterAssetList(data.customCw20AccountAssets),
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
     };
-  }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, visibleAssetIds]);
+  }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
 
   const returnData = useMemo(() => {
     if (!filteredByVisibleList) return null;

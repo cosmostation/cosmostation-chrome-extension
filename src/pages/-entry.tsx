@@ -224,11 +224,11 @@ export default function Entry() {
                     <Typography variant="b3_R">{t('pages.index.hideSmallBalance')}</Typography>
                   </CheckBoxTextButton>
                   <IconTextButton
-                    onClick={() => [
+                    onClick={() => {
                       navigate({
                         to: ManageAssets.to,
-                      }),
-                    ]}
+                      });
+                    }}
                     leadingIcon={<PlusIcon />}
                   >
                     <MarginLeftTypography variant="b3_M">{t('pages.index.manageCrypto')}</MarginLeftTypography>
