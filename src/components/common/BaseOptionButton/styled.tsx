@@ -12,12 +12,22 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   padding: '1.2rem 1.6rem',
 
+  position: 'relative',
+
   backgroundColor: props['isActive'] ? theme.palette.color.base200 : 'transparent',
   border: 'none',
 
   '&: hover': {
     backgroundColor: theme.palette.color.base100,
   },
+}));
+
+export const ActiveLabel = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  left: 0,
+  width: '0.4rem',
+  height: '100%',
+  backgroundColor: theme.palette.accentColor.purple400,
 }));
 
 export const LeftContainer = styled('div')({

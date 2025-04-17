@@ -6,6 +6,7 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
+import { gt } from '@/utils/numbers';
 import { shorterAddress, toPercentages } from '@/utils/string';
 
 import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
@@ -33,7 +34,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const isStakeable = selectedCoin?.chain.isSupportStaking && selectedCoin.asset.id === selectedCoin.chain.mainAssetDenom;
 
-  const apr = selectedCoin?.chain.apr && toPercentages(selectedCoin?.chain.apr);
+  const apr = selectedCoin?.chain.apr && gt(selectedCoin.chain.apr, '0') ? toPercentages(selectedCoin.chain.apr) : undefined;
 
   return (
     <BaseBody>

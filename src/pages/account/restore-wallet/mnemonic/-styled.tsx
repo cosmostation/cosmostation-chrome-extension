@@ -73,7 +73,7 @@ export const MnemonicInputContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr',
 
-  gap: '0.8rem',
+  gap: '0.6rem',
 });
 
 export const StyledInput = styled(OutlinedInput)(({ theme, ...props }) => ({

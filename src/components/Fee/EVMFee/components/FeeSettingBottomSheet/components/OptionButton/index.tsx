@@ -60,6 +60,7 @@ export default function OptionButton({ fee, isActive, ...remainder }: OptionButt
       }
       isActive={isActive}
       disableRightChevron
+      enableActiveLabel
       {...remainder}
     />
   );
