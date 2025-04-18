@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import Base1300Text from '@/components/common/Base1300Text';
 
 export const Body = styled('div')({
-  paddingTop: '2.4rem',
+  paddingTop: '1.2rem',
 });
 
 export const DescriptionContainer = styled('div')({
@@ -17,7 +17,7 @@ export const DescriptionContainer = styled('div')({
 
   rowGap: '0.6rem',
 
-  padding: '0 0.4rem',
+  padding: '0.4rem 0.4rem 0',
 });
 
 export const DescriptionTitle = styled(Typography)(({ theme }) => ({

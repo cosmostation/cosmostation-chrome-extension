@@ -13,7 +13,7 @@ export const DescriptionContainer = styled('div')({
 
   rowGap: '0.6rem',
 
-  margin: '1.6rem 0 2rem',
+  margin: '1.6rem 0.4rem 2rem',
 });
 
 export const DescriptionTitle = styled(Base1300Text)({});
