@@ -77,6 +77,6 @@ export const Footer = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    minHeight: '50%',
+    minHeight: '60%',
   },
 });

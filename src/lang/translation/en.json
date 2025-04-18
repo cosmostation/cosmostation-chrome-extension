@@ -721,7 +721,7 @@
     "account": {
       "initial": {
         "index": {
-          "termsNotice": "I have read and agress to the",
+          "termsNotice": "I have read and agree to the",
           "termsOfUse": "Terms of Use",
           "start": "Start"
         }
@@ -1192,9 +1192,9 @@
           "ResetBottomSheet": {
             "index": {
               "title": "Confirm Reset",
-              "description1": "To delete the Program, please enter the text",
+              "description1": "To initialize, please enter the text",
               "description1-1": " \"RESET\" ",
-              "description2": "You must know your mnemonic to recover your wallet before reset.",
+              "description2": "You must know your mnemonic to recover your wallet before reset.",
               "inputLabel": "Enter “RESET”",
               "cancel": "Cancel",
               "reset": "Reset"
@@ -1220,40 +1220,6 @@
         "$coinId": {
           "layout": {
             "header": "Send"
-          },
-          "entry": {
-            "send": "Send",
-            "contract": "Contract",
-            "recipientNetwork": "Recipient Network",
-            "ibcSend": "IBC Send",
-            "selectRecipientNetwork": "Select Recipient Network",
-            "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
-            "recipientAddress": "Recipient Address",
-            "amount": "Amount",
-            "memo": "Memo (Option)",
-            "sendReview": "Confirm Send",
-            "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
-            "denom": "Denom",
-            "chooseRecipientAddress": "Choose Recipient",
-            "cosmos": {
-              "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
-              "invalidAddress": "Invalid address",
-              "invalidAmount": "Invalid amount",
-              "insufficientAmount": "Insufficient amount",
-              "insufficientFeeAmount": "Insufficient fee",
-              "send": "Send",
-              "recipientNetwork": "Recipient Network",
-              "ibcSend": "IBC Send",
-              "selectRecipientNetwork": "Select Recipient Network",
-              "searchRecipientNetwork": "Search Network (Ex. Bitcoin)",
-              "recipientAddress": "Recipient Address",
-              "amount": "Amount",
-              "memo": "Memo (Option)",
-              "chooseRecipientAddress": "Choose Recipient",
-              "sendReview": "Confirm Send",
-              "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
-              "timeoutHeightError": "Network Error"
-            }
           },
           "Entry": {
             "Sui": {
@@ -1706,7 +1672,7 @@
                 "cancelUnstakeReviewDescription": "Are you sure you want to proceed with the cancel unstake? \nThis action cannot be undone once completed.",
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                "cancelUnstakingAmount": "Cancel Unstaking Amount",
+                "cancelUnstakingAmount": "Amount to Unstake",
                 "cancelUnstakeConfirm": "Cancel Unstake"
               }
             }
@@ -1866,7 +1832,8 @@
           "components": {
             "OptionButton": {
               "index": {
-                "english": "English"
+                "english": "English",
+                "korean": "한국어 ( Korean )"
               }
             }
           },
@@ -2278,7 +2245,7 @@
                 "tokenImageURL": "Token Image URL (Optional)",
                 "exploreURL": "Block explorer URL (Optional)",
                 "addCustomNetwork": "Add Custom Network",
-                "restURLError": "Failed to get chain information, please check the REST URL"
+                "restURLError": "Failed to get chain information, please check the RPC URL"
               }
             }
           },

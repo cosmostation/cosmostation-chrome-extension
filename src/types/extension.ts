@@ -19,6 +19,7 @@ import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './ass
 import type { LockupTimeOptions } from './autoLock';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
+import type { LanguageType } from './language';
 import type { Request } from './message/inject';
 import type { CosmosNFT, EvmNFT, SuiNFT } from './nft';
 import type { Password } from './password';
@@ -93,7 +94,7 @@ export interface ExtensionStorage {
   initCheckLegacyBalanceAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;
   dappListSortKey: DappListSortKeyType;
-  userLanguagePreference: string;
+  userLanguagePreference: LanguageType;
   comparisonPasswordHash: string;
   accountNamesById: AccountNamesById;
   mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;

@@ -19,7 +19,7 @@ module.exports = {
       list: ['t'],
       extensions: ['.ts', '.tsx'],
     },
-    lngs: ['en'],
+    lngs: ['en', 'ko'],
     ns: ['translation'],
     defaultLng: 'en',
     defaultNs: 'translation',

@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
+import { LANGUAGE_TYPE } from '@/constants/language';
+import type { LanguageType } from '@/types/language';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+
 import OptionButton from './components/OptionButton';
 import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton } from './styled';
 
@@ -8,15 +12,14 @@ import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type LanguageBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'>;
 
-const SUPPORT_LANGUAGES = ['en', 'ko', 'ja'];
-
 export default function LanguageBottomSheet({ onClose, ...remainder }: LanguageBottomSheetProps) {
-  const { t } = useTranslation();
-  const i18 = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const onHandleClick = (val: string) => {
-    i18.i18n.changeLanguage(val);
+  const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
+  const onHandleClick = (val: LanguageType) => {
+    i18n.changeLanguage(val);
+    updateExtensionStorageStore('userLanguagePreference', val);
     onClose?.({}, 'backdropClick');
   };
 
@@ -41,12 +44,12 @@ export default function LanguageBottomSheet({ onClose, ...remainder }: LanguageB
           </StyledButton>
         </Header>
         <Body>
-          {SUPPORT_LANGUAGES.map((item) => {
+          {Object.values(LANGUAGE_TYPE).map((item) => {
             return (
               <OptionButton
                 key={item}
                 language={item}
-                isActive={i18.i18n.resolvedLanguage === item}
+                isActive={i18n.resolvedLanguage === item}
                 onClickButton={(val) => {
                   onHandleClick(val);
                 }}

@@ -4,6 +4,7 @@ import type { Network } from 'bitcoinjs-lib';
 import { PUBKEY_STYLE, PUBKEY_TYPE_MAP } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { LANGUAGE_TYPE } from '@/constants/language';
 import { getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { Account as NewAccount, AccountNamesById, MnemonicAccount as NewMnemonicAccount, PrivateAccount as NewPrivateAccount } from '@/types/account';
@@ -551,10 +552,10 @@ async function migrateLanguage(legacyStorage: LegacyExtensionStorage) {
   const language = legacyStorage['language'];
   const newLanguage = (() => {
     if (language === 'ko') {
-      return 'en';
+      return LANGUAGE_TYPE.KO;
     }
 
-    return 'en';
+    return LANGUAGE_TYPE.EN;
   })();
 
   await setExtensionLocalStorage('userLanguagePreference', newLanguage);

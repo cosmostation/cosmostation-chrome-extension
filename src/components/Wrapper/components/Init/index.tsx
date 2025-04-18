@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { LANGUAGE_TYPE } from '@/constants/language';
 import type { ExtensionStorageKeys } from '@/types/extension';
+import type { LanguageType } from '@/types/language';
 import { extension } from '@/utils/browser';
-import { initExtensionLocalStorage } from '@/utils/storage';
+import { getExtensionLocalStorage, initExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { loadExtensionSessionStorageStoreFromStorage } from '@/zustand/hooks/useExtensionSessionStorageStore';
 import { loadAllStoreFromStorage } from '@/zustand/utils';
 
@@ -14,6 +17,8 @@ type InitProps = {
 
 export default function Init({ children }: InitProps) {
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const { i18n } = useTranslation();
 
   const handleOnStorageChange = (changes: browser.storage.StorageChange, areaName: string) => {
     void (async () => {
@@ -39,6 +44,17 @@ export default function Init({ children }: InitProps) {
     void (async () => {
       await initExtensionLocalStorage();
 
+      const storedLang = await getExtensionLocalStorage('userLanguagePreference');
+
+      if (i18n.language && !storedLang) {
+        console.log('🚀 ~ void ~ i18n.language:', i18n.language);
+
+        const languageType = Object.values(LANGUAGE_TYPE) as string[];
+        const newLanguage = (languageType.includes(i18n.language) ? i18n.language : LANGUAGE_TYPE.EN) as LanguageType;
+        await i18n.changeLanguage(newLanguage);
+        await setExtensionLocalStorage('userLanguagePreference', newLanguage);
+      }
+
       await loadAllStoreFromStorage();
 
       setIsHydrated(true);
@@ -47,6 +63,7 @@ export default function Init({ children }: InitProps) {
     return () => {
       extension.storage.onChanged.removeListener(handleOnStorageChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!isHydrated) {

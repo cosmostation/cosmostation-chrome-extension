@@ -1,15 +1,16 @@
 import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
+import type { LanguageType } from '@/types/language';
 
 import { ActiveBadge, StyledOptionButton } from './styled';
 
 import CheckIcon from 'assets/images/icons/Check.svg';
 
 type OptionButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
-  language: string;
+  language: LanguageType;
   isActive?: boolean;
-  onClickButton: (val: string) => void;
+  onClickButton: (val: LanguageType) => void;
 };
 
 export default function OptionButton({ language, isActive, onClickButton, ...remainder }: OptionButtonProps) {
@@ -17,6 +18,7 @@ export default function OptionButton({ language, isActive, onClickButton, ...rem
 
   const text = (() => {
     if (language === 'en') return t('pages.general-setting.components.LanguageBottomSheet.components.OptionButton.index.english');
+    if (language === 'ko') return t('pages.general-setting.components.LanguageBottomSheet.components.OptionButton.index.korean');
   })();
 
   return (

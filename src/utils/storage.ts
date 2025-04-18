@@ -190,9 +190,6 @@ async function initializeStorageDefaults() {
     await v11();
   }
 
-  if (!originStorage.userLanguagePreference) {
-    setExtensionLocalStorage('userLanguagePreference', 'en');
-  }
   if (!originStorage.userCurrencyPreference) {
     const newCurrency = CURRENCY_TYPE.USD;
 
