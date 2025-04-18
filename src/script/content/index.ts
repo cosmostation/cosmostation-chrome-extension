@@ -76,10 +76,50 @@ chrome.runtime.onMessage.addListener(
   },
 );
 
-const rootElement = document.head || document.documentElement;
-const scriptElement = document.createElement('script');
+function doctypeCheck() {
+  const { doctype } = window.document;
+  if (doctype) {
+    return doctype.name === 'html';
+  }
+  return true;
+}
 
-scriptElement.src = chrome.runtime.getURL('js/inject.js');
-scriptElement.type = 'text/javascript';
-rootElement.appendChild(scriptElement);
-scriptElement.remove();
+function suffixCheck() {
+  const prohibitedTypes = [/\.xml$/, /\.pdf$/, /\.asp$/, /\.jsp$/, /\.php$/, /\.md$/, /\.svg$/, /\.docx$/, /\.odt$/, /\.eml$/];
+  const currentUrl = window.location.pathname;
+  for (const type of prohibitedTypes) {
+    if (type.test(currentUrl)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function documentElementCheck() {
+  const documentElement = document.documentElement.nodeName;
+  if (documentElement) {
+    return documentElement.toLowerCase() === 'html';
+  }
+  return true;
+}
+
+function shouldInjectProvider() {
+  return doctypeCheck() && suffixCheck() && documentElementCheck();
+}
+
+function injectScript() {
+  try {
+    const container = document.head || document.documentElement;
+    const scriptTag = document.createElement('script');
+    scriptTag.setAttribute('src', chrome.runtime.getURL('js/inject.js'));
+    container.insertBefore(scriptTag, container.children[0]);
+    container.removeChild(scriptTag);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    console.error(e);
+  }
+}
+
+if (shouldInjectProvider()) {
+  injectScript();
+}
