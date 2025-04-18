@@ -7,7 +7,6 @@ export const StyledButton = styled(Button)({
   height: '4rem',
   backgroundColor: '#6F4AFF',
   '&:hover': {
-    opacity: '0.8',
-    backgroundColor: '#6F4AFF',
+    backgroundColor: '#6443E5',
   },
 });
