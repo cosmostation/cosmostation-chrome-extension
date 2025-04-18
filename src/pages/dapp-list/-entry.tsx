@@ -15,6 +15,8 @@ import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { DappListSortKeyType } from '@/types/sortKey';
 import { chunkArray } from '@/utils/array';
+import { filterChainsByChainId } from '@/utils/asset';
+import { parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import ChipTypeButton from './-components/ChipTypeButton';
@@ -141,6 +143,8 @@ export default function Entry() {
   const [sortOption, setSortOption] = useState<DappListSortKeyType>(DAPP_LIST_SORT_KEY.ALPHABETICAL_ASC);
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
 
+  const baseChainList = filterChainsByChainId(flatChainList);
+
   const dappTypeList = useMemo(() => {
     const aggregatedDappTypes = dappList.reduce((acc, dapp) => {
       if (!acc.includes(dapp?.type || '')) {
@@ -186,7 +190,9 @@ export default function Entry() {
       return filteredByPinned.filter((dapp) => dapp.type === selectedDappType);
     })();
 
-    const filteredDappsByChain = currentSelectedChainId ? filteredByType.filter((dapp) => dapp.chains.includes(currentSelectedChainId)) : filteredByType;
+    const filteredDappsByChain = currentSelectedChainId
+      ? filteredByType.filter((dapp) => dapp.chains.includes(parseUniqueChainId(currentSelectedChainId).id))
+      : filteredByType;
 
     if (!!search && debouncedSearch.length > 1) {
       return (
@@ -278,7 +284,7 @@ export default function Entry() {
             <SortConditionContainer>
               <AllNetworkButton
                 currentChainId={currentSelectedChainId}
-                chainList={flatChainList}
+                chainList={baseChainList}
                 selectChainOption={(id) => {
                   setCurrentSelectedChainId(id);
                 }}
