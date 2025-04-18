@@ -556,7 +556,7 @@
       },
       "CoinOverview": {
         "index": {
-          "Overview": "모아보기",
+          "Overview": "전체 보기",
           "in": "",
           "networks": "개의 체인"
         }
