@@ -542,7 +542,7 @@
     "MainBox": {
       "CoinDetailBox": {
         "index": {
-          "copied": "복사",
+          "copied": "주소를 복사했습니다",
           "dao": "Dao",
           "daoDescription": "DAO 투표를 통해 거버넌스에 참여하세요",
           "more": "더보기",
@@ -1035,7 +1035,7 @@
       },
       "entry": {
         "copiedDenom": "IBC Denom이 복사에 성공했습니다",
-        "denom": "데놈",
+        "denom": "Denom",
         "history": "트랜잭션 내역"
       }
     },
