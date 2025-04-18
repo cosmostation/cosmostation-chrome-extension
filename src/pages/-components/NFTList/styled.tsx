@@ -15,7 +15,7 @@ export const StickyTabPanelContentsContainer = styled('div')(({ theme }) => ({
   position: 'sticky',
   top: '7.8rem',
 
-  padding: '0.8rem 1.2rem',
+  padding: '0 1.2rem 0.8rem ',
 
   boxSizing: 'border-box',
 
