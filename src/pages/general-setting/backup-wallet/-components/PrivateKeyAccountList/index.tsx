@@ -44,6 +44,9 @@ export default function PrivateKeyAccountList() {
                     </AccountImgContainer>
                   }
                   leftSecondHeader={<Base1300Text variant="b2_M">{accountName}</Base1300Text>}
+                  style={{
+                    padding: '1.6rem',
+                  }}
                 />
               );
             })

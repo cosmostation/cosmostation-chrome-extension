@@ -57,6 +57,9 @@ export default function MnemonicAccountList() {
                   </AlertContainer>
                 ) : undefined
               }
+              style={{
+                padding: '1.6rem',
+              }}
             />
           );
         })
