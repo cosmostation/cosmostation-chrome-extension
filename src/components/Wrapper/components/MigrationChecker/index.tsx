@@ -7,6 +7,7 @@ import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import LinearProgressBar from '@/components/common/LinearProgressBar';
+import TextButton from '@/components/common/TextButton';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 import OutlinedChipButton from '@/components/OutlinedChipButton';
@@ -19,6 +20,7 @@ import { isMigrationRequired_V1_0_0, migrateData, skipMigration } from '@/utils/
 import { toastError } from '@/utils/toast';
 import { setLoadingProgressBarStore, useLoadingProgressBarStore } from '@/zustand/hooks/useLoadingProgressBar';
 
+import ResetOverlay from './components/ResetOverlay';
 import {
   Container,
   ContentsContainer,
@@ -27,6 +29,7 @@ import {
   ErrorText,
   ErrorTextButton,
   ErrorTopContainer,
+  FooterContainer,
   ImgContainer,
   LinearProgressContainer,
   LoadingProgressText,
@@ -53,6 +56,8 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
   const [isMigrateComplete, setIsMigrateComplete] = useState<boolean | undefined>();
   const [isFailToMigrate, setIsFailToMigrate] = useState(false);
   const [isStartedFirstMigration, setIsStartedFirstMigration] = useState(false);
+
+  const [isOpenResetOverlay, setIsOpenResetOverlay] = useState(false);
 
   const handleSkipMigration = async () => {
     try {
@@ -179,8 +184,12 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
                           </ErrorTextButton>
                         </ErrorTopContainer>
 
-                        <OutlinedChipButton onClick={handleSkipMigration}>
-                          <Base1300Text variant="b3_M">{t('components.Wrapper.components.MigrationChecker.index.skipMigration')}</Base1300Text>
+                        <OutlinedChipButton
+                          onClick={() => {
+                            setIsOpenResetOverlay(true);
+                          }}
+                        >
+                          <Base1300Text variant="b3_M">{t('components.Wrapper.components.MigrationChecker.index.resetExtension')}</Base1300Text>
                           <RightArrowIconContainer>
                             <RightArrow />
                           </RightArrowIconContainer>
@@ -199,14 +208,29 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
             </BaseBody>
             <BaseFooter>
               {!isStartedFirstMigration && (
-                <Button
-                  disabled={!encryptedPassword}
-                  onClick={() => {
-                    setIsOpenVerifyBottomSheet(true);
-                  }}
-                >
-                  {t('components.Wrapper.components.MigrationChecker.index.startWithMigration')}
-                </Button>
+                <>
+                  <FooterContainer>
+                    <Base1300Text variant="b3_R">{t('components.Wrapper.components.MigrationChecker.index.forgotPassword')}</Base1300Text>
+                    <TextButton
+                      onClick={() => {
+                        setIsOpenResetOverlay(true);
+                      }}
+                      variant="hyperlink"
+                      typoVarient="b2_M"
+                    >
+                      {t('components.Wrapper.components.MigrationChecker.index.reset')}
+                    </TextButton>
+                  </FooterContainer>
+
+                  <Button
+                    disabled={!encryptedPassword}
+                    onClick={() => {
+                      setIsOpenVerifyBottomSheet(true);
+                    }}
+                  >
+                    {t('components.Wrapper.components.MigrationChecker.index.startWithMigration')}
+                  </Button>
+                </>
               )}
             </BaseFooter>
           </>
@@ -221,6 +245,17 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
               await setCurrentPassword(inputPassword as string);
               await startMigration();
             }
+          }}
+        />
+        <ResetOverlay
+          open={isOpenResetOverlay}
+          onClose={() => {
+            setIsOpenResetOverlay(false);
+          }}
+          onConfirm={() => {
+            handleSkipMigration();
+
+            setIsOpenResetOverlay(false);
           }}
         />
       </>

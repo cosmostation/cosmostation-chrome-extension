@@ -89,3 +89,13 @@ export const LinearProgressContainer = styled('div')({
 export const LoadingProgressText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1100,
 }));
+
+export const FooterContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  columnGap: '0.4rem',
+
+  marginBottom: '3rem',
+});
