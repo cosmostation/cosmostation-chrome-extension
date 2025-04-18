@@ -8,11 +8,29 @@ export default function BackgroundLayer({ children }: BackgroundLayer) {
   return (
     <BackgroundContainer>
       {ellipseStyles.map((style, index) => (
-        <Ellipse key={index} sx={style} />
+        <Ellipse
+          key={index}
+          sx={style}
+          style={{
+            display: 'none',
+          }}
+        />
       ))}
-      <SubtleGradientLayer />
-      <BlackRadialGradientLayer />
-      <PurpleRadialGradientLayer />
+      <SubtleGradientLayer
+        style={{
+          display: 'none',
+        }}
+      />
+      <BlackRadialGradientLayer
+        style={{
+          display: 'none',
+        }}
+      />
+      <PurpleRadialGradientLayer
+        style={{
+          display: 'none',
+        }}
+      />
       {Array.from({ length: 300 }).map((_, i) => (
         <Star
           key={i}
