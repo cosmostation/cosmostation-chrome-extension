@@ -520,8 +520,9 @@
     },
     "FooterCoinPrice": {
       "index": {
-        "coinGecko24h": "Coingecko 24 시간",
-        "currentPrice": "현재 가격"
+        "coinGecko24h": "24시간 기준 (Coingecko)",
+        "currentPrice": "현재 가격",
+        "seeDetail": "살펴보기"
       }
     },
     "GithubBottomSheet": {
@@ -991,6 +992,25 @@
           },
           "layout": {
             "header": "스테이크 매니지"
+          }
+        },
+        "about": {
+          "entry": {
+            "contract": "컨트랙트",
+            "denom": "Denom",
+            "coinId": "코인 ID",
+            "description": "설명",
+            "detailInformation": "상세 정보",
+            "network": "네트워크",
+            "decimals": "Decimals",
+            "erc20Coin": "ERC20 Token",
+            "cw20Coin": "CW20 Token",
+            "nativeCoin": "Native Coin",
+            "bridgeCoin": "Bridged COin",
+            "type": "코인 타입"
+          },
+          "layout": {
+            "about": "{{symbol}} 정보"
           }
         }
       },

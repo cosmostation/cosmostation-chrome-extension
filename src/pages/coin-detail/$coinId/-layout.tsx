@@ -1,3 +1,5 @@
+import { useNavigate } from '@tanstack/react-router';
+
 import BaseLayout from '@/components/BaseLayout';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconButton from '@/components/common/IconButton';
@@ -9,6 +11,7 @@ import NavigationPanel from '@/components/Header/components/NavigationPanel';
 import { BABYLON_POPOVER_ID, DROP_POPOVER_ID } from '@/constants/adPopover';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { Route as CoinAbout } from '@/pages/coin-detail/$coinId/about';
 import { isStillBlocked } from '@/utils/date';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 import { turnOnAdPopover } from '@/utils/zustand/adPopoverState';
@@ -27,6 +30,7 @@ type LayoutProps = {
 };
 
 export default function Layout({ children, coinId }: LayoutProps) {
+  const navigate = useNavigate();
   const { currentAccount } = useCurrentAccount();
   const { adPopoverState } = useExtensionStorageStore((state) => state);
 
@@ -102,7 +106,17 @@ export default function Layout({ children, coinId }: LayoutProps) {
               </FloatingButton>
             )}
           </FloatingButtonContainer>
-          <FooterCoinPrice coinId={coinId} />
+          <FooterCoinPrice
+            coinId={coinId}
+            onClick={() => {
+              navigate({
+                to: CoinAbout.to,
+                params: {
+                  coinId: coinId,
+                },
+              });
+            }}
+          />
         </FooterContainer>
       }
     >

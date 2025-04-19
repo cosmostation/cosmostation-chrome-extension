@@ -14,15 +14,20 @@ export const LeftContainer = styled('div')({
   rowGap: '0.2rem',
 });
 
-export const RightChevronIconContainer = styled('div')({
-  width: '1.4rem',
-  height: '1.4rem',
+export const RightArrowIconContainer = styled('div')(({ theme }) => ({
+  width: '1.2rem',
+  height: '1.2rem',
 
+  marginLeft: ' 0.2rem',
   '& > svg': {
-    width: '100%',
-    height: '100%',
+    width: '1.2rem',
+    height: '1.2rem',
+    fill: theme.palette.color.base800,
+    '& >path': {
+      fill: theme.palette.color.base800,
+    },
   },
-});
+}));
 
 export const MarginRightText = styled(Base1300Text)({
   marginRight: '0.2rem',

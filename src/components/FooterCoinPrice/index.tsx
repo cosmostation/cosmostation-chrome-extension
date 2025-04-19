@@ -13,24 +13,25 @@ import {
   LeftContainer,
   LineChartContainer,
   MarginRightText,
-  RightChevronIconContainer,
+  RightArrowIconContainer,
   RightContainer,
   RightPriceContainer,
   ValueContainer,
 } from './styled';
 import StickyFooter from '../BaseLayout/components/BaseStickyFooter';
-import IconTextButton from '../common/IconTextButton';
+import Base1000Text from '../common/Base1000Text';
 import LineChart from '../common/LineChart';
 import NumberTypo from '../common/NumberTypo';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
+import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
 import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
 
 type FooterCoinPriceProps = {
   coinId: string;
+  onClick?: () => void;
 };
-export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
+export default function FooterCoinPrice({ coinId, onClick }: FooterCoinPriceProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -60,20 +61,25 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
     <StickyFooter
       leftContent={
         <LeftContainer>
-          <IconTextButton
-            trailingIcon={
-              <RightChevronIconContainer
-                sx={{
-                  visibility: 'hidden',
-                }}
-              >
-                <RightChevronIcon />
-              </RightChevronIconContainer>
-            }
-          >
-            <MarginRightText variant="b2_M">{t('components.FooterCoinPrice.index.currentPrice')}</MarginRightText>
-          </IconTextButton>
-          <CoinGecko24Text variant="b4_R">{t('components.FooterCoinPrice.index.coinGecko24h')}</CoinGecko24Text>
+          <MarginRightText variant="b2_M">{t('components.FooterCoinPrice.index.currentPrice')}</MarginRightText>
+          {onClick ? (
+            <Base1000Text
+              variant="b4_R"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {t('components.FooterCoinPrice.index.seeDetail')}
+              <span>
+                <RightArrowIconContainer>
+                  <RightArrowIcon />
+                </RightArrowIconContainer>
+              </span>
+            </Base1000Text>
+          ) : (
+            <CoinGecko24Text variant="b4_R">{t('components.FooterCoinPrice.index.coinGecko24h')}</CoinGecko24Text>
+          )}
         </LeftContainer>
       }
       rightContent={
@@ -102,6 +108,7 @@ export default function FooterCoinPrice({ coinId }: FooterCoinPriceProps) {
           </RightPriceContainer>
         </RightContainer>
       }
+      onClick={onClick}
     />
   );
 }
