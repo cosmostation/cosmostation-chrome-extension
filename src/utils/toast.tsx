@@ -13,3 +13,9 @@ export function toastSuccess(title: string) {
     return <Toast toastContentProps={toastProps} title={title} />;
   });
 }
+
+export function toastDefault(title: string) {
+  toast((toastProps) => {
+    return <Toast toastContentProps={toastProps} title={title} />;
+  });
+}

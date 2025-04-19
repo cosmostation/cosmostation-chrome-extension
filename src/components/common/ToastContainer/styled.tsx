@@ -9,6 +9,7 @@ export const StyledToastContainer = styled(ToastContainer)<ToastContainerProps>(
     margin: '0 2rem 7rem',
     boxSizing: 'border-box',
     borderRadius: '0.6rem !important',
+    backgroundColor: theme.palette.color.base300,
   },
   '.Toastify__toast-body': {
     padding: '0',

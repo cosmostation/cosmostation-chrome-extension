@@ -1,3 +1,4 @@
+import type { TypeOptions as ToastTypeOptions } from 'react-toastify';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -14,17 +15,21 @@ export const TitleContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const IconContainer = styled('div')(({ theme }) => ({
+type IconContainerProps = {
+  'data-type': ToastTypeOptions;
+};
+
+export const IconContainer = styled('div')<IconContainerProps>(({ theme, ...props }) => ({
   width: '1.6rem',
   height: '1.6rem',
-  marginRight: '0.2rem',
+  marginRight: props['data-type'] !== 'default' ? '0.2rem' : '0.4rem',
 
   '& svg': {
     width: '100%',
     height: '100%',
-    fill: theme.palette.commonColor.commonWhite,
+    fill: props['data-type'] !== 'default' ? theme.palette.commonColor.commonWhite : 'null',
     '& path': {
-      fill: theme.palette.commonColor.commonWhite,
+      fill: props['data-type'] !== 'default' ? theme.palette.commonColor.commonWhite : 'null',
     },
   },
 }));
