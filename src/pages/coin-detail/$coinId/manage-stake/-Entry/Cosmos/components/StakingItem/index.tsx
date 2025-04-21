@@ -169,7 +169,7 @@ export default function StakingItem({
         />
         <BaseOptionButton
           style={{
-            display: isHideReward ? 'none' : 'initial',
+            display: isHideReward ? 'none' : 'null',
           }}
           onClick={() => {
             navigate({

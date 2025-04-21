@@ -24,7 +24,14 @@ export const StyledButton = styled('button')({
 
   cursor: 'pointer',
 
-  background: `url(${stakePromotionImage}) no-repeat center right/ 11.2rem auto, ${theme.palette.commonColor.commonBlack}}`,
+  background: `url(${stakePromotionImage}) no-repeat right bottom/ 11.2rem auto, ${theme.palette.commonColor.commonBlack}}`,
+});
+
+export const TitleTextContainer = styled('div')({
+  width: '75%',
+  display: 'flex',
+  alignItems: 'center',
+  textAlign: 'left',
 });
 
 export const TitleText = styled(Base1300Text)({

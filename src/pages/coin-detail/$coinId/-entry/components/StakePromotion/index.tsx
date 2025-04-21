@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 
-import { IconContainer, StyledButton, SubTitleContainer, SubTitleText } from './styled';
+import { IconContainer, StyledButton, SubTitleContainer, SubTitleText, TitleTextContainer } from './styled';
 
 import RightArrow from '@/assets/images/icons/RightArrow14.svg';
 
@@ -25,7 +25,9 @@ export default function StakePromotion({ symbol, apr, ...remainer }: StakePromot
 
   return (
     <StyledButton {...remainer}>
-      <Base1300Text variant="h3_B">{title}</Base1300Text>
+      <TitleTextContainer>
+        <Base1300Text variant="h3_B">{title}</Base1300Text>
+      </TitleTextContainer>
 
       <SubTitleContainer>
         <SubTitleText variant="b2_M">{t('pages.coin-detail.components.StakePromotion.index.stake')}</SubTitleText>
