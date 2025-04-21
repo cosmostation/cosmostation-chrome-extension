@@ -19,7 +19,7 @@ import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash, shorterAddress } from '@/utils/string';
-import { toastSuccess } from '@/utils/toast';
+import { toastDefault } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -134,7 +134,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   const copyToClipboard = () => {
     copy(address);
-    toastSuccess(t('components.MainBox.CoinDetailBox.index.copied'));
+    toastDefault(t('components.MainBox.CoinDetailBox.index.copied'));
   };
 
   const handleOnClickChangeAddress = () => {

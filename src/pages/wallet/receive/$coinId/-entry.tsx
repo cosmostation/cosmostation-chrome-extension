@@ -14,7 +14,7 @@ import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
 import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
-import { toastSuccess } from '@/utils/toast.tsx';
+import { toastDefault } from '@/utils/toast.tsx';
 
 import {
   AddressBodyContainer,
@@ -136,7 +136,7 @@ export default function Entry({ coinId }: EntryProps) {
 
   const copyToClipboard = (copyString?: string) => {
     copy(copyString || '');
-    toastSuccess(t('pages.wallet.receive.$coinId.entry.copied'));
+    toastDefault(t('pages.wallet.receive.$coinId.entry.copied'));
   };
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
