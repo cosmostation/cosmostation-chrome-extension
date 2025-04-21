@@ -49,17 +49,18 @@ export default function Cosmos({ coinId, txHash, address }: CosmosProps) {
   const txExplorerUrl = selectedAsset?.chain.explorer?.account && txHash ? selectedAsset.chain.explorer.tx.replace('${hash}', txHash) : '';
 
   const txConfirmedStatus = useMemo(() => {
-    if (isAxiosError(txInfo.error) && txInfo.error?.response?.status && txInfo.error.response.status >= 400 && txInfo.error.response.status < 500)
+    if (isAxiosError(txInfo.error) && txInfo.error?.response?.status && txInfo.error.response.status >= 400 && txInfo.error.response.status < 500) {
       return TX_CONFIRMED_STATUS.PENDING;
+    }
 
-    if (txInfo.data?.tx_response.code !== undefined) {
-      if (txInfo.data.tx_response.code !== 0) return TX_CONFIRMED_STATUS.FAILED;
+    if (txInfo.data?.tx_response?.code !== undefined) {
+      if (txInfo.data.tx_response?.code !== 0) return TX_CONFIRMED_STATUS.FAILED;
 
-      if (txInfo.data.tx_response.code === 0) return TX_CONFIRMED_STATUS.CONFIRMED;
+      if (txInfo.data.tx_response?.code === 0) return TX_CONFIRMED_STATUS.CONFIRMED;
     }
 
     return undefined;
-  }, [txInfo.data?.tx_response.code, txInfo.error]);
+  }, [txInfo.data?.tx_response?.code, txInfo.error]);
 
   const isTxConfirmed = txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED;
   const isTxFailed = txConfirmedStatus === TX_CONFIRMED_STATUS.FAILED || !txHash || txInfo.error;
