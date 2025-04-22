@@ -85,7 +85,7 @@ export default function FooterCoinPrice({ coinId, onClick }: FooterCoinPriceProp
       rightContent={
         <RightContainer>
           <LineChartContainer>
-            <LineChart lineChartData={chartData} />
+            <LineChart lineChartData={chartData} trend={trend} />
           </LineChartContainer>
 
           <RightPriceContainer>
