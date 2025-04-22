@@ -30,6 +30,7 @@ export const Body = styled('div')({
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
     height: '60%',
+    maxHeight: '90%',
   },
 });
 
