@@ -172,7 +172,7 @@ export default function Entry({ coinId }: EntryProps) {
         </CoinContainer>
         <QRBorderContainer>
           <QRContainer>
-            <QRCodeSVG value={chainAddress} size={200} />
+            <QRCodeSVG level="H" value={chainAddress} size={200} />
           </QRContainer>
           <BottomLeftCornerContainer>
             <CornerIconContainer>
