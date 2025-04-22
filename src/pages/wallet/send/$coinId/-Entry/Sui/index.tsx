@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Transaction, type Transaction as TransactionType } from '@mysten/sui/transactions';
 import { isValidSuiAddress } from '@mysten/sui/utils';
@@ -33,7 +33,16 @@ import { getCoinType } from '@/utils/sui/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import { AddressBookButton, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper } from './styled.tsx';
+import {
+  AddressBookButton,
+  CoinContainer,
+  CoinImage,
+  CoinSymbolText,
+  DescriptionContainer,
+  Divider,
+  EstimatedValueTextContainer,
+  InputWrapper,
+} from './styled.tsx';
 import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
@@ -78,6 +87,8 @@ export default function Sui({ coinId }: SuiProps) {
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
+
+  const coinDescription = selectedCoinToSend?.asset.description;
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
@@ -313,6 +324,10 @@ export default function Sui({ coinId }: SuiProps) {
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
             <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.Sui.index.send')}`}</CoinSymbolText>
+
+            <DescriptionContainer>
+              <Typography variant="b3_M">{coinDescription}</Typography>
+            </DescriptionContainer>
           </CoinContainer>
 
           <InputWrapper>

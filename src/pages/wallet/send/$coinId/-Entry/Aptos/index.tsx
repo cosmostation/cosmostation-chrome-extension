@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { Account, Ed25519PrivateKey, PrivateKey, PrivateKeyVariants } from '@aptos-labs/ts-sdk';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
@@ -33,7 +33,16 @@ import { aptosAddressRegex } from '@/utils/regex.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import { AddressBookButton, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper } from './styled.tsx';
+import {
+  AddressBookButton,
+  CoinContainer,
+  CoinImage,
+  CoinSymbolText,
+  DescriptionContainer,
+  Divider,
+  EstimatedValueTextContainer,
+  InputWrapper,
+} from './styled.tsx';
 import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
@@ -70,6 +79,8 @@ export default function Aptos({ coinId }: AptosProps) {
 
   const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
+
+  const coinDescription = selectedCoinToSend?.asset.description;
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
@@ -348,6 +359,9 @@ export default function Aptos({ coinId }: AptosProps) {
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
             <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}`}</CoinSymbolText>
+            <DescriptionContainer>
+              <Typography variant="b3_M">{coinDescription}</Typography>
+            </DescriptionContainer>
           </CoinContainer>
 
           <InputWrapper>

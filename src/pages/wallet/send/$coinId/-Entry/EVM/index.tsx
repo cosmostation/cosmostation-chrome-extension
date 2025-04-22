@@ -42,6 +42,7 @@ import {
   CoinDenomContainer,
   CoinImage,
   CoinSymbolText,
+  DescriptionContainer,
   Divider,
   EstimatedValueTextContainer,
   InputWrapper,
@@ -118,6 +119,8 @@ export default function EVM({ coinId }: EVMProps) {
 
     return '';
   })();
+
+  const coinDescription = selectedCoinToSend?.asset.description;
 
   const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
@@ -472,12 +475,16 @@ export default function EVM({ coinId }: EVMProps) {
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
             <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.EVM.index.send')}`}</CoinSymbolText>
-            {coinType && (
+            {coinType ? (
               <CoinDenomContainer>
                 <Typography variant="b4_R">{`${coinType} :`}</Typography>
                 &nbsp;
                 <Typography variant="b3_M">{shortCoinDenom}</Typography>
               </CoinDenomContainer>
+            ) : (
+              <DescriptionContainer>
+                <Typography variant="b3_M">{coinDescription}</Typography>
+              </DescriptionContainer>
             )}
           </CoinContainer>
 

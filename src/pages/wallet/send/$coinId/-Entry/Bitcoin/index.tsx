@@ -4,7 +4,7 @@ import { Network, validate } from 'bitcoin-address-validation';
 import { networks, payments, Psbt } from 'bitcoinjs-lib';
 import { isTaprootInput, toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
 import { useDebouncedCallback } from 'use-debounce';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
@@ -32,7 +32,16 @@ import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
-import { AddressBookButton, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper } from './styled.tsx';
+import {
+  AddressBookButton,
+  CoinContainer,
+  CoinImage,
+  CoinSymbolText,
+  DescriptionContainer,
+  Divider,
+  EstimatedValueTextContainer,
+  InputWrapper,
+} from './styled.tsx';
 import TxProcessingOverlay from '../components/TxProcessingOverlay/index.tsx';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
@@ -73,6 +82,12 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
 
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
+
+  console.log('🚀 ~ Bitcoin ~ displayAvailableAmount:', displayAvailableAmount);
+
+  const coinDescription = selectedCoinToSend?.asset.description;
+
+  console.log('🚀 ~ Bitcoin ~ coinDescription:', coinDescription);
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
@@ -398,6 +413,9 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
             <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.Bitcoin.index.send')}`}</CoinSymbolText>
+            <DescriptionContainer>
+              <Typography variant="b3_M">{coinDescription}</Typography>
+            </DescriptionContainer>
           </CoinContainer>
 
           <InputWrapper>

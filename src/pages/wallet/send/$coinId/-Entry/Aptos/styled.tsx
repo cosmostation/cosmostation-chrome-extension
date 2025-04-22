@@ -23,13 +23,21 @@ export const CoinSymbolText = styled(Base1300Text)({
   marginTop: '0.8rem',
 });
 
-export const CoinDenomContainer = styled('div')(({ theme }) => ({
+export const DescriptionContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
 
   marginTop: '0.4rem',
 
   color: theme.palette.color.base1000,
+  maxWidth: '20rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const InputWrapper = styled('div')({
