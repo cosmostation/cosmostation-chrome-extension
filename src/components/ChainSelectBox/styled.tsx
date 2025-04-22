@@ -129,7 +129,7 @@ type HelperTextContainerProps = {
 export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ theme, ...props }) => ({
   width: '100%',
 
-  color: props['data-is-error'] ? 'red' : theme.palette.color.base1300,
+  color: props['data-is-error'] ? theme.palette.accentColor.red400 : theme.palette.color.base1300,
 }));
 
 export const ChainImageContainer = styled(BaseChainImage)({
