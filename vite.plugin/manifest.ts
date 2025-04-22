@@ -11,12 +11,6 @@ export function chromeManifestPlugin(manifestPath: string): PluginOption {
     },
     async generateBundle(/* _: NormalizedOutputOptions  , bundle: OutputBundle */) {
       const chromeManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-      // const prefix = 'js';
-      // const files = Object.keys(bundle);
-
-      // const filesWithoutMap = files.filter((file) => !file.endsWith('.map'));
-
-      // const serviceWorker = filesWithoutMap.find((file) => file.includes(`${prefix}/service_worker`));
 
       const withJs = {
         version: process.env.npm_package_version,

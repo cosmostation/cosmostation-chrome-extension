@@ -1,7 +1,3 @@
-// import { addAccount } from '@/libs/account';
-// import { getAccountAssets } from '@/libs/asset';
-
-// import { addressToStorage, balanceToStorage, chainsAndAssetstoStorage } from './storage';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
@@ -97,16 +93,6 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
 });
 
 chrome.runtime.onInstalled.addListener((details) => {
-  // const isMigrationRequired = await isMigrationRequired_V1_0_0();
-
-  // console.log('🚀 ~ chrome.runtime.onInstalled.addListener ~ isMigrationRequired:', isMigrationRequired);
-
-  // if (isMigrationRequired) {
-  //   await migrateData();
-  // } else {
-  //   await v11();
-  // }
-
   void (async () => {
     await v11();
 
