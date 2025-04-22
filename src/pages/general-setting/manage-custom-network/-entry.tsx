@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
+import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -8,6 +9,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
+import IconTextButton from '@/components/common/IconTextButton';
 import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import { useCustomChain } from '@/hooks/useCustomChain';
@@ -23,12 +25,15 @@ import {
   Container,
   EmptyAssetContainer,
   IconContainer,
+  ImportTextContainer,
   NetworkCounts,
+  PurpleContainer,
   RowContainer,
   StickyContainer,
 } from './-styled';
 
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
+import PlusIcon from '@/assets/images/icons/Plus12.svg';
 import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
 
 export default function Entry() {
@@ -89,6 +94,22 @@ export default function Entry() {
                 &nbsp;
                 <NetworkCounts>{chainsCount}</NetworkCounts>
               </Base1300Text>
+              <IconTextButton
+                onClick={() => {
+                  navigate({
+                    to: ImportNetwork.to,
+                  });
+                }}
+                leadingIcon={
+                  <PurpleContainer>
+                    <PlusIcon />
+                  </PurpleContainer>
+                }
+              >
+                <ImportTextContainer>
+                  <Typography variant="b3_M">{t('pages.general-setting.manage-custom-network.entry.importNetwork')}</Typography>
+                </ImportTextContainer>
+              </IconTextButton>
             </RowContainer>
           </StickyContainer>
           <ButtonWrapper>

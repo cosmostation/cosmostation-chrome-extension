@@ -1401,7 +1401,8 @@
           "network": "체인",
           "noCustomChains": "커스텀 체인이 없습니다",
           "noCustomChainsDescription": "추가된 커스텀 체인이 없습니다",
-          "search": "체인 검색 (예 : BITCOIN)"
+          "search": "체인 검색 (예 : BITCOIN)",
+          "importNetwork": "체인 추가"
         },
         "header": "커스텀 체인 관리"
       },

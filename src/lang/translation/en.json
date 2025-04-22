@@ -2015,7 +2015,8 @@
           "network": "Network",
           "noCustomChains": "No Chains",
           "noCustomChainsDescription": "There are no chains to display at the moment",
-          "goToAdd": "Go to add"
+          "goToAdd": "Go to add",
+          "importNetwork": "Import Network"
         },
         "header": "Manage Custom Network",
         "edit": {

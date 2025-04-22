@@ -35,6 +35,23 @@ export const NetworkCounts = styled('span')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
 
+export const PurpleContainer = styled('div')(({ theme }) => ({
+  width: '1.2rem',
+  height: '1.2rem',
+
+  '& > svg': {
+    fill: theme.palette.accentColor.purple400,
+    '& > path': {
+      fill: theme.palette.accentColor.purple400,
+    },
+  },
+}));
+
+export const ImportTextContainer = styled('div')(({ theme }) => ({
+  color: theme.palette.accentColor.purple400,
+  marginLeft: '0.2rem',
+}));
+
 export const ButtonWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
