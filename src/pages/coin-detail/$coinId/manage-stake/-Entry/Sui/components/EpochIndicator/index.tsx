@@ -50,7 +50,7 @@ export default function EpochIndicator({ coinId }: EpochIndicatorProps) {
   return (
     <Container>
       <DistributionCountContainer>
-        <Base1300Text variant="h3n_B">{remainingTime}</Base1300Text>
+        <Base1300Text variant="b2_B">{remainingTime}</Base1300Text>
         <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.entry.Sui.components.EpochIndicator.index.nextRewardShare')}</Base1000Text>
       </DistributionCountContainer>
 

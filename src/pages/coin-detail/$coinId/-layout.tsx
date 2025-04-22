@@ -17,7 +17,7 @@ import { parseCoinId } from '@/utils/queryParamGenerator';
 import { turnOnAdPopover } from '@/utils/zustand/adPopoverState';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { FloatingButtonContainer, FooterContainer } from './-styled';
+import { FloatingButtonContainer, FooterContainer, IconContainer } from './-styled';
 
 import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 
@@ -80,7 +80,9 @@ export default function Layout({ children, coinId }: LayoutProps) {
           rightContent={
             explorerUrl ? (
               <IconButton onClick={() => window.open(explorerUrl, '_blank')}>
-                <ExplorerIcon />
+                <IconContainer>
+                  <ExplorerIcon />
+                </IconContainer>
               </IconButton>
             ) : undefined
           }
