@@ -8,8 +8,12 @@ type StyledChipButtonProps = {
 
 export const StyledChipButton = styled('button')<StyledChipButtonProps>(({ ...props }) => ({
   border: 0,
+  flexShrink: '0',
 
+  width: 'fit-content',
   height: 'fit-content',
+
+  boxSizing: 'border-box',
 
   display: 'flex',
   justifyContent: 'center',

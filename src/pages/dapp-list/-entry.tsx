@@ -5,37 +5,20 @@ import { Typography } from '@mui/material';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import Carousel from '@/components/common/Carousel';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
-import IconButton from '@/components/common/IconButton';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DAPP_LIST_SORT_KEY } from '@/constants/sortKey';
 import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { DappListSortKeyType } from '@/types/sortKey';
-import { chunkArray } from '@/utils/array';
 import { filterChainsByChainId } from '@/utils/asset';
 import { parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import ChipTypeButton from './-components/ChipTypeButton';
 import GridDappItem from './-components/GridDappItem';
-import {
-  CarouselContainer,
-  CarouselWrapper,
-  ChipButtonContainer,
-  ChipButtonContentsContainer,
-  Container,
-  FilterContaienr,
-  GridContainer,
-  LeftChevronIconContainer,
-  SortConditionContainer,
-  StickyContentsContainer,
-} from './-styled';
-
-import PopularIcon from '@/assets/images/icons/Popular16.svg';
-import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
+import ScrollableChips from './-components/ScrollableChips';
+import { Container, FilterContaienr, GridContainer, SortConditionContainer, StickyContentsContainer } from './-styled';
 
 const dappList = [
   {
@@ -132,7 +115,6 @@ export default function Entry() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
-  const [currentDappTypeButtonPage, setCurrentDappTypeButtonPate] = useState(0);
   const [selectedDappType, setSelectedDappType] = useState(DEFAULT_DAPP_TYPE);
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
@@ -155,8 +137,6 @@ export default function Entry() {
 
     return [DEFAULT_DAPP_TYPE, ALL_DAPP_TYPE, ...aggregatedDappTypes];
   }, []);
-
-  const dappTypeListChunk = useMemo(() => chunkArray(dappTypeList, 5), [dappTypeList]);
 
   const sortedDappList = useMemo(() => {
     return dappList
@@ -229,58 +209,13 @@ export default function Entry() {
               />
             </FilterContaienr>
 
-            <CarouselWrapper>
-              <IconButton
-                sx={{
-                  width: 'fit-content',
-                  height: 'fit-content',
-                  visibility: currentDappTypeButtonPage === 0 ? 'hidden' : 'visible',
-                }}
-                disabled={currentDappTypeButtonPage === 0}
-                onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
-              >
-                <LeftChevronIconContainer>
-                  <RightChevronIcon />
-                </LeftChevronIconContainer>
-              </IconButton>
-              <CarouselContainer>
-                <Carousel
-                  hideIndicator
-                  currentIndex={currentDappTypeButtonPage}
-                  onClickNext={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
-                  onClickPrev={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage - 1)}
-                >
-                  {dappTypeListChunk.map((dappTypeListChunk, index) => (
-                    <ChipButtonContainer key={index}>
-                      {dappTypeListChunk.map((type) => (
-                        <ChipTypeButton
-                          key={type}
-                          isActive={selectedDappType === type}
-                          onClick={() => {
-                            setSelectedDappType(type);
-                          }}
-                        >
-                          <ChipButtonContentsContainer>
-                            {type === DEFAULT_DAPP_TYPE && <PopularIcon />}
-                            <Typography variant="h4_B">{type}</Typography>
-                          </ChipButtonContentsContainer>
-                        </ChipTypeButton>
-                      ))}
-                    </ChipButtonContainer>
-                  ))}
-                </Carousel>
-              </CarouselContainer>
-              <IconButton
-                sx={{
-                  width: 'fit-content',
-                  height: 'fit-content',
-                  visibility: currentDappTypeButtonPage === dappTypeListChunk.length - 1 ? 'hidden' : 'visible',
-                }}
-                onClick={() => setCurrentDappTypeButtonPate(currentDappTypeButtonPage + 1)}
-              >
-                <RightChevronIcon />
-              </IconButton>
-            </CarouselWrapper>
+            <ScrollableChips
+              types={dappTypeList}
+              selectedType={selectedDappType}
+              onClick={(type) => {
+                setSelectedDappType(type);
+              }}
+            />
             <SortConditionContainer>
               <AllNetworkButton
                 currentChainId={currentSelectedChainId}
@@ -300,6 +235,7 @@ export default function Entry() {
               </CheckBoxTextButton>
             </SortConditionContainer>
           </StickyContentsContainer>
+
           <GridContainer>
             {filteredDappList.map((dapp) => {
               return <GridDappItem key={dapp.id} dappItemInfo={dapp} />;
