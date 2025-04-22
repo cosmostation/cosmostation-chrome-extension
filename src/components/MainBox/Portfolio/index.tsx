@@ -116,10 +116,12 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
             </TopLeftContainer>
             <TopRightContainer>
               <AllNetworkButton
+                typoVarient="b4_M"
                 variant="chip"
                 currentChainId={selectedChainId}
                 chainList={chainList}
                 isManageAssets
+                sizeVariant="small"
                 selectChainOption={(id) => {
                   onChangeChaindId(id);
                 }}

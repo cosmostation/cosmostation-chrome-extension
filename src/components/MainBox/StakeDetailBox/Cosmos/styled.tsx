@@ -6,7 +6,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 export const TopContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
-  marginBottom: '1.3rem',
+  marginBottom: '1.2rem',
 });
 
 export const BodyContainer = styled('div')({
@@ -36,7 +36,7 @@ export const BottomButtonContainer = styled('div')({
   backdropFilter: 'blur(0.4rem)',
   WebkitBackdropFilter: 'blur(0.4rem)',
 
-  marginTop: '0.6rem',
+  marginTop: '1.8rem',
 
   borderTop: '0.1rem solid rgba(255, 255, 255, 0.01)',
   borderBottom: '0.1rem solid rgba(255, 255, 255, 0.01)',

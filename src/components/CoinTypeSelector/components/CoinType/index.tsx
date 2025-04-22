@@ -86,7 +86,7 @@ export default function CoinTypeSelector({
               return PUBKEY_STYLE_MAP[item.accountType.pubkeyStyle as keyof typeof PUBKEY_STYLE_MAP];
             }
 
-            return item.accountType.pubkeyStyle;
+            return `${highlightedText} TYPE`;
           })();
 
           return (

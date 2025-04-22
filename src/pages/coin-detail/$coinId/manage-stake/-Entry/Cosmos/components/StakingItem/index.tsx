@@ -104,7 +104,7 @@ export default function StakingItem({
                 {stakedAmount}
               </BalanceDisplay>
               &nbsp;
-              <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
+              <Base1300Text variant="b4_M">{symbol}</Base1300Text>
             </AmountContainer>
           </StakingInfoRowContainer>
           {!isHideReward && (

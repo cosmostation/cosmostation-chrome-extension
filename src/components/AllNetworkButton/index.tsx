@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { TypoVariantKeys } from '@/styles/theme';
 import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 
@@ -12,18 +13,22 @@ import AllNetworkIcon from '@/assets/images/icons/AllNetwork36.svg';
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
 type AllNetworkButtonprops = IconTextButtonProps & {
+  typoVarient?: TypoVariantKeys;
   variant?: 'normal' | 'chip';
   currentChainId?: UniqueChainId;
   chainList?: ChainBase[];
   isManageAssets?: boolean;
+  sizeVariant?: 'small' | 'medium' | 'large';
   selectChainOption?: (id?: UniqueChainId) => void;
 };
 
 export default function AllNetworkButton({
+  typoVarient = 'b2_M',
   variant = 'normal',
   currentChainId,
   chainList,
   isManageAssets = false,
+  sizeVariant,
   selectChainOption,
   ...remainder
 }: AllNetworkButtonprops) {
@@ -38,15 +43,15 @@ export default function AllNetworkButton({
         variants={variant}
         leadingIcon={
           currentChain ? (
-            <ChainImageContainer sizeVariant={'large'} src={currentChain.image || ''} />
+            <ChainImageContainer sizeVariant={sizeVariant || 'large'} src={currentChain.image || ''} />
           ) : (
-            <GridMenuIconContainer sizeVariant={'large'}>
+            <GridMenuIconContainer sizeVariant={sizeVariant || 'large'}>
               <AllNetworkIcon />
             </GridMenuIconContainer>
           )
         }
         trailingIcon={
-          <ChevronIconContainer sizeVariant={'medium'} data-is-open={isOpenChainListBottomSheet}>
+          <ChevronIconContainer sizeVariant={sizeVariant || 'medium'} data-is-open={isOpenChainListBottomSheet}>
             <BottomFilledChevronIcon />
           </ChevronIconContainer>
         }
@@ -55,7 +60,7 @@ export default function AllNetworkButton({
         }}
         {...remainder}
       >
-        <TextContainer variant={'b2_M'}>{currentChain ? currentChain.name : t('components.AllNetworkButton.index.allNetwork')}</TextContainer>
+        <TextContainer variant={typoVarient}>{currentChain ? currentChain.name : t('components.AllNetworkButton.index.allNetwork')}</TextContainer>
       </StyledIconButton>
       <ChainListBottomSheet
         currentChainId={currentChainId}

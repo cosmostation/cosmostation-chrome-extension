@@ -5,7 +5,7 @@ type MainBoxProps = {
   body: JSX.Element;
   bottom?: JSX.Element;
   className?: string;
-  bgImageClassName?: 'basic' | 'stake';
+  bgImageClassName?: 'basic' | 'stake' | 'coinDetail' | 'coinOverView';
   backgroundImage?: string;
   coinBackgroundImage?: string;
 };

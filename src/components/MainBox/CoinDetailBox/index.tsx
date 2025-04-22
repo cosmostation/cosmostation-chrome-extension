@@ -284,6 +284,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
           </BottomButtonContainer>
         }
         className="circleGradient"
+        bgImageClassName="coinDetail"
         coinBackgroundImage={coinImage || DefaultCoinImage}
       />
       {cosmosStyleCoin && (

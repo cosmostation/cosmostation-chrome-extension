@@ -62,6 +62,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
           </BodyContainer>
         }
         className="circleGradient"
+        bgImageClassName="coinOverView"
         coinBackgroundImage={currentGroupCoin?.asset.image || DefaultCoinImage}
       />
     </>
