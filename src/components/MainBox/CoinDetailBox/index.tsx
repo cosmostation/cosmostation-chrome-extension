@@ -77,6 +77,8 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const chainName = currentCoin?.chain.name;
   const coinGeckoId = currentCoin?.asset.coinGeckoId;
 
+  const isNativeCoin = currentCoin?.asset.id === currentCoin?.chain.mainAssetDenom;
+
   const totalDisplayAmount = toDisplayDenomAmount(currentCoin?.balance || '0', currentCoin?.asset.decimals || 0);
   const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
@@ -251,7 +253,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
             </StyledIconTextButton>
-            {formattedVoteURL && (
+            {isNativeCoin && formattedVoteURL && (
               <StyledIconTextButton
                 onClick={() => {
                   window.open(formattedVoteURL, '_blank');
