@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
-import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import AllNetworkButton from '@/components/AllNetworkButton';
@@ -11,13 +10,10 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
 import Search from '@/components/Search';
-import SortBottomSheet from '@/components/SortBottomSheet';
-import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
-import type { CommonSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
@@ -42,9 +38,6 @@ export default function Entry({ coinId }: EntryProps) {
   const isDebouncing = !!search && isPending();
 
   const [viewLimit, setViewLimit] = useState(30);
-
-  const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
-  const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
@@ -74,15 +67,7 @@ export default function Entry({ coinId }: EntryProps) {
     });
 
     const sortedAssets = computedAssetValues?.sort((a, b) => {
-      if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-        return Number(minus(b.value, a.value));
-      }
-
-      if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-        return a.asset.symbol.localeCompare(b.asset.symbol);
-      }
-
-      return 0;
+      return Number(minus(b.value, a.value));
     });
 
     if (!!search && debouncedSearch.length > 1) {
@@ -97,7 +82,7 @@ export default function Entry({ coinId }: EntryProps) {
       );
     }
     return sortedAssets?.slice(0, viewLimit) || [];
-  }, [baseCoinList, coinGeckoPrice, userCurrencyPreference, currentSelectedChainId, debouncedSearch.length, search, sortOption, viewLimit]);
+  }, [baseCoinList, coinGeckoPrice, userCurrencyPreference, currentSelectedChainId, debouncedSearch.length, search, viewLimit]);
 
   const chainList = useMemo(() => getFilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
@@ -123,9 +108,7 @@ export default function Entry({ coinId }: EntryProps) {
                 }}
                 isPending={isDebouncing}
                 placeholder={t('pages.coin-overview.$coinId.entry.search')}
-                onClickFilter={() => {
-                  setIsOpenSortBottomSheet(true);
-                }}
+                disableFilter
                 onClear={() => {
                   setSearch('');
                   setViewLimit(30);
@@ -179,25 +162,6 @@ export default function Entry({ coinId }: EntryProps) {
               />
             )}
           </CoinButtonWrapper>
-
-          <SortBottomSheet
-            optionButtonProps={[
-              {
-                sortKey: DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER,
-                children: <Typography variant="b2_M">{t('pages.index.valueHighOrder')}</Typography>,
-              },
-              {
-                sortKey: DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC,
-                children: <Typography variant="b2_M">{t('pages.index.alphabeticalAsc')}</Typography>,
-              },
-            ]}
-            currentSortOption={sortOption}
-            open={isOpenSortBottomSheet}
-            onClose={() => setIsOpenSortBottomSheet(false)}
-            onSelectSortOption={(val) => {
-              setSortOption(val);
-            }}
-          />
         </Container>
       </EdgeAligner>
     </BaseBody>

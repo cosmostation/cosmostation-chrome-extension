@@ -94,7 +94,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [inputMemo, setInputMemo] = useState(doc.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : doc.memo), [doc.memo, inputMemo, isEditMemo]);
 
-  const { feeAssets } = useFees({ coinId: accountAssetCoinId });
+  const { feeAssets, defaultGasRateKey } = useFees({ coinId: accountAssetCoinId });
 
   const inputFee = useMemo(
     () =>
@@ -106,7 +106,13 @@ export default function Entry({ request, chain }: EntryProps) {
     [chain.mainAssetDenom, doc.fee.amount, feeAssets],
   );
 
-  const [currentFeeStepKey, setCurrentFeeStepKey] = useState<number>(0);
+  const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
+
+  const currentFeeStepKey = useMemo(() => {
+    if (customFeeStepKey) return customFeeStepKey;
+
+    return isEditFee ? defaultGasRateKey + 1 : 0;
+  }, [customFeeStepKey, defaultGasRateKey, isEditFee]);
 
   const dappFromFeeAsset = useMemo(() => feeAssets.find((item) => item.asset.id === inputFee.denom), [feeAssets, inputFee.denom]);
 
@@ -236,8 +242,12 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.amino.entry.insufficientFeeAmount');
     }
 
+    if (!simulate.isFetched) {
+      return t('pages.popup.cosmos.sign.amino.entry.notSimulated');
+    }
+
     return '';
-  }, [baseFee, alternativeFeeAsset?.balance, doc.fee.granter, doc.fee.payer, isCheckBalance, t]);
+  }, [alternativeFeeAsset?.balance, baseFee, isCheckBalance, doc.fee.granter, doc.fee.payer, simulate.isFetched, t]);
 
   const additionalFee = useAdditionalFee({ chain, msgs: tx.msgs, currentStep: txMessagePage });
 
@@ -426,7 +436,7 @@ export default function Entry({ request, chain }: EntryProps) {
           setCustomFeeCoinId(feeCoinId);
         }}
         onSelectOption={(val) => {
-          setCurrentFeeStepKey(val);
+          setCustomFeeStepKey(val);
         }}
       />
     </>

@@ -1062,7 +1062,7 @@
     "coin-overview": {
       "$coinId": {
         "entry": {
-          "search": "Crypto 검색 (예 : BTC)"
+          "search": "Denom 또는 Contract 검색"
         }
       }
     },
@@ -2149,7 +2149,8 @@
             "entry": {
               "insufficientFeeAmount": "수수료를 지불할 잔액이 부족합니다",
               "reject": "거부",
-              "sign": "사인"
+              "sign": "사인",
+              "notSimulated": "트랜잭션 확인 중입니다."
             }
           },
           "direct": {
@@ -2197,7 +2198,8 @@
               "decodedTxInfoTitle": "디코딩된 거래 정보",
               "insufficientFeeAmount": "수수료를 지불할 잔액이 부족합니다.",
               "reject": "거부",
-              "sign": "사인"
+              "sign": "사인",
+              "notSimulated": "트랜잭션 확인 중입니다."
             }
           },
           "entry": {

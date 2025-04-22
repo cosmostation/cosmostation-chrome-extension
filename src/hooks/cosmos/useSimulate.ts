@@ -55,7 +55,7 @@ export function useSimulate({ coinId, txBytes, config }: UseSimulateProps) {
     }
   };
 
-  const { data, isLoading, isFetching, error, refetch } = useFetch({
+  const { data, isLoading, isFetching, isFetched, error, refetch } = useFetch({
     queryKey: ['cosmosSimulate', coinId, txBytes],
     fetchFunction: () => fetcher(),
     config: {
@@ -74,5 +74,5 @@ export function useSimulate({ coinId, txBytes, config }: UseSimulateProps) {
     },
   });
 
-  return { data, error, refetch, isLoading, isFetching };
+  return { data, error, refetch, isLoading, isFetching, isFetched };
 }

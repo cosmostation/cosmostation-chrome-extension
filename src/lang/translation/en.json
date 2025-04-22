@@ -2444,7 +2444,8 @@
             "entry": {
               "insufficientFeeAmount": "Insufficient fee",
               "reject": "Reject",
-              "sign": "Sign"
+              "sign": "Sign",
+              "notSimulated": "Simulating transaction..."
             },
             "components": {
               "TxMessage": {
@@ -2545,7 +2546,8 @@
               "decodedTxInfoTitle": "Decoded Transaction Information",
               "decodedTxInfoDescription": "Some transactions may not show data because of decryption failures, but this doesn't affect the transaction execution.",
               "reject": "Reject",
-              "sign": "Sign"
+              "sign": "Sign",
+              "notSimulated": "Simulating transaction..."
             }
           },
           "message": {
@@ -2845,7 +2847,7 @@
     "coin-overview": {
       "$coinId": {
         "entry": {
-          "search": "Search Crypto (Ex. BTC)"
+          "search": "Search for Denom, Contract"
         }
       }
     },

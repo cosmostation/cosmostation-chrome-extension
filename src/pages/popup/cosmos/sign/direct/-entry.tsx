@@ -98,7 +98,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [inputMemo, setInputMemo] = useState(decodedBodyBytes.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : decodedBodyBytes.memo), [decodedBodyBytes.memo, inputMemo, isEditMemo]);
 
-  const { feeAssets } = useFees({ coinId: accountAssetCoinId });
+  const { feeAssets, defaultGasRateKey } = useFees({ coinId: accountAssetCoinId });
 
   const { fee, signer_infos } = decodedAuthInfoBytes;
 
@@ -112,7 +112,13 @@ export default function Entry({ request, chain }: EntryProps) {
     [chain.mainAssetDenom, fee?.amount, feeAssets],
   );
 
-  const [currentFeeStepKey, setCurrentFeeStepKey] = useState<number>(0);
+  const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
+
+  const currentFeeStepKey = useMemo(() => {
+    if (customFeeStepKey) return customFeeStepKey;
+
+    return isEditFee ? defaultGasRateKey + 1 : 0;
+  }, [customFeeStepKey, defaultGasRateKey, isEditFee]);
 
   const dappFromFeeAsset = useMemo(() => feeAssets.find((item) => item.asset.id === inputFee.denom), [feeAssets, inputFee.denom]);
 
@@ -280,8 +286,12 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.direct.entry.insufficientFeeAmount');
     }
 
+    if (!simulate.isFetched) {
+      return t('pages.popup.cosmos.sign.direct.entry.notSimulated');
+    }
+
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, isCheckBalance, t]);
+  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, isCheckBalance, simulate.isFetched, t]);
 
   const handleOnSign = async () => {
     try {
@@ -492,7 +502,7 @@ export default function Entry({ request, chain }: EntryProps) {
           setCustomFeeCoinId(feeCoinId);
         }}
         onSelectOption={(val) => {
-          setCurrentFeeStepKey(val);
+          setCustomFeeStepKey(val);
         }}
       />
     </>

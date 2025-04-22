@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
-import NumberTypo from '@/components/common/NumberTypo';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { AmountContainer, LeftBottomContainer, LeftContainer, RightContainer, ValueContainer } from './styled';
@@ -45,16 +45,16 @@ export default function OptionButton({ fee, isActive, ...remainder }: OptionButt
       rightContent={
         <RightContainer>
           <AmountContainer>
-            <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
               {amount}
-            </NumberTypo>
+            </BalanceDisplay>
             &nbsp;
             <Base1300Text variant="b4_M">{symbol}</Base1300Text>
           </AmountContainer>
           <ValueContainer>
-            <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
+            <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {value}
-            </NumberTypo>
+            </BalanceDisplay>
           </ValueContainer>
         </RightContainer>
       }
