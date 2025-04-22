@@ -69,7 +69,11 @@ export default function Entry() {
         </>
       </BaseBody>
       <BaseFooter>
-        <FooterContainer>
+        <FooterContainer
+          style={{
+            display: 'none',
+          }}
+        >
           <Base1300Text variant="b3_R">{t('pages.buy-coin.entry.needGuide')}</Base1300Text>
           <TextButton
             onClick={() => {

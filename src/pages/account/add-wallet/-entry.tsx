@@ -69,7 +69,11 @@ export default function Entry() {
         </Body>
       </BaseBody>
       <BaseFooter>
-        <FooterContainer>
+        <FooterContainer
+          style={{
+            display: 'none',
+          }}
+        >
           <DescriptionText variant="b3_R">{t('pages.account.add-wallet.index.guide')}</DescriptionText>
           <TextButton variant="hyperlink">{t('pages.account.add-wallet.index.goToGuide')}</TextButton>
         </FooterContainer>
