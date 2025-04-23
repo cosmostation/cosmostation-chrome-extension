@@ -30,6 +30,7 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { UniqueChainId } from '@/types/chain.ts';
+import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
@@ -79,13 +80,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
-  const { feeAssets, defaultGasRateKey } = useFees({ coinId });
+  const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId });
 
-  const [cusotmFeeCoinId, setCustomFeeCoinId] = useState('');
+  const [customFeeCoinId, setCustomFeeCoinId] = useState('');
 
   const alternativeFeeAsset = useMemo(
-    () => (cusotmFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, cusotmFeeCoinId)) : feeAssets[0]),
-    [cusotmFeeCoinId, feeAssets],
+    () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
+    [customFeeCoinId, feeAssets],
   );
   const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
 
@@ -480,8 +481,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
       title: 'Custom',
     };
 
+    const feeStepNames = getCosmosFeeStepNames(isFeemarketActive || false, alternativeGasRate);
+
     const alternativeFeeOptions = alternativeGasRate
-      ? alternativeGasRate.map((item) => ({
+      ? alternativeGasRate.map((item, i) => ({
           gas: alternativeGas,
           gasRate: item,
           coinId: alternativeFeeCoinId,
@@ -490,7 +493,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
           denom: alternativeFeeAsset?.asset.id,
           coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
           symbol: alternativeFeeAsset?.asset.symbol || '',
-          title: 'From Extension',
+          title: feeStepNames[i],
         }))
       : [];
 
@@ -506,6 +509,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     alternativeGasRate,
     customGasAmount,
     customGasRate,
+    isFeemarketActive,
   ]);
 
   const selectedFeeOption = useMemo(() => {

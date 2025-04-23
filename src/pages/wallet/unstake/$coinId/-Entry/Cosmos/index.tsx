@@ -30,6 +30,7 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
+import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
@@ -66,7 +67,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const [currentFeeStepKey, setCurrentFeeStepKey] = useState<number>(0);
+  const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
 
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
@@ -85,7 +86,15 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const selectedUnstakingCoin = getCosmosAccountAsset();
 
   const delegationInfo = useDelegationInfo({ coinId });
-  const { feeAssets } = useFees({ coinId: coinId });
+  const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });
+
+  const currentFeeStepKey = useMemo(() => {
+    if (inputFeeStepKey !== undefined) {
+      return inputFeeStepKey;
+    }
+
+    return defaultGasRateKey;
+  }, [defaultGasRateKey, inputFeeStepKey]);
 
   const stakerAddress = useMemo(() => selectedUnstakingCoin?.address.address, [selectedUnstakingCoin?.address.address]);
 
@@ -261,8 +270,10 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       title: 'Custom',
     };
 
+    const feeStepNames = getCosmosFeeStepNames(isFeemarketActive || false, alternativeGasRate);
+
     const alternativeFeeOptions = alternativeGasRate
-      ? alternativeGasRate.map((item) => ({
+      ? alternativeGasRate.map((item, i) => ({
           gas: alternativeGas,
           gasRate: item,
           coinId: alternativeFeeCoinId,
@@ -271,7 +282,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
           denom: alternativeFeeAsset?.asset.id,
           coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
           symbol: alternativeFeeAsset?.asset.symbol || '',
-          title: 'From Extension',
+          title: feeStepNames[i],
         }))
       : [];
 
@@ -287,6 +298,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     alternativeGasRate,
     customGasAmount,
     customGasRate,
+    isFeemarketActive,
   ]);
 
   const selectedFeeOption = useMemo(() => {
@@ -595,7 +607,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
               setCustomFeeCoinId(feeCoinId);
             }}
             onClickFeeStep={(val) => {
-              setCurrentFeeStepKey(val);
+              setInputFeeStepKey(val);
             }}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);

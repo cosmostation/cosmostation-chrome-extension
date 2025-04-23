@@ -32,6 +32,7 @@ import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type { Msg } from '@/types/cosmos/direct';
 import type { CosSignDirect, CosSignDirectResponse } from '@/types/message/inject/cosmos';
+import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signDirect } from '@/utils/cosmos/msg';
 import { decodeProtobufMessage, protoTxBytes } from '@/utils/cosmos/proto';
 import { toUint8Array } from '@/utils/crypto';
@@ -98,7 +99,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [inputMemo, setInputMemo] = useState(decodedBodyBytes.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : decodedBodyBytes.memo), [decodedBodyBytes.memo, inputMemo, isEditMemo]);
 
-  const { feeAssets, defaultGasRateKey } = useFees({ coinId: accountAssetCoinId });
+  const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: accountAssetCoinId });
 
   const { fee, signer_infos } = decodedAuthInfoBytes;
 
@@ -186,8 +187,10 @@ export default function Entry({ request, chain }: EntryProps) {
       title: 'Custom',
     };
 
+    const feeStepNames = getCosmosFeeStepNames(isFeemarketActive || false, alternativeGasRate);
+
     const alternativeFeeOptions = alternativeGasRate
-      ? alternativeGasRate.map((item) => ({
+      ? alternativeGasRate.map((item, i) => ({
           gas: alternativeGas,
           gasRate: item,
           coinId: alternativeFeeCoinId,
@@ -195,7 +198,7 @@ export default function Entry({ request, chain }: EntryProps) {
           denom: alternativeFeeAsset?.asset.id,
           coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
           symbol: alternativeFeeAsset?.asset.symbol || '',
-          title: 'From Extension',
+          title: feeStepNames[i],
         }))
       : [];
 
@@ -213,6 +216,7 @@ export default function Entry({ request, chain }: EntryProps) {
     dappFromFeeAsset?.asset,
     dappFromGas,
     dappFromGasRate,
+    isFeemarketActive,
   ]);
 
   const selectedFeeOption = useMemo(() => {

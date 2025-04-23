@@ -27,6 +27,7 @@ import MemoInput from '@/pages/popup/-components/MemoInput';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { CosmosChain } from '@/types/chain';
 import type { CosSignAmino, CosSignAminoResponse } from '@/types/message/inject/cosmos';
+import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { ceil, divide, gte, times } from '@/utils/numbers';
@@ -94,7 +95,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [inputMemo, setInputMemo] = useState(doc.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : doc.memo), [doc.memo, inputMemo, isEditMemo]);
 
-  const { feeAssets, defaultGasRateKey } = useFees({ coinId: accountAssetCoinId });
+  const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: accountAssetCoinId });
 
   const inputFee = useMemo(
     () =>
@@ -184,8 +185,10 @@ export default function Entry({ request, chain }: EntryProps) {
       title: 'Custom',
     };
 
+    const feeStepNames = getCosmosFeeStepNames(isFeemarketActive || false, alternativeGasRate);
+
     const alternativeFeeOptions = alternativeGasRate
-      ? alternativeGasRate.map((item) => ({
+      ? alternativeGasRate.map((item, i) => ({
           gas: alternativeGas,
           gasRate: item,
           coinId: alternativeFeeCoinId,
@@ -193,7 +196,7 @@ export default function Entry({ request, chain }: EntryProps) {
           denom: alternativeFeeAsset?.asset.id,
           coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
           symbol: alternativeFeeAsset?.asset.symbol || '',
-          title: 'From Extension',
+          title: feeStepNames[i],
         }))
       : [];
 
@@ -211,6 +214,7 @@ export default function Entry({ request, chain }: EntryProps) {
     dappFromFeeAsset?.asset,
     dappFromGas,
     dappFromGasRate,
+    isFeemarketActive,
   ]);
 
   const selectedFeeOption = useMemo(() => {

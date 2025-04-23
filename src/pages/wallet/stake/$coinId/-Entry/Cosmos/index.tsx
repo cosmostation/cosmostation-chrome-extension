@@ -30,6 +30,7 @@ import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
+import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
@@ -83,7 +84,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
 
-  const { feeAssets, defaultGasRateKey } = useFees({ coinId: coinId });
+  const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });
 
   const currentFeeStepKey = useMemo(() => {
     if (inputFeeStepKey !== undefined) {
@@ -281,8 +282,10 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       title: 'Custom',
     };
 
+    const feeStepNames = getCosmosFeeStepNames(isFeemarketActive || false, alternativeGasRate);
+
     const alternativeFeeOptions = alternativeGasRate
-      ? alternativeGasRate.map((item) => ({
+      ? alternativeGasRate.map((item, i) => ({
           gas: alternativeGas,
           gasRate: item,
           coinId: alternativeFeeCoinId,
@@ -291,7 +294,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
           denom: alternativeFeeAsset?.asset.id,
           coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
           symbol: alternativeFeeAsset?.asset.symbol || '',
-          title: 'From Extension',
+          title: feeStepNames[i],
         }))
       : [];
 
@@ -307,6 +310,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     alternativeGasRate,
     customGasAmount,
     customGasRate,
+    isFeemarketActive,
   ]);
 
   const selectedFeeOption = useMemo(() => {

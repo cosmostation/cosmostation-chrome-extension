@@ -227,19 +227,21 @@ export default function EVM({ coinId }: EVMProps) {
     })();
 
     const alternativeFeeOptions = (() => {
+      const feeStepNames = ['Low', 'Average', 'High'];
+
       if (fee.type === 'BASIC') {
         const baseGasPrice = fee.currentGasPrice || '0';
 
         const gasPrices = [baseGasPrice, times(baseGasPrice, '1.2'), times(baseGasPrice, '2')];
 
         return gasPrices.map(
-          (item) =>
+          (item, i) =>
             ({
               ...defaultFeeOption,
               type: 'BASIC',
               gas: alternativeGas,
               gasPrice: item,
-              title: 'From Extension',
+              title: feeStepNames[i] || 'Fee',
             }) as BasicFeeOption,
         );
       }
@@ -248,14 +250,14 @@ export default function EVM({ coinId }: EVMProps) {
         const eipFeeList = fee.currentFee || [];
 
         return eipFeeList.map(
-          (item) =>
+          (item, i) =>
             ({
               ...defaultFeeOption,
               type: 'EIP-1559',
               gas: alternativeGas,
               maxBaseFeePerGas: item.maxBaseFeePerGas,
               maxPriorityFeePerGas: item.maxPriorityFeePerGas,
-              title: 'From Extension',
+              title: feeStepNames[i] || 'Fee',
             }) as EIP1559FeeOption,
         );
       }
