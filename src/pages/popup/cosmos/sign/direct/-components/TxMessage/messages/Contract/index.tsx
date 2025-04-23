@@ -78,16 +78,13 @@ export default function Contract({ msg, chain, currentStep, totalSteps, onPageCh
 
                 const displayAmount = toDisplayDenomAmount(amountItem.amount || '0', coinAsset?.decimals || 0);
                 const symbol = coinAsset?.symbol || 'UNKNOWN';
-                const symbolColor = coinAsset && ('color' in coinAsset ? coinAsset.color : undefined);
                 return (
                   <AmountContainer key={index}>
                     <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6} isDisableHidden>
                       {displayAmount}
                     </BalanceDisplay>
                     &nbsp;
-                    <SymbolText data-symbol-color={symbolColor} variant="b2_B">
-                      {symbol}
-                    </SymbolText>
+                    <SymbolText variant="b2_B">{symbol}</SymbolText>
                   </AmountContainer>
                 );
               })}

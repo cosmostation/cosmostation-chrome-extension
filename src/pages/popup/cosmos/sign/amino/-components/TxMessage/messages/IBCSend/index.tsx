@@ -54,7 +54,6 @@ export default function IBCSend({ msg, chain, currentStep, totalSteps, onPageCha
 
   const displaySendAmount = toDisplayDenomAmount(token.amount || '0', sendTokenAsset?.decimals || 0);
   const sendSymbol = sendTokenAsset?.symbol || 'UNKNOWN';
-  const sendSymbolColor = sendTokenAsset && ('color' in sendTokenAsset ? sendTokenAsset.color : undefined);
 
   const memoData = useMemo(() => {
     if (isJsonString(memo)) {
@@ -88,9 +87,7 @@ export default function IBCSend({ msg, chain, currentStep, totalSteps, onPageCha
               {displaySendAmount}
             </BalanceDisplay>
             &nbsp;
-            <SymbolText data-symbol-color={sendSymbolColor} variant="b2_B">
-              {sendSymbol}
-            </SymbolText>
+            <SymbolText variant="b2_B">{sendSymbol}</SymbolText>
           </AmountContainer>
         </LabelContainer>
 

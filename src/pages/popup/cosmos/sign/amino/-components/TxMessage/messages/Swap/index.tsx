@@ -51,11 +51,9 @@ export default function Swap({ msg, chain, currentStep, totalSteps, onPageChange
 
   const inputCoin = useMemo(() => coinList?.find((item) => item.asset.id === token_in.denom), [coinList, token_in.denom]);
   const inputCoinSymbol = inputCoin?.asset.symbol || 'Unknown';
-  const inputCoinSymbolColor = inputCoin && ('color' in inputCoin.asset ? inputCoin.asset.color : undefined);
 
   const outputCoin = useMemo(() => coinList?.find((item) => item.asset.id === routes[routes.length - 1].token_out_denom), [coinList, routes]);
   const outputCoinSymbol = outputCoin?.asset.symbol || 'Unknown';
-  const outputCoinSymbolColor = outputCoin && ('color' in outputCoin.asset ? outputCoin.asset.color : undefined);
 
   const routesDisplayDenomList = useMemo(
     () =>
@@ -99,9 +97,7 @@ export default function Swap({ msg, chain, currentStep, totalSteps, onPageChange
               {inputDisplayAmount}
             </BalanceDisplay>
             &nbsp;
-            <SymbolText data-symbol-color={inputCoinSymbolColor} variant="b2_B">
-              {inputCoinSymbol}
-            </SymbolText>
+            <SymbolText variant="b2_B">{inputCoinSymbol}</SymbolText>
           </AmountContainer>
         </LabelContainer>
 
@@ -119,9 +115,7 @@ export default function Swap({ msg, chain, currentStep, totalSteps, onPageChange
               {outputDisplayAmount}
             </BalanceDisplay>
             &nbsp;
-            <SymbolText data-symbol-color={outputCoinSymbolColor} variant="b2_B">
-              {outputCoinSymbol}
-            </SymbolText>
+            <SymbolText variant="b2_B">{outputCoinSymbol}</SymbolText>
           </AmountContainer>
         </LabelContainer>
 
