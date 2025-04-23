@@ -77,6 +77,10 @@ export const getPublicKeyType = (pubkeyType: string) => {
     return PUBLIC_KEY_TYPE.ETH_SECP256K1;
   }
 
+  if (pubkeyType === '/initia.crypto.v1beta1.ethsecp256k1.PubKey') {
+    return PUBLIC_KEY_TYPE.INIT_SECP256K1;
+  }
+
   return PUBLIC_KEY_TYPE.SECP256K1;
 };
 
