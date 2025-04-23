@@ -1,4 +1,5 @@
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
+import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -86,7 +87,7 @@ export async function getChains() {
         };
       }) ?? [];
 
-    const isSupportStaking = chain.params.chainlist_params?.is_stake_enabled !== false;
+    const isSupportStaking = chain.params.chainlist_params?.is_stake_enabled !== false && !UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID.includes(chain.id);
     const isSupportHistory = !!chain.params.chainlist_params?.is_support_mintscan;
     const isDiableSend = chain.params.chainlist_params?.is_send_enabled === false;
 
