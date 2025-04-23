@@ -17,6 +17,7 @@ import PortFolio from '@/components/MainBox/Portfolio';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
+import { CURRENCY_DECIMALS } from '@/constants/currency';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -120,13 +121,17 @@ export default function Entry() {
 
   const hideSmallValueAssets = useMemo(() => {
     if (isHideSmalValue) {
+      const decimalPlaces = CURRENCY_DECIMALS[userCurrencyPreference];
+
+      const minDisplayValue = 10 ** -decimalPlaces;
+
       return computedAssetValues.filter((coin) => {
-        return gte(coin.value, '0.001');
+        return gte(coin.value, minDisplayValue);
       });
     }
 
     return computedAssetValues;
-  }, [computedAssetValues, isHideSmalValue]);
+  }, [computedAssetValues, isHideSmalValue, userCurrencyPreference]);
 
   const sortedAssets = useMemo(
     () =>
