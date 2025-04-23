@@ -1,9 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
+import BaseButton from '@/components/common/BaseButton';
 import BaseChainImage from '@/components/common/BaseChainImage';
 
-export const StyledChainButton = styled('button')(({ theme }) => ({
+export const StyledChainButton = styled(BaseButton)(({ theme }) => ({
   width: '100%',
   padding: '1.2rem 1.6rem',
 

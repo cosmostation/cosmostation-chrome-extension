@@ -17,6 +17,11 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   backgroundColor: props['isActive'] ? theme.palette.color.base200 : 'transparent',
   border: 'none',
 
+  cursor: 'pointer',
+
+  '&: disabled': {
+    cursor: 'not-allowed',
+  },
   '&: hover': {
     backgroundColor: theme.palette.color.base100,
   },
