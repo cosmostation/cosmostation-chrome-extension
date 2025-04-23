@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import BalanceDisplay from '@/components/BalanceDisplay';
 import Tooltip from '@/components/common/Tooltip';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -8,7 +9,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import { Container, EstimatedFeeTextContainer, FeeCustomButton, LeftContentContainer, NetworkFeeText, RightContentContainer, StyledButton } from './styled';
 import Base1300Text from '../../common/Base1300Text';
-import NumberTypo from '../../common/NumberTypo';
 import type { FeeOption } from '../EVMFee/components/FeeSettingBottomSheet';
 import FeeSettingBottomSheet from '../EVMFee/components/FeeSettingBottomSheet';
 
@@ -79,16 +79,16 @@ export default function EVMFee({
         >
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
                 {displayFeeAmount}
-              </NumberTypo>
+              </BalanceDisplay>
               &nbsp;
               <Base1300Text variant="h7n_M">{coinSymbol}</Base1300Text>
               &nbsp;
               <Base1300Text variant="b2_M">{'('}</Base1300Text>
-              <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
                 {value}
-              </NumberTypo>
+              </BalanceDisplay>
               <Base1300Text variant="b2_M">{')'}</Base1300Text>
             </EstimatedFeeTextContainer>
           ) : (
