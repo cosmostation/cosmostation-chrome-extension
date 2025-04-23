@@ -105,10 +105,10 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const coinSymbol = selectedStakingCoin?.asset.symbol || '';
   const coinDecimal = selectedStakingCoin?.asset.decimals || 0;
 
-  const chainName = selectedStakingCoin?.chain.name || '';
-
   const coinGeckoId = selectedStakingCoin?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
+
+  const coinDescription = selectedStakingCoin?.asset.description;
 
   const baseAvailableAmount = selectedStakingCoin?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimal);
@@ -524,11 +524,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
             <CoinImage imageURL={coinImageURL} />
             <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.stake.$coinId.entry.stake')}`}</CoinSymbolText>
             <ChainNameContainer>
-              <Typography variant="b3_M">
-                {t('pages.wallet.stake.$coinId.entry.stakingCoin', {
-                  chainName: chainName,
-                })}
-              </Typography>
+              <Typography variant="b3_M">{coinDescription}</Typography>
             </ChainNameContainer>
           </CoinContainer>
 

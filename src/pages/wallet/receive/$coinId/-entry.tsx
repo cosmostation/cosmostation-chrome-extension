@@ -31,6 +31,7 @@ import {
   CoinSymbolText,
   Container,
   CornerIconContainer,
+  DescriptionContainer,
   FilledTabContainer,
   InfoIconContainer,
   QRBorderContainer,
@@ -123,11 +124,19 @@ export default function Entry({ coinId }: EntryProps) {
       return `${t('pages.wallet.receive.$coinId.entry.contract')} : `;
     }
     if (coinType === 'ibc') {
-      return `${t('pages.wallet.receive.$coinId.entry.ibc')} :`;
+      return `${t('pages.wallet.receive.$coinId.entry.denom')} :`;
     }
     if (coinType === 'native' && selectedCoin?.chain.chainType === 'cosmos') {
       return `${t('pages.wallet.receive.$coinId.entry.denom')} :`;
     }
+  })();
+
+  const coinDescription = selectedCoin?.asset.description;
+
+  const isShowDescription = (() => {
+    if (['erc20', 'cw20', 'ibc'].includes(selectedCoin?.asset.type || '')) return false;
+
+    return true;
   })();
 
   const shortCoinDenom = shorterAddress(coinDenom, 16);
@@ -157,18 +166,24 @@ export default function Entry({ coinId }: EntryProps) {
         )}
         <CoinContainer>
           <CoinSymbolText variant="h2_B">{symbol}</CoinSymbolText>
-          <CoinDenomContainer>
-            {coinTypeText && <Typography variant="b4_R">{`${coinTypeText}`}</Typography>}
-            &nbsp;
-            <TextButton
-              typoVarient="b3_M"
-              onClick={() => {
-                copyToClipboard(coinDenom);
-              }}
-            >
-              {shortCoinDenom}
-            </TextButton>
-          </CoinDenomContainer>
+          {isShowDescription ? (
+            <DescriptionContainer>
+              <Typography variant="b3_M">{coinDescription}</Typography>
+            </DescriptionContainer>
+          ) : (
+            <CoinDenomContainer>
+              {coinTypeText && <Typography variant="b4_R">{`${coinTypeText}`}</Typography>}
+              &nbsp;
+              <TextButton
+                typoVarient="b3_M"
+                onClick={() => {
+                  copyToClipboard(coinDenom);
+                }}
+              >
+                {shortCoinDenom}
+              </TextButton>
+            </CoinDenomContainer>
+          )}
         </CoinContainer>
         <QRBorderContainer>
           <QRContainer>
