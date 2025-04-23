@@ -9,6 +9,7 @@ import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
+import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
@@ -365,6 +366,13 @@ export default function Aptos({ coinId }: AptosProps) {
           </CoinContainer>
 
           <InputWrapper>
+            <ChainSelectBox
+              chainList={selectedCoinToSend?.chain ? [selectedCoinToSend?.chain] : []}
+              currentChainId={selectedCoinToSend?.chain && getUniqueChainId(selectedCoinToSend?.chain)}
+              disableSortChain
+              label={t('pages.wallet.send.$coinId.Entry.Aptos.index.recipientNetwork')}
+              disabled
+            />
             <StandardInput
               label={t('pages.wallet.send.$coinId.Entry.Aptos.index.recipientAddress')}
               error={!!addressInputErrorMessage}

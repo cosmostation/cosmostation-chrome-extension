@@ -1007,7 +1007,8 @@
             "cw20Coin": "CW20 Token",
             "nativeCoin": "Native Coin",
             "bridgeCoin": "Bridged COin",
-            "type": "코인 타입"
+            "type": "코인 타입",
+            "displayDecimals": "{{decimals}} decimals"
           },
           "layout": {
             "about": "{{symbol}} 정보"
@@ -2630,7 +2631,8 @@
                 "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "recipientNetwork": "수신 체인"
               }
             },
             "Bitcoin": {
@@ -2651,7 +2653,8 @@
                 "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "recipientNetwork": "수신 체인"
               }
             },
             "Cosmos": {
@@ -2707,7 +2710,8 @@
                 "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "recipientNetwork": "수신 체인"
               }
             },
             "Sui": {
@@ -2728,7 +2732,8 @@
                 "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "recipientNetwork": "수신 체인"
               }
             },
             "components": {

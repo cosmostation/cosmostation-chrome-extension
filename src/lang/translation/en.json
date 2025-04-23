@@ -1261,7 +1261,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
-                "noAmount": "Please enter the amount"
+                "noAmount": "Please enter the amount",
+                "recipientNetwork": "Recipient Network"
               }
             },
             "components": {
@@ -1292,7 +1293,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noAvailableAmount": "No available amount",
                 "noAmount": "Please enter the amount",
-                "noRecipientAddress": "Please enter the recipient address"
+                "noRecipientAddress": "Please enter the recipient address",
+                "recipientNetwork": "Recipient Network"
               }
             },
             "Bitcoin": {
@@ -1313,7 +1315,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "memo": "OP_RETURN (option)",
                 "tooLowAmount": "Please enter an amount greater than 0",
-                "noRecipientAddress": "Please enter the recipient address"
+                "noRecipientAddress": "Please enter the recipient address",
+                "recipientNetwork": "Recipient Network"
               }
             },
             "Aptos": {
@@ -1334,7 +1337,8 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "tooLowAmount": "Please enter an amount greater than 0",
-                "noRecipientAddress": "Please enter the recipient address"
+                "noRecipientAddress": "Please enter the recipient address",
+                "recipientNetwork": "Recipient Network"
               }
             },
             "Cosmos": {
