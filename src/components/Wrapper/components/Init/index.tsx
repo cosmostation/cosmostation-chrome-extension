@@ -47,8 +47,6 @@ export default function Init({ children }: InitProps) {
       const storedLang = await getExtensionLocalStorage('userLanguagePreference');
 
       if (i18n.language && !storedLang) {
-        console.log('🚀 ~ void ~ i18n.language:', i18n.language);
-
         const languageType = Object.values(LANGUAGE_TYPE) as string[];
         const newLanguage = (languageType.includes(i18n.language) ? i18n.language : LANGUAGE_TYPE.EN) as LanguageType;
         await i18n.changeLanguage(newLanguage);

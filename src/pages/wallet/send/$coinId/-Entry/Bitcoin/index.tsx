@@ -84,11 +84,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
 
-  console.log('🚀 ~ Bitcoin ~ displayAvailableAmount:', displayAvailableAmount);
-
   const coinDescription = selectedCoinToSend?.asset.description;
-
-  console.log('🚀 ~ Bitcoin ~ coinDescription:', coinDescription);
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
