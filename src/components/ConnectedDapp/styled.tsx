@@ -22,4 +22,11 @@ export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   height: '3.1rem',
   borderRadius: '50%',
   border: `0.13rem solid ${theme.palette.color.base200}`,
+  '&:hover': {
+    '& svg': {
+      '& path': {
+        stroke: theme.palette.accentColor.red400,
+      },
+    },
+  },
 }));

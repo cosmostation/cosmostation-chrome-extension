@@ -1786,7 +1786,7 @@
           "network": "체인",
           "selected": "선택된 유형 :",
           "successSwitch": "지갑 주소가 업데이트되었습니다",
-          "type": "{{AccountType}} 유형"
+          "type": "{{accountType}} 유형"
         },
         "layout": {
           "header": "주소 유형 설정"

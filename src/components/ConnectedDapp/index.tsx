@@ -1,6 +1,9 @@
+import { useNavigate } from '@tanstack/react-router';
+
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useActiveTabInfo } from '@/hooks/current/useActiveTabInfo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { Route as ManageDapps } from '@/pages/manage-dapps';
 import { getSiteTitle } from '@/utils/website';
 
 import { ContentsContainer, ContentsInfoContainer, StyledIconButton } from './styled';
@@ -12,6 +15,7 @@ import ConnectedWebsiteImage from '../ConnectedWebsiteImage';
 import DisconnectIcon from '@/assets/images/icons/Disconnect20.svg';
 
 export default function ConnectedDapp() {
+  const navigate = useNavigate();
   const { data: activeTabInfo } = useActiveTabInfo();
 
   const { currentAccountApporvedOrigins, removeApprovedOrigin } = useCurrentAccount();
@@ -44,10 +48,20 @@ export default function ConnectedDapp() {
         </ContentsContainer>
       }
       rightContent={
-        <StyledIconButton onClick={() => removeApprovedOrigin(origin)}>
+        <StyledIconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            removeApprovedOrigin(origin);
+          }}
+        >
           <DisconnectIcon />
         </StyledIconButton>
       }
+      onClick={() => {
+        navigate({
+          to: ManageDapps.to,
+        });
+      }}
     />
   );
 }
