@@ -18,3 +18,5 @@ export interface DappEcosystemInfo {
   is_default?: boolean;
   type?: string;
 }
+
+export type DappEcosystemInfoResponse = DappEcosystemInfo[];

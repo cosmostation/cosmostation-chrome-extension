@@ -2,6 +2,8 @@ export const PRIVATE_KEY_FOR_TEST = '3ec22888f25112c10a967a45dce4181b6fcff8e41d6
 
 export const CHAINLIST_RESOURCE_URL = 'https://raw.githubusercontent.com/cosmostation/chainlist/main/wallet_extension';
 
+export const CHAINLIST_WALLET_RESOURCE_URL = 'https://raw.githubusercontent.com/cosmostation/chainlist/main/wallet';
+
 export const MINTSCAN_FRONT_API_V10_URL = 'https://front.api.mintscan.io/v10';
 export const MINTSCAN_FRONT_API_V11_URL = 'https://front.api.mintscan.io/v11';
 
