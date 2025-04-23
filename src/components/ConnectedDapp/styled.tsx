@@ -25,7 +25,7 @@ export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   '&:hover': {
     '& svg': {
       '& path': {
-        stroke: theme.palette.accentColor.red400,
+        stroke: theme.palette.accentColor.red100,
       },
     },
   },
