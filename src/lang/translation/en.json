@@ -1099,7 +1099,8 @@
               "viewPrivateKey": "View My Private Key",
               "viewPrivateKeyDescription": "View Recovery Phrase",
               "deleteAccount": "Delete Account",
-              "successDeleteAccount": "Delete Account Success"
+              "successDeleteAccount": "Delete Account Success",
+              "deleteAccountDescription": "Are you sure you want to delete this account? Please make sure to back up your private key in a safe place before deleting the account."
             },
             "layout": {
               "header": "Wallet Detail"
