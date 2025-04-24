@@ -46,7 +46,7 @@ export const ValidatorNameWrapper = styled('div')({
 
 export const ValidatorNameContainer = styled('div')({
   display: 'flex',
-  maxWidth: '14rem',
+  maxWidth: '12rem',
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
 
