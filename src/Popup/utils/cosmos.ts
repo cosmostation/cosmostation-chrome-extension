@@ -9,6 +9,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
+import { INITIA } from '~/constants/chain/cosmos/initia';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
@@ -137,6 +138,10 @@ export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: Co
 export const getPublicKeyType = (chain: CosmosChain) => {
   if (chain.id === INJECTIVE.id) {
     return PUBLIC_KEY_TYPE.INJ_SECP256K1;
+  }
+
+  if (chain.id === INITIA.id) {
+    return PUBLIC_KEY_TYPE.INIT_SECP256K1;
   }
 
   if (chain.type === 'ETHERMINT') {

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
+import { INITIA } from '~/constants/chain/cosmos/initia';
 import { NEUTRON } from '~/constants/chain/cosmos/neutron';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -22,7 +23,7 @@ export function useUndelegationSWR(chain: CosmosChain, suspense?: boolean) {
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      if (chain.id === NEUTRON.id) {
+      if (chain.id === NEUTRON.id || chain.id === INITIA.id) {
         return null;
       }
 
