@@ -241,7 +241,18 @@ export async function cosmosProcess(message: CosmosRequest) {
               .map((item) => item.chainId.toLowerCase());
 
             if (filteredCosmosLowercaseChainIds.includes(validatedParams.chainId)) {
-              throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
+              sendMessage<ResponseAppMessage<CosRequestAddChain>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  result: true,
+                },
+              });
+              return;
             }
 
             void processRequest({ ...message, params: { ...validatedParams, chainName: params.chainName } as CosRequestAddChain['params'] });
