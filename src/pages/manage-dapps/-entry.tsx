@@ -7,6 +7,7 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
+import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
@@ -17,7 +18,9 @@ import { getSiteTitle } from '@/utils/website';
 
 import CurrentDapp from './-components/CurrentDapp';
 import DappItem from './-components/DappItem';
-import { Container, DappItemContainer, Divider, RowContainer, StickyContainer } from './-styled';
+import { Container, DappItemContainer, Divider, EmptyAssetContainer, RowContainer, StickyContainer } from './-styled';
+
+import NoListIcon from '@/assets/images/icons/NoList70.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -80,7 +83,11 @@ export default function Entry() {
   return (
     <>
       <BaseBody>
-        <EdgeAligner>
+        <EdgeAligner
+          style={{
+            flex: 1,
+          }}
+        >
           <Container>
             <>
               <CurrentDapp />
@@ -111,17 +118,23 @@ export default function Entry() {
               </RowContainer>
             </StickyContainer>
             <DappItemContainer>
-              {filteredOriginssBySearch.map((item) => {
-                return (
-                  <DappItem
-                    key={item.origin}
-                    origin={item.origin}
-                    websiteName={item.title}
-                    totalTxCount={item.txCount}
-                    onClickDelete={() => removeApprovedOrigin(item.origin)}
-                  />
-                );
-              })}
+              {filteredOriginssBySearch.length === 0 ? (
+                <EmptyAssetContainer>
+                  <EmptyAsset icon={<NoListIcon />} title={t('pages.manage-dapps.entry.noDapps')} subTitle={t('pages.manage-dapps.entry.noDappsDescription')} />
+                </EmptyAssetContainer>
+              ) : (
+                filteredOriginssBySearch.map((item) => {
+                  return (
+                    <DappItem
+                      key={item.origin}
+                      origin={item.origin}
+                      websiteName={item.title}
+                      totalTxCount={item.txCount}
+                      onClickDelete={() => removeApprovedOrigin(item.origin)}
+                    />
+                  );
+                })
+              )}
               {filteredOriginssBySearch?.length > viewLimit - 1 && (
                 <IntersectionObserver
                   onIntersect={() => {

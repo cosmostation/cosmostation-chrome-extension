@@ -1,7 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
 });
 
 export const RowContainer = styled('div')({
@@ -28,7 +31,20 @@ export const Divider = styled('div')(({ theme }) => ({
 }));
 
 export const DappItemContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
+});
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  height: '100%',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 export const FooterContainer = styled('div')(({ theme }) => ({

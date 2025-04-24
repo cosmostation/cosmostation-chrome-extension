@@ -2386,7 +2386,9 @@
         "connectedDapps": "{{dappCount}} Connected Dapps",
         "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
         "searchPlaceholder": "Search Dapp Name, URL",
-        "connectedDateDesc": "Connected Date Desc. (New -> Old)"
+        "connectedDateDesc": "Connected Date Desc. (New -> Old)",
+        "noDapps": "No Dapps",
+        "noDappsDescription": "Connected Dapp will show up here"
       },
       "layout": {
         "header": "Manage Dapps",
