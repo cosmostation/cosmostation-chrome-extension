@@ -17,7 +17,7 @@ import PortFolio from '@/components/MainBox/Portfolio';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
-import { CURRENCY_DECIMALS } from '@/constants/currency';
+import { CURRENCY_TYPE } from '@/constants/currency';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -100,12 +100,15 @@ export default function Entry() {
       const displayAmount = item.totalDisplayAmount || '0';
 
       const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
+      const coinPriceInDolalr = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[CURRENCY_TYPE.USD]) || 0;
 
       const value = times(displayAmount, coinPrice);
+      const valueInDollar = times(displayAmount, coinPriceInDolalr);
 
       return {
         ...item,
         value,
+        dollarValue: valueInDollar,
       };
     });
   }, [
@@ -121,17 +124,13 @@ export default function Entry() {
 
   const hideSmallValueAssets = useMemo(() => {
     if (isHideSmalValue) {
-      const decimalPlaces = CURRENCY_DECIMALS[userCurrencyPreference];
-
-      const minDisplayValue = 10 ** -decimalPlaces;
-
       return computedAssetValues.filter((coin) => {
-        return gte(coin.value, minDisplayValue);
+        return gte(coin.dollarValue, '1');
       });
     }
 
     return computedAssetValues;
-  }, [computedAssetValues, isHideSmalValue, userCurrencyPreference]);
+  }, [computedAssetValues, isHideSmalValue]);
 
   const sortedAssets = useMemo(
     () =>
