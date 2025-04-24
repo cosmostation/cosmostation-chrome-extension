@@ -108,7 +108,7 @@ export default function UnstakeObjectSelectBox({ isOpenBottomSheet = false, cont
                 {displayTotalStakedAndEarned}
               </NumberTypo>
               &nbsp;
-              <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
+              <Base1300Text variant="b4_M">{symbol}</Base1300Text>
             </AmountContainer>
             <NumberTypo typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
               {totalValue}
