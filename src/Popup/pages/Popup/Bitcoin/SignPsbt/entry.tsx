@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import validate from 'bitcoin-address-validation';
 import { networks, Psbt } from 'bitcoinjs-lib';
 import { isTaprootInput } from 'bitcoinjs-lib/src/psbt/bip371';
 import { ECPairFactory } from 'ecpair';
@@ -153,9 +152,6 @@ export default function Entry({ queue }: EntryProps) {
   );
 
   const errorMessage = useMemo(() => {
-    if (decodedPsbtData.outputInfos.some((item) => !validate(item.address))) {
-      return t('pages.Popup.Bitcoin.SignPsbt.entry.invalidAddress');
-    }
     if (availableAmount === 0 || !canSendTx) {
       return t('pages.Popup.Bitcoin.SignPsbt.entry.noAvailableAmount');
     }
@@ -169,7 +165,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '';
-  }, [availableAmount, canSendTx, decodedPsbtData.outputInfos, psbtHex, t, totalInputAmount]);
+  }, [availableAmount, canSendTx, psbtHex, t, totalInputAmount]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
