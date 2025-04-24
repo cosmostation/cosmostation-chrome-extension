@@ -121,6 +121,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                 currentChainId={selectedChainId}
                 chainList={chainList}
                 isManageAssets
+                isWithValue
                 sizeVariant="small"
                 selectChainOption={(id) => {
                   onChangeChaindId(id);

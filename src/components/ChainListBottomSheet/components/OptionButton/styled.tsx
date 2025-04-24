@@ -29,6 +29,10 @@ export const LeftContainer = styled('div')({
   columnGap: '0.6rem',
 });
 
+export const AmountContainer = styled('div')(({ theme }) => ({
+  color: theme.palette.color.base1300,
+}));
+
 export const ChainImage = styled(BaseChainImage)({
   width: '3.6rem',
   height: '3.6rem',

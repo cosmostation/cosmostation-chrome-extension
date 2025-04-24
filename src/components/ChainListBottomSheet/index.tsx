@@ -4,12 +4,16 @@ import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import { usePortfolioValuesByChain } from '@/hooks/current/usePortfolioValuesByChain';
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
 import { Route as ManageCustomNetwork } from '@/pages/manage-assets/visibility/network';
 import type { ChainBase, UniqueChainId } from '@/types/chain';
-import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { plus } from '@/utils/numbers';
+import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import OptionButton from './components/OptionButton';
+import { AmountContainer } from './components/OptionButton/styled';
 import {
   Body,
   Container,
@@ -25,6 +29,7 @@ import {
   StyledButton,
   SwtichCoinType,
 } from './styled';
+import BalanceDisplay from '../BalanceDisplay';
 import Base1300Text from '../common/Base1300Text';
 import IconTextButton from '../common/IconTextButton';
 import Search from '../Search';
@@ -43,6 +48,8 @@ type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSh
   title?: string;
   searchPlaceholder?: string;
   customType?: 'normal' | 'manageAssets';
+  isShowValue?: boolean;
+  buttonVarients?: 'indicator' | 'label';
   onClickChain: (id?: UniqueChainId) => void;
 };
 
@@ -56,11 +63,14 @@ export default function ChainListBottomSheet({
   title,
   searchPlaceholder,
   customType = 'normal',
+  isShowValue = false,
+  buttonVarients = 'indicator',
   ...remainder
 }: ChainListBottomSheetProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -68,6 +78,14 @@ export default function ChainListBottomSheet({
   const isDebouncing = !!search && isPending();
 
   const AllNetworkOptionId = undefined;
+
+  const { portfolioValuesByChain } = usePortfolioValuesByChain();
+
+  const totalValue = isShowValue
+    ? portfolioValuesByChain.reduce((acc, item) => {
+        return plus(acc, item.totalValue);
+      }, '0')
+    : '0';
 
   const sortedChainList = useMemo(
     () =>
@@ -174,13 +192,23 @@ export default function ChainListBottomSheet({
               name={t('components.ChainListBottomSheet.index.allNetwork')}
               image={AllNetworkImage}
               id={AllNetworkOptionId}
+              varient={buttonVarients}
+              rightComponent={
+                isShowValue ? (
+                  <AmountContainer>
+                    <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+                      {totalValue}
+                    </BalanceDisplay>
+                  </AmountContainer>
+                ) : undefined
+              }
             />
           )}
           {!isDebouncing &&
             filteredChainList?.length > 0 &&
             filteredChainList?.map((item) => {
               const isActive = isMatchingUniqueChainId(item, currentChainId);
-
+              const value = portfolioValuesByChain.find((chain) => isSameChain(chain.chain, item));
               return (
                 <OptionButton
                   key={getUniqueChainId(item)}
@@ -193,6 +221,16 @@ export default function ChainListBottomSheet({
                   name={item.name}
                   image={item.image}
                   id={getUniqueChainId(item)}
+                  varient={buttonVarients}
+                  rightComponent={
+                    isShowValue ? (
+                      <AmountContainer>
+                        <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+                          {value?.totalValue || '0'}
+                        </BalanceDisplay>
+                      </AmountContainer>
+                    ) : undefined
+                  }
                 />
               );
             })}

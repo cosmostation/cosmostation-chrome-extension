@@ -1,8 +1,9 @@
 import { forwardRef } from 'react';
 
+import BaseOptionButton from '@/components/common/BaseOptionButton';
 import type { UniqueChainId } from '@/types/chain';
 
-import { ActiveBadge, ChainImage, ChainNameText, LeftContainer, StyledChainButton } from './styled';
+import { ActiveBadge, ChainImage, ChainNameText } from './styled';
 
 import CheckIcon from 'assets/images/icons/Check.svg';
 
@@ -11,30 +12,38 @@ type OptionButtonProps = {
   name: string;
   id?: UniqueChainId;
   isActive?: boolean;
+  varient?: 'indicator' | 'label';
+  rightComponent?: JSX.Element;
   onSelectChain?: (id?: UniqueChainId) => void;
 };
 
-const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ image, name, isActive, id, onSelectChain, ...remainder }, ref) => {
-  return (
-    <StyledChainButton
-      onClick={() => {
-        onSelectChain?.(id);
-      }}
-      {...remainder}
-      ref={isActive ? ref : undefined}
-    >
-      <LeftContainer>
-        <ChainImage src={image} />
-        <ChainNameText variant="b2_M">{name}</ChainNameText>
-      </LeftContainer>
-      {isActive && (
-        <ActiveBadge>
-          <CheckIcon />
-        </ActiveBadge>
-      )}
-    </StyledChainButton>
-  );
-});
+const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(
+  ({ image, name, isActive, id, varient = 'indicator', onSelectChain, rightComponent, ...remainder }, ref) => {
+    return (
+      <BaseOptionButton
+        onClick={() => {
+          onSelectChain?.(id);
+        }}
+        leftContent={<ChainImage src={image} />}
+        leftSecondHeader={<ChainNameText variant="b2_M">{name}</ChainNameText>}
+        rightContent={
+          rightComponent ? (
+            rightComponent
+          ) : isActive && varient === 'indicator' ? (
+            <ActiveBadge>
+              <CheckIcon />
+            </ActiveBadge>
+          ) : undefined
+        }
+        disableRightChevron
+        enableActiveLabel={varient === 'label'}
+        isActive={isActive}
+        {...remainder}
+        ref={ref}
+      />
+    );
+  },
+);
 
 OptionButton.displayName = 'OptionButton';
 
