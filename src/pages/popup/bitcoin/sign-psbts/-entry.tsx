@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import validate from 'bitcoin-address-validation';
 import { networks, Psbt } from 'bitcoinjs-lib';
 import { isTaprootInput } from 'bitcoinjs-lib/src/psbt/bip371';
 import { Typography } from '@mui/material';
@@ -128,10 +127,6 @@ export default function Entry({ request }: EntryProps) {
   const currentPsbtHex = psbtHexes[txMessagePage];
 
   const errorMessage = useMemo(() => {
-    if (decodedPsbtDatas.some((psbt) => psbt.outputInfos.some((item) => item?.address && !validate(item.address)))) {
-      return t('pages.popup.bitcoin.sign-psbts.entry.invalidAddress');
-    }
-
     if (gte('0', nativeCoinAvailableAmount) || !canSend) {
       return t('pages.popup.bitcoin.sign-psbts.entry.noAvailableAmount');
     }
