@@ -516,7 +516,7 @@ export async function cosmosProcess(message: CosmosRequest) {
         }
 
         try {
-          const response: CosSendTransactionResponse = await post<SendTransactionPayload>(`${chain.lcdUrls[0]}/cosmos/tx/v1beta1/txs`, {
+          const response: CosSendTransactionResponse = await post<SendTransactionPayload>(`${chain.lcdUrls[0].url}/cosmos/tx/v1beta1/txs`, {
             tx_bytes: params.txBytes,
             mode: params.mode,
           });
