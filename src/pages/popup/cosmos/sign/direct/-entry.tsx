@@ -290,12 +290,12 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.direct.entry.insufficientFeeAmount');
     }
 
-    if (!simulate.isFetched) {
+    if (isEditFee && !simulate.isFetched) {
       return t('pages.popup.cosmos.sign.direct.entry.notSimulated');
     }
 
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, isCheckBalance, simulate.isFetched, t]);
+  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, isCheckBalance, isEditFee, simulate.isFetched, t]);
 
   const handleOnSign = async () => {
     try {

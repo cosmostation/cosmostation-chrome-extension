@@ -246,12 +246,12 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.amino.entry.insufficientFeeAmount');
     }
 
-    if (!simulate.isFetched) {
+    if (isEditFee && !simulate.isFetched) {
       return t('pages.popup.cosmos.sign.amino.entry.notSimulated');
     }
 
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, isCheckBalance, doc.fee.granter, doc.fee.payer, simulate.isFetched, t]);
+  }, [alternativeFeeAsset?.balance, baseFee, isCheckBalance, doc.fee.granter, doc.fee.payer, isEditFee, simulate.isFetched, t]);
 
   const additionalFee = useAdditionalFee({ chain, msgs: tx.msgs, currentStep: txMessagePage });
 
