@@ -99,6 +99,9 @@ export const StyledSelectBox = styled(TextField)<TextFieldProps>(({ theme }) => 
 
     color: theme.palette.color.base1000,
   },
+  '& .MuiInputLabel-shrink.Mui-disabled': {
+    color: theme.palette.color.base1000,
+  },
 }));
 
 export const BottomWrapper = styled('div')({});
