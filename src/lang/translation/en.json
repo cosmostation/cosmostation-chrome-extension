@@ -1727,7 +1727,8 @@
                 "sendNFTReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
                 "sendNFT": "Send NFT",
                 "txProcessing": "Transaction Processing",
-                "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "contract": "Contract : "
               }
             },
             "Sui": {
@@ -1765,7 +1766,8 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "quantity": "Quantity",
-                "insufficientNFTAmount": "Cannot send more than the amount you have"
+                "insufficientNFTAmount": "Cannot send more than the amount you have",
+                "contract": "Contract : "
               }
             }
           },

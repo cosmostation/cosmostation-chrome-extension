@@ -73,7 +73,8 @@ export default function Cosmos({ id }: CosmosProps) {
 
   const nftImage = selectedNFT?.image;
   const nftName = selectedNFT?.name || shorterAddress(selectedNFT?.contractAddress, 12);
-  const nftTokenId = selectedNFT?.tokenId && selectedNFT.tokenId.length > 12 ? shorterAddress(selectedNFT.tokenId, 12) : selectedNFT?.tokenId;
+  const nftContractAddress =
+    selectedNFT?.contractAddress && selectedNFT.contractAddress.length > 12 ? shorterAddress(selectedNFT.contractAddress, 12) : selectedNFT?.contractAddress;
 
   const { data: accountAllAssets } = useAccountAllAssets({
     filterByPreferAccountType: true,
@@ -417,10 +418,10 @@ export default function Cosmos({ id }: CosmosProps) {
             <NFTImage src={nftImage} />
             <NFTName variant="h2_B">{nftName}</NFTName>
             <NFTSubname>
-              <Typography variant="b3_M">
-                {t('pages.wallet.nft-send.$id.Entry.Cosmos.index.tokenId', {
-                  tokenId: nftTokenId,
-                })}
+              <Typography variant="b4_R">
+                {t('pages.wallet.nft-send.$id.Entry.Cosmos.index.contract')}
+
+                <Typography variant="b3_M">{nftContractAddress}</Typography>
               </Typography>
             </NFTSubname>
           </NFTContainer>

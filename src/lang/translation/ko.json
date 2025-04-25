@@ -2550,7 +2550,8 @@
                 "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
                 "tokenId": "토큰 ID: {{tokenId}}",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "contract": "컨트랙트: "
               }
             },
             "EVM": {
@@ -2573,7 +2574,8 @@
                 "tokenId": "토큰 ID: {{tokenId}}",
                 "tooLowAmount": "0보다 큰 금액을 입력해야합니다",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "contract": "컨트랙트: "
               }
             },
             "Sui": {
