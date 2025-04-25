@@ -19,6 +19,7 @@ export const Divider = styled('div')(({ theme }) => ({
 }));
 
 export const DappDescriptionContainer = styled('div')({
+  width: '100%',
   display: 'flex',
   flexDirection: 'column',
   rowGap: '0.6rem',

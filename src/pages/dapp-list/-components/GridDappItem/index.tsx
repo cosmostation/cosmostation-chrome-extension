@@ -7,6 +7,7 @@ import type { DappEcosystemInfo } from '@/types/registry/dapp';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
+  Badge,
   BodyContainer,
   BodyText,
   BodyTopContainer,
@@ -116,6 +117,9 @@ export default function GridDappItem({ dappItemInfo, ...remainer }: GridDappItem
             </MultipleChainContainer>
           )}
         </BodyContainer>
+        <Badge>
+          <Base1300Text variant="c2_B">{dappItemInfo.type}</Base1300Text>
+        </Badge>
       </StyledButton>
       <DappDetailBottomSheet dappInfo={dappItemInfo} open={isOpenDappDetailBottomSheet} onClose={() => setIsOpenDappDetailBottomSheet(false)} />
     </>

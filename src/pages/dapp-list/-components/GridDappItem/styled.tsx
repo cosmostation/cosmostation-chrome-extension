@@ -17,6 +17,7 @@ export const StyledButton = styled('button')({
   rowGap: '1rem',
 
   backgroundColor: 'transparent',
+  position: 'relative',
 
   '&:hover': {
     opacity: '0.8',
@@ -38,6 +39,8 @@ export const ThumbnailImageContainer = styled(SkeletonImage)({
 });
 
 export const BodyContainer = styled('div')({
+  width: '100%',
+
   display: 'flex',
   flexDirection: 'column',
   rowGap: '0.4rem',
@@ -75,6 +78,7 @@ export const BodyText = styled(Typography)(({ theme }) => ({
   WebkitLineClamp: 2,
   overflow: 'hidden',
   marginBottom: '0.2rem',
+  height: '3.2rem',
 }));
 
 export const OneChainContainer = styled('div')({
@@ -123,3 +127,20 @@ export const PinnedIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const Badge = styled('div')({
+  position: 'absolute',
+  top: '0.8rem',
+  right: '0.8rem',
+
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0.2rem 0.5rem',
+
+  border: `0.08rem solid rgba(247, 247, 248, 0.04)`,
+  borderRadius: '0.2rem',
+  backdropFilter: 'blur(0.3rem)',
+
+  backgroundColor: 'rgba(0, 0, 0, 0.25)',
+});
