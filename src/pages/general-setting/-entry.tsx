@@ -40,6 +40,7 @@ import RedUpIcon from 'assets/images/icons/RedUp28.svg';
 
 const LangMap: Record<string, string> = {
   en: 'English',
+  ko: '한국어',
 };
 export default function Entry() {
   const { t, i18n } = useTranslation();
