@@ -35,7 +35,7 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
 import { isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
@@ -233,7 +233,16 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
 
-  const [currentRecipientChainId, setCurrentRecipientChainId] = useState<UniqueChainId>();
+  const [selectedRecipientChainId, setSelectedRecipientChainId] = useState<UniqueChainId>();
+
+  const currentRecipientChainId = useMemo(() => {
+    if (selectedRecipientChainId) return selectedRecipientChainId;
+
+    const defaultRecipientChainId = selectedCoinToSend?.chain ? getUniqueChainId(selectedCoinToSend?.chain) : undefined;
+
+    return defaultRecipientChainId;
+  }, [selectedCoinToSend?.chain, selectedRecipientChainId]);
+
   const currentRecipientChain = useMemo(
     () => availableRecipientChainList.find((asset) => isMatchingUniqueChainId(asset, currentRecipientChainId)),
     [availableRecipientChainList, currentRecipientChainId],
@@ -772,7 +781,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
               chainList={availableRecipientChainList}
               currentChainId={currentRecipientChainId}
               onClickChain={(chainId) => {
-                setCurrentRecipientChainId(chainId);
+                setSelectedRecipientChainId(chainId);
               }}
               disableSortChain
               label={t('pages.wallet.send.$coinId.Entry.Cosmos.index.recipientNetwork')}
