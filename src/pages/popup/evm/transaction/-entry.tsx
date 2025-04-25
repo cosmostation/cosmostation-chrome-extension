@@ -147,7 +147,9 @@ export default function Entry({ request }: EntryProps) {
       return false;
     })();
 
-    return isDappFeePositive ? 0 : 2;
+    const isDappFromOptionActive = !!originEthereumTx.gasPrice || !!originEthereumTx.maxFeePerGas;
+
+    return isDappFeePositive ? 0 : isDappFromOptionActive ? 2 : 1;
   }, [customFeeStepKey, dappFromGas, originEthereumTx.gasPrice, originEthereumTx.maxFeePerGas]);
 
   const feeOptions = useMemo(() => {
