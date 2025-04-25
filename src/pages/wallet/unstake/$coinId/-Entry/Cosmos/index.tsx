@@ -555,6 +555,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
                     }
                     coin={selectedUnstakingCoin?.asset}
                     balance={availableUnstakeBaseAmount}
+                    variant="zeroAsDash"
                   />
                 )
               }
