@@ -10,6 +10,7 @@ export function useSchema() {
   const { t } = useTranslation();
   const nameForm = Joi.object<NameForm>({
     name: Joi.string()
+      .trim()
       .required()
       .min(1)
       .max(20)

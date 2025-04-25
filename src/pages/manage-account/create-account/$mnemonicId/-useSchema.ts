@@ -12,6 +12,7 @@ export function useSchema() {
   const newAccountForm = Joi.object<NewAccountForm>({
     accountName: Joi.string()
       .required()
+      .trim()
       .min(1)
       .max(20)
       .messages({

@@ -74,7 +74,7 @@ export default function Entry({ mnemonicId }: EntryProps) {
   });
 
   const { accountName, hdPathIndex } = watch();
-  const isButtonEnabled = accountName && hdPathIndex;
+  const isButtonEnabled = !!accountName?.trim() && !!hdPathIndex;
 
   const majorNetworkIds = ['cosmos', 'bitcoin', 'ethereum'];
   const majorNetwork = majorNetworkIds

@@ -48,7 +48,7 @@ export default function SetNameBottomSheet({
   });
 
   const { name } = watch();
-  const isButtonEnabled = !!name;
+  const isButtonEnabled = !!name?.trim();
 
   const onHandleClose = () => {
     reset({
