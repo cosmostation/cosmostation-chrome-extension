@@ -86,7 +86,8 @@ export function useCurrentAddedSuiNFTsWithMetaData({ accountId }: UseAccountSuiN
         const metaData = getNFTMeta(originObject);
 
         const name = metaData?.name ? metaData.name : shorterAddress(metaData?.objectId, 15) || '-';
-        const subName = metaData?.type ? shorterAddress(metaData.type, 15) || '-' : '-';
+        const subName = metaData?.type ? `Object ID: ${shorterAddress(metaData.type, 15)}` : '-';
+
         return {
           id: addedNFT.id,
           chainId: addedNFT.chainId,

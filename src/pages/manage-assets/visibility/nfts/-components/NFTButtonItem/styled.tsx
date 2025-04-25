@@ -104,7 +104,7 @@ export const NFTNameTextContainer = styled('div')({
 
 export const NFTSubNameTextContainer = styled('div')({
   display: 'flex',
-  maxWidth: '70%',
+  maxWidth: '17rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
