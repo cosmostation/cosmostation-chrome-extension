@@ -30,7 +30,7 @@ export const Body = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    minHeight: '21rem',
+    minHeight: '35rem',
   },
 });
 

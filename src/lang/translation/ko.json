@@ -570,7 +570,11 @@
               "buyDescription": "암호화폐 구매하기",
               "header": "더보기",
               "vote": "투표",
-              "voteDescription": "프로포절에 투표하여 거버넌스에 참여하세요"
+              "voteDescription": "프로포절에 투표하여 거버넌스에 참여하세요",
+              "dropMoney": "Drop.Money",
+              "dropMoneyDescription": "Drop으로 리퀴드 스테이킹을 경험해보세요.",
+              "babylon": "Babylon",
+              "babylonDescription": "비트코인 스테이킹으로 보상의 기회를 누려보세요."
             }
           }
         },

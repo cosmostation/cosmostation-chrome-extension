@@ -21,7 +21,11 @@
               "vote": "Vote",
               "voteDescription": "Participate governance by voting on proposals",
               "buy": "Buy",
-              "buyDescription": "Purchase crypto with fiat or another asset"
+              "buyDescription": "Purchase crypto with fiat or another asset",
+              "dropMoney": "Drop.Money",
+              "dropMoneyDescription": "Keep your assets liquid stake with Drop",
+              "babylon": "Babylon",
+              "babylonDescription": "Stake Bitcoin and unlock earnings potential"
             }
           }
         }
