@@ -26,12 +26,12 @@ import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
-import type { UniqueChainId } from '@/types/chain';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId } from '@/utils/asset';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { usePortfolioFilterChainIdStore } from '@/zustand/hooks/usePortfolioFilterChainId';
 
 import NFTList from './-components/NFTList';
 import SkeletonCoinList from './-components/SkeletonCoinList';
@@ -65,7 +65,7 @@ export default function Entry() {
 
   const isDebouncing = !!search && isPending();
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
+  const { chainId: currentSelectedChainId, updateChainId: setCurrentSelectedChainId } = usePortfolioFilterChainIdStore((state) => state);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
