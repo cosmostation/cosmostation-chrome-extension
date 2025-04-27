@@ -62,14 +62,14 @@ type ChevronIconProps = {
 };
 
 const redUpfillColors = {
-  upward: 'rgba(231, 69, 95, 1)',
-  downward: 'rgba(47, 190, 136, 1)',
+  upward: 'rgba(235, 77, 103, 1)',
+  downward: 'rgba(47, 188, 136, 1)',
   unchanged: 'rgba(128, 128, 128, 1)',
 };
 
 const greenUpfillColors = {
-  upward: 'rgba(47, 190, 136, 1)',
-  downward: 'rgba(231, 69, 95, 1)',
+  upward: 'rgba(47, 188, 136, 1)',
+  downward: 'rgba(235, 77, 103, 1)',
   unchanged: 'rgba(128, 128, 128, 1)',
 };
 
