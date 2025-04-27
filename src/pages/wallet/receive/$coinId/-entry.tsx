@@ -225,7 +225,7 @@ export default function Entry({ coinId }: EntryProps) {
             <AddressBodyContainer>
               <AddressText variant="b3_M_Multiline">{chainAddress}</AddressText>
 
-              <CopyButton sx={{ width: '2rem', height: '2rem' }} copyString={selectedCoin?.address.address} />
+              <CopyButton sx={{ width: '2rem', height: '2rem' }} copyString={chainAddress} />
             </AddressBodyContainer>
           </AddressTopContainer>
           <AddressBottomContainer>

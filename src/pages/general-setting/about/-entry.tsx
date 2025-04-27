@@ -44,7 +44,16 @@ export default function Entry() {
                 </ButtonIconContainer>
               }
               leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.about.entry.termsOfService')}</Base1300Text>}
-              leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.about.entry.termsOfServiceDescription')}</Base1000Text>}
+              leftSecondBody={
+                <Base1000Text
+                  variant="b3_R"
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  {t('pages.general-setting.about.entry.termsOfServiceDescription')}
+                </Base1000Text>
+              }
             />
             <BaseOptionButton
               onClick={() => {
@@ -56,7 +65,16 @@ export default function Entry() {
                 </ButtonIconContainer>
               }
               leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.about.entry.privacy')}</Base1300Text>}
-              leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.about.entry.privacyDescription')}</Base1000Text>}
+              leftSecondBody={
+                <Base1000Text
+                  variant="b3_R"
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  {t('pages.general-setting.about.entry.privacyDescription')}
+                </Base1000Text>
+              }
             />
             <BaseOptionButton
               onClick={() => {
@@ -68,7 +86,16 @@ export default function Entry() {
                 </ButtonIconContainer>
               }
               leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.about.entry.github')}</Base1300Text>}
-              leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.about.entry.githubDescription')}</Base1000Text>}
+              leftSecondBody={
+                <Base1000Text
+                  variant="b3_R"
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  {t('pages.general-setting.about.entry.githubDescription')}
+                </Base1000Text>
+              }
             />
             <BaseOptionButton
               onClick={() => {
@@ -80,7 +107,16 @@ export default function Entry() {
                 </ButtonIconContainer>
               }
               leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.about.entry.homepage')}</Base1300Text>}
-              leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.about.entry.homepageDescription')}</Base1000Text>}
+              leftSecondBody={
+                <Base1000Text
+                  variant="b3_R"
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  {t('pages.general-setting.about.entry.homepageDescription')}
+                </Base1000Text>
+              }
             />
             <BaseOptionButton
               onClick={() => {
@@ -92,7 +128,16 @@ export default function Entry() {
                 </ButtonIconContainer>
               }
               leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.about.entry.x')}</Base1300Text>}
-              leftSecondBody={<Base1000Text variant="b3_R">{t('pages.general-setting.about.entry.xDescription')}</Base1000Text>}
+              leftSecondBody={
+                <Base1000Text
+                  variant="b3_R"
+                  style={{
+                    textAlign: 'left',
+                  }}
+                >
+                  {t('pages.general-setting.about.entry.xDescription')}
+                </Base1000Text>
+              }
             />
           </ButtonContainer>
         </Container>

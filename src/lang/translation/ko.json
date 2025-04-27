@@ -335,10 +335,10 @@
     },
     "CoinSelect": {
       "index": {
-        "alphabeticalAsc": "알파벳 오름차순. (A-> Z)",
+        "alphabeticalAsc": "알파벳 순 (A -> Z)",
         "aprDesc": "APR 내림차순",
-        "searchPlaceholder": "Crypto 검색 (예 : BTC)",
-        "valueHighOrder": "가치가 높은 순서"
+        "searchPlaceholder": "Crypto를 검색하세요 (Ex. BTC)",
+        "valueHighOrder": "금액 높은 순"
       }
     },
     "CoinTypeSelector": {
@@ -364,11 +364,11 @@
     },
     "EthermintSendBottomSheet": {
       "index": {
-        "cosmosSubtitle": "{{bech32prefix}} 주소 또는 IBC Send 에이 옵션을 사용하세요",
-        "cosmosTitle": "다음과 같은 주소로 출금 * IBC 전송을 사용하려면 해당 옵션을 사용하세요 ({{bech32Prefix}})",
-        "evmSubtitle": "0x 주소로 출금하려면 해당 옵션을 사용하세요",
-        "evmTitle": "EVM 스타일 주소로 출금하기",
-        "title": "출금 유형을 선택하세요"
+        "cosmosSubtitle": "'{{bech32Prefix}}...'로 시작하는 주소로 전송할 때 선택해주세요.",
+        "cosmosTitle": "COSMOS 형식 주소로 전송",
+        "evmSubtitle": "'0x...'로 시작하는 주소로 전송할 때 선택해주세요",
+        "evmTitle": "EVM 형식 주소로 전송",
+        "title": "전송 유형을 선택해 주세요."
       }
     },
     "Fee": {
@@ -522,7 +522,7 @@
       "index": {
         "coinGecko24h": "24시간 기준 (Coingecko)",
         "currentPrice": "현재 가격",
-        "seeDetail": "살펴보기"
+        "seeDetail": "See Detail"
       }
     },
     "GithubBottomSheet": {
@@ -547,8 +547,8 @@
           "dao": "Dao",
           "daoDescription": "DAO 투표를 통해 거버넌스에 참여하세요",
           "more": "더보기",
-          "receive": "입금",
-          "send": "출금",
+          "receive": "받기",
+          "send": "전송",
           "swap": "교환",
           "vault": "Vault",
           "vaultDescription": "$NTRN의 Vault기능을 사용해보세요",
@@ -567,8 +567,8 @@
           "MoreOptionBottomSheet": {
             "index": {
               "buy": "구매",
-              "buyDescription": "암호화폐 구매하기",
-              "header": "더보기",
+              "buyDescription": "암호화폐 구매할 수 있습니다",
+              "header": "More Options",
               "vote": "투표",
               "voteDescription": "프로포절에 투표하여 거버넌스에 참여하세요",
               "dropMoney": "Drop.Money",
@@ -579,16 +579,16 @@
           }
         },
         "index": {
-          "allNetwork": "모든 체인",
-          "buy": "구입하다",
-          "dapp": "DAPP",
-          "history": "트랜잭션 내역보기",
-          "more": "더보기",
-          "receive": "입금",
-          "send": "출금",
+          "allNetwork": "All Network",
+          "buy": "구매",
+          "dapp": "Dapp",
+          "history": "거래내역",
+          "more": "More",
+          "receive": "받기",
+          "send": "전송",
           "stake": "스테이킹",
-          "swap": "교환",
-          "totalValue": "내 총 자산"
+          "swap": "스왑",
+          "totalValue": "나의 총 자산"
         }
       },
       "StakeDetailBox": {
@@ -1022,46 +1022,46 @@
       "components": {
         "AmountDetail": {
           "Bitcoin": {
-            "available": "사용 가능한 수량",
-            "pendingReceive": "대기중인 입금",
-            "pendingSent": "대기중인 출금",
-            "title": "세부 사항"
+            "available": "Available",
+            "pendingReceive": "Pending Receive",
+            "pendingSent": "Pending Sent",
+            "title": "코인의 상세 정보"
           },
           "Cosmos": {
-            "available": "사용 가능한 수량",
-            "commission": "커미션",
-            "incentive": "인센티브",
-            "rewards": "리워드",
-            "staked": "스테이킹 수량",
-            "title": "세부 사항",
-            "unstaking": "언스테이킹"
+            "title": "코인의 상세 정보",
+            "available": "Available",
+            "staked": "Staked",
+            "unstaking": "Unstaking",
+            "rewards": "Rewards",
+            "incentive": "Incentive",
+            "commission": "Commission"
           },
           "Sui": {
-            "available": "사용 가능한 수량",
-            "earned": "리워드",
-            "staked": "스테이킹 수량",
-            "title": "세부 사항",
-            "totalStaked": "스테이킹 총 수량"
+            "title": "코인의 상세 정보",
+            "available": "Available",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned"
           }
         },
         "ContractAddress": {
           "index": {
             "contract": "컨트랙트 토큰",
-            "copied": "컨트랙트 주소가 복사에 성공했습니다"
+            "copied": "컨트랙트 주소를 복사했습니다"
           }
         },
         "StakePromotion": {
           "index": {
-            "title": "{{symbol}}을(를) 스테이킹하고 수익을 올리세요",
-            "stake": "스테이킹 관리하기",
-            "titleWithApr": "{{symbol}}을(를) 최대 {{apr}} APR로 수익을 얻어보세요"
+            "title": "Earn ${{symbol}} and make a profit",
+            "stake": "스테이킹 내역 관리",
+            "titleWithApr": "Earn ${{symbol}} up to {{apr}} APR"
           }
         }
       },
       "entry": {
-        "copiedDenom": "IBC Denom이 복사에 성공했습니다",
+        "copiedDenom": "IBC Denom을 복사했습니다",
         "denom": "Denom",
-        "history": "트랜잭션 내역"
+        "history": "거래내역"
       }
     },
     "coin-overview": {
@@ -1099,7 +1099,7 @@
         }
       },
       "entry": {
-        "alphabeticalAsc": "알파벳 오름차순. (A-> Z)",
+        "alphabeticalAsc": "알파벳 순 (A -> Z)",
         "multiChainSupport": "다중 체인 지원",
         "pinnedDapps": "즐겨찾기",
         "searchPlaceholder": "Dapp 검색하기"
@@ -1303,37 +1303,37 @@
         }
       },
       "entry": {
-        "about": "정보",
-        "aboutDescription": "지갑 버전을 확인하세요",
+        "about": "앱 정보",
+        "aboutDescription": "앱 정보 및 버젼 확인",
         "addressBook": "주소록",
-        "addressBookDescription": "자주 사용되는 주소를 관리합니다",
+        "addressBookDescription": "자주 사용하는 주소 추가 및 관리",
         "backupWallet": "지갑 백업",
-        "backupWalletDescription": "자산 손실을 방지하기 위해 지갑을 백업하세요",
-        "changePassword": "비밀번호를 변경하세요",
-        "changePasswordDescription": "지갑 암호를 변경하세요",
-        "currency": "통화",
-        "currencyDescription": "사용할 통화를 선택하세요",
+        "backupWalletDescription": "계정의 니모닉, 프라이빗 키 확인",
+        "changePassword": "비밀번호 변경",
+        "changePasswordDescription": "계정 비밀번호 변경 가능",
+        "currency": "통화량",
+        "currencyDescription": "선택된 화폐 단위로 자산 표시",
         "guide": "가이드",
-        "guideDescription": "지갑을 사용하는 방법을 살펴보세요",
+        "guideDescription": "앱 사용에 대한 도움말 제공",
         "language": "언어",
-        "languageDescription": "사용할 언어를 선택하세요",
+        "languageDescription": "앱에서 사용할 언어 선택",
         "manageCustomNetwork": "커스텀 체인 관리",
-        "manageCustomNetworkDescription": "추가된 커스텀 체인 관리",
+        "manageCustomNetworkDescription": "추가한 커스텀 체인 관리",
         "min": "{{minutes}} 분",
         "never": "안 함",
-        "preference": "선호",
-        "priceChangeColor": "가격 추세 색상",
-        "priceChangeColorDescription": "가격 추세 색상을 변경하세요",
-        "prioritize": "내 지갑 우선 사용하기",
-        "prioritizeDescription": "Cosmostation을 기본 지갑으로 설정하세요.",
-        "security": "보안",
-        "setAutoLock": "자동 잠금을 설정하세요",
-        "setAutoLockDescription": "자동 잠금 시간을 설정하세요",
-        "support": "지원",
-        "wallet": "지갑"
+        "preference": "Preference",
+        "priceChangeColor": "가격 변동 색상",
+        "priceChangeColorDescription": "가격 등락폭에 대한 색상 설정",
+        "prioritize": "지갑 우선 순위 설정",
+        "prioritizeDescription": "Cosmostation 지갑으로 연결",
+        "security": "Security",
+        "setAutoLock": "자동 잠금 설정",
+        "setAutoLockDescription": "지갑 자동 잠금 시간 활성화",
+        "support": "Support",
+        "wallet": "Wallet"
       },
       "layout": {
-        "header": "환경 설정"
+        "header": "설정"
       },
       "manage-custom-network": {
         "edit": {
@@ -1420,13 +1420,13 @@
       }
     },
     "index": {
-      "alphabeticalAsc": "알파벳 오름차순. (A-> Z)",
-      "hideSmallBalance": "소액 잔액 숨기기",
+      "alphabeticalAsc": "알파벳 순 (A -> Z)",
+      "hideSmallBalance": "소액 자산 숨기기",
       "manageCrypto": "자산 관리",
       "noTokens": "자산이 발견되지 않았습니다",
       "noTokensDescription": "검색 또는 필터를 조정하세요",
-      "searchPlaceholder": "Crypto 검색 (예 : BTC)",
-      "valueHighOrder": "가치가 높은 순서"
+      "searchPlaceholder": "Crypto를 검색하세요 (Ex. BTC)",
+      "valueHighOrder": "금액 높은 순"
     },
     "manage-account": {
       "backup-wallet": {
@@ -1727,7 +1727,7 @@
                 "contractAddress": "NFT 컨트랙트 주소",
                 "error": "NFT를 추가하지 못했습니다",
                 "imagePreview": "IMG 미리보기",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAddressTitle": "잘못된 컨트랙트 주소",
                 "invalidOwnership": "해당 컨트랙트 주소 또는 토큰 ID에 대한 NFT를 소유하고 있지 않습니다",
                 "invalidOwnershipTitle": "소유권 불일치",
@@ -1748,7 +1748,7 @@
                 "data": "데이터",
                 "error": "NFT를 추가하지 못했습니다",
                 "imagePreview": "IMG 미리보기",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAddressTitle": "잘못된 컨트랙트 주소",
                 "invalidOwnership": "해당 컨트랙트 주소 또는 토큰 ID에 대한 NFT를 소유하고 있지 않습니다",
                 "invalidOwnershipTitle": "소유권 불일치",
@@ -1805,14 +1805,14 @@
         },
         "assets": {
           "entry": {
-            "alphabeticalAsc": "알파벳 오름차순. (A-> Z)",
+            "alphabeticalAsc": "알파벳 순 (A -> Z)",
             "contract": "컨트랙트 주소 :",
             "customCrypto": "커스텀 토큰",
             "deleteDescription": "커스텀 토큰을 삭제 하시겠습니까? \n삭제 후 토큰을 다시 추가하려면 정보를 다시 입력해야합니다.",
             "importCrypto": "토큰 가져오기",
             "lastStandingError": "최소 한 개의 코인은 표시되어야 합니다",
             "supportedCrypto": "Supported Crypto",
-            "valueHighOrder": "가치가 높은 순서"
+            "valueHighOrder": "금액 높은 순"
           }
         },
         "layout": {
@@ -1996,7 +1996,7 @@
         "sign-psbt": {
           "entry": {
             "failedCreateTxHex": "TX Hex를 생성하지 못했습니다",
-            "invalidAddress": "잘못된 주소",
+            "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
             "noAmount": "잔액이 없습니다",
             "noAvailableAmount": "사용 가능한 잔액이 없습니다",
             "reject": "거부",
@@ -2006,7 +2006,7 @@
         "sign-psbts": {
           "entry": {
             "failedCreateTxHex": "TX Hex를 생성하지 못했습니다",
-            "invalidAddress": "잘못된 주소",
+            "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
             "noAvailableAmount": "사용 가능한 잔액이 없습니다",
             "reject": "거부",
             "sign": "사인"
@@ -2289,9 +2289,9 @@
               "messages": {
                 "Approve": {
                   "index": {
-                    "grantAmount": "보조금 금액",
-                    "grantedAddress": "부여 된 주소",
-                    "tokenAddress": "토큰 컨트랙트"
+                    "grantAmount": "사용 허용 수량",
+                    "grantedAddress": "사용 허용 대상 주소",
+                    "tokenAddress": "컨트랙트"
                   }
                 },
                 "Deploy": {
@@ -2542,13 +2542,13 @@
               "index": {
                 "chooseRecipientAddress": "수신 주소 선택",
                 "insufficientAmount": "잔액이 부족합니다",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidOwnerAddress": "잘못된 소유자 주소",
                 "memo": "메모 (옵션)",
                 "notFoundNFT": "NFT를 찾을 수 없습니다",
                 "notOwnedNFT": "소유하지 않은 NFT입니다",
-                "recipientAddress": "수신자 주소",
-                "recipientNetwork": "수신 체인",
+                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientNetwork": "수신 네트워크 선택",
                 "sendNFT": "NFT 전송",
                 "sendNFTReview": "NFT전송 확인",
                 "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
@@ -2564,14 +2564,14 @@
                 "failedToCreateTransaction": "트랜잭션 생성에 실패했습니다",
                 "insufficientAmount": "잔액이 부족합니다",
                 "insufficientNFTAmount": "보유한 수량보다 더 보낼 수 없습니다",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
                 "missingNFT": "NFT를 찾을 수 없습니다",
                 "networkError": "네트워크 오류",
                 "notOwnedNFT": "소유하지 않은 NFT입니다",
                 "quantity": "수량",
-                "recipientAddress": "수신자 주소",
-                "recipientNetwork": "수신 체인",
+                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientNetwork": "수신 네트워크 선택",
                 "sendNFT": "NFT 전송",
                 "sendNFTReview": "NFT 전송 확인",
                 "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
@@ -2586,10 +2586,10 @@
               "index": {
                 "chooseRecipientAddress": "수신 주소 선택",
                 "insufficientAmount": "잔액이 부족합니다",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "objectId": "오브젝트 ID : {{objectId}}",
-                "recipientAddress": "수신자 주소",
-                "recipientNetwork": "수신 체인",
+                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientNetwork": "수신 네트워크 선택",
                 "sendNFT": "NFT 전송",
                 "sendNFTReview": "NFT 전송 확인",
                 "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
@@ -2624,20 +2624,20 @@
           "Entry": {
             "Aptos": {
               "index": {
-                "amount": "수량",
+                "amount": "전송할 금액 입력",
                 "chooseRecipientAddress": "수신 주소 선택",
                 "failedGenerateTransaction": "트랜잭션을 생성하지 못했습니다",
                 "insufficientAmount": "잔액이 부족합니다",
                 "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
-                "recipientAddress": "수신자 주소",
+                "recipientAddress": "수신 지갑 주소 입력",
                 "send": "전송",
-                "sendReview": "전송 확인",
-                "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
@@ -2646,20 +2646,20 @@
             },
             "Bitcoin": {
               "index": {
-                "amount": "수량",
+                "amount": "전송할 금액 입력",
                 "chooseRecipientAddress": "수신 주소 선택",
                 "failedCreateTxHex": "트랜잭션을 생성하지 못했습니다",
                 "failedLoadFee": "수수료 계산에 실패했습니다",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "memo": "op_return (옵션)",
                 "memoMaxLength": "OP_RETURN은 80자를 초과 할 수 없습니다",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
-                "recipientAddress": "수신자 주소",
+                "recipientAddress": "수신 지갑 주소 입력",
                 "send": "전송",
-                "sendReview": "전송 확인",
-                "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
@@ -2668,29 +2668,29 @@
             },
             "Cosmos": {
               "index": {
-                "amount": "수량",
+                "amount": "전송할 금액 입력",
                 "bankLocked": "전송 기능은 현재 비활성화되었습니다. \n추후에 거버넌스를 통해 활성화 될 수 있습니다.",
                 "chooseRecipientAddress": "수신 주소 선택",
                 "contract": "컨트랙트",
                 "denom": "Denom",
                 "failedToCalculateTransaction": "트랜잭션을 생성하지 못했습니다",
-                "ibcSend": "IBC 보내기",
+                "ibcSend": "IBC 전송",
                 "insufficientAmount": "잔액이 부족합니다",
                 "insufficientFeeAmount": "수수료를 지불할 잔액이 부족합니다.",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
                 "invalidRewardAmount": "잘못된 리워드 수량입니다.",
                 "memo": "메모 (옵션)",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
-                "recipientAddress": "수신자 주소",
-                "recipientNetwork": "수신 체인",
-                "searchRecipientNetwork": "체인 검색 (예 : BITCOIN)",
-                "selectRecipientNetwork": "수신 체인을 선택하세요",
+                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientNetwork": "수신 네트워크 선택",
+                "searchRecipientNetwork": "네트워크 검색 (예 : BITCOIN)",
+                "selectRecipientNetwork": "수신 네트워크를 선택하세요",
                 "send": "전송",
-                "sendReview": "전송 확인",
-                "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
                 "timeoutHeightError": "네트워크 오류",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
@@ -2699,13 +2699,13 @@
             },
             "EVM": {
               "index": {
-                "amount": "수량",
+                "amount": "전송할 금액 입력",
                 "bankLocked": "전송 기능은 현재 비활성화되었습니다. \n추후에 거버넌스를 통해 활성화 될 수 있습니다.",
                 "chooseRecipientAddress": "수신 주소 선택",
                 "contract": "컨트랙트",
                 "insufficientAmount": "잔액이 부족합니다",
                 "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
                 "invalidENSAddress": "ENS 주소를 변환하지 못했습니다",
                 "invalidENSFormat": "잘못된 ENS 형식입니다",
@@ -2713,10 +2713,10 @@
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
                 "noTransaction": "트랜잭션 생성에 실패했습니다",
-                "recipientAddress": "수신자 주소",
+                "recipientAddress": "수신 지갑 주소 입력",
                 "send": "전송",
-                "sendReview": "전송 확인",
-                "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
@@ -2725,20 +2725,20 @@
             },
             "Sui": {
               "index": {
-                "amount": "수량",
+                "amount": "전송할 금액 입력",
                 "chooseRecipientAddress": "수신 주소 선택",
                 "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
                 "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
                 "failedToSend": "전송에 실패했습니다",
                 "insufficientAmount": "잔액이 부족합니다",
-                "invalidAddress": "잘못된 주소",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
                 "noAmount": "금액을 입력하세요",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
-                "recipientAddress": "수신자 주소",
+                "recipientAddress": "수신 지갑 주소 입력",
                 "send": "전송",
-                "sendReview": "전송 확인",
-                "sendReviewSub": "전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
