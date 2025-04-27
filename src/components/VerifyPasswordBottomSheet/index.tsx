@@ -92,6 +92,12 @@ export default function VerifyPasswordBottomSheet({ encryptedPassword, title, de
                 }),
               },
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit(submit)();
+              }
+            }}
           />
         </Body>
         <Footer>

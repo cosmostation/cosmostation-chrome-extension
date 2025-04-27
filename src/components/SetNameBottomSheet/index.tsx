@@ -85,6 +85,12 @@ export default function SetNameBottomSheet({
                   ...register('name'),
                 },
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSubmit(submit)();
+                }
+              }}
             />
 
             <ConfirmButton type="submit" disabled={!isButtonEnabled}>
