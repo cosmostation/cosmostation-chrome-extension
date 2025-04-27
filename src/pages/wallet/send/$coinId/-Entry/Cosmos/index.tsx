@@ -15,6 +15,7 @@ import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee/CosmosFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas.ts';
+import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx.ts';
 import { useAccount } from '@/hooks/cosmos/useAccount.ts';
 import { useBlockLatest } from '@/hooks/cosmos/useBlockLatest.ts';
 import { useClientState } from '@/hooks/cosmos/useClientState.ts';
@@ -37,7 +38,7 @@ import { cosmosURL } from '@/utils/crypto/cosmos.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
-import { isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import {
@@ -260,9 +261,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
     [availableRecipientAsset, currentRecipientChainId],
   );
 
-  const clientState = useClientState({ coinId, channelId: currentRecipientAsset?.channel ?? '', port: currentRecipientAsset?.port });
+  const clientState = useClientState({ coinId: isIBCSend ? coinId : '', channelId: currentRecipientAsset?.channel ?? '', port: currentRecipientAsset?.port });
 
-  const receiverLatestBlock = useBlockLatest({ chainId: currentRecipientChainId });
+  const receiverLatestBlock = useBlockLatest({ chainId: isIBCSend ? currentRecipientChainId : undefined });
 
   const latestHeight = useMemo(() => receiverLatestBlock.data?.block?.header?.height, [receiverLatestBlock.data?.block?.header?.height]);
 
@@ -593,12 +594,21 @@ export default function Cosmos({ coinId }: CosmosProps) {
     t,
   ]);
 
+  const inputMemoErrorMessage = useMemo(() => {
+    if (inputMemo) {
+      if (gt(getUtf8BytesLength(inputMemo), COSMOS_MEMO_MAX_BYTES)) {
+        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.memoOverflow');
+      }
+    }
+    return '';
+  }, [inputMemo, t]);
+
   const errorMessage = useMemo(() => {
     if (selectedCoinToSend?.chain.isDiableSend) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.bankLocked');
     }
 
-    if (!latestHeight) {
+    if (isIBCSend && !latestHeight) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.timeoutHeightError');
     }
 
@@ -622,6 +632,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
       return sendAmountInputErrorMessage;
     }
 
+    if (inputMemoErrorMessage) {
+      return inputMemoErrorMessage;
+    }
+
     if (!gt(displaySendAmount, '0')) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.invalidAmount');
     }
@@ -635,6 +649,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
     addressInputErrorMessage,
     baseAvailableAmount,
     displaySendAmount,
+    inputMemoErrorMessage,
+    isIBCSend,
     latestHeight,
     recipientAddress,
     selectedCoinToSend?.chain.isDiableSend,
@@ -842,6 +858,8 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <StandardInput
               multiline
               maxRows={3}
+              error={!!inputMemoErrorMessage}
+              helperText={inputMemoErrorMessage}
               label={t('pages.wallet.send.$coinId.Entry.Cosmos.index.memo')}
               value={inputMemo}
               onChange={(e) => setInputMemo(e.target.value)}

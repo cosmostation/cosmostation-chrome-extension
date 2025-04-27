@@ -147,3 +147,7 @@ export function trimTrailingZeros(decimalStr: string): string {
 
   return trimmedDecimal.length > 0 ? `${intPart}.${trimmedDecimal}` : intPart;
 }
+
+export function getUtf8BytesLength(str: string): number {
+  return new TextEncoder().encode(str).length;
+}

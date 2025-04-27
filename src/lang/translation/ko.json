@@ -2158,7 +2158,8 @@
               "insufficientFeeAmount": "수수료를 지불할 잔액이 부족합니다",
               "reject": "거부",
               "sign": "사인",
-              "notSimulated": "트랜잭션 확인 중입니다."
+              "notSimulated": "트랜잭션 확인 중입니다.",
+              "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
             }
           },
           "direct": {
@@ -2207,7 +2208,8 @@
               "insufficientFeeAmount": "수수료를 지불할 잔액이 부족합니다.",
               "reject": "거부",
               "sign": "사인",
-              "notSimulated": "트랜잭션 확인 중입니다."
+              "notSimulated": "트랜잭션 확인 중입니다.",
+              "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
             }
           },
           "entry": {
@@ -2432,7 +2434,8 @@
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "unstakingAmount": "언스테이킹 수량",
-                "validator": "벨리데이터"
+                "validator": "벨리데이터",
+                "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
               }
             }
           },
@@ -2694,7 +2697,8 @@
                 "timeoutHeightError": "네트워크 오류",
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
-                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
               }
             },
             "EVM": {

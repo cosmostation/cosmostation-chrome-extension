@@ -10,6 +10,7 @@ import Tooltip from '@/components/common/Tooltip';
 import FeeSettingBottomSheet from '@/components/Fee/CosmosFee/components/FeeSettingBottomSheet';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
+import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useAdditionalFee } from '@/hooks/cosmos/useAdditionalFee';
@@ -30,8 +31,9 @@ import type { CosSignAmino, CosSignAminoResponse } from '@/types/message/inject/
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
-import { ceil, divide, gte, times } from '@/utils/numbers';
+import { ceil, divide, gt, gte, times } from '@/utils/numbers';
 import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getUtf8BytesLength } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
@@ -241,6 +243,15 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
 
+  const inputMemoErrorMessage = useMemo(() => {
+    if (signingMemo) {
+      if (gt(getUtf8BytesLength(signingMemo), COSMOS_MEMO_MAX_BYTES)) {
+        return t('pages.popup.cosmos.sign.amino.entry.memoOverflow');
+      }
+    }
+    return '';
+  }, [signingMemo, t]);
+
   const errorMessage = useMemo(() => {
     if (!gte(alternativeFeeAsset?.balance || '0', baseFee) && isCheckBalance && !doc.fee.granter && !doc.fee.payer) {
       return t('pages.popup.cosmos.sign.amino.entry.insufficientFeeAmount');
@@ -250,8 +261,12 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.amino.entry.notSimulated');
     }
 
+    if (inputMemoErrorMessage) {
+      return inputMemoErrorMessage;
+    }
+
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, isCheckBalance, doc.fee.granter, doc.fee.payer, isEditFee, simulate.isFetched, t]);
+  }, [alternativeFeeAsset?.balance, baseFee, isCheckBalance, doc.fee.granter, doc.fee.payer, isEditFee, simulate.isFetched, inputMemoErrorMessage, t]);
 
   const additionalFee = useAdditionalFee({ chain, msgs: tx.msgs, currentStep: txMessagePage });
 

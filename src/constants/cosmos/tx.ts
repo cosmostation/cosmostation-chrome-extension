@@ -159,3 +159,5 @@ export const TX_MESSAGE_TYPE = {
   TX_ETHEREUM_EVM: 'txEthereumEvm',
   TX_KNOWN: 'txKnown',
 } as const;
+
+export const COSMOS_MEMO_MAX_BYTES = 256;

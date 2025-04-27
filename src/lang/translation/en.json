@@ -1374,7 +1374,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
-                "invalidRewardAmount": "Invalid reward amount"
+                "invalidRewardAmount": "Invalid reward amount",
+                "memoOverflow": "Memo is too long. Please shorten it."
               }
             }
           }
@@ -1703,7 +1704,8 @@
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "cancelUnstakingAmount": "Amount to Unstake",
-                "cancelUnstakeConfirm": "Cancel Unstake"
+                "cancelUnstakeConfirm": "Cancel Unstake",
+                "memoOverflow": "Memo is too long. Please shorten it."
               }
             }
           },
@@ -2458,7 +2460,8 @@
               "insufficientFeeAmount": "Insufficient fee",
               "reject": "Reject",
               "sign": "Sign",
-              "notSimulated": "Simulating transaction..."
+              "notSimulated": "Simulating transaction...",
+              "memoOverflow": "Memo is too long. Please shorten it."
             },
             "components": {
               "TxMessage": {
@@ -2560,7 +2563,8 @@
               "decodedTxInfoDescription": "Some transactions may not show data because of decryption failures, but this doesn't affect the transaction execution.",
               "reject": "Reject",
               "sign": "Sign",
-              "notSimulated": "Simulating transaction..."
+              "notSimulated": "Simulating transaction...",
+              "memoOverflow": "Memo is too long. Please shorten it."
             }
           },
           "message": {

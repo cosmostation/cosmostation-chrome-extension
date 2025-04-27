@@ -14,6 +14,7 @@ import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee/CosmosFee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
+import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useAccount } from '@/hooks/cosmos/useAccount';
 import { useFees } from '@/hooks/cosmos/useFees';
@@ -34,7 +35,7 @@ import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, times } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex';
-import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
 
@@ -262,6 +263,15 @@ export default function Cosmos({ id }: CosmosProps) {
     return '';
   }, [addressRegex, recipientAddress, selectedNFT?.ownerAddress, t]);
 
+  const inputMemoErrorMessage = useMemo(() => {
+    if (inputMemo) {
+      if (gt(getUtf8BytesLength(inputMemo), COSMOS_MEMO_MAX_BYTES)) {
+        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.memoOverflow');
+      }
+    }
+    return '';
+  }, [inputMemo, t]);
+
   const errorMessage = useMemo(() => {
     if (!selectedNFT) {
       return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.notFoundNFT');
@@ -279,6 +289,10 @@ export default function Cosmos({ id }: CosmosProps) {
       return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.invalidOwnerAddress');
     }
 
+    if (inputMemoErrorMessage) {
+      return inputMemoErrorMessage;
+    }
+
     if (isEqualsIgnoringCase(selectedNFT?.ownerAddress, recipientAddress)) {
       return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.invalidAddress');
     }
@@ -288,7 +302,7 @@ export default function Cosmos({ id }: CosmosProps) {
     }
 
     return '';
-  }, [addressRegex, currentBaseFee, recipientAddress, selectedFeeOption.balance, selectedNFT, t]);
+  }, [addressRegex, currentBaseFee, inputMemoErrorMessage, recipientAddress, selectedFeeOption.balance, selectedNFT, t]);
 
   const handleOnClickConfirm = useCallback(async () => {
     try {
@@ -456,6 +470,8 @@ export default function Cosmos({ id }: CosmosProps) {
               multiline
               maxRows={3}
               label={t('pages.wallet.nft-send.$id.Entry.Cosmos.index.memo')}
+              error={!!inputMemoErrorMessage}
+              helperText={inputMemoErrorMessage}
               value={inputMemo}
               onChange={(e) => setInputMemo(e.target.value)}
             />

@@ -12,6 +12,7 @@ import FeeSettingBottomSheet from '@/components/Fee/CosmosFee/components/FeeSett
 import InformationPanel from '@/components/InformationPanel';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
+import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useAdditionalFee } from '@/hooks/cosmos/useAdditionalFee';
@@ -36,8 +37,9 @@ import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signDirect } from '@/utils/cosmos/msg';
 import { decodeProtobufMessage, protoTxBytes } from '@/utils/cosmos/proto';
 import { toUint8Array } from '@/utils/crypto';
-import { ceil, divide, equal, gte, times } from '@/utils/numbers';
+import { ceil, divide, equal, gt, gte, times } from '@/utils/numbers';
 import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getUtf8BytesLength } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
@@ -285,6 +287,15 @@ export default function Entry({ request, chain }: EntryProps) {
     [decodedTxData.data, doc],
   );
 
+  const inputMemoErrorMessage = useMemo(() => {
+    if (signingMemo) {
+      if (gt(getUtf8BytesLength(signingMemo), COSMOS_MEMO_MAX_BYTES)) {
+        return t('pages.popup.cosmos.sign.direct.entry.memoOverflow');
+      }
+    }
+    return '';
+  }, [signingMemo, t]);
+
   const errorMessage = useMemo(() => {
     if (!gte(alternativeFeeAsset?.balance || '0', baseFee) && isCheckBalance && !fee?.granter && !fee?.payer) {
       return t('pages.popup.cosmos.sign.direct.entry.insufficientFeeAmount');
@@ -294,8 +305,12 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.direct.entry.notSimulated');
     }
 
+    if (inputMemoErrorMessage) {
+      return inputMemoErrorMessage;
+    }
+
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, isCheckBalance, isEditFee, simulate.isFetched, t]);
+  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, inputMemoErrorMessage, isCheckBalance, isEditFee, simulate.isFetched, t]);
 
   const handleOnSign = async () => {
     try {

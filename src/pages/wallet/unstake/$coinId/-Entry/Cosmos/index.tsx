@@ -16,6 +16,7 @@ import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
+import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useAccount } from '@/hooks/cosmos/useAccount';
 import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useFees } from '@/hooks/cosmos/useFees';
@@ -37,7 +38,7 @@ import { cosmosURL } from '@/utils/crypto/cosmos';
 import { getDayFromSeconds } from '@/utils/date';
 import { ceil, gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
+import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import ValidatorBottomSheet from './components/ValidatorBottomSheet';
@@ -336,6 +337,15 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     return '';
   }, [availableUnstakeDisplayAmount, displayUnstakeAmount, t]);
 
+  const inputMemoErrorMessage = useMemo(() => {
+    if (inputMemo) {
+      if (gt(getUtf8BytesLength(inputMemo), COSMOS_MEMO_MAX_BYTES)) {
+        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.memoOverflow');
+      }
+    }
+    return '';
+  }, [inputMemo, t]);
+
   const errorMessage = useMemo(() => {
     if (!selectedUnstakingCoin?.chain.isSupportStaking) {
       return t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.bankLocked');
@@ -351,6 +361,10 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
     if (unstakeAmountInputErrorMessage) {
       return unstakeAmountInputErrorMessage;
+    }
+
+    if (inputMemoErrorMessage) {
+      return inputMemoErrorMessage;
     }
 
     if (gt(currentDisplayFeeAmount, toDisplayDenomAmount(selectedFeeOption.balance, selectedFeeOption.decimals))) {
@@ -370,6 +384,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     baseAvailableAmount,
     currentDisplayFeeAmount,
     displayUnstakeAmount,
+    inputMemoErrorMessage,
     selectedFeeOption.balance,
     selectedFeeOption.decimals,
     selectedUnstakingCoin?.chain.isSupportStaking,
@@ -564,6 +579,8 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
               multiline
               maxRows={3}
               label={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.memo')}
+              error={!!inputMemoErrorMessage}
+              helperText={inputMemoErrorMessage}
               value={inputMemo}
               onChange={(e) => setInputMemo(e.target.value)}
             />

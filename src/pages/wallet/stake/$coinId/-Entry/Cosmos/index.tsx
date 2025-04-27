@@ -17,6 +17,7 @@ import InformationPanel from '@/components/InformationPanel';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
+import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useAccount } from '@/hooks/cosmos/useAccount';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
@@ -36,7 +37,7 @@ import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, divide, fix, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
+import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
 import {
@@ -357,6 +358,15 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     t,
   ]);
 
+  const inputMemoErrorMessage = useMemo(() => {
+    if (inputMemo) {
+      if (gt(getUtf8BytesLength(inputMemo), COSMOS_MEMO_MAX_BYTES)) {
+        return t('pages.wallet.send.$coinId.Entry.Cosmos.index.memoOverflow');
+      }
+    }
+    return '';
+  }, [inputMemo, t]);
+
   const errorMessage = useMemo(() => {
     if (!selectedStakingCoin?.chain.isSupportStaking) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.bankLocked');
@@ -378,12 +388,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.invalidAmount');
     }
 
+    if (inputMemoErrorMessage) {
+      return inputMemoErrorMessage;
+    }
+
     if (!stakeAminoTx) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.failedToCalculateTransaction');
     }
 
     return '';
-  }, [baseAvailableAmount, displayStakeAmount, selectedStakingCoin?.chain.isSupportStaking, stakeAminoTx, stakeAmountInputErrorMessage, t]);
+  }, [
+    baseAvailableAmount,
+    displayStakeAmount,
+    inputMemoErrorMessage,
+    selectedStakingCoin?.chain.isSupportStaking,
+    stakeAminoTx,
+    stakeAmountInputErrorMessage,
+    t,
+  ]);
 
   const handleOnClickMax = () => {
     if (selectedStakingCoin && selectedFeeOption && selectedStakingCoin?.asset.id === selectedFeeOption.denom) {
@@ -588,6 +610,8 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
               multiline
               maxRows={3}
               label={t('pages.wallet.stake.$coinId.entry.memo')}
+              error={!!inputMemoErrorMessage}
+              helperText={inputMemoErrorMessage}
               value={inputMemo}
               onChange={(e) => setInputMemo(e.target.value)}
             />
