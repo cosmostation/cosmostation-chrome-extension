@@ -3,24 +3,25 @@ import { styled } from '@mui/material/styles';
 import OutlinedInput from '../../../common/OutlinedInput';
 import TextButton from '../../../common/TextButton';
 
-import backgroungImg from '@/assets/images/backgroundImage/background.png';
+import backgroundImg from '@/assets/images/backgroundImage/background.png';
 
-export const FormContainer = styled('form')(({ theme }) => ({
+export const FormContainer = styled('form')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
   width: '100%',
   padding: '1.2rem',
-
   boxSizing: 'border-box',
 
-  backgroundImage: `url(${backgroungImg})`,
-  backgroundSize: 'cover',
+  backgroundImage: `url(${backgroundImg})`,
+  backgroundSize: 'auto',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
-  backgroundColor: theme.palette.common.black,
+  backgroundColor: '#101011',
+
+  overflow: 'hidden',
   position: 'relative',
-}));
+});
 
 export const StyledInputContainer = styled('div')({
   position: 'absolute',
