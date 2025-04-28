@@ -41,7 +41,7 @@
         "Cosmos": {
           "index": {
             "title": "Stake & Earn {{symbol}}",
-            "reward": "Reward",
+            "reward": "Rewards",
             "stake": "Stake",
             "claim": "Claim",
             "compound": "Compound",
@@ -182,8 +182,8 @@
                   "networkFee": "Network Fee",
                   "feeToken": "Fee Token",
                   "gasAmount": "Gas Amount",
-                  "maxbaseFee": "Max Base Fee",
-                  "priorityFee": "Priority Fee",
+                  "maxbaseFee": "Max base fee per gas (GWEI)",
+                  "priorityFee": "Max priority fee per gas (GWEI)",
                   "inform": "How Network Fees are paid",
                   "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
                   "done": "Setup Complete"
@@ -196,7 +196,7 @@
                   "networkFee": "Network Fee",
                   "feeToken": "Fee Token",
                   "gasAmount": "Gas Amount",
-                  "maxbaseFee": "Max Base Fee",
+                  "maxbaseFee": "Max base fee per gas (GWEI)",
                   "inform": "How Network Fees are paid",
                   "informDescription": "Network fees are paid to the blockchain network, not to the Cosmostation wallet app",
                   "done": "Setup Complete",

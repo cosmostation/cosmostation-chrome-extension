@@ -13,7 +13,7 @@ type EpochIndicatorProps = {
 };
 
 export default function EpochIndicator({ coinId }: EpochIndicatorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: latestSystemState } = useGetLatestSuiSystemState({ coinId });
 
   const currentEpoch = latestSystemState?.result?.epoch || '-';
@@ -35,7 +35,11 @@ export default function EpochIndicator({ coinId }: EpochIndicatorProps) {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        setRemainingTime(`After ${String(hours).padStart(2, '0')}h :${String(minutes).padStart(2, '0')}m :${String(seconds).padStart(2, '0')}s,`);
+        if (i18n.resolvedLanguage === 'ko') {
+          setRemainingTime(`${String(hours).padStart(2, '0')}시 :${String(minutes).padStart(2, '0')}분 :${String(seconds).padStart(2, '0')}초 후,`);
+        } else {
+          setRemainingTime(`After ${String(hours).padStart(2, '0')}h :${String(minutes).padStart(2, '0')}m :${String(seconds).padStart(2, '0')}s,`);
+        }
       } else {
         setRemainingTime('00:00:00');
       }
@@ -45,7 +49,7 @@ export default function EpochIndicator({ coinId }: EpochIndicatorProps) {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [epochDurationMs, epochStartTimestampMs]);
+  }, [epochDurationMs, epochStartTimestampMs, i18n.resolvedLanguage]);
 
   return (
     <Container>

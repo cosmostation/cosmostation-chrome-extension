@@ -310,11 +310,11 @@
     "ChainListBottomSheet": {
       "index": {
         "allNetwork": "모든 체인",
-        "customNetwork": "체인을 찾을 수 없습니까?\n직접 추가 할 수 있습니다",
-        "network": "체인",
-        "searchPlaceholder": "체인 검색 (예 : Bitcoin)",
-        "switchCoinType": "주소 유형 변경",
-        "title": "체인을 선택하세요"
+        "customNetwork": "찾으시는 네트워크가 없다면,\n커스텀 네트워크를 직업 등록할 수 있습니다.",
+        "network": "네트워크",
+        "searchPlaceholder": "네트워크 검색 (예 : Bitcoin)",
+        "switchCoinType": "코인 타입 변경",
+        "title": "네트워크를 선택해주세요"
       }
     },
     "CheckLegacyAddressBalanceBottomSheet": {
@@ -322,7 +322,7 @@
         "contentBody": "레거시 주소애서 자산을 발견했습니다.\n선택된 주소 유형이 보유한 코인들이 포트폴리오에 표시되며 선택하지 않으면 기본 주소가 적용됩니다.",
         "contentTitle": "레거시 지갑에 자산이 있습니다",
         "goToSetUp": "설정하기",
-        "infoBody": "포트폴리오 > 체인 필터 > 주소 유형 변경 메뉴에서 언제든지 주소 유형을 다시 설정할 수 있습니다",
+        "infoBody": "포트폴리오 > 체인 필터 > 코인 타입 변경 메뉴에서 언제든지 주소 유형을 다시 설정할 수 있습니다",
         "infoTitle": "기본 주소 유형이 권장됩니다.",
         "later": "나중에",
         "title": "주소 유형을 설정하세요"
@@ -351,7 +351,7 @@
     "DeleteConfirmBottomSheet": {
       "index": {
         "delete": "삭제",
-        "header": "삭제하시겠습니까?"
+        "header": "정말 삭제하시겠어요?"
       }
     },
     "EthermintFilterChainSelectBox": {
@@ -374,14 +374,14 @@
     "Fee": {
       "AptosFee": {
         "index": {
-          "continue": "계속하다",
-          "networkFee": "트랜잭션 수수료"
+          "continue": "계속하기",
+          "networkFee": "네트워크 수수료"
         }
       },
       "BitcoinFee": {
         "index": {
-          "continue": "계속하다",
-          "networkFee": "트랜잭션 수수료"
+          "continue": "계속하기",
+          "networkFee": "네트워크 수수료"
         }
       },
       "Components": {
@@ -389,12 +389,12 @@
           "components": {
             "FeeCustomOverlay": {
               "index": {
-                "done": "완료",
-                "feeToken": "수수료 토큰",
-                "gasAmount": "가스 양",
-                "inform": "트랜잭션 수수료가 지불되는 방법",
-                "informDescription": "트랜잭션 수수료은 Cosmostation지갑 앱이 아닌 블록 체인 네트워크에 지불됩니다.",
-                "networkFee": "트랜잭션 수수료",
+                "done": "설정 완료",
+                "feeToken": "Fee Token",
+                "gasAmount": "Gas Amount",
+                "inform": "네트워크 수수료는 어떻게 지불되나요?",
+                "informDescription": "네트워크 수수료는 Cosmostation 지갑 앱이 아닌, 해당 블록체인 네트워크에 직접 지불됩니다.",
+                "networkFee": "네트워크 수수료",
                 "selectFeeToken": "수수료 토큰을 선택하세요"
               }
             }
@@ -404,8 +404,8 @@
       "CosmosFee": {
         "FeeSettingBottomSheet": {
           "index": {
-            "custom": "커스텀",
-            "customDescription": "고급 설정을 원하십니까?",
+            "custom": "사용자 지정",
+            "customDescription": "고급 설정을 사용하시겠어요?",
             "title": "수수료 옵션을 선택하세요"
           }
         },
@@ -415,14 +415,14 @@
               "FeeCustomOverlay": {
                 "index": {
                   "done": "설정 완료",
-                  "feeToken": "수수료 토큰",
-                  "gasAmount": "가스 양",
-                  "gasRate": "가스 단가",
-                  "inform": "트랜잭션 수수료가 지불되는 방법",
-                  "informDescription": "트랜잭션 수수료는 Cossmentation 지갑 앱이 아닌 블록 체인 네트워크에 지불됩니다.",
-                  "inputGasAmountError": "잘못된 가스 양",
-                  "inputGasRateError": "잘못된 가스 속도",
-                  "networkFee": "트랜잭션 수수료",
+                  "feeToken": "Fee Token",
+                  "gasAmount": "Gas Amount",
+                  "gasRate": "Gas Rate",
+                  "inform": "네트워크 수수료는 어떻게 지불되나요?",
+                  "informDescription": "네트워크 수수료는 Cosmostation 지갑 앱이 아닌, 해당 블록체인 네트워크에 직접 지불됩니다.",
+                  "inputGasAmountError": "잘못된 Gas Amount입니다",
+                  "inputGasRateError": "잘못된 Gas Rate입니다",
+                  "networkFee": "네트워크 수수료",
                   "selectFeeToken": "수수료 토큰을 선택하세요"
                 }
               }
@@ -430,8 +430,8 @@
           }
         },
         "index": {
-          "continue": "계속",
-          "networkFee": "트랜잭션 수수료"
+          "continue": "계속하기",
+          "networkFee": "네트워크 수수료"
         }
       },
       "EVMFee": {
@@ -441,30 +441,30 @@
               "EIP1559FeeCustomOverlay": {
                 "index": {
                   "done": "설정 완료",
-                  "feeToken": "수수료 토큰",
-                  "gasAmount": "가스 양",
-                  "inform": "트랜잭션 수수료가 지불되는 방법",
-                  "informDescription": "트랜잭션 수수료는 Cossmentation지갑 앱이 아닌 블록 체인 네트워크에 지불됩니다.",
-                  "inputGasAmountError": "잘못된 가스 양",
-                  "inputMaxBaseFeeAmountError": "잘못된 최대 기본 수수료 금액",
-                  "inputPriorityFeeAmountError": "우선 순위 수수료는 최대 기본 수수료보다 작아야합니다",
-                  "maxbaseFee": "최대 기본 요금",
-                  "networkFee": "트랜잭션 수수료",
-                  "priorityFee": "우선 수수료"
+                  "feeToken": "Fee Token",
+                  "gasAmount": "Gas Amount",
+                  "inform": "네트워크 수수료는 어떻게 지불되나요?",
+                  "informDescription": "네트워크 수수료는 Cosmostation 지갑 앱이 아닌, 해당 블록체인 네트워크에 직접 지불됩니다.",
+                  "inputGasAmountError": "잘못된 Gas Amount입니다",
+                  "inputMaxBaseFeeAmountError": "잘못된 Max Base Fee입니다",
+                  "inputPriorityFeeAmountError": "Priority Fee는 Max Base Fee보다 작아야합니다",
+                  "maxbaseFee": "Max base fee per gas (GWEI)",
+                  "networkFee": "네트워크 수수료",
+                  "priorityFee": "Max priority fee per gas (GWEI)"
                 }
               },
               "GasPriceCustomOverlay": {
                 "index": {
                   "done": "설정 완료",
-                  "feeToken": "수수료 토큰",
-                  "gasAmount": "가스 양",
-                  "gasPrice": "가스 단가",
-                  "inform": "트랜잭션 수수료가 지불되는 방법",
-                  "informDescription": "트랜잭션 수수료는 Cossmentation지갑 앱이 아닌 블록 체인 네트워크에 지불됩니다.",
-                  "inputGasAmountError": "잘못된 가스 양",
-                  "inputMaxBaseFeeAmountError": "잘못된 최대 기본 수수료 금액",
-                  "maxbaseFee": "최대 기본 요금",
-                  "networkFee": "트랜잭션 수수료"
+                  "feeToken": "Fee Token",
+                  "gasAmount": "Gas Amount",
+                  "gasPrice": "Gas Price",
+                  "inform": "네트워크 수수료는 어떻게 지불되나요?",
+                  "informDescription": "네트워크 수수료는 Cosmostation 지갑 앱이 아닌, 해당 블록체인 네트워크에 직접 지불됩니다.",
+                  "inputGasAmountError": "잘못된 Gas Amount입니다",
+                  "inputMaxBaseFeeAmountError": "잘못된 Max Base Fee입니다",
+                  "maxbaseFee": "Max base fee per gas (GWEI)",
+                  "networkFee": "네트워크 수수료"
                 }
               }
             }
@@ -475,39 +475,39 @@
             "components": {
               "OptionButton": {
                 "index": {
-                  "feeToken": "수수료 토큰"
+                  "feeToken": "Fee Token"
                 }
               }
             }
           }
         },
         "index": {
-          "continue": "계속",
-          "networkFee": "트랜잭션 수수료"
+          "continue": "계속하기",
+          "networkFee": "네트워크 수수료"
         }
       },
       "SuiFee": {
         "index": {
-          "continue": "계속",
-          "networkFee": "트랜잭션 수수료"
+          "continue": "계속하기",
+          "networkFee": "네트워크 수수료"
         }
       },
       "index": {
-        "continue": "계속",
-        "networkFee": "트랜잭션 수수료"
+        "continue": "계속하기",
+        "networkFee": "네트워크 수수료"
       }
     },
     "FeeSettingBottomSheet": {
       "components": {
         "OptionButton": {
           "index": {
-            "feeToken": "수수료 토큰 :"
+            "feeToken": "Fee Token :"
           }
         }
       },
       "index": {
         "custom": "커스텀",
-        "customDescription": "고급 설정을 원하십니까?",
+        "customDescription": "고급 설정을 사용하시겠어요?",
         "title": "수수료 옵션을 선택하세요"
       }
     },
@@ -515,7 +515,7 @@
       "index": {
         "cancel": "취소",
         "confirm": "확인",
-        "title": "최종 검토"
+        "title": "완료 전에 한 번 더 검토해 주세요."
       }
     },
     "FooterCoinPrice": {
@@ -596,22 +596,22 @@
           "index": {
             "claim": "리워드 클레임",
             "compound": "컴파운딩",
-            "reward": "리워드 수량",
+            "reward": "Rewards",
             "stake": "스테이킹",
-            "staked": "스테이킹 수량",
-            "title": "스테이킹",
+            "staked": "Staked",
+            "title": "Stake & Earn {{symbol}}",
             "unstake": "언스테이킹"
           }
         },
         "Sui": {
           "index": {
             "available": "사용 가능한 수량",
-            "earned": "리워드 수량",
+            "earned": "Earned",
             "stake": "스테이킹",
-            "staked": "스테이킹 수량",
+            "staked": "Staked",
             "suiStake": "수이 스테이킹",
-            "title": "스테이킹",
-            "totalStaked": "스테이킹 총 수량",
+            "title": "Stake & Earn {{symbol}}",
+            "totalStaked": "Total Staked",
             "unstake": "언스테이킹"
           }
         }
@@ -793,12 +793,12 @@
             "HdPathBottomSheet": {
               "index": {
                 "confirm": "확인",
-                "description": "동일한 니모닉을 사용해 다른 HD 경로로 새 계정을 만들 수 있습니다.",
-                "emptyHdPath": "HD 경로를 입력하세요",
-                "header": "HD 경로 설정",
-                "invalidHdPathIndex": "유효한 HD 경로를 입력하세요",
-                "lastHdPath": "HD 경로",
-                "majorChains": "주요 체인"
+                "description": "같은 니모닉 구문을 이용하면서도, HD path만 다르게 설정하여 새로운 계정을 만들 수 있습니다.",
+                "emptyHdPath": "HD Path를 입력하세요",
+                "header": "HD Path 설정",
+                "invalidHdPathIndex": "유효한 HD Path를 입력하세요",
+                "lastHdPath": "Last HD Path",
+                "majorChains": "주요 네트워크"
               }
             }
           },
@@ -806,8 +806,8 @@
             "accountCreated": "계정이 생성되었습니다",
             "addressAndBalanceFetchingError": "주소와 보유한 코인의 수량을 가져 오지 못했습니다",
             "clearAll": "지우기",
-            "hdPathDescription": "사용자 정의 HD 경로를 사용 하시겠습니까?",
-            "hdPathSetting": "HD 경로 설정",
+            "hdPathDescription": "사용자 정의 HD Path를 사용 하시겠습니까?",
+            "hdPathSetting": "HD Path 설정",
             "import": "가져오기",
             "importAllAssets": "자산 가져오기",
             "importBottmSheetContentsSubTitle": "모든 자산을 가져오시겠습니까? \n\n자산이 많으면 시간이 걸릴 수 있습니다.",
@@ -887,17 +887,17 @@
               "components": {
                 "StakingItem": {
                   "index": {
-                    "claimRewards": "리워드 수령하기",
-                    "claimRewardsDescription": "누적된 스테이킹 리워드를 수령하세요",
-                    "commission": "커미션",
+                    "claimRewards": "리워드 받기",
+                    "claimRewardsDescription": "누적된 스테이킹 보상을 수령하세요",
+                    "commission": "Commission",
                     "compounding": "컴파운딩",
-                    "compoundingDescription": "미래의 수입을 높이기 위해 리워드를 재투자합니다",
-                    "reward": "리워드",
+                    "compoundingDescription": "리워드를 다시 스테이킹하여 많은 수익을 얻어보세요",
+                    "reward": "Reward",
                     "stake": "스테이킹",
-                    "stakeDescription": "보상을 위해 토큰을 스테이킹하세요",
-                    "staked": "스테이킹 수량",
+                    "stakeDescription": "코인을 예치하고 시간에 따라 보상을 받아보세요.",
+                    "staked": "Staked",
                     "unstake": "언스테이킹",
-                    "unstakeDescription": "스테이킹한 토큰을 출금합니다. 지연이 발생할 수 있습니다."
+                    "unstakeDescription": "스테이킹한 코인을 출금하세요. 대기 시간이 발생할 수 있어요."
                   }
                 },
                 "UnstakingItem": {
@@ -913,26 +913,26 @@
               "components": {
                 "PendingItem": {
                   "index": {
-                    "earned": "리워드",
-                    "objectId": "오브젝트 ID : {{objectId}}",
-                    "staked": "스테이킹 수량",
-                    "startEarning": "스테이킹 시작",
-                    "totalStaked": "총 스테이킹"
+                    "objectId": "Object ID : {{objectId}}",
+                    "totalStaked": "Total Staked",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "startEarning": "Start Earning"
                   }
                 },
                 "StakingItem": {
                   "index": {
-                    "claimRewards": "리워드 수령하기",
-                    "claimRewardsDescription": "누적된 스테이킹 리워드를 수령하세요",
-                    "earned": "리워드 수량",
-                    "objectId": "오브젝트 ID : {{objectId}}",
+                    "claimRewards": "리워드 받기",
+                    "claimRewardsDescription": "누적된 스테이킹 보상을 수령하세요",
+                    "earned": "Earned",
+                    "objectId": "Object ID : {{objectId}}",
                     "stake": "스테이킹",
-                    "stakeDescription": "보상을 위해 토큰을 스테이킹하세요",
-                    "staked": "스테이킹 수량",
-                    "startEarning": "스테이킹 시작",
-                    "totalStaked": "스테이킹 총 수량",
+                    "stakeDescription": "코인을 예치하고 시간에 따라 보상을 받아보세요.",
+                    "staked": "Staked",
+                    "startEarning": "Start Earning",
+                    "totalStaked": "Total Staked",
                     "unstake": "언스테이킹",
-                    "unstakeDescription": "스테이킹한 토큰을 출금합니다. 지연이 발생할 수 있습니다."
+                    "unstakeDescription": "스테이킹한 코인을 출금하세요. 대기 시간이 발생할 수 있어요."
                   }
                 }
               }
@@ -948,21 +948,21 @@
           "components": {
             "SuiStakingInfoBottomSheet": {
               "index": {
-                "available": "사용 가능한 수량",
+                "available": "Available",
                 "epoch": "에포치(#{{epoch}})",
-                "estApr": "예상, APR",
-                "goToSuiStake": "스테이킹",
-                "header": "수이 스테이킹 정보",
+                "estApr": "Est. APR",
+                "goToSuiStake": "SUI 스테이킹 시작하기",
+                "header": "SUI 스테이킹 한눈에 보기",
                 "subtitle1": "에포치는 24시간마다 생성됩니다.",
-                "subtitle2-1": "스테이킹을 시작했다면 다음 에포치까지 '대기중인'상태로 남아 있습니다.",
-                "subtitle2-2": "",
-                "subtitle3-1": "다음의 에포치가 끝난후 부터",
-                "subtitle3-2": ", 보상이 배포되며, 이후 에포치도 같은 방식으로 반복됩니다.",
-                "subtitle4": "보상은 복리로 누적되며 언스테이킹 시작 후 즉시 사용할 수 있습니다.",
-                "title1": "에포치 생성",
-                "title2": "대기 상태",
-                "title3": "리워드 분배",
-                "title4": "컴파운딩"
+                "subtitle2-1": "스테이킹을 시작하면, 현재 ",
+                "subtitle2-2": "가 종료될 때까지 '대기중' 상태로 유지됩니다",
+                "subtitle3-1": "다음",
+                "subtitle3-2": ",가 종료되면 리워드가 지급되며, 이후 에포치에서도 같은 방식으로 반복됩니다",
+                "subtitle4": "리워드는 복리로 누적되며, 언스테이킹 후 쌓인 리워드를 바로 받을 수 있습니다.",
+                "title1": "에포치가 시작됩니다",
+                "title2": "스테이킹 후 '대기'상태가 됩니다",
+                "title3": "리워드가 지급됩니다",
+                "title4": "리워드는 복리로 쌓입니다"
               }
             }
           },
@@ -970,10 +970,10 @@
             "Cosmos": {
               "index": {
                 "emptyStaking": "언스테이킹 없음",
-                "emptyStakingDescription": "현재는 언스테이킹이 없습니다",
-                "goToStake": "스테이킹 페이지로 가기",
-                "startStaking": "Cosmostation으로 스테이킹 시작하기",
-                "startStakingDescription": "스테이킹을 시작해 보상을 받고\n네트워크 생태계에 참여하세요"
+                "emptyStakingDescription": "현재 언스테이킹 중인 자산이 없습니다.",
+                "goToStake": "스테이킹 시작하기",
+                "startStaking": "COSMOSTATION과 함께 시작해보세요",
+                "startStakingDescription": "스테이킹을 통해 리워드를 받고,\n네트워크 성장에 함께할 수 있어요."
               }
             },
             "Sui": {
@@ -981,7 +981,7 @@
                 "EpochIndicator": {
                   "index": {
                     "currentEpoch": "현재 에포치",
-                    "nextRewardShare": "다음 보상이 배포될 예정입니다"
+                    "nextRewardShare": "다음 리워드를 받아보실 수 있어요."
                   }
                 }
               },
@@ -1124,17 +1124,17 @@
       "about": {
         "entry": {
           "termsOfService": "이용 약관",
-          "termsOfServiceDescription": "Cosmostation 서비스 이용에 대한 조건과 규정을 확인하세요.",
-          "privacy": "개인정보 처리방침",
-          "privacyDescription": "Cosmostation이 사용자 정보를 어떻게 보호하는지 알아보세요",
+          "termsOfServiceDescription": "서비스 이용에 대한 약관을 안내해드려요.",
+          "privacy": "개인정보 보호정책",
+          "privacyDescription": "데이터를 어떻게 보호하는지 안내해드려요.",
           "github": "GitHub",
-          "githubDescription": "Cosmostation의 오픈 소스 프로젝트를 확인하세요",
+          "githubDescription": "오픈소스 프로젝트를 확인해보세요.",
           "homepage": "홈페이지",
-          "homepageDescription": "공식 웹사이트를 방문하세요",
+          "homepageDescription": "Cosmostation의 공식 사이트를 방문해보세요.",
           "x": "X (Twitter)",
-          "xDescription": "X에서 최신 소식들을 확인하세요"
+          "xDescription": "최신 소식을 X에서 확인할 수 있습니다."
         },
-        "header": "정보"
+        "header": "앱 정보"
       },
       "address-book": {
         "add-address": {
@@ -1156,12 +1156,12 @@
             "cosmwasm": "Cosmwasm",
             "failedToGetChainId": "체인 ID확인에 실패했습니다.",
             "label": "라벨",
-            "memo": "메모 (옵션)",
+            "memo": "메모 입력 (선택사항)",
             "memoInfo": "메모를 입력하세요",
             "memoInfoDescription": "코스모스 생태계의 토큰을 메모없이 중앙 집중식 거래소에 입금하면 자금이 손실 될 수 있습니다.",
             "network": "체인",
             "pubkeyStyle": "Pubkey 스타일",
-            "searchNetwork": "체인 검색 (예 : Bitcoin)",
+            "searchNetwork": "네트워크 검색 (예 : Bitcoin)",
             "selectNetwork": "체인을 선택하세요",
             "universal": "Universal",
             "unversalAddressInfo": "공통 주소",
@@ -1188,7 +1188,7 @@
               "failedToDeleteAddress": "주소를 삭제하지 못했습니다",
               "failedToGetChainId": "체인 ID를 얻지 못했습니다",
               "label": "라벨",
-              "memo": "메모 (옵션)",
+              "memo": "메모 입력 (선택사항)",
               "network": "체인",
               "searchNetwork": "체인 검색 (예 : BITCOIN)",
               "selectNetwork": "체인을 선택하세요",
@@ -1317,8 +1317,8 @@
         "guideDescription": "앱 사용에 대한 도움말 제공",
         "language": "언어",
         "languageDescription": "앱에서 사용할 언어 선택",
-        "manageCustomNetwork": "커스텀 체인 관리",
-        "manageCustomNetworkDescription": "추가한 커스텀 체인 관리",
+        "manageCustomNetwork": "커스텀 네트워크 관리",
+        "manageCustomNetworkDescription": "추가한 커스텀 네트워크 관리",
         "min": "{{minutes}} 분",
         "never": "안 함",
         "preference": "Preference",
@@ -1403,13 +1403,13 @@
         },
         "entry": {
           "goToAdd": "추가하기",
-          "network": "체인",
-          "noCustomChains": "커스텀 체인이 없습니다",
-          "noCustomChainsDescription": "추가된 커스텀 체인이 없습니다",
-          "search": "체인 검색 (예 : BITCOIN)",
-          "importNetwork": "체인 추가"
+          "network": "네트워크",
+          "noCustomChains": "커스텀 네트워크가 없습니다",
+          "noCustomChainsDescription": "추가된 커스텀 네트워크가 없습니다",
+          "search": "네트워크 검색 (예 : BITCOIN)",
+          "importNetwork": "네트워크 가져오기"
         },
-        "header": "커스텀 체인 관리"
+        "header": "커스텀 네트워크 관리"
       },
       "wallet-prioritize": {
         "entry": {
@@ -1432,7 +1432,7 @@
       "backup-wallet": {
         "step1": {
           "entry": {
-            "continue": "계속",
+            "continue": "계속하기",
             "subTitle": "이 문구는 계정을 복구하는 유일한 방법입니다. \n이 니모닉을 잃으면 자산이 손실 될 수 있습니다.",
             "title": "니모닉을 기록하세요"
           },
@@ -1457,15 +1457,15 @@
         "entry": {
           "accountName": "계정 이름",
           "failToFindMnemonic": "니모닉을 찾지 못했습니다",
-          "lastHdPathIndex": "HD 경로",
+          "lastHdPathIndex": "Last HD Path",
           "loadingOverlayMessage": "보유 자산을 확인 중 이며, 이 단계는 조금 시간이 소요됩니다.\n잠시만 기다려주세요.",
           "loadingOverlayTitle": "보유한 자산 동기화 중...",
-          "majorNetwork": "주요 체인",
+          "majorNetwork": "주요 네트워크",
           "setUpComplete": "설정 완료",
           "setupFail": "설정에 실패했습니다",
           "setupSuccess": "설정에 성공했습니다",
-          "subTitle": "동일한 니모닉을 사용해 다른 HD 경로로 새 계정을 만들 수 있습니다.",
-          "title": "HD 경로 설정"
+          "subTitle": "동일한 니모닉을 사용해 다른 HD Path로 새 계정을 만들 수 있습니다.",
+          "title": "HD Path 설정"
         },
         "layout": {
           "header": "새 계정 생성"
@@ -1478,13 +1478,13 @@
               "accountNameUpdated": "계정 이름을 업데이트했습니다",
               "deleteAccount": "계정 삭제",
               "deleteAccountDescription": "이 계정을 삭제 하시겠습니까? \n계정을 삭제하기 전에 안전한 장소에서 니모닉을 백업하세요.",
-              "lastHdPath": "HD 경로",
-              "notBackedUp": "백업 안 됨",
+              "lastHdPath": "Last HD Path",
+              "notBackedUp": "아직 백업하지 않음",
               "successDeleteAccount": "계정 삭제에 성공했습니다",
               "viewMyMnemonic": "내 니모닉 보기",
               "viewMyMnemonicDescription": "니모닉 구문을 확인하여 지갑을 백업하거나 복구하세요",
-              "viewPrivateKey": "개인 키 보기 (각 체인 별)",
-              "viewPrivateKeyDescription": "각 체인에 대한 개인 키를 확인하세요"
+              "viewPrivateKey": "개인 키 보기 (각 네트워크 별)",
+              "viewPrivateKeyDescription": "각 네트워크에 대한 개인 키를 확인하세요"
             },
             "layout": {
               "header": "계정 세부 사항"
@@ -1492,7 +1492,7 @@
           },
           "components": {
             "MnemonicAccount": {
-              "lastHdPath": "HD 경로",
+              "lastHdPath": "Last HD Path",
               "myAccount": "내 계정"
             }
           },
@@ -1503,7 +1503,7 @@
             "editMnemonicNameDescription": "니모닉의 이름을 입력하세요 \n언제든지 니모닉 이름을 변경할 수 있습니다.",
             "mnemonicName": "니모닉 이름",
             "mnemonicWallet": "니모닉 지갑",
-            "notBackedUp": "백업 안 됨",
+            "notBackedUp": "아직 백업하지 않음",
             "successDeleteMnemonic": "니모닉을 삭제했습니다",
             "updateMnemonicNameSuccess": "니모닉 이름이 업데이트되었습니다",
             "viewMyMnemonic": "내 니모닉 보기",
@@ -1533,7 +1533,7 @@
           "MnemonicAccount": {
             "index": {
               "backUpNow": "지금 백업하기",
-              "notBackedUp": "(백업되지 않음)"
+              "notBackedUp": "(아직 백업하지 않음)"
             }
           }
         },
@@ -1579,10 +1579,10 @@
       },
       "switch-account": {
         "components": {
-          "backUpNow": "지금 백업",
+          "backUpNow": "지금 백업하기",
           "createNewWallet": "새 계정 생성",
-          "lastHdPath": "HD 경로",
-          "notBackedUp": "(백업되지 않음)",
+          "lastHdPath": "HD Path",
+          "notBackedUp": "(아직 백업하지 않음)",
           "switchAccountSuccess": "{{accountName}}으로 계정이 변경되었습니다"
         },
         "entry": {
@@ -1592,7 +1592,7 @@
           "importPrivateKeyDescription": "개인 키 복원이 완료되면 계정이 표시됩니다"
         },
         "layout": {
-          "addWallet": "지갑 추가",
+          "addWallet": "새 지갑 추가",
           "header": "계정 변경",
           "manage": "계정 관리"
         }
@@ -1670,53 +1670,53 @@
             "Cosmos": {
               "index": {
                 "accountPrefix": "계정 주소 접두사 (예 : cosmos)",
-                "addCustomNetwork": "커스텀 체인 추가",
+                "addCustomNetwork": "커스텀 네트워크 추가",
                 "advanced": "고급 설정 (선택 사항)",
-                "chainImage": "체인 이미지 URL (선택 사항)",
-                "chainName": "체인 이름",
+                "chainImage": "네트워크 이미지 URL (선택 사항)",
+                "chainName": "네트워크 이름 입력",
                 "coinTypePath": "코인 타입 (예 : 118)",
                 "decimals": "Decimals (예 : 6)",
                 "defaultGasLimit": "기본 가스 (예 : 300000)",
                 "denom": "denom (예 : uatom)",
-                "error": "체인을 추가하지 못했습니다",
+                "error": "네트워크를 추가하지 못했습니다",
                 "exploreURL": "블록 탐색기 URL (선택 사항)",
                 "gasRateAverage": "평균 가스 단가 (예 : 0.0025)",
                 "gasRateHigh": "높은 가스 단가 (예 : 0.025)",
                 "gasRateLow": "낮은 가스 단가 (예 : 0.00025)",
-                "invalidChainId": "이 체인은 이미 지원하고 있습니다",
-                "restURL": "REST URL",
-                "restURLError": "체인 정보를 얻지 못했습니다. Rest URL을 확인하세요.",
+                "invalidChainId": "이 네트워크는 이미 지원하고 있습니다",
+                "restURL": "REST URL 입력",
+                "restURLError": "네트워크 정보를 얻지 못했습니다. Rest URL을 확인하세요.",
                 "selectCosmwasm": "Cosmwasm을 활성화합니다",
                 "selectPubkeyStyle": "Pubkey 스타일을 선택하세요",
-                "success": "체인을 성공적으로 추가했습니다",
+                "success": "네트워크를 성공적으로 추가했습니다",
                 "symbol": "심볼 (예 : ATOM)",
                 "tokenImageURL": "토큰 이미지 URL (선택 사항)"
               }
             },
             "EVM": {
               "index": {
-                "addCustomNetwork": "커스텀 체인 추가",
-                "advanced": "고급 설정(선택 사항)",
-                "chainId": "체인 ID (예 : 1 또는 0x1)",
-                "chainImage": "체인 이미지 URL (선택 사항)",
-                "error": "체인을 추가하지 못했습니다",
+                "addCustomNetwork": "커스텀 네트워크 추가",
+                "advanced": "Advanced (Optional)",
+                "chainId": "Chain ID 입력",
+                "chainImage": "네트워크 이미지 URL (선택 사항)",
+                "error": "네트워크를 가져오지 못했습니다",
                 "exploreURL": "블록 탐색기 URL (선택 사항)",
-                "networkName": "체인 이름",
-                "restURLError": "체인 정보를 얻지 못하면 나머지 URL을 확인하세요.",
+                "networkName": "네트워크 이름 입력",
+                "restURLError": "네트워크 정보를 확인하지 못했습니다. RPC URL을 확인하세요.",
                 "rpcURL": "RPC URL",
-                "success": "체인을 성공적으로 추가했습니다",
+                "success": "네트워크를 성공적으로 가져왔습니다",
                 "symbol": "기호 (예 : ETH)",
                 "tokenImageURL": "토큰 이미지 URL (선택 사항)"
               }
             }
           },
           "entry": {
-            "network": "체인",
-            "searchNetwork": "체인 검색 (예 : BITCOIN)",
-            "selectNetwork": "체인을 선택하세요"
+            "network": "네트워크",
+            "searchNetwork": "네트워크 검색 (예 : BITCOIN)",
+            "selectNetwork": "네트워크를 선택하세요"
           },
           "layout": {
-            "header": "커스텀 체인 추가"
+            "header": "네트워크 가져오기"
           }
         },
         "nft": {
@@ -1735,7 +1735,7 @@
                 "invalidTokenIdTitle": "유효하지 않은 토큰 ID",
                 "networkError": "오류가 발생했습니다. \n나중에 다시 시도하세요",
                 "networkErrorTitle": "네트워크 오류",
-                "preview": "NFT 미리보기",
+                "preview": "NFT Preview",
                 "previewSubText": "자신의 NFT 정보를 입력하면 이미지가 표시됩니다.",
                 "success": "NFT를 성공적으로 추가했습니다",
                 "tokenId": "토큰 ID"
@@ -1758,8 +1758,8 @@
                 "invalidTokenIdTitle": "유효하지 않은 토큰 ID",
                 "networkError": "오류가 발생했습니다. \n나중에 다시 시도하세요",
                 "networkErrorTitle": "네트워크 오류",
-                "preview": "NFT 미리보기",
-                "previewSubText": "자신의 NFT 정보를 입력하면 이미지가 표시됩니다.",
+                "preview": "NFT Preview",
+                "previewSubText": "내 NFT정보를 입력하면 이미지가 자동으로 보여집니다",
                 "success": "NFT를 성공적으로 추가했습니다",
                 "tokenId": "토큰 ID",
                 "uri": "URI"
@@ -1767,9 +1767,9 @@
             }
           },
           "entry": {
-            "network": "체인",
-            "searchNetwork": "체인 검색 (예 : Ethereum)",
-            "selectNetwork": "체인을 선택하세요"
+            "network": "네트워크 선택",
+            "searchNetwork": "네트워크 검색 (예 : Ethereum)",
+            "selectNetwork": "네트워크를 선택하세요"
           },
           "layout": {
             "header": "NFT 가져오기"
@@ -1780,21 +1780,21 @@
         "components": {
           "coinTypeBottomSheet": {
             "index": {
-              "coinType": "{{chainName}} 주소 유형",
-              "description": "레거시 주소를 사용하면 호환성 문제가 발생할 수 있으므로 최신 기본 유형 주소를 사용하는 것이 좋습니다."
+              "coinType": "{{chainName}} 코인 타입",
+              "description": "기본으로 제공되는 최신 주소 유형 사용을 권장드립니다. 이전 주소를 사용할 경우 호환성 문제가 발생할 수 있습니다."
             }
           }
         },
         "entry": {
-          "info": "기본 주소 유형이 권장됩니다.",
-          "infoDescription": "선택한 주소 유형이 보유한 자산이 포트폴리오에 표시되며 기본 유형을 사용하는 것이 권장됩니다.",
-          "network": "체인",
-          "selected": "선택된 유형 :",
+          "info": "디폴트 코인 타입 사용을 권장합니다",
+          "infoDescription": "1개의 코인의 타입을 설정해주세요. 선택한 코인 타입의 에셋들이 포트폴리오에 노출되며 디폴트 타입 사용을 권장합니다.",
+          "network": "네트워크",
+          "selected": "Selected :",
           "successSwitch": "지갑 주소가 업데이트되었습니다",
-          "type": "{{accountType}} 유형"
+          "type": "{{accountType}} TYPE"
         },
         "layout": {
-          "header": "주소 유형 설정"
+          "header": "코인 타입 변경"
         }
       },
       "visibility": {
@@ -1823,7 +1823,7 @@
         "network": {
           "entry": {
             "chainId": "체인 ID :",
-            "deleteCustomChainDescription": "이 커스텀 체인을 삭제 하시겠습니까? \n\n체인을 다시 추가하려면 정보를 다시 입력해야합니다.",
+            "deleteCustomChainDescription": "이 커스텀 네트워크를 삭제하시겠습니까?\n삭제하면 다시 추가할 때 정보를 재입력해야 합니다.",
             "importNetwork": "체인 추가",
             "network": "체인",
             "noCustomChains": "커스텀 체인이 없습니다",
@@ -1832,7 +1832,7 @@
             "viewTestnet": "TestNet"
           },
           "layout": {
-            "header": "커스텀 체인 관리"
+            "header": "커스텀 네트워크 관리"
           }
         },
         "nfts": {
@@ -1840,7 +1840,7 @@
           "entry": {
             "deleteCustomNFTDescription": "해당 NFT를 삭제 하시겠습니까? \n삭제 후 NFT를 다시 추가하려면 정보를 다시 입력해야합니다.",
             "importNFT": "NFT 가져오기",
-            "searchPlaceholder": "NFT를 검색"
+            "searchPlaceholder": "NFT 검색"
           },
           "headerTitle": "NFT 등록 정보",
           "layout": {
@@ -1861,13 +1861,13 @@
       "components": {
         "CurrentDapp": {
           "index": {
-            "currentDapp": "현재 연결된 DAPP"
+            "currentDapp": "현재 연결중인 DAPP"
           }
         },
         "DappItem": {
           "index": {
-            "totalTx": "총 사인한 TX :",
-            "transaction": "{{totalTxCount}}개"
+            "totalTx": "Total Tx:",
+            "transaction": "{{totalTxCount}} Transaction"
           }
         },
         "DisconnectBottomSheet": {
@@ -1880,16 +1880,16 @@
         }
       },
       "entry": {
-        "alphabeticalAsc": "알파벳 ASC. (A-> Z)",
-        "connectedDapps": "연결된 Dapps: {{dappCount}}",
-        "connectedDateDesc": "연결 날짜 내림차순 (최신 → 오래된 순)",
-        "searchPlaceholder": "Dapp 검색 (이름, URL)",
+        "alphabeticalAsc": "알파벳 순 (A -> Z)",
+        "connectedDapps": "Dapp 연결 내역: {{dappCount}}",
+        "connectedDateDesc": "연결 날짜순 정렬 (최신 순)",
+        "searchPlaceholder": "Dapp 이름, URL 검색",
         "noDapps": "디앱 연결 내역이 없습니다",
         "noDappsDescription": "여기에서 연결된 디앱을 확인할 수 있습니다"
       },
       "layout": {
-        "disconnectAll": "전체 연결 해제",
-        "header": "DAPPS 관리"
+        "disconnectAll": "모두 연결 해제",
+        "header": "Dapp 관리"
       }
     },
     "nft-detail": {
@@ -2026,7 +2026,7 @@
           "index": {
             "additionalFee": "추가 요금",
             "network": "체인",
-            "networkFee": "트랜잭션 수수료",
+            "networkFee": "네트워크 수수료",
             "totalFee": "총 요금",
             "uncertainFee": "확인되지 않은 수수료"
           }
@@ -2405,7 +2405,7 @@
         "components": {
           "index": {
             "copied": "복사",
-            "hdPath": "HD 경로 :"
+            "hdPath": "HD Path :"
           }
         },
         "entry": {
@@ -2424,13 +2424,13 @@
                 "bankLocked": "해당 기능은 현재 비활성화되었습니다.",
                 "cancelUnstake": "{{symbol}} 언스테이킹 취소",
                 "cancelUnstakeConfirm": "언스테이킹 취소",
-                "cancelUnstakeReview": "언스테이킹 취소를 확인하세요",
-                "cancelUnstakeReviewDescription": "언스테이킹 취소를 원하십니까? \n\n이 조치는 완료되면 취소 할 수 없습니다.",
+                "cancelUnstakeReview": "언스테이킹 취소 최종 확인",
+                "cancelUnstakeReviewDescription": "언스테이킹 취소 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다",
                 "cancelUnstakingAmount": "언스테이킹 수량",
                 "failedToCalculateTransaction": "트랜잭션을 생성하지 못했습니다",
                 "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
-                "memo": "메모 (옵션)",
-                "stakingCoin": "{{chainname}} 스테이킹 코인",
+                "memo": "메모 입력 (선택사항)",
+                "stakingCoin": "{{chainName}} 스테이킹 코인",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "unstakingAmount": "언스테이킹 수량",
@@ -2451,29 +2451,29 @@
               "Cosmos": {
                 "index": {
                   "bankLocked": "클레임 기능은 현재 비활성화되었습니다.",
-                  "claimAllRewards": "모든 리워드 수령",
-                  "claimAllRewardsReview": "모든 리워드 수령 확인",
-                  "claimAllRewardsReviewDescription": "모든 리워드 수령을 진행하고 싶습니까? \n\n이 조치는 완료되면 취소 할 수 없습니다.",
-                  "claimRewards": "리워드 수령",
+                  "claimAllRewards": "모든 리워드 받기",
+                  "claimAllRewardsReview": "모든 리워드 받기 최종 확인",
+                  "claimAllRewardsReviewDescription": "리워드를 받기 전 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
+                  "claimRewards": "리워드 받기",
                   "claimSymbolRewards": "{{symbol}} 리워드 보상",
                   "failedToCalculateTransaction": "Tx를 생성하지 못했습니다",
-                  "inform": "리워드 수령 주소",
-                  "informDescription": "{{address}}\n리워드는 위 주소로 전송됩니다",
+                  "inform": "보상을 받을 지갑 주소입니다.",
+                  "informDescription": "{{address}}\n해당 주소로 이자를 받을 예정입니다.",
                   "insufficientAmount": "수수료를 지불할 잔액이 부족합니다.",
-                  "memo": "메모 (옵션)",
-                  "noReward": "수령할 수 있는 리워드가 없습니다",
-                  "rewardAmount": "리워드 수량",
-                  "stakingCoin": "{{chainname}} 스테이킹 코인",
+                  "memo": "메모 입력 (선택사항)",
+                  "noReward": "받을 수 있는 리워드가 없습니다",
+                  "rewardAmount": "받을 리워드 수량",
+                  "stakingCoin": "{{chainName}} 스테이킹 코인",
                   "subtitle": "{{symbol}} + {{coinCount}} 토큰",
                   "txProcessing": "트랜잭션 처리 중",
                   "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                  "validator": "벨리데이터"
+                  "validator": "벨리데이터 선택"
                 }
               }
             }
           },
           "layout": {
-            "header": "리워드 수령"
+            "header": "리워드 받기"
           }
         }
       },
@@ -2482,17 +2482,17 @@
           "Entry": {
             "Cosmos": {
               "index": {
-                "claimCommissions": "커미션 수령",
-                "claimCommissionsReview": "커미션 수령 확인",
-                "claimCommissionsReviewDescription": "커미션 수령을 진행하고 싶습니까? \n\n이 조치는 완료되면 취소 할 수 없습니다.",
-                "claimSymbolCommissions": "{{symbol}} 커미션 수령",
+                "claimCommissions": "커미션 받기",
+                "claimCommissionsReview": "커미션 받기 최정 확인",
+                "claimCommissionsReviewDescription": "커미션을 받기 전 정보를 확인하시고, 계속 진행하시겠습니까?\n 이 작업은 완료 후 취소할 수 없습니다.",
+                "claimSymbolCommissions": "{{symbol}} 커미션 받기",
                 "commissionAmount": "커미션 수량",
                 "failedToCalculateTransaction": "트랜잭션을 생성하지 못했습니다",
                 "inform": "커미션 주소",
                 "informDescription": "{{address}}\n커미션은 위 주소로 입금됩니다",
                 "insufficientAmount": "수수료를 지불할 잔액이 부족합니다.",
-                "memo": "메모 (옵션)",
-                "noCommission": "수령할 수 있는 커미션이 없습니다",
+                "memo": "메모 입력 (선택사항)",
+                "noCommission": "받을 수 있는 커미션이 없습니다",
                 "stakingCoin": "{{chainName}} 스테이킹 코인",
                 "subtitle": "{{symbol}} + {{coinCount}} 코인",
                 "txProcessing": "트랜잭션 처리 중",
@@ -2502,7 +2502,7 @@
             }
           },
           "layout": {
-            "header": "커미션"
+            "header": "커미션 받기"
           }
         }
       },
@@ -2513,22 +2513,22 @@
               "Cosmos": {
                 "index": {
                   "bankLocked": "클레임 기능은 현재 비활성화되었습니다.",
-                  "claimRewards": "리워드 수령",
-                  "claimRewardsReview": "리워드 수령 확인",
-                  "claimRewardsReviewDescription": "리워드 수령을 진행하고 싶습니까? \n\n이 조치는 완료되면 취소 할 수 없습니다.",
-                  "claimSymbolRewards": "{{symbol}} 리워드 수령",
+                  "claimRewards": "리워드 받기",
+                  "claimRewardsReview": "리워드 받기 최종 확인",
+                  "claimRewardsReviewDescription": "리워드를 받기 전 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
+                  "claimSymbolRewards": "{{symbol}} 리워드 받기",
                   "failedToCalculateTransaction": "트랜잭션을 생성하지 못했습니다",
-                  "inform": "리워드 수령 주소",
-                  "informDescription": "{{address}}\n리워드는 위 주소로 전송됩니다",
+                  "inform": "보상을 받을 지갑 주소입니다.",
+                  "informDescription": "{{address}}\n해당 주소로 이자를 받을 예정입니다.",
                   "insufficientAmount": "잔액이 부족합니다",
-                  "memo": "메모 (옵션)",
-                  "noReward": "수령 가능한 리워드가 없습니다",
-                  "rewardAmount": "리워드 수량",
+                  "memo": "메모 입력 (선택사항)",
+                  "noReward": "받을 수 있는 리워드가 없습니다",
+                  "rewardAmount": "받을 리워드 수량",
                   "stakingCoin": "{{chainName}} 스테이킹 코인",
                   "subtitle": "{{symbol}} + {{coinCount}} 코인",
                   "txProcessing": "트랜잭션 처리 중",
                   "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                  "validator": "벨리데이터"
+                  "validator": "벨리데이터 선택"
                 }
               }
             },
@@ -2547,14 +2547,14 @@
                 "insufficientAmount": "잔액이 부족합니다",
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidOwnerAddress": "잘못된 소유자 주소",
-                "memo": "메모 (옵션)",
+                "memo": "메모 입력 (선택사항)",
                 "notFoundNFT": "NFT를 찾을 수 없습니다",
                 "notOwnedNFT": "소유하지 않은 NFT입니다",
                 "recipientAddress": "수신 지갑 주소 입력",
                 "recipientNetwork": "수신 네트워크 선택",
                 "sendNFT": "NFT 전송",
-                "sendNFTReview": "NFT전송 확인",
-                "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendNFTReview": "NFT전송 최종 확인",
+                "sendNFTReviewSub": "NFT를 전송하기 전에 정보를 꼭 확인해 주세요. \n이 작업은 완료 후 취소할 수 없습니다.",
                 "tokenId": "토큰 ID: {{tokenId}}",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
@@ -2576,8 +2576,8 @@
                 "recipientAddress": "수신 지갑 주소 입력",
                 "recipientNetwork": "수신 네트워크 선택",
                 "sendNFT": "NFT 전송",
-                "sendNFTReview": "NFT 전송 확인",
-                "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendNFTReview": "NFT 전송 최종 확인",
+                "sendNFTReviewSub": "NFT를 전송하기 전에 정보를 꼭 확인해 주세요. \n이 작업은 완료 후 취소할 수 없습니다.",
                 "tokenId": "토큰 ID: {{tokenId}}",
                 "tooLowAmount": "0보다 큰 금액을 입력해야합니다",
                 "txProcessing": "트랜잭션 처리 중",
@@ -2594,8 +2594,8 @@
                 "recipientAddress": "수신 지갑 주소 입력",
                 "recipientNetwork": "수신 네트워크 선택",
                 "sendNFT": "NFT 전송",
-                "sendNFTReview": "NFT 전송 확인",
-                "sendNFTReviewSub": "NFT전송 작업을 진행하고 싶습니까? \n이 조치는 완료되면 취소 할 수 없습니다.",
+                "sendNFTReview": "NFT 전송 최종 확인",
+                "sendNFTReviewSub": "NFT를 전송하기 전에 정보를 꼭 확인해 주세요. \n이 작업은 완료 후 취소할 수 없습니다.",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
               }
@@ -2610,7 +2610,7 @@
         "$coinId": {
           "entry": {
             "addressDescription1": "",
-            "addressDescription2": "체인의 자산들만 입금이 가능합니다",
+            "addressDescription2": "네트워크의 자산들만 입금이 가능합니다",
             "contract": "컨트랙트",
             "copied": "복사에 성공했습니다",
             "denom": "Denom",
@@ -2683,7 +2683,7 @@
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
                 "invalidRewardAmount": "잘못된 리워드 수량입니다.",
-                "memo": "메모 (옵션)",
+                "memo": "메모 입력 (선택사항)",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
@@ -2793,25 +2793,25 @@
             }
           },
           "entry": {
-            "commission": "커미션",
+            "commission": "Commission",
             "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
             "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
-            "inform": "예상 월간 리워드",
-            "inform1": "예상되는 {{symbol}} 스테이킹",
-            "inform2": "apr은 {{apr}}%입니다.",
+            "inform": "예상 월간 보상을 확인해보세요",
+            "inform1": "현재 {{symbol}} 스테이킹의 추정",
+            "inform2": "APR is {{apr}}%",
             "insufficientBalance": "잔액이 부족합니다",
-            "memo": "메모 (옵션)",
+            "memo": "메모 입력 (선택사항)",
             "noAmount": "금액을 입력하세요",
             "noValidator": "벨리데이터가 선택되지 않았습니다",
             "stake": "스테이킹",
-            "stakeReview": "스테이킹 확인",
-            "stakeReviewSub": "스테이킹을 진행하고 싶습니까? \n\n이 조치는 완료되면 취소 할 수 없습니다.",
-            "stakingAmount": "스테이킹 금액",
+            "stakeReview": "스테이킹 최종 확인",
+            "stakeReviewSub": "스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다.",
+            "stakingAmount": "스테이킹할 수량 입력",
             "stakingCoin": "{{chainName}} 스테이킹 코인",
             "tooLowAmount": "0보다 큰 금액을 입력하세요",
             "txProcessing": "트랜잭션 처리 중",
             "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-            "validator": "벨리데이터"
+            "validator": "벨리데이터 선택"
           },
           "layout": {
             "header": "스테이킹"
@@ -2907,42 +2907,42 @@
                 "index": {
                   "bankLocked": "해당 기능은 현재 비활성화되었습니다.",
                   "failedToCalculateTransaction": "트랜잭션을 생성하지 못했습니다",
-                  "inform": "언스테이킹 대기 기간",
-                  "informDescription1": "{{symbol}} 언스테이킹 시 ",
-                  "informDescription2": "일의 대기 기간이 있으며, 이 기간 동안 언스테이킹을 취소할 수 있습니다",
+                  "inform": "언스테이킹 완료까지는 일정 기간이 소요됩니다.",
+                  "informDescription1": "{{symbol}} 스테이킹 해제에는 ",
+                  "informDescription2": "일의 대기 기간이 있으며, 그동안 언제든 취소할 수 있습니다.",
                   "insufficientAmount": "잔액이 부족합니다",
                   "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
                   "invalidAmount": "잘못된 수량을 입력했습니다",
                   "lockUpPeriod": "{{lockUpPeriod}}",
-                  "memo": "메모 (옵션)",
+                  "memo": "메모 입력 (선택사항)",
                   "noAmount": "금액을 입력하세요",
                   "noAvailableAmount": "사용 가능한 잔액이 없습니다",
-                  "staked": "스테이킹 수량",
+                  "staked": "Staked",
                   "stakingCoin": "{{chainName}} 스테이킹 코인",
                   "tooLowAmount": "0보다 큰 금액을 입력하세요",
                   "txProcessing": "트랜잭션 처리 중",
                   "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                   "unstake": "언스테이킹",
-                  "unstakeReview": "언스테이킹 확인",
-                  "unstakeReviewDescription": "언스테이킹을 진행하고 싶습니까? \n\n이 조치는 완료되면 취소 할 수 없습니다.",
-                  "unstakingAmount": "언스테이킹 수량",
-                  "validator": "벨리데이터"
+                  "unstakeReview": "언스테이킹 최종 확인",
+                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다.",
+                  "unstakingAmount": "언스테이킹할 수량 입력",
+                  "validator": "벨리데이터 선택"
                 }
               },
               "Sui": {
                 "index": {
                   "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
                   "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
-                  "inform": "언스테이킹 대기 기간",
-                  "informDescription": "SUI 언스테이킹은 대기 기간 없이 즉시 처리되며, 이 과정은 취소할 수 없습니다.",
+                  "inform": "언스테이킹은 즉시 완료됩니다.",
+                  "informDescription": "SUI는 대기 기간 없이 즉시 언스테이킹되며, 진행 후에는 취소가 어렵기 때문에 신중하게 선택해 주세요.",
                   "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
                   "noObject": "선택된 오브젝트가 없습니다",
                   "stakingCoin": "{{chainName}} 스테이킹 코인",
                   "txProcessing": "트랜잭션 처리 중",
                   "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                   "unstake": "언스테이킹",
-                  "unstakeReview": "언스테이킹 확인",
-                  "unstakeReviewDescription": "언스테이킹을 진행하고 싶습니까? \n\n이 조치는 완료되면 취소 할 수 없습니다."
+                  "unstakeReview": "언스테이킹 최종 확인",
+                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다."
                 }
               }
             },
@@ -2970,11 +2970,11 @@
               "components": {
                 "UnstakeObjectSelectBox": {
                   "index": {
-                    "amountToStake": "언스테이킹 수량",
-                    "earned": "리워드 수량",
+                    "amountToStake": "Amount to Unstake",
+                    "earned": "Earned",
                     "objectId": "오브젝트 ID : {{objectId}}",
-                    "selectValidator": "벨리데이터 (객체) 선택",
-                    "staked": "스테이킹 수량"
+                    "selectValidator": "벨리데이터(Object) 선택",
+                    "staked": "Staked"
                   }
                 }
               }
