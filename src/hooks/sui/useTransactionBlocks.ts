@@ -1,3 +1,4 @@
+import { throttle } from 'lodash';
 import type { SuiTransactionBlockResponseQuery } from '@mysten/sui/client';
 
 import type { SuiRpcGetTransactionBlocksResponse } from '@/types/sui/api';
@@ -92,5 +93,11 @@ export function useTransactionBlocks({ coinId, queryOptions, config }: UseTransa
       },
     });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
+  const handleIntersect = throttle(async () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, 2000);
+
+  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
 }

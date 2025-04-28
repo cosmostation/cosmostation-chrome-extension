@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { throttle } from 'lodash';
 
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { AccountTx as AccountTxsPayload } from '@/types/cosmos/txs';
@@ -61,5 +62,11 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     },
   });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isLoading, isFetchingNextPage, status, isPending };
+  const handleIntersect = throttle(async () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, 2000);
+
+  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isLoading, isFetchingNextPage, status, isPending };
 }

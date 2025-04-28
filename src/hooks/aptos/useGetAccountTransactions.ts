@@ -1,3 +1,4 @@
+import { throttle } from 'lodash';
 import type { TransactionResponse } from '@aptos-labs/ts-sdk';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 
@@ -81,5 +82,11 @@ export function useGetAccountTransactions({ coinId, config }: UseGetAccountTrans
     },
   });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, isLoading, isPending };
+  const handleIntersect = throttle(async () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, 2000);
+
+  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, status, isLoading, isPending };
 }

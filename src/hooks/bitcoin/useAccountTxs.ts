@@ -1,3 +1,5 @@
+import { throttle } from 'lodash';
+
 import type { AccountTxPayload } from '@/types/bitcoin/txs';
 import { get } from '@/utils/axios';
 import { sortByLatestDate } from '@/utils/date';
@@ -45,5 +47,11 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     },
   });
 
-  return { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
+  const handleIntersect = throttle(async () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, 2000);
+
+  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
 }
