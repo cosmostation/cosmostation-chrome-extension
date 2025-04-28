@@ -1,8 +1,12 @@
+import axios from 'axios';
 import { KioskClient, Network } from '@mysten/kiosk';
 import type { DynamicFieldInfo, SuiObjectDataOptions, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
 import { SuiClient } from '@mysten/sui/client';
 import PromisePool from '@supercharge/promise-pool';
 
+import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { SUI_COIN_TYPE } from '@/constants/sui';
 import type {
   AccountAddress,
   AccountAptosAsset,
@@ -17,11 +21,14 @@ import type {
 } from '@/types/account';
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
+import type { AuthAccountsPayload } from '@/types/cosmos/account';
 import type { ExtensionStorage } from '@/types/extension';
 import type { SuiGetDynamicFieldsResponse, SuiGetObjectsOwnedByAddressResponse, SuiGetObjectsResponse } from '@/types/sui/api';
 import { chunkArray } from '@/utils/array';
 import { post } from '@/utils/axios';
-import { gt, minus } from '@/utils/numbers';
+import { formattingAccount } from '@/utils/cosmos/account';
+import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
+import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 import { getObjectDisplay, isKiosk } from '@/utils/sui/nft';
 
@@ -165,15 +172,22 @@ type GetAccountAssetsOption = {
   disableBalanceFilter?: boolean;
 };
 
+const vestingChainIds = new Set([KAVA_CHAINLIST_ID]);
+
 export async function getAccountAssets(id: string, option?: GetAccountAssetsOption) {
   console.time('getAccountAssets');
   const concurrency = 10;
   const storage = await chrome.storage.local.get<ExtensionStorage>([
     `${id}-address`,
     `${id}-balance-cosmos`,
+    `${id}-delegation-cosmos`,
+    `${id}-undelegation-cosmos`,
+    `${id}-reward-cosmos`,
+    `${id}-commission-cosmos`,
     `${id}-balance-evm`,
     `${id}-balance-aptos`,
     `${id}-balance-sui`,
+    `${id}-delegation-sui`,
     `${id}-balance-bitcoin`,
     `${id}-balance-erc20`,
     `${id}-balance-cw20`,
@@ -229,9 +243,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const allAccountAddress = await getAllAccountAddress(id);
 
   const cosmosBalances = storage[`${id}-balance-cosmos`];
+  const cosmosDelegations = storage[`${id}-delegation-cosmos`];
+  const cosmosUndelegations = storage[`${id}-undelegation-cosmos`];
+  const cosmosRewards = storage[`${id}-reward-cosmos`];
+  const cosmosCommissions = storage[`${id}-commission-cosmos`];
+
   const evmBalances = storage[`${id}-balance-evm`];
   const aptosBalances = storage[`${id}-balance-aptos`];
+
   const suiBalances = storage[`${id}-balance-sui`];
+  const suiDelegations = storage[`${id}-delegation-sui`];
+
   const bitcoinBalances = storage[`${id}-balance-bitcoin`];
   const erc20Balances = storage[`${id}-balance-erc20`];
   const customErc20Balances = storage[`${id}-custom-balance-erc20`];
@@ -246,18 +268,122 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
       const { results } = await PromisePool.withConcurrency(concurrency)
         .for(addresses)
-        .process((address) => {
+        .process(async (address) => {
+          const urlPath = `/cosmos/auth/v1beta1/accounts/${address.address}`;
+
+          const isVestingChainMainAsset = vestingChainIds.has(chain.id) && chain.mainAssetDenom === asset.id;
+
+          const promises = isVestingChainMainAsset
+            ? chain.lcdUrls.map(async (lcdUrl) => {
+                const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
+                const requestUrl = `${url}${urlPath}`;
+
+                const response = await axios.get<AuthAccountsPayload>(requestUrl, {
+                  timeout: BALANCE_FETCH_TIME_OUT_MS,
+                });
+
+                const contentType = response.headers['content-type'] ?? '';
+                if (!contentType.includes('application/json')) {
+                  throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
+                }
+
+                if (typeof response.data !== 'object' || response.data === null) {
+                  throw new Error('Invalid response: data is not an object');
+                }
+
+                return formattingAccount(response.data);
+              })
+            : undefined;
+
+          const accountResponse = promises && (await Promise.any(promises));
+
           const type = asset.id;
           const balanceInfo = cosmosBalances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.denom === type)?.amount || '0';
 
+          const delegationInfo = cosmosDelegations?.find(
+            (balance) =>
+              balance.assetId === type && balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const delegation =
+            delegationInfo?.delegations
+              ?.filter((item) => item.balance.denom === type)
+              ?.reduce((ac, cu) => plus(ac, cu.balance.amount), '0')
+              .toString() || '0';
+
+          const undelegationInfo = cosmosUndelegations?.find(
+            (balance) =>
+              balance.assetId === type && balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const undelegation =
+            undelegationInfo?.unbondings
+              .map((item) =>
+                item.entries.map((entry) => ({ delegator_address: item.delegator_address, validator_address: item.validator_address, entries: entry })),
+              )
+              .flat()
+              .reduce((ac, cu) => plus(ac, cu.entries.balance), '0') || '0';
+
+          const rewardInfo = cosmosRewards?.find(
+            (balance) =>
+              balance.assetId === type && balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const reward =
+            rewardInfo?.rewards.total
+              ?.filter((item) => item.denom === type)
+              ?.reduce((ac, cu) => plus(ac, cu.amount), '0')
+              .toString() || '0';
+
+          const commissioInfo = cosmosCommissions?.find(
+            (balance) =>
+              balance.assetId === type && balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const commission =
+            commissioInfo?.commissions?.commission.commission
+              ?.filter((item) => item.denom === type)
+              ?.reduce((ac, cu) => plus(ac, cu.amount), '0')
+              .toString() || '0';
+
+          const resolvedBalance = (() => {
+            if (isVestingChainMainAsset && accountResponse) {
+              const vestingRemained = getVestingRemained(accountResponse, type);
+              const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountResponse, type) : delegation;
+
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const [vestingRelatedAvailable, _] = (() => {
+                if (gt(vestingRemained, '0')) {
+                  if (chain.id === PERSISTENCE_CHAINLIST_ID) {
+                    return getPersistenceVestingRelatedBalances(balance, vestingRemained);
+                  }
+
+                  return getVestingRelatedBalances(balance, vestingRemained, delegatedVestingTotal, undelegation);
+                }
+
+                return [balance, '0'];
+              })();
+
+              return vestingRelatedAvailable;
+            }
+            return balance;
+          })();
+
+          const totalBalance = sum([resolvedBalance, delegation, undelegation, reward, commission]);
+
           const result: AccountCosmosAsset = {
             chain,
             asset,
             address,
-            balance: balance,
+            balance: resolvedBalance,
+            delegation,
+            undelegation,
+            reward,
+            commission,
+            totalBalance,
           };
 
           return result;
@@ -308,6 +434,82 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
 
           const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
+
+          if (chain.isCosmos) {
+            const mainAssetDenom = chain.mainAssetDenom;
+            const cosmosStyleCoin = cosmosAssets.find(
+              (cosmosCoin) => cosmosCoin.id === mainAssetDenom && cosmosCoin.chainId === chain.id && cosmosCoin.chainType === 'cosmos',
+            );
+
+            const cosmosStyleAddress = accountAddress.find((aa) => aa.chainId === address.chainId && aa.accountType.hdPath === address.accountType.hdPath);
+
+            const delegationInfo = cosmosDelegations?.find(
+              (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
+            );
+
+            const delegation =
+              delegationInfo?.delegations
+                ?.filter((item) => item.balance.denom === mainAssetDenom)
+                ?.reduce((ac, cu) => plus(ac, cu.balance.amount), '0')
+                .toString() || '0';
+
+            const decimalsAdjustment = cosmosStyleCoin?.decimals ? asset.decimals - cosmosStyleCoin.decimals : 0;
+            const resolvedDelegation = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(delegation, decimalsAdjustment) : delegation;
+
+            const undelegationInfo = cosmosUndelegations?.find(
+              (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
+            );
+
+            const undelegation =
+              undelegationInfo?.unbondings
+                .map((item) =>
+                  item.entries.map((entry) => ({ delegator_address: item.delegator_address, validator_address: item.validator_address, entries: entry })),
+                )
+                .flat()
+                .reduce((ac, cu) => plus(ac, cu.entries.balance), '0') || '0';
+
+            const resolvedUndelegation = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(undelegation, decimalsAdjustment) : undelegation;
+
+            const rewardInfo = cosmosRewards?.find(
+              (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
+            );
+
+            const reward =
+              rewardInfo?.rewards.total
+                ?.filter((item) => item.denom === mainAssetDenom)
+                ?.reduce((ac, cu) => plus(ac, cu.amount), '0')
+                .toString() || '0';
+
+            const resolvedReward = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(reward, decimalsAdjustment) : reward;
+
+            const commissioInfo = cosmosCommissions?.find(
+              (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
+            );
+
+            const commission =
+              commissioInfo?.commissions?.commission.commission
+                ?.filter((item) => item.denom === mainAssetDenom)
+                ?.reduce((ac, cu) => plus(ac, cu.amount), '0')
+                .toString() || '0';
+
+            const resolvedCommission = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(commission, decimalsAdjustment) : commission;
+
+            const totalBalance = sum([balance, resolvedDelegation, resolvedUndelegation, resolvedReward, resolvedCommission]);
+
+            const result: AccountEvmAsset = {
+              chain,
+              asset,
+              address,
+              balance: balance,
+              delegation: resolvedDelegation,
+              undelegation: resolvedUndelegation,
+              reward: resolvedReward,
+              commission: resolvedCommission,
+              totalBalance,
+            };
+
+            return result;
+          }
 
           const result: AccountEvmAsset = {
             chain,
@@ -447,6 +649,48 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.coinType === type)?.totalBalance || '0';
+
+          if (type === SUI_COIN_TYPE) {
+            const delegationInfo = suiDelegations?.find(
+              (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+            );
+
+            const delegation =
+              delegationInfo?.delegations.reduce(
+                (allValidatorStakedSum, item) =>
+                  plus(
+                    allValidatorStakedSum,
+                    item.stakes.reduce((eachValidatorStakedSum, stakeItem) => plus(eachValidatorStakedSum, stakeItem.principal), '0'),
+                  ),
+                '0',
+              ) || '0';
+            const reward =
+              delegationInfo?.delegations?.reduce(
+                (allValidatorRewardsSum, item) =>
+                  plus(
+                    allValidatorRewardsSum,
+                    item.stakes.reduce(
+                      (eachValidatorRewardSum, stakeItem) => plus(eachValidatorRewardSum, 'estimatedReward' in stakeItem ? stakeItem.estimatedReward : '0'),
+                      '0',
+                    ),
+                  ),
+                '0',
+              ) || '0';
+            const totalBalance = sum([balance, delegation, reward]);
+
+            const result: AccountSuiAsset = {
+              chain,
+              asset,
+              address,
+              balance: balance,
+              delegation,
+              reward,
+              totalBalance,
+            };
+
+            return result;
+          }
+
           const result: AccountSuiAsset = {
             chain,
             asset,
@@ -560,8 +804,28 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     }
   };
 
-  const filteredCosmosAccountAssets = filterHiddenAssetsByBalance(cosmosAccountAssets);
-  const filteredEVMAccountAssets = filterHiddenAssetsByBalance(evmAccountAssets);
+  const filterHiddenStakableAssetsByBalance = <T extends AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset>(assets: T[]): T[] => {
+    if (option?.disableBalanceFilter) {
+      return assets;
+    } else {
+      return assets.filter((asset) => {
+        const isVisible = visibleAssetIds.find(
+          (assetId) => assetId.chainId === asset.asset.chainId && assetId.id === asset.asset.id && assetId.chainType === asset.asset.chainType,
+        );
+        if (isVisible) {
+          return true;
+        }
+
+        const isBalanceGreaterThanZero = gt(asset.totalBalance || asset.balance || '0', '0');
+
+        return isBalanceGreaterThanZero;
+      });
+    }
+  };
+
+  const filteredCosmosAccountAssets = filterHiddenStakableAssetsByBalance(cosmosAccountAssets);
+  const filteredEVMAccountAssets = filterHiddenStakableAssetsByBalance(evmAccountAssets);
+
   const filteredAptosAccountAssets = filterHiddenAssetsByBalance(aptosAccountAssets);
   const filteredSuiAccountAssets = filterHiddenAssetsByBalance(suiAccountAssets);
   const filteredCW20AccountAssets = filterHiddenAssetsByBalance(cw20AccountAssets);

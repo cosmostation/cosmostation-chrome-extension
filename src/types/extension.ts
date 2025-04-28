@@ -10,6 +10,11 @@ import type {
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
   AccountAddressBalanceSui,
+  AccountAddressCommissionsCosmos,
+  AccountAddressDelegationsCosmos,
+  AccountAddressDelegationsSui,
+  AccountAddressRewardsCosmos,
+  AccountAddressUnbondingsCosmos,
   AccountNamesById,
   MnemonicNamesByHashedMnemonic,
   PreferAccountType,
@@ -80,6 +85,11 @@ export interface ExtensionStorage {
   [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
+  [key: `${string}-delegation-cosmos`]: AccountAddressDelegationsCosmos[];
+  [key: `${string}-undelegation-cosmos`]: AccountAddressUnbondingsCosmos[];
+  [key: `${string}-reward-cosmos`]: AccountAddressRewardsCosmos[];
+  [key: `${string}-commission-cosmos`]: AccountAddressCommissionsCosmos[];
+  [key: `${string}-delegation-sui`]: AccountAddressDelegationsSui[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
   [key: `${string}-visible-assetIds`]: AssetId[];
   [key: `${string}-custom-address`]: AccountAddress[];

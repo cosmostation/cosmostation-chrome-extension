@@ -1,9 +1,14 @@
+import type { DelegatedStake } from '@mysten/sui/client';
+
 import type { AptosResourceResponse } from './aptos/api';
-import type { AptosAsset, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
+import type { AptosAsset, AssetId, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
 import type { AptosChain, BitcoinChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, CustomEvmChain, EvmChain, SuiChain } from './chain';
 import type { CosmosBalance } from './cosmos/api';
-import type { Cw20Balance } from './cosmos/balance';
+import type { CommissionResponse, Cw20Balance } from './cosmos/balance';
+import type { LcdDelegationResponse } from './cosmos/delegation';
+import type { RewardDetails } from './cosmos/reward';
+import type { UnbondingResponses } from './cosmos/undelegation';
 import type { Erc20Balance } from './evm/balance';
 import type { SuiGetBalance } from './sui/api';
 
@@ -45,6 +50,39 @@ export interface AccountAddressBalanceCosmos {
   balances: CosmosBalance[];
 }
 
+export interface AccountAddressDelegationsCosmos {
+  id: Chain['id'];
+  assetId: AssetId['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  delegations: LcdDelegationResponse[];
+}
+export interface AccountAddressUnbondingsCosmos {
+  id: Chain['id'];
+  assetId: AssetId['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  unbondings: UnbondingResponses[];
+}
+export interface AccountAddressRewardsCosmos {
+  id: Chain['id'];
+  assetId: AssetId['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  rewards: RewardDetails;
+}
+export interface AccountAddressCommissionsCosmos {
+  id: Chain['id'];
+  assetId: AssetId['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  commissions?: CommissionResponse;
+}
+
 export interface AccountAddressBalanceEvm {
   id: Chain['id'];
   chainId: Chain['chainId'];
@@ -59,6 +97,14 @@ export interface AccountAddressBalanceAptos {
   chainType: ChainType;
   address: string;
   balances: AptosResourceResponse[];
+}
+
+export interface AccountAddressDelegationsSui {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  delegations: DelegatedStake[];
 }
 
 export interface AccountAddressBalanceSui {
@@ -97,6 +143,12 @@ export interface AccountCosmosAsset {
   asset: CosmosAsset;
   address: AccountAddress;
   balance: string;
+  delegation?: string;
+  vesting?: string;
+  undelegation?: string;
+  reward?: string;
+  commission?: string;
+  totalBalance?: string;
 }
 
 export interface AccountCustomCosmosAsset {
@@ -118,6 +170,11 @@ export interface AccountEvmAsset {
   asset: EvmAsset;
   address: AccountAddress;
   balance: string;
+  delegation?: string;
+  undelegation?: string;
+  reward?: string;
+  commission?: string;
+  totalBalance?: string;
 }
 
 export interface AccountCustomEvmAsset {
@@ -145,6 +202,9 @@ export interface AccountSuiAsset {
   asset: SuiAsset;
   address: AccountAddress;
   balance: string;
+  delegation?: string;
+  reward?: string;
+  totalBalance?: string;
 }
 export interface AccountBitcoinAsset {
   chain: BitcoinChain;

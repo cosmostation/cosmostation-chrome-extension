@@ -14,7 +14,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -47,7 +47,16 @@ export default function Entry({ coinId }: EntryProps) {
     const selectedCoin = groupAccountAssets?.groupAccountAssets.find((item) => getCoinId(item.asset) === coinId);
 
     const selectedGroupMap = groupAccountAssets?.groupMap[selectedCoin?.asset.coinGeckoId || ''];
-    return selectedGroupMap;
+
+    const resolvedGroupMap = selectedGroupMap?.map((item) => {
+      const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
+
+      return {
+        ...item,
+        balance: balance,
+      };
+    });
+    return resolvedGroupMap;
   }, [coinId, groupAccountAssets?.groupAccountAssets, groupAccountAssets?.groupMap]);
 
   const filteredAssetsBySearch = useMemo(() => {

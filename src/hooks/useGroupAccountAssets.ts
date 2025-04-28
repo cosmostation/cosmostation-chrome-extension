@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { FlatAccountAssets, SingleOrGroupAccountAssets } from '@/types/accountAssets';
+import { isStakeableAsset } from '@/utils/asset';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
@@ -81,9 +82,11 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
     );
 
     const singleAccountAssets = [...singles, ...invalidGroups.flat()].map((item) => {
+      const totalBalance = isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
+
       return {
         ...item,
-        totalDisplayAmount: toDisplayDenomAmount(item.balance, item.asset.decimals),
+        totalDisplayAmount: toDisplayDenomAmount(totalBalance, item.asset.decimals),
         counts: '1',
       };
     });
@@ -93,7 +96,9 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
         currentAccountAssets?.flatAccountAssets.filter((item) => value.some((v) => getCoinId(v.asset) === getCoinId(item.asset))) || [];
 
       const totalAmount = filteredAccountAssets.reduce((totalAmount, cur) => {
-        const displayAmount = toDisplayDenomAmount(cur.balance, cur.asset.decimals);
+        const totalBalance = isStakeableAsset(cur) ? cur.totalBalance || cur.balance || '0' : cur.balance;
+
+        const displayAmount = toDisplayDenomAmount(totalBalance, cur.asset.decimals);
 
         return plus(totalAmount, displayAmount);
       }, '0');

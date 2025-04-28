@@ -45,7 +45,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
               const cosmosValueSum =
                 filteredCosmosAssets?.reduce((totalValue, cur) => {
                   const assetPrice = (cur.asset.coinGeckoId && coinGeckoData?.[cur.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
-                  const assetValue = times(toDisplayDenomAmount(cur.balance, cur.asset.decimals), assetPrice);
+                  const assetValue = times(toDisplayDenomAmount(cur.totalBalance || cur.balance || '0', cur.asset.decimals), assetPrice);
                   return plus(totalValue, assetValue);
                 }, '0') || '0';
 
@@ -59,7 +59,9 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
 
               const totalAssetValue = plus(cosmosValueSum, cw20ValueSum);
 
-              const isHaveBalance = filteredCosmosAssets?.some((item) => gt(item.balance, '0')) || filteredCW20Assets?.some((item) => gt(item.balance, '0'));
+              const isHaveBalance =
+                filteredCosmosAssets?.some((item) => gt(item.totalBalance || item.balance || '0', '0')) ||
+                filteredCW20Assets?.some((item) => gt(item.balance, '0'));
 
               return {
                 accountType: i.accountType,

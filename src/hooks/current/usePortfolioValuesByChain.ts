@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -29,7 +29,9 @@ export function usePortfolioValuesByChain(accountId?: string) {
         const coins = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, getUniqueChainId(item));
 
         const aggregateValue = coins.reduce((acc, item) => {
-          const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals || 0);
+          const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
+
+          const displayAmount = toDisplayDenomAmount(balance, item.asset.decimals || 0);
           const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
           const value = times(displayAmount, coinPrice);

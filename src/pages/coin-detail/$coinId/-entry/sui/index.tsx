@@ -43,7 +43,7 @@ export default function Sui({ coinId }: SuiProps) {
             {isSuiMainCoin && (
               <StakePromotion
                 symbol={symbol}
-                apr={averageAPY}
+                apr={averageAPY + '%'}
                 onClick={() => {
                   navigate({
                     to: ManageStake.to,

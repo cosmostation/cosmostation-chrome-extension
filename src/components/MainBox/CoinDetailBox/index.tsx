@@ -16,6 +16,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
+import { isStakeableAsset } from '@/utils/asset';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash, shorterAddress } from '@/utils/string';
@@ -79,7 +80,9 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   const isNativeCoin = currentCoin?.asset.id === currentCoin?.chain.mainAssetDenom;
 
-  const totalDisplayAmount = toDisplayDenomAmount(currentCoin?.balance || '0', currentCoin?.asset.decimals || 0);
+  const balance = currentCoin && isStakeableAsset(currentCoin) ? currentCoin.totalBalance || '0' : currentCoin?.balance || '0';
+
+  const totalDisplayAmount = toDisplayDenomAmount(balance, currentCoin?.asset.decimals || 0);
   const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
   const totalValue = times(totalDisplayAmount, chainPrice);

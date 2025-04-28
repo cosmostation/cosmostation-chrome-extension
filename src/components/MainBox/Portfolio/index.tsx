@@ -16,7 +16,7 @@ import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -85,7 +85,9 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
     const filteredAssetsByChainId = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, selectedChainId);
 
     const aggregateValue = filteredAssetsByChainId.reduce((acc, item) => {
-      const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals || 0);
+      const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
+
+      const displayAmount = toDisplayDenomAmount(balance, item.asset.decimals || 0);
       const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
       const value = times(displayAmount, coinPrice);

@@ -14,7 +14,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { toPercentages } from '@/utils/string';
@@ -104,7 +104,9 @@ export default function CoinSelect({
   const computedAssetValues = useMemo(() => {
     return (
       baseCoinList?.map((item) => {
-        const displayAmount = toDisplayDenomAmount(item.balance, item.asset.decimals);
+        const balance = isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
+
+        const displayAmount = toDisplayDenomAmount(balance, item.asset.decimals);
 
         const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
 
@@ -216,7 +218,8 @@ export default function CoinSelect({
 
       <CoinButtonWrapper>
         {filteredCoinList?.map((coin) => {
-          const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
+          const balance = isStakeableAsset(coin) ? coin.totalBalance || coin.balance || '0' : coin.balance;
+          const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
 
           return (
             <CoinWithChainNameButton

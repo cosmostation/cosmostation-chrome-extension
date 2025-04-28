@@ -13,3 +13,8 @@ export type RewardPayload = {
     total: Amount[];
   };
 };
+
+export type RewardDetails = {
+  rewards?: Reward[];
+  total?: Amount[];
+};

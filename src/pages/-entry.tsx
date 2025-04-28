@@ -27,7 +27,7 @@ import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId } from '@/utils/asset';
+import { getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -84,10 +84,13 @@ export default function Entry() {
 
     const unGroupedAccountAssets = Object.values(groupAccountAssets?.groupMap || []).flat();
     const mappedUngroupAccountAssets = unGroupedAccountAssets.map((item) => {
+      const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
+      const totalDisplayAmount = toDisplayDenomAmount(balance, item.asset.decimals);
+
       return {
         ...item,
         counts: '1',
-        totalDisplayAmount: toDisplayDenomAmount(item.balance, item.asset.decimals),
+        totalDisplayAmount,
       };
     });
 

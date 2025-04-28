@@ -1,3 +1,4 @@
+import type { AccountCosmosAsset, AccountEvmAsset, AccountSuiAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 
@@ -59,4 +60,20 @@ export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
 
     return isMatchingUniqueChainId(item.chain, uniqueChainId);
   });
+}
+
+export function isAccountCosmosStakableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset {
+  return asset.chain.chainType === 'cosmos' && asset.asset.type === 'native' && 'delegation' in asset;
+}
+
+export function isAccountEVMStakableAsset(asset: FlatAccountAssets): asset is AccountEvmAsset {
+  return asset.chain.chainType === 'evm' && asset.asset.type === 'native' && 'delegation' in asset;
+}
+
+export function isAccountSuiStakableAsset(asset: FlatAccountAssets): asset is AccountSuiAsset {
+  return asset.chain.chainType === 'sui' && asset.asset.type === 'native' && 'delegation' in asset;
+}
+
+export function isStakeableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset {
+  return isAccountCosmosStakableAsset(asset) || isAccountEVMStakableAsset(asset) || isAccountSuiStakableAsset(asset);
 }

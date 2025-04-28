@@ -12,6 +12,7 @@ import { process } from './message';
 import { startAutoLockTimer } from './passwordManage';
 import { address, customChainAddress } from './update/address';
 import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance } from './update/balance';
+import { updateStakingRelatedBalance } from './update/staking';
 import { v11 } from './update/v11';
 
 initExtensionView();
@@ -46,6 +47,12 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
       if (message.method === 'updateDefaultBalance') {
         const [id] = message.params;
         await updateDefaultAssetsBalance(id);
+        sendResponse(null);
+      }
+
+      if (message.method === 'updateStaking') {
+        const [id] = message.params;
+        await updateStakingRelatedBalance(id);
         sendResponse(null);
       }
 

@@ -21,6 +21,14 @@ export function plus(num1: number | string, num2: number | string, toFix?: numbe
   return new Big(num1).plus(num2).toString();
 }
 
+export function sum(numbers: (number | string)[], toFix?: number): string {
+  if (numbers.length === 0) {
+    return toFix !== undefined ? new Big(0).toFixed(toFix, 0).toString() : '0';
+  }
+
+  return numbers.reduce<string>((acc, cur) => plus(acc, cur), toFix !== undefined ? new Big(0).toFixed(toFix, 0).toString() : '0');
+}
+
 export function equal(num1: number | string, num2: number | string) {
   return new Big(num1).eq(num2);
 }
