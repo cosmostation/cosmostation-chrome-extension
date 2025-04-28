@@ -12,6 +12,7 @@ import TextButton from '@/components/common/TextButton/index.tsx';
 import CopyButton from '@/components/CopyButton/index.tsx';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm.ts';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets.ts';
+import { isTestnetChain } from '@/utils/chain.ts';
 import { getCoinId } from '@/utils/queryParamGenerator.ts';
 import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { toastDefault } from '@/utils/toast.tsx';
@@ -93,7 +94,7 @@ export default function Entry({ coinId }: EntryProps) {
 
   const coinImage = selectedCoin?.asset.image;
 
-  const symbol = selectedCoin?.asset.symbol || '';
+  const symbol = selectedCoin?.asset.symbol ? selectedCoin.asset.symbol + `${isTestnetChain(selectedCoin.chain.id) ? ' (Testnet)' : ''}` : '';
 
   const chainAddress = (() => {
     if (isShowCosmosStyle) {

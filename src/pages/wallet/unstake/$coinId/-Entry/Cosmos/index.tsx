@@ -31,6 +31,7 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
+import { isTestnetChain } from '@/utils/chain';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
@@ -101,7 +102,9 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const coinImageURL = selectedUnstakingCoin?.asset.image || '';
 
-  const coinSymbol = selectedUnstakingCoin?.asset.symbol || '';
+  const coinSymbol = selectedUnstakingCoin?.asset.symbol
+    ? selectedUnstakingCoin.asset.symbol + `${isTestnetChain(selectedUnstakingCoin.chain.id) ? ' (Testnet)' : ''}`
+    : '';
   const coinDecimal = selectedUnstakingCoin?.asset.decimals || 0;
 
   const chainName = selectedUnstakingCoin?.chain.name || '';

@@ -6,6 +6,7 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
+import { isTestnetChain } from '@/utils/chain';
 import { gt } from '@/utils/numbers';
 import { shorterAddress, toPercentages } from '@/utils/string';
 
@@ -30,7 +31,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const selectedCoin = getCosmosAccountAsset();
 
   const contractAddress = selectedCoin?.asset.type === 'cw20' || selectedCoin?.asset.type === 'ibc' ? selectedCoin.asset.id : undefined;
-  const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
+  const symbol = selectedCoin?.asset.symbol
+    ? selectedCoin.asset.symbol + `${isTestnetChain(selectedCoin.chain.id) ? ' (Testnet)' : ''}`
+    : shorterAddress(coinId, 6) || '';
 
   const isStakeable = selectedCoin?.chain.isSupportStaking && selectedCoin.asset.id === selectedCoin.chain.mainAssetDenom;
 

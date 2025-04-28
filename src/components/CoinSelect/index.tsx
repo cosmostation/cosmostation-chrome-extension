@@ -15,6 +15,7 @@ import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
+import { isTestnetChain } from '@/utils/chain';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { toPercentages } from '@/utils/string';
@@ -221,13 +222,14 @@ export default function CoinSelect({
           const balance = isStakeableAsset(coin) ? coin.totalBalance || coin.balance || '0' : coin.balance;
           const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
 
+          const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
           return (
             <CoinWithChainNameButton
               key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
               isActive={currentCoinId === getCoinId(coin.asset)}
               displayAmount={displayAmount}
               apr={coin.apr ? coin.apr : undefined}
-              symbol={coin.asset.symbol}
+              symbol={resolvedSymbol}
               chainName={coin.chain.name}
               assetId={coin.asset.id}
               coinGeckoId={coin.asset.coinGeckoId}

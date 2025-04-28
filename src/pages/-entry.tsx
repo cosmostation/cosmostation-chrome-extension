@@ -28,6 +28,7 @@ import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
+import { isTestnetChain } from '@/utils/chain';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -250,6 +251,7 @@ export default function Entry() {
                     const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
 
                     const isGroupToken = gt(coin.counts || '0', '1');
+                    const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
                     return (
                       <CoinWithMarketTrendButton
                         key={getCoinId(coin.asset)}
@@ -262,7 +264,7 @@ export default function Entry() {
                           });
                         }}
                         displayAmount={coin.totalDisplayAmount || '0'}
-                        symbol={coin.asset.symbol}
+                        symbol={resolvedSymbol}
                         coinGeckoId={coin.asset.coinGeckoId}
                         coinImageProps={{
                           imageURL: coin.asset.image,

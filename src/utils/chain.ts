@@ -29,3 +29,8 @@ export function isBitcoinChain(chain?: ChainBase): chain is BitcoinChain {
 
   return chain.chainType === 'bitcoin';
 }
+
+export const isTestnetChain = (value?: string | null): boolean => {
+  if (!value) return false;
+  return value.endsWith('-testnet');
+};

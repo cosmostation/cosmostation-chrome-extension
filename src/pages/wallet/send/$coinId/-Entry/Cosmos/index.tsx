@@ -31,6 +31,7 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { UniqueChainId } from '@/types/chain.ts';
+import { isTestnetChain } from '@/utils/chain.ts';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
@@ -112,7 +113,9 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const coinImageURL = selectedCoinToSend?.asset.image || '';
   const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
 
-  const coinSymbol = selectedCoinToSend?.asset.symbol || '';
+  const coinSymbol = selectedCoinToSend?.asset.symbol
+    ? selectedCoinToSend.asset.symbol + `${isTestnetChain(selectedCoinToSend.chain.id) ? ' (Testnet)' : ''}`
+    : '';
   const coinDenom = selectedCoinToSend?.asset.id || '';
   const shortCoinDenom = shorterAddress(coinDenom, 16);
   const coinDecimals = selectedCoinToSend?.asset.decimals || 0;

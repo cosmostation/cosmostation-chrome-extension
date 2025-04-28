@@ -8,6 +8,7 @@ import { useChainList } from '@/hooks/useChainList';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 import { isAccountEVMStakableAsset } from '@/utils/asset';
+import { isTestnetChain } from '@/utils/chain';
 import { gt } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 import { shorterAddress, toPercentages } from '@/utils/string';
@@ -34,7 +35,9 @@ export default function EVM({ coinId }: EVMProps) {
   const selectedCoin = getEVMAccountAsset();
 
   const contractAddress = selectedCoin?.asset.type === 'erc20' ? selectedCoin.asset.id : undefined;
-  const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
+  const symbol = selectedCoin?.asset.symbol
+    ? selectedCoin.asset.symbol + `${isTestnetChain(selectedCoin.chain.id) ? ' (Testnet)' : ''}`
+    : shorterAddress(coinId, 6) || '';
 
   const isStakeable = selectedCoin ? isAccountEVMStakableAsset(selectedCoin) : false;
 

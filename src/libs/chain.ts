@@ -3,6 +3,7 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
+import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
 
 export async function getChains() {
@@ -42,7 +43,7 @@ export async function getChains() {
 
     const isCosmwasm = chain.params.chainlist_params?.is_support_cw20 ?? false;
     const isSupportCW721 = chain.params.chainlist_params?.is_support_cw721 ?? false;
-
+    const isTestnet = isTestnetChain(id);
     const isEvm = chain.params.chainlist_params?.chain_type?.includes('evm') ?? false;
 
     const lcdUrls =
@@ -114,6 +115,7 @@ export async function getChains() {
       isSupportStaking,
       isSupportHistory,
       isDiableSend,
+      isTestnet,
       apr,
       stakingParams,
     };
@@ -132,6 +134,8 @@ export async function getChains() {
       isEip1559: chain.params.chainlist_params?.evm_fee_info?.is_eip1559 ?? false,
       gasCoefficient: chain.params.chainlist_params?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
     };
+
+    const isTestnet = isTestnetChain(id);
 
     const rpcUrls =
       chain.params.chainlist_params.evm_rpc_endpoint?.map((endpoint) => ({
@@ -190,6 +194,7 @@ export async function getChains() {
       rpcUrls,
       accountTypes,
       isDiableSend,
+      isTestnet,
       explorer,
     };
   });

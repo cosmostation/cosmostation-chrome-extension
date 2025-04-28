@@ -30,6 +30,7 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
+import { isTestnetChain } from '@/utils/chain.ts';
 import { ethersProvider } from '@/utils/ethereum/ethers.ts';
 import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -108,7 +109,9 @@ export default function EVM({ coinId }: EVMProps) {
   const coinImageURL = selectedCoinToSend?.asset.image || '';
   const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
 
-  const coinSymbol = selectedCoinToSend?.asset.symbol || '';
+  const coinSymbol = selectedCoinToSend?.asset.symbol
+    ? selectedCoinToSend.asset.symbol + `${isTestnetChain(selectedCoinToSend.chain.id) ? ' (Testnet)' : ''}`
+    : '';
   const coinDenom = selectedCoinToSend?.asset.id || '';
   const shortCoinDenom = shorterAddress(coinDenom, 16);
   const coinDecimals = selectedCoinToSend?.asset.decimals || 0;

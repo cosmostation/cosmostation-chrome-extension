@@ -63,6 +63,7 @@ export interface CosmosChain extends ChainBase {
   isSupportHistory?: boolean;
   isSupportCW721?: boolean;
   isDiableSend?: boolean;
+  isTestnet?: boolean;
   apr?: string;
   stakingParams?: {
     unbonding_time?: string;
@@ -90,6 +91,7 @@ export interface CustomCosmosChain extends ChainBase {
   isSupportHistory?: boolean;
   isSupportCW721?: boolean;
   isDiableSend?: boolean;
+  isTestnet?: boolean;
   apr?: string;
   stakingParams?: {
     unbonding_time?: string;
@@ -115,6 +117,7 @@ export interface EvmChain extends ChainBase {
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   isDiableSend?: boolean;
+  isTestnet?: boolean;
   explorer: ChainExplorer;
 }
 
