@@ -123,7 +123,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
           </DetailRow>
         )}
         {selectedCoin?.chain.id === KAVA_CHAINLIST_ID && (
-          <DetailRow>
+          <DetailRow
+            style={{
+              display: 'none',
+            }}
+          >
             <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.incentive')}</LabelText>
             <ValueText>
               <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
