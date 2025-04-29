@@ -304,12 +304,12 @@
     },
     "AllNetworkButton": {
       "index": {
-        "allNetwork": "모든 체인"
+        "allNetwork": "All Network"
       }
     },
     "ChainListBottomSheet": {
       "index": {
-        "allNetwork": "모든 체인",
+        "allNetwork": "All Network",
         "customNetwork": "찾으시는 네트워크가 없다면,\n커스텀 네트워크를 직업 등록할 수 있습니다.",
         "network": "네트워크",
         "searchPlaceholder": "네트워크 검색 (예 : Bitcoin)",
@@ -594,7 +594,7 @@
       "StakeDetailBox": {
         "Cosmos": {
           "index": {
-            "claim": "리워드 클레임",
+            "claim": "리워드 받기",
             "compound": "컴파운딩",
             "reward": "Rewards",
             "stake": "스테이킹",
@@ -697,11 +697,11 @@
             "completed": "{{percent}}% 완료",
             "errorOccurred": "오류가 발생했습니다",
             "migration": "데이터 마이그레이션",
-            "migrationDescription": "코스모스테이션 익스텐션을 업데이트 중입니다!\n데이터를 안전하게 이전하는 중이니 잠시만 기다려 주세요.\n\n마이그레이션이 정상적으로 완료될 때까지 브라우저를닫거나\n익스텐션을 종료하지 마세요.",
+            "migrationDescription": "코스모스테이션 익스텐션을 업데이트 중입니다!\n데이터를 안전하게 이전하는 중이니 잠시만 기다려 주세요.\n\n마이그레이션이 정상적으로 완료될 때까지 브라우저를닫거나 익스텐션을 종료하지 마세요.",
             "migrationError": "마이그레이션 오류, 다시 시도하세요",
             "migrationInProgress": "데이터 마이그레이션중입니다.",
             "migrationRequired": "데이터 마이그레이션이 필요합니다",
-            "migrationRequiredDescription": "익스텐션이 최신 버전으로 업데이트됨에 따라, 기존 데이터를\n안전하게 이전하기 위해 마이그레이션 과정이 필요합니다.\n\n원활한 서비스 이용을 위해 마이그레이션을 진행해 주세요.",
+            "migrationRequiredDescription": "익스텐션이 최신 버전으로 업데이트됨에 따라,\n기존 데이터를 안전하게 이전하기 위해 마이그레이션 과정이 필요합니다.\n\n원활한 서비스 이용을 위해 마이그레이션을 진행해 주세요.",
             "retry": "다시 시도하기",
             "startWithMigration": "마이그레이션을 시작하기",
             "verifyPasswordBottomSheetDescription": "진행하려면 비밀번호를 입력하세요. \n이 단계는 민감한 정보에 안전하게 액세스하기 위해 필요합니다",
