@@ -180,8 +180,6 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
             </TopContainer>
             <BodyContainer>
               {flatAddressDetails.map((addressDetail, i) => {
-                const shortAddress = shorterAddress(addressDetail.address, 20);
-
                 return (
                   <AccountButton
                     key={i}
@@ -210,7 +208,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
                             </Badge>
                           )}
                         </TitleContainer>
-                        <AddressText variant="b4_M">{shortAddress}</AddressText>
+                        <AddressText variant="b4_M">{addressDetail.address}</AddressText>
                       </AccountInfoContainer>
                     </AccountLeftContainer>
                   </AccountButton>

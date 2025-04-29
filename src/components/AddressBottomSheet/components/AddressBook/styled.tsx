@@ -34,16 +34,10 @@ export const LabelContainer = styled('div')({
 });
 
 export const AddressContainer = styled('div')(({ theme }) => ({
-  maxWidth: '80%',
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-  marginBottom: '1rem',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-
+  wordBreak: 'break-word',
+  whiteSpace: 'normal',
+  overflowWrap: 'break-word',
+  textAlign: 'left',
   color: theme.palette.color.base1200,
 }));
 

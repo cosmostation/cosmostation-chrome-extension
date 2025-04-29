@@ -8,7 +8,6 @@ import EmptyAsset from '@/components/EmptyAsset';
 import { UNIVERSAL_EVM_NETWORK_ID } from '@/pages/general-setting/address-book/add-address/-entry';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual, parseUniqueChainId } from '@/utils/queryParamGenerator';
-import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import Badge from './components/Badge';
@@ -67,8 +66,6 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
         const { label, address, memo } = item;
         const isBadge = !!memo;
 
-        const shortAddress = shorterAddress(address, 20);
-
         const badgeContent = (() => {
           if (isBadge) {
             const isENS = memo?.includes('ENS');
@@ -108,7 +105,7 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
                   )}
                 </LabelContainer>
                 <AddressContainer>
-                  <Typography variant="b4_M">{shortAddress}</Typography>
+                  <Typography variant="b4_M">{address}</Typography>
                 </AddressContainer>
 
                 {memo && (

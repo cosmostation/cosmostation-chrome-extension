@@ -75,6 +75,7 @@ export const AccountButton = styled('button')(({ theme }) => ({
 export const AccountImgContainer = styled('div')({
   width: '2.8rem',
   height: '2.8rem',
+  minWidth: '2.8rem',
 });
 
 export const AccountLeftContainer = styled('div')({
@@ -120,6 +121,10 @@ export const Badge = styled('div')<BadgeProps>(({ theme, ...props }) => ({
 
 export const AddressText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1200,
+  wordBreak: 'break-word',
+  whiteSpace: 'normal',
+  overflowWrap: 'break-word',
+  textAlign: 'left',
 }));
 
 export const EmptyAssetContainer = styled('div')({
