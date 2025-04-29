@@ -147,6 +147,12 @@ export default function Entry({ request, chain }: EntryProps) {
     return null;
   }, [auth_info_bytes, body_bytes, isEditFee, signer_infos]);
 
+  const isPossibleSimulating =
+    !!accountAssetCoinId &&
+    !!memoizedProtoTx?.tx_bytes &&
+    !!accountAsset?.chain.lcdUrls.map((item) => item.url).length &&
+    accountAsset?.chain.feeInfo.isSimulable;
+
   const simulate = useSimulate({ coinId: accountAssetCoinId, txBytes: memoizedProtoTx?.tx_bytes });
 
   const dappFromGas = useMemo(() => (fee?.gas_limit ? String(fee.gas_limit) : '0'), [fee?.gas_limit]);
@@ -301,7 +307,7 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.direct.entry.insufficientFeeAmount');
     }
 
-    if (isEditFee && !simulate.isFetched) {
+    if (isEditFee && isPossibleSimulating && !simulate.isFetched) {
       return t('pages.popup.cosmos.sign.direct.entry.notSimulated');
     }
 
@@ -310,7 +316,18 @@ export default function Entry({ request, chain }: EntryProps) {
     }
 
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, fee?.granter, fee?.payer, inputMemoErrorMessage, isCheckBalance, isEditFee, simulate.isFetched, t]);
+  }, [
+    alternativeFeeAsset?.balance,
+    baseFee,
+    fee?.granter,
+    fee?.payer,
+    inputMemoErrorMessage,
+    isCheckBalance,
+    isEditFee,
+    isPossibleSimulating,
+    simulate.isFetched,
+    t,
+  ]);
 
   const handleOnSign = async () => {
     try {

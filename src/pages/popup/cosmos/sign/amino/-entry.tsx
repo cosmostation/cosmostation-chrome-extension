@@ -145,6 +145,12 @@ export default function Entry({ request, chain }: EntryProps) {
     return null;
   }, [accountAsset?.address.accountType.pubkeyType, assetForSimulation?.asset.id, doc, isEditFee]);
 
+  const isPossibleSimulating =
+    !!accountAssetCoinId &&
+    !!memoizedProtoTx?.tx_bytes &&
+    !!accountAsset?.chain.lcdUrls.map((item) => item.url).length &&
+    accountAsset?.chain.feeInfo.isSimulable;
+
   const simulate = useSimulate({ coinId: accountAssetCoinId, txBytes: memoizedProtoTx?.tx_bytes });
 
   const dappFromGas = doc.fee.gas;
@@ -257,7 +263,7 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.amino.entry.insufficientFeeAmount');
     }
 
-    if (isEditFee && !simulate.isFetched) {
+    if (isEditFee && isPossibleSimulating && !simulate.isFetched) {
       return t('pages.popup.cosmos.sign.amino.entry.notSimulated');
     }
 
@@ -266,7 +272,18 @@ export default function Entry({ request, chain }: EntryProps) {
     }
 
     return '';
-  }, [alternativeFeeAsset?.balance, baseFee, isCheckBalance, doc.fee.granter, doc.fee.payer, isEditFee, simulate.isFetched, inputMemoErrorMessage, t]);
+  }, [
+    alternativeFeeAsset?.balance,
+    baseFee,
+    isCheckBalance,
+    doc.fee.granter,
+    doc.fee.payer,
+    isEditFee,
+    isPossibleSimulating,
+    simulate.isFetched,
+    inputMemoErrorMessage,
+    t,
+  ]);
 
   const additionalFee = useAdditionalFee({ chain, msgs: tx.msgs, currentStep: txMessagePage });
 
