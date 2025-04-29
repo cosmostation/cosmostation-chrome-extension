@@ -7,6 +7,7 @@ import AllNetworkButton from '@/components/AllNetworkButton';
 import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import SortBottomSheet from '@/components/SortBottomSheet';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -18,7 +19,7 @@ import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsse
 import { isTestnetChain } from '@/utils/chain';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
-import { toPercentages } from '@/utils/string';
+import { shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, StickyContentsContainer } from './styled';
@@ -223,6 +224,12 @@ export default function CoinSelect({
           const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
 
           const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
+          const resolvedAssetId =
+            coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
+              ? coin.asset.description
+              : coin.asset.id.length > 15
+                ? shorterAddress(coin.asset.id, 16)
+                : coin.asset.id;
           return (
             <CoinWithChainNameButton
               key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
@@ -231,7 +238,7 @@ export default function CoinSelect({
               apr={coin.apr ? coin.apr : undefined}
               symbol={resolvedSymbol}
               chainName={coin.chain.name}
-              assetId={coin.asset.id}
+              assetId={resolvedAssetId}
               coinGeckoId={coin.asset.coinGeckoId}
               displayAssetId={isShowAssetId}
               coinImageProps={{

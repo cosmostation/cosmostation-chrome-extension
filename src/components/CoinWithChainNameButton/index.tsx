@@ -1,9 +1,8 @@
 import { Typography } from '@mui/material';
 
 import { gt } from '@/utils/numbers';
-import { shorterAddress } from '@/utils/string';
 
-import { APRText, APRTextContainer, ChainNameTypography, ContentsContainer, SymbolTypography } from './styled';
+import { APRText, APRTextContainer, ChainNameContainer, ChainNameTypography, ContentsContainer, SymbolTypography } from './styled';
 import Base1000Text from '../common/Base1000Text';
 import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
 import BaseCoinButton from '../common/BaseCoinButton';
@@ -30,7 +29,7 @@ export default function CoinWithChainNameButton({
 }: CoinWithChainNameButtonProps) {
   const resolvedSymbol = symbol || 'UNKNOWN';
   const resolvedChainName = chainName || 'UNKNOWN';
-  const resolvedAssetId = assetId ? (assetId?.length > 15 ? shorterAddress(assetId, 16) : assetId) : 'UNKNOWN';
+  const resolvedAssetId = assetId || 'UNKNOWN';
 
   return (
     <BaseCoinButton
@@ -56,7 +55,9 @@ export default function CoinWithChainNameButton({
                 </APRText>
               </APRTextContainer>
             ) : (
-              <ChainNameTypography variant="b4_R">{displayAssetId ? resolvedAssetId : resolvedChainName}</ChainNameTypography>
+              <ChainNameContainer>
+                <ChainNameTypography variant="b4_R">{displayAssetId ? resolvedAssetId : resolvedChainName}</ChainNameTypography>
+              </ChainNameContainer>
             )}
           </ContentsContainer>
         </>

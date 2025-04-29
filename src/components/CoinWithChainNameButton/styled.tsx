@@ -3,12 +3,12 @@ import { styled } from '@mui/material/styles';
 
 export const ContentsContainer = styled('div')({
   paddingLeft: '1rem',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.3rem',
 
-  display: 'grid',
-
-  gridTemplateColumns: '1fr',
-
-  rowGap: '0.3rem',
+  flex: 1,
+  minWidth: 0,
 });
 
 export const SymbolTypography = styled(Typography)(({ theme }) => ({
@@ -31,3 +31,20 @@ type APRTextProps = {
 export const APRText = styled('div')<APRTextProps>(({ theme, ...props }) => ({
   color: props['data-is-high-apr'] ? theme.palette.accentColor.green400 : theme.palette.color.base1000,
 }));
+
+export const ChainNameContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  flex: 1,
+  minWidth: 0,
+
+  maxWidth: '100%',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});

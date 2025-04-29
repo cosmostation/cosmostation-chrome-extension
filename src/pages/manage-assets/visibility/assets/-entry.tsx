@@ -16,6 +16,7 @@ import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -416,6 +417,13 @@ export default function Entry() {
                       return false;
                     })();
                     const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
+
+                    const resolvedAssetId =
+                      coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
+                        ? coin.asset.description
+                        : coin.asset.id.length > 15
+                          ? shorterAddress(coin.asset.id, 16)
+                          : coin.asset.id;
                     return (
                       <>
                         <CoinWithChainNameButton
@@ -423,7 +431,7 @@ export default function Entry() {
                           displayAmount={displayAmount}
                           symbol={coin.asset.symbol}
                           chainName={coin.chain.name}
-                          assetId={coin.asset.id}
+                          assetId={resolvedAssetId}
                           coinGeckoId={coin.asset.coinGeckoId}
                           displayAssetId={isShowAssetId}
                           coinImageProps={{

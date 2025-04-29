@@ -10,6 +10,7 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import IntersectionObserver from '@/components/common/IntersectionObserver';
 import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
 import Search from '@/components/Search';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
@@ -17,6 +18,7 @@ import type { UniqueChainId } from '@/types/chain';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, StickyContentsContainer } from './-styled';
@@ -139,6 +141,13 @@ export default function Entry({ coinId }: EntryProps) {
             {filteredAssetsBySearch?.map((item) => {
               const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals);
 
+              const resolvedAssetId =
+                item.chain.mainAssetDenom === item.asset.id || item.asset.id === NATIVE_EVM_COIN_ADDRESS
+                  ? item.asset.description
+                  : item.asset.id.length > 15
+                    ? shorterAddress(item.asset.id, 16)
+                    : item.asset.id;
+
               return (
                 <CoinWithChainNameButton
                   key={getCoinId(item.asset)}
@@ -146,7 +155,7 @@ export default function Entry({ coinId }: EntryProps) {
                   symbol={item.asset.symbol}
                   chainName={item.chain.name}
                   coinGeckoId={item.asset.coinGeckoId}
-                  assetId={item.asset.id}
+                  assetId={resolvedAssetId}
                   coinImageProps={{
                     imageURL: item.asset.image,
                     badgeImageURL: item.chain.image || '',

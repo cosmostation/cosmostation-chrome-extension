@@ -37,6 +37,9 @@ export const LeftContainer = styled('div')({
   justifyContent: 'flex-start',
   alignItems: 'center',
 
+  flexShrink: 1,
+  minWidth: 0,
+
   textAlign: 'left',
 });
 
