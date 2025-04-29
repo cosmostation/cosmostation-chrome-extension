@@ -45,14 +45,14 @@ export default function OptionButton({ fee, isActive, ...remainder }: OptionButt
       rightContent={
         <RightContainer>
           <AmountContainer>
-            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6} isDisableHidden>
               {amount}
             </BalanceDisplay>
             &nbsp;
             <Base1300Text variant="b4_M">{symbol}</Base1300Text>
           </AmountContainer>
           <ValueContainer>
-            <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference}>
+            <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>
               {value}
             </BalanceDisplay>
           </ValueContainer>

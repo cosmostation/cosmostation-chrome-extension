@@ -79,14 +79,14 @@ export default function EVMFee({
         >
           {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
-              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny isDisableHidden>
                 {displayFeeAmount}
               </BalanceDisplay>
               &nbsp;
               <Base1300Text variant="h7n_M">{coinSymbol}</Base1300Text>
               &nbsp;
               <Base1300Text variant="b2_M">{'('}</Base1300Text>
-              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
                 {value}
               </BalanceDisplay>
               <Base1300Text variant="b2_M">{')'}</Base1300Text>

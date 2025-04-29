@@ -101,7 +101,7 @@ export default function Entry({ coinId }: EntryProps) {
           <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL || ''} />
           <CoinSymbolText variant="h2_B">{symbol}</CoinSymbolText>
           <CoinDenomContainer>
-            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+            <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
               {String(coinPrice)}
             </BalanceDisplay>
             &nbsp;
