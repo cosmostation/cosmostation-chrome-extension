@@ -131,7 +131,16 @@ export default function Entry({ mnemonicId }: EntryProps) {
                 }}
                 leftContent={<MnemonicViewIcon />}
                 leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.manage-account.detail.mnemonic.entry.viewMyMnemonic')}</Base1300Text>}
-                leftSecondBody={<Base1000Text variant="b3_R">{t('pages.manage-account.detail.mnemonic.entry.viewMyMnemonicDescription')}</Base1000Text>}
+                leftSecondBody={
+                  <Base1000Text
+                    style={{
+                      textAlign: 'left',
+                    }}
+                    variant="b3_R"
+                  >
+                    {t('pages.manage-account.detail.mnemonic.entry.viewMyMnemonicDescription')}
+                  </Base1000Text>
+                }
                 rightContent={
                   isNotBackedUp ? (
                     <Caution>
