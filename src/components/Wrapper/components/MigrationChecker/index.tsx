@@ -18,6 +18,7 @@ import { extension } from '@/utils/browser';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { isMigrationRequired_V1_0_0, migrateData, skipMigration } from '@/utils/storageMigration/v1/migration';
 import { toastError } from '@/utils/toast';
+import { openTab } from '@/utils/view/controlView';
 import { setLoadingProgressBarStore, useLoadingProgressBarStore } from '@/zustand/hooks/useLoadingProgressBar';
 
 import ResetOverlay from './components/ResetOverlay';
@@ -129,6 +130,8 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
 
       const { encryptedPassword } = await extension.storage.local.get('encryptedPassword');
       setEncryptedPassword(encryptedPassword);
+
+      await openTab();
     };
 
     void checkMigrationStatus();
