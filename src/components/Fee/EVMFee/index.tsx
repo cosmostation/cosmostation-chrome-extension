@@ -92,7 +92,7 @@ export default function EVMFee({
               <Base1300Text variant="b2_M">{')'}</Base1300Text>
             </EstimatedFeeTextContainer>
           ) : (
-            <Base1300Text variant="b2_M">{')'}</Base1300Text>
+            <Base1300Text variant="b2_M">{'-'}</Base1300Text>
           )}
         </FeeCustomButton>
       </LeftContentContainer>

@@ -102,8 +102,8 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, additionalFees, d
         </RowLeftContainer>
         <RowRightContainer>
           <ChainContainer>
-            <ChainImageContainer src={feeCoin?.chain.image} />
-            <Base1300Text variant="b3_M">{feeCoin?.chain.name || 'UNKNOWN'}</Base1300Text>
+            {feeCoin && <ChainImageContainer src={feeCoin?.chain.image} />}
+            {feeCoin && <Base1300Text variant="b3_M">{feeCoin?.chain.name || 'UNKNOWN'}</Base1300Text>}
           </ChainContainer>
         </RowRightContainer>
       </RowContainer>
@@ -133,30 +133,31 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, additionalFees, d
             </LabelLeftContainer>
             <RowRightContainer>
               <Base900FeeCustomButton disabled={disableFee} onClick={onClickFee}>
-                {displayFeeAmount ? (
-                  <AdditionalEstimatedFeeTextContainer data-is-disabled={disableFee}>
-                    <BalanceDisplay
-                      typoOfIntegers="h6n_M"
-                      typoOfDecimals="h8n_R"
-                      currency={userCurrencyPreference}
-                      fixed={6}
-                      isDisableLeadingCurreny
-                      isDisableHidden
-                    >
-                      {displayFeeAmount}
-                    </BalanceDisplay>
-                    &nbsp;
-                    <Base900Text variant="b5_M">{feeCoin?.asset.symbol}</Base900Text>
-                    &nbsp;
-                    <Base900Text variant="b5_M">{'('}</Base900Text>
-                    <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>
-                      {value}
-                    </BalanceDisplay>
-                    <Base900Text variant="b5_M">{')'}</Base900Text>
-                  </AdditionalEstimatedFeeTextContainer>
-                ) : (
-                  <Base900Text variant="b5_M">{'-'}</Base900Text>
-                )}
+                {feeCoin &&
+                  (displayFeeAmount ? (
+                    <AdditionalEstimatedFeeTextContainer data-is-disabled={disableFee}>
+                      <BalanceDisplay
+                        typoOfIntegers="h6n_M"
+                        typoOfDecimals="h8n_R"
+                        currency={userCurrencyPreference}
+                        fixed={6}
+                        isDisableLeadingCurreny
+                        isDisableHidden
+                      >
+                        {displayFeeAmount}
+                      </BalanceDisplay>
+                      &nbsp;
+                      <Base900Text variant="b5_M">{feeCoin?.asset.symbol}</Base900Text>
+                      &nbsp;
+                      <Base900Text variant="b5_M">{'('}</Base900Text>
+                      <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>
+                        {value}
+                      </BalanceDisplay>
+                      <Base900Text variant="b5_M">{')'}</Base900Text>
+                    </AdditionalEstimatedFeeTextContainer>
+                  ) : (
+                    <Base900Text variant="b5_M">{'-'}</Base900Text>
+                  ))}
               </Base900FeeCustomButton>
             </RowRightContainer>
           </RowContainer>
@@ -210,30 +211,31 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, additionalFees, d
           </RowLeftContainer>
           <RowRightContainer>
             <FeeCustomButton disabled={disableFee} onClick={onClickFee}>
-              {displayFeeAmount ? (
-                <EstimatedFeeTextContainer data-is-disabled={disableFee}>
-                  <BalanceDisplay
-                    typoOfIntegers="h5n_M"
-                    typoOfDecimals="h7n_R"
-                    currency={userCurrencyPreference}
-                    fixed={6}
-                    isDisableLeadingCurreny
-                    isDisableHidden
-                  >
-                    {displayFeeAmount}
-                  </BalanceDisplay>
-                  &nbsp;
-                  <Base1300Text variant="h7n_M">{feeCoin?.asset.symbol}</Base1300Text>
-                  &nbsp;
-                  <Base1300Text variant="b2_M">{'('}</Base1300Text>
-                  <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
-                    {value}
-                  </BalanceDisplay>
-                  <Base1300Text variant="b2_M">{')'}</Base1300Text>
-                </EstimatedFeeTextContainer>
-              ) : (
-                <Base1300Text variant="b2_M">{'-'}</Base1300Text>
-              )}
+              {feeCoin &&
+                (displayFeeAmount ? (
+                  <EstimatedFeeTextContainer data-is-disabled={disableFee}>
+                    <BalanceDisplay
+                      typoOfIntegers="h5n_M"
+                      typoOfDecimals="h7n_R"
+                      currency={userCurrencyPreference}
+                      fixed={6}
+                      isDisableLeadingCurreny
+                      isDisableHidden
+                    >
+                      {displayFeeAmount}
+                    </BalanceDisplay>
+                    &nbsp;
+                    <Base1300Text variant="h7n_M">{feeCoin?.asset.symbol}</Base1300Text>
+                    &nbsp;
+                    <Base1300Text variant="b2_M">{'('}</Base1300Text>
+                    <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
+                      {value}
+                    </BalanceDisplay>
+                    <Base1300Text variant="b2_M">{')'}</Base1300Text>
+                  </EstimatedFeeTextContainer>
+                ) : (
+                  <Base1300Text variant="b2_M">{'-'}</Base1300Text>
+                ))}
             </FeeCustomButton>
           </RowRightContainer>
         </RowContainer>

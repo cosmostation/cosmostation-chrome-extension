@@ -105,45 +105,50 @@ export default function Entry({ request }: EntryProps) {
         <Divider />
         <ContentsContainer>
           <SwitchNetworkContainer>
-            <NetworkContainer>
-              <NetworkImage
-                src={currentEVMNetwork?.image}
-                sx={{
-                  marginBottom: '0.6rem',
-                }}
-              />
-              <Base1300Text
-                variant="b2_B"
-                sx={{
-                  marginBottom: '0.2rem',
-                }}
-              >
-                {currentEVMNetwork?.name}
-              </Base1300Text>
-              <Base1000Text variant="b3_R">{currentEVMNetwork?.chainId}</Base1000Text>
-            </NetworkContainer>
+            {currentEVMNetwork && requestNetwork && (
+              <NetworkContainer>
+                <NetworkImage
+                  src={currentEVMNetwork?.image}
+                  sx={{
+                    marginBottom: '0.6rem',
+                  }}
+                />
+                <Base1300Text
+                  variant="b2_B"
+                  sx={{
+                    marginBottom: '0.2rem',
+                  }}
+                >
+                  {currentEVMNetwork?.name}
+                </Base1300Text>
+                <Base1000Text variant="b3_R">{currentEVMNetwork?.chainId}</Base1000Text>
+              </NetworkContainer>
+            )}
 
-            <RightArrowIconContainer>
-              <RightArrow />
-            </RightArrowIconContainer>
-
-            <NetworkContainer>
-              <NetworkImage
-                src={requestNetwork?.image}
-                sx={{
-                  marginBottom: '0.6rem',
-                }}
-              />
-              <Base1300Text
-                variant="b2_B"
-                sx={{
-                  marginBottom: '0.2rem',
-                }}
-              >
-                {requestNetwork?.name}
-              </Base1300Text>
-              <Base1000Text variant="b3_R">{requestNetwork?.chainId}</Base1000Text>
-            </NetworkContainer>
+            {currentEVMNetwork && requestNetwork && (
+              <RightArrowIconContainer>
+                <RightArrow />
+              </RightArrowIconContainer>
+            )}
+            {currentEVMNetwork && requestNetwork && (
+              <NetworkContainer>
+                <NetworkImage
+                  src={requestNetwork?.image}
+                  sx={{
+                    marginBottom: '0.6rem',
+                  }}
+                />
+                <Base1300Text
+                  variant="b2_B"
+                  sx={{
+                    marginBottom: '0.2rem',
+                  }}
+                >
+                  {requestNetwork?.name}
+                </Base1300Text>
+                <Base1000Text variant="b3_R">{requestNetwork?.chainId}</Base1000Text>
+              </NetworkContainer>
+            )}
           </SwitchNetworkContainer>
         </ContentsContainer>
       </BaseBody>
