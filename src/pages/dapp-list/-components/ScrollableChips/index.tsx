@@ -46,7 +46,7 @@ export default function ScrollableChips({ types, selectedType, onClick }: Scroll
     return () => {
       el.removeEventListener('scroll', checkScrollButtons);
     };
-  }, []);
+  }, [types]);
 
   return (
     <Container>
