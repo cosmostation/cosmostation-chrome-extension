@@ -239,26 +239,26 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const suiAssetsWithoutHidden = filterHiddenAssets(suiAssets);
   const bitcoinAssetsWithoutHidden = filterHiddenAssets(bitcoinAssets);
 
-  const accountAddress = storage[`${id}-address`];
+  const accountAddress = storage[`${id}-address`] || [];
   const allAccountAddress = await getAllAccountAddress(id);
 
-  const cosmosBalances = storage[`${id}-balance-cosmos`];
-  const cosmosDelegations = storage[`${id}-delegation-cosmos`];
-  const cosmosUndelegations = storage[`${id}-undelegation-cosmos`];
-  const cosmosRewards = storage[`${id}-reward-cosmos`];
-  const cosmosCommissions = storage[`${id}-commission-cosmos`];
+  const cosmosBalances = storage[`${id}-balance-cosmos`] || [];
+  const cosmosDelegations = storage[`${id}-delegation-cosmos`] || [];
+  const cosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
+  const cosmosRewards = storage[`${id}-reward-cosmos`] || [];
+  const cosmosCommissions = storage[`${id}-commission-cosmos`] || [];
 
-  const evmBalances = storage[`${id}-balance-evm`];
-  const aptosBalances = storage[`${id}-balance-aptos`];
+  const evmBalances = storage[`${id}-balance-evm`] || [];
+  const aptosBalances = storage[`${id}-balance-aptos`] || [];
 
-  const suiBalances = storage[`${id}-balance-sui`];
-  const suiDelegations = storage[`${id}-delegation-sui`];
+  const suiBalances = storage[`${id}-balance-sui`] || [];
+  const suiDelegations = storage[`${id}-delegation-sui`] || [];
 
-  const bitcoinBalances = storage[`${id}-balance-bitcoin`];
-  const erc20Balances = storage[`${id}-balance-erc20`];
-  const customErc20Balances = storage[`${id}-custom-balance-erc20`];
-  const cw20Balances = storage[`${id}-balance-cw20`];
-  const customCw20Balances = storage[`${id}-custom-balance-cw20`];
+  const bitcoinBalances = storage[`${id}-balance-bitcoin`] || [];
+  const erc20Balances = storage[`${id}-balance-erc20`] || [];
+  const customErc20Balances = storage[`${id}-custom-balance-erc20`] || [];
+  const cw20Balances = storage[`${id}-balance-cw20`] || [];
+  const customCw20Balances = storage[`${id}-custom-balance-cw20`] || [];
 
   const cosmosPromise = PromisePool.withConcurrency(concurrency)
     .for(cosmosAssetsWithoutHidden)

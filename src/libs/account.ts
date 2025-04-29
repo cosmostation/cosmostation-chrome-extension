@@ -40,7 +40,7 @@ export async function addAccount(account: Account) {
 export async function getAccountAddress(id: string) {
   const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-address`);
 
-  const address = storage[`${id}-address`];
+  const address = storage[`${id}-address`] || [];
 
   return address;
 }
@@ -48,9 +48,9 @@ export async function getAccountAddress(id: string) {
 export async function getCustomAccountAddress(id: string) {
   const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-custom-address`);
 
-  const address = storage[`${id}-custom-address`];
+  const address = storage[`${id}-custom-address`] || [];
 
-  return address || [];
+  return address;
 }
 
 export async function getAllAccountAddress(id: string) {

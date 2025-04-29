@@ -388,7 +388,7 @@ export async function getChains() {
 export async function getAddedCustomChains() {
   const storage = await chrome.storage.local.get<ExtensionStorage>('addedCustomChainList');
 
-  const addedCustomChainList = storage['addedCustomChainList'];
+  const addedCustomChainList = storage['addedCustomChainList'] || [];
 
   return addedCustomChainList;
 }
