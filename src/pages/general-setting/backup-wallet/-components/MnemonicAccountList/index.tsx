@@ -76,10 +76,15 @@ export default function MnemonicAccountList() {
         open={!!supposedToBackupAccountId}
         onClose={() => setSupposedToBackupAccountId(undefined)}
         onSubmit={() => {
+          const isNotBackedUp = supposedToBackupAccountId ? notBackedUpAccountIds.includes(supposedToBackupAccountId) : false;
+
           navigate({
             to: ManageBackupStep1.to,
             params: {
               accountId: supposedToBackupAccountId || '',
+            },
+            search: {
+              backupCompleted: !isNotBackedUp,
             },
           });
         }}

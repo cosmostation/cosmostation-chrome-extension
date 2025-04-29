@@ -14,9 +14,10 @@ import { Body, DescriptionContainer, DescriptionSubTitle, DescriptionTitle, Mnem
 
 type EntryProps = {
   accountId: string;
+  isBackupCompleted?: boolean;
 };
 
-export default function Entry({ accountId }: EntryProps) {
+export default function Entry({ accountId, isBackupCompleted }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -44,6 +45,9 @@ export default function Entry({ accountId }: EntryProps) {
       </BaseBody>
       <BaseFooter>
         <Button
+          style={{
+            display: isBackupCompleted ? 'none' : 'null',
+          }}
           onClick={() => {
             navigate({
               to: ManageBackupStep2.to,
