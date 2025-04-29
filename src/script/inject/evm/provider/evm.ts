@@ -1,9 +1,22 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import type { EthereumListenerType, EventDetail } from '@/types/message';
+import type { BaseRequest } from '@/types/message/inject';
 import type { EthRequestAccountsResponse } from '@/types/message/inject/evm';
 
 import { evmRequestApp } from '../request';
+
+export const wrappedEVMRequestApp = async <T extends BaseRequest>(message: T) => {
+  if (message.method === 'eth_chainId' && window.cosmostation.ethereum.chainId) {
+    return window.cosmostation.ethereum.chainId;
+  }
+
+  if (message.method === 'net_version' && window.cosmostation.ethereum.chainId) {
+    return window.cosmostation.ethereum.chainId;
+  }
+
+  return evmRequestApp(message);
+};
 
 export class CosmostaionEthereum implements EthereumProvider {
   private static instance: CosmostaionEthereum;
@@ -24,7 +37,7 @@ export class CosmostaionEthereum implements EthereumProvider {
     return CosmostaionEthereum.instance;
   }
 
-  request = evmRequestApp;
+  request = wrappedEVMRequestApp;
 
   on(eventName: EthereumListenerType, eventHandler: (data: unknown) => void) {
     if (eventName === 'chainChanged') {
