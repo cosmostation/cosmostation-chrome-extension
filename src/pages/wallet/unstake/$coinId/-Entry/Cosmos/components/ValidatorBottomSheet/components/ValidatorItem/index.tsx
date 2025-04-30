@@ -3,26 +3,24 @@ import { useTranslation } from 'react-i18next';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
 import type { UnstakeItemButtonProps } from '@/pages/wallet/unstake/$coinId/-components/UnstakeItemButton';
 import UnstakeItemButton from '@/pages/wallet/unstake/$coinId/-components/UnstakeItemButton';
+import type { ValidatorStatus } from '@/types/cosmos/validator';
 import { gt, toDisplayDenomAmount } from '@/utils/numbers';
 
 import {
   AmountContainer,
-  ImageContainer,
   LabelAttributeText,
   LabelLeftContainer,
   StakingInfoContainer,
   StakingInfoDetailContainer,
   StakingInfoRowContainer,
+  StyledValidatorImage,
   TopLeftContainer,
   TopLeftContentsContainer,
   ValidatorNameContainer,
 } from './styled';
-
-import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type ValidatorButtonProps = UnstakeItemButtonProps & {
   validatorName: string;
@@ -34,10 +32,11 @@ type ValidatorButtonProps = UnstakeItemButtonProps & {
   decimals: number;
   validatorImage?: string;
   rewardTokenCounts?: string;
+  status?: ValidatorStatus;
 };
 
 const ValidatorButton = forwardRef<HTMLButtonElement, ValidatorButtonProps>(
-  ({ validatorName, validatorImage, commission, stakedAmount, symbol, rewardTokenCounts, rewardAmount, decimals, onClick, ...remainder }, ref) => {
+  ({ validatorName, validatorImage, commission, stakedAmount, symbol, rewardTokenCounts, rewardAmount, decimals, status, onClick, ...remainder }, ref) => {
     const { t } = useTranslation();
 
     const displayStakedAmount = toDisplayDenomAmount(stakedAmount, decimals);
@@ -50,9 +49,7 @@ const ValidatorButton = forwardRef<HTMLButtonElement, ValidatorButtonProps>(
         onClick={onClick}
         headerContent={
           <TopLeftContentsContainer>
-            <ImageContainer>
-              <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
-            </ImageContainer>
+            <StyledValidatorImage imageURL={validatorImage} status={status} />
             <TopLeftContainer>
               <ValidatorNameContainer>
                 <Base1300Text variant="b2_M">{validatorName}</Base1300Text>

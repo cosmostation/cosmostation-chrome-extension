@@ -113,6 +113,10 @@ export type V11Param = {
         en: string;
         ja: string;
       };
+      reported_validators?: string[];
+    };
+    interchain_provider_params?: {
+      max_provider_consensus_validators?: string;
     };
   };
   updated_at: string;

@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
 import type { SuiDelegationData } from '@/hooks/sui/useDelegations';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -14,7 +13,6 @@ import {
   AmountContainer,
   ChevronIconContainer,
   CommissionContainer,
-  ImageContainer,
   LabelAttributeText,
   LabelLeftContainer,
   StakingInfoContainer,
@@ -23,6 +21,7 @@ import {
   StakingInfoTitleRowContainer,
   StakingInfoTitleRowRightContainer,
   StyledButton,
+  StyledValidatorImage,
   TopContainer,
   TopLeftContainer,
   TopLeftContentsContainer,
@@ -32,8 +31,6 @@ import {
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
-
-import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type UnstakeObjectSelectBoxProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   isOpenBottomSheet?: boolean;
@@ -64,9 +61,7 @@ export default function UnstakeObjectSelectBox({ isOpenBottomSheet = false, cont
         {contentData ? (
           <>
             <TopLeftContentsContainer>
-              <ImageContainer>
-                <Image src={contentData.validatorImage} defaultImgSrc={defaultValidatorImage} />
-              </ImageContainer>
+              <StyledValidatorImage imageURL={contentData.validatorImage} />
               <TopLeftContainer>
                 <ValidatorNameContainer>
                   <Base1300Text variant="b2_M">{contentData.validatorName}</Base1300Text>

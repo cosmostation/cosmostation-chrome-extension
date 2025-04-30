@@ -1,3 +1,5 @@
+import type { VALIDATOR_STATUS } from '@/constants/cosmos/validator';
+
 import type { Pagination, Uptime } from './common';
 
 export type UnbondingValidators = {
@@ -49,6 +51,7 @@ export interface CosmosValidator {
 
 export interface FormattedCosmosValidator extends CosmosValidator {
   monikerImage?: string;
+  validatorStatus?: ValidatorStatus;
 }
 
 export interface Commission {
@@ -74,3 +77,5 @@ export interface Description {
   security_contact: string;
   details: string;
 }
+
+export type ValidatorStatus = ValueOf<typeof VALIDATOR_STATUS>;

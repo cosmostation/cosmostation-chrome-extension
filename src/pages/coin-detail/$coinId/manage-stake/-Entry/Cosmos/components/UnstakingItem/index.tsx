@@ -6,17 +6,17 @@ import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
-import Image from '@/components/common/Image';
 import { Route as CancelUnstake } from '@/pages/wallet/cancel-unstaking/$coinId';
+import type { ValidatorStatus } from '@/types/cosmos/validator';
 import { formatDateForUnstakingEndDate, getDDay } from '@/utils/date';
 
 import {
   AmountContainer,
-  ImageContainer,
   RightChevronIconContainer,
   StakingInfoContainer,
   StakingInfoRowContainer,
   StyledButton,
+  StyledValidatorImage,
   TopContainer,
   TopLeftContainer,
   TopRightContainer,
@@ -26,8 +26,6 @@ import {
 import StakingOptionBottomSheet from '../../../components/StakingOptionBottomSheet';
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
-
-import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type UnStakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   stakingCoinId: string;
@@ -40,6 +38,7 @@ type UnStakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTM
   unstakingAmount: string;
   unstakingCompletionTime: string;
   validatorImage?: string;
+  status?: ValidatorStatus;
 };
 
 export default function UnstakingItem({
@@ -52,6 +51,7 @@ export default function UnstakingItem({
   unstakingAmount,
   unstakingCompletionTime,
   validatorImage,
+  status,
   ...remainder
 }: UnStakingItemProps) {
   const { t } = useTranslation();
@@ -74,9 +74,7 @@ export default function UnstakingItem({
       >
         <TopContainer>
           <TopLeftContainer>
-            <ImageContainer>
-              <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
-            </ImageContainer>
+            <StyledValidatorImage imageURL={validatorImage} status={status} />
             <ValidatorNameWrapper>
               <ValidatorNameContainer>
                 <Base1300Text variant="b2_M">{validatorName}</Base1300Text>
@@ -107,6 +105,7 @@ export default function UnstakingItem({
       <StakingOptionBottomSheet
         validatorName={validatorName}
         validatorImage={validatorImage}
+        status={status}
         open={isOpenStakingOptionBottomSheet}
         onClose={() => setIsOpenStakingOptionBottomSheet(false)}
       >

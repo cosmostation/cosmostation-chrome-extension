@@ -73,6 +73,8 @@ export interface CosmosChain extends ChainBase {
     bond_denom?: string;
     min_commission_rate?: string;
   };
+  reportedValidators?: string[];
+  maxApproveValidator?: string;
 }
 
 export interface CustomCosmosChain extends ChainBase {
@@ -101,6 +103,8 @@ export interface CustomCosmosChain extends ChainBase {
     bond_denom?: string;
     min_commission_rate?: string;
   };
+  reportedValidators?: string[];
+  maxApproveValidator?: string;
 }
 
 export interface EvmFeeInfo {

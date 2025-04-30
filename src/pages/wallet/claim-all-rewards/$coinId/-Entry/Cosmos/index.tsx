@@ -158,6 +158,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
             commission: commission,
             stakedAmount: item.totalDelegationAmount,
             validatorImage: item.validatorInfo?.monikerImage,
+            status: item.validatorInfo?.validatorStatus,
           };
         })
         .sort((a, b) => (gt(a.stakedAmount, b.stakedAmount) ? -1 : 1)),

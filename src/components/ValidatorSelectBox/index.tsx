@@ -1,20 +1,20 @@
 import { useRef } from 'react';
 import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
 
+import type { ValidatorStatus } from '@/types/cosmos/validator';
+
 import {
   BottomContainer,
   BottomWrapper,
   ChevronIconContainer,
   Container,
   HelperTextContainer,
-  ImageContainer,
   RightAdormentConatiner,
   StyledSelectBox,
+  StyledValidatorImage,
 } from './styled';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-
-import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 export type Validator = {
   validatorName: string;
@@ -22,6 +22,7 @@ export type Validator = {
   votingPower: string;
   commission: string;
   validatorImage?: string;
+  status?: ValidatorStatus;
 };
 
 type ValidatorSelectBoxProps = TextFieldProps & {
@@ -70,7 +71,7 @@ export default function ValidatorSelectBox({
             startAdornment:
               !validatorCounts && currentValidatorAddress ? (
                 <InputAdornment position="start">
-                  <ImageContainer src={currentValidator?.validatorImage} defaultImgSrc={defaultValidatorImage} />
+                  <StyledValidatorImage imageURL={currentValidator?.validatorImage} status={currentValidator?.status} />
                 </InputAdornment>
               ) : null,
             endAdornment: disabled ? null : (

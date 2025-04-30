@@ -1,6 +1,8 @@
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import ValidatorImage from '@/components/common/ValidatorImage';
+
 export const StyledButton = styled('button')(({ theme }) => ({
   width: '100%',
   display: 'flex',
@@ -72,15 +74,13 @@ export const ValidatorNameContainer = styled('div')({
   columnGap: '0.2rem',
 });
 
-export const ImageContainer = styled('div')({
+export const StyledValidatorImage = styled(ValidatorImage)({
   width: '3.2rem',
   height: '3.2rem',
-  borderRadius: '50%',
 
   '& > img': {
     width: '100%',
     height: '100%',
-    borderRadius: '50%',
   },
 });
 
