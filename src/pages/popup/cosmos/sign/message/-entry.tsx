@@ -89,7 +89,7 @@ export default function Entry({ request, chain }: EntryProps) {
       })();
       const base64Signature = Buffer.from(signature).toString('base64');
 
-      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+      const base64PublicKey = Buffer.from(keyPair.publicKey, 'hex').toString('base64');
 
       const publicKeyType = chain.accountTypes[0].pubkeyType ? getPublicKeyType(chain.accountTypes[0].pubkeyType) : PUBLIC_KEY_TYPE.SECP256K1;
 

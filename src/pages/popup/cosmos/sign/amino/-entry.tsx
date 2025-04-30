@@ -314,7 +314,7 @@ export default function Entry({ request, chain }: EntryProps) {
       })();
       const base64Signature = Buffer.from(signature).toString('base64');
 
-      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+      const base64PublicKey = Buffer.from(keyPair.publicKey, 'hex').toString('base64');
 
       const publicKeyType = accountAsset.address.accountType.pubkeyType
         ? getPublicKeyType(accountAsset.address.accountType.pubkeyType)
