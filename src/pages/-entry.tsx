@@ -59,6 +59,8 @@ export default function Entry() {
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
+  const { data: usdCoinGeckoPrice } = useCoinGeckoPrice('usd');
+
   const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
@@ -104,7 +106,7 @@ export default function Entry() {
       const displayAmount = item.totalDisplayAmount || '0';
 
       const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
-      const coinPriceInDolalr = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[CURRENCY_TYPE.USD]) || 0;
+      const coinPriceInDolalr = (item.asset.coinGeckoId && usdCoinGeckoPrice?.[item.asset.coinGeckoId]?.[CURRENCY_TYPE.USD]) || 0;
 
       const value = times(displayAmount, coinPrice);
       const valueInDollar = times(displayAmount, coinPriceInDolalr);
@@ -116,14 +118,15 @@ export default function Entry() {
       };
     });
   }, [
+    groupAccountAssets?.groupAccountAssets,
+    groupAccountAssets?.singleAccountAssets,
+    groupAccountAssets?.groupMap,
+    search,
+    debouncedSearch.length,
+    currentSelectedChainId,
     coinGeckoPrice,
     userCurrencyPreference,
-    currentSelectedChainId,
-    debouncedSearch.length,
-    groupAccountAssets?.groupAccountAssets,
-    groupAccountAssets?.groupMap,
-    groupAccountAssets?.singleAccountAssets,
-    search,
+    usdCoinGeckoPrice,
   ]);
 
   const hideSmallValueAssets = useMemo(() => {
