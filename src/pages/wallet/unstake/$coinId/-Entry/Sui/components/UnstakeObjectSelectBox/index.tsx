@@ -33,7 +33,7 @@ import {
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type UnstakeObjectSelectBoxProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   isOpenBottomSheet?: boolean;

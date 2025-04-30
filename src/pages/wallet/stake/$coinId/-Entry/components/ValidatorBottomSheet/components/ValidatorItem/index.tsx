@@ -10,7 +10,7 @@ import NumberTypo from '@/components/common/NumberTypo';
 
 import { ImageContainer, ValidatorNameContainer, VotingPowerContainer } from './styled';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type ValidatorButtonProps = BaseOptionButtonProps & {
   validatorName: string;

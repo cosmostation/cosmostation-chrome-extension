@@ -37,7 +37,7 @@ import UnstakeItemButton from '../../../../-components/UnstakeItemButton';
 import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type UnstakeObjectBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   currentObjectId?: string;

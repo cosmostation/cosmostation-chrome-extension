@@ -4,7 +4,7 @@ import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, 
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type StakingOptionBottomSheetProps = React.ComponentProps<typeof StyledBottomSheet> & {
   validatorName: string;

@@ -14,7 +14,7 @@ import {
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 export type Validator = {
   validatorName: string;

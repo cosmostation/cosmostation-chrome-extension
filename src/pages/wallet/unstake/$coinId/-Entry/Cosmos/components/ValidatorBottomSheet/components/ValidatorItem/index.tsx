@@ -22,7 +22,7 @@ import {
   ValidatorNameContainer,
 } from './styled';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type ValidatorButtonProps = UnstakeItemButtonProps & {
   validatorName: string;

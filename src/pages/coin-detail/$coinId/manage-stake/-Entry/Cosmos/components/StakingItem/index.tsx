@@ -29,7 +29,7 @@ import StakingOptionBottomSheet from '../../../components/StakingOptionBottomShe
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
+import defaultValidatorImage from '@/assets/images/default/validatorDefault.png';
 
 type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   stakingCoinId: string;
