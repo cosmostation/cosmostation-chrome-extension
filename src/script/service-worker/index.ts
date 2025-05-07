@@ -3,6 +3,7 @@ import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
 import type { ServiceWorkerMessage } from '@/types/message/service-worker';
 import { extension } from '@/utils/browser';
+import { devLogger } from '@/utils/devLogger';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { openTab } from '@/utils/view/controlView';
 import { closeWindow } from '@/utils/view/window';
@@ -32,8 +33,8 @@ extension.storage.onChanged.addListener((changes) => {
 
 chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
   (async () => {
-    console.log('service worker message', message);
-    console.log('service worker sender', sender);
+    devLogger.log('service worker message', message);
+    devLogger.log('service worker sender', sender);
 
     if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
       if (message.method === 'updateBalance') {

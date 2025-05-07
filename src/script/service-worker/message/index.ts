@@ -1,4 +1,5 @@
 import type { Request } from '@/types/message/inject';
+import { devLogger } from '@/utils/devLogger';
 
 import { aptosProcess } from './aptos';
 import { bitcoinProcess } from './bitcoin';
@@ -9,7 +10,7 @@ import { suiProcess } from './sui';
 
 export async function process(message: Request) {
   try {
-    console.log('process', message);
+    devLogger.log('process', message);
 
     if (message.chainType === 'cosmos') {
       await cosmosProcess(message);
@@ -30,6 +31,6 @@ export async function process(message: Request) {
       await aptosProcess(message);
     }
   } catch (e) {
-    console.log('process error', e);
+    devLogger.error('process error', e);
   }
 }

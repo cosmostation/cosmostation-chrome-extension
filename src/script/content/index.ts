@@ -3,6 +3,7 @@ import { sendMessage } from '@/libs/extension';
 import type { ChainType } from '@/types/chain';
 import type { ListenerType } from '@/types/message';
 import type { ContentMessage } from '@/types/message/content';
+import { devLogger } from '@/utils/devLogger';
 
 window.addEventListener('cosmostation_request', (event) => {
   (async () => {
@@ -14,8 +15,8 @@ window.addEventListener('cosmostation_request', (event) => {
 
 chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
   (async () => {
-    console.log('content message', message);
-    console.log('content sender', sender);
+    devLogger.log('content message', message);
+    devLogger.log('content sender', sender);
 
     if (sender?.id === chrome.runtime.id && message?.target === 'CONTENT') {
       if (message.method === 'responseApp') {
