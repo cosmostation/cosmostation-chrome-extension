@@ -109,7 +109,6 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
           {filteredValidatorList?.length > viewLimit - 1 && (
             <IntersectionObserver
               onIntersect={() => {
-                console.log('first');
                 setViewLimit((limit) => limit + 30);
               }}
             />

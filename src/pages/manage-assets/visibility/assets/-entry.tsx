@@ -83,6 +83,8 @@ export default function Entry() {
 
   const { customAssets } = useCustomAssets();
 
+  const [tokenToDelete, setTokenToDelete] = useState<FlatAccountAssetsWithValue | undefined>();
+
   const [viewLimit, setViewLimit] = useState(30);
 
   const [search, setSearch] = useState('');
@@ -91,8 +93,6 @@ export default function Entry() {
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
-
-  const [isOpenDeleteCoinBottomSheet, setIsOpenDeleteCoinBottomSheet] = useState(false);
 
   const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
 
@@ -451,36 +451,12 @@ export default function Entry() {
                           }
                           onClick={() => {
                             if (customToken) {
-                              setIsOpenDeleteCoinBottomSheet(true);
+                              setTokenToDelete(coin);
                             } else {
                               handleAssetVisibility(getCoinId(coin.asset), isBalanceZero);
                             }
                           }}
                         />
-                        {customToken && (
-                          <DeleteConfirmBottomSheet
-                            open={isOpenDeleteCoinBottomSheet}
-                            onClose={() => setIsOpenDeleteCoinBottomSheet(false)}
-                            contents={
-                              <CoinContainer>
-                                <CoinImage imageURL={customToken.image} badgeImageURL={coin.chain.image || ''} />
-                                <CoinSymbolContainer>
-                                  <Base1300Text variant="b1_B">{customToken.symbol}</Base1300Text>
-                                  <CoinIdContainer>
-                                    <Base1000Text variant="b4_R">{t('pages.manage-assets.visibility.assets.entry.contract')}</Base1000Text>
-                                    &nbsp;
-                                    <Base1000Text variant="b3_M">{shorterAddress(customToken.id, 16)}</Base1000Text>
-                                  </CoinIdContainer>
-                                </CoinSymbolContainer>
-                              </CoinContainer>
-                            }
-                            descriptionText={t('pages.manage-assets.visibility.assets.entry.deleteDescription')}
-                            onClickConfirm={() => {
-                              handleAssetVisibility(getCoinId(coin.asset), isBalanceZero);
-                              setIsOpenDeleteCoinBottomSheet(false);
-                            }}
-                          />
-                        )}
                       </>
                     );
                   })}
@@ -514,6 +490,28 @@ export default function Entry() {
         onClose={() => setIsOpenSortBottomSheet(false)}
         onSelectSortOption={(val) => {
           setSortOption(val);
+        }}
+      />
+      <DeleteConfirmBottomSheet
+        open={!!tokenToDelete?.asset}
+        onClose={() => setTokenToDelete(undefined)}
+        contents={
+          <CoinContainer>
+            <CoinImage imageURL={tokenToDelete?.asset.image} badgeImageURL={tokenToDelete?.chain.image || undefined} />
+            <CoinSymbolContainer>
+              <Base1300Text variant="b1_B">{tokenToDelete?.asset.symbol}</Base1300Text>
+              <CoinIdContainer>
+                <Base1000Text variant="b4_R">{t('pages.manage-assets.visibility.assets.entry.contract')}</Base1000Text>
+                &nbsp;
+                <Base1000Text variant="b3_M">{shorterAddress(tokenToDelete?.asset.id, 16)}</Base1000Text>
+              </CoinIdContainer>
+            </CoinSymbolContainer>
+          </CoinContainer>
+        }
+        descriptionText={t('pages.manage-assets.visibility.assets.entry.deleteDescription')}
+        onClickConfirm={() => {
+          handleAssetVisibility(tokenToDelete?.asset ? getCoinId(tokenToDelete?.asset) : '', tokenToDelete?.balance === '0');
+          setTokenToDelete(undefined);
         }}
       />
     </>
