@@ -29,7 +29,7 @@ export const TopContainer = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
   paddingBottom: '1.2rem',
-  borderBottom: `0.2rem solid ${theme.palette.color.base300}`,
+  borderBottom: `0.1rem solid ${theme.palette.color.base300}`,
 }));
 
 export const TopLeftContainer = styled('div')({

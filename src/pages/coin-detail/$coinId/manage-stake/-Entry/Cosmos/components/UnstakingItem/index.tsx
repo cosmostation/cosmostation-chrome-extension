@@ -93,11 +93,11 @@ export default function UnstakingItem({
           <StakingInfoRowContainer>
             <Base1000Text variant="b3_R">{t('pages.coin-detail.$coinId.manage-stake.Entry.Cosmos.components.UnstakingItem.index.unstaking')}</Base1000Text>
             <AmountContainer>
-              <BalanceDisplay typoOfIntegers="h3n_B" typoOfDecimals="h5n_M" fixed={6}>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                 {unstakingAmount}
               </BalanceDisplay>
               &nbsp;
-              <Base1300Text variant="h5n_M">{symbol}</Base1300Text>
+              <Base1300Text variant="b4_M">{symbol}</Base1300Text>
             </AmountContainer>
           </StakingInfoRowContainer>
         </StakingInfoContainer>
