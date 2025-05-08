@@ -121,8 +121,8 @@ export function useAccountAllAssets({
       suiAccountAssets: filterAssetList(data.suiAccountAssets),
       cw20AccountAssets: filterAssetList(data.cw20AccountAssets),
       erc20AccountAssets: filterAssetList(data.erc20AccountAssets),
-      customErc20AccountAssets: filterAssetList(data.customErc20AccountAssets),
-      customCw20AccountAssets: filterAssetList(data.customCw20AccountAssets),
+      customErc20AccountAssets: data.customErc20AccountAssets,
+      customCw20AccountAssets: data.customCw20AccountAssets,
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
     };
   }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);

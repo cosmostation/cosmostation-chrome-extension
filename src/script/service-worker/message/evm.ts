@@ -392,7 +392,7 @@ export async function evmProcess(message: EvmRequest) {
 
           const addTokenParam: EthcAddTokens['params'][0] = {
             id: validatedParams.options.address,
-            chainId: currentEthereumNetwork.chainId,
+            chainId: currentEthereumNetwork.id,
             type: 'erc20',
             chainType: 'evm',
             name: validatedParams.options.symbol,

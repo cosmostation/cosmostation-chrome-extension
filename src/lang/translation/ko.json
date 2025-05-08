@@ -2079,7 +2079,7 @@
         "add-token": {
           "entry": {
             "addCustomToken": "커스텀 토큰을 추가하세요",
-            "addToken": "토큰을 추가하세요",
+            "addToken": "토큰 추가",
             "contractAddress": "컨트랙트 주소",
             "decimals": "Decimals",
             "reject": "거부",
@@ -2242,7 +2242,7 @@
         "add-token": {
           "entry": {
             "addCustomToken": "ERC20을 추가하세요",
-            "addToken": "토큰을 추가하세요",
+            "addToken": "토큰 추가",
             "contractAddress": "컨트랙트 주소",
             "decimals": "Decimals",
             "reject": "거부",

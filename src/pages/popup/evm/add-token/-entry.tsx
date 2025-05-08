@@ -53,11 +53,11 @@ export default function Entry({ request }: EntryProps) {
   const wrappedTokens = useMemo(() => {
     return tokens.map((token) => {
       const selectedToken = data?.erc20Assets.find((coin) => isEqualsIgnoringCase(coin.id, token.id));
-
       if (selectedToken) {
         return {
           ...token,
           id: selectedToken.id,
+          chainId: selectedToken.chainId,
           symbol: selectedToken.symbol,
           decimals: selectedToken.decimals,
           image: selectedToken.image,
