@@ -136,23 +136,21 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const availableValidators = useMemo(
     () =>
-      validators.data
-        .map((item) => {
-          const votinPower = ceil(toDisplayDenomAmount(item.tokens, selectedStakingCoin?.asset.decimals || 0));
-          const commission = toPercentages(item.commission.commission_rates.rate, {
-            disableMark: true,
-          });
+      validators.data.map((item) => {
+        const votingPower = ceil(toDisplayDenomAmount(item.tokens, selectedStakingCoin?.asset.decimals || 0));
+        const commission = toPercentages(item.commission.commission_rates.rate, {
+          disableMark: true,
+        });
 
-          return {
-            validatorName: item.description.moniker,
-            validatorAddress: item.operator_address,
-            votingPower: votinPower,
-            commission: commission,
-            validatorImage: item.monikerImage,
-          };
-        })
-        .sort((a, b) => (gt(a.votingPower, b.votingPower) ? -1 : 1))
-        .sort((a) => (a.validatorName.toLocaleLowerCase().includes('cosmostation') ? -1 : 1)),
+        return {
+          validatorName: item.description.moniker,
+          validatorAddress: item.operator_address,
+          votingPower: votingPower,
+          commission: commission,
+          validatorImage: item.monikerImage,
+          status: item.validatorStatus,
+        };
+      }),
     [selectedStakingCoin?.asset.decimals, validators.data],
   );
 

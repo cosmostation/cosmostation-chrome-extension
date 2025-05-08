@@ -152,6 +152,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
             rewardAmount,
             rewardTokenCounts: restRewardCounts,
             validatorImage: item.validatorInfo?.monikerImage,
+            status: item.validatorInfo?.validatorStatus,
           };
         })
         .sort((a, b) => (gt(a.votingPower, b.votingPower) ? -1 : 1)),

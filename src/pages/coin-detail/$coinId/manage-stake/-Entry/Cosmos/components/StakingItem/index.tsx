@@ -6,20 +6,20 @@ import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
-import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
 import { Route as ClaimRewards } from '@/pages/wallet/claim-rewards/$coinId/$validatorAddress';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId/$validatorAddress';
 import { Route as Unstake } from '@/pages/wallet/unstake/$coinId/$validatorAddress';
+import type { ValidatorStatus } from '@/types/cosmos/validator';
 
 import {
   AmountContainer,
   CommissionContainer,
-  ImageContainer,
   RightChevronIconContainer,
   StakingInfoContainer,
   StakingInfoRowContainer,
   StyledButton,
+  StyledValidatorImage,
   TopContainer,
   TopLeftContainer,
   ValidatorNameContainer,
@@ -29,8 +29,6 @@ import StakingOptionBottomSheet from '../../../components/StakingOptionBottomShe
 
 import RightChevronIcon from '@/assets/images/icons/RightChevron20.svg';
 
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
-
 type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   stakingCoinId: string;
   validatorAddress: string;
@@ -39,6 +37,7 @@ type StakingItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLB
   decimals: number;
   stakedAmount: string;
   rewardAmount: string;
+  status?: ValidatorStatus;
   commission?: string;
   rewardCounts?: string;
   validatorImage?: string;
@@ -52,6 +51,7 @@ export default function StakingItem({
   commission,
   symbol,
   stakedAmount,
+  status,
   rewardAmount,
   rewardCounts,
   validatorImage,
@@ -73,9 +73,7 @@ export default function StakingItem({
         {...remainder}
       >
         <TopContainer>
-          <ImageContainer>
-            <Image src={validatorImage} defaultImgSrc={defaultValidatorImage} />
-          </ImageContainer>
+          <StyledValidatorImage imageURL={validatorImage} status={status} />
           <TopLeftContainer>
             <ValidatorNameWrapper>
               <ValidatorNameContainer>
@@ -126,6 +124,7 @@ export default function StakingItem({
       <StakingOptionBottomSheet
         validatorName={validatorName}
         validatorImage={validatorImage}
+        status={status}
         open={isOpenStakingOptionBottomSheet}
         onClose={() => setIsOpenStakingOptionBottomSheet(false)}
       >

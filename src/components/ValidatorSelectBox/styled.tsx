@@ -2,7 +2,7 @@ import type { TextFieldProps } from '@mui/material';
 import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import Image from '../common/Image';
+import ValidatorImage from '../common/ValidatorImage';
 
 export const Container = styled('div')({
   width: '100%',
@@ -126,11 +126,11 @@ export const HelperTextContainer = styled('div')<HelperTextContainerProps>(({ th
   color: props['data-is-error'] ? theme.palette.accentColor.red400 : theme.palette.color.base1300,
 }));
 
-export const ImageContainer = styled(Image)({
+export const StyledValidatorImage = styled(ValidatorImage)({
   width: '2rem',
   height: '2rem',
   marginBottom: '0.5rem',
-  borderRadius: '50%',
+  marginRight: '0.2rem',
 });
 
 export const RightAdormentConatiner = styled('div')({

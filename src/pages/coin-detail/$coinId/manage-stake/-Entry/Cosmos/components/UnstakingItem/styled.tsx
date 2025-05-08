@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import ValidatorImage from '@/components/common/ValidatorImage';
+
 export const StyledButton = styled('button')(({ theme }) => ({
   width: '100%',
   border: 0,
@@ -27,7 +29,7 @@ export const TopContainer = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
   paddingBottom: '1.2rem',
-  borderBottom: `0.2rem solid ${theme.palette.color.base300}`,
+  borderBottom: `0.1rem solid ${theme.palette.color.base300}`,
 }));
 
 export const TopLeftContainer = styled('div')({
@@ -68,16 +70,9 @@ export const RightChevronIconContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ImageContainer = styled('div')({
+export const StyledValidatorImage = styled(ValidatorImage)({
   width: '3.2rem',
   height: '3.2rem',
-  borderRadius: '50%',
-
-  '& > img': {
-    width: '100%',
-    height: '100%',
-    borderRadius: '50%',
-  },
 });
 
 export const TopRightContainer = styled('div')({

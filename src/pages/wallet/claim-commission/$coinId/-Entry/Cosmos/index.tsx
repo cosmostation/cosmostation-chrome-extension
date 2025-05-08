@@ -121,6 +121,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
           commission,
           stakedAmount: '0',
           validatorImage: item.monikerImage,
+          status: item.validatorStatus,
         };
       }),
     [selectedCoin?.asset.decimals, validators.data],

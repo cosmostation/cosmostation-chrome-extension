@@ -99,6 +99,7 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
                 votingPower={item.votingPower}
                 commission={item.commission}
                 validatorImage={item.validatorImage}
+                status={item.status}
                 onClick={() => {
                   onClickItem(item.validatorAddress);
                   handleClose();

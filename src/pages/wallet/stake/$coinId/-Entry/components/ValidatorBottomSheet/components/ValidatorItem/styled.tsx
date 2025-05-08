@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import ValidatorImage from '@/components/common/ValidatorImage';
+
 type StyledButtonProps = {
   isActive: boolean;
 };
@@ -20,11 +22,10 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   },
 }));
 
-export const ImageContainer = styled('div')({
+export const StyledValidatorImage = styled(ValidatorImage)({
   width: '3.2rem',
   height: '3.2rem',
-  borderRadius: '50%',
-  overflow: 'hidden',
+
   '& > img': {
     width: '100%',
     height: '100%',

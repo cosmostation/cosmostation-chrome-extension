@@ -96,6 +96,9 @@ export async function getChains() {
 
     const stakingParams = chain.params?.staking_params ? chain.params.staking_params.params : undefined;
 
+    const reportedValidators = chain.params.chainlist_params.reported_validators;
+    const maxApproveValidator = chain.params.interchain_provider_params?.max_provider_consensus_validators;
+
     return {
       id,
       chainId,
@@ -118,6 +121,8 @@ export async function getChains() {
       isTestnet,
       apr,
       stakingParams,
+      reportedValidators,
+      maxApproveValidator,
     };
   });
 

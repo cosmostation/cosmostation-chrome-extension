@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 
-import type { CosmosValidator, FormattedCosmosValidator, GetValidatorsResponse } from '@/types/cosmos/validator';
+import { VALIDATOR_STATUS } from '@/constants/cosmos/validator';
+import type { CosmosValidator, FormattedCosmosValidator, GetValidatorsResponse, ValidatorStatus } from '@/types/cosmos/validator';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
+import { gt } from '@/utils/numbers';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseFetchConfig } from '../common/useFetch';
@@ -63,7 +65,36 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
 
       setIsAllRequestsFailed(false);
 
-      return flattenedReturnData;
+      const sortedByVotingPower = flattenedReturnData.toSorted((a, b) => (gt(a.tokens, b.tokens) ? -1 : 1));
+      const activeValidators = asset.chain.maxApproveValidator
+        ? sortedByVotingPower.filter((item) => item.status === 'BOND_STATUS_BONDED').toSpliced(Number(asset.chain.maxApproveValidator))
+        : undefined;
+      const topActiveValidators = activeValidators && new Set(activeValidators.map((item) => item.operator_address));
+
+      const mappedData = sortedByVotingPower
+        .map((validator) => {
+          const validatorStatus: ValidatorStatus | undefined = (() => {
+            if (validator.jailed) return VALIDATOR_STATUS.JAILED;
+
+            if (validator.status !== 'BOND_STATUS_BONDED') return VALIDATOR_STATUS.INACTIVE;
+
+            if (asset.chain.reportedValidators?.includes(validator.operator_address)) return VALIDATOR_STATUS.FAKE;
+
+            if (topActiveValidators) {
+              return topActiveValidators.has(validator.operator_address) ? undefined : VALIDATOR_STATUS.INACTIVE;
+            }
+            return undefined;
+          })();
+
+          return {
+            ...validator,
+            monikerImage: `https://serve.dev-mintscan.com/assets/moniker/${parseCoinId(coinId).chainId}/64/${validator.operator_address}.png`,
+            validatorStatus,
+          };
+        })
+        .toSorted((a) => (a.description.moniker.toLocaleLowerCase().includes('cosmostation') ? -1 : 1));
+
+      return mappedData;
     } catch {
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
@@ -88,13 +119,8 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
   const returnData = useMemo<FormattedCosmosValidator[]>(() => {
     if (!data) return [];
 
-    return data.map((item) => {
-      return {
-        ...item,
-        monikerImage: `https://serve.dev-mintscan.com/assets/moniker/${parseCoinId(coinId).chainId}/64/${item.operator_address}.png`,
-      };
-    });
-  }, [coinId, data]);
+    return data;
+  }, [data]);
 
   return { data: returnData, error, refetch, isLoading };
 }

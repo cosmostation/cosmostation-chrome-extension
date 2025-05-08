@@ -4,7 +4,6 @@ import { Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
-import Image from '@/components/common/Image';
 import NumberTypo from '@/components/common/NumberTypo';
 import type { SuiDelegationData } from '@/hooks/sui/useDelegations';
 import { plus, toDisplayDenomAmount } from '@/utils/numbers';
@@ -17,7 +16,6 @@ import {
   Container,
   Header,
   HeaderTitle,
-  ImageContainer,
   LabelAttributeText,
   LabelLeftContainer,
   StakingInfoContainer,
@@ -27,6 +25,7 @@ import {
   StakingInfoTitleRowRightContainer,
   StyledBottomSheet,
   StyledButton,
+  StyledValidatorImage,
   TopLeftContainer,
   TopLeftContentsContainer,
   ValidatorNameContainer,
@@ -36,8 +35,6 @@ import UnstakeItemButton from '../../../../-components/UnstakeItemButton';
 
 import ClassificationIcon from '@/assets/images/icons/Classification10.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
-
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
 type UnstakeObjectBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   currentObjectId?: string;
@@ -94,9 +91,7 @@ export default function UnstakeObjectBottomSheet({ currentObjectId, objects, onC
                   }}
                   headerContent={
                     <TopLeftContentsContainer>
-                      <ImageContainer>
-                        <Image src={item.validatorImage} defaultImgSrc={defaultValidatorImage} />
-                      </ImageContainer>
+                      <StyledValidatorImage imageURL={item.validatorImage} />
                       <TopLeftContainer>
                         <ValidatorNameContainer>
                           <Base1300Text variant="b2_M">{item.validatorName}</Base1300Text>

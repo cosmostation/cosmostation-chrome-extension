@@ -80,6 +80,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
             validatorAddress: item.validatorAddress,
             validatorImage: item.validatorInfo?.monikerImage,
             validatorName: item.validatorInfo?.description.moniker || shorterAddress(item.validatorAddress, 12) || '',
+            status: item.validatorInfo?.validatorStatus,
             commission: commissionPercentage,
             symbol: currentCoin?.asset.symbol || '',
             stakedAmount: displayStakedAmount,
@@ -111,6 +112,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         decimals: currentCoin?.asset.decimals || 0,
         unstakingAmount: displayUnstakingAmount,
         unstakingCompletionTime: item.entries.completion_time,
+        status: item.validatorInfo?.validatorStatus,
       };
     });
   }, [currentCoin?.asset.decimals, currentCoin?.asset.symbol, undelegation.data]);
@@ -183,6 +185,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
                       decimals={currentCoin?.asset.decimals || 0}
                       unstakingAmount={item.unstakingAmount}
                       unstakingCompletionTime={item.unstakingCompletionTime}
+                      status={item.status}
                     />
                   ))
                 ) : (

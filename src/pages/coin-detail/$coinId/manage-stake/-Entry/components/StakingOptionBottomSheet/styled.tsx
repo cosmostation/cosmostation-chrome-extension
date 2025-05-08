@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import BottomSheet from '@/components/common/BottomSheet';
-import Image from '@/components/common/Image';
+import ValidatorImage from '@/components/common/ValidatorImage';
 
 export const Container = styled('div')({
   overflow: 'hidden',
@@ -27,10 +27,14 @@ export const HeaderTitle = styled('div')({
   columnGap: '0.6rem',
 });
 
-export const ValidatorImage = styled(Image)({
+export const StyledValidatorImage = styled(ValidatorImage)({
   width: '2.8rem',
   height: '2.8rem',
-  borderRadius: '50%',
+
+  '& > img': {
+    width: '100%',
+    height: '100%',
+  },
 });
 
 export const Body = styled('div')({

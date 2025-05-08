@@ -1,17 +1,18 @@
 import { Typography } from '@mui/material';
 
-import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, ValidatorImage } from './styled';
+import type { ValidatorStatus } from '@/types/cosmos/validator';
+
+import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledValidatorImage } from './styled';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
-
-import defaultValidatorImage from '@/assets/images/chain/defaultChain.png';
 
 type StakingOptionBottomSheetProps = React.ComponentProps<typeof StyledBottomSheet> & {
   validatorName: string;
   validatorImage?: string;
+  status?: ValidatorStatus;
 };
 
-export default function StakingOptionBottomSheet({ validatorName, validatorImage, children, onClose, ...remainder }: StakingOptionBottomSheetProps) {
+export default function StakingOptionBottomSheet({ validatorName, validatorImage, children, status, onClose, ...remainder }: StakingOptionBottomSheetProps) {
   return (
     <StyledBottomSheet
       {...remainder}
@@ -22,7 +23,7 @@ export default function StakingOptionBottomSheet({ validatorName, validatorImage
       <Container>
         <Header>
           <HeaderTitle>
-            <ValidatorImage src={validatorImage} defaultImgSrc={defaultValidatorImage} />
+            <StyledValidatorImage imageURL={validatorImage} status={status} />
             <Typography variant="h3_B">{validatorName}</Typography>
           </HeaderTitle>
           <StyledButton
