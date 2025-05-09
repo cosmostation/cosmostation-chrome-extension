@@ -12,6 +12,7 @@ import type {
   AccountAddressBalanceBitcoin,
   AccountAddressBalanceCosmos,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceIota,
   AccountAddressBalanceSui,
 } from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
@@ -20,6 +21,7 @@ import type { ChainType } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import type { SuiRpcGetBalanceResponse } from '@/types/sui/api';
 import { fetchCosmosBalances, fetchCW20Balances, fetchERC20Balances, fetchEVMBalances, fetchMultiERC20Balances } from '@/utils/cosmos/fetch/balance';
+import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
@@ -87,6 +89,7 @@ export async function updateBalance(id: string) {
       evmBalances(id),
       aptosBalances(id),
       suiBalances(id),
+      iotaBalances(id),
       bitcoinBalances(id),
       erc20Balance(id),
       cw20Balance(id),
@@ -488,6 +491,40 @@ async function suiBalances(id: string) {
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: results });
+}
+
+async function iotaBalances(id: string) {
+  const address = await getAccountAddress(id);
+  const { iotaChains } = await getChains();
+
+  const addressWithChain = address
+    .map((addr) => {
+      const chain = iotaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls } = chain;
+
+      try {
+        const balances = await fetchIotaBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
+
+        const result: AccountAddressBalanceIota = { id, chainId, chainType, address, balances };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceIota = { id, chainId, chainType, address, balances: [] };
+
+        return result;
+      }
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: results });
 }
 
 async function erc20Balance(id: string) {

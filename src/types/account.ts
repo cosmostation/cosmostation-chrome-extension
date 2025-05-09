@@ -1,9 +1,22 @@
+import type { DelegatedStake as IotaDelegatedStake } from '@iota/iota-sdk/client';
 import type { DelegatedStake } from '@mysten/sui/client';
 
 import type { AptosResourceResponse } from './aptos/api';
-import type { AptosAsset, AssetId, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
+import type { AptosAsset, AssetId, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, IotaAsset, SuiAsset } from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
-import type { AptosChain, BitcoinChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, CustomEvmChain, EvmChain, SuiChain } from './chain';
+import type {
+  AptosChain,
+  BitcoinChain,
+  Chain,
+  ChainAccountType,
+  ChainType,
+  CosmosChain,
+  CustomCosmosChain,
+  CustomEvmChain,
+  EvmChain,
+  IotaChain,
+  SuiChain,
+} from './chain';
 import type { AuthAccountsPayload } from './cosmos/account';
 import type { CosmosBalance } from './cosmos/api';
 import type { CommissionResponse, Cw20Balance } from './cosmos/balance';
@@ -11,6 +24,7 @@ import type { LcdDelegationResponse } from './cosmos/delegation';
 import type { RewardDetails } from './cosmos/reward';
 import type { UnbondingResponses } from './cosmos/undelegation';
 import type { Erc20Balance } from './evm/balance';
+import type { IotaGetBalance } from './iota/api';
 import type { SuiGetBalance } from './sui/api';
 
 export type AccountType = 'PRIVATE_KEY' | 'MNEMONIC';
@@ -122,6 +136,22 @@ export interface AccountAddressBalanceSui {
   address: string;
   balances: SuiGetBalance[];
 }
+
+export interface AccountAddressBalanceIota {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balances: IotaGetBalance[];
+}
+
+export interface AccountAddressDelegationsIota {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  delegations: IotaDelegatedStake[];
+}
 export interface AccountAddressBalanceBitcoin {
   id: Chain['id'];
   chainId: Chain['chainId'];
@@ -219,6 +249,16 @@ export interface AccountBitcoinAsset {
   asset: BitcoinAsset;
   address: AccountAddress;
   balance: string;
+}
+
+export interface AccountIotaAsset {
+  chain: IotaChain;
+  asset: IotaAsset;
+  address: AccountAddress;
+  balance: string;
+  delegation?: string;
+  reward?: string;
+  totalBalance?: string;
 }
 
 export type AccountNamesById = Record<AccountBase['id'], string>;

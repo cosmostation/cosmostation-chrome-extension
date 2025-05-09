@@ -1,3 +1,4 @@
+import type { PERMISSION as IOTA_PERMISSION } from '@/constants/iota';
 import type { PERMISSION } from '@/constants/sui';
 
 import type {
@@ -10,9 +11,11 @@ import type {
   AccountAddressBalanceCw20,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceIota,
   AccountAddressBalanceSui,
   AccountAddressCommissionsCosmos,
   AccountAddressDelegationsCosmos,
+  AccountAddressDelegationsIota,
   AccountAddressDelegationsSui,
   AccountAddressRewardsCosmos,
   AccountAddressUnbondingsCosmos,
@@ -33,6 +36,7 @@ import type { PriceTrendType } from './price';
 import type { DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
 
 export type ApprovedSuiPermissionType = ValueOf<typeof PERMISSION>;
+export type ApprovedIotaPermissionType = ValueOf<typeof IOTA_PERMISSION>;
 
 export type AddressInfo = {
   id: string;
@@ -55,6 +59,14 @@ export type ApprovedSuiPermission = {
   origin: ApprovedOrigin['origin'];
   accountId: Account['id'];
   permission: ApprovedSuiPermissionType;
+  lastConnectedAt: number;
+};
+
+export type ApprovedIotaPermission = {
+  id: string;
+  origin: ApprovedOrigin['origin'];
+  accountId: Account['id'];
+  permission: ApprovedIotaPermissionType;
   lastConnectedAt: number;
 };
 
@@ -84,6 +96,7 @@ export interface ExtensionStorage {
   [key: `${string}-balance-aptos`]: AccountAddressBalanceAptos[];
   [key: `${string}-balance-sui`]: AccountAddressBalanceSui[];
   [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
+  [key: `${string}-balance-iota`]: AccountAddressBalanceIota[];
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-delegation-cosmos`]: AccountAddressDelegationsCosmos[];
@@ -92,6 +105,7 @@ export interface ExtensionStorage {
   [key: `${string}-commission-cosmos`]: AccountAddressCommissionsCosmos[];
   [key: `${string}-account-info-cosmos`]: AccountAddressAccountInfoCosmos[];
   [key: `${string}-delegation-sui`]: AccountAddressDelegationsSui[];
+  [key: `${string}-delegation-iota`]: AccountAddressDelegationsIota[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
   [key: `${string}-visible-assetIds`]: AssetId[];
   [key: `${string}-custom-address`]: AccountAddress[];
@@ -102,6 +116,7 @@ export interface ExtensionStorage {
   [key: `${string}-nft-evm`]: EvmNFT[];
   [key: `${string}-nft-cosmos`]: CosmosNFT[];
   [key: `${string}-nft-sui`]: SuiNFT[];
+  [key: `${string}-nft-iota`]: SuiNFT[];
   initAccountIds: Account['id'][];
   initCheckLegacyBalanceAccountIds: Account['id'][];
   dashboardCoinSortKey: DashboardCoinSortKeyType;
@@ -123,11 +138,13 @@ export interface ExtensionStorage {
   isBalanceVisible: boolean;
   isHideSmalValue: boolean;
   approvedSuiPermissions: ApprovedSuiPermission[];
+  approvedIotaPermissions: ApprovedSuiPermission[];
   requestQueue: RequestQueue[];
   chosenEthereumNetworkId: string;
   chosenAptosNetworkId: string;
   chosenSuiNetworkId: string;
   chosenBitcoinNetworkId: string;
+  chosenIotaNetworkId: string;
   currentWindowId: number | null;
   prioritizedProvider: PrioritizedProvider;
   pinnedDappIds: number[];

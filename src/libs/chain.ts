@@ -1,7 +1,8 @@
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
 import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -30,6 +31,7 @@ export async function getChains() {
   const suiChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('sui'));
   const aptosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('aptos'));
   const bitcoinChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('bitcoin'));
+  const iotaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('iota'));
 
   const remappedCosmosChains: CosmosChain[] = cosmosChains.map((chain) => {
     const id = chain.id;
@@ -381,12 +383,66 @@ export async function getChains() {
     };
   });
 
+  const remappedIotaChains: IotaChain[] = iotaChains.map((chain) => {
+    const id = chain.id;
+    const chainType = 'iota';
+    const chainId = chain.params.chainlist_params.chain_id!;
+
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
+    const image = chain.params.chainlist_params?.chain_image ?? null;
+
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
+
+    const rpcUrls =
+      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
+
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
+
+    const accountTypes =
+      chain.params.chainlist_params?.account_type?.map((accountType) => {
+        const hdPath = accountType.hd_path.replace('X', '${index}');
+        return {
+          hdPath,
+          pubkeyStyle: accountType.pubkey_style,
+          pubkeyType: accountType.pubkey_type ?? null,
+          isDefault: accountType.is_default ?? null,
+        };
+      }) ?? [];
+
+    return {
+      id,
+      chainId,
+      name,
+      image,
+      chainType,
+      mainAssetDenom,
+      rpcUrls,
+      explorer,
+      accountTypes,
+    };
+  });
+
   return {
     cosmosChains: remappedCosmosChains,
     evmChains: remappedEvmChains,
     suiChains: remappedSuiChains,
     aptosChains: remappedAptosChains,
     bitcoinChains: remappedBitcoinChains,
+    iotaChains: remappedIotaChains,
   };
 }
 

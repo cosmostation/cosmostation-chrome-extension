@@ -75,7 +75,12 @@ export interface BitcoinAsset extends AssetBase {
   color?: string;
 }
 
-export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset;
+export interface IotaAsset extends AssetBase {
+  chainType: 'iota';
+  type: string;
+}
+
+export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset | IotaAsset;
 
 export type AssetSingleGroup = {
   singles: Asset[];

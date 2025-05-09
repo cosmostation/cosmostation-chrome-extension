@@ -9,6 +9,7 @@ import { getChains } from '@/libs/chain';
 import type {
   AccountAddressCommissionsCosmos,
   AccountAddressDelegationsCosmos,
+  AccountAddressDelegationsIota,
   AccountAddressDelegationsSui,
   AccountAddressRewardsCosmos,
   AccountAddressUnbondingsCosmos,
@@ -17,13 +18,14 @@ import type { ExtensionStorage } from '@/types/extension';
 import type { SuiRpcGetDelegatedStakeResponse } from '@/types/sui/api';
 import { convertToValidatorAddress, isValidatorAddress } from '@/utils/cosmos/address';
 import { fetchCosmosCommission, fetchCosmosDelegations, fetchCosmosRewards, fetchCosmosUnbondings, fetchNTRNRewards } from '@/utils/cosmos/fetch/staking';
+import { fetchIotaDelegations } from '@/utils/iota/fetch/staking';
 
 export async function updateStakingRelatedBalance(id: string) {
   console.time(`update-staking-related-balance-${id}`);
   try {
     await getAccount(id);
 
-    await Promise.all([cosmosStaking(id), suiStaking(id)]);
+    await Promise.all([cosmosStaking(id), suiStaking(id), iotaStaking(id)]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
@@ -289,4 +291,34 @@ async function suiStaking(id: string) {
     });
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: results });
+}
+
+async function iotaStaking(id: string) {
+  const address = await getAccountAddress(id);
+  const { iotaChains } = await getChains();
+
+  const addressWithChain = address
+    .map((addr) => {
+      const chain = iotaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls } = chain;
+
+      const response = await fetchIotaDelegations(address, rpcUrls.map((item) => item.url).filter(Boolean));
+
+      const delegations = response ?? [];
+
+      const result: AccountAddressDelegationsIota = { id, chainId, chainType, address, delegations };
+
+      return result;
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: results });
 }
