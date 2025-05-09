@@ -16,8 +16,9 @@ import type { AptosAccount } from '@/types/message/inject/aptos';
 import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
 import type { CosRequestAccount, CosRequestAccountResponse } from '@/types/message/inject/cosmos';
 import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
+import type { IotaRequestAccount, IotaRequestAccountResponse, IotaRequestConnect, IotaRequestConnectResponse } from '@/types/message/inject/iota';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
-import { EthereumRPCError, SuiRPCError } from '@/utils/error';
+import { EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
 import { extensionLocalStorage } from '@/utils/storage';
 import { addHexPrefix } from '@/utils/string';
 
@@ -251,6 +252,77 @@ export default function Entry() {
               params: {
                 id: requestId,
                 result,
+              },
+            });
+
+            void deQueue();
+          }
+        }
+
+        if (currentRequestQueue?.method === 'iota_connect') {
+          const { tabId, requestId, origin } = currentRequestQueue;
+
+          const result: IotaRequestConnectResponse = null;
+
+          void refreshOriginConnectionTime(origin);
+
+          sendMessage<ResponseAppMessage<IotaRequestConnect>>({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin,
+            requestId,
+            tabId,
+            params: {
+              id: requestId,
+              result,
+            },
+          });
+          void deQueue();
+        }
+
+        if (currentRequestQueue?.method === 'iota_getAccount' && currentPassword) {
+          const { tabId, requestId, origin } = currentRequestQueue;
+          const iotaChains = (await getChains()).iotaChains;
+          const iotaChain = iotaChains?.find((item) => item.id === 'iota') || iotaChains?.[0];
+
+          if (iotaChain) {
+            void refreshOriginConnectionTime(origin);
+
+            const keyPair = getKeypair(iotaChain, currentAccount, currentPassword);
+            const address = getAddress(iotaChain, keyPair.publicKey);
+
+            const publicKey = addHexPrefix(keyPair!.publicKey);
+
+            const result: IotaRequestAccountResponse = {
+              address,
+              publicKey,
+            };
+
+            sendMessage<ResponseAppMessage<IotaRequestAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
+              },
+            });
+
+            void deQueue();
+          } else {
+            const { tabId, requestId, origin } = currentRequestQueue;
+
+            sendMessage<ResponseAppMessage<IotaRequestAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                error: new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
               },
             });
 

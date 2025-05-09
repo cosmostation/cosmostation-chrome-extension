@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { Account, AccountWithName } from '@/types/account';
-import type { ApprovedSuiPermissionType } from '@/types/extension';
+import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/types/extension';
 import { emitChangedAddressEvent } from '@/utils/event';
 import { emitToWeb } from '@/utils/message';
 import { removeMnemonicName } from '@/utils/mnemonicNames';
@@ -15,9 +15,8 @@ import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zusta
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentAccount() {
-  const { userAccounts, accountNamesById, currentAccountId, approvedOrigins, approvedSuiPermissions, updateExtensionStorageStore } = useExtensionStorageStore(
-    (state) => state,
-  );
+  const { userAccounts, accountNamesById, currentAccountId, approvedOrigins, approvedSuiPermissions, approvedIotaPermissions, updateExtensionStorageStore } =
+    useExtensionStorageStore((state) => state);
 
   const selectedAccount = useMemo(() => userAccounts.find((account) => account.id === currentAccountId), [currentAccountId, userAccounts]);
 
@@ -181,10 +180,36 @@ export function useCurrentAccount() {
     await updateExtensionStorageStore('approvedSuiPermissions', newSuiPermissions);
   };
 
+  const currentAccountApprovedIotaPermissions = useMemo(
+    () => approvedIotaPermissions.filter((permission) => permission.accountId === currentAccount?.id),
+    [approvedIotaPermissions, currentAccount?.id],
+  );
+
+  const addIotaPermissions = async (permissions: ApprovedIotaPermissionType[], origin: string) => {
+    const lastConnectedAt = new Date().getTime();
+
+    const newIotaPermissions = [
+      ...approvedIotaPermissions.filter((permission) => permission.accountId !== currentAccount?.id),
+      ...permissions.map((permission) => ({ id: uuidv4(), accountId: currentAccount?.id, permission, origin, lastConnectedAt })),
+    ];
+
+    await updateExtensionStorageStore('approvedIotaPermissions', newIotaPermissions);
+  };
+
+  const removeIotaPermissions = async (permissions: ApprovedIotaPermissionType[], origin: string) => {
+    const newIotaPermissions = approvedIotaPermissions.filter(
+      (permission) =>
+        !(permission.accountId === currentAccount?.id && permission.origin === origin && permissions.some((item) => item === permission.permission)),
+    );
+
+    await updateExtensionStorageStore('approvedIotaPermissions', newIotaPermissions);
+  };
+
   return {
     currentAccount: currentAccountWithName,
     currentAccountApporvedOrigins,
     currentAccountApprovedSuiPermissions,
+    currentAccountApprovedIotaPermissions,
     setCurrentAccount,
     addAccount,
     removeMnemonic,
@@ -195,6 +220,8 @@ export function useCurrentAccount() {
     removeAllApprovedOrigin,
     addSuiPermissions,
     removeSuiPermissions,
+    addIotaPermissions,
+    removeIotaPermissions,
     refreshOriginConnectionTime,
     incrementTxCountForOrigin,
   };

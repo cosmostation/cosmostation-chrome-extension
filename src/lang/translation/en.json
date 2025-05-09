@@ -3023,6 +3023,38 @@
             "sign": "Sign"
           }
         }
+      },
+      "iota": {
+        "sign-message": {
+          "entry": {
+            "signatureRequest": "Signature Request",
+            "message": "Message",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "sign": {
+          "transaction": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "DefaultTx": {
+                    "index": {
+                      "data": "Data"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transaction": {
+          "entry": {
+            "failedToDryRun": "Failed to dry run",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        }
       }
     },
     "coin-overview": {

@@ -19,6 +19,11 @@ export const SUI_LISTENER_TYPE = {
   CHAIN_CHANGED: 'networkChange',
 } as const;
 
+export const IOTA_LISTENER_TYPE = {
+  ACCOUNT_CHANGED: 'accountChange',
+  CHAIN_CHANGED: 'networkChange',
+} as const;
+
 export const BITCOIN_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
 } as const;

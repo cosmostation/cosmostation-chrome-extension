@@ -2509,6 +2509,38 @@
             "sign": "사인"
           }
         }
+      },
+      "iota": {
+        "sign-message": {
+          "entry": {
+            "message": "메시지",
+            "reject": "거부",
+            "sign": "사인",
+            "signatureRequest": "서명 요청"
+          }
+        },
+        "sign": {
+          "transaction": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "DefaultTx": {
+                    "index": {
+                      "data": "데이터"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transaction": {
+          "entry": {
+            "failedToDryRun": "시뮬레이션에 실패했습니다",
+            "reject": "거부",
+            "sign": "사인"
+          }
+        }
       }
     },
     "view": {
@@ -2885,7 +2917,9 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "recipientNetwork": "수신 체인"
+                "recipientNetwork": "수신 체인",
+                "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
+                "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다"
               }
             }
           },

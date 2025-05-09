@@ -43,7 +43,14 @@ export default function AccessRequest({ children }: AccessRequestProps) {
 
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
 
-  const { addApprovedOrigin, addSuiPermissions, currentAccountApporvedOrigins, currentAccountApprovedSuiPermissions } = useCurrentAccount();
+  const {
+    addApprovedOrigin,
+    addSuiPermissions,
+    addIotaPermissions,
+    currentAccountApporvedOrigins,
+    currentAccountApprovedSuiPermissions,
+    currentAccountApprovedIotaPermissions,
+  } = useCurrentAccount();
 
   const { siteIconURL } = useSiteIconURL(currentRequestQueue?.origin);
   const siteTitle = getSiteTitle(currentRequestQueue?.origin);
@@ -57,7 +64,20 @@ export default function AccessRequest({ children }: AccessRequestProps) {
     currentRequestQueue.method === 'sui_connect' &&
     !currentRequestQueue.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission));
 
-  if ((currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) || isSuiApporved) {
+  const currentAccountIotaPermissionTypes = currentAccountApprovedIotaPermissions
+    .filter((permission) => permission.origin === currentRequestQueue?.origin)
+    .map((permission) => permission.permission);
+
+  const isIotaApporved =
+    currentRequestQueue &&
+    currentRequestQueue.method === 'iota_connect' &&
+    !currentRequestQueue.params.every((permission) => currentAccountIotaPermissionTypes.includes(permission));
+
+  if (
+    (currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) ||
+    isSuiApporved ||
+    isIotaApporved
+  ) {
     return (
       <Layout>
         <>
@@ -150,6 +170,10 @@ export default function AccessRequest({ children }: AccessRequestProps) {
 
                     if (currentRequestQueue.method === 'sui_connect') {
                       await addSuiPermissions(currentRequestQueue.params, currentRequestQueue.origin);
+                    }
+
+                    if (currentRequestQueue.method === 'iota_connect') {
+                      await addIotaPermissions(currentRequestQueue.params, currentRequestQueue.origin);
                     }
                   }}
                 >

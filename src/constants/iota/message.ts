@@ -1,10 +1,7 @@
 export const IOTA_POPUP_METHOD_TYPE = {
   IOTA__CONNECT: 'iota_connect',
-  IOTA__SIGN_TRANSACTION_BLOCK: 'iota_signTransactionBlock',
   IOTA__SIGN_TRANSACTION: 'iota_signTransaction',
-  IOTA__SIGN_AND_EXECUTE_TRANSACTION_BLOCK: 'iota_signAndExecuteTransactionBlock',
   IOTA__SIGN_AND_EXECUTE_TRANSACTION: 'iota_signAndExecuteTransaction',
-  IOTA__SIGN_MESSAGE: 'iota_signMessage',
   IOTA__SIGN_PERSONAL_MESSAGE: 'iota_signPersonalMessage',
   IOTA__GET_ACCOUNT: 'iota_getAccount',
 } as const;

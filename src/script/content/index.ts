@@ -1,4 +1,11 @@
-import { APTOS_LISTENER_TYPE, BITCOIN_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, SUI_LISTENER_TYPE } from '@/constants/message';
+import {
+  APTOS_LISTENER_TYPE,
+  BITCOIN_LISTENER_TYPE,
+  COSMOS_LISTENER_TYPE,
+  ETHEREUM_LISTENER_TYPE,
+  IOTA_LISTENER_TYPE,
+  SUI_LISTENER_TYPE,
+} from '@/constants/message';
 import { sendMessage } from '@/libs/extension';
 import type { ChainType } from '@/types/chain';
 import type { ListenerType } from '@/types/message';
@@ -61,6 +68,7 @@ chrome.runtime.onMessage.addListener(
       if (data.chainType === 'aptos') return Object.values(APTOS_LISTENER_TYPE);
       if (data.chainType === 'sui') return Object.values(SUI_LISTENER_TYPE);
       if (data.chainType === 'bitcoin') return Object.values(BITCOIN_LISTENER_TYPE);
+      if (data.chainType === 'iota') return Object.values(IOTA_LISTENER_TYPE);
 
       return [];
     })() as ListenerType[];
