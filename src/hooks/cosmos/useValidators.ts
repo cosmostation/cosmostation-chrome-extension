@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import { VALIDATOR_STATUS } from '@/constants/cosmos/validator';
 import type { CosmosValidator, FormattedCosmosValidator, GetValidatorsResponse, ValidatorStatus } from '@/types/cosmos/validator';
 import { get } from '@/utils/axios';
@@ -46,7 +47,9 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
 
       const returnData: CosmosValidator[][] = [];
 
-      const response = await get<GetValidatorsResponse>(requestURLs[index]);
+      const response = await get<GetValidatorsResponse>(requestURLs[index], {
+        timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      });
 
       returnData.push(response.validators);
 
@@ -55,7 +58,9 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
       while (nextCursor) {
         const nextCursorRequestURL = `${requestURLs[index]}?pagination.key=${nextCursor}`;
 
-        const nextResponse = await get<GetValidatorsResponse>(nextCursorRequestURL);
+        const nextResponse = await get<GetValidatorsResponse>(nextCursorRequestURL, {
+          timeout: DEFAULT_FETCH_TIME_OUT_MS,
+        });
 
         returnData.push(nextResponse.validators ?? []);
         nextCursor = nextResponse?.pagination?.next_key ?? null;

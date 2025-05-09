@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { RewardPayload } from '@/types/cosmos/reward';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
@@ -42,7 +43,9 @@ export function useReward({ coinId, config }: UseRewardProps) {
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<RewardPayload>(requestURLs[index]);
+      const response = await get<RewardPayload>(requestURLs[index], {
+        timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
+      });
 
       setIsAllRequestsFailed(false);
 
