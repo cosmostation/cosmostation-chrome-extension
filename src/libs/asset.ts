@@ -1,3 +1,4 @@
+import type { IotaObjectDataOptions, IotaObjectResponse, IotaObjectResponseQuery } from '@iota/iota-sdk/client';
 import { KioskClient, Network } from '@mysten/kiosk';
 import type { DynamicFieldInfo, SuiObjectDataOptions, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
 import { SuiClient } from '@mysten/sui/client';
@@ -22,6 +23,7 @@ import type {
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, IotaAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
+import type { IotaGetObjectsOwnedByAddressResponse, IotaGetObjectsResponse } from '@/types/iota/api';
 import type { SuiGetDynamicFieldsResponse, SuiGetObjectsOwnedByAddressResponse, SuiGetObjectsResponse } from '@/types/sui/api';
 import { chunkArray } from '@/utils/array';
 import { post } from '@/utils/axios';
@@ -1293,6 +1295,102 @@ export async function getMultiObjects(
         });
         if (response.error) {
           throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: sui_multiGetObjects, Message: ${response.error?.message}`);
+        }
+
+        if (response.result) {
+          multiGetObjectResponses.push(response.result ?? []);
+          success = true;
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+    if (!success) break;
+  }
+
+  return multiGetObjectResponses.flat();
+}
+
+export async function getIotaObjectsByOwnedAddress(
+  address: string,
+  chainId: string,
+  chainType: string,
+  option?: IotaObjectResponseQuery,
+): Promise<IotaObjectResponse[]> {
+  const { iotaChains } = await getChains();
+  const iotaChain = iotaChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!iotaChain) throw new Error('Chain not found');
+
+  const rpcUrls = iotaChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+  let nextKey: string | null = null;
+  const iotaObjectResponses: IotaObjectResponse[][] = [];
+
+  do {
+    let success = false;
+    for (const rpcUrl of rpcUrls) {
+      try {
+        const response: IotaGetObjectsOwnedByAddressResponse | undefined = await post<IotaGetObjectsOwnedByAddressResponse>(rpcUrl, {
+          jsonrpc: '2.0',
+          method: 'iotax_getOwnedObjects',
+          params: nextKey ? [address, { ...option }, nextKey] : [address, { ...option }],
+          id: address,
+        });
+        if (response.error) {
+          throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: iotax_getOwnedObjects, Message: ${response.error?.message}`);
+        }
+
+        if (response.result) {
+          nextKey = response.result.nextCursor && response.result.hasNextPage ? response.result.nextCursor : null;
+          iotaObjectResponses.push(response.result.data ?? []);
+          success = true;
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+    if (!success) break;
+  } while (nextKey);
+
+  return iotaObjectResponses.flat();
+}
+
+export async function getIotaMultiObjects(
+  objectIds: string[],
+  chainId: string,
+  chainType: string,
+  option?: IotaObjectDataOptions | null,
+): Promise<IotaObjectResponse[]> {
+  const { iotaChains } = await getChains();
+  const iotaChain = iotaChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!iotaChain) throw new Error('Chain not found');
+
+  const rpcUrls = iotaChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+  const chunkedArray = chunkArray(objectIds, 50);
+  const multiGetObjectResponses: IotaObjectResponse[][] = [];
+
+  for (const chunk of chunkedArray) {
+    let success = false;
+    for (const rpcUrl of rpcUrls) {
+      try {
+        const response = await post<IotaGetObjectsResponse>(rpcUrl, {
+          jsonrpc: '2.0',
+          method: 'iota_multiGetObjects',
+          params: [
+            [...chunk],
+            {
+              ...option,
+              showType: true,
+              showContent: true,
+              showOwner: true,
+              showDisplay: true,
+            },
+          ],
+          id: 'getMultiObjects',
+        });
+        if (response.error) {
+          throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: iota_multiGetObjects, Message: ${response.error?.message}`);
         }
 
         if (response.result) {

@@ -9,10 +9,10 @@ export type AddressBookForm = {
 };
 
 type useSchemaProps = {
-  regex: RegExp;
+  checkIsValidAddress: (address: string) => boolean;
 };
 
-export function useSchema({ regex }: useSchemaProps) {
+export function useSchema({ checkIsValidAddress }: useSchemaProps) {
   const { t } = useTranslation();
 
   const addressBookForm = Joi.object<AddressBookForm>({
@@ -31,12 +31,15 @@ export function useSchema({ regex }: useSchemaProps) {
     address: Joi.string()
       .required()
       .trim()
-      .min(1)
-      .pattern(regex)
+      .custom((value, helpers) => {
+        if (!checkIsValidAddress(value)) {
+          return helpers.error('string.pattern.base', { value });
+        }
+        return value;
+      })
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
-        'string.min': t('schema.common.string.min'),
         'string.pattern.base': t('schema.addressBookForm.address.string.pattern.base'),
       }),
 

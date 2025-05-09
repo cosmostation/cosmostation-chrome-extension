@@ -375,7 +375,7 @@ async function initializeChosenNetworks() {
     await setExtensionLocalStorage('chosenBitcoinNetworkId', defaultBitcoinNetworkId);
   }
 
-  if (!storedChosenIotaNetworkId) {
+  if (!storedChosenIotaNetworkId && iotaChains.length > 0) {
     const defaultIotaNetwork = iotaChains.find((item) => item.id === 'iota') || iotaChains[0];
 
     const defaultIotaNetworkId = getUniqueChainId(defaultIotaNetwork);

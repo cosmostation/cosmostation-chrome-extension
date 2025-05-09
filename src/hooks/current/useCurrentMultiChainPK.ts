@@ -21,6 +21,7 @@ export function useCurrentMultiChainPK() {
         ...(chainListFilteredByAccountType.aptosChains || []),
         ...(chainListFilteredByAccountType.suiChains || []),
         ...(chainListFilteredByAccountType.bitcoinChains || []),
+        ...(chainListFilteredByAccountType.iotaChains || []),
       ]
         .filter((item, index, self) => {
           return index === self.findIndex((t) => t.id === item.id);
@@ -31,6 +32,7 @@ export function useCurrentMultiChainPK() {
       chainListFilteredByAccountType.allEVMChains,
       chainListFilteredByAccountType.aptosChains,
       chainListFilteredByAccountType.bitcoinChains,
+      chainListFilteredByAccountType.iotaChains,
       chainListFilteredByAccountType.suiChains,
     ],
   );
