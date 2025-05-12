@@ -1252,7 +1252,7 @@
           "components": {
             "EthermintSelectBottomSheet": {
               "index": {
-                "cosmosSubtitle": "'{{bech32prefix}} ...'형식의 주소를 등록합니다",
+                "cosmosSubtitle": "'{{bech32Prefix}} ...'형식의 주소를 등록합니다",
                 "cosmosTitle": "코스모스 스타일 주소",
                 "evmSubtitle": "'0x ...'형식으로 주소를 등록합니다",
                 "evmTitle": "EVM 스타일 주소",
