@@ -3,6 +3,7 @@ import type { PERMISSION } from '@/constants/sui';
 import type {
   Account,
   AccountAddress,
+  AccountAddressAccountInfoCosmos,
   AccountAddressBalanceAptos,
   AccountAddressBalanceBitcoin,
   AccountAddressBalanceCosmos,
@@ -89,6 +90,7 @@ export interface ExtensionStorage {
   [key: `${string}-undelegation-cosmos`]: AccountAddressUnbondingsCosmos[];
   [key: `${string}-reward-cosmos`]: AccountAddressRewardsCosmos[];
   [key: `${string}-commission-cosmos`]: AccountAddressCommissionsCosmos[];
+  [key: `${string}-account-info-cosmos`]: AccountAddressAccountInfoCosmos[];
   [key: `${string}-delegation-sui`]: AccountAddressDelegationsSui[];
   [key: `${string}-hidden-assetIds`]: AssetId[];
   [key: `${string}-visible-assetIds`]: AssetId[];

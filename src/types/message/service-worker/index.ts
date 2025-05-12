@@ -27,6 +27,12 @@ export interface UpdateStakingMessage extends MessageBase {
   params: [string];
 }
 
+export interface UpdateAccountInfoMessage extends MessageBase {
+  target: Extract<TargetType, 'SERVICE_WORKER'>;
+  method: 'updateAccountInfo';
+  params: [string];
+}
+
 export interface RequestAppMessage extends MessageBase {
   target: Extract<TargetType, 'SERVICE_WORKER'>;
   method: 'requestApp';
@@ -45,7 +51,8 @@ export type ServiceWorkerMessage =
   | UpdateDefaultBalanceMessage
   | RequestAppMessage
   | RequestSidePanelOpenMessage
-  | UpdateStakingMessage;
+  | UpdateStakingMessage
+  | UpdateAccountInfoMessage;
 
 export interface ServiceWorkerResponse {
   updateBalance: null;

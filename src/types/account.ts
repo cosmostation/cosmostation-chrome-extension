@@ -4,6 +4,7 @@ import type { AptosResourceResponse } from './aptos/api';
 import type { AptosAsset, AssetId, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, SuiAsset } from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
 import type { AptosChain, BitcoinChain, Chain, ChainAccountType, ChainType, CosmosChain, CustomCosmosChain, CustomEvmChain, EvmChain, SuiChain } from './chain';
+import type { AuthAccountsPayload } from './cosmos/account';
 import type { CosmosBalance } from './cosmos/api';
 import type { CommissionResponse, Cw20Balance } from './cosmos/balance';
 import type { LcdDelegationResponse } from './cosmos/delegation';
@@ -81,6 +82,13 @@ export interface AccountAddressCommissionsCosmos {
   chainType: ChainType;
   address: string;
   commissions?: CommissionResponse;
+}
+export interface AccountAddressAccountInfoCosmos {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  accountInfo: AuthAccountsPayload;
 }
 
 export interface AccountAddressBalanceEvm {

@@ -1,10 +1,8 @@
-import axios from 'axios';
 import { KioskClient, Network } from '@mysten/kiosk';
 import type { DynamicFieldInfo, SuiObjectDataOptions, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
 import { SuiClient } from '@mysten/sui/client';
 import PromisePool from '@supercharge/promise-pool';
 
-import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import type {
@@ -21,7 +19,6 @@ import type {
 } from '@/types/account';
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
-import type { AuthAccountsPayload } from '@/types/cosmos/account';
 import type { ExtensionStorage } from '@/types/extension';
 import type { SuiGetDynamicFieldsResponse, SuiGetObjectsOwnedByAddressResponse, SuiGetObjectsResponse } from '@/types/sui/api';
 import { chunkArray } from '@/utils/array';
@@ -184,6 +181,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-undelegation-cosmos`,
     `${id}-reward-cosmos`,
     `${id}-commission-cosmos`,
+    `${id}-account-info-cosmos`,
     `${id}-balance-evm`,
     `${id}-balance-aptos`,
     `${id}-balance-sui`,
@@ -247,6 +245,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const cosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
   const cosmosRewards = storage[`${id}-reward-cosmos`] || [];
   const cosmosCommissions = storage[`${id}-commission-cosmos`] || [];
+  const cosmosAccountInfo = storage[`${id}-account-info-cosmos`] || [];
 
   const evmBalances = storage[`${id}-balance-evm`] || [];
   const aptosBalances = storage[`${id}-balance-aptos`] || [];
@@ -269,33 +268,13 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       const { results } = await PromisePool.withConcurrency(concurrency)
         .for(addresses)
         .process(async (address) => {
-          const urlPath = `/cosmos/auth/v1beta1/accounts/${address.address}`;
-
           const isVestingChainMainAsset = vestingChainIds.has(chain.id) && chain.mainAssetDenom === asset.id;
 
-          const promises = isVestingChainMainAsset
-            ? chain.lcdUrls.map(async (lcdUrl) => {
-                const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-                const requestUrl = `${url}${urlPath}`;
-
-                const response = await axios.get<AuthAccountsPayload>(requestUrl, {
-                  timeout: BALANCE_FETCH_TIME_OUT_MS,
-                });
-
-                const contentType = response.headers['content-type'] ?? '';
-                if (!contentType.includes('application/json')) {
-                  throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-                }
-
-                if (typeof response.data !== 'object' || response.data === null) {
-                  throw new Error('Invalid response: data is not an object');
-                }
-
-                return formattingAccount(response.data);
-              })
+          const accountInfo = isVestingChainMainAsset
+            ? formattingAccount(
+                cosmosAccountInfo.find((accountInfo) => accountInfo.address === address.address && accountInfo.chainId === chain.id)?.accountInfo,
+              )
             : undefined;
-
-          const accountResponse = promises && (await Promise.any(promises));
 
           const type = asset.id;
           const balanceInfo = cosmosBalances?.find(
@@ -350,9 +329,9 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               .toString() || '0';
 
           const resolvedBalance = (() => {
-            if (isVestingChainMainAsset && accountResponse) {
-              const vestingRemained = getVestingRemained(accountResponse, type);
-              const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountResponse, type) : delegation;
+            if (isVestingChainMainAsset && accountInfo) {
+              const vestingRemained = getVestingRemained(accountInfo, type);
+              const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountInfo, type) : delegation;
 
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const [vestingRelatedAvailable, _] = (() => {

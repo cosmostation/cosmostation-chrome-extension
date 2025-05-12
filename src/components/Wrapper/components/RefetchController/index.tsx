@@ -1,3 +1,4 @@
+import { useUpdateAccountInfo } from '@/hooks/update/useUpdateAccountInfo';
 import { useUpdateAddress } from '@/hooks/update/useUpdateAddress';
 import { useUpdateAutoLockAt } from '@/hooks/update/useUpdateAutoLockAt';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
@@ -13,6 +14,7 @@ export default function RefetchController({ children }: RefetchControllerProps) 
   useUpdateAddress();
   useUpdateBalance();
   useUpdateStaking();
+  useUpdateAccountInfo();
   useUpdateAutoLockAt();
 
   return <>{children}</>;

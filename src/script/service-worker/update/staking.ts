@@ -2,6 +2,8 @@ import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { NEUTRON_STAKE_CONTRACT_ADDRESS, NEUTRON_TESTNET_STAKE_CONTRACT_ADDRESS } from '@/constants/cosmos/contract';
 import { getAccount, getAccountAddress } from '@/libs/account';
 import { getChains } from '@/libs/chain';
 import type {
@@ -11,13 +13,10 @@ import type {
   AccountAddressRewardsCosmos,
   AccountAddressUnbondingsCosmos,
 } from '@/types/account';
-import type { CommissionResponse } from '@/types/cosmos/balance';
-import type { DelegationPayload, KavaDelegationPayload, LcdDelegationResponse } from '@/types/cosmos/delegation';
-import type { RewardPayload } from '@/types/cosmos/reward';
-import type { UnbondingPayload, UnbondingResponses } from '@/types/cosmos/undelegation';
 import type { ExtensionStorage } from '@/types/extension';
 import type { SuiRpcGetDelegatedStakeResponse } from '@/types/sui/api';
-import { convertToValidatorAddress } from '@/utils/cosmos/address';
+import { convertToValidatorAddress, isValidatorAddress } from '@/utils/cosmos/address';
+import { fetchCosmosCommission, fetchCosmosDelegations, fetchCosmosRewards, fetchCosmosUnbondings, fetchNTRNRewards } from '@/utils/cosmos/fetch/staking';
 
 export async function updateStakingRelatedBalance(id: string) {
   console.time(`update-staking-related-balance-${id}`);
@@ -35,9 +34,6 @@ export async function updateStakingRelatedBalance(id: string) {
     console.timeEnd(`update-staking-related-balance-${id}`);
   }
 }
-
-const isKavaPayload = (payload: DelegationPayload | KavaDelegationPayload): payload is KavaDelegationPayload =>
-  (payload as KavaDelegationPayload).result?.[0]?.delegation?.delegator_address !== undefined;
 
 async function cosmosStaking(id: string) {
   await Promise.all([cosmosDelegations(id), cosmosUnbondings(id), cosmosRewards(id), cosmosCommissions(id)]);
@@ -61,96 +57,10 @@ async function cosmosDelegations(id: string) {
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const urlPath = `/cosmos/staking/v1beta1/delegations/${address}`;
-
       const { lcdUrls } = chain;
 
-      let nextKey: string | null = null;
-
-      const responseDelegations: LcdDelegationResponse[][] = [];
-
-      const promises = lcdUrls.map(async (lcdUrl) => {
-        const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-        const requestUrl = `${url}${urlPath}`;
-
-        const response = await axios.get<DelegationPayload | KavaDelegationPayload>(requestUrl, {
-          timeout: BALANCE_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
-        });
-
-        const contentType = response.headers['content-type'] ?? '';
-        if (!contentType.includes('application/json')) {
-          throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-        }
-
-        if (typeof response.data !== 'object' || response.data === null) {
-          throw new Error('Invalid response: data is not an object');
-        }
-
-        if (isKavaPayload(response.data)) {
-          throw Error('no Balance');
-        }
-
-        if (response.data.delegation_responses?.length === 0) {
-          throw Error('no Balance');
-        }
-
-        return response.data;
-      });
-
       try {
-        const response = await Promise.any(promises);
-
-        nextKey = response?.pagination?.next_key ?? null;
-
-        responseDelegations.push(response?.delegation_responses ?? []);
-
-        while (nextKey) {
-          const nextPromises = lcdUrls.map(async (lcdUrl) => {
-            const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-            const requestUrl = `${url}${urlPath}?pagination.key=${nextKey}`;
-
-            const response = await axios.get<DelegationPayload | KavaDelegationPayload>(requestUrl, {
-              timeout: BALANCE_FETCH_TIME_OUT_MS,
-              headers: {
-                Cosmostation: `extension/${__APP_VERSION__}`,
-              },
-            });
-
-            const contentType = response.headers['content-type'] ?? '';
-            if (!contentType.includes('application/json')) {
-              throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-            }
-
-            if (typeof response.data !== 'object' || response.data === null) {
-              throw new Error('Invalid response: data is not an object');
-            }
-
-            if (isKavaPayload(response.data)) {
-              throw Error('no Balance');
-            }
-
-            if (response.data.delegation_responses?.length === 0) {
-              throw Error('no Balance');
-            }
-
-            return response.data;
-          });
-
-          try {
-            const nextResponse = await Promise.any(nextPromises);
-
-            responseDelegations.push(nextResponse?.delegation_responses ?? []);
-            nextKey = nextResponse?.pagination?.next_key ?? null;
-          } catch {
-            nextKey = null;
-          }
-        }
-
-        const delegations = responseDelegations.flat();
-
+        const delegations = await fetchCosmosDelegations(address, lcdUrls.map((item) => item.url).filter(Boolean));
         const result: AccountAddressDelegationsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, delegations };
 
         return result;
@@ -182,87 +92,11 @@ async function cosmosUnbondings(id: string) {
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const urlPath = `/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`;
 
       const { lcdUrls } = chain;
 
-      let nextKey: string | null = null;
-
-      const responseUnbondings: UnbondingResponses[][] = [];
-
-      const promises = lcdUrls.map(async (lcdUrl) => {
-        const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-        const requestUrl = `${url}${urlPath}`;
-
-        const response = await axios.get<UnbondingPayload>(requestUrl, {
-          timeout: BALANCE_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
-        });
-
-        const contentType = response.headers['content-type'] ?? '';
-        if (!contentType.includes('application/json')) {
-          throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-        }
-
-        if (typeof response.data !== 'object' || response.data === null) {
-          throw new Error('Invalid response: data is not an object');
-        }
-
-        if (response.data.unbonding_responses?.length === 0) {
-          throw Error('no Balance');
-        }
-
-        return response.data;
-      });
-
       try {
-        const response = await Promise.any(promises);
-
-        nextKey = response?.pagination?.next_key ?? null;
-
-        responseUnbondings.push(response.unbonding_responses ?? []);
-
-        while (nextKey) {
-          const nextPromises = lcdUrls.map(async (lcdUrl) => {
-            const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-            const requestUrl = `${url}${urlPath}?pagination.key=${nextKey}`;
-
-            const response = await axios.get<UnbondingPayload>(requestUrl, {
-              timeout: BALANCE_FETCH_TIME_OUT_MS,
-              headers: {
-                Cosmostation: `extension/${__APP_VERSION__}`,
-              },
-            });
-
-            const contentType = response.headers['content-type'] ?? '';
-            if (!contentType.includes('application/json')) {
-              throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-            }
-
-            if (typeof response.data !== 'object' || response.data === null) {
-              throw new Error('Invalid response: data is not an object');
-            }
-
-            if (response.data.unbonding_responses?.length === 0) {
-              throw Error('no Balance');
-            }
-
-            return response.data;
-          });
-
-          try {
-            const nextResponse = await Promise.any(nextPromises);
-
-            responseUnbondings.push(nextResponse.unbonding_responses ?? []);
-            nextKey = nextResponse?.pagination?.next_key ?? null;
-          } catch {
-            nextKey = null;
-          }
-        }
-
-        const unbondings = responseUnbondings.flat();
+        const unbondings = await fetchCosmosUnbondings(address, lcdUrls.map((item) => item.url).filter(Boolean));
 
         const result: AccountAddressUnbondingsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, unbondings };
 
@@ -295,51 +129,24 @@ async function cosmosRewards(id: string) {
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const urlPath = `/cosmos/distribution/v1beta1/delegators/${address}/rewards`;
-
       const { lcdUrls } = chain;
 
-      const promises = lcdUrls.map(async (lcdUrl) => {
-        const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-        const requestUrl = `${url}${urlPath}`;
-
-        const response = await axios.get<RewardPayload>(requestUrl, {
-          timeout: BALANCE_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
-        });
-
-        const contentType = response.headers['content-type'] ?? '';
-        if (!contentType.includes('application/json')) {
-          throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-        }
-
-        if (typeof response.data !== 'object' || response.data === null) {
-          throw new Error('Invalid response: data is not an object');
-        }
-
-        return response.data;
-      });
-
       try {
-        const response = await Promise.any(promises);
+        const getRewards = async () => {
+          const isNeutronChain = [NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID].includes(chainId);
 
-        const rewards = (() => {
-          if (response?.result) {
-            return { ...response.result };
+          const lcdUrlList = lcdUrls.map((item) => item.url).filter(Boolean);
+
+          if (isNeutronChain) {
+            const contractAddress = chainId === NEUTRON_CHAINLIST_ID ? NEUTRON_STAKE_CONTRACT_ADDRESS : NEUTRON_TESTNET_STAKE_CONTRACT_ADDRESS;
+
+            return fetchNTRNRewards(address, contractAddress, lcdUrlList);
           }
 
-          if (response?.rewards && response?.total) {
-            return { rewards: response.rewards, total: response.total };
-          }
+          return fetchCosmosRewards(address, lcdUrlList);
+        };
 
-          return {
-            rewards: [],
-            total: [],
-          };
-        })();
-
+        const rewards = await getRewards();
         const result: AccountAddressRewardsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, rewards };
 
         return result;
@@ -363,6 +170,21 @@ async function cosmosRewards(id: string) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: results });
 }
 
+const validatorAddressCache = new Map<string, boolean>();
+
+async function isValidatorCached(address: string, lcdUrl: string, validatorPrefix?: string): Promise<boolean> {
+  if (validatorAddressCache.has(address)) {
+    return validatorAddressCache.get(address)!;
+  }
+
+  const validatorAddress = convertToValidatorAddress(address, validatorPrefix);
+
+  const isValidator = validatorAddress ? await isValidatorAddress(validatorAddress, lcdUrl) : false;
+
+  validatorAddressCache.set(address, isValidator);
+  return isValidator;
+}
+
 async function cosmosCommissions(id: string) {
   const address = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
@@ -382,37 +204,21 @@ async function cosmosCommissions(id: string) {
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
 
-      const validatorAddress = convertToValidatorAddress(address, chain.validatorAccountPrefix);
-
-      const urlPath = `/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`;
-
       const { lcdUrls } = chain;
 
-      const promises = lcdUrls.map(async (lcdUrl) => {
-        const url = lcdUrl.url.endsWith('/') ? lcdUrl.url.slice(0, -1) : lcdUrl.url;
-        const requestUrl = `${url}${urlPath}`;
-
-        const response = await axios.get<CommissionResponse>(requestUrl, {
-          timeout: BALANCE_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
-        });
-
-        const contentType = response.headers['content-type'] ?? '';
-        if (!contentType.includes('application/json')) {
-          throw new Error(`Invalid response: not JSON (content-type: ${contentType})`);
-        }
-
-        if (typeof response.data !== 'object' || response.data === null) {
-          throw new Error('Invalid response: data is not an object');
-        }
-
-        return response.data;
-      });
-
       try {
-        const commissions = await Promise.any(promises);
+        const shouldFetchCommission = await isValidatorCached(address, lcdUrls[0].url, chain.validatorAccountPrefix);
+        if (!shouldFetchCommission) {
+          throw new Error('Not a validator account');
+        }
+
+        const validatorAddress = convertToValidatorAddress(address, chain.validatorAccountPrefix);
+
+        if (!validatorAddress) {
+          throw new Error('No validator address');
+        }
+
+        const commissions = await fetchCosmosCommission(validatorAddress, lcdUrls.map((item) => item.url).filter(Boolean));
 
         const result: AccountAddressCommissionsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, commissions };
 
