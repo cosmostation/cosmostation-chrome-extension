@@ -1,6 +1,7 @@
 export const COSMOS_POPUP_METHOD_TYPE = {
   COS__REQUEST_ACCOUNT: 'cos_requestAccount',
   COS__REQUEST_ACCOUNTS: 'cos_requestAccounts',
+  COS__REQUEST_ACCOUNTS_SETTLED: 'cos_requestAccountsSettled',
   COS__ADD_CHAIN: 'cos_addChain',
   COS__SIGN_AMINO: 'cos_signAmino',
   COS__SIGN_DIRECT: 'cos_signDirect',

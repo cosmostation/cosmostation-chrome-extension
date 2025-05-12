@@ -95,6 +95,8 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
   switch (requestQueue.method) {
     case 'cos_requestAccount':
       return RequestAccount.to;
+    case 'cos_requestAccountsSettled':
+      return RequestAccount.to;
     case 'cos_addChain':
       return CosmosAddChain.to;
     case 'cos_signAmino':
