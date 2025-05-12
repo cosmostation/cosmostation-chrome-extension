@@ -106,12 +106,13 @@ export async function extensionLocalStorage() {
     chosenSuiNetworkId,
     chosenBitcoinNetworkId,
     chosenEthereumNetworkId,
+    chosenIotaNetworkId,
   } = storageWithDefault;
 
   const currentAccount = (() => userAccounts.find((account) => account.id === currentAccountId)!)();
   const currentAccountName = accountNamesById[currentAccountId];
 
-  const { evmChains, aptosChains, suiChains, bitcoinChains } = await getChains();
+  const { evmChains, aptosChains, suiChains, bitcoinChains, iotaChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
 
   const currentEthereumNetwork = (() => {
@@ -154,6 +155,14 @@ export async function extensionLocalStorage() {
     return response;
   })();
 
+  const currentIotaNetwork = (() => {
+    const iotaNetworks = [...iotaChains];
+
+    const networkId = chosenIotaNetworkId ?? getUniqueChainId(iotaNetworks[0]);
+
+    return iotaNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? iotaNetworks[0];
+  })();
+
   const currentAccountAllowedOrigins = approvedOrigins
     .filter((allowedOrigin) => allowedOrigin.accountId === currentAccountId)
     .map((allowedOrigin) => allowedOrigin.origin);
@@ -166,6 +175,7 @@ export async function extensionLocalStorage() {
     currentAptosNetwork,
     currentSuiNetwork,
     currentBitcoinNetwork,
+    currentIotaNetwork,
     currentAccountAllowedOrigins,
   };
 }
@@ -271,6 +281,10 @@ async function initializeStorageDefaults() {
     await setExtensionLocalStorage('approvedSuiPermissions', []);
   }
 
+  if (!originStorage.approvedIotaPermissions) {
+    await setExtensionLocalStorage('approvedIotaPermissions', []);
+  }
+
   if (!originStorage.initCheckLegacyBalanceAccountIds) {
     await setExtensionLocalStorage('initCheckLegacyBalanceAccountIds', []);
   }
@@ -326,7 +340,8 @@ async function initializeChosenNetworks() {
   const storedChosenAptosNetworkId = await getExtensionLocalStorage('chosenAptosNetworkId');
   const storedChosenSuiNetworkId = await getExtensionLocalStorage('chosenSuiNetworkId');
   const storedChosenBitcoinNetworkId = await getExtensionLocalStorage('chosenBitcoinNetworkId');
-  const { evmChains, aptosChains, suiChains, bitcoinChains } = await getChains();
+  const storedChosenIotaNetworkId = await getExtensionLocalStorage('chosenIotaNetworkId');
+  const { evmChains, aptosChains, suiChains, bitcoinChains, iotaChains } = await getChains();
 
   if (!storedChosenEthereumNetworkId) {
     const defaultEVMNetwork = evmChains.find((item) => item.id === 'ethereum') || evmChains[0];
@@ -358,6 +373,14 @@ async function initializeChosenNetworks() {
     const defaultBitcoinNetworkId = getUniqueChainId(defaultBitcoinNetwork);
 
     await setExtensionLocalStorage('chosenBitcoinNetworkId', defaultBitcoinNetworkId);
+  }
+
+  if (!storedChosenIotaNetworkId && iotaChains.length > 0) {
+    const defaultIotaNetwork = iotaChains.find((item) => item.id === 'iota') || iotaChains[0];
+
+    const defaultIotaNetworkId = getUniqueChainId(defaultIotaNetwork);
+
+    await setExtensionLocalStorage('chosenIotaNetworkId', defaultIotaNetworkId);
   }
 }
 

@@ -1,0 +1,3 @@
+export const DEFAULT_GAS_BUDGET = 4000000;
+
+export const DEFAULT_GAS_BUDGET_MULTIPLY = 1.3;

@@ -265,7 +265,52 @@
                 },
                 "SuiStakingTxItem": {
                   "index": {
-                    "failedStaking": "스테이킹에 실패했습니다",
+                    "failedStaking": "스테이킹 실패",
+                    "staking": "스테이킹",
+                    "unstaking": "언스테이킹"
+                  }
+                }
+              }
+            }
+          },
+          "index": {
+            "LoadingSubTitle": "잠시 기다려주세요",
+            "LoadingTitle": "로딩 중...",
+            "NoHistorySubTitle": "트랜잭션 내역이 여기에 표시됩니다",
+            "NoHistoryTitle": "트랜잭션 내역이 없습니다",
+            "goToExplorer": "익스플로러로 이동하기"
+          }
+        },
+        "Iota": {
+          "components": {
+            "IotaTxItem": {
+              "components": {
+                "IotaDefaultTxItem": {
+                  "index": {
+                    "transaction": "트랜잭션"
+                  }
+                },
+                "IotaFailedTxItem": {
+                  "index": {
+                    "failed": "실패"
+                  }
+                },
+                "IotaFaucetTxItem": {
+                  "index": {
+                    "faucet": "Faucet"
+                  }
+                },
+                "IotaSendingTxItem": {
+                  "index": {
+                    "sent": "Sent {{object}}",
+                    "received": "Received {{object}}",
+                    "to": "To: {{address}}",
+                    "from": "From: {{address}}"
+                  }
+                },
+                "IotaStakingTxItem": {
+                  "index": {
+                    "failedStaking": "스테이킹 실패",
                     "staking": "스테이킹",
                     "unstaking": "언스테이킹"
                   }
@@ -495,6 +540,12 @@
       "index": {
         "continue": "계속하기",
         "networkFee": "네트워크 수수료"
+      },
+      "IotaFee": {
+        "index": {
+          "continue": "계속하기",
+          "networkFee": "네트워크 수수료"
+        }
       }
     },
     "FeeSettingBottomSheet": {
@@ -612,6 +663,16 @@
             "suiStake": "수이 스테이킹",
             "title": "Stake & Earn {{symbol}}",
             "totalStaked": "Total Staked",
+            "unstake": "언스테이킹"
+          }
+        },
+        "Iota": {
+          "index": {
+            "title": "Stake & Earn {{symbol}}",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned",
+            "stake": "스테이킹",
             "unstake": "언스테이킹"
           }
         }
@@ -943,6 +1004,32 @@
                   "title": "옵션을 선택하세요"
                 }
               }
+            },
+            "Iota": {
+              "components": {
+                "PendingItem": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "totalStaked": "Total Staked",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "startEarning": "Start Earning"
+                  }
+                },
+                "StakingItem": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "totalStaked": "Total Staked",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "startEarning": "Start Earning",
+                    "stake": "스테이킹",
+                    "stakeDescription": "코인을 예치하고 시간에 따라 보상을 받아보세요.",
+                    "unstake": "언스테이킹",
+                    "unstakeDescription": "스테이킹한 코인을 출금하세요. 대기 시간이 발생할 수 있어요."
+                  }
+                }
+              }
             }
           },
           "components": {
@@ -977,6 +1064,23 @@
               }
             },
             "Sui": {
+              "components": {
+                "EpochIndicator": {
+                  "index": {
+                    "currentEpoch": "현재 에포치",
+                    "nextRewardShare": "다음 리워드를 받아보실 수 있어요."
+                  }
+                }
+              },
+              "index": {
+                "emptyPending": "대기 중 없음",
+                "emptyPendingDescription": "대기 중인 항목이 없습니다.",
+                "startStaking": "Cosmostation으로 스테이킹 시작하기",
+                "startStakingDescription": "스테이킹 보상을 시작하고\n네트워크 생태계에 기여하세요.",
+                "goToStake": "스테이킹페이지로 가기"
+              }
+            },
+            "Iota": {
               "components": {
                 "EpochIndicator": {
                   "index": {
@@ -1037,6 +1141,13 @@
             "commission": "Commission"
           },
           "Sui": {
+            "title": "코인의 상세 정보",
+            "available": "Available",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned"
+          },
+          "Iota": {
             "title": "코인의 상세 정보",
             "available": "Available",
             "totalStaked": "Total Staked",
@@ -1141,7 +1252,7 @@
           "components": {
             "EthermintSelectBottomSheet": {
               "index": {
-                "cosmosSubtitle": "'{{bech32prefix}} ...'형식의 주소를 등록합니다",
+                "cosmosSubtitle": "'{{bech32Prefix}} ...'형식의 주소를 등록합니다",
                 "cosmosTitle": "코스모스 스타일 주소",
                 "evmSubtitle": "'0x ...'형식으로 주소를 등록합니다",
                 "evmTitle": "EVM 스타일 주소",
@@ -1928,6 +2039,15 @@
               "owner": "소유자 주소",
               "untransferableObject": "이 NFT는 전송할 수 없습니다."
             }
+          },
+          "iota": {
+            "index": {
+              "lockedFeature": "해당 기능은 현재 지원하지 않습니다",
+              "network": "체인",
+              "nftSend": "NFT 전송",
+              "objectId": "오브젝트 ID",
+              "owner": "소유자 주소"
+            }
           }
         }
       }
@@ -2398,6 +2518,38 @@
             "sign": "사인"
           }
         }
+      },
+      "iota": {
+        "sign-message": {
+          "entry": {
+            "message": "메시지",
+            "reject": "거부",
+            "sign": "사인",
+            "signatureRequest": "서명 요청"
+          }
+        },
+        "sign": {
+          "transaction": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "DefaultTx": {
+                    "index": {
+                      "data": "데이터"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transaction": {
+          "entry": {
+            "failedToDryRun": "시뮬레이션에 실패했습니다",
+            "reject": "거부",
+            "sign": "사인"
+          }
+        }
       }
     },
     "view": {
@@ -2754,6 +2906,30 @@
                 "confirm": "확인",
                 "header": "트랜잭션 결과"
               }
+            },
+            "Iota": {
+              "index": {
+                "amount": "전송할 금액 입력",
+                "chooseRecipientAddress": "수신 주소 선택",
+                "failedGenerateTransaction": "트랜잭션을 생성하지 못했습니다",
+                "insufficientAmount": "잔액이 부족합니다",
+                "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
+                "invalidAmount": "잘못된 금액",
+                "noAmount": "금액을 입력하세요",
+                "noAvailableAmount": "사용 가능한 잔액이 없습니다",
+                "noRecipientAddress": "수신자 주소를 입력하세요",
+                "recipientAddress": "수신 지갑 주소 입력",
+                "send": "전송",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
+                "tooLowAmount": "0보다 큰 금액을 입력하세요",
+                "txProcessing": "트랜잭션 처리 중",
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                "recipientNetwork": "수신 체인",
+                "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
+                "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다"
+              }
             }
           },
           "layout": {
@@ -2944,6 +3120,22 @@
                   "unstakeReview": "언스테이킹 최종 확인",
                   "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다."
                 }
+              },
+              "Iota": {
+                "index": {
+                  "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
+                  "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
+                  "inform": "언스테이킹은 즉시 완료됩니다.",
+                  "informDescription": "IOTA는 대기 기간 없이 즉시 언스테이킹되며, 진행 후에는 취소가 어렵기 때문에 신중하게 선택해 주세요.",
+                  "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
+                  "noObject": "선택된 오브젝트가 없습니다",
+                  "stakingCoin": "{{chainName}} 스테이킹 코인",
+                  "txProcessing": "트랜잭션 처리 중",
+                  "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
+                  "unstake": "언스테이킹",
+                  "unstakeReview": "언스테이킹 최종 확인",
+                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다."
+                }
               }
             },
             "layout": {
@@ -2967,6 +3159,19 @@
               }
             },
             "Sui": {
+              "components": {
+                "UnstakeObjectSelectBox": {
+                  "index": {
+                    "amountToStake": "Amount to Unstake",
+                    "earned": "Earned",
+                    "objectId": "오브젝트 ID : {{objectId}}",
+                    "selectValidator": "벨리데이터(Object) 선택",
+                    "staked": "Staked"
+                  }
+                }
+              }
+            },
+            "Iota": {
               "components": {
                 "UnstakeObjectSelectBox": {
                   "index": {

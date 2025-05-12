@@ -1,4 +1,5 @@
 import type { AptosWallet } from '@aptos-labs/wallet-standard';
+import type { IotaSignAndExecuteTransactionInput, IotaSignPersonalMessageInput, IotaSignTransactionInput } from '@iota/wallet-standard';
 import type { Keplr } from '@keplr-wallet/types';
 import type {
   SuiSignAndExecuteTransactionBlockInput,
@@ -10,8 +11,8 @@ import type {
 } from '@mysten/wallet-standard';
 
 import type { Network } from '@/constants/bitcoin/common';
-import type { ApprovedSuiPermissionType } from '@/types/extension';
-import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, SuiListenerType } from '@/types/message';
+import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/types/extension';
+import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, IotaListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
 import type {
   BitGetAddressResponse,
@@ -23,6 +24,12 @@ import type {
   BitSignPsbtsResposne,
 } from '@/types/message/inject/bitcoin';
 import type { CommonRequest } from '@/types/message/inject/common';
+import type {
+  IotaRequestDisconnectResponse,
+  IotaSignAndExecuteTransactionResponse,
+  IotaSignPersonalMessageResponse,
+  IotaSignTransactionResponse,
+} from '@/types/message/inject/iota';
 import type {
   SuiRequestDisconnectResponse,
   SuiSignAndExecuteTransactionBlockResponse,
@@ -123,6 +130,22 @@ declare global {
     off: (eventName: BitcoinListenerType, callBack: () => void) => void;
   }
 
+  interface IotaProvider {
+    request: <T extends BaseRequest>(message: T) => Promise<Unknown>;
+    connect: (permissions: ApprovedIotaPermissionType[]) => Promise<boolean>;
+    disconnect: () => Promise<IotaRequestDisconnectResponse>;
+    requestPermissions: (permissions?: ApprovedIotaPermissionType[]) => Promise<boolean>;
+    hasPermissions: (permissions?: ApprovedIotaPermissionType[]) => Promise<boolean>;
+    getAccounts: () => Promise<string[]>;
+    getPublicKey: () => Promise<string>;
+    getChain: () => Promise<string>;
+    signTransaction: (data: IotaSignTransactionInput) => Promise<IotaSignTransactionResponse>;
+    signAndExecuteTransaction: (data: IotaSignAndExecuteTransactionInput) => Promise<IotaSignAndExecuteTransactionResponse>;
+    signPersonalMessage: (data: IotaSignPersonalMessageInput) => Promise<IotaSignPersonalMessageResponse>;
+    on: (eventName: IotaListenerType, eventHandler: (data: unknown) => void) => void;
+    off: (eventName: IotaListenerType, eventHandler: (data: unknown) => void) => void;
+  }
+
   interface Window {
     __cosmostationInjected__: boolean;
     customProperty: boolean;
@@ -138,6 +161,7 @@ declare global {
       sui: SuiProvider;
       bitcoin: BitcoinProvider;
       aptos: AptosWallet;
+      iota: IotaProvider;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;

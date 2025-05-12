@@ -1,5 +1,6 @@
 import { registerWallet as registerAptosWallet } from '@aptos-labs/wallet-standard';
 import { registerCosmosWallet } from '@cosmostation/wallets';
+import { registerWallet as registerIotaWallet } from '@iota/wallet-standard';
 import { registerWallet as registerSuiWallet } from '@mysten/wallet-standard';
 
 import type { EventDetail } from '@/types/message';
@@ -13,6 +14,7 @@ import { CosmostationKeplr } from './cosmos/provider/keplr';
 import { cosmosWallet } from './cosmos/provider/wallets';
 import { announceEip6963Provider } from './evm/provider/eip6963';
 import { CosmostaionEthereum } from './evm/provider/evm';
+import { CosmostationIota, IotaStandard } from './iota/provider/iota';
 import { CosmostationSui, SuiStandard } from './sui/provider/sui';
 
 if (!window.__cosmostationInjected__) {
@@ -30,6 +32,7 @@ if (!window.__cosmostationInjected__) {
         bitcoin: CosmostationBitcoin.getInstance(),
         sui: CosmostationSui.getInstance(),
         aptos: CosmostationAptos.getInstance(),
+        iota: CosmostationIota.getInstance(),
         providers: {
           keplr: CosmostationKeplr.getInstance(),
           metamask: CosmostaionEthereum.getInstance(),
@@ -38,6 +41,7 @@ if (!window.__cosmostationInjected__) {
 
       window.cosmostationWallet = CosmostationSui.getInstance();
 
+      registerIotaWallet(new IotaStandard());
       registerSuiWallet(new SuiStandard());
       registerCosmosWallet(cosmosWallet);
       registerAptosWallet(CosmostationAptos.getInstance());

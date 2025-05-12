@@ -60,6 +60,18 @@
             "stake": "Stake",
             "unstake": "Unstake"
           }
+        },
+        "Iota": {
+          "index": {
+            "title": "Stake & Earn {{symbol}}",
+            "available": "Available",
+            "suiStake": "Sui Stake",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned",
+            "stake": "Stake",
+            "unstake": "Unstake"
+          }
         }
       },
       "CoinDetailBox": {
@@ -262,6 +274,12 @@
             "custom": "Custom"
           }
         },
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
+      },
+      "IotaFee": {
         "index": {
           "networkFee": "Network Fee",
           "continue": "Continue"
@@ -670,6 +688,51 @@
             "LoadingSubTitle": "Please wait a moment",
             "goToExplorer": "Go to Explorer"
           }
+        },
+        "Iota": {
+          "components": {
+            "IotaTxItem": {
+              "components": {
+                "IotaDefaultTxItem": {
+                  "index": {
+                    "transaction": "Transaction"
+                  }
+                },
+                "IotaFailedTxItem": {
+                  "index": {
+                    "failed": "Failed Transaction"
+                  }
+                },
+                "IotaFaucetTxItem": {
+                  "index": {
+                    "faucet": "Faucet"
+                  }
+                },
+                "IotaSendingTxItem": {
+                  "index": {
+                    "sent": "Sent {{object}}",
+                    "received": "Received {{object}}",
+                    "to": "To: {{address}}",
+                    "from": "From: {{address}}"
+                  }
+                },
+                "IotaStakingTxItem": {
+                  "index": {
+                    "failedStaking": "Failed Staking",
+                    "staking": "Staking",
+                    "unstaking": "Unstaking"
+                  }
+                }
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
+          }
         }
       }
     },
@@ -906,6 +969,13 @@
             "available": "Available",
             "pendingReceive": "Pending Receive",
             "pendingSent": "Pending Sent"
+          },
+          "Iota": {
+            "title": "My Coin Details",
+            "available": "Available",
+            "totalStaked": "Total Staked",
+            "staked": "Staked",
+            "earned": "Earned"
           }
         }
       },
@@ -980,6 +1050,32 @@
                   "title": "Select Option"
                 }
               }
+            },
+            "Iota": {
+              "components": {
+                "PendingItem": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "totalStaked": "Total Staked",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "startEarning": "Start Earning"
+                  }
+                },
+                "StakingItem": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "totalStaked": "Total Staked",
+                    "staked": "Staked",
+                    "earned": "Earned",
+                    "startEarning": "Start Earning",
+                    "stake": "Stake",
+                    "stakeDescription": "Lock your tokens to earn rewards over time",
+                    "unstake": "Unstake",
+                    "unstakeDescription": "Withdraw staked tokens"
+                  }
+                }
+              }
             }
           },
           "entry": {
@@ -1007,6 +1103,23 @@
                 "goToStake": "Go to Stake",
                 "emptyStaking": "No Unstaking",
                 "emptyStakingDescription": "Currently have no unstaking transactions."
+              }
+            },
+            "Iota": {
+              "components": {
+                "EpochIndicator": {
+                  "index": {
+                    "currentEpoch": "Current Epoch",
+                    "nextRewardShare": "The next rewards will be distributed"
+                  }
+                }
+              },
+              "index": {
+                "emptyPending": "No Pending",
+                "emptyPendingDescription": "There are no pending objects.",
+                "startStaking": "Start Staking with COSMOSTATION",
+                "startStakingDescription": "Start earning staking rewards and\ncontribute to the network ecosystem",
+                "goToStake": "Go to Stake"
               }
             }
           },
@@ -1377,6 +1490,28 @@
                 "invalidRewardAmount": "Invalid reward amount",
                 "memoOverflow": "Memo is too long. Please shorten it."
               }
+            },
+            "Iota": {
+              "index": {
+                "invalidAddress": "Invalid address",
+                "invalidAmount": "Invalid amount",
+                "insufficientAmount": "Insufficient amount",
+                "failedToDryRun": "Transaction simulation failed",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "failedToSend": "Failed to send",
+                "failedToBuildTransaction": "Failed to build transaction",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "noRecipientAddress": "Please enter the recipient address",
+                "noAmount": "Please enter the amount",
+                "recipientNetwork": "Recipient Network"
+              }
             }
           }
         },
@@ -1580,6 +1715,22 @@
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed"
                 }
+              },
+              "Iota": {
+                "index": {
+                  "inform": "Unstake Period",
+                  "informDescription": "Unstaking IOTA incurs instantly without a waiting period, and the process cannot be canceled",
+                  "noObject": "No object selected",
+                  "insufficientFee": "Insufficient fee",
+                  "failedToDryRun": "Transaction simulation failed",
+                  "failedToBuildTransaction": "Failed to build transaction",
+                  "unstake": "Unstake",
+                  "stakingCoin": "{{chainName}} Staking Coin",
+                  "unstakeReview": "Confirm Unstake",
+                  "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
+                  "txProcessing": "Transaction Processing",
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                }
               }
             },
             "layout": {
@@ -1611,6 +1762,19 @@
                         "reward": "Reward"
                       }
                     }
+                  }
+                }
+              }
+            },
+            "Iota": {
+              "components": {
+                "UnstakeObjectSelectBox": {
+                  "index": {
+                    "objectId": "Object ID : {{objectId}}",
+                    "selectValidator": "Select Validator (Object)",
+                    "amountToStake": "Amount to Unstake",
+                    "staked": "Staked",
+                    "earned": "Earned"
                   }
                 }
               }
@@ -2859,6 +3023,38 @@
             "sign": "Sign"
           }
         }
+      },
+      "iota": {
+        "sign-message": {
+          "entry": {
+            "signatureRequest": "Signature Request",
+            "message": "Message",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "sign": {
+          "transaction": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "DefaultTx": {
+                    "index": {
+                      "data": "Data"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transaction": {
+          "entry": {
+            "failedToDryRun": "Failed to dry run",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        }
       }
     },
     "coin-overview": {
@@ -2952,6 +3148,15 @@
           "sui": {
             "index": {
               "untransferableObject": "This NFT cannot be transferred.",
+              "owner": "Owner Address",
+              "objectId": "Object ID",
+              "nftSend": "Send NFT",
+              "network": "Network"
+            }
+          },
+          "iota": {
+            "index": {
+              "lockedFeature": "This feature is locked currently",
               "owner": "Owner Address",
               "objectId": "Object ID",
               "nftSend": "Send NFT",

@@ -1,5 +1,6 @@
 import { COSMOS_TYPE } from '@/constants/cosmos';
 import { TOKEN_TYPE } from '@/constants/evm/token';
+import { PERMISSION as IOTA_PERMISSION } from '@/constants/iota';
 import { PERMISSION } from '@/constants/sui';
 import type { CosmosChain } from '@/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '@/types/cosmos/amino';
@@ -27,12 +28,14 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from '@/types/message/inject/evm';
+import type { IotaSignPersonalMessageInput } from '@/types/message/inject/iota';
 import type { SuiSignMessageInput } from '@/types/message/inject/sui';
 import Joi from '@/utils/joi';
 import { ethereumAddressRegex, getCosmosAddressRegex, suiAddressRegex } from '@/utils/regex';
 
 const cosmosType = Object.values(COSMOS_TYPE);
 const suiPermissionType = Object.values(PERMISSION);
+const iotaPermissionType = Object.values(IOTA_PERMISSION);
 
 function getChainIdRegex(chainId: string) {
   const splitedChainId = chainId.split('-');
@@ -409,6 +412,24 @@ export const suiSignMessageSchema = () =>
   }).required();
 
 export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
+
+export const iotaConnectSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .valid(...iotaPermissionType)
+        .required(),
+    );
+
+export const iotaSignMessageSchema = () =>
+  Joi.object<IotaSignPersonalMessageInput>({
+    message: Joi.string().base64(),
+    accountAddress: Joi.string().pattern(suiAddressRegex).optional(),
+  }).required();
+
+export const iotaExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
 
 export const aptosSignTransactionSchema = () =>
   Joi.object<AptosSignTransaction['params']>({

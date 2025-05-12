@@ -4,6 +4,7 @@ import Aptos from './aptos';
 import Bitcoin from './bitcoin';
 import Cosmos from './cosmos';
 import EVM from './evm';
+import Iota from './iota';
 import Sui from './sui';
 
 type EntryProps = {
@@ -33,6 +34,10 @@ export default function Entry({ coinId }: EntryProps) {
 
   if (selectedAccountAsset?.asset.chainType === 'bitcoin') {
     return <Bitcoin coinId={coinId} />;
+  }
+
+  if (selectedAccountAsset?.asset.chainType === 'iota') {
+    return <Iota coinId={coinId} />;
   }
 
   return null;

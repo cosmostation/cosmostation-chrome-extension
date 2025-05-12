@@ -45,10 +45,12 @@ export const initialState: ExtensionStorageState = {
   isBalanceVisible: true,
   isHideSmalValue: false,
   approvedSuiPermissions: [],
+  approvedIotaPermissions: [],
   chosenEthereumNetworkId: '',
   chosenSuiNetworkId: '',
   chosenAptosNetworkId: '',
   chosenBitcoinNetworkId: '',
+  chosenIotaNetworkId: '',
   currentWindowId: null,
   prioritizedProvider: {
     keplr: false,

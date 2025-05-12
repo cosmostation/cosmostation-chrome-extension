@@ -11,6 +11,7 @@ import { derivePath, getPublicKey } from 'ed25519-hd-key';
 import { Address, toChecksumAddress } from 'ethereumjs-util';
 import { SHA3 } from 'sha3';
 import ecc from '@bitcoinerlab/secp256k1';
+import { Ed25519PublicKey as IotaEd25519PublicKey } from '@iota/iota-sdk/keypairs/ed25519';
 import { Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
 
 import type { Account } from '@/types/account';
@@ -57,7 +58,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
       return { privateKey, publicKey };
     }
 
-    if (chainType === 'aptos' || chainType === 'sui') {
+    if (chainType === 'aptos' || chainType === 'sui' || chainType === 'iota') {
       const path = hdPath.replace('${index}', `${index}`);
 
       const seed = bip39.mnemonicToSeedSync(decryptedMnemonic);
@@ -83,7 +84,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
 
       return { privateKey: decryptedPrivateKey, publicKey: Buffer.from(ecpair.publicKey).toString('hex') };
     }
-    if (chainType === 'aptos' || chainType === 'sui') {
+    if (chainType === 'aptos' || chainType === 'sui' || chainType === 'iota') {
       const publicKey = Buffer.from(getPublicKey(Buffer.from(decryptedPrivateKey, 'hex'), false)).toString('hex');
       return { privateKey: decryptedPrivateKey, publicKey };
     }
@@ -129,6 +130,12 @@ export function getAddress(chain: Chain, publicKey: string) {
     const ed25519PublicKey = new Ed25519PublicKey(Buffer.from(publicKey, 'hex'));
 
     return ed25519PublicKey.toSuiAddress();
+  }
+
+  if (chainType === 'iota') {
+    const ed25519PublicKey = new IotaEd25519PublicKey(Buffer.from(publicKey, 'hex'));
+
+    return ed25519PublicKey.toIotaAddress();
   }
 
   if (chainType === 'evm') {

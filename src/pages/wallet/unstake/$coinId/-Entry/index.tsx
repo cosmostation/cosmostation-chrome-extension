@@ -1,6 +1,7 @@
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import Cosmos from './Cosmos';
+import Iota from './Iota';
 import Sui from './Sui';
 
 type EntryProps = {
@@ -19,6 +20,10 @@ export default function Entry({ coinId, validatorAddress, objectId }: EntryProps
 
   if (currentCoin?.asset.chainType === 'sui') {
     return <Sui coinId={coinId} objectId={objectId} />;
+  }
+
+  if (currentCoin?.asset.chainType === 'iota') {
+    return <Iota coinId={coinId} objectId={objectId} />;
   }
 
   return null;

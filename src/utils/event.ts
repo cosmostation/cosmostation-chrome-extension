@@ -56,6 +56,21 @@ export async function emitChangedAddressEvent(newAccountId: string) {
     currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
   );
 
+  const iotaChainForAddress = chainList.iotaChains?.[0];
+
+  const iotaKeyPair = iotaChainForAddress
+    ? getKeypair(iotaChainForAddress, userAccounts.find((item) => item.id === newAccountId)!, currentPassword)
+    : undefined;
+  const iotaAddress = iotaKeyPair && iotaChainForAddress ? getAddress(iotaChainForAddress, iotaKeyPair?.publicKey) : undefined;
+
+  if (iotaAddress) {
+    emitToWeb({ event: 'accountChange', chainType: 'iota', data: { result: iotaAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'accountChange', chainType: 'iota', data: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+  }
+
   const { currentBitcoinNetwork } = await extensionLocalStorage();
 
   const bitcoinKeyPair = getKeypair(currentBitcoinNetwork, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);

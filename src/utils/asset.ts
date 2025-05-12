@@ -1,4 +1,4 @@
-import type { AccountCosmosAsset, AccountEvmAsset, AccountSuiAsset } from '@/types/account';
+import type { AccountCosmosAsset, AccountEvmAsset, AccountIotaAsset, AccountSuiAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 
@@ -74,6 +74,10 @@ export function isAccountSuiStakableAsset(asset: FlatAccountAssets): asset is Ac
   return asset.chain.chainType === 'sui' && asset.asset.type === 'native' && 'delegation' in asset;
 }
 
-export function isStakeableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset {
-  return isAccountCosmosStakableAsset(asset) || isAccountEVMStakableAsset(asset) || isAccountSuiStakableAsset(asset);
+export function isAccountIotaStakableAsset(asset: FlatAccountAssets): asset is AccountIotaAsset {
+  return asset.chain.chainType === 'iota' && asset.asset.type === 'native' && 'delegation' in asset;
+}
+
+export function isStakeableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset | AccountIotaAsset {
+  return isAccountCosmosStakableAsset(asset) || isAccountEVMStakableAsset(asset) || isAccountSuiStakableAsset(asset) || isAccountIotaStakableAsset(asset);
 }

@@ -124,6 +124,7 @@ export function useAccountAllAssets({
       customErc20AccountAssets: data.customErc20AccountAssets,
       customCw20AccountAssets: data.customCw20AccountAssets,
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
+      iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
     };
   }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
 

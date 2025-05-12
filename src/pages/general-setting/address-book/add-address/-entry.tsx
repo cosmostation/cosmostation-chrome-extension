@@ -5,6 +5,7 @@ import validate, { Network } from 'bitcoin-address-validation';
 import { isValidAddress } from 'ethereumjs-util';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { isValidIotaAddress } from '@iota/iota-sdk/utils';
 import { Typography } from '@mui/material';
 import { isValidSuiAddress } from '@mysten/sui/utils';
 import { useRouter } from '@tanstack/react-router';
@@ -96,6 +97,10 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
 
     if (currentChain?.chainType === 'sui') {
       return isValidSuiAddress(address);
+    }
+
+    if (currentChain?.chainType === 'iota') {
+      return isValidIotaAddress(address);
     }
 
     if (isBitcoinChain(currentChain)) {

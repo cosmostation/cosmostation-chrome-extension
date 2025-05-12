@@ -18,6 +18,20 @@ export interface SuiNFTMeta {
   rarity?: '';
 }
 
+export interface IotaNFTMeta {
+  name?: string;
+  description?: string;
+  imageURL?: string;
+  link?: string;
+  projectUrl?: string;
+  creator?: string;
+  objectId?: string;
+  ownerAddress?: string;
+  objectFieldData?: Record<string, unknown>;
+  type?: string;
+  rarity?: '';
+}
+
 export interface EvmNFTMeta {
   name?: string;
   description?: string;
@@ -62,6 +76,10 @@ export interface SuiNFT extends NFTId {
   objectId: string;
 }
 
+export interface IotaNFT extends NFTId {
+  objectId: string;
+}
+
 export interface CosmosNFT extends NFTId {
   tokenId: string;
   tokenType: 'CW721';
@@ -72,9 +90,10 @@ export interface AccountNFTs {
   cosmosAccountNFT: CosmosNFT[];
   evmAccountNFT: EvmNFT[];
   suiAccountNFT: SuiNFT[];
+  iotaAccountNFT: IotaNFT[];
 }
 
-export type FlatAccountNFT = CosmosNFT | EvmNFT | SuiNFT;
+export type FlatAccountNFT = CosmosNFT | EvmNFT | SuiNFT | IotaNFT;
 
 export interface AccountAddressSuiNFT {
   id: string;

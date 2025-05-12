@@ -1,0 +1,57 @@
+export const IOTA_POPUP_METHOD_TYPE = {
+  IOTA__CONNECT: 'iota_connect',
+  IOTA__SIGN_TRANSACTION: 'iota_signTransaction',
+  IOTA__SIGN_AND_EXECUTE_TRANSACTION: 'iota_signAndExecuteTransaction',
+  IOTA__SIGN_PERSONAL_MESSAGE: 'iota_signPersonalMessage',
+  IOTA__GET_ACCOUNT: 'iota_getAccount',
+} as const;
+
+export const IOTA_NO_POPUP_METHOD_TYPE = {
+  IOTA__BATCH_TRANSACTION: 'iota_batchTransaction',
+  IOTA__DRY_RUN_TRANSACTION: 'iota_dryRunTransaction',
+  IOTA__EXECUTE_TRANSACTION: 'iota_executeTransaction',
+  IOTA__EXECUTE_TRANSACTION_SERIALIZED_SIG: 'iota_executeTransactionSerializedSig',
+  IOTA__GET_BALANCE: 'iota_getBalance',
+  IOTA__GET_COIN_METADATA: 'iota_getCoinMetadata',
+  IOTA__GET_COINS: 'iota_getCoins',
+  IOTA__GET_COMMITTEEI_NFO: 'iota_getCommitteeInfo',
+  IOTA__GET_EVENTS: 'iota_getEvents',
+  IOTA__GET_MOVE_FUNCTION_ARG_TYPES: 'iota_getMoveFunctionArgTypes',
+  IOTA__GET_NORMALIZED_MOVE_FUNCTION: 'iota_getNormalizedMoveFunction',
+  IOTA__GET_NORMALIZED_MOVE_MODULE: 'iota_getNormalizedMoveModule',
+  IOTA__GET_NORMALIZED_MOVE_MODULES_BY_PACKAGE: 'iota_getNormalizedMoveModulesByPackage',
+  IOTA__GET_NORMALIZED_MOVE_STRUCT: 'iota_getNormalizedMoveStruct',
+  IOTA__GET_OBJECT: 'iota_getObject',
+  IOTA__GET_OBJECTS_OWNED_BY_ADDRESS: 'iota_getObjectsOwnedByAddress',
+  IOTA__GET_OBJECTS_OWNED_BY_OBJECT: 'iota_getObjectsOwnedByObject',
+  IOTA__GET_RAW_OBJECT: 'iota_getRawObject',
+  IOTA__GET_IOTA_SYSTEM_STATE: 'iota_getSuiSystemState',
+  IOTA__GET_TOTAL_SUPPLY: 'iota_getTotalSupply',
+  IOTA__GET_TOTAL_TRANSACTION_NUMBER: 'iota_getTotalTransactionNumber',
+  IOTA__GET_TRANSACTION: 'iota_getTransaction',
+  IOTA__GET_TRANSACTION_AUTH_SIGNERS: 'iota_getTransactionAuthSigners',
+  IOTA__GET_TRANSACTIONS: 'iota_getTransactions',
+  IOTA__GET_TRANSACTIONS_IN_RANGE: 'iota_getTransactionsInRange',
+  IOTA__MERGE_COINS: 'iota_mergeCoins',
+  IOTA__MOVE_CALL: 'iota_moveCall',
+  IOTA__PAY: 'iota_pay',
+  IOTA__PAY_ALL_SUI: 'iota_payAllSui',
+  IOTA__PAY_SUI: 'iota_paySui',
+  IOTA__PUBLISH: 'iota_publish',
+  IOTA__SPLIT_COIN: 'iota_splitCoin',
+  IOTA__SPLIT_COIN_EQUAL: 'iota_splitCoinEqual',
+  IOTA__SUBSCRIBE_EVENT: 'iota_subscribeEvent',
+  IOTA__TRANSFER_OBJECT: 'iota_transferObject',
+  IOTA__TRANSFER_SUI: 'iota_transferSui',
+  IOTA__TRY_GET_PAST_OBJECT: 'iota_tryGetPastObject',
+
+  // custom
+  IOTA__GET_PERMISSIONS: 'iota_getPermissions',
+  IOTA__DISCONNECT: 'iota_disconnect',
+  IOTA__GET_CHAIN: 'iota_getChain',
+} as const;
+
+export const IOTA_METHOD_TYPE = {
+  ...IOTA_NO_POPUP_METHOD_TYPE,
+  ...IOTA_POPUP_METHOD_TYPE,
+} as const;
