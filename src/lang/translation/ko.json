@@ -2039,6 +2039,15 @@
               "owner": "소유자 주소",
               "untransferableObject": "이 NFT는 전송할 수 없습니다."
             }
+          },
+          "iota": {
+            "index": {
+              "lockedFeature": "해당 기능은 현재 지원하지 않습니다",
+              "network": "체인",
+              "nftSend": "NFT 전송",
+              "objectId": "오브젝트 ID",
+              "owner": "소유자 주소"
+            }
           }
         }
       }

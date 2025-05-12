@@ -76,6 +76,10 @@ export interface SuiNFT extends NFTId {
   objectId: string;
 }
 
+export interface IotaNFT extends NFTId {
+  objectId: string;
+}
+
 export interface CosmosNFT extends NFTId {
   tokenId: string;
   tokenType: 'CW721';
@@ -86,9 +90,10 @@ export interface AccountNFTs {
   cosmosAccountNFT: CosmosNFT[];
   evmAccountNFT: EvmNFT[];
   suiAccountNFT: SuiNFT[];
+  iotaAccountNFT: IotaNFT[];
 }
 
-export type FlatAccountNFT = CosmosNFT | EvmNFT | SuiNFT;
+export type FlatAccountNFT = CosmosNFT | EvmNFT | SuiNFT | IotaNFT;
 
 export interface AccountAddressSuiNFT {
   id: string;

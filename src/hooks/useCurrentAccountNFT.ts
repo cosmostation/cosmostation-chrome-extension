@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { CosmosNFT, EvmNFT, FlatAccountNFT, SuiNFT } from '@/types/nft';
+import type { CosmosNFT, EvmNFT, FlatAccountNFT, IotaNFT, SuiNFT } from '@/types/nft';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useCurrentAccount } from './useCurrentAccount';
@@ -22,13 +22,15 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
     const evmNFT = storeData[`${currentAccountId}-nft-evm`] || [];
     const cosmosNFT = storeData[`${currentAccountId}-nft-cosmos`] || [];
     const suiNFT = storeData[`${currentAccountId}-nft-sui`] || [];
+    const iotaNFT = storeData[`${currentAccountId}-nft-iota`] || [];
 
-    const flatNFTs = [...(evmNFT || []), ...(cosmosNFT || []), ...(suiNFT || [])];
+    const flatNFTs = [...(evmNFT || []), ...(cosmosNFT || []), ...(suiNFT || []), ...(iotaNFT || [])];
 
     return {
       evm: evmNFT,
       cosmos: cosmosNFT,
       sui: suiNFT,
+      iota: iotaNFT,
       flat: flatNFTs,
     };
   }, [currentAccountId, storeData]);
@@ -65,6 +67,40 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
     const updatedNFTs = storedAddedSuiNFTs.filter((item) => item.id !== id);
 
     await updateExtensionStorageStore(`${currentAccountId}-nft-sui`, updatedNFTs);
+  };
+
+  const addIotaNFT = async (newNFT: Omit<IotaNFT, 'id'>) => {
+    const storedAddedIotaNFTs = storeData[`${currentAccountId}-nft-iota`] || [];
+
+    const isAlreadyAdded = storedAddedIotaNFTs.some(
+      (item) => item.objectId.toLowerCase() === newNFT.objectId.toLowerCase() && item.chainId === newNFT.chainId && item.chainType === newNFT.chainType,
+    );
+
+    if (isAlreadyAdded) {
+      return;
+    }
+
+    const nonDuplicateAddedNFTs = storedAddedIotaNFTs.filter(
+      (item) => !(item.objectId.toLowerCase() === newNFT.objectId.toLowerCase() && item.chainId === newNFT.chainId && item.chainType === newNFT.chainType),
+    );
+    const newNFTWithId: IotaNFT = {
+      id: uuidv4(),
+      chainId: newNFT.chainId,
+      chainType: newNFT.chainType,
+      objectId: newNFT.objectId,
+    };
+
+    const updatedAddedNFTs = [...nonDuplicateAddedNFTs, newNFTWithId];
+
+    await updateExtensionStorageStore(`${currentAccountId}-nft-iota`, updatedAddedNFTs);
+  };
+
+  const removeIotaNFT = async (id: string) => {
+    const storedAddedIotaNFTs = storeData[`${currentAccountId}-nft-iota`] || [];
+
+    const updatedNFTs = storedAddedIotaNFTs.filter((item) => item.id !== id);
+
+    await updateExtensionStorageStore(`${currentAccountId}-nft-iota`, updatedNFTs);
   };
 
   const addEVMNFT = async (newNFT: Omit<EvmNFT, 'id'>) => {
@@ -172,6 +208,8 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
       await addCosmosNFT(newNFT as Omit<CosmosNFT, 'id'>);
     } else if (newNFT.chainType === 'sui') {
       await addSuiNFT(newNFT as Omit<SuiNFT, 'id'>);
+    } else if (newNFT.chainType === 'iota') {
+      await addIotaNFT(newNFT as Omit<IotaNFT, 'id'>);
     }
   };
 
@@ -179,10 +217,12 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
     const storedAddedCosmosNFTs = storeData[`${currentAccountId}-nft-cosmos`] || [];
     const storedAddedEVMNFTs = storeData[`${currentAccountId}-nft-evm`] || [];
     const storedAddedSuiNFTs = storeData[`${currentAccountId}-nft-sui`] || [];
+    const storedAddedIotaNFTs = storeData[`${currentAccountId}-nft-iota`] || [];
 
     const isCosmosNFT = storedAddedCosmosNFTs.some((item) => item.id === id);
     const isEVMNFT = storedAddedEVMNFTs.some((item) => item.id === id);
     const isSuiNFT = storedAddedSuiNFTs.some((item) => item.id === id);
+    const isIotaNFT = storedAddedIotaNFTs.some((item) => item.id === id);
 
     if (isCosmosNFT) {
       await removeCosmosNFT(id);
@@ -190,6 +230,8 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
       await removeEVMNFT(id);
     } else if (isSuiNFT) {
       await removeSuiNFT(id);
+    } else if (isIotaNFT) {
+      await removeIotaNFT(id);
     }
   };
 

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { useCurrentAddedCosmosNFTsWithMetaData } from './cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useCurrentAddedEVMNFTsWithMetaData } from './evm/nft/useCurrentAddedEVMNFTsWithMetaData';
+import { useCurrentAddedIotaNFTsWithMetaData } from './iota/useCurrentAddedIotaNFTsWithMetaData';
 import { useCurrentAddedSuiNFTsWithMetaData } from './sui/useCurrentAddedSuiNFTsWithMetaData';
 
 type UseCurrentAccountAddedNFTsWithMetaDataProps =
@@ -12,6 +13,7 @@ type UseCurrentAccountAddedNFTsWithMetaDataProps =
 
 export function useCurrentAccountAddedNFTsWithMetaData({ accountId }: UseCurrentAccountAddedNFTsWithMetaDataProps = {}) {
   const { addedSuiNFTsWithMeta, isLoading: isLoadingSuiNFTs } = useCurrentAddedSuiNFTsWithMetaData({ accountId });
+  const { addedIotaNFTsWithMeta, isLoading: isLoadingIotaNFTs } = useCurrentAddedIotaNFTsWithMetaData({ accountId });
   const { addedEVMNFTsWithMeta, isLoading: isLoadingEVMNFTs } = useCurrentAddedEVMNFTsWithMetaData({ accountId });
   const { addedCosmosNFTsWithMeta, isLoading: isLoadingCosmsoNFTs } = useCurrentAddedCosmosNFTsWithMetaData({ accountId });
 
@@ -19,18 +21,20 @@ export function useCurrentAccountAddedNFTsWithMetaData({ accountId }: UseCurrent
     const addedSuiNFTs = [...addedSuiNFTsWithMeta];
     const addedEVMNFTs = [...addedEVMNFTsWithMeta];
     const addedCosmosNFTs = [...addedCosmosNFTsWithMeta];
+    const addedIotaNFTs = [...addedIotaNFTsWithMeta];
 
     return {
       sui: addedSuiNFTs,
       evm: addedEVMNFTs,
       cosmos: addedCosmosNFTs,
-      flat: [...addedSuiNFTs, ...addedEVMNFTs, ...addedCosmosNFTs],
+      iota: addedIotaNFTs,
+      flat: [...addedSuiNFTs, ...addedEVMNFTs, ...addedCosmosNFTs, ...addedIotaNFTs],
     };
-  }, [addedCosmosNFTsWithMeta, addedEVMNFTsWithMeta, addedSuiNFTsWithMeta]);
+  }, [addedCosmosNFTsWithMeta, addedEVMNFTsWithMeta, addedIotaNFTsWithMeta, addedSuiNFTsWithMeta]);
 
   const isLoading = useMemo(() => {
-    return isLoadingSuiNFTs || isLoadingEVMNFTs || isLoadingCosmsoNFTs;
-  }, [isLoadingCosmsoNFTs, isLoadingEVMNFTs, isLoadingSuiNFTs]);
+    return isLoadingSuiNFTs || isLoadingEVMNFTs || isLoadingCosmsoNFTs || isLoadingIotaNFTs;
+  }, [isLoadingCosmsoNFTs, isLoadingEVMNFTs, isLoadingIotaNFTs, isLoadingSuiNFTs]);
 
   return { currentAccountAddNFTsWithMeta, isLoading };
 }

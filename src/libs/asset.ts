@@ -1,4 +1,6 @@
-import type { IotaObjectDataOptions, IotaObjectResponse, IotaObjectResponseQuery } from '@iota/iota-sdk/client';
+import type { DynamicFieldInfo as IotaDynamicFieldInfo, IotaObjectDataOptions, IotaObjectResponse, IotaObjectResponseQuery } from '@iota/iota-sdk/client';
+import { IotaClient, Network as IotaNetwork } from '@iota/iota-sdk/client';
+import { KioskClient as IotaKioskClient } from '@iota/kiosk';
 import { KioskClient, Network } from '@mysten/kiosk';
 import type { DynamicFieldInfo, SuiObjectDataOptions, SuiObjectResponse, SuiObjectResponseQuery } from '@mysten/sui/client';
 import { SuiClient } from '@mysten/sui/client';
@@ -23,12 +25,13 @@ import type {
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, IotaAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
-import type { IotaGetObjectsOwnedByAddressResponse, IotaGetObjectsResponse } from '@/types/iota/api';
+import type { IotaGetDynamicFieldsResponse, IotaGetObjectsOwnedByAddressResponse, IotaGetObjectsResponse } from '@/types/iota/api';
 import type { SuiGetDynamicFieldsResponse, SuiGetObjectsOwnedByAddressResponse, SuiGetObjectsResponse } from '@/types/sui/api';
 import { chunkArray } from '@/utils/array';
 import { post } from '@/utils/axios';
 import { formattingAccount } from '@/utils/cosmos/account';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
+import { getObjectDisplay as getIotaObjectDisplay, isKiosk as isIotaKiosk } from '@/utils/iota/nft';
 import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
 import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
 import { getObjectDisplay, isKiosk } from '@/utils/sui/nft';
@@ -1310,6 +1313,153 @@ export async function getMultiObjects(
   }
 
   return multiGetObjectResponses.flat();
+}
+
+type GetIotaNFTSOption = {
+  objectResponseQuery?: IotaObjectResponseQuery;
+};
+
+export async function getIotaNFTs(id: string, option?: GetIotaNFTSOption) {
+  const concurrency = 10;
+
+  const { iotaChains } = await getChains();
+
+  const accountAddress = await getAccountAddress(id);
+
+  const iotaAddresses = accountAddress.filter((address) => address.chainType === 'iota');
+
+  const addressWithChain = iotaAddresses
+    .map((addr) => {
+      const chain = iotaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(concurrency)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      try {
+        const { chainId, chainType, address, chain } = addr;
+
+        const normalNFTObjects = await (async () => {
+          const objectsOwnedByAddress = await getIotaObjectsByOwnedAddress(address, chain.id, chainType, option?.objectResponseQuery);
+
+          const objectIdList = objectsOwnedByAddress.map((object) => object.data?.objectId || '');
+
+          const objects = await getIotaMultiObjects(objectIdList, chain.id, chainType, option?.objectResponseQuery?.options);
+
+          const nftObjects = objects?.filter((item) => getIotaObjectDisplay(item)?.data) || [];
+
+          return nftObjects;
+        })();
+
+        const anotherKioskObjects = await (async () => {
+          const anotherkioskObjects = normalNFTObjects.filter((item) => item.data && isIotaKiosk(item.data));
+
+          const kioskObjectParentId = anotherkioskObjects
+            ? anotherkioskObjects.map((item) => getIotaObjectDisplay(item)?.data?.kiosk || '').filter((item) => !!item)
+            : [];
+
+          const dynamicFields = await Promise.all(
+            kioskObjectParentId.map(async (kioskId) => {
+              return await getIotaDynamicFields(kioskId, chainId, chainType);
+            }),
+          );
+          const flatDynamicFields = dynamicFields.flat();
+
+          const kioskDynamicFieldsObjectIds = flatDynamicFields?.map((item) => item.objectId) || [];
+
+          const kioskObjects = await getIotaMultiObjects(kioskDynamicFieldsObjectIds, chainId, chainType, option?.objectResponseQuery?.options);
+          const filteredKioskObjects = kioskObjects.filter((item) => getIotaObjectDisplay(item)?.data);
+
+          return filteredKioskObjects;
+        })();
+
+        const kioskNFTs = await getIotaKioskNFTs(address, chainId, chainType, option?.objectResponseQuery);
+
+        const total = [...normalNFTObjects, ...kioskNFTs, ...anotherKioskObjects];
+
+        const result = { accountId: id, chainId, chainType, address, nftObjects: total };
+
+        return result;
+      } catch {
+        return null;
+      }
+    });
+
+  return results.filter((result) => !!result);
+}
+
+export async function getIotaKioskNFTs(address: string, chainId: string, chainType: string, option?: IotaObjectResponseQuery) {
+  const { iotaChains } = await getChains();
+  const iotaChain = iotaChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!iotaChain) throw new Error('Chain not found');
+
+  const rpcUrls = iotaChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+
+  for (const rpcUrl of rpcUrls) {
+    try {
+      const iotaClient = new IotaClient({ url: rpcUrl });
+      const network = iotaChain.isTestnet ? IotaNetwork.Testnet : IotaNetwork.Mainnet;
+      const kioskClient = new IotaKioskClient({ client: iotaClient, network });
+      const { kioskIds } = await kioskClient.getOwnedKiosks({ address });
+
+      const kioskDatas = await Promise.all(
+        kioskIds.map(async (id) => {
+          return kioskClient.getKiosk({
+            id,
+            options: { withKioskFields: true, withListingPrices: true },
+          });
+        }),
+      );
+
+      const kioskObjectIds = kioskDatas.flatMap((kiosk) => kiosk.itemIds);
+
+      const kioskNFTObjects = await getIotaMultiObjects(kioskObjectIds, chainId, chainType, option?.options);
+
+      const filteredKioskNFTs = kioskNFTObjects.filter((item) => !!item && !!getIotaObjectDisplay(item)?.data) || [];
+
+      return filteredKioskNFTs;
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
+export async function getIotaDynamicFields(parentObjectId: string, chainId: string, chainType: string) {
+  const { iotaChains } = await getChains();
+  const iotaChain = iotaChains.find((chain) => chain.chainType === chainType && chain.id === chainId);
+  if (!iotaChain) throw new Error('Chain not found');
+
+  const rpcUrls = iotaChain.rpcUrls.map((rpcUrl) => rpcUrl.url);
+  let nextKey: string | null = null;
+  const dynamicFieldsInfoResponse: IotaDynamicFieldInfo[][] = [];
+
+  do {
+    for (const rpcUrl of rpcUrls) {
+      try {
+        const response: IotaGetDynamicFieldsResponse | undefined = await post<IotaGetDynamicFieldsResponse>(rpcUrl, {
+          jsonrpc: '2.0',
+          method: 'iotax_getDynamicFields',
+          params: [parentObjectId, nextKey, null],
+          id: parentObjectId,
+        });
+        if (response.error) {
+          throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: iotax_getDynamicFields, Message: ${response.error?.message}`);
+        }
+        if (response.result) {
+          nextKey = response.result.nextCursor && response.result.hasNextPage ? response.result.nextCursor : null;
+          dynamicFieldsInfoResponse.push(response.result.data ?? []);
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+  } while (nextKey);
+
+  return dynamicFieldsInfoResponse.flat();
 }
 
 export async function getIotaObjectsByOwnedAddress(

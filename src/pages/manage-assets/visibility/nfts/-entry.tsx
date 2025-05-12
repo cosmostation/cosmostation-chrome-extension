@@ -16,6 +16,7 @@ import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useCurrentAddedEVMNFTsWithMetaData } from '@/hooks/evm/nft/useCurrentAddedEVMNFTsWithMetaData';
+import { useCurrentAddedIotaNFTsWithMetaData } from '@/hooks/iota/useCurrentAddedIotaNFTsWithMetaData';
 import { useCurrentAddedSuiNFTsWithMetaData } from '@/hooks/sui/useCurrentAddedSuiNFTsWithMetaData';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddibleNFTs } from '@/hooks/useCurrentAccountAddibleNFTs';
@@ -85,7 +86,21 @@ type CosmosNFTItem = {
   isOwned: boolean;
 };
 
-type NFTItem = SuiNFTItem | EVMNFTItem | CosmosNFTItem;
+type IotaNFTItem = {
+  id?: string;
+  accountId: string;
+  chainId: string;
+  chainType: 'iota';
+  ownerAddress: string;
+  name: string;
+  subName: string;
+  image: string;
+  objectId: string;
+  type: string;
+  isOwned: boolean;
+};
+
+type NFTItem = SuiNFTItem | EVMNFTItem | CosmosNFTItem | IotaNFTItem;
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -109,8 +124,8 @@ export default function Entry() {
   const baseChainList = useMemo(() => {
     const cosmosChains = chainList.cosmosChains?.filter((item) => item.isCosmwasm || item.isSupportCW721) || [];
 
-    return [...cosmosChains, ...(chainList.evmChains || []), ...(chainList.suiChains || [])];
-  }, [chainList.cosmosChains, chainList.evmChains, chainList.suiChains]);
+    return [...cosmosChains, ...(chainList.evmChains || []), ...(chainList.suiChains || []), ...(chainList.iotaChains || [])];
+  }, [chainList.cosmosChains, chainList.evmChains, chainList.iotaChains, chainList.suiChains]);
 
   const { currentAccountAddibleNFTs, isLoading: isCurrentAccountAddibleNFTsLoading } = useCurrentAccountAddibleNFTs();
 
@@ -119,6 +134,7 @@ export default function Entry() {
   const { addedEVMNFTsWithMeta, isLoading: isCurrentAddedEVMNFTsLoading } = useCurrentAddedEVMNFTsWithMetaData();
   const { addedCosmosNFTsWithMeta } = useCurrentAddedCosmosNFTsWithMetaData();
   const { addedSuiNFTsWithMeta } = useCurrentAddedSuiNFTsWithMetaData();
+  const { addedIotaNFTsWithMeta } = useCurrentAddedIotaNFTsWithMetaData();
 
   const wrappedCosmosNFTs = useMemo(() => {
     const addedComsosNFTsWithoutReRender = currentAddedNFTs.cosmos
@@ -170,6 +186,14 @@ export default function Entry() {
     return [...addedSuiNFTsWithMeta, ...addibleNFTs] as SuiNFTItem[];
   }, [addedSuiNFTsWithMeta, currentAccountAddibleNFTs.sui]);
 
+  const wrappedIotaNFTs = useMemo(() => {
+    const addibleNFTs = currentAccountAddibleNFTs.iota.filter((addibleItem) => {
+      return !addedIotaNFTsWithMeta.some((item) => addibleItem.objectId === item.objectId);
+    });
+
+    return [...addedIotaNFTsWithMeta, ...addibleNFTs] as IotaNFTItem[];
+  }, [addedIotaNFTsWithMeta, currentAccountAddibleNFTs.iota]);
+
   const isLoading = useMemo(
     () => isCurrentAccountAddibleNFTsLoading || isCurrentAddedEVMNFTsLoading,
     [isCurrentAccountAddibleNFTsLoading, isCurrentAddedEVMNFTsLoading],
@@ -178,8 +202,8 @@ export default function Entry() {
   const addedNFTIds = useMemo(() => currentAddedNFTs.flat.map((item) => item.id), [currentAddedNFTs.flat]);
 
   const aggregatedNFTs = useMemo<NFTItem[]>(
-    () => [...wrappedSuiNFTs, ...(addedEVMNFTsWithMeta as EVMNFTItem[]), ...wrappedCosmosNFTs],
-    [wrappedSuiNFTs, addedEVMNFTsWithMeta, wrappedCosmosNFTs],
+    () => [...wrappedSuiNFTs, ...(addedEVMNFTsWithMeta as EVMNFTItem[]), ...wrappedCosmosNFTs, ...wrappedIotaNFTs],
+    [wrappedSuiNFTs, addedEVMNFTsWithMeta, wrappedCosmosNFTs, wrappedIotaNFTs],
   );
 
   const sortedNFTs = useMemo(() => {
@@ -299,7 +323,7 @@ export default function Entry() {
                       const isAdded = addedNFTIds.includes(nftItem.id || '');
 
                       const uniqueKey = (() => {
-                        if (nftItem.chainType === 'sui') {
+                        if (nftItem.chainType === 'sui' || nftItem.chainType === 'iota') {
                           return nftItem.objectId;
                         } else if (nftItem.chainType === 'evm') {
                           return `${nftItem.contractAddress}_${nftItem.tokenId}`;
@@ -328,8 +352,10 @@ export default function Entry() {
                                 );
                               const isCustomSuiNFT =
                                 nftItem.chainType === 'sui' && !currentAccountAddibleNFTs.sui.some((item) => item.objectId === nftItem.objectId);
+                              const isCustomIotaNFT =
+                                nftItem.chainType === 'iota' && !currentAccountAddibleNFTs.iota.some((item) => item.objectId === nftItem.objectId);
 
-                              if (isCustomEVMNFT || isCustomCosmosNFT || isCustomSuiNFT) {
+                              if (isCustomEVMNFT || isCustomCosmosNFT || isCustomSuiNFT || isCustomIotaNFT) {
                                 setSupposedDeleteItem(nftItem);
                               } else {
                                 handleRemoveNFT(nftItem.id);

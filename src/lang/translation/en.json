@@ -3153,6 +3153,15 @@
               "nftSend": "Send NFT",
               "network": "Network"
             }
+          },
+          "iota": {
+            "index": {
+              "lockedFeature": "This feature is locked currently",
+              "owner": "Owner Address",
+              "objectId": "Object ID",
+              "nftSend": "Send NFT",
+              "network": "Network"
+            }
           }
         }
       }
