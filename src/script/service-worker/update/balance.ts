@@ -15,6 +15,8 @@ import type {
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
   AccountAddressBalanceIota,
+  AccountAddressBalanceSolana,
+  AccountAddressBalanceSplToken,
   AccountAddressBalanceSui,
   AccountAddressLockedBalanceCosmos,
 } from '@/types/account';
@@ -42,6 +44,8 @@ import {
   fetchERC20Balances,
   fetchEVMBalances,
   fetchMultiERC20Balances,
+  fetchSolanaBalances,
+  fetchSolanaSplTokenBalances,
 } from '@/utils/cosmos/fetch/balance';
 import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
 import { minus } from '@/utils/numbers';
@@ -63,8 +67,9 @@ interface EVMBalancesOption extends BalanceFetchOption {
 const defaultCosmosCoinList: AssetId[] = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
 const defaultEvmCoinList: AssetId[] = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
 const defaultBitcoinCoinList: AssetId[] = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
+const defaultSolanaCoinList = [{ id: 'sol', chainId: 'solana', chainType: 'solana' }];
 
-const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
+const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList, ...defaultSolanaCoinList];
 
 const CHAIN_MULTICALL_CONFIGS: Record<
   ChainId['id'],
@@ -194,8 +199,10 @@ export async function updateBalance(id: string) {
       suiBalances(id),
       iotaBalances(id),
       bitcoinBalances(id),
+      solanaBalances(id),
       erc20Balance(id),
       cw20Balance(id),
+      splTokenBalance(id),
       customErc20Balance(id),
       customCw20Balance(id),
     ]);
@@ -772,6 +779,40 @@ async function iotaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
 }
 
+async function solanaBalances(id: string) {
+  const address = await getAccountAddress(id);
+  const { solanaChains } = await getChains();
+
+  const addressWithChain = address
+    .map((addr) => {
+      const chain = solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls } = chain;
+
+      try {
+        const balance = await fetchSolanaBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
+
+        const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: balance.value };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: 0 };
+
+        return result;
+      }
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: results });
+}
+
 async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
   const startUpdateTime = Date.now();
 
@@ -1120,4 +1161,38 @@ async function customCw20Balance(id: string, { chainId }: BalanceFetchOption = {
   const updatedCustomCW20Balances = upsertCW20Balance(stored, results);
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
+}
+
+async function splTokenBalance(id: string) {
+  const address = await getAccountAddress(id);
+  const { solanaChains } = await getChains();
+
+  const addressWithChain = address
+    .map((addr) => {
+      const chain = solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls, programId } = chain;
+
+      try {
+        const balance = await fetchSolanaSplTokenBalances(address, programId.splToken, rpcUrls.map((item) => item.url).filter(Boolean));
+
+        const result: AccountAddressBalanceSplToken = { id, chainId, chainType, address, balances: balance.value };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceSplToken = { id, chainId, chainType, address, balances: [] };
+
+        return result;
+      }
+    });
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${id}-balance-spltoken`]: results });
 }

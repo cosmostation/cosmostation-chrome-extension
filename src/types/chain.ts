@@ -189,6 +189,10 @@ export interface IotaChain extends ChainBase {
   isDevnet?: boolean;
 }
 
+export interface SolanaProgramId {
+  splToken: string;
+}
+
 export interface SolanaChain extends ChainBase {
   chainType: Extract<ChainType, 'solana'>;
   chainId: string | number;
@@ -196,6 +200,7 @@ export interface SolanaChain extends ChainBase {
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
+  programId: SolanaProgramId;
   isTestnet?: boolean;
 }
 

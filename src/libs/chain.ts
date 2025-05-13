@@ -529,6 +529,10 @@ export async function getChains() {
         };
       }) ?? [];
 
+    const programId = {
+      splToken: chain.params.chainlist_params.solana_program_id?.spl_token ?? '',
+    };
+
     return {
       id,
       chainId,
@@ -539,6 +543,7 @@ export async function getChains() {
       rpcUrls,
       explorer,
       accountTypes,
+      programId,
     };
   });
 

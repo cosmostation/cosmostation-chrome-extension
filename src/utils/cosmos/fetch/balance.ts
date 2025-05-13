@@ -5,14 +5,14 @@ import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { Erc20Balance } from '@/types/evm/balance';
-import { getWithFullResponse, postWithFullResponse } from '@/utils/axios';
-import { buildRequestUrl } from '@/utils/fetch';
 import type {
-  SolanaGetBalanceResult,
-  SolanaGetTokenAccountsByOwnerResult,
+  SolanaGetBalance,
+  SolanaGetTokenAccountsByOwner,
   SolanaRpcGetBalanceResponse,
   SolanaRpcGetTokenAccountsByOwnerResponse,
 } from '@/types/solana/api';
+import { getWithFullResponse, postWithFullResponse } from '@/utils/axios';
+import { buildRequestUrl } from '@/utils/fetch';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 export const fetchCosmosBalances = async (
@@ -193,7 +193,7 @@ export const fetchMultiERC20Balances = async (
   });
 };
 
-export const fetchSolanaBalances = async (address: string, rpcUrls: string[]): Promise<SolanaGetBalanceResult> => {
+export const fetchSolanaBalances = async (address: string, rpcUrls: string[]): Promise<SolanaGetBalance> => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const body = {
       jsonrpc: '2.0',
@@ -202,13 +202,12 @@ export const fetchSolanaBalances = async (address: string, rpcUrls: string[]): P
       id: 1,
     };
 
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
-    const response = await axios.post<SolanaRpcGetBalanceResponse>(baseRpcUrl, body, {
+    const response = await postWithFullResponse<SolanaRpcGetBalanceResponse>(rpcUrl, body, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
     });
 
     if (response.data.error) {
-      throw new Error(`[RPC Error] URL: ${baseRpcUrl}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+      throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: ${body.method}, Message: ${response.data.error?.message}`);
     }
 
     const balance = response.data?.result ?? { value: 0, context: { apiVersion: '', slot: 0 } };
@@ -217,7 +216,7 @@ export const fetchSolanaBalances = async (address: string, rpcUrls: string[]): P
   });
 };
 
-export const fetchSolanaSplTokenBalances = async (address: string, programId: string, rpcUrls: string[]): Promise<SolanaGetTokenAccountsByOwnerResult> => {
+export const fetchSolanaSplTokenBalances = async (address: string, programId: string, rpcUrls: string[]): Promise<SolanaGetTokenAccountsByOwner> => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const body = {
       jsonrpc: '2.0',
@@ -232,13 +231,12 @@ export const fetchSolanaSplTokenBalances = async (address: string, programId: st
       id: 1,
     };
 
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
-    const response = await axios.post<SolanaRpcGetTokenAccountsByOwnerResponse>(baseRpcUrl, body, {
+    const response = await postWithFullResponse<SolanaRpcGetTokenAccountsByOwnerResponse>(rpcUrl, body, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
     });
 
     if (response.data.error) {
-      throw new Error(`[RPC Error] URL: ${baseRpcUrl}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+      throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: ${body.method}, Message: ${response.data.error?.message}`);
     }
 
     const balance = response.data?.result ?? { value: [], context: { apiVersion: '', slot: 0 } };

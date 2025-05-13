@@ -14,6 +14,8 @@ import type {
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
   AccountAddressBalanceIota,
+  AccountAddressBalanceSolana,
+  AccountAddressBalanceSplToken,
   AccountAddressBalanceSui,
   AccountAddressCommissionsCosmos,
   AccountAddressDelegationsCosmos,
@@ -106,8 +108,10 @@ export interface ExtensionStorage {
   [key: `${string}-balance-sui`]: AccountAddressBalanceSui[];
   [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
   [key: `${string}-balance-iota`]: AccountAddressBalanceIota[];
+  [key: `${string}-balance-solana`]: AccountAddressBalanceSolana[];
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
+  [key: `${string}-balance-spltoken`]: AccountAddressBalanceSplToken[];
   [key: `${string}-delegation-cosmos`]: AccountAddressDelegationsCosmos[];
   [key: `${string}-undelegation-cosmos`]: AccountAddressUnbondingsCosmos[];
   [key: `${string}-reward-cosmos`]: AccountAddressRewardsCosmos[];
