@@ -181,7 +181,6 @@ export function getAddress(chain: Chain, publicKey: string) {
 
   if (chainType === 'solana') {
     const pubKey = new PublicKey(Buffer.from(publicKey, 'hex'));
-    console.log('pubKey', pubKey.toBase58());
     return pubKey.toBase58();
   }
 
