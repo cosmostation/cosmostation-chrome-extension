@@ -1653,7 +1653,8 @@
             "noValidator": "No validator selected",
             "noAmount": "Please enter the amount",
             "failedToDryRun": "Transaction simulation failed",
-            "failedToBuildTransaction": "Failed to build transaction"
+            "failedToBuildTransaction": "Failed to build transaction",
+            "tooSmallToStake": "Minimum stake amount is 1"
           },
           "layout": {
             "header": "Stake"

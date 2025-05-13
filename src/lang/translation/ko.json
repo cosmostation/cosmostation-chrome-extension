@@ -2987,7 +2987,8 @@
             "tooLowAmount": "0보다 큰 금액을 입력하세요",
             "txProcessing": "트랜잭션 처리 중",
             "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-            "validator": "벨리데이터 선택"
+            "validator": "벨리데이터 선택",
+            "tooSmallToStake": "최소 스테이킹 수량은 1입니다"
           },
           "layout": {
             "header": "스테이킹"
