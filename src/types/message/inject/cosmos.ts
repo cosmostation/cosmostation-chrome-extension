@@ -106,6 +106,15 @@ export interface CosAccountResponse {
   isEthermint: boolean;
 }
 
+export interface CosAccountResponseWithChainId {
+  chainId: string;
+  publicKey: string;
+  address: string;
+  name: string;
+  isLedger: boolean;
+  isEthermint: boolean;
+}
+
 export type CosAccountsResponse = CosAccountResponse[];
 
 export interface CosSendTransactionParams {
@@ -187,7 +196,7 @@ export type SettledResponse<T> =
     };
 export type SettledResponses<T> = SettledResponse<T>[];
 
-export type CosRequestAccountsSettledResponse = SettledResponses<CosAccountResponse>;
+export type CosRequestAccountsSettledResponse = SettledResponses<CosAccountResponseWithChainId>;
 
 export type CosRequestAddChainResponse = boolean;
 

@@ -180,6 +180,7 @@ export async function cosmosProcess(message: CosmosRequest) {
               return {
                 status: 'fulfilled',
                 value: {
+                  chainId: inputChainId,
                   address: matchedAddressInfo.address,
                   publicKey: matchedAddressInfo.publicKey,
                   name: currentAccountName,
@@ -197,6 +198,7 @@ export async function cosmosProcess(message: CosmosRequest) {
             return {
               status: 'fulfilled',
               value: {
+                chainId: inputChainId,
                 address,
                 publicKey,
                 name: currentAccountName,

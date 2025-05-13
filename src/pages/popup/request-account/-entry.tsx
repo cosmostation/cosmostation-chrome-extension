@@ -126,6 +126,7 @@ export default function Entry() {
                 return {
                   status: 'fulfilled',
                   value: {
+                    chainId: inputChainId,
                     address: matchedAddressInfo.address,
                     publicKey: matchedAddressInfo.publicKey,
                     name: currentAccount.name,
@@ -142,6 +143,7 @@ export default function Entry() {
                 return {
                   status: 'fulfilled',
                   value: {
+                    chainId: inputChainId,
                     address,
                     publicKey,
                     name: currentAccount.name,
