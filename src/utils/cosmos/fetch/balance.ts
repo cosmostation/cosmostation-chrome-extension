@@ -7,6 +7,12 @@ import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { Erc20Balance } from '@/types/evm/balance';
 import { getWithFullResponse, postWithFullResponse } from '@/utils/axios';
 import { buildRequestUrl } from '@/utils/fetch';
+import type {
+  SolanaGetBalanceResult,
+  SolanaGetTokenAccountsByOwnerResult,
+  SolanaRpcGetBalanceResponse,
+  SolanaRpcGetTokenAccountsByOwnerResponse,
+} from '@/types/solana/api';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 export const fetchCosmosBalances = async (
@@ -184,5 +190,59 @@ export const fetchMultiERC20Balances = async (
     } finally {
       multicallProvider.destroy();
     }
+  });
+};
+
+export const fetchSolanaBalances = async (address: string, rpcUrls: string[]): Promise<SolanaGetBalanceResult> => {
+  return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
+    const body = {
+      jsonrpc: '2.0',
+      method: 'getBalance',
+      params: [address],
+      id: 1,
+    };
+
+    const baseRpcUrl = removeTrailingSlash(rpcUrl);
+    const response = await axios.post<SolanaRpcGetBalanceResponse>(baseRpcUrl, body, {
+      timeout: BALANCE_FETCH_TIME_OUT_MS,
+    });
+
+    if (response.data.error) {
+      throw new Error(`[RPC Error] URL: ${baseRpcUrl}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+    }
+
+    const balance = response.data?.result ?? { value: 0, context: { apiVersion: '', slot: 0 } };
+
+    return balance;
+  });
+};
+
+export const fetchSolanaSplTokenBalances = async (address: string, rpcUrls: string[]): Promise<SolanaGetTokenAccountsByOwnerResult> => {
+  return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
+    const body = {
+      jsonrpc: '2.0',
+      method: 'getTokenAccountsByOwner',
+      params: [
+        address,
+        {
+          programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+        },
+        { encoding: 'jsonParsed' },
+      ],
+      id: 1,
+    };
+
+    const baseRpcUrl = removeTrailingSlash(rpcUrl);
+    const response = await axios.post<SolanaRpcGetTokenAccountsByOwnerResponse>(baseRpcUrl, body, {
+      timeout: BALANCE_FETCH_TIME_OUT_MS,
+    });
+
+    if (response.data.error) {
+      throw new Error(`[RPC Error] URL: ${baseRpcUrl}, Method: ${body.method}, Message: ${response.data.error?.message}`);
+    }
+
+    const balance = response.data?.result ?? { value: [], context: { apiVersion: '', slot: 0 } };
+
+    return balance;
   });
 };
