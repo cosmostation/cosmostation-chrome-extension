@@ -48,7 +48,7 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
       const returnData: CosmosValidator[][] = [];
 
       const response = await get<GetValidatorsResponse>(requestURLs[index], {
-        timeout: DEFAULT_FETCH_TIME_OUT_MS,
+        timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
       });
 
       returnData.push(response.validators);
@@ -59,7 +59,7 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
         const nextCursorRequestURL = `${requestURLs[index]}?pagination.key=${nextCursor}`;
 
         const nextResponse = await get<GetValidatorsResponse>(nextCursorRequestURL, {
-          timeout: DEFAULT_FETCH_TIME_OUT_MS,
+          timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
         });
 
         returnData.push(nextResponse.validators ?? []);
@@ -96,6 +96,19 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
             monikerImage: `https://serve.dev-mintscan.com/assets/moniker/${parseCoinId(coinId).chainId}/64/${validator.operator_address}.png`,
             validatorStatus,
           };
+        })
+        .toSorted((a, b) => {
+          const aIsUndefined = a.validatorStatus === undefined ? -1 : 1;
+          const bIsUndefined = b.validatorStatus === undefined ? -1 : 1;
+
+          if (aIsUndefined !== bIsUndefined) {
+            return aIsUndefined - bIsUndefined;
+          }
+
+          if (gt(a.tokens, b.tokens)) return -1;
+          if (gt(b.tokens, a.tokens)) return 1;
+
+          return 0;
         })
         .toSorted((a) => (a.description.moniker.toLocaleLowerCase().includes('cosmostation') ? -1 : 1));
 
