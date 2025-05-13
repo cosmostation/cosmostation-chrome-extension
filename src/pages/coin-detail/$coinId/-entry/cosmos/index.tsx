@@ -70,9 +70,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
               />
             </SectionContainer>
           )}
-          <SectionContainer>
-            <AmountDetail coinId={coinId} />
-          </SectionContainer>
+          {isStakeable && (
+            <SectionContainer>
+              <AmountDetail coinId={coinId} />
+            </SectionContainer>
+          )}
           <SectionContainer
             style={{
               flex: 1,
