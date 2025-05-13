@@ -15,6 +15,9 @@ export const solana = {
   is_support_extension_wallet: true,
   is_support_erc20: false,
   chain_type: ['solana'],
+  solana_program_id: {
+    spl_token: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+  },
   solana_fee_info: {
     simulated_gas_multiply: 1.3,
   },

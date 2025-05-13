@@ -75,6 +75,9 @@ export type V11Param = {
       solana_fee_info?: {
         simulated_gas_multiply: number;
       };
+      solana_program_id?: {
+        spl_token: string;
+      };
       grpc_endpoint?: {
         provider: string;
         url: string;

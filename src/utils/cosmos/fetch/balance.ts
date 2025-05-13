@@ -217,7 +217,7 @@ export const fetchSolanaBalances = async (address: string, rpcUrls: string[]): P
   });
 };
 
-export const fetchSolanaSplTokenBalances = async (address: string, rpcUrls: string[]): Promise<SolanaGetTokenAccountsByOwnerResult> => {
+export const fetchSolanaSplTokenBalances = async (address: string, programId: string, rpcUrls: string[]): Promise<SolanaGetTokenAccountsByOwnerResult> => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const body = {
       jsonrpc: '2.0',
@@ -225,7 +225,7 @@ export const fetchSolanaSplTokenBalances = async (address: string, rpcUrls: stri
       params: [
         address,
         {
-          programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+          programId,
         },
         { encoding: 'jsonParsed' },
       ],
