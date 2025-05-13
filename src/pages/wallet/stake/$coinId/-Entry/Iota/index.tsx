@@ -31,7 +31,7 @@ import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign';
-import { ceil, divide, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
+import { ceil, divide, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 
@@ -207,6 +207,10 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
 
       if (!gt(displayStakeAmount, '0')) {
         return t('pages.wallet.stake.$coinId.entry.tooLowAmount');
+      }
+
+      if (!gte(displayStakeAmount, '1')) {
+        return t('pages.wallet.stake.$coinId.entry.tooSmallToStake');
       }
     }
 
