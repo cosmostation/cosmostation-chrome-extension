@@ -3,7 +3,19 @@ import type { DelegatedStake as IotaDelegatedStake } from '@iota/iota-sdk/client
 import type { DelegatedStake } from '@mysten/sui/client';
 
 import type { AptosResourceResponse } from './aptos/api';
-import type { AptosAsset, AssetId, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, IotaAsset, SuiAsset } from './asset';
+import type {
+  AptosAsset,
+  AssetId,
+  BitcoinAsset,
+  CosmosAsset,
+  CosmosCw20Asset,
+  CustomCosmosAsset,
+  EvmAsset,
+  EvmErc20Asset,
+  IotaAsset,
+  SolanaAsset,
+  SuiAsset,
+} from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
 import type {
   AptosChain,
@@ -16,6 +28,7 @@ import type {
   CustomEvmChain,
   EvmChain,
   IotaChain,
+  SolanaChain,
   SuiChain,
 } from './chain';
 import type { AuthAccountsPayload } from './cosmos/account';
@@ -348,6 +361,14 @@ export interface AccountIotaAsset {
   totalBalance?: string;
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AccountIotaAssetFetchStatus;
+}
+
+export interface AccountSolanaAsset {
+  chain: SolanaChain;
+  asset: SolanaAsset;
+  address: AccountAddress;
+  balance: string;
+  totalBalance?: string;
 }
 
 export type AccountNamesById = Record<AccountBase['id'], string>;

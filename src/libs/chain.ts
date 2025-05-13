@@ -3,7 +3,9 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import { solana } from '@/constants/testChain';
+import type { V11Param } from '@/types/apiV11';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -24,13 +26,49 @@ function collectDefaultDenoms(
 }
 
 export async function getChains() {
-  const { paramsV11: chains } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
+  const { paramsV11: chains_temp } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
+
+  const chains: Record<string, V11Param> = {
+    ...chains_temp,
+    solana: {
+      params: {
+        chainlist_params: solana,
+        apr: '',
+        minting_inflation: {
+          inflation: '',
+        },
+        staking_params: {
+          params: {
+            unbonding_time: undefined,
+            max_validators: undefined,
+            max_entries: undefined,
+            historical_entries: undefined,
+            bond_denom: undefined,
+            min_commission_rate: undefined,
+          },
+        },
+        slashing_params: {
+          params: {
+            signed_blocks_window: '',
+            min_signed_per_window: '',
+            downtime_jail_duration: '',
+            slash_fraction_double_sign: '',
+            slash_fraction_downtime: '',
+          },
+        },
+      },
+      chain_id: '',
+      block_time: 0,
+      updated_at: '',
+      is_support: false,
+    },
+  };
 
   if (!chains) {
     throw new Error('No chains found');
   }
 
-  const chainIds = Object.keys(chains);
+  const chainIds = Object.keys({ ...chains });
   const chainInfos = chainIds.map((chainId) => {
     const chainInfo = chains[chainId];
 
@@ -48,6 +86,7 @@ export async function getChains() {
   const aptosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('aptos'));
   const bitcoinChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('bitcoin'));
   const iotaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('iota'));
+  const solanaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('solana'));
 
   const remappedCosmosChains: CosmosChain[] = cosmosChains.map((chain) => {
     const id = chain.id;
@@ -451,6 +490,58 @@ export async function getChains() {
     };
   });
 
+  const remappedSolanaChains: SolanaChain[] = solanaChains.map((chain) => {
+    const id = chain.id;
+    const chainType = 'solana';
+    const chainId = chain.params.chainlist_params.chain_id!;
+
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
+    const image = chain.params.chainlist_params?.chain_image ?? null;
+
+    const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom || null;
+
+    const rpcUrls =
+      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
+
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
+
+    const accountTypes =
+      chain.params.chainlist_params?.account_type?.map((accountType) => {
+        const hdPath = accountType.hd_path.replace('X', '${index}');
+        return {
+          hdPath,
+          pubkeyStyle: accountType.pubkey_style,
+          isDefault: accountType.is_default ?? null,
+        };
+      }) ?? [];
+
+    return {
+      id,
+      chainId,
+      name,
+      image,
+      chainType,
+      mainAssetDenom,
+      rpcUrls,
+      explorer,
+      accountTypes,
+    };
+  });
+
   return {
     cosmosChains: remappedCosmosChains,
     evmChains: remappedEvmChains,
@@ -458,6 +549,7 @@ export async function getChains() {
     aptosChains: remappedAptosChains,
     bitcoinChains: remappedBitcoinChains,
     iotaChains: remappedIotaChains,
+    solanaChains: remappedSolanaChains,
   };
 }
 

@@ -72,6 +72,9 @@ export type V11Param = {
         is_eip1559: boolean;
         simulated_gas_multiply: number;
       };
+      solana_fee_info?: {
+        simulated_gas_multiply: number;
+      };
       grpc_endpoint?: {
         provider: string;
         url: string;

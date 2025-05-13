@@ -80,7 +80,17 @@ export interface IotaAsset extends AssetBase {
   type: string;
 }
 
-export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset | IotaAsset;
+export interface SolanaAsset extends AssetBase {
+  chainType: 'solana';
+  type: string;
+}
+
+export interface SolanaSplTokenAsset extends AssetBase {
+  chainType: 'solana';
+  type: 'spl-token';
+}
+
+export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset | IotaAsset | SolanaAsset;
 
 export type AssetSingleGroup = {
   singles: Asset[];

@@ -1,0 +1,79 @@
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getBalance",
+    "params": [
+        "8PgCV8AXGiV8WTpRvEd39e4Jg2RmySeN51MaZkqVJ1Ho"
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getAccountInfo",
+    "params": [
+        "8PgCV8AXGiV8WTpRvEd39e4Jg2RmySeN51MaZkqVJ1Ho"
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountBalance",
+    "params": [
+        "8PgCV8AXGiV8WTpRvEd39e4Jg2RmySeN51MaZkqVJ1Ho"
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountsByOwner",
+    "params": [
+        "7i5MmHTJNZ5wdLu7zcj9RvYfD1rg37sYFWrWXqBjySUd",
+        {
+            "mint": "So11111111111111111111111111111111111111112"
+        },
+        {
+            "encoding": "jsonParsed"
+        }
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountsByOwner",
+    "params": [
+        "5T2hdPcvuVRQREHB4Ffn8bQMxre9JiTUe6s37cWDJQE7",
+        {
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+            "encoding": "jsonParsed"
+        }
+    ]
+}

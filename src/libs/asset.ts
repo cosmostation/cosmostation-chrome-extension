@@ -23,11 +23,12 @@ import type {
   AccountEVMAssetFetchStatus,
   AccountIotaAsset,
   AccountIotaAssetFetchStatus,
+  AccountSolanaAsset,
   AccountSuiAsset,
   AccountSuiAssetFetchStatus,
   AssetFetchStatus,
 } from '@/types/account';
-import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, IotaAsset, SuiAsset } from '@/types/asset';
+import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, IotaAsset, SolanaAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import type { IotaGetDynamicFieldsResponse, IotaGetObjectsOwnedByAddressResponse, IotaGetObjectsResponse } from '@/types/iota/api';
@@ -117,7 +118,7 @@ export async function getAssets() {
     throw new Error('No assets found');
   }
 
-  const { evmChains, suiChains, aptosChains, cosmosChains, bitcoinChains, iotaChains } = await getChains();
+  const { evmChains, suiChains, aptosChains, cosmosChains, bitcoinChains, iotaChains, solanaChains } = await getChains();
 
   const evmChainIds = evmChains.map((chain) => chain.id);
   const cosmosChainIds = cosmosChains.map((chain) => chain.id);
@@ -125,6 +126,7 @@ export async function getAssets() {
   const aptosChainIds = aptosChains.map((chain) => chain.id);
   const bitcoinChainIds = bitcoinChains.map((chain) => chain.id);
   const iotaChainIds = iotaChains.map((chain) => chain.id);
+  const solanaChainIds = solanaChains.map((chain) => chain.id);
 
   const {
     evm: filteredEvmAssets,
@@ -231,6 +233,16 @@ export async function getAssets() {
     };
   });
 
+  const filteredSolanaAssets = assets.filter((asset) => solanaChainIds.includes(asset.chain));
+  const solanaAssets: SolanaAsset[] = filteredSolanaAssets.map((asset) => {
+    return {
+      ...asset,
+      id: asset.denom,
+      chainId: asset.chain,
+      chainType: 'solana',
+    };
+  });
+
   return {
     cosmosAssets,
     evmAssets,
@@ -238,6 +250,7 @@ export async function getAssets() {
     aptosAssets,
     bitcoinAssets,
     iotaAssets,
+    solanaAssets,
     erc20Assets,
     customErc20Assets,
     cw20Assets,
@@ -286,8 +299,19 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
   const allCosmosChains = [...cosmosChains, ...addedCustomChains.filter((chain) => chain.chainType === 'cosmos')];
 
-  const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets, bitcoinAssets, iotaAssets } =
-    await getAssets();
+  const {
+    aptosAssets,
+    cosmosAssets,
+    cw20Assets,
+    customCw20Assets,
+    erc20Assets,
+    customErc20Assets,
+    evmAssets,
+    suiAssets,
+    bitcoinAssets,
+    iotaAssets,
+    // solanaAssets,
+  } = await getAssets();
 
   const filterHiddenAssets = <T extends Asset>(assets: T[]): T[] => {
     if (option?.disableFilterHidden) {
@@ -319,6 +343,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const suiAssetsWithoutHidden = filterHiddenAssets(suiAssets);
   const bitcoinAssetsWithoutHidden = filterHiddenAssets(bitcoinAssets);
   const iotaAssetsWithoutHidden = filterHiddenAssets(iotaAssets);
+  // const solanaAssetsWithoutHidden = filterHiddenAssets(solanaAssets);
 
   const accountAddress = storage[`${id}-address`] || [];
   const allAccountAddress = await getAllAccountAddress(id);
@@ -996,6 +1021,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
   const bitcoinAccountAssets = results[8].results.flat().filter((asset) => asset.chain && asset.address);
   const iotaAccountAssets = results[9].results.flat().filter((asset) => asset.chain && asset.address);
+  const solanaAccountAssets: AccountSolanaAsset[] = [];
 
   type AssetWithBalance = {
     balance: string;
@@ -1035,7 +1061,9 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     }
   };
 
-  const filterHiddenStakableAssetsByBalance = <T extends AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset | AccountIotaAsset>(assets: T[]): T[] => {
+  const filterHiddenStakableAssetsByBalance = <T extends AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset | AccountIotaAsset | AccountSolanaAsset>(
+    assets: T[],
+  ): T[] => {
     if (option?.disableBalanceFilter) {
       return assets;
     } else {
@@ -1057,6 +1085,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const filteredEVMAccountAssets = filterHiddenStakableAssetsByBalance(evmAccountAssets);
   const filteredSuiAccountAssets = filterHiddenStakableAssetsByBalance(suiAccountAssets);
   const filteredIotaAccountAssets = filterHiddenStakableAssetsByBalance(iotaAccountAssets);
+  const filteredSolanaAccountAssets = filterHiddenStakableAssetsByBalance(solanaAccountAssets);
 
   const filteredAptosAccountAssets = filterHiddenAssetsByBalance(aptosAccountAssets);
   const filteredCW20AccountAssets = filterHiddenAssetsByBalance(cw20AccountAssets);
@@ -1079,6 +1108,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     customCw20AccountAssets: filteredCustomCW20AccountAssets,
     bitcoinAccountAssets: filteredBitcoinAccountAssets,
     iotaAccountAssets: filteredIotaAccountAssets,
+    solanaAccountAssets: filteredSolanaAccountAssets,
   };
 }
 
