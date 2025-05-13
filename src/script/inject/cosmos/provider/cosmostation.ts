@@ -6,6 +6,8 @@ import type { BaseRequest } from '@/types/message/inject';
 import type {
   CosRequestAccountResponse,
   CosRequestAccounts,
+  CosRequestAccountsSettled,
+  CosRequestAccountsSettledResponse,
   CosSendTransaction,
   CosSignDirect,
   CosSignDirectParams,
@@ -19,6 +21,10 @@ import { toUint8Array } from '../utils';
 
 function isCosRequestAccounts(message: BaseRequest): message is CosRequestAccounts {
   return message.method === 'cos_requestAccounts';
+}
+
+function isCosRequestAccountsSettled(message: BaseRequest): message is CosRequestAccountsSettled {
+  return message.method === 'cos_requestAccountsSettled';
 }
 
 function isCosSignDirect(message: BaseRequest): message is CosSignDirect {
@@ -84,6 +90,25 @@ export const wrappedCosmosRequestApp = async <T extends BaseRequest>(message: T)
         ...(item as { publicKey: string; address: string }),
         publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')),
       };
+    });
+
+    return response;
+  }
+
+  if (isCosRequestAccountsSettled(message)) {
+    const result = (await cosmosRequestApp(message)) as CosRequestAccountsSettledResponse;
+
+    const response = result.map((item) => {
+      if (item.status === 'fulfilled') {
+        return {
+          status: item.status,
+          value: {
+            ...item.value,
+            publicKey: new Uint8Array(Buffer.from(item.value.publicKey, 'hex')),
+          },
+        };
+      }
+      return item;
     });
 
     return response;

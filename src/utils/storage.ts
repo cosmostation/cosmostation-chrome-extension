@@ -167,6 +167,8 @@ export async function extensionLocalStorage() {
     .filter((allowedOrigin) => allowedOrigin.accountId === currentAccountId)
     .map((allowedOrigin) => allowedOrigin.origin);
 
+  const currentAccountAddressInfo = storageWithDefault[`${currentAccount.id}-address`];
+
   return {
     ...storageWithDefault,
     currentAccount,
@@ -177,6 +179,7 @@ export async function extensionLocalStorage() {
     currentBitcoinNetwork,
     currentIotaNetwork,
     currentAccountAllowedOrigins,
+    currentAccountAddressInfo,
   };
 }
 

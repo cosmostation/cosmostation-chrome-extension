@@ -1,10 +1,11 @@
-import type { CosmosRegisterWallet } from '@cosmostation/wallets';
+import type { CosmosRegisterWallet, CosmosRequestAccountsSettledResponse } from '@cosmostation/wallets';
 
 import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_WALLET_NAME } from '@/constants/common';
 import type { SignAminoDoc } from '@/types/cosmos/amino';
 import type { SignDirectDoc } from '@/types/cosmos/direct';
 import type {
   CosRequestAccountResponse,
+  CosRequestAccountsSettledResponse,
   CosSendTransactionResponse,
   CosSignAminoResponse,
   CosSignDirectResponse,
@@ -47,6 +48,36 @@ export const cosmosWallet: CosmosRegisterWallet = {
           },
           address: account.address,
         };
+      } catch (e) {
+        throw new Error((e as { message?: string }).message || 'Unknown Error');
+      }
+    },
+    getAccountsSettled: async (chainIDs) => {
+      try {
+        const accounts = (await wrappedCosmosRequestApp({
+          method: 'cos_requestAccountsSettled',
+          params: { chainIds: chainIDs },
+        })) as CosRequestAccountsSettledResponse;
+
+        const result: CosmosRequestAccountsSettledResponse = accounts.map((account) => {
+          if (account.status === 'fulfilled') {
+            return {
+              status: account.status,
+              value: {
+                name: account.value.name,
+                is_ledger: !!account.value.isLedger,
+                public_key: {
+                  type: account.value.isEthermint ? 'ethsecp256k1' : 'secp256k1',
+                  value: Buffer.from(account.value.publicKey).toString('base64'),
+                },
+                address: account.value.address,
+                chain_id: account.value.chainId,
+              },
+            };
+          }
+          return account;
+        });
+        return result;
       } catch (e) {
         throw new Error((e as { message?: string }).message || 'Unknown Error');
       }

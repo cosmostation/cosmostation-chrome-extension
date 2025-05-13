@@ -15,6 +15,7 @@ export type CosmosRequest =
   | CosAddTokensCW20
   | CosRequestAccount
   | CosRequestAccounts
+  | CosRequestAccountsSettled
   | CosSignAmino
   | CosSupportedChainIds
   | CosRequestAddChain
@@ -39,6 +40,7 @@ export interface CosmosResponse {
   [COSMOS_METHOD_TYPE.COS__SIGN_AMINO]: CosSignAminoResponse;
   [COSMOS_METHOD_TYPE.COS__REQUEST_ACCOUNT]: CosRequestAccountResponse;
   [COSMOS_METHOD_TYPE.COS__REQUEST_ACCOUNTS]: CosRequestAccountsResponse;
+  [COSMOS_METHOD_TYPE.COS__REQUEST_ACCOUNTS_SETTLED]: CosRequestAccountsSettledResponse;
   [COSMOS_METHOD_TYPE.COS__ADD_CHAIN]: CosRequestAddChainResponse;
   [COSMOS_METHOD_TYPE.COS__SIGN_DIRECT]: CosSignDirectResponse;
   [COSMOS_METHOD_TYPE.COS__SEND_TRANSACTION]: CosSendTransactionResponse;
@@ -104,6 +106,15 @@ export interface CosAccountResponse {
   isEthermint: boolean;
 }
 
+export interface CosAccountResponseWithChainId {
+  chainId: string;
+  publicKey: string;
+  address: string;
+  name: string;
+  isLedger: boolean;
+  isEthermint: boolean;
+}
+
 export type CosAccountsResponse = CosAccountResponse[];
 
 export interface CosSendTransactionParams {
@@ -140,6 +151,12 @@ export interface CosRequestAccounts extends RequestBase {
   params: { chainIds: string[] };
 }
 
+export interface CosRequestAccountsSettled extends RequestBase {
+  chainType: Extract<ChainType, 'cosmos'>;
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__REQUEST_ACCOUNTS_SETTLED;
+  params: { chainIds: string[] };
+}
+
 export interface CosAddChainParams {
   type?: CosmosType;
   chainId: string;
@@ -167,6 +184,19 @@ export interface CosRequestAddChain extends RequestBase {
 export type CosRequestAccountResponse = CosAccountResponse;
 
 export type CosRequestAccountsResponse = CosAccountsResponse;
+
+export type SettledResponse<T> =
+  | {
+      status: 'fulfilled';
+      value: T;
+    }
+  | {
+      status: 'rejected';
+      reason: Error;
+    };
+export type SettledResponses<T> = SettledResponse<T>[];
+
+export type CosRequestAccountsSettledResponse = SettledResponses<CosAccountResponseWithChainId>;
 
 export type CosRequestAddChainResponse = boolean;
 

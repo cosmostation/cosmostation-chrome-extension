@@ -14,12 +14,12 @@ import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { AptosAccount } from '@/types/message/inject/aptos';
 import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
-import type { CosRequestAccount, CosRequestAccountResponse } from '@/types/message/inject/cosmos';
+import type { CosRequestAccount, CosRequestAccountResponse, CosRequestAccountsSettled, CosRequestAccountsSettledResponse } from '@/types/message/inject/cosmos';
 import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
 import type { IotaRequestAccount, IotaRequestAccountResponse, IotaRequestConnect, IotaRequestConnectResponse } from '@/types/message/inject/iota';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
-import { EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
-import { extensionLocalStorage } from '@/utils/storage';
+import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
+import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage';
 import { addHexPrefix } from '@/utils/string';
 
 export default function Entry() {
@@ -32,6 +32,8 @@ export default function Entry() {
 
   useEffect(() => {
     const handleRequestAccount = async () => {
+      const currentAccountAddressInfo = await getExtensionLocalStorage(`${currentAccount.id}-address`);
+
       try {
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
           const { tabId, requestId, origin, params } = currentRequestQueue;
@@ -72,6 +74,89 @@ export default function Entry() {
             };
 
             sendMessage<ResponseAppMessage<CosRequestAccount>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
+              },
+            });
+
+            void deQueue();
+          }
+        }
+
+        if (currentRequestQueue?.method === 'cos_requestAccountsSettled' && currentPassword) {
+          const { tabId, requestId, origin, params } = currentRequestQueue;
+
+          const inputChainIds = params.chainIds;
+
+          if (chainList.cosmosChains && chainList.cosmosChains?.length > 0) {
+            const allCosmosChains = chainList.allCosmosChains;
+
+            const result: CosRequestAccountsSettledResponse = inputChainIds.map((inputChainId) => {
+              const targetChain = allCosmosChains.find((chain) => chain.chainId === inputChainId);
+
+              if (!targetChain) {
+                return {
+                  status: 'rejected',
+                  reason: new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]),
+                };
+              }
+
+              const inAppSelectedPreferAccountType = currentPreferAccountType?.[targetChain?.id];
+
+              const updatedChain = inAppSelectedPreferAccountType
+                ? produce(targetChain, (draft) => {
+                    draft.accountTypes = draft.accountTypes.filter(
+                      (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+                    );
+                  })
+                : targetChain;
+
+              const matchedAddressInfo = currentAccountAddressInfo.find(
+                (info) => info.chainId === updatedChain.id && info.chainType === 'cosmos' && info.accountType.hdPath === updatedChain.accountTypes[0].hdPath,
+              );
+
+              if (matchedAddressInfo) {
+                const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+                return {
+                  status: 'fulfilled',
+                  value: {
+                    chainId: inputChainId,
+                    address: matchedAddressInfo.address,
+                    publicKey: matchedAddressInfo.publicKey,
+                    name: currentAccount.name,
+                    isLedger: false,
+                    isEthermint,
+                  },
+                };
+              } else {
+                const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
+                const address = getAddress(updatedChain, keyPair?.publicKey);
+                const publicKey = keyPair?.publicKey || '';
+                const isEthermint = updatedChain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+                return {
+                  status: 'fulfilled',
+                  value: {
+                    chainId: inputChainId,
+                    address,
+                    publicKey,
+                    name: currentAccount.name,
+                    isLedger: false,
+                    isEthermint,
+                  },
+                };
+              }
+            });
+
+            void refreshOriginConnectionTime(origin);
+
+            sendMessage<ResponseAppMessage<CosRequestAccountsSettled>>({
               target: 'CONTENT',
               method: 'responseApp',
               origin,

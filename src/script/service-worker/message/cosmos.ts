@@ -25,6 +25,8 @@ import type {
   CosmosRequest,
   CosRequestAccount,
   CosRequestAccountResponse,
+  CosRequestAccountsSettled,
+  CosRequestAccountsSettledResponse,
   CosRequestAddChain,
   CosSendTransaction,
   CosSendTransactionResponse,
@@ -63,7 +65,8 @@ export async function cosmosProcess(message: CosmosRequest) {
 
   const { cosmosChains } = await getChains();
 
-  const { currentAccount, currentAccountAllowedOrigins, currentAccountName, approvedOrigins, preferAccountType } = await extensionLocalStorage();
+  const { currentAccount, currentAccountAllowedOrigins, currentAccountName, approvedOrigins, preferAccountType, currentAccountAddressInfo } =
+    await extensionLocalStorage();
   const { currentPassword } = await extensionSessionStorage();
 
   const addedCustomChains = await getAddedCustomChains();
@@ -136,6 +139,76 @@ export async function cosmosProcess(message: CosmosRequest) {
           };
 
           sendMessage<ResponseAppMessage<CosRequestAccount>>({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin,
+            requestId,
+            tabId,
+            params: {
+              id: requestId,
+              result,
+            },
+          });
+        } else {
+          void processRequest({ ...message });
+        }
+      }
+
+      if (method === 'cos_requestAccountsSettled') {
+        const { params } = message;
+        const inputChainIds = params.chainIds;
+
+        if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          const result: CosRequestAccountsSettledResponse = inputChainIds.map((inputChainId) => {
+            const targetChain = allCosmosChains.find((chain) => chain.chainId === inputChainId);
+
+            const chain = getChain(targetChain?.name.toLowerCase());
+
+            if (!chain) {
+              return {
+                status: 'rejected',
+                reason: new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]),
+              };
+            }
+
+            const matchedAddressInfo = currentAccountAddressInfo.find(
+              (info) => info.chainId === chain?.id && info.chainType === 'cosmos' && info.accountType.hdPath === chain.accountTypes[0].hdPath,
+            );
+
+            if (matchedAddressInfo) {
+              const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+              return {
+                status: 'fulfilled',
+                value: {
+                  chainId: inputChainId,
+                  address: matchedAddressInfo.address,
+                  publicKey: matchedAddressInfo.publicKey,
+                  name: currentAccountName,
+                  isLedger: false,
+                  isEthermint,
+                },
+              };
+            }
+
+            const keyPair = getKeypair(chain, currentAccount, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+            const publicKey = keyPair?.publicKey || '';
+            const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+            return {
+              status: 'fulfilled',
+              value: {
+                chainId: inputChainId,
+                address,
+                publicKey,
+                name: currentAccountName,
+                isLedger: false,
+                isEthermint,
+              },
+            };
+          });
+
+          sendMessage<ResponseAppMessage<CosRequestAccountsSettled>>({
             target: 'CONTENT',
             method: 'responseApp',
             origin,
