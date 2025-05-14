@@ -61,6 +61,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
     getSuiAccountAsset: () => assetFinders.sui(),
     getBitcoinAccountAsset: () => assetFinders.bitcoin(),
     getIotaAccountAsset: () => assetFinders.iota(),
+    getSolanaAccountAsset: () => assetFinders.solana(),
     error,
   };
 }

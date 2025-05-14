@@ -68,7 +68,7 @@ Content-Type: application/json
     "id": 1,
     "method": "getTokenAccountsByOwner",
     "params": [
-        "5T2hdPcvuVRQREHB4Ffn8bQMxre9JiTUe6s37cWDJQE7",
+        "J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
         {
             "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },

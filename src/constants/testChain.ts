@@ -1,3 +1,5 @@
+import type { V11Asset } from '@/types/apiV11';
+
 export const solana = {
   forum: { governance: '', main: '' },
   chain_id: '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d',
@@ -57,3 +59,17 @@ export const solana = {
     ja: 'Ethereumは、暗号通貨Ethereum（ETH）と数千の分散型アプリケーションをサポートするL1チェーンです。',
   },
 };
+
+export const solanaTestAssets: V11Asset[] = [
+  {
+    type: 'native',
+    denom: 'sol',
+    name: 'Solana',
+    symbol: 'SOL',
+    description: 'Solana Native Coin',
+    decimals: 9,
+    image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/solana/asset/sol.png',
+    coinGeckoId: 'solana',
+    chain: 'solana',
+  },
+];

@@ -9,6 +9,7 @@ import PromisePool from '@supercharge/promise-pool';
 import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
+import { solanaTestAssets } from '@/constants/testChain';
 import type {
   AccountAddress,
   AccountAptosAsset,
@@ -107,13 +108,15 @@ export async function getVisibleAssetsSet(id: string): Promise<Set<string>> {
 
 export async function getAssets() {
   const {
-    assetsV11: assets,
+    assetsV11: assetsTemp,
     paramsV11: chains,
     erc20Assets,
     cw20Assets,
     customErc20Assets,
     customCw20Assets,
   } = await chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'paramsV11', 'cw20Assets', 'erc20Assets', 'customErc20Assets', 'customCw20Assets']);
+
+  const assets = [...assetsTemp, ...solanaTestAssets];
   if (!assets) {
     throw new Error('No assets found');
   }
@@ -288,12 +291,13 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-balance-cw20`,
     `${id}-custom-balance-erc20`,
     `${id}-custom-balance-cw20`,
+    `${id}-balance-solana`,
   ]);
 
   const hiddenAssetIdSet = await getHiddenAssetsSet(id);
   const visibleAssetIdSet = await getVisibleAssetsSet(id);
 
-  const { aptosChains, cosmosChains, evmChains, suiChains, bitcoinChains, iotaChains } = await getChains();
+  const { aptosChains, cosmosChains, evmChains, suiChains, bitcoinChains, iotaChains, solanaChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
 
   const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
@@ -310,7 +314,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     suiAssets,
     bitcoinAssets,
     iotaAssets,
-    // solanaAssets,
+    solanaAssets,
   } = await getAssets();
 
   const filterHiddenAssets = <T extends Asset>(assets: T[]): T[] => {
@@ -343,7 +347,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const suiAssetsWithoutHidden = filterHiddenAssets(suiAssets);
   const bitcoinAssetsWithoutHidden = filterHiddenAssets(bitcoinAssets);
   const iotaAssetsWithoutHidden = filterHiddenAssets(iotaAssets);
-  // const solanaAssetsWithoutHidden = filterHiddenAssets(solanaAssets);
+  const solanaAssetsWithoutHidden = filterHiddenAssets(solanaAssets);
 
   const accountAddress = storage[`${id}-address`] || [];
   const allAccountAddress = await getAllAccountAddress(id);
@@ -358,6 +362,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
   const evmBalances = storage[`${id}-balance-evm`] || [];
   const aptosBalances = storage[`${id}-balance-aptos-v2`] || [];
+  const solanaBalances = storage[`${id}-balance-solana`] || [];
 
   const suiBalances = storage[`${id}-balance-sui`] || [];
   const suiDelegations = storage[`${id}-delegation-sui`] || [];
@@ -998,6 +1003,34 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       return results;
     });
 
+  const solanaPromise = PromisePool.withConcurrency(concurrency)
+    .for(solanaAssetsWithoutHidden)
+    .process(async (asset) => {
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = solanaChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const balanceInfo = solanaBalances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+
+          const balance = String(balanceInfo?.balance || 0);
+
+          const result: AccountSolanaAsset = {
+            chain,
+            asset,
+            address,
+            balance: balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
   const results = await Promise.all([
     cosmosPromise,
     evmPromise,
@@ -1009,6 +1042,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     customCW20Promise,
     bitcoinPromise,
     iotaPromise,
+    solanaPromise,
   ]);
 
   const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
@@ -1021,7 +1055,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const customCw20AccountAssets = results[7].results.flat().filter((asset) => asset.chain && asset.address);
   const bitcoinAccountAssets = results[8].results.flat().filter((asset) => asset.chain && asset.address);
   const iotaAccountAssets = results[9].results.flat().filter((asset) => asset.chain && asset.address);
-  const solanaAccountAssets: AccountSolanaAsset[] = [];
+  const solanaAccountAssets = results[10].results.flat().filter((asset) => asset.chain && asset.address);
 
   type AssetWithBalance = {
     balance: string;

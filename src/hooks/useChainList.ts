@@ -146,6 +146,7 @@ export function useChainList() {
             ...(chainList.suiChains || []),
             ...(chainList.bitcoinChains || []),
             ...(chainList.iotaChains || []),
+            ...(chainList.solanaChains || []),
           ].sort((a, b) => a.name.localeCompare(b.name))
         : [],
     [chainList],
