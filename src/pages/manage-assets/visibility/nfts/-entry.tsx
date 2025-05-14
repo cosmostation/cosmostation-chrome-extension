@@ -10,7 +10,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
-import IntersectionObserver from '@/components/common/IntersectionObserver';
+import { VirtualizedList } from '@/components/common/VirtualizedList';
 import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import Search from '@/components/Search';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
@@ -112,8 +112,6 @@ export default function Entry() {
   const [suppoesdDeleteNFTItem, setSupposedDeleteItem] = useState<NFTItem | undefined>();
 
   const [initSortKeys, setInitSortKeys] = useState<string[] | undefined>(undefined);
-
-  const [viewLimit, setViewLimit] = useState(30);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -232,10 +230,10 @@ export default function Entry() {
 
   const sortedByAddedNFTs = useMemo(() => {
     if (initSortKeys && initSortKeys.length > 0) {
-      return [...filteredNFTsBySearch].sort((a) => (a.id && initSortKeys.includes(a.id) ? -1 : 1)).slice(0, viewLimit);
+      return [...filteredNFTsBySearch].sort((a) => (a.id && initSortKeys.includes(a.id) ? -1 : 1));
     }
-    return filteredNFTsBySearch.slice(0, viewLimit);
-  }, [filteredNFTsBySearch, initSortKeys, viewLimit]);
+    return filteredNFTsBySearch;
+  }, [filteredNFTsBySearch, initSortKeys]);
 
   const handleAddNFT = (nftItem: NFTItem) => {
     addNFT(nftItem);
@@ -255,7 +253,6 @@ export default function Entry() {
   useEffect(() => {
     if (search.length > 1 || search.length === 0) {
       scrollToTop();
-      setViewLimit(30);
     }
   }, [scrollToTop, search.length]);
 
@@ -275,7 +272,6 @@ export default function Entry() {
                 disableFilter
                 onClear={() => {
                   setSearch('');
-                  setViewLimit(30);
                   cancel();
                 }}
               />
@@ -319,62 +315,61 @@ export default function Entry() {
               ) : (
                 !isDebouncing && (
                   <>
-                    {sortedByAddedNFTs.map((nftItem) => {
-                      const isAdded = addedNFTIds.includes(nftItem.id || '');
+                    {
+                      <VirtualizedList
+                        items={sortedByAddedNFTs}
+                        estimateSize={() => 86}
+                        renderItem={(nftItem) => {
+                          const isAdded = addedNFTIds.includes(nftItem.id || '');
 
-                      const uniqueKey = (() => {
-                        if (nftItem.chainType === 'sui' || nftItem.chainType === 'iota') {
-                          return nftItem.objectId;
-                        } else if (nftItem.chainType === 'evm') {
-                          return `${nftItem.contractAddress}_${nftItem.tokenId}`;
-                        } else if (nftItem.chainType === 'cosmos') {
-                          return `${nftItem.contractAddress}_${nftItem.tokenId}`;
-                        }
-                      })();
-
-                      return (
-                        <NFTButtonItem
-                          key={uniqueKey}
-                          imageURL={nftItem.image}
-                          name={nftItem.name}
-                          subName={nftItem.subName}
-                          chainId={nftItem.chainId}
-                          chainType={nftItem.chainType}
-                          isActive={isAdded}
-                          isOwned={nftItem.isOwned}
-                          onClick={() => {
-                            if (isAdded && nftItem.id) {
-                              const isCustomEVMNFT = nftItem.chainType === 'evm' && nftItem.isCustom;
-                              const isCustomCosmosNFT =
-                                nftItem.chainType === 'cosmos' &&
-                                !currentAccountAddibleNFTs.cosmos.some(
-                                  (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,
-                                );
-                              const isCustomSuiNFT =
-                                nftItem.chainType === 'sui' && !currentAccountAddibleNFTs.sui.some((item) => item.objectId === nftItem.objectId);
-                              const isCustomIotaNFT =
-                                nftItem.chainType === 'iota' && !currentAccountAddibleNFTs.iota.some((item) => item.objectId === nftItem.objectId);
-
-                              if (isCustomEVMNFT || isCustomCosmosNFT || isCustomSuiNFT || isCustomIotaNFT) {
-                                setSupposedDeleteItem(nftItem);
-                              } else {
-                                handleRemoveNFT(nftItem.id);
-                              }
-                            } else {
-                              handleAddNFT(nftItem);
+                          const uniqueKey = (() => {
+                            if (nftItem.chainType === 'sui' || nftItem.chainType === 'iota') {
+                              return nftItem.objectId;
+                            } else if (nftItem.chainType === 'evm') {
+                              return `${nftItem.contractAddress}_${nftItem.tokenId}`;
+                            } else if (nftItem.chainType === 'cosmos') {
+                              return `${nftItem.contractAddress}_${nftItem.tokenId}`;
                             }
-                          }}
-                        />
-                      );
-                    })}
+                          })();
 
-                    {filteredNFTsBySearch?.length > viewLimit - 1 && (
-                      <IntersectionObserver
-                        onIntersect={() => {
-                          setViewLimit((limit) => limit + 30);
+                          return (
+                            <NFTButtonItem
+                              key={uniqueKey}
+                              imageURL={nftItem.image}
+                              name={nftItem.name}
+                              subName={nftItem.subName}
+                              chainId={nftItem.chainId}
+                              chainType={nftItem.chainType}
+                              isActive={isAdded}
+                              isOwned={nftItem.isOwned}
+                              onClick={() => {
+                                if (isAdded && nftItem.id) {
+                                  const isCustomEVMNFT = nftItem.chainType === 'evm' && nftItem.isCustom;
+                                  const isCustomCosmosNFT =
+                                    nftItem.chainType === 'cosmos' &&
+                                    !currentAccountAddibleNFTs.cosmos.some(
+                                      (item) => item.contractAddress === nftItem.contractAddress && item.tokenId === nftItem.tokenId,
+                                    );
+                                  const isCustomSuiNFT =
+                                    nftItem.chainType === 'sui' && !currentAccountAddibleNFTs.sui.some((item) => item.objectId === nftItem.objectId);
+                                  const isCustomIotaNFT =
+                                    nftItem.chainType === 'iota' && !currentAccountAddibleNFTs.iota.some((item) => item.objectId === nftItem.objectId);
+
+                                  if (isCustomEVMNFT || isCustomCosmosNFT || isCustomSuiNFT || isCustomIotaNFT) {
+                                    setSupposedDeleteItem(nftItem);
+                                  } else {
+                                    handleRemoveNFT(nftItem.id);
+                                  }
+                                } else {
+                                  handleAddNFT(nftItem);
+                                }
+                              }}
+                            />
+                          );
                         }}
+                        overscan={5}
                       />
-                    )}
+                    }
                   </>
                 )
               )}

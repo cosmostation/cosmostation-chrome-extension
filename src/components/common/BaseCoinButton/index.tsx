@@ -5,7 +5,7 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import { LeftContainer, RightContainer, RightDisplayAmountContainer, RightTextContainer, RightValueContainer, StyledButton } from './styled';
 
-export type BaseCoinButtonProps = {
+export type BaseCoinButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   displayAmount: string;
   coinGeckoId?: string;
   symbol?: string;
@@ -16,7 +16,16 @@ export type BaseCoinButtonProps = {
   onClick?: () => void;
 };
 
-export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, leftComponent, rightComponent, isActive, onClick }: BaseCoinButtonProps) {
+export default function BaseCoinButton({
+  disabled,
+  displayAmount,
+  coinGeckoId,
+  leftComponent,
+  rightComponent,
+  isActive,
+  onClick,
+  ...remainder
+}: BaseCoinButtonProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference, isBalanceVisible } = useExtensionStorageStore((state) => state);
 
@@ -25,7 +34,7 @@ export default function BaseCoinButton({ disabled, displayAmount, coinGeckoId, l
   const value = times(displayAmount, chainPrice);
 
   return (
-    <StyledButton onClick={onClick} data-is-active={isActive} disabled={disabled}>
+    <StyledButton onClick={onClick} data-is-active={isActive} disabled={disabled} {...remainder}>
       <LeftContainer>{leftComponent}</LeftContainer>
       <RightContainer>
         <RightTextContainer>
