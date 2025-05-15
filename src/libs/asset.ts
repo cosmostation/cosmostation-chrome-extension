@@ -97,12 +97,49 @@ export async function getAssets() {
   const bitcoinChainIds = bitcoinChains.map((chain) => chain.id);
   const iotaChainIds = iotaChains.map((chain) => chain.id);
 
-  const filteredEvmAssets = assets.filter((asset) => {
-    const chainParam = chains?.[asset.chain]?.params?.chainlist_params;
-    const gasCoinDenom = chainParam?.gas_asset_denom || chainParam?.staking_asset_denom || chainParam?.main_asset_denom;
+  const {
+    evm: filteredEvmAssets,
+    cosmos: filteredCosmosAssets,
+    sui: filteredSuiAssets,
+    aptos: filteredAptosAssets,
+    bitcoin: filteredBitcoinAssets,
+    iota: filteredIotaAssets,
+  } = assets.reduce(
+    (acc, asset) => {
+      if (evmChainIds.includes(asset.chain)) {
+        const chainParam = chains?.[asset.chain]?.params?.chainlist_params;
 
-    return evmChainIds.includes(asset.chain) && asset.type === 'native' && gasCoinDenom === asset.denom;
-  });
+        const isOnlyEVM = !chainParam.chain_type.includes('cosmos') && chainParam.chain_type.includes('evm');
+
+        const gasCoinDenom = isOnlyEVM
+          ? chainParam?.gas_asset_denom || chainParam?.main_asset_denom
+          : chainParam?.gas_asset_denom || chainParam?.staking_asset_denom || chainParam?.main_asset_denom;
+
+        if (asset.type === 'native' && gasCoinDenom === asset.denom) {
+          acc.evm.push(asset);
+        }
+      } else if (cosmosChainIds.includes(asset.chain)) {
+        acc.cosmos.push(asset);
+      } else if (suiChainIds.includes(asset.chain)) {
+        acc.sui.push(asset);
+      } else if (aptosChainIds.includes(asset.chain)) {
+        acc.aptos.push(asset);
+      } else if (bitcoinChainIds.includes(asset.chain)) {
+        acc.bitcoin.push(asset);
+      } else if (iotaChainIds.includes(asset.chain)) {
+        acc.iota.push(asset);
+      }
+      return acc;
+    },
+    {
+      evm: [] as typeof assets,
+      cosmos: [] as typeof assets,
+      sui: [] as typeof assets,
+      aptos: [] as typeof assets,
+      bitcoin: [] as typeof assets,
+      iota: [] as typeof assets,
+    },
+  );
 
   const evmAssets: EvmAsset[] = filteredEvmAssets.map((asset) => {
     return {
@@ -115,8 +152,6 @@ export async function getAssets() {
     };
   });
 
-  const filteredCosmosAssets = assets.filter((asset) => cosmosChainIds.includes(asset.chain));
-
   const cosmosAssets: CosmosAsset[] = filteredCosmosAssets.map((asset) => {
     return {
       ...asset,
@@ -125,8 +160,6 @@ export async function getAssets() {
       chainType: 'cosmos',
     };
   });
-
-  const filteredSuiAssets = assets.filter((asset) => suiChainIds.includes(asset.chain));
 
   const suiAssets: SuiAsset[] = filteredSuiAssets.map((asset) => {
     return {
@@ -137,8 +170,6 @@ export async function getAssets() {
     };
   });
 
-  const filteredAptosAssets = assets.filter((asset) => aptosChainIds.includes(asset.chain));
-
   const aptosAssets: AptosAsset[] = filteredAptosAssets.map((asset) => {
     return {
       ...asset,
@@ -148,8 +179,6 @@ export async function getAssets() {
     };
   });
 
-  const filteredBitcoinAssets = assets.filter((asset) => bitcoinChainIds.includes(asset.chain));
-
   const bitcoinAssets: BitcoinAsset[] = filteredBitcoinAssets.map((asset) => {
     return {
       ...asset,
@@ -158,8 +187,6 @@ export async function getAssets() {
       chainType: 'bitcoin',
     };
   });
-
-  const filteredIotaAssets = assets.filter((asset) => iotaChainIds.includes(asset.chain));
 
   const iotaAssets: IotaAsset[] = filteredIotaAssets.map((asset) => {
     return {
