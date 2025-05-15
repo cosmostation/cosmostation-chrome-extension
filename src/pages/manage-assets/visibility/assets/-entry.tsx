@@ -11,7 +11,7 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
-import IntersectionObserver from '@/components/common/IntersectionObserver';
+import { VirtualizedList } from '@/components/common/VirtualizedList';
 import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
@@ -84,8 +84,6 @@ export default function Entry() {
   const { customAssets } = useCustomAssets();
 
   const [tokenToDelete, setTokenToDelete] = useState<FlatAccountAssetsWithValue | undefined>();
-
-  const [viewLimit, setViewLimit] = useState(30);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -197,7 +195,7 @@ export default function Entry() {
 
     const hiddenAssets = filteredCoinListBySearch.filter((item) => !visibleAssets.some((visibleAsset) => isSameCoin(visibleAsset.asset, item.asset)));
 
-    return [...visibleAssets, ...hiddenAssets].slice(0, viewLimit);
+    return [...visibleAssets, ...hiddenAssets];
   }, [
     currentCustomCW20Tokens,
     currentCustomERC20Tokens,
@@ -205,7 +203,6 @@ export default function Entry() {
     initHiddenAssetCoinIds,
     initHiddenCustomAssetCoinIds,
     initVisibleAssetCoinIds,
-    viewLimit,
   ]);
 
   const isLastStanding = useMemo(
@@ -339,7 +336,6 @@ export default function Entry() {
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
       scrollToTop();
-      setViewLimit(30);
     }
   }, [scrollToTop, search.length, currentSelectedChainId]);
 
@@ -358,7 +354,6 @@ export default function Entry() {
                 disableFilter
                 onClear={() => {
                   setSearch('');
-                  setViewLimit(30);
                   cancel();
                 }}
               />
@@ -392,8 +387,10 @@ export default function Entry() {
             </StickyContainer>
             <CoinButtonWrapper>
               {!isDebouncing && (
-                <>
-                  {sortedCoinListByHidden?.map((coin) => {
+                <VirtualizedList
+                  items={sortedCoinListByHidden}
+                  estimateSize={() => 60}
+                  renderItem={(coin) => {
                     const customToken = currentCustomTokens.find((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
 
                     const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
@@ -459,16 +456,9 @@ export default function Entry() {
                         />
                       </>
                     );
-                  })}
-
-                  {filteredCoinListBySearch?.length > viewLimit - 1 && (
-                    <IntersectionObserver
-                      onIntersect={() => {
-                        setViewLimit((limit) => limit + 30);
-                      }}
-                    />
-                  )}
-                </>
+                  }}
+                  overscan={5}
+                />
               )}
             </CoinButtonWrapper>
           </Container>

@@ -10,8 +10,8 @@ import CheckLegacyAddressBalanceBottomSheet from '@/components/CheckLegacyAddres
 import CoinWithMarketTrendButton from '@/components/CoinWithMarketTrendButton';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 import IconTextButton from '@/components/common/IconTextButton';
-import IntersectionObserver from '@/components/common/IntersectionObserver';
 import { Tab, Tabs } from '@/components/common/Tab';
+import { VirtualizedList } from '@/components/common/VirtualizedList';
 import EmptyAsset from '@/components/EmptyAsset';
 import PortFolio from '@/components/MainBox/Portfolio';
 import Search from '@/components/Search';
@@ -58,8 +58,8 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { data: usdCoinGeckoPrice } = useCoinGeckoPrice('usd');
+  const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
+  const { data: usdCoinGeckoPrice, isLoading: isCoinGeckoPriceUSDLoading } = useCoinGeckoPrice('usd');
 
   const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   useCurrentAccountAddedNFTsWithMetaData();
@@ -75,12 +75,10 @@ export default function Entry() {
 
   const tabLabels = ['Crypto', 'NFTs'];
 
-  const [viewLimit, setViewLimit] = useState(30);
-
   const { groupAccountAssets, isLoading: isGroupAssetsLoading } = useGroupAccountAssets();
 
   const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
-  const isLoading = isFirstBalanceLoading || isGroupAssetsLoading;
+  const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
   const computedAssetValues = useMemo(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
@@ -159,17 +157,15 @@ export default function Entry() {
     const filterdByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
     if (!!search && debouncedSearch.length > 1) {
       return (
-        filterdByChain
-          .filter((asset) => {
-            const condition = [asset.asset.symbol, asset.asset.id];
+        filterdByChain.filter((asset) => {
+          const condition = [asset.asset.symbol, asset.asset.id];
 
-            return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-          })
-          .slice(0, viewLimit) || []
+          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+        }) || []
       );
     }
-    return filterdByChain.slice(0, viewLimit);
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets, viewLimit]);
+    return filterdByChain;
+  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -178,7 +174,6 @@ export default function Entry() {
   useEffect(() => {
     if (search.length > 1 || search.length === 0) {
       scrollToTop();
-      setViewLimit(30);
     }
   }, [scrollToTop, search.length]);
 
@@ -220,7 +215,6 @@ export default function Entry() {
                     }}
                     onClear={() => {
                       setSearch('');
-                      setViewLimit(30);
                       cancel();
                     }}
                   />
@@ -250,44 +244,44 @@ export default function Entry() {
                 {isLoading ? (
                   <SkeletonCoinList />
                 ) : filteredAssetsBySearch.length > 0 ? (
-                  filteredAssetsBySearch.map((coin) => {
-                    const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
+                  <VirtualizedList
+                    items={filteredAssetsBySearch}
+                    estimateSize={() => 60}
+                    renderItem={(coin, virtualItem) => {
+                      if (!coin) return null;
 
-                    const isGroupToken = gt(coin.counts || '0', '1');
-                    const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
-                    return (
-                      <CoinWithMarketTrendButton
-                        key={getCoinId(coin.asset)}
-                        onClick={() => {
-                          navigate({
-                            to: destinationRoute,
-                            params: {
-                              coinId: getCoinId(coin.asset),
-                            },
-                          });
-                        }}
-                        displayAmount={coin.totalDisplayAmount || '0'}
-                        symbol={resolvedSymbol}
-                        coinGeckoId={coin.asset.coinGeckoId}
-                        coinImageProps={{
-                          imageURL: coin.asset.image,
-                          isAggregatedCoin: gt(coin.counts || '0', '1'),
-                          badgeImageURL: isGroupToken ? undefined : coin.chain.image || undefined,
-                        }}
-                      />
-                    );
-                  })
+                      const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
+
+                      const isGroupToken = gt(coin.counts || '0', '1');
+                      const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
+                      return (
+                        <CoinWithMarketTrendButton
+                          key={getCoinId(coin.asset) + virtualItem.index}
+                          onClick={() => {
+                            navigate({
+                              to: destinationRoute,
+                              params: {
+                                coinId: getCoinId(coin.asset),
+                              },
+                            });
+                          }}
+                          displayAmount={coin.totalDisplayAmount || '0'}
+                          symbol={resolvedSymbol}
+                          coinGeckoId={coin.asset.coinGeckoId}
+                          coinImageProps={{
+                            imageURL: coin.asset.image,
+                            isAggregatedCoin: gt(coin.counts || '0', '1'),
+                            badgeImageURL: isGroupToken ? undefined : coin.chain.image || undefined,
+                          }}
+                        />
+                      );
+                    }}
+                    overscan={5}
+                  />
                 ) : (
                   <EmptyAssetContainer>
                     <EmptyAsset icon={<NoListIcon />} title={t('pages.index.noTokens')} subTitle={t('pages.index.noTokensDescription')} />
                   </EmptyAssetContainer>
-                )}
-                {(filteredAssetsBySearch?.length || 0) > viewLimit - 1 && (
-                  <IntersectionObserver
-                    onIntersect={() => {
-                      setViewLimit((limit) => limit + 30);
-                    }}
-                  />
                 )}
               </CoinButtonWrapper>
             </StyledTabPanel>

@@ -6,7 +6,7 @@ type StyledButtonProps = {
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   width: '100%',
-
+  height: '6rem',
   border: 'none',
 
   backgroundColor: props['data-is-active'] ? theme.palette.color.base200 : 'transparent',

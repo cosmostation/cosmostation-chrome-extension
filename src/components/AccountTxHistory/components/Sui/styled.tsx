@@ -1,4 +1,3 @@
-import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
@@ -22,17 +21,6 @@ export const DateLineContainer = styled('div')({
 export const TxDetailContainer = styled('div')({
   marginBottom: '1.2rem',
 });
-
-export const StyledCircularProgressContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-});
-
-export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
-  '&.MuiCircularProgress-root': {
-    color: theme.palette.accentColor.purple200,
-  },
-}));
 
 export const EmptyAssetContainer = styled('div')({
   flex: 1,

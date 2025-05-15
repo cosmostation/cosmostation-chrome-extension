@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
-import IntersectionObserver from '@/components/common/IntersectionObserver';
+import { InfiniteVirtualizedList } from '@/components/common/InfiniteVirtualizedList';
 import EmptyAsset from '@/components/EmptyAsset';
 import ListLoading from '@/components/Loading/ListLoading';
 import { useAccountTxs } from '@/hooks/evm/useAccountTxs';
@@ -10,16 +10,7 @@ import { formatDateForHistory } from '@/utils/date';
 import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import EVMTxItem from './components/EVMTxItem';
-import {
-  Container,
-  ContentsContainer,
-  DateLineContainer,
-  EmptyAssetContainer,
-  IconContainer,
-  StyledCircularProgress,
-  StyledCircularProgressContainer,
-  TxDetailContainer,
-} from './styled';
+import { Container, ContentsContainer, DateLineContainer, EmptyAssetContainer, IconContainer, TxDetailContainer } from './styled';
 import DateLine from '../Common/DateLine';
 
 import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
@@ -81,33 +72,27 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
     <Container>
       {isExistTxHistory ? (
         <ContentsContainer>
-          {txsGroupedByDate.map((item) => {
-            const date = Object.keys(item)[0];
-            const txsByDate = item[date];
+          <InfiniteVirtualizedList
+            items={txsGroupedByDate}
+            estimateSize={() => 60}
+            renderItem={(item) => {
+              const date = Object.keys(item)[0];
+              const txsByDate = item[date];
 
-            return (
-              <ContentsContainer key={date}>
-                <DateLineContainer>
-                  <DateLine date={date} />
-                </DateLineContainer>
-                <TxDetailContainer>{txsByDate.map((tx) => tx && <EVMTxItem key={tx.txHash} coinId={coinId} tx={tx} />)}</TxDetailContainer>
-              </ContentsContainer>
-            );
-          })}
-          {isFetchingNextPage && (
-            <StyledCircularProgressContainer>
-              <StyledCircularProgress size={20} />
-            </StyledCircularProgressContainer>
-          )}
-          {!isFetchingNextPage && hasNextPage && !error && (
-            <IntersectionObserver
-              onIntersect={async () => {
-                if (hasNextPage) {
-                  fetchNextPage();
-                }
-              }}
-            />
-          )}
+              return (
+                <ContentsContainer key={date}>
+                  <DateLineContainer>
+                    <DateLine date={date} />
+                  </DateLineContainer>
+                  <TxDetailContainer>{txsByDate.map((tx) => tx && <EVMTxItem key={tx.txHash} coinId={coinId} tx={tx} />)}</TxDetailContainer>
+                </ContentsContainer>
+              );
+            }}
+            overscan={10}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={!isFetchingNextPage && hasNextPage && !error}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </ContentsContainer>
       ) : (
         <EmptyAssetContainer>

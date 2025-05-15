@@ -4,12 +4,12 @@ import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
-import IntersectionObserver from '@/components/common/IntersectionObserver';
+import { VirtualizedList } from '@/components/common/VirtualizedList';
 import Search from '@/components/Search';
 import type { Validator } from '@/components/ValidatorSelectBox';
 
 import ValidatorButton from './components/ValidatorItem';
-import { Body, Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, SubHeaderContaienr } from './styled';
+import { Container, FilterContaienr, Header, HeaderTitle, StyledBottomSheet, StyledButton, SubHeaderContaienr } from './styled';
 
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
@@ -23,8 +23,6 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
 
-  const [viewLimit, setViewLimit] = useState(30);
-
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
@@ -33,17 +31,15 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
   const filteredValidatorList = useMemo(() => {
     if (!!search && debouncedSearch.length > 1) {
       return (
-        validatorList
-          ?.filter((validator) => {
-            const condition = [validator.validatorName, validator.validatorAddress];
+        validatorList?.filter((validator) => {
+          const condition = [validator.validatorName, validator.validatorAddress];
 
-            return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-          })
-          .slice(0, viewLimit) || []
+          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
+        }) || []
       );
     }
-    return validatorList?.slice(0, viewLimit) || [];
-  }, [debouncedSearch, search, validatorList, viewLimit]);
+    return validatorList || [];
+  }, [debouncedSearch, search, validatorList]);
 
   const handleClose = () => {
     onClose?.({}, 'backdropClick');
@@ -76,7 +72,6 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
             isPending={isDebouncing}
             onClear={() => {
               setSearch('');
-              setViewLimit(30);
               cancel();
             }}
             disableFilter
@@ -86,8 +81,10 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
           <Base1000Text variant="b4_M">{t('pages.wallet.stake.$coinId.components.ValidatorBottomSheet.index.validator')}</Base1000Text>
           <Base1000Text variant="b4_M">{t('pages.wallet.stake.$coinId.components.ValidatorBottomSheet.index.commisson')}</Base1000Text>
         </SubHeaderContaienr>
-        <Body>
-          {filteredValidatorList.map((item) => {
+        <VirtualizedList
+          items={filteredValidatorList}
+          estimateSize={() => 62}
+          renderItem={(item) => {
             const isActive = item.validatorAddress === currentValidatorId;
             return (
               <ValidatorButton
@@ -106,15 +103,10 @@ export default function ValidatorBottomSheet({ currentValidatorId, validatorList
                 }}
               />
             );
-          })}
-          {filteredValidatorList?.length > viewLimit - 1 && (
-            <IntersectionObserver
-              onIntersect={() => {
-                setViewLimit((limit) => limit + 30);
-              }}
-            />
-          )}
-        </Body>
+          }}
+          overscan={5}
+          isFixed={true}
+        />
       </Container>
     </StyledBottomSheet>
   );
