@@ -8,7 +8,7 @@ import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTyp
 import type { Account, AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
+import { isEqualsIgnoringCase } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -38,6 +38,7 @@ type MnemonicAccountProps = {
 };
 
 type AccountAddressDetails = AccountAddress & {
+  accountId: string;
   name: string;
   badge?: {
     text: string;
@@ -98,6 +99,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
               const matchingAddressesWithBadge = matchingAddresses.map((addressInfo) => ({
                 ...addressInfo,
                 name: accountNamesById[item.id],
+                accountId: item.id,
               }));
 
               return {
@@ -122,13 +124,14 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
         .map((item) => {
           const addressList: AccountAddress[] | undefined = addressesMap[item.id];
 
-          const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress);
+          const matchingAddresses = filterMatchingAddresses(addressList, chainId, filterAddress, currentPreferAccountType);
 
           if (!matchingAddresses || matchingAddresses.length === 0) return null;
 
           const matchingAddressesWithBadge = matchingAddresses.map((addressInfo) => ({
             ...addressInfo,
             name: accountNamesById[item.id],
+            accountId: item.id,
           }));
 
           return {
@@ -137,7 +140,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
           };
         })
         .filter((item) => item !== null) as AccountAddressInfo[],
-    [accountNamesById, addressesMap, chainId, filterAddress, privatekeyAccounts],
+    [accountNamesById, addressesMap, chainId, currentPreferAccountType, filterAddress, privatekeyAccounts],
   );
 
   const privateKeyAddresses = useMemo(() => filteredPrivatekeyAccounts.map((item) => item.addressDetails).flat(), [filteredPrivatekeyAccounts]);
@@ -159,16 +162,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
       {filteredMnemonicAccounts.map((item) => {
         const mnemonicName = mnemonicNamesByHashedMnemonic[item.id];
 
-        const flatAddressDetails = item.accounts
-          .map((item) =>
-            item.addressDetails.map((addressDetail) => {
-              return {
-                accountId: item.account.id,
-                ...addressDetail,
-              };
-            }),
-          )
-          .flat();
+        const flatAddressDetails = item.accounts.flatMap((account) => account.addressDetails);
 
         return (
           <Container key={item.id}>
@@ -236,7 +230,9 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
                   }}
                 >
                   <AccountLeftContainer>
-                    <AccountImgContainer />
+                    <AccountImgContainer>
+                      <AccountImage accountId={item.accountId} />
+                    </AccountImgContainer>
 
                     <AccountInfoContainer>
                       <TitleContainer>
@@ -255,7 +251,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
                         )}
                       </TitleContainer>
 
-                      <AddressText variant="b4_M">{shorterAddress(item.address, 20)}</AddressText>
+                      <AddressText variant="b4_M">{item.address}</AddressText>
                     </AccountInfoContainer>
                   </AccountLeftContainer>
                 </AccountButton>
