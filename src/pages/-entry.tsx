@@ -58,8 +58,8 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { data: usdCoinGeckoPrice } = useCoinGeckoPrice('usd');
+  const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
+  const { data: usdCoinGeckoPrice, isLoading: isCoinGeckoPriceUSDLoading } = useCoinGeckoPrice('usd');
 
   const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   useCurrentAccountAddedNFTsWithMetaData();
@@ -78,7 +78,7 @@ export default function Entry() {
   const { groupAccountAssets, isLoading: isGroupAssetsLoading } = useGroupAccountAssets();
 
   const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
-  const isLoading = isFirstBalanceLoading || isGroupAssetsLoading;
+  const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
   const computedAssetValues = useMemo(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];

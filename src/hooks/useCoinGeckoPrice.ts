@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
+import { DEFAULT_FETCH_TIME_OUT_MS, MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { CoinGeckoPriceResponse, SimplePrice } from '@/types/coinGecko';
 import type { CurrencyType } from '@/types/currency';
 import { get } from '@/utils/axios';
@@ -14,7 +14,10 @@ export function useCoinGeckoPrice(currency?: CurrencyType, config?: UseQueryOpti
   const selectedCurrency = currency || userCurrencyPreference;
   const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/prices?currency=${selectedCurrency}`;
 
-  const fetcher = () => get<CoinGeckoPriceResponse>(requestURL);
+  const fetcher = () =>
+    get<CoinGeckoPriceResponse>(requestURL, {
+      timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
+    });
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['coinGeckoPrice', requestURL],
     queryFn: fetcher,
