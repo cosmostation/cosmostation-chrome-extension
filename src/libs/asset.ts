@@ -118,15 +118,20 @@ export async function getAssets() {
         if (asset.type === 'native' && gasCoinDenom === asset.denom) {
           acc.evm.push(asset);
         }
-      } else if (cosmosChainIds.includes(asset.chain)) {
+      }
+      if (cosmosChainIds.includes(asset.chain)) {
         acc.cosmos.push(asset);
-      } else if (suiChainIds.includes(asset.chain)) {
+      }
+      if (suiChainIds.includes(asset.chain)) {
         acc.sui.push(asset);
-      } else if (aptosChainIds.includes(asset.chain)) {
+      }
+      if (aptosChainIds.includes(asset.chain)) {
         acc.aptos.push(asset);
-      } else if (bitcoinChainIds.includes(asset.chain)) {
+      }
+      if (bitcoinChainIds.includes(asset.chain)) {
         acc.bitcoin.push(asset);
-      } else if (iotaChainIds.includes(asset.chain)) {
+      }
+      if (iotaChainIds.includes(asset.chain)) {
         acc.iota.push(asset);
       }
       return acc;
