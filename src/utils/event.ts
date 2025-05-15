@@ -14,6 +14,8 @@ export async function emitChangedAddressEvent(newAccountId: string) {
   const ethereumKeyPair = getKeypair(evmChainForAddress!, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const ethereumAddress = getAddress(evmChainForAddress!, ethereumKeyPair?.publicKey);
 
+  const approvedAllOrigins = Array.from(new Set(approvedOrigins.map((item) => item.origin)));
+
   const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === newAccountId).map((item) => item.origin)));
   const currentAccountNotOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId !== newAccountId).map((item) => item.origin)));
 
@@ -23,7 +25,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
     currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
   );
 
-  emitToWeb({ event: 'accountChanged', chainType: 'cosmos', data: undefined }, currentAccountOrigins);
+  emitToWeb({ event: 'accountChanged', chainType: 'cosmos', data: undefined }, approvedAllOrigins);
 
   const aptosChainForAddress = chainList.aptosChains?.[0];
 
