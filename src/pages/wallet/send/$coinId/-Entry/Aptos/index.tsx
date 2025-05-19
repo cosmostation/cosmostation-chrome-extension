@@ -29,10 +29,11 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
 import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex } from '@/utils/regex.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
 import {
   AddressBookButton,
@@ -55,6 +56,7 @@ type AptosProps = {
 export default function Aptos({ coinId }: AptosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -296,6 +298,10 @@ export default function Aptos({ coinId }: AptosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({ txHash: response.hash, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -314,7 +320,7 @@ export default function Aptos({ coinId }: AptosProps) {
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }
-  }, [aptosAccount, coinId, generateTransaction.data, navigate, recipientAddress, selectedCoinToSend?.chain]);
+  }, [addTx, aptosAccount, coinId, generateTransaction.data, navigate, recipientAddress, selectedCoinToSend?.address.address, selectedCoinToSend?.chain]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {

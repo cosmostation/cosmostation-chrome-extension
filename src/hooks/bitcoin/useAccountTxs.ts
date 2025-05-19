@@ -43,6 +43,8 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     },
     config: {
       enabled: !!coinId && !!address && !!requestURL,
+      staleTime: 1000 * 29,
+      refetchInterval: 1000 * 30,
       ...config,
     },
   });

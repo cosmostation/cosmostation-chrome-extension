@@ -29,9 +29,10 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { executeTransactionSequentially } from '@/utils/bitcoin/sign.ts';
 import { ecpairFromPrivateKey, getTweakSigner, initBitcoinEcc } from '@/utils/bitcoin/tx.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
 import {
   AddressBookButton,
@@ -54,6 +55,7 @@ type BitcoinProps = {
 export default function Bitcoin({ coinId }: BitcoinProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -285,9 +287,13 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
       }
 
       const response = await executeTransactionSequentially(txHex, rpcURLs);
-      if (!response) {
+      if (!response.result) {
         throw new Error('Failed to send transaction');
       }
+
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({ txHash: response.result, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
 
       navigate({
         to: TxResult.to,

@@ -2,21 +2,25 @@ import { useQuery } from '@tanstack/react-query';
 
 import { sendMessage } from '@/libs/extension';
 
+import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCurrentAccount } from '../useCurrentAccount';
 
 export function useUpdateBalance() {
   const { currentAccount } = useCurrentAccount();
+  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
   const fetcher = async () => {
-    return await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
+    const response = await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
+    await refetchAccountAllAssets();
+
+    return response;
   };
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['updateBalance', currentAccount.id],
     enabled: !!currentAccount.id,
     queryFn: fetcher,
-    staleTime: 1000 * 14,
-    refetchInterval: 1000 * 15,
+    staleTime: 1000 * 60 * 5,
   });
 
   return { data, isLoading, error };

@@ -29,15 +29,15 @@ export default function Sui({ coinId }: SuiProps) {
 
   const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
 
-  const { delegation } = useDelegations({ coinId });
+  useDelegations({ coinId });
 
   const selectedCoin = getSuiAccountAsset();
 
   const decimal = selectedCoin?.asset.decimals || 0;
 
   const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
-  const stakedDisplayAmount = toDisplayDenomAmount(delegation.totalStakedAmount, decimal);
-  const earnedDisplayAmount = toDisplayDenomAmount(delegation.totalEstimatedRewards, decimal);
+  const stakedDisplayAmount = toDisplayDenomAmount(selectedCoin?.delegation || '0', decimal);
+  const earnedDisplayAmount = toDisplayDenomAmount(selectedCoin?.reward || '0', decimal);
 
   const totalStakedDisplayAmount = plus(stakedDisplayAmount, earnedDisplayAmount);
   return (

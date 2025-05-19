@@ -37,10 +37,18 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import {
+  getCoinId,
+  getUniqueChainId,
+  getUniqueChainIdWithManual,
+  isMatchingCoinId,
+  isMatchingUniqueChainId,
+  parseCoinId,
+} from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
 import {
   AddressBookButton,
@@ -65,6 +73,7 @@ type CosmosProps = {
 export default function Cosmos({ coinId }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -730,6 +739,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({ txHash: response.tx_response.txhash, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -750,6 +763,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     }
   }, [
     account.data?.value.account_number,
+    addTx,
     coinId,
     currentAccount,
     currentCeilFeeAmount,
@@ -759,6 +773,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     navigate,
     recipientAddress,
     selectedCoinToSend?.address.accountType.pubkeyType,
+    selectedCoinToSend?.address.address,
     selectedCoinToSend?.chain,
     selectedFeeOption,
   ]);

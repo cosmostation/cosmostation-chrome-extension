@@ -24,7 +24,8 @@ export function useAccountHoldIotaNFTs({ accountId, config }: UseAccountHoldIota
     fetchFunction: () => fetcher(),
     config: {
       enabled: !!currentAccountId,
-      refetchInterval: 1000 * 15,
+      staleTime: 1000 * 60 * 1,
+      refetchInterval: false,
       ...config,
     },
   });

@@ -38,9 +38,10 @@ import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { getDayFromSeconds } from '@/utils/date';
 import { ceil, gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import ValidatorBottomSheet from './components/ValidatorBottomSheet';
 import { ChainNameContainer, CoinContainer, CoinImage, CoinSymbolText, Divider, EstimatedValueTextContainer, InputWrapper, LockDateTextSpan } from './styled';
@@ -64,6 +65,7 @@ type CosmosProps = {
 export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
@@ -469,6 +471,17 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({
+        txHash: response.tx_response.txhash,
+        chainId: uniqueChainId,
+        address: selectedUnstakingCoin.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'staking',
+      });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -488,6 +501,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     }
   }, [
     account.data?.value.account_number,
+    addTx,
     coinId,
     currentAccount,
     currentBaseFee,
@@ -497,6 +511,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     navigate,
     selectedFeeOption,
     selectedUnstakingCoin?.address.accountType.pubkeyType,
+    selectedUnstakingCoin?.address.address,
     selectedUnstakingCoin?.chain,
   ]);
 
