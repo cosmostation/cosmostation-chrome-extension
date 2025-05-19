@@ -20,6 +20,9 @@ export const fetchCosmosBalances = async (address: string, lcdUrls: string[]): P
 
     const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
+      headers: {
+        Cosmostation: `extension/${__APP_VERSION__}`,
+      },
     });
 
     const initialResponse = response.data;
@@ -33,6 +36,9 @@ export const fetchCosmosBalances = async (address: string, lcdUrls: string[]): P
 
         const paginatedResponse = await axios.get<CosmosBalanceResponse>(paginatedRequestUrl, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
+          headers: {
+            Cosmostation: `extension/${__APP_VERSION__}`,
+          },
         });
 
         const paginatedData = paginatedResponse.data;
@@ -57,6 +63,9 @@ export const fetchCW20Balances = async (address: string, contractAddress: string
 
     const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
+      headers: {
+        Cosmostation: `extension/${__APP_VERSION__}`,
+      },
     });
 
     return response.data?.data?.balance ?? '0';
