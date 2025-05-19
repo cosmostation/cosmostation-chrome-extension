@@ -410,7 +410,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
       enabled: txs.length > 0 && !!currentAccount.id,
       refetchInterval: () => {
         if (txs.length > 0) {
-          return 1000 * 5;
+          return 1000 * 7;
         }
 
         return false;
