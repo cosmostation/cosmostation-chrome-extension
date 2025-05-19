@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { produce } from 'immer';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
@@ -16,6 +15,7 @@ import type {
 } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
+import { upsertList } from '@/utils/array';
 import { convertToValidatorAddress, isValidatorAddress } from '@/utils/cosmos/address';
 import { fetchCosmosCommission, fetchCosmosDelegations, fetchCosmosRewards, fetchCosmosUnbondings, fetchNTRNRewards } from '@/utils/cosmos/fetch/staking';
 import { fetchIotaDelegations } from '@/utils/iota/fetch/staking';
@@ -43,7 +43,7 @@ export async function updateStakingRelatedBalance(id: string) {
 }
 
 export async function updateSpecificChainStaking(id: string, chainId: UniqueChainId, address: string) {
-  console.time(`chain-staking-balance-${id}`);
+  console.time(`chain-staking-balance-${id}-${chainId}-${address}`);
   try {
     await getAccount(id);
 
@@ -55,7 +55,7 @@ export async function updateSpecificChainStaking(id: string, chainId: UniqueChai
       console.error(error);
     }
   } finally {
-    console.timeEnd(`chain-staking-balance-${id}`);
+    console.timeEnd(`chain-staking-balance-${id}-${chainId}-${address}`);
   }
 }
 
@@ -83,6 +83,23 @@ async function cosmosStaking(id: string, { address, chainId }: BalanceFetchOptio
     cosmosCommissions(id, { chainId, address }),
   ]);
 }
+
+interface UpsertItemBase {
+  address: string;
+  chainId: string | number;
+  chainType: string;
+  id: string;
+}
+
+interface UpsertItemWithAssetId extends UpsertItemBase {
+  assetId: string;
+}
+
+const isSameUpsertItemWithAssetId = (a: UpsertItemWithAssetId, b: UpsertItemWithAssetId) =>
+  isEqualsIgnoringCase(a.address, b.address) && a.chainId === b.chainId && a.chainType === b.chainType && a.assetId === b.assetId && a.id === b.id;
+
+const isSameUpsertItemWithoutAssetId = (a: UpsertItemBase, b: UpsertItemBase) =>
+  isEqualsIgnoringCase(a.address, b.address) && a.chainId === b.chainId && a.chainType === b.chainType && a.id === b.id;
 
 async function cosmosDelegations(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const accountAddress = await getAccountAddress(id);
@@ -125,24 +142,7 @@ async function cosmosDelegations(id: string, { address, chainId }: BalanceFetchO
 
     const storedCosmosDelegations = storage[`${id}-delegation-cosmos`] || [];
 
-    const updatedCosmosDelegations = produce(storedCosmosDelegations, (draft) => {
-      results.forEach((resultItem) => {
-        const existing = draft.find(
-          (draftItem) =>
-            isEqualsIgnoringCase(draftItem.address, resultItem.address) &&
-            draftItem.chainId === resultItem.chainId &&
-            draftItem.chainType === resultItem.chainType &&
-            draftItem.assetId === resultItem.assetId &&
-            draftItem.id === resultItem.id,
-        );
-
-        if (existing) {
-          existing.delegations = resultItem.delegations;
-        } else {
-          draft.push(resultItem);
-        }
-      });
-    });
+    const updatedCosmosDelegations = upsertList(storedCosmosDelegations, results, isSameUpsertItemWithAssetId, (e, i) => (e.delegations = i.delegations));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${id}-delegation-cosmos`]: updatedCosmosDelegations });
   } else {
@@ -193,24 +193,7 @@ async function cosmosUnbondings(id: string, { address, chainId }: BalanceFetchOp
 
     const storedCosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
 
-    const updatedCosmosUndelegations = produce(storedCosmosUndelegations, (draft) => {
-      results.forEach((resultItem) => {
-        const existing = draft.find(
-          (draftItem) =>
-            isEqualsIgnoringCase(draftItem.address, resultItem.address) &&
-            draftItem.chainId === resultItem.chainId &&
-            draftItem.chainType === resultItem.chainType &&
-            draftItem.assetId === resultItem.assetId &&
-            draftItem.id === resultItem.id,
-        );
-
-        if (existing) {
-          existing.unbondings = resultItem.unbondings;
-        } else {
-          draft.push(resultItem);
-        }
-      });
-    });
+    const updatedCosmosUndelegations = upsertList(storedCosmosUndelegations, results, isSameUpsertItemWithAssetId, (e, i) => (e.unbondings = i.unbondings));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${id}-undelegation-cosmos`]: updatedCosmosUndelegations });
   } else {
@@ -283,24 +266,7 @@ async function cosmosRewards(id: string, { address, chainId }: BalanceFetchOptio
 
     const storedCosmosRewards = storage[`${id}-reward-cosmos`] || [];
 
-    const updatedCosmosRewards = produce(storedCosmosRewards, (draft) => {
-      results.forEach((resultItem) => {
-        const existing = draft.find(
-          (draftItem) =>
-            isEqualsIgnoringCase(draftItem.address, resultItem.address) &&
-            draftItem.chainId === resultItem.chainId &&
-            draftItem.chainType === resultItem.chainType &&
-            draftItem.assetId === resultItem.assetId &&
-            draftItem.id === resultItem.id,
-        );
-
-        if (existing) {
-          existing.rewards = resultItem.rewards;
-        } else {
-          draft.push(resultItem);
-        }
-      });
-    });
+    const updatedCosmosRewards = upsertList(storedCosmosRewards, results, isSameUpsertItemWithAssetId, (e, i) => (e.rewards = i.rewards));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: updatedCosmosRewards });
   } else {
@@ -384,24 +350,7 @@ async function cosmosCommissions(id: string, { address, chainId }: BalanceFetchO
 
     const storedCosmosCommission = storage[`${id}-commission-cosmos`] || [];
 
-    const updatedCosmosCommission = produce(storedCosmosCommission, (draft) => {
-      results.forEach((resultItem) => {
-        const existing = draft.find(
-          (draftItem) =>
-            isEqualsIgnoringCase(draftItem.address, resultItem.address) &&
-            draftItem.chainId === resultItem.chainId &&
-            draftItem.chainType === resultItem.chainType &&
-            draftItem.assetId === resultItem.assetId &&
-            draftItem.id === resultItem.id,
-        );
-
-        if (existing) {
-          existing.commissions = resultItem.commissions;
-        } else {
-          draft.push(resultItem);
-        }
-      });
-    });
+    const updatedCosmosCommission = upsertList(storedCosmosCommission, results, isSameUpsertItemWithAssetId, (e, i) => (e.commissions = i.commissions));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${id}-commission-cosmos`]: updatedCosmosCommission });
   } else {
@@ -447,23 +396,7 @@ async function suiStaking(id: string, { address, chainId }: BalanceFetchOption =
 
     const storedSuiDelegations = storage[`${id}-delegation-sui`] || [];
 
-    const updatedSuiDelegations = produce(storedSuiDelegations, (draft) => {
-      results.forEach((resultItem) => {
-        const existing = draft.find(
-          (draftItem) =>
-            isEqualsIgnoringCase(draftItem.address, resultItem.address) &&
-            draftItem.chainId === resultItem.chainId &&
-            draftItem.chainType === resultItem.chainType &&
-            draftItem.id === resultItem.id,
-        );
-
-        if (existing) {
-          existing.delegations = resultItem.delegations;
-        } else {
-          draft.push(resultItem);
-        }
-      });
-    });
+    const updatedSuiDelegations = upsertList(storedSuiDelegations, results, isSameUpsertItemWithoutAssetId, (e, i) => (e.delegations = i.delegations));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: updatedSuiDelegations });
   } else {
@@ -509,23 +442,7 @@ async function iotaStaking(id: string, { address, chainId }: BalanceFetchOption 
 
     const storedIotaDelegations = storage[`${id}-delegation-iota`] || [];
 
-    const updatedIotaDelegations = produce(storedIotaDelegations, (draft) => {
-      results.forEach((resultItem) => {
-        const existing = draft.find(
-          (draftItem) =>
-            isEqualsIgnoringCase(draftItem.address, resultItem.address) &&
-            draftItem.chainId === resultItem.chainId &&
-            draftItem.chainType === resultItem.chainType &&
-            draftItem.id === resultItem.id,
-        );
-
-        if (existing) {
-          existing.delegations = resultItem.delegations;
-        } else {
-          draft.push(resultItem);
-        }
-      });
-    });
+    const updatedIotaDelegations = upsertList(storedIotaDelegations, results, isSameUpsertItemWithoutAssetId, (e, i) => (e.delegations = i.delegations));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: updatedIotaDelegations });
   } else {

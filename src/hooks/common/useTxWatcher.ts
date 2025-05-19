@@ -187,9 +187,9 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
               const aptosClient = new Aptos(aptosClientConfig);
 
-              const respose = await aptosClient.transaction.waitForTransaction({ transactionHash: tx.txHash });
+              const response = await aptosClient.transaction.waitForTransaction({ transactionHash: tx.txHash });
 
-              return respose;
+              return response;
             }),
           );
 
@@ -244,19 +244,19 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const respose = await post<SuiTxInfoResponse>(rpcUrl, requestBody, {
+              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, {
                 timeout: 5000,
               });
 
-              if (respose.error) {
-                throw new Error(respose.error.message);
+              if (response.error) {
+                throw new Error(response.error.message);
               }
 
-              if (!respose.result?.checkpoint) {
+              if (!response.result?.checkpoint) {
                 throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
               }
 
-              return respose;
+              return response;
             }),
           );
 
@@ -347,19 +347,19 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const respose = await post<IotaTxInfoResponse>(rpcUrl, requestBody, {
+              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, {
                 timeout: 5000,
               });
 
-              if (respose.error) {
-                throw new Error(respose.error.message);
+              if (response.error) {
+                throw new Error(response.error.message);
               }
 
-              if (!respose.result?.checkpoint) {
+              if (!response.result?.checkpoint) {
                 throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
               }
 
-              return respose;
+              return response;
             }),
           );
 

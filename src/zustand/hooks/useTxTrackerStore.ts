@@ -24,7 +24,7 @@ export const useTxTrackerStore = create<TxTrackerState>()(
     txs: [],
     addTx: (tx) =>
       set((state) => {
-        const exists = state.txs.some((t) => t.txHash === tx.txHash);
+        const exists = state.txs.some((t) => t.txHash === tx.txHash && t.chainId === tx.chainId);
         if (!exists) {
           state.txs.push(tx);
         }
@@ -36,9 +36,11 @@ export const useTxTrackerStore = create<TxTrackerState>()(
     updateTx: (txHash, partial) =>
       set((state) => {
         const tx = state.txs.find((tx) => tx.txHash === txHash);
-        if (tx) {
-          Object.assign(tx, partial);
-        }
+        if (!tx) return;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { txHash: _, ...rest } = partial;
+        Object.assign(tx, rest);
       }),
   })),
 );
