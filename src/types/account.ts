@@ -14,6 +14,7 @@ import type {
   EvmErc20Asset,
   IotaAsset,
   SolanaAsset,
+  SolanaSpltokenAsset,
   SuiAsset,
 } from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
@@ -386,6 +387,13 @@ export interface AccountSolanaAsset {
   address: AccountAddress;
   balance: string;
   totalBalance?: string;
+}
+
+export interface AccountSpltokenAsset {
+  chain: SolanaChain;
+  asset: SolanaSpltokenAsset;
+  address: AccountAddress;
+  balance: string;
 }
 
 export type AccountNamesById = Record<AccountBase['id'], string>;

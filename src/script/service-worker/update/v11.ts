@@ -1,15 +1,16 @@
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
+import { solanaSplAssets as spltokens } from '@/constants/testChain';
 import { updateHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
 import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
-import type { CosmosCw20Asset, EvmErc20Asset } from '@/types/asset';
+import type { CosmosCw20Asset, EvmErc20Asset, SolanaSpltokenAsset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
 import { getWithFullResponse } from '@/utils/axios';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
-// params, assets, erc20, cw20
+// params, assets, erc20, cw20, spltoken
 export async function v11() {
   console.time('chainsAndAsset');
   try {
@@ -35,7 +36,7 @@ export async function v11() {
       assetsV11: assets,
     });
 
-    const { cosmosChains, evmChains } = await getChains();
+    const { cosmosChains, evmChains, solanaChains } = await getChains();
 
     // ERC20
     const { results: erc20AssetsResponse } = await PromisePool.withConcurrency(5)
@@ -89,11 +90,39 @@ export async function v11() {
 
     const cw20Assets = cw20AssetsResponse.flat();
 
-    await hideNewContractTokens(erc20Assets, cw20Assets);
+    // spltoken
+    const { results: spltokenAssetsResponse } = await PromisePool.withConcurrency(5)
+      .for(solanaChains)
+      .handleError((error) => {
+        throw error;
+      })
+      .process(async (solanaChain) => {
+        const { id } = solanaChain;
+        // const spltokenAssetResponse = await axios.get<V11Spltoken[]>(`https://front.api.mintscan.io/v11/assets/${id}/spltoken/info`);
+        // const spltokenAsset = spltokenAssetResponse.data;
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets'>>({
+        const spltokenAsset = spltokens;
+
+        const spltokenAssets: SolanaSpltokenAsset[] = spltokenAsset.map((asset) => {
+          return {
+            ...asset,
+            id: asset.contract,
+            chainId: id,
+            type: 'spl-token',
+            chainType: 'solana',
+          };
+        });
+        return spltokenAssets;
+      });
+
+    const spltokenAssets = spltokenAssetsResponse.flat().filter((asset) => asset.id);
+
+    await hideNewContractTokens(erc20Assets, cw20Assets, spltokenAssets);
+
+    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'spltokenAssets'>>({
       erc20Assets,
       cw20Assets,
+      spltokenAssets,
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -106,21 +135,24 @@ export async function v11() {
   }
 }
 
-async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[]) {
+async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[], spltokenAssets: SolanaSpltokenAsset[]) {
   const {
     userAccounts: storedAccounts,
     erc20Assets: storedERC20AssetsV11,
     cw20Assets: storedCW20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets']);
+    spltokenAssets: storedSpltokenAssets,
+  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'spltokenAssets']);
 
   const storedAccountsList = storedAccounts || [];
   const storedAccountsIds = storedAccountsList.map((account) => account.id);
 
   const storedERC20Data = storedERC20AssetsV11 || [];
   const storedCW20Data = storedCW20Assets || [];
+  const storedSpltokenData = storedSpltokenAssets || [];
 
   const storedERC20Set = new Set(storedERC20Data.map((asset) => getCoinId(asset)));
   const storedCW20Set = new Set(storedCW20Data.map((asset) => getCoinId(asset)));
+  const storedSpltokenSet = new Set(storedSpltokenData.map((asset) => getCoinId(asset)));
 
   const newERC20Assets =
     storedERC20Set.size === 0 ? [] : erc20Assets.filter((asset) => !storedERC20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
@@ -128,7 +160,10 @@ async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: C
   const newCW20Assets =
     storedCW20Set.size === 0 ? [] : cw20Assets.filter((asset) => !storedCW20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
 
-  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets];
+  const newSpltokenAssets =
+    storedSpltokenSet.size === 0 ? [] : spltokenAssets.filter((asset) => !storedSpltokenSet.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
+
+  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets, ...newSpltokenAssets];
 
   if (mergedNewContractAssets.length > 0) {
     const hiddenAssetIds = mergedNewContractAssets.map((asset) => ({

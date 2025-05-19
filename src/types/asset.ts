@@ -85,12 +85,23 @@ export interface SolanaAsset extends AssetBase {
   type: string;
 }
 
-export interface SolanaSplTokenAsset extends AssetBase {
+export interface SolanaSpltokenAsset extends AssetBase {
   chainType: 'solana';
-  type: 'spl-token';
+  type: string;
+  wallet_preload?: boolean;
 }
 
-export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset | IotaAsset | SolanaAsset;
+export type Asset =
+  | CosmosAsset
+  | CosmosCw20Asset
+  | EvmAsset
+  | EvmErc20Asset
+  | SuiAsset
+  | AptosAsset
+  | BitcoinAsset
+  | IotaAsset
+  | SolanaAsset
+  | SolanaSpltokenAsset;
 
 export type AssetSingleGroup = {
   singles: Asset[];

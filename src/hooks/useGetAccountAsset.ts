@@ -30,16 +30,16 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
       sui: () => accountAllAssets?.suiAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       bitcoin: () => accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       iota: () => accountAllAssets?.iotaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      solana: () => accountAllAssets?.solanaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      solana: () => accountAllAssets?.allSolanaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
     };
   }, [
     accountAllAssets?.allCosmosAccountAssets,
     accountAllAssets?.allCosmosAccountAssetsFiltered,
     accountAllAssets?.allEVMAccountAssets,
+    accountAllAssets?.allSolanaAccountAssets,
     accountAllAssets?.aptosAccountAssets,
     accountAllAssets?.bitcoinAccountAssets,
     accountAllAssets?.iotaAccountAssets,
-    accountAllAssets?.solanaAccountAssets,
     accountAllAssets?.suiAccountAssets,
     coinId,
   ]);

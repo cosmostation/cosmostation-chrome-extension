@@ -1,16 +1,16 @@
-import type { V11Asset } from '@/types/apiV11';
+import type { V11Asset, V11Spltoken } from '@/types/apiV11';
 
 export const solana = {
   forum: { governance: '', main: '' },
   chain_id: '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d',
   chain_name: 'Solana',
-  chain_image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/ethereum/resource/chain_ethereum.png',
+  chain_image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/solana/asset/sol.png',
   main_asset_denom: 'sol',
   main_asset_symbol: 'SOL',
-  main_asset_image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/ethereum/asset/eth.png',
+  main_asset_image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/solana/asset/sol.png',
   gas_asset_denom: 'sol',
   gas_asset_symbol: 'SOL',
-  gas_asset_image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/ethereum/asset/eth.png',
+  gas_asset_image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/solana/asset/sol.png',
   origin_genesis_time: '2015-07-30T03:26:13Z',
   api_name: 'solana',
   is_support_mobile_wallet: false,
@@ -35,6 +35,10 @@ export const solana = {
     {
       provider: 'solana',
       url: 'https://api.mainnet-beta.solana.com',
+    },
+    {
+      provider: 'allnodes',
+      url: 'https://solana-rpc.publicnode.com',
     },
   ],
   explorer: {
@@ -71,5 +75,19 @@ export const solanaTestAssets: V11Asset[] = [
     image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/solana/asset/sol.png',
     coinGeckoId: 'solana',
     chain: 'solana',
+  },
+];
+
+export const solanaSplAssets: V11Spltoken[] = [
+  {
+    chain: 'solana',
+    type: 'spl-token',
+    contract: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 6,
+    description: 'USD Coin',
+    image: 'https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/ethereum/asset/usdc.png',
+    coinGeckoId: 'usd-coin',
   },
 ];

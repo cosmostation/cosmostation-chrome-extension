@@ -186,3 +186,17 @@ export type V11Cw20 = {
   color?: string;
   wallet_preload?: boolean;
 };
+
+export type V11Spltoken = {
+  chain: string;
+  type: string;
+  contract: string;
+  name: string;
+  symbol: string;
+  description?: string;
+  decimals: number;
+  image?: string;
+  coinGeckoId?: string;
+  color?: string;
+  wallet_preload?: boolean;
+};

@@ -1,4 +1,4 @@
-POST https://api.mainnet-beta.solana.com
+POST https://solana-rpc.publicnode.com
 Content-Type: application/json
 
 {
@@ -6,7 +6,7 @@ Content-Type: application/json
     "id": 1,
     "method": "getBalance",
     "params": [
-        "8PgCV8AXGiV8WTpRvEd39e4Jg2RmySeN51MaZkqVJ1Ho"
+        "J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv"
     ]
 }
 

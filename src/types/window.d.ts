@@ -146,6 +146,19 @@ declare global {
     off: (eventName: IotaListenerType, eventHandler: (data: unknown) => void) => void;
   }
 
+  interface SolanaProvider {
+    request: () => Promise<Unknown>;
+    connect: () => Promise<string>;
+    disconnect: () => Promise<void>;
+    signTransaction: () => Promise<Unknown>;
+    signAllTransactions: () => Promise<Unknown>;
+    signMessage: () => Promise<Unknown>;
+    signAndSendTransaction: () => Promise<Unknown>;
+    signAndSendAllTransaction: () => Promise<Unknown>;
+    on: () => Promise<Unknown>;
+    off: () => Promise<Unknown>;
+  }
+
   interface Window {
     __cosmostationInjected__: boolean;
     customProperty: boolean;
@@ -162,6 +175,7 @@ declare global {
       bitcoin: BitcoinProvider;
       aptos: AptosWallet;
       iota: IotaProvider;
+      solana?: SolanaProvider;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;

@@ -29,7 +29,7 @@ import type {
   PreferAccountType,
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
-import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './asset';
+import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset, SolanaSpltokenAsset } from './asset';
 import type { LockupTimeOptions } from './autoLock';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
@@ -100,6 +100,7 @@ export interface ExtensionStorage {
   customErc20Assets: EvmErc20Asset[];
   cw20Assets: CosmosCw20Asset[];
   customCw20Assets: CosmosCw20Asset[];
+  spltokenAssets: SolanaSpltokenAsset[];
   [key: `${string}-address`]: AccountAddress[];
   [key: `${string}-balance-cosmos`]: AccountAddressBalanceCosmos[];
   [key: `${string}-balance-evm`]: AccountAddressBalanceEvm[];

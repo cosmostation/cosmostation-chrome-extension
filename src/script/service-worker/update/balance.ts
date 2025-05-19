@@ -798,7 +798,10 @@ async function solanaBalances(id: string) {
       const { rpcUrls } = chain;
 
       try {
-        const balance = await fetchSolanaBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
+        const balance = await fetchSolanaBalances(
+          address,
+          rpcUrls.map((item) => item.url),
+        );
 
         const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: balance.value };
 

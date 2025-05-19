@@ -5,7 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
 import type { AccountAddress } from '@/types/account';
-import type { AccountAssets as AccountAllAssets, AllCosmosAccountAssets, AllEVMAccountAssets, FlatAccountAssets } from '@/types/accountAssets';
+import type {
+  AccountAssets as AccountAllAssets,
+  AllCosmosAccountAssets,
+  AllEVMAccountAssets,
+  AllSolanaAccountAssets,
+  FlatAccountAssets,
+} from '@/types/accountAssets';
 import type { AssetId } from '@/types/asset';
 import { gt } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -19,6 +25,7 @@ export type UseAccountAssetsResponse = AccountAllAssets & {
   allCosmosAccountAssets: AllCosmosAccountAssets[];
   allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];
+  allSolanaAccountAssets: AllSolanaAccountAssets[];
 };
 
 type UseAccountAllAssets =
@@ -131,6 +138,7 @@ export function useAccountAllAssets({
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
       iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
       solanaAccountAssets: filterAssetList(data.solanaAccountAssets),
+      spltokenAccountAssets: filterAssetList(data.spltokenAccountAssets),
     };
   }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
 
@@ -289,12 +297,32 @@ export function useAccountAllAssets({
         return true;
       });
 
+      const filteredSpltokenAssets = filteredByVisibleList.spltokenAccountAssets.filter((item) => {
+        const selectedChainAccountType = accountType?.[item.chain.id];
+
+        if (selectedChainAccountType) {
+          const isSamePubkeyType = (() => {
+            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
+              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
+            }
+            return true;
+          })();
+          return (
+            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
+            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
+            isSamePubkeyType
+          );
+        }
+        return true;
+      });
+
       const filteredAccountAssets = produce(filteredByVisibleList, (draft) => {
         draft.cosmosAccountAssets = filteredCosmos;
         draft.cw20AccountAssets = filteredCW20;
         draft.evmAccountAssets = filteredEVM;
         draft.erc20AccountAssets = filteredERC20Assets;
         draft.bitcoinAccountAssets = filteredBitcoin;
+        draft.spltokenAccountAssets = filteredSpltokenAssets;
       });
 
       const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];
@@ -320,6 +348,7 @@ export function useAccountAllAssets({
           ...filteredAccountAssets.erc20AccountAssets,
           ...filteredAccountAssets.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredAccountAssets.solanaAccountAssets, ...filteredAccountAssets.spltokenAccountAssets],
       };
 
       return returnData;
@@ -344,6 +373,7 @@ export function useAccountAllAssets({
           ...filteredByVisibleList.erc20AccountAssets,
           ...filteredByVisibleList.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
       };
 
       return returnData;

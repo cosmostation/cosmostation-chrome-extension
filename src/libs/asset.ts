@@ -25,6 +25,7 @@ import type {
   AccountIotaAsset,
   AccountIotaAssetFetchStatus,
   AccountSolanaAsset,
+  AccountSpltokenAsset,
   AccountSuiAsset,
   AccountSuiAssetFetchStatus,
   AssetFetchStatus,
@@ -112,9 +113,18 @@ export async function getAssets() {
     paramsV11: chains,
     erc20Assets,
     cw20Assets,
+    spltokenAssets,
     customErc20Assets,
     customCw20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'paramsV11', 'cw20Assets', 'erc20Assets', 'customErc20Assets', 'customCw20Assets']);
+  } = await chrome.storage.local.get<ExtensionStorage>([
+    'assetsV11',
+    'paramsV11',
+    'cw20Assets',
+    'erc20Assets',
+    'customErc20Assets',
+    'customCw20Assets',
+    'spltokenAssets',
+  ]);
 
   const assets = [...assetsTemp, ...solanaTestAssets];
   if (!assets) {
@@ -258,6 +268,7 @@ export async function getAssets() {
     customErc20Assets,
     cw20Assets,
     customCw20Assets,
+    spltokenAssets,
   };
 }
 
@@ -286,9 +297,11 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-delegation-sui`,
     `${id}-balance-bitcoin`,
     `${id}-balance-iota`,
+    `${id}-balance-solana`,
     `${id}-delegation-iota`,
     `${id}-balance-erc20`,
     `${id}-balance-cw20`,
+    `${id}-balance-spltoken`,
     `${id}-custom-balance-erc20`,
     `${id}-custom-balance-cw20`,
     `${id}-balance-solana`,
@@ -315,6 +328,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     bitcoinAssets,
     iotaAssets,
     solanaAssets,
+    spltokenAssets,
   } = await getAssets();
 
   const filterHiddenAssets = <T extends Asset>(assets: T[]): T[] => {
@@ -348,6 +362,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const bitcoinAssetsWithoutHidden = filterHiddenAssets(bitcoinAssets);
   const iotaAssetsWithoutHidden = filterHiddenAssets(iotaAssets);
   const solanaAssetsWithoutHidden = filterHiddenAssets(solanaAssets);
+  const spltokenAssetsWithoutHidden = filterHiddenAssets(spltokenAssets);
 
   const accountAddress = storage[`${id}-address`] || [];
   const allAccountAddress = await getAllAccountAddress(id);
@@ -375,6 +390,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const customErc20Balances = storage[`${id}-custom-balance-erc20`] || [];
   const cw20Balances = storage[`${id}-balance-cw20`] || [];
   const customCw20Balances = storage[`${id}-custom-balance-cw20`] || [];
+  const spltokenBalances = storage[`${id}-balance-spltoken`] || [];
 
   const cosmosPromise = PromisePool.withConcurrency(concurrency)
     .for(cosmosAssetsWithoutHidden)
@@ -1031,6 +1047,36 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       return results;
     });
 
+  const spltokenPromise = PromisePool.withConcurrency(concurrency)
+    .for(spltokenAssetsWithoutHidden)
+    .process(async (asset) => {
+      const addresses = accountAddress.filter((address) => address.chainId === asset.chainId && address.chainType === asset.chainType);
+      const chain = solanaChains.find((chain) => chain.id === asset.chainId && chain.chainType === asset.chainType)!;
+
+      const { results } = await PromisePool.withConcurrency(concurrency)
+        .for(addresses)
+        .process((address) => {
+          const type = asset.id;
+          const balanceInfo = spltokenBalances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+          const balance =
+            balanceInfo?.balances?.find((balance) => balance.account?.data?.parsed?.info?.mint === type)?.account?.data?.parsed?.info?.tokenAmount?.amount ||
+            '0';
+
+          const result: AccountSpltokenAsset = {
+            chain,
+            asset,
+            address,
+            balance,
+          };
+
+          return result;
+        });
+
+      return results;
+    });
+
   const results = await Promise.all([
     cosmosPromise,
     evmPromise,
@@ -1043,6 +1089,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     bitcoinPromise,
     iotaPromise,
     solanaPromise,
+    spltokenPromise,
   ]);
 
   const cosmosAccountAssets = results[0].results.flat().filter((asset) => asset.chain && asset.address);
@@ -1056,6 +1103,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const bitcoinAccountAssets = results[8].results.flat().filter((asset) => asset.chain && asset.address);
   const iotaAccountAssets = results[9].results.flat().filter((asset) => asset.chain && asset.address);
   const solanaAccountAssets = results[10].results.flat().filter((asset) => asset.chain && asset.address);
+  const spltokenAccountAssets = results[11].results.flat().filter((asset) => asset.chain && asset.address);
 
   type AssetWithBalance = {
     balance: string;
@@ -1124,6 +1172,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const filteredAptosAccountAssets = filterHiddenAssetsByBalance(aptosAccountAssets);
   const filteredCW20AccountAssets = filterHiddenAssetsByBalance(cw20AccountAssets);
   const filteredERC20AccountAssets = filterHiddenAssetsByBalance(erc20AccountAssets);
+  const filteredSpltokenAccountAssets = filterHiddenAssetsByBalance(spltokenAccountAssets);
   const filteredCustomERC20AccountAssets = filterHiddenAssetsByBalance(customErc20AccountAssets);
   const filteredCustomCW20AccountAssets = filterHiddenAssetsByBalance(customCw20AccountAssets);
 
@@ -1143,6 +1192,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     bitcoinAccountAssets: filteredBitcoinAccountAssets,
     iotaAccountAssets: filteredIotaAccountAssets,
     solanaAccountAssets: filteredSolanaAccountAssets,
+    spltokenAccountAssets: filteredSpltokenAccountAssets,
   };
 }
 
