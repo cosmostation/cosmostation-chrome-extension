@@ -17,7 +17,7 @@ import BalanceButton from '@/components/common/StandardInput/components/BalanceB
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import BitcoinFee from '@/components/Fee/BitcoinFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
-import { P2WPKH__V_BYTES } from '@/constants/bitcoin/tx.ts';
+import { P2PKH__V_BYTES, P2SH__V_BYTES, P2TR__V_BYTES, P2WPKH__V_BYTES } from '@/constants/bitcoin/tx.ts';
 import { useEstimateSmartFee } from '@/hooks/bitcoin/useEstimateSmartFee.ts';
 import { useUtxo } from '@/hooks/bitcoin/useUtxo.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
@@ -155,15 +155,27 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
 
   const currentMemoBytes = useMemo(() => Buffer.from(currentMemo, 'utf8').length, [currentMemo]);
 
+  const selectedVbytes = useMemo(() => {
+    if (addressType === 'p2wpkh') return P2WPKH__V_BYTES;
+
+    if (addressType === 'p2tr') return P2TR__V_BYTES;
+
+    if (addressType === 'p2pkh') return P2PKH__V_BYTES;
+
+    if (addressType === 'p2wpkhSh') return P2SH__V_BYTES;
+
+    return undefined;
+  }, [addressType]);
+
   const currentVbytes = useMemo(() => {
-    if (!utxo.data?.length) {
+    if (!utxo.data?.length || !selectedVbytes) {
       return 0;
     }
 
     const isMemo = currentMemoBytes > 0;
 
-    return (utxo.data.length || 0) * P2WPKH__V_BYTES.INPUT + 2 * P2WPKH__V_BYTES.OUTPUT + P2WPKH__V_BYTES.OVERHEAD + (isMemo ? 3 : 0) + currentMemoBytes;
-  }, [currentMemoBytes, utxo.data]);
+    return (utxo.data.length || 0) * selectedVbytes.INPUT + 2 * selectedVbytes.OUTPUT + selectedVbytes.OVERHEAD + (isMemo ? 3 : 0) + currentMemoBytes;
+  }, [currentMemoBytes, selectedVbytes, utxo.data?.length]);
 
   const fee = useMemo(() => {
     if (!gasRate) {
