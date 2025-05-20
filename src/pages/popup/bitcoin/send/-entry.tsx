@@ -15,7 +15,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import EmptyAsset from '@/components/EmptyAsset';
-import { P2WPKH__V_BYTES } from '@/constants/bitcoin/tx';
+import { P2PKH__V_BYTES, P2SH__V_BYTES, P2TR__V_BYTES, P2WPKH__V_BYTES } from '@/constants/bitcoin/tx';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useEstimateSmartFee } from '@/hooks/bitcoin/useEstimateSmartFee';
@@ -174,15 +174,27 @@ export default function Entry({ request }: EntryProps) {
 
   const currentMemoBytes = useMemo(() => Buffer.from('', 'utf8').length, []);
 
+  const selectedVbytes = useMemo(() => {
+    if (addressType === 'p2wpkh') return P2WPKH__V_BYTES;
+
+    if (addressType === 'p2tr') return P2TR__V_BYTES;
+
+    if (addressType === 'p2pkh') return P2PKH__V_BYTES;
+
+    if (addressType === 'p2wpkhSh') return P2SH__V_BYTES;
+
+    return undefined;
+  }, [addressType]);
+
   const currentVbytes = useMemo(() => {
-    if (!utxo.data?.length) {
+    if (!utxo.data?.length || !selectedVbytes) {
       return 0;
     }
 
     const isMemo = currentMemoBytes > 0;
 
-    return (utxo.data.length || 0) * P2WPKH__V_BYTES.INPUT + 2 * P2WPKH__V_BYTES.OUTPUT + P2WPKH__V_BYTES.OVERHEAD + (isMemo ? 3 : 0) + currentMemoBytes;
-  }, [currentMemoBytes, utxo.data]);
+    return (utxo.data.length || 0) * selectedVbytes.INPUT + 2 * selectedVbytes.OUTPUT + selectedVbytes.OVERHEAD + (isMemo ? 3 : 0) + currentMemoBytes;
+  }, [currentMemoBytes, selectedVbytes, utxo.data?.length]);
 
   const fee = useMemo(() => {
     if (!gasRate) {
