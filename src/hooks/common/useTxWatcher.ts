@@ -18,6 +18,7 @@ import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 import type { UseFetchConfig } from './useFetch';
 import { useFetch } from './useFetch';
 import { useAccountHoldCosmosNFTs } from '../cosmos/nft/useAccountHoldCosmosNFTs';
+import { useCurrentAddedEVMNFTsWithMetaData } from '../evm/nft/useCurrentAddedEVMNFTsWithMetaData';
 import { useAccountHoldIotaNFTs } from '../iota/useAccountHoldIotaNFTs';
 import { useAccountHoldSuiNFTs } from '../sui/useAccountHoldSuiNFTs';
 import { useAccountAllAssets } from '../useAccountAllAssets';
@@ -34,6 +35,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
   const { refetch: refetchCosmosNFTs } = useAccountHoldCosmosNFTs();
   const { refetch: refetchSuiNFTs } = useAccountHoldSuiNFTs();
   const { refetch: refetchIotaNFTs } = useAccountHoldIotaNFTs();
+  const { refetch: refetchEVMNFTs } = useCurrentAddedEVMNFTsWithMetaData();
 
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
@@ -157,6 +159,10 @@ export function useTxWatcher(config?: UseFetchConfig) {
             });
 
             refetchAccountAllAssets();
+
+            if (tx.type === 'nft') {
+              refetchEVMNFTs();
+            }
           }
 
           removeTx(tx.txHash);

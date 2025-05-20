@@ -38,7 +38,7 @@ export function useCurrentAddedEVMNFTsWithMetaData({ accountId }: UseCurrentAdde
     });
   }, [currentAccountAddress, currentAddedNFTs.evm]);
 
-  const { data: nftsMeta, isLoading } = useGetNFTsMeta({ params });
+  const { data: nftsMeta, isLoading, refetch } = useGetNFTsMeta({ params });
 
   const addedEVMNFTsWithMeta = useMemo(() => {
     if (isLoading) return [];
@@ -74,5 +74,5 @@ export function useCurrentAddedEVMNFTsWithMetaData({ accountId }: UseCurrentAdde
     });
   }, [currentAccountAddress, currentAccountId, currentAddedNFTs.evm, isLoading, nftsMeta]);
 
-  return { addedEVMNFTsWithMeta, isLoading };
+  return { addedEVMNFTsWithMeta, isLoading, refetch };
 }
