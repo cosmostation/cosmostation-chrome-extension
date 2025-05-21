@@ -40,6 +40,7 @@
     "@mysten/kiosk": "^0.11.1",
     "@mysten/sui": "^1.24.0",
     "@mysten/wallet-standard": "^0.13.26",
+    "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.2",
     "@supercharge/promise-pool": "^3.2.0",
     "@tanstack/react-query": "^5.62.2",

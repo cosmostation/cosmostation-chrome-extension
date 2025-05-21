@@ -18,6 +18,7 @@ export const initialState: ExtensionStorageState = {
   customErc20Assets: [],
   cw20Assets: [],
   customCw20Assets: [],
+  spltokenAssets: [],
   initAccountIds: [],
   initCheckLegacyBalanceAccountIds: [],
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,

@@ -1,7 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
+import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
+import { PublicKey, SystemProgram, TransactionMessage } from '@solana/web3.js';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -9,6 +11,9 @@ import ChainSelectBox from '@/components/ChainSelectBox';
 import NumberTypo from '@/components/common/NumberTypo';
 import StandardInput from '@/components/common/StandardInput';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton';
+import { useGetAccountInfo } from '@/hooks/solana/useGetAccountInfo';
+import { useGetFeeForMessage } from '@/hooks/solana/useGetFeeForMessage';
+import { useGetLatestBlockHash } from '@/hooks/solana/useGetLatestBlockHash';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isTestnetChain } from '@/utils/chain';
@@ -24,7 +29,7 @@ import {
   CoinImage,
   CoinSymbolText,
   DescriptionContainer,
-  Divider,
+  // Divider,
   EstimatedValueTextContainer,
   InputWrapper,
 } from './styled';
@@ -48,6 +53,7 @@ export default function Solana({ coinId }: SolanaProps) {
   const recipientAddress = useMemo(() => debouncedInputRecipientAddress, [debouncedInputRecipientAddress]);
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+
   const { t } = useTranslation();
   const { getSolanaAccountAsset } = useGetAccountAsset({ coinId });
 
@@ -69,8 +75,8 @@ export default function Solana({ coinId }: SolanaProps) {
   const coinDecimals = selectedCoinToSend?.asset.decimals || 0;
 
   const coinType = (() => {
-    if (selectedCoinToSend?.asset.type === 'spltoken') {
-      return t('pages.wallet.send.$coinId.Entry.EVM.index.contract');
+    if (selectedCoinToSend?.asset.type === 'spl-token') {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.mint');
     }
 
     return '';
@@ -87,8 +93,16 @@ export default function Solana({ coinId }: SolanaProps) {
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
 
   const addressInputErrorMessage = useMemo(() => {
+    if (recipientAddress) {
+      try {
+        new PublicKey(recipientAddress);
+      } catch {
+        return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidAddress');
+      }
+    }
+
     return '';
-  }, []);
+  }, [recipientAddress, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
     return '';
@@ -98,13 +112,118 @@ export default function Solana({ coinId }: SolanaProps) {
     return;
   }, []);
 
+  const { data: latestBlockHash } = useGetLatestBlockHash({ coinId });
+
+  const errorMessage = useMemo(() => {
+    if (addressInputErrorMessage) {
+      return addressInputErrorMessage;
+    }
+
+    if (!recipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noRecipientAddress');
+    }
+
+    if (baseAvailableAmount === '0') {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noAvailableAmount');
+    }
+
+    if (!sendDisplayAmount) {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noAmount');
+    }
+  }, [addressInputErrorMessage, baseAvailableAmount, recipientAddress, sendDisplayAmount, t]);
+
+  const toATA = useMemo(() => {
+    try {
+      if (!errorMessage && selectedCoinToSend?.asset?.type === 'spl-token' && latestBlockHash) {
+        const mint = selectedCoinToSend.asset.id;
+
+        const pubMint = new PublicKey(mint);
+        const pubRecipient = new PublicKey(recipientAddress);
+
+        return getAssociatedTokenAddressSync(pubMint, pubRecipient);
+      }
+    } catch {
+      return undefined;
+    }
+
+    return undefined;
+  }, [errorMessage, latestBlockHash, recipientAddress, selectedCoinToSend?.asset.id, selectedCoinToSend?.asset?.type]);
+
+  const { data: toATAInfo } = useGetAccountInfo({
+    coinId,
+    account: toATA,
+  });
+
+  const message = useMemo(() => {
+    try {
+      if (!errorMessage && selectedCoinToSend && latestBlockHash) {
+        if (selectedCoinToSend?.asset.type === 'spl-token') {
+          const programId = selectedCoinToSend.chain.programId.splToken;
+          const mint = selectedCoinToSend.asset.id;
+          const sender = selectedCoinToSend.address.address;
+
+          const pubProgramId = new PublicKey(programId);
+
+          const pubMint = new PublicKey(mint);
+          const pubSender = new PublicKey(sender);
+          const pubRecipient = new PublicKey(recipientAddress);
+
+          const fromATA = getAssociatedTokenAddressSync(pubMint, pubSender);
+          const toATA = getAssociatedTokenAddressSync(pubMint, pubRecipient);
+
+          const createIx = createAssociatedTokenAccountInstruction(pubSender, toATA, pubRecipient, pubMint);
+
+          const transferInstruction = createTransferInstruction(fromATA, toATA, pubSender, Number(baseSendAmount), [], pubProgramId);
+
+          const messageV0 = new TransactionMessage({
+            payerKey: pubSender,
+            recentBlockhash: latestBlockHash.blockhash,
+            instructions: toATAInfo ? [transferInstruction] : [createIx, transferInstruction],
+          }).compileToV0Message();
+
+          return messageV0;
+        }
+
+        const sender = selectedCoinToSend.address.address;
+
+        const pubSender = new PublicKey(sender);
+        const pubRecipient = new PublicKey(recipientAddress);
+
+        const transferInstruction = SystemProgram.transfer({ fromPubkey: pubSender, toPubkey: pubRecipient, lamports: Number(baseSendAmount) });
+
+        const messageV0 = new TransactionMessage({
+          payerKey: pubSender,
+          recentBlockhash: latestBlockHash.blockhash,
+          instructions: [transferInstruction],
+        }).compileToV0Message();
+        return messageV0;
+      }
+
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }, [errorMessage, selectedCoinToSend, latestBlockHash, recipientAddress, baseSendAmount, toATAInfo]);
+
+  const { data: feeForMessage } = useGetFeeForMessage({ coinId, message });
+
+  useEffect(() => {
+    console.log('selectedCoinToSend', selectedCoinToSend);
+    console.log('recipientAddress', recipientAddress);
+    console.log('baseSendAmount', baseSendAmount);
+    console.log('selectedChainId', selectedChainId);
+    console.log('errorMessage', errorMessage);
+    console.log('feeForMessage', feeForMessage);
+    console.log('toATAInfo', toATAInfo);
+  });
+
   return (
     <>
       <BaseBody>
         <>
           <CoinContainer>
             <CoinImage imageURL={coinImageURL} badgeImageURL={coinBadgeImageURL} />
-            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.EVM.index.send')}`}</CoinSymbolText>
+            <CoinSymbolText variant="h2_B">{`${coinSymbol} ${t('pages.wallet.send.$coinId.Entry.Solana.index.send')}`}</CoinSymbolText>
             {coinType ? (
               <CoinDenomContainer>
                 <Typography variant="b4_R">{`${coinType} :`}</Typography>
@@ -123,11 +242,11 @@ export default function Solana({ coinId }: SolanaProps) {
               chainList={selectedCoinToSend?.chain ? [selectedCoinToSend?.chain] : []}
               currentChainId={selectedCoinToSend?.chain && getUniqueChainId(selectedCoinToSend?.chain)}
               disableSortChain
-              label={t('pages.wallet.send.$coinId.Entry.EVM.index.recipientNetwork')}
+              label={t('pages.wallet.send.$coinId.Entry.Solana.index.recipientNetwork')}
               disabled
             />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.Entry.EVM.index.recipientAddress')}
+              label={t('pages.wallet.send.$coinId.Entry.Solana.index.recipientAddress')}
               error={!!addressInputErrorMessage}
               helperText={addressInputErrorMessage}
               value={inputRecipientAddress}
@@ -146,7 +265,7 @@ export default function Solana({ coinId }: SolanaProps) {
               }}
             />
             <StandardInput
-              label={t('pages.wallet.send.$coinId.Entry.EVM.index.amount')}
+              label={t('pages.wallet.send.$coinId.Entry.Solana.index.amount')}
               error={!!sendAmountInputErrorMessage}
               helperText={sendAmountInputErrorMessage}
               value={sendDisplayAmount}
@@ -183,7 +302,7 @@ export default function Solana({ coinId }: SolanaProps) {
           onClose={() => setIsOpenAddressBottomSheet(false)}
           filterAddress={selectedCoinToSend?.address.address}
           chainId={getUniqueChainId(selectedCoinToSend.chain)}
-          headerTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.chooseRecipientAddress')}
+          headerTitle={t('pages.wallet.send.$coinId.Entry.Solana.index.chooseRecipientAddress')}
           onClickAddress={(address) => {
             setInputRecipientAddress(address);
           }}

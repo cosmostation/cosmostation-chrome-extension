@@ -33,10 +33,6 @@ export const solana = {
   ],
   rpc_endpoint: [
     {
-      provider: 'solana',
-      url: 'https://api.mainnet-beta.solana.com',
-    },
-    {
       provider: 'allnodes',
       url: 'https://solana-rpc.publicnode.com',
     },

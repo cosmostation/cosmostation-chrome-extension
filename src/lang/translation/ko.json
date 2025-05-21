@@ -2982,6 +2982,16 @@
                 "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
                 "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
+            },
+            "Solana": {
+              "index": {
+                "mint": "민트 주소",
+                "send": "전송",
+                "recipientNetwork": "수신 체인",
+                "recipientAddress": "수신 지갑 주소 입력",
+                "amount": "전송할 금액 입력",
+                "chooseRecipientAddress": "수신 주소 선택"
+              }
             }
           },
           "layout": {

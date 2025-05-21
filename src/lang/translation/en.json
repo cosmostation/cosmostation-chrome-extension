@@ -1551,6 +1551,16 @@
                 "recipientNetwork": "Recipient Network",
                 "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
+            },
+            "Solana": {
+              "index": {
+                "mint": "Mint Address",
+                "send": "Send",
+                "recipientNetwork": "Recipient Network",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient"
+              }
             }
           }
         },
