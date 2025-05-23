@@ -77,3 +77,15 @@ Content-Type: application/json
         }
     ]
 }
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getPriorityFeeEstimate",
+    "params": []
+}

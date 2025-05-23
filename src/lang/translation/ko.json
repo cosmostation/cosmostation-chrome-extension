@@ -552,6 +552,12 @@
           "continue": "계속하기",
           "networkFee": "네트워크 수수료"
         }
+      },
+      "SolanaFee": {
+        "index": {
+          "networkFee": "네트워크 수수료",
+          "continue": "계속하기"
+        }
       }
     },
     "FeeSettingBottomSheet": {
@@ -2990,7 +2996,11 @@
                 "recipientNetwork": "수신 체인",
                 "recipientAddress": "수신 지갑 주소 입력",
                 "amount": "전송할 금액 입력",
-                "chooseRecipientAddress": "수신 주소 선택"
+                "chooseRecipientAddress": "수신 주소 선택",
+                "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
+                "noRecipientAddress": "수신자 주소를 입력하세요",
+                "noAvailableAmount": "사용 가능한 잔액이 없습니다",
+                "noAmount": "금액을 입력하세요"
               }
             }
           },

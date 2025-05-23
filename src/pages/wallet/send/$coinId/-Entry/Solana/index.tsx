@@ -3,22 +3,27 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
-import { PublicKey, SystemProgram, TransactionMessage } from '@solana/web3.js';
+import { PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from '@solana/web3.js';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
+import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
+import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
 import ChainSelectBox from '@/components/ChainSelectBox';
 import NumberTypo from '@/components/common/NumberTypo';
 import StandardInput from '@/components/common/StandardInput';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton';
+import SolanaFee from '@/components/Fee/SolanaFee';
+import { SOLANA_NATIVE_COIN } from '@/constants/solana';
 import { useGetAccountInfo } from '@/hooks/solana/useGetAccountInfo';
-import { useGetFeeForMessage } from '@/hooks/solana/useGetFeeForMessage';
 import { useGetLatestBlockHash } from '@/hooks/solana/useGetLatestBlockHash';
+import { useGetRecentPrioritizationFees } from '@/hooks/solana/useGetRecentPrioritizationFees';
+import { useTransactionPreview } from '@/hooks/solana/useTransactionPreview';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isTestnetChain } from '@/utils/chain';
-import { times, toBaseDenomAmount } from '@/utils/numbers';
-import { getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
+import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isDecimal, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -29,7 +34,7 @@ import {
   CoinImage,
   CoinSymbolText,
   DescriptionContainer,
-  // Divider,
+  Divider,
   EstimatedValueTextContainer,
   InputWrapper,
 } from './styled';
@@ -41,6 +46,8 @@ type SolanaProps = {
 };
 
 export default function Solana({ coinId }: SolanaProps) {
+  const { chainId, chainType } = parseCoinId(coinId);
+
   const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
 
@@ -49,20 +56,26 @@ export default function Solana({ coinId }: SolanaProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
+  const [debouncedSendDisplayAmount] = useDebounce(sendDisplayAmount, 500);
 
   const recipientAddress = useMemo(() => debouncedInputRecipientAddress, [debouncedInputRecipientAddress]);
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
   const { t } = useTranslation();
+
+  const nativeCoinId = useMemo(() => getCoinId({ chainId, chainType, id: SOLANA_NATIVE_COIN }), [chainId, chainType]);
+
+  const { getSolanaAccountAsset: getSolanaAccountNativeAsset } = useGetAccountAsset({ coinId: nativeCoinId });
+  const nativeCoin = getSolanaAccountNativeAsset();
+
+  const nativeCoinSymbol = nativeCoin?.asset.symbol || '';
+  const nativeCoinDecimals = nativeCoin?.asset.decimals || 0;
+  const nativeCoinPrice = (nativeCoin?.asset.coinGeckoId && coinGeckoPrice?.[nativeCoin?.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
+
   const { getSolanaAccountAsset } = useGetAccountAsset({ coinId });
 
   const selectedCoinToSend = getSolanaAccountAsset();
-  const selectedChainId = useMemo(() => {
-    const { chainId, chainType } = parseCoinId(coinId);
-
-    return getUniqueChainId({ id: chainId, chainType });
-  }, [coinId]);
 
   const coinImageURL = selectedCoinToSend?.asset.image || '';
   const coinBadgeImageURL = selectedCoinToSend?.asset.type === 'native' ? '' : selectedCoinToSend?.chain.image || '';
@@ -87,26 +100,25 @@ export default function Solana({ coinId }: SolanaProps) {
   const coinGeckoId = selectedCoinToSend?.asset.coinGeckoId || '';
   const coinPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
 
-  const displaySendAmountPrice = useMemo(() => (sendDisplayAmount ? times(sendDisplayAmount, coinPrice) : '0'), [coinPrice, sendDisplayAmount]);
+  const displaySendAmountPrice = useMemo(
+    () => (debouncedSendDisplayAmount ? times(debouncedSendDisplayAmount, coinPrice) : '0'),
+    [coinPrice, debouncedSendDisplayAmount],
+  );
 
-  const baseSendAmount = useMemo(() => toBaseDenomAmount(sendDisplayAmount || '0', coinDecimals), [coinDecimals, sendDisplayAmount]);
+  const baseSendAmount = useMemo(() => toBaseDenomAmount(debouncedSendDisplayAmount || '0', coinDecimals), [coinDecimals, debouncedSendDisplayAmount]);
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
 
   const addressInputErrorMessage = useMemo(() => {
-    if (recipientAddress) {
+    if (debouncedInputRecipientAddress) {
       try {
-        new PublicKey(recipientAddress);
+        new PublicKey(debouncedInputRecipientAddress);
       } catch {
         return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidAddress');
       }
     }
 
     return '';
-  }, [recipientAddress, t]);
-
-  const sendAmountInputErrorMessage = useMemo(() => {
-    return '';
-  }, []);
+  }, [debouncedInputRecipientAddress, t]);
 
   const handleOnClickMax = useCallback(() => {
     return;
@@ -114,27 +126,19 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const { data: latestBlockHash } = useGetLatestBlockHash({ coinId });
 
-  const errorMessage = useMemo(() => {
-    if (addressInputErrorMessage) {
-      return addressInputErrorMessage;
+  const sendAmountInputErrorMessage = useMemo(() => {
+    if (debouncedSendDisplayAmount) {
+      if (gt(baseSendAmount, baseAvailableAmount)) {
+        return t('pages.wallet.send.$coinId.Entry.Solana.index.insufficientAmount');
+      }
     }
 
-    if (!recipientAddress) {
-      return t('pages.wallet.send.$coinId.Entry.Solana.index.noRecipientAddress');
-    }
-
-    if (baseAvailableAmount === '0') {
-      return t('pages.wallet.send.$coinId.Entry.Solana.index.noAvailableAmount');
-    }
-
-    if (!sendDisplayAmount) {
-      return t('pages.wallet.send.$coinId.Entry.Solana.index.noAmount');
-    }
-  }, [addressInputErrorMessage, baseAvailableAmount, recipientAddress, sendDisplayAmount, t]);
+    return '';
+  }, [baseAvailableAmount, baseSendAmount, debouncedSendDisplayAmount, t]);
 
   const toATA = useMemo(() => {
     try {
-      if (!errorMessage && selectedCoinToSend?.asset?.type === 'spl-token' && latestBlockHash) {
+      if (!addressInputErrorMessage && !sendAmountInputErrorMessage && selectedCoinToSend?.asset?.type === 'spl-token' && latestBlockHash) {
         const mint = selectedCoinToSend.asset.id;
 
         const pubMint = new PublicKey(mint);
@@ -147,16 +151,16 @@ export default function Solana({ coinId }: SolanaProps) {
     }
 
     return undefined;
-  }, [errorMessage, latestBlockHash, recipientAddress, selectedCoinToSend?.asset.id, selectedCoinToSend?.asset?.type]);
+  }, [addressInputErrorMessage, latestBlockHash, recipientAddress, selectedCoinToSend?.asset.id, selectedCoinToSend?.asset?.type, sendAmountInputErrorMessage]);
 
   const { data: toATAInfo } = useGetAccountInfo({
     coinId,
     account: toATA,
   });
 
-  const message = useMemo(() => {
+  const transaction = useMemo(() => {
     try {
-      if (!errorMessage && selectedCoinToSend && latestBlockHash) {
+      if (!addressInputErrorMessage && !sendAmountInputErrorMessage && selectedCoinToSend && latestBlockHash) {
         if (selectedCoinToSend?.asset.type === 'spl-token') {
           const programId = selectedCoinToSend.chain.programId.splToken;
           const mint = selectedCoinToSend.asset.id;
@@ -181,7 +185,7 @@ export default function Solana({ coinId }: SolanaProps) {
             instructions: toATAInfo ? [transferInstruction] : [createIx, transferInstruction],
           }).compileToV0Message();
 
-          return messageV0;
+          return new VersionedTransaction(messageV0);
         }
 
         const sender = selectedCoinToSend.address.address;
@@ -196,25 +200,82 @@ export default function Solana({ coinId }: SolanaProps) {
           recentBlockhash: latestBlockHash.blockhash,
           instructions: [transferInstruction],
         }).compileToV0Message();
-        return messageV0;
+        return new VersionedTransaction(messageV0);
       }
 
       return undefined;
     } catch {
       return undefined;
     }
-  }, [errorMessage, selectedCoinToSend, latestBlockHash, recipientAddress, baseSendAmount, toATAInfo]);
+  }, [addressInputErrorMessage, sendAmountInputErrorMessage, selectedCoinToSend, latestBlockHash, recipientAddress, baseSendAmount, toATAInfo]);
 
-  const { data: feeForMessage } = useGetFeeForMessage({ coinId, message });
+  const { data: transactionPreview } = useTransactionPreview({ coinId, transaction });
+
+  const { data: recentPrioritizationFees } = useGetRecentPrioritizationFees({ coinId });
+
+  const priorityBaseFee = useMemo(() => {
+    if (recentPrioritizationFees && transactionPreview?.simulatedValue.unitsConsumed) {
+      const averagePrioritizationFee =
+        recentPrioritizationFees.reduce((acc, cur) => {
+          return acc + cur.prioritizationFee;
+        }, 0) / recentPrioritizationFees.length;
+
+      const microLamports = transactionPreview.simulatedValue.unitsConsumed * averagePrioritizationFee;
+
+      const lamports = Math.ceil(microLamports / 1000000) + 1;
+
+      return lamports;
+    }
+
+    return undefined;
+  }, [recentPrioritizationFees, transactionPreview?.simulatedValue.unitsConsumed]);
+
+  const baseFee = useMemo(() => {
+    if (transactionPreview?.estimatedValue && priorityBaseFee) {
+      return transactionPreview.estimatedValue + priorityBaseFee;
+    }
+
+    return undefined;
+  }, [transactionPreview?.estimatedValue, priorityBaseFee]);
+
+  const displayFee = useMemo(() => {
+    if (baseFee) {
+      return toDisplayDenomAmount(baseFee, nativeCoinDecimals);
+    }
+    return undefined;
+  }, [baseFee, nativeCoinDecimals]);
+
+  const feePrice = useMemo(() => {
+    if (displayFee) {
+      return times(displayFee, nativeCoinPrice);
+    }
+    return undefined;
+  }, [displayFee, nativeCoinPrice]);
+
+  const errorMessage = useMemo(() => {
+    if (!debouncedSendDisplayAmount) {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noAmount');
+    }
+
+    if (!debouncedInputRecipientAddress) {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noRecipientAddress');
+    }
+
+    if (baseAvailableAmount === '0') {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noAvailableAmount');
+    }
+
+    if (addressInputErrorMessage) {
+      return addressInputErrorMessage;
+    }
+
+    if (sendAmountInputErrorMessage) {
+      return sendAmountInputErrorMessage;
+    }
+  }, [addressInputErrorMessage, debouncedInputRecipientAddress, debouncedSendDisplayAmount, sendAmountInputErrorMessage, t]);
 
   useEffect(() => {
-    console.log('selectedCoinToSend', selectedCoinToSend);
-    console.log('recipientAddress', recipientAddress);
-    console.log('baseSendAmount', baseSendAmount);
-    console.log('selectedChainId', selectedChainId);
-    console.log('errorMessage', errorMessage);
-    console.log('feeForMessage', feeForMessage);
-    console.log('toATAInfo', toATAInfo);
+    console.log('nativeCoin', nativeCoin);
   });
 
   return (
@@ -296,6 +357,24 @@ export default function Solana({ coinId }: SolanaProps) {
           </InputWrapper>
         </>
       </BaseBody>
+      <BaseFooter>
+        <>
+          <EdgeAligner>
+            <Divider />
+          </EdgeAligner>
+          <SolanaFee
+            displayFeeAmount={displayFee}
+            displayFeePrice={feePrice}
+            coinSymbol={nativeCoinSymbol}
+            disableConfirm={!!errorMessage}
+            isLoading={false}
+            errorMessage={errorMessage}
+            onClickConfirm={() => {
+              console.log('onClickConfirm');
+            }}
+          />
+        </>
+      </BaseFooter>
       {selectedCoinToSend?.chain && (
         <AddressBottomSheet
           open={isOpenAddressBottomSheet}
