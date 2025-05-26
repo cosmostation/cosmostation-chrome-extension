@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
-import { PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from '@solana/web3.js';
+import { ComputeBudgetProgram, Connection, PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from '@solana/web3.js';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -21,7 +21,10 @@ import { useGetLatestBlockHash } from '@/hooks/solana/useGetLatestBlockHash';
 import { useGetRecentPrioritizationFees } from '@/hooks/solana/useGetRecentPrioritizationFees';
 import { useTransactionPreview } from '@/hooks/solana/useTransactionPreview';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { getKeypair } from '@/libs/address';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
@@ -42,17 +45,16 @@ import {
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
+const defaultPriorityBaseFee = 500; // Default value for priority base fee in microLamports
+
 type SolanaProps = {
   coinId: string;
 };
 
 interface ConfirmData {
-  recipientAddress: string;
-  sendDisplayAmount: string;
-  baseSendAmount: string;
-  baseFee: number;
-  priorityBaseFee?: number;
   transaction: VersionedTransaction | undefined;
+  computeUnitLimit?: number;
+  computeUnitPrice?: number;
 }
 
 export default function Solana({ coinId }: SolanaProps) {
@@ -61,13 +63,11 @@ export default function Solana({ coinId }: SolanaProps) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const [confirmData, setConfirmData] = useState<ConfirmData>({
-    recipientAddress: '',
-    sendDisplayAmount: '',
-    baseSendAmount: '',
-    baseFee: 0,
-    priorityBaseFee: undefined,
     transaction: undefined,
   });
+
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
 
   const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
@@ -253,21 +253,28 @@ export default function Solana({ coinId }: SolanaProps) {
   const { data: recentPrioritizationFees, isFetching: isFetchingGetRecentPrioritizationFees } = useGetRecentPrioritizationFees({ coinId });
 
   const priorityBaseFee = useMemo(() => {
-    if (recentPrioritizationFees && transactionPreview?.simulatedValue.unitsConsumed) {
-      const averagePrioritizationFee =
-        recentPrioritizationFees.reduce((acc, cur) => {
-          return acc + cur.prioritizationFee;
-        }, 0) / recentPrioritizationFees.length;
+    if (recentPrioritizationFees && recentPrioritizationFees.length > 0) {
+      return recentPrioritizationFees.reduce((acc, cur) => acc + cur.prioritizationFee, 0) / recentPrioritizationFees.length / 1000000 + defaultPriorityBaseFee;
+    }
+    return defaultPriorityBaseFee;
+  }, [recentPrioritizationFees]);
 
-      const microLamports = transactionPreview.simulatedValue.unitsConsumed * averagePrioritizationFee;
+  const computeUnitLimit = useMemo(() => {
+    if (transactionPreview?.simulatedValue?.unitsConsumed) {
+      return transactionPreview.simulatedValue.unitsConsumed + 500;
+    }
+    return undefined;
+  }, [transactionPreview?.simulatedValue?.unitsConsumed]);
 
-      const lamports = Math.ceil(microLamports / 1000000) + 1;
+  const computeUnitPrice = useMemo(() => {
+    if (priorityBaseFee && computeUnitLimit) {
+      const price = priorityBaseFee / computeUnitLimit;
 
-      return lamports;
+      return price;
     }
 
     return undefined;
-  }, [recentPrioritizationFees, transactionPreview?.simulatedValue.unitsConsumed]);
+  }, [priorityBaseFee, computeUnitLimit]);
 
   const baseFee = useMemo(() => {
     if (transactionPreview?.estimatedValue) {
@@ -339,6 +346,64 @@ export default function Solana({ coinId }: SolanaProps) {
     }, 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction, isFetchingGetAccountInfo, isFetchingGetLatestBlockHash, isFetchingGetRecentPrioritizationFees, isFetchingTransactionPreview]);
+
+  const reviewOnClick = useCallback(() => {
+    if (transactionPreview?.simulatedValue?.unitsConsumed && transaction && typeof baseFee === 'number') {
+      setConfirmData({
+        transaction: transaction,
+        computeUnitLimit,
+        computeUnitPrice,
+      });
+      setIsOpenReviewBottomSheet(true);
+    }
+  }, [baseFee, computeUnitLimit, computeUnitPrice, transaction, transactionPreview?.simulatedValue?.unitsConsumed]);
+
+  const confirmOnClick = useCallback(async () => {
+    if (confirmData.transaction && selectedCoinToSend) {
+      const currentChain = selectedCoinToSend?.chain;
+      const connection = new Connection(currentChain.rpcUrls[0].url, 'confirmed');
+      const keypair = getKeypair(currentChain, currentAccount, currentPassword);
+      const transactionToSend = confirmData.transaction;
+
+      if (confirmData.computeUnitLimit && confirmData.computeUnitPrice) {
+        const { message } = transactionToSend;
+
+        const computeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({
+          units: confirmData.computeUnitLimit,
+        });
+        const computeUnitPriceIx = ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: Math.ceil(confirmData.computeUnitPrice * 1000000),
+        });
+
+        const messageWithPriority = new TransactionMessage({
+          payerKey: message.staticAccountKeys[0],
+          recentBlockhash: message.recentBlockhash,
+          instructions: [
+            computeUnitIx,
+            computeUnitPriceIx,
+            ...message.compiledInstructions.map((ix) => ({
+              programId: message.staticAccountKeys[ix.programIdIndex],
+              keys: ix.accountKeyIndexes.map((i) => {
+                const pubkey = message.staticAccountKeys[i];
+                const isSigner = message.isAccountSigner(i);
+                const isWritable = message.isAccountWritable(i);
+                return { pubkey, isSigner, isWritable };
+              }),
+              data: Buffer.from(ix.data),
+            })),
+          ],
+        }).compileToV0Message();
+
+        const tx = new VersionedTransaction(messageWithPriority);
+
+        tx.sign([{ publicKey: new PublicKey(selectedCoinToSend.address.address), secretKey: Buffer.from(keypair.privateKey, 'hex') }]);
+
+        const signature = await connection.sendRawTransaction(tx.serialize());
+
+        console.log(signature);
+      }
+    }
+  }, [confirmData.computeUnitLimit, confirmData.computeUnitPrice, confirmData.transaction, currentAccount, currentPassword, selectedCoinToSend]);
 
   return (
     <>
@@ -425,25 +490,13 @@ export default function Solana({ coinId }: SolanaProps) {
             <Divider />
           </EdgeAligner>
           <SolanaFee
-            displayFeeAmount={totalFeePrice}
+            displayFeeAmount={displayTotalFee}
             displayFeePrice={totalFeePrice}
             coinSymbol={nativeCoinSymbol}
             disableConfirm={isDisabled || !!errorMessage}
             isLoading={isDisabled}
             errorMessage={errorMessage}
-            onClickConfirm={() => {
-              if (transaction && typeof baseFee === 'number') {
-                setConfirmData({
-                  recipientAddress: recipientAddress,
-                  sendDisplayAmount: debouncedSendDisplayAmount,
-                  baseSendAmount: baseSendAmount,
-                  baseFee: baseFee,
-                  priorityBaseFee: priorityBaseFee,
-                  transaction: transaction,
-                });
-                setIsOpenReviewBottomSheet(true);
-              }
-            }}
+            onClickConfirm={reviewOnClick}
           />
         </>
       </BaseFooter>
@@ -465,9 +518,7 @@ export default function Solana({ coinId }: SolanaProps) {
         contentsTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')}
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}
-        onClickConfirm={() => {
-          console.log('onClickConfirm');
-        }}
+        onClickConfirm={confirmOnClick}
       />
     </>
   );
