@@ -71,7 +71,6 @@ export function useTransactionPreview({ coinId, transaction, config }: UseTransa
     fetchFunction: () => fetcher(),
     config: {
       enabled: !!coinId && !!rpcURLs.length && !!transaction,
-      refetchInterval: 1000 * 60,
       ...config,
     },
   });
