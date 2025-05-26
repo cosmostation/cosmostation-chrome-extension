@@ -160,7 +160,14 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const transaction = useMemo(() => {
     try {
-      if (!addressInputErrorMessage && !sendAmountInputErrorMessage && selectedCoinToSend && latestBlockHash) {
+      if (
+        !addressInputErrorMessage &&
+        !sendAmountInputErrorMessage &&
+        debouncedSendDisplayAmount &&
+        debouncedInputRecipientAddress &&
+        selectedCoinToSend &&
+        latestBlockHash
+      ) {
         if (selectedCoinToSend?.asset.type === 'spl-token') {
           const programId = selectedCoinToSend.chain.programId.splToken;
           const mint = selectedCoinToSend.asset.id;
@@ -207,7 +214,17 @@ export default function Solana({ coinId }: SolanaProps) {
     } catch {
       return undefined;
     }
-  }, [addressInputErrorMessage, sendAmountInputErrorMessage, selectedCoinToSend, latestBlockHash, recipientAddress, baseSendAmount, toATAInfo]);
+  }, [
+    addressInputErrorMessage,
+    sendAmountInputErrorMessage,
+    debouncedSendDisplayAmount,
+    debouncedInputRecipientAddress,
+    selectedCoinToSend,
+    latestBlockHash,
+    recipientAddress,
+    baseSendAmount,
+    toATAInfo,
+  ]);
 
   const { data: transactionPreview } = useTransactionPreview({ coinId, transaction });
 
@@ -272,7 +289,11 @@ export default function Solana({ coinId }: SolanaProps) {
     if (sendAmountInputErrorMessage) {
       return sendAmountInputErrorMessage;
     }
-  }, [addressInputErrorMessage, debouncedInputRecipientAddress, debouncedSendDisplayAmount, sendAmountInputErrorMessage, t]);
+
+    if (!baseFee) {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noFee');
+    }
+  }, [addressInputErrorMessage, baseAvailableAmount, baseFee, debouncedInputRecipientAddress, debouncedSendDisplayAmount, sendAmountInputErrorMessage, t]);
 
   useEffect(() => {
     console.log('nativeCoin', nativeCoin);
