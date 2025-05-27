@@ -330,7 +330,7 @@
           "components": {
             "SolanaTxItem": {
               "index": {
-                "transaction": "시그니처"
+                "transaction": "트랜잭션"
               }
             }
           },

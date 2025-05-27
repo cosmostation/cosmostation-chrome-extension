@@ -755,7 +755,7 @@
           "components": {
             "SolanaTxItem": {
               "index": {
-                "transaction": "Signature"
+                "transaction": "Transaction"
               }
             }
           },
