@@ -750,6 +750,22 @@
             "LoadingSubTitle": "Please wait a moment",
             "goToExplorer": "Go to Explorer"
           }
+        },
+        "Solana": {
+          "components": {
+            "SolanaTxItem": {
+              "index": {
+                "transaction": "Signature"
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
+          }
         }
       }
     },
@@ -1569,7 +1585,13 @@
                 "invalidAddress": "Invalid address",
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAvailableAmount": "No available amount",
-                "noAmount": "Please enter the amount"
+                "noAmount": "Please enter the amount",
+                "insufficientAmount": "Insufficient amount",
+                "noFee": "Insufficient fee amount",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
               }
             }
           }

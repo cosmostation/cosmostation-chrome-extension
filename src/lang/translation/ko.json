@@ -325,6 +325,22 @@
             "NoHistoryTitle": "트랜잭션 내역이 없습니다",
             "goToExplorer": "익스플로러로 이동하기"
           }
+        },
+        "Solana": {
+          "components": {
+            "SolanaTxItem": {
+              "index": {
+                "transaction": "시그니처"
+              }
+            }
+          },
+          "index": {
+            "LoadingSubTitle": "잠시 기다려주세요",
+            "LoadingTitle": "로딩 중...",
+            "NoHistorySubTitle": "트랜잭션 내역이 여기에 표시됩니다",
+            "NoHistoryTitle": "트랜잭션 내역이 없습니다",
+            "goToExplorer": "익스플로러로 이동하기"
+          }
         }
       }
     },
@@ -3000,7 +3016,14 @@
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
-                "noAmount": "금액을 입력하세요"
+                "noAmount": "금액을 입력하세요",
+                "insufficientAmount": "잔액이 부족합니다",
+                "noFee": "수수료 잔액이 부족합니다",
+                "sendReview": "코인 전송 최종 확인",
+                "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
+                "tooLowAmount": "0보다 큰 금액을 입력하세요",
+                "txProcessing": "트랜잭션 처리 중",
+                "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요"
               }
             }
           },

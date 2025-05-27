@@ -107,3 +107,37 @@ Content-Type: application/json
         }
     ]
 }
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getSignaturesForAddress",
+    "params": ["J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
+        { 
+            "limit": 100,
+            "before": "sGwQuUhQJrYvFuDegq4dSimmGK7TKtXzf1At2UAaLB8gCAe4EpuV62tizUkDf2xk1otQv7RT7N1d8qChADg4zUz"
+        }
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getSignaturesForAddress",
+    "params": ["J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
+        { 
+            "limit": 10,
+            "before": "5fKzZjYVT32pahZWu78wpGCqJJgnUaN3vi79bjxcvdnYNTuVNFf6sRSEJPLk7YHpq58nzULaXRRmKyJUj6V3bgZc"
+        }
+    ]
+}
