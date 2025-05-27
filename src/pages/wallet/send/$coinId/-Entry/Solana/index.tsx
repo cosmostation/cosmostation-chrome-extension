@@ -4,6 +4,7 @@ import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
 import { ComputeBudgetProgram, Connection, PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from '@solana/web3.js';
+import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -25,6 +26,7 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
+import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
@@ -42,6 +44,7 @@ import {
   EstimatedValueTextContainer,
   InputWrapper,
 } from './styled';
+import TxProcessingOverlay from '../components/TxProcessingOverlay';
 
 import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
@@ -58,6 +61,9 @@ interface ConfirmData {
 }
 
 export default function Solana({ coinId }: SolanaProps) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const { chainId, chainType } = parseCoinId(coinId);
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -74,6 +80,7 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
+  const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
@@ -83,8 +90,6 @@ export default function Solana({ coinId }: SolanaProps) {
   const recipientAddress = useMemo(() => debouncedInputRecipientAddress, [debouncedInputRecipientAddress]);
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
-
-  const { t } = useTranslation();
 
   const nativeCoinId = useMemo(() => getCoinId({ chainId, chainType, id: SOLANA_NATIVE_COIN }), [chainId, chainType]);
 
@@ -347,7 +352,7 @@ export default function Solana({ coinId }: SolanaProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction, isFetchingGetAccountInfo, isFetchingGetLatestBlockHash, isFetchingGetRecentPrioritizationFees, isFetchingTransactionPreview]);
 
-  const reviewOnClick = useCallback(() => {
+  const handleOnClickReview = useCallback(() => {
     if (transactionPreview?.simulatedValue?.unitsConsumed && transaction && typeof baseFee === 'number') {
       setConfirmData({
         transaction: transaction,
@@ -358,52 +363,85 @@ export default function Solana({ coinId }: SolanaProps) {
     }
   }, [baseFee, computeUnitLimit, computeUnitPrice, transaction, transactionPreview?.simulatedValue?.unitsConsumed]);
 
-  const confirmOnClick = useCallback(async () => {
-    if (confirmData.transaction && selectedCoinToSend) {
-      const currentChain = selectedCoinToSend?.chain;
-      const connection = new Connection(currentChain.rpcUrls[0].url, 'confirmed');
-      const keypair = getKeypair(currentChain, currentAccount, currentPassword);
-      const transactionToSend = confirmData.transaction;
+  const handleOnClickConfirm = useCallback(async () => {
+    try {
+      setIsOpenTxProcessingOverlay(true);
+      if (confirmData.transaction && selectedCoinToSend) {
+        const currentChain = selectedCoinToSend?.chain;
+        const connection = new Connection(currentChain.rpcUrls[0].url, 'confirmed');
+        const keypair = getKeypair(currentChain, currentAccount, currentPassword);
+        const transactionToSend = confirmData.transaction;
 
-      if (confirmData.computeUnitLimit && confirmData.computeUnitPrice) {
-        const { message } = transactionToSend;
+        if (confirmData.computeUnitLimit && confirmData.computeUnitPrice) {
+          const { message } = transactionToSend;
 
-        const computeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({
-          units: confirmData.computeUnitLimit,
-        });
-        const computeUnitPriceIx = ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: Math.ceil(confirmData.computeUnitPrice * 1000000),
-        });
+          const computeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({
+            units: confirmData.computeUnitLimit,
+          });
+          const computeUnitPriceIx = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: Math.ceil(confirmData.computeUnitPrice * 1000000),
+          });
 
-        const messageWithPriority = new TransactionMessage({
-          payerKey: message.staticAccountKeys[0],
-          recentBlockhash: message.recentBlockhash,
-          instructions: [
-            computeUnitIx,
-            computeUnitPriceIx,
-            ...message.compiledInstructions.map((ix) => ({
-              programId: message.staticAccountKeys[ix.programIdIndex],
-              keys: ix.accountKeyIndexes.map((i) => {
-                const pubkey = message.staticAccountKeys[i];
-                const isSigner = message.isAccountSigner(i);
-                const isWritable = message.isAccountWritable(i);
-                return { pubkey, isSigner, isWritable };
-              }),
-              data: Buffer.from(ix.data),
-            })),
-          ],
-        }).compileToV0Message();
+          const messageWithPriority = new TransactionMessage({
+            payerKey: message.staticAccountKeys[0],
+            recentBlockhash: message.recentBlockhash,
+            instructions: [
+              computeUnitIx,
+              computeUnitPriceIx,
+              ...message.compiledInstructions.map((ix) => ({
+                programId: message.staticAccountKeys[ix.programIdIndex],
+                keys: ix.accountKeyIndexes.map((i) => {
+                  const pubkey = message.staticAccountKeys[i];
+                  const isSigner = message.isAccountSigner(i);
+                  const isWritable = message.isAccountWritable(i);
+                  return { pubkey, isSigner, isWritable };
+                }),
+                data: Buffer.from(ix.data),
+              })),
+            ],
+          }).compileToV0Message();
 
-        const tx = new VersionedTransaction(messageWithPriority);
+          const tx = new VersionedTransaction(messageWithPriority);
 
-        tx.sign([{ publicKey: new PublicKey(selectedCoinToSend.address.address), secretKey: Buffer.from(keypair.privateKey, 'hex') }]);
+          tx.sign([{ publicKey: new PublicKey(selectedCoinToSend.address.address), secretKey: Buffer.from(keypair.privateKey, 'hex') }]);
 
-        const signature = await connection.sendRawTransaction(tx.serialize());
+          const signature = await connection.sendRawTransaction(tx.serialize());
 
-        console.log(signature);
+          if (!signature) {
+            throw new Error('Failed to send transaction');
+          }
+
+          navigate({
+            to: TxResult.to,
+            search: {
+              address: recipientAddress,
+              coinId,
+              txHash: signature,
+            },
+          });
+        }
       }
+    } catch {
+      navigate({
+        to: TxResult.to,
+        search: {
+          coinId,
+        },
+      });
+    } finally {
+      setIsOpenTxProcessingOverlay(false);
     }
-  }, [confirmData.computeUnitLimit, confirmData.computeUnitPrice, confirmData.transaction, currentAccount, currentPassword, selectedCoinToSend]);
+  }, [
+    coinId,
+    confirmData.computeUnitLimit,
+    confirmData.computeUnitPrice,
+    confirmData.transaction,
+    currentAccount,
+    currentPassword,
+    navigate,
+    recipientAddress,
+    selectedCoinToSend,
+  ]);
 
   return (
     <>
@@ -496,7 +534,7 @@ export default function Solana({ coinId }: SolanaProps) {
             disableConfirm={isDisabled || !!errorMessage}
             isLoading={isDisabled}
             errorMessage={errorMessage}
-            onClickConfirm={reviewOnClick}
+            onClickConfirm={handleOnClickReview}
           />
         </>
       </BaseFooter>
@@ -515,10 +553,15 @@ export default function Solana({ coinId }: SolanaProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')}
-        contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewSub')}
-        confirmButtonText={t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}
-        onClickConfirm={confirmOnClick}
+        contentsTitle={t('pages.wallet.send.$coinId.Entry.Solana.index.sendReview')}
+        contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Solana.index.sendReviewSub')}
+        confirmButtonText={t('pages.wallet.send.$coinId.Entry.Solana.index.send')}
+        onClickConfirm={handleOnClickConfirm}
+      />
+      <TxProcessingOverlay
+        open={isOpenTxProcessingOverlay}
+        title={t('pages.wallet.send.$coinId.Entry.Solana.index.txProcessing')}
+        message={t('pages.wallet.send.$coinId.Entry.Solana.index.txProcessingSub')}
       />
     </>
   );

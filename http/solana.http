@@ -87,5 +87,23 @@ Content-Type: application/json
     "jsonrpc": "2.0",
     "id": 1,
     "method": "getRecentPrioritizationFees",
-    "params": []
+    "params": [["11111111111111111111111111111111", "68qgeyUHDxagPSqpG3KNZYw22MfwTqF7py3Uw888UtMq"]]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTransaction",
+    "params": ["5W2y8juhAySNaRkGCe44RfDPfAkNzjX7bPGFMeBFaJtPdDPDo3owt7tcSA5zBAvd71qfiTj4xYGCBYC3EFvXojNo",
+        {
+            "encoding": "json",
+            "maxSupportedTransactionVersion": 0,
+            "commitment": "confirmed"
+        }
+    ]
 }
