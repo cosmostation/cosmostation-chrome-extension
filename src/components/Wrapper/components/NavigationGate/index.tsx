@@ -32,6 +32,7 @@ import type { BitcoinRequest } from '@/types/message/inject/bitcoin';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
 import type { IotaRequest } from '@/types/message/inject/iota';
+import type { SolanaRequest } from '@/types/message/inject/solana';
 import type { SuiRequest } from '@/types/message/inject/sui';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -83,6 +84,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         if (requestQueue[0].chainType === 'iota') {
           navigate({
             to: getNavigationPathForIotaRequest(requestQueue[0]),
+          });
+        }
+        if (requestQueue[0].chainType === 'solana') {
+          navigate({
+            to: getNavigationPathForSolanaRequest(requestQueue[0]),
           });
         }
       }
@@ -218,6 +224,16 @@ const getNavigationPathForIotaRequest = (requestQueue: IotaRequest) => {
       return IotaTransaction.to;
     case 'iota_signPersonalMessage':
       return IotaSignMessage.to;
+
+    default:
+      return '/';
+  }
+};
+
+const getNavigationPathForSolanaRequest = (requestQueue: SolanaRequest) => {
+  switch (requestQueue.method) {
+    case 'solana_connect':
+      return RequestAccount.to;
 
     default:
       return '/';

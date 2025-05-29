@@ -15,6 +15,7 @@ import { cosmosWallet } from './cosmos/provider/wallets';
 import { announceEip6963Provider } from './evm/provider/eip6963';
 import { CosmostaionEthereum } from './evm/provider/evm';
 import { CosmostationIota, IotaStandard } from './iota/provider/iota';
+import { CosmostationSolana } from './solana/provider/solana';
 import { CosmostationSui, SuiStandard } from './sui/provider/sui';
 
 if (!window.__cosmostationInjected__) {
@@ -33,6 +34,7 @@ if (!window.__cosmostationInjected__) {
         sui: CosmostationSui.getInstance(),
         aptos: CosmostationAptos.getInstance(),
         iota: CosmostationIota.getInstance(),
+        solana: CosmostationSolana.getInstance(),
         providers: {
           keplr: CosmostationKeplr.getInstance(),
           metamask: CosmostaionEthereum.getInstance(),

@@ -53,6 +53,7 @@ export const initialState: ExtensionStorageState = {
   chosenAptosNetworkId: '',
   chosenBitcoinNetworkId: '',
   chosenIotaNetworkId: '',
+  chosenSolanaNetworkId: '',
   currentWindowId: null,
   prioritizedProvider: {
     keplr: false,

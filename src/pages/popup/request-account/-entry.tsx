@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { produce } from 'immer';
+import type { PublicKey } from '@solana/web3.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -17,6 +18,7 @@ import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
 import type { CosRequestAccount, CosRequestAccountResponse, CosRequestAccountsSettled, CosRequestAccountsSettledResponse } from '@/types/message/inject/cosmos';
 import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
 import type { IotaRequestAccount, IotaRequestAccountResponse, IotaRequestConnect, IotaRequestConnectResponse } from '@/types/message/inject/iota';
+import type { SolanaConnect } from '@/types/message/inject/solana';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
 import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
 import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage';
@@ -408,6 +410,36 @@ export default function Entry() {
               params: {
                 id: requestId,
                 error: new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+              },
+            });
+
+            void deQueue();
+          }
+        }
+
+        if (currentRequestQueue?.method === 'solana_connect' && currentPassword) {
+          const { tabId, requestId, origin } = currentRequestQueue;
+
+          const { currentSolanaNetwork } = await extensionLocalStorage();
+
+          if (currentSolanaNetwork) {
+            void refreshOriginConnectionTime(origin);
+
+            // const keyPair = getKeypair(currentSolanaNetwork, currentAccount, currentPassword);
+
+            // const publicKey = new PublicKey(Buffer.from(keyPair.publicKey, 'hex'));
+
+            const result = { publicKey: 'ssssssssss' as unknown as PublicKey };
+
+            sendMessage<ResponseAppMessage<SolanaConnect>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
               },
             });
 

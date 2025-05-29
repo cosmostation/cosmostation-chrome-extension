@@ -109,12 +109,13 @@ export async function extensionLocalStorage() {
     chosenBitcoinNetworkId,
     chosenEthereumNetworkId,
     chosenIotaNetworkId,
+    chosenSolanaNetworkId,
   } = storageWithDefault;
 
   const currentAccount = (() => userAccounts.find((account) => account.id === currentAccountId)!)();
   const currentAccountName = accountNamesById[currentAccountId];
 
-  const { evmChains, aptosChains, suiChains, bitcoinChains, iotaChains } = await getChains();
+  const { evmChains, aptosChains, suiChains, bitcoinChains, iotaChains, solanaChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
 
   const currentEthereumNetwork = (() => {
@@ -165,6 +166,14 @@ export async function extensionLocalStorage() {
     return iotaNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? iotaNetworks[0];
   })();
 
+  const currentSolanaNetwork = (() => {
+    const solanaNetworks = [...solanaChains];
+
+    const networkId = chosenSolanaNetworkId ?? getUniqueChainId(solanaNetworks[0]);
+
+    return solanaNetworks.find((network) => isMatchingUniqueChainId(network, networkId)) ?? solanaNetworks[0];
+  })();
+
   const currentAccountAllowedOrigins = approvedOrigins
     .filter((allowedOrigin) => allowedOrigin.accountId === currentAccountId)
     .map((allowedOrigin) => allowedOrigin.origin);
@@ -180,6 +189,7 @@ export async function extensionLocalStorage() {
     currentSuiNetwork,
     currentBitcoinNetwork,
     currentIotaNetwork,
+    currentSolanaNetwork,
     currentAccountAllowedOrigins,
     currentAccountAddressInfo,
   };

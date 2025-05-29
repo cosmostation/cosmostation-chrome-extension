@@ -40,6 +40,8 @@ import type {
   SuiSignTransactionResponse,
 } from '@/types/message/inject/sui';
 
+import type { SolanaConnectResponse } from './message/inject/solana';
+
 declare global {
   type KeplrInterface = Omit<
     Keplr,
@@ -147,16 +149,16 @@ declare global {
   }
 
   interface SolanaProvider {
-    request: () => Promise<Unknown>;
-    connect: () => Promise<string>;
-    disconnect: () => Promise<void>;
-    signTransaction: () => Promise<Unknown>;
-    signAllTransactions: () => Promise<Unknown>;
-    signMessage: () => Promise<Unknown>;
-    signAndSendTransaction: () => Promise<Unknown>;
-    signAndSendAllTransaction: () => Promise<Unknown>;
-    on: () => Promise<Unknown>;
-    off: () => Promise<Unknown>;
+    request?: () => Promise<Unknown>;
+    connect?: () => Promise<SolanaConnectResponse>;
+    disconnect?: () => Promise<void>;
+    signTransaction?: () => Promise<Unknown>;
+    signAllTransactions?: () => Promise<Unknown>;
+    signMessage?: () => Promise<Unknown>;
+    signAndSendTransaction?: () => Promise<Unknown>;
+    signAndSendAllTransaction?: () => Promise<Unknown>;
+    on?: () => Promise<Unknown>;
+    off?: () => Promise<Unknown>;
   }
 
   interface Window {
