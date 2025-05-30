@@ -1,13 +1,19 @@
 // import { COSMOSTATION_WALLET_NAME } from '@/constants/common';
 // import type { ApprovedSuiPermissionType } from '@/types/extension';
 // import type { EventDetail, SolanaListenerType, SuiListenerType } from '@/types/message';
+import { PublicKey } from '@solana/web3.js';
+
 import type { SolanaConnectResponse, SolanaDisconnectResponse } from '@/types/message/inject/solana';
 
 import { solanaRequestApp } from '../request';
 
 const connect = async () => {
-  const response = (await solanaRequestApp({ method: 'solana_connect', params: undefined })) as Promise<SolanaConnectResponse>;
-  return response;
+  const response = (await solanaRequestApp({ method: 'solana_connect', params: undefined })) as SolanaConnectResponse;
+
+  const { publicKey: hexPublicKey } = response;
+
+  const publicKey = new PublicKey(Buffer.from(hexPublicKey as unknown as string, 'hex'));
+  return { publicKey } as SolanaConnectResponse;
 };
 
 const disconnect = () => solanaRequestApp({ method: 'solana_disconnect', params: undefined }) as Promise<SolanaDisconnectResponse>;

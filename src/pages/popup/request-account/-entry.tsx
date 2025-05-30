@@ -425,11 +425,9 @@ export default function Entry() {
           if (currentSolanaNetwork) {
             void refreshOriginConnectionTime(origin);
 
-            // const keyPair = getKeypair(currentSolanaNetwork, currentAccount, currentPassword);
+            const keyPair = getKeypair(currentSolanaNetwork, currentAccount, currentPassword);
 
-            // const publicKey = new PublicKey(Buffer.from(keyPair.publicKey, 'hex'));
-
-            const result = { publicKey: 'ssssssssss' as unknown as PublicKey };
+            const result = { publicKey: keyPair.publicKey as unknown as PublicKey };
 
             sendMessage<ResponseAppMessage<SolanaConnect>>({
               target: 'CONTENT',

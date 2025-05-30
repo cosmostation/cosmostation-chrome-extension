@@ -1,11 +1,9 @@
-import { PublicKey } from '@solana/web3.js';
-
 import { RPC_ERROR, RPC_ERROR_MESSAGE, SOLANA_RPC_ERROR_MESSAGE } from '@/constants/error';
 import { SOLANA_METHOD_TYPE, /* SOLANA_NO_POPUP_METHOD_TYPE, */ SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
 import { /* getAddress, */ getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import type { ResponseAppMessage } from '@/types/message/content';
-import type { SolanaConnect, /* SolanaConnectResponse, SolanaDisconnect,*/ SolanaRequest } from '@/types/message/inject/solana';
+import type { SolanaConnect, SolanaConnectResponse, /* SolanaConnectResponse, SolanaDisconnect,*/ SolanaRequest } from '@/types/message/inject/solana';
 import { SolanaRPCError } from '@/utils/error';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
@@ -20,10 +18,10 @@ export async function solanaProcess(message: SolanaRequest) {
   const solanaPopupMethods = Object.values(SOLANA_POPUP_METHOD_TYPE) as string[];
   // const solanaNoPopupMethods = Object.values(SOLANA_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccount, currentAccountAllowedOrigins, currentAptosNetwork /*, approvedOrigins */ } = await extensionLocalStorage();
+  const { currentAccount, currentAccountAllowedOrigins, currentSolanaNetwork /*, approvedOrigins */ } = await extensionLocalStorage();
   const { currentPassword } = await extensionSessionStorage();
 
-  const chain = currentAptosNetwork;
+  const chain = currentSolanaNetwork;
 
   try {
     if (!method || !solanaMethods.includes(method)) {
@@ -37,7 +35,7 @@ export async function solanaProcess(message: SolanaRequest) {
 
           const keyPair = getKeypair(chain, currentAccount, currentPassword);
 
-          const result = { publicKey: new PublicKey(Buffer.from(keyPair.publicKey, 'hex')) };
+          const result = { publicKey: keyPair.publicKey } as unknown as SolanaConnectResponse;
 
           sendMessage<ResponseAppMessage<SolanaConnect>>({
             target: 'CONTENT',
