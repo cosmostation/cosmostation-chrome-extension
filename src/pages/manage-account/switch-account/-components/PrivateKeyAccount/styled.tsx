@@ -74,3 +74,11 @@ export const ActiveBadge = styled('div')(({ theme }) => ({
 
   background: theme.palette.accentColor.purple200,
 }));
+
+export const EmptyAssetContainer = styled('div')({
+  position: 'absolute',
+
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+});
