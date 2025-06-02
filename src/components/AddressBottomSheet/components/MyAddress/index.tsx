@@ -112,7 +112,7 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
 
           return {
             id: restoreString,
-            mnemonicName: mnemonicNamesByHashedMnemonic[restoreString],
+            mnemonicName: mnemonicNamesByHashedMnemonic[restoreString] || '',
             accounts: filteredAccountAddresses,
           };
         })

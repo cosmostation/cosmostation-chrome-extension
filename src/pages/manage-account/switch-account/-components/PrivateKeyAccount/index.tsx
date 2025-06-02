@@ -40,7 +40,7 @@ export default function PrivateKeyAccount({ search }: PrivateKeyAccountProps) {
     .filter((item) => item.type === 'PRIVATE_KEY')
     .map((item) => ({
       ...item,
-      accountName: accountNamesById[item.id],
+      accountName: accountNamesById[item.id] ?? '',
     }));
 
   const filteredAccounts = useMemo(() => {

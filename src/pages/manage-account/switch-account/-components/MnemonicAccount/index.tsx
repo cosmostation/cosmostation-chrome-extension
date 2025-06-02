@@ -90,7 +90,7 @@ export default function MnemonicAccount({ search }: MnemonicAccountProps) {
       .map(({ mnemonicName, accounts, ...rest }) => {
         const matchesMnemonicName = mnemonicName.toLowerCase().includes(lowerSearch);
 
-        const filteredAccounts = accounts.filter((acc) => acc.accountName.toLowerCase().includes(lowerSearch));
+        const filteredAccounts = accounts.filter((acc) => (acc.accountName ?? '').toLowerCase().includes(lowerSearch));
 
         if (matchesMnemonicName || filteredAccounts.length > 0) {
           return {
