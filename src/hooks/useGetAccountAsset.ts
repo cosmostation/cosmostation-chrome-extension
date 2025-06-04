@@ -52,7 +52,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
   return {
     getAccountAsset,
     getCosmosAccountAsset: () => assetFinders.cosmos(),
-    getCosmosAccountAssetFillteredByAccoutType: () => assetFinders.filteredCosmosAssetByAccountType(),
+    getCosmosAccountAssetFilteredByAccountType: () => assetFinders.filteredCosmosAssetByAccountType(),
     getEVMAccountAsset: () => assetFinders.evm(),
     getAptosAccountAsset: () => assetFinders.aptos(),
     getSuiAccountAsset: () => assetFinders.sui(),

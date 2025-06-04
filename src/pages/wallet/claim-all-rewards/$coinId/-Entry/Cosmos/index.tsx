@@ -86,7 +86,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { getCosmosAccountAssetFillteredByAccoutType } = useGetAccountAsset({ coinId });
+  const { getCosmosAccountAssetFilteredByAccountType } = useGetAccountAsset({ coinId });
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });
 
   const currentFeeStepKey = useMemo(() => {
@@ -99,13 +99,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const { data: coinList } = useCoinList();
 
-  const selectedRewardCoin = getCosmosAccountAssetFillteredByAccoutType();
+  const selectedRewardCoin = getCosmosAccountAssetFilteredByAccountType();
 
   const delegationInfo = useDelegationInfo({ coinId });
 
   const rewardReceiptAddress = selectedRewardCoin?.address.address || '';
 
-  const mainRewardCoin = getCosmosAccountAssetFillteredByAccoutType();
+  const mainRewardCoin = getCosmosAccountAssetFilteredByAccountType();
 
   const isNTRN = [NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID].some((item) => item === parseCoinId(coinId).chainId);
 

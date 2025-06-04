@@ -84,7 +84,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { getCosmosAccountAssetFillteredByAccoutType } = useGetAccountAsset({ coinId });
+  const { getCosmosAccountAssetFilteredByAccountType } = useGetAccountAsset({ coinId });
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });
 
   const currentFeeStepKey = useMemo(() => {
@@ -97,7 +97,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const { data: coinList } = useCoinList();
 
-  const selectedRewardCoin = getCosmosAccountAssetFillteredByAccoutType();
+  const selectedRewardCoin = getCosmosAccountAssetFilteredByAccountType();
 
   const delegationInfo = useDelegationInfo({ coinId });
 
