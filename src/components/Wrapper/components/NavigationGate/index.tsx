@@ -25,6 +25,7 @@ import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as IotaSignMessage } from '@/pages/popup/iota/sign-message';
 import { Route as IotaTransaction } from '@/pages/popup/iota/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
+import { Route as SolanaSignMessage } from '@/pages/popup/solana/sign-message';
 import { Route as SuiSignMessage } from '@/pages/popup/sui/sign-message';
 import { Route as SuiTransaction } from '@/pages/popup/sui/transaction';
 import type { AptosRequest } from '@/types/message/inject/aptos';
@@ -234,6 +235,8 @@ const getNavigationPathForSolanaRequest = (requestQueue: SolanaRequest) => {
   switch (requestQueue.method) {
     case 'solana_connect':
       return RequestAccount.to;
+    case 'solana_signMessage':
+      return SolanaSignMessage.to;
 
     default:
       return '/';

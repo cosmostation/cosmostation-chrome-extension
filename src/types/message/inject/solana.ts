@@ -1,14 +1,15 @@
 import type { PublicKey } from '@solana/web3.js';
 
-import type { SOLANA_NO_POPUP_METHOD_TYPE, SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
+import type { SOLANA_METHOD_TYPE, SOLANA_NO_POPUP_METHOD_TYPE, SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
 import type { ChainType } from '@/types/chain';
 
 import type { RequestBase } from '.';
 
-export type SolanaRequest = SolanaConnect | SolanaDisconnect;
+export type SolanaRequest = SolanaConnect | SolanaDisconnect | SolanaSignMessage;
 
 export interface SolanaResponse {
   [SOLANA_POPUP_METHOD_TYPE.SOLANA__CONNECT]: SolanaConnectResponse;
+  [SOLANA_POPUP_METHOD_TYPE.SOLANA__SIGN_MESSAGE]: SolanaSignMessageResponse;
   [SOLANA_NO_POPUP_METHOD_TYPE.SOLANA__DISCONNECT]: SolanaDisconnectResponse;
 }
 
@@ -29,3 +30,19 @@ export interface SolanaDisconnect extends RequestBase {
 }
 
 export type SolanaDisconnectResponse = undefined;
+
+export interface SolanaSingMessageParams {
+  message: Uint8Array;
+  display: 'utf8' | 'hex';
+}
+
+export interface SolanaSignMessage extends RequestBase {
+  chainType: Extract<ChainType, 'solana'>;
+  method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_MESSAGE;
+  params: SolanaSingMessageParams;
+}
+
+export type SolanaSignMessageResponse = {
+  signature: Uint8Array;
+  publicKey: PublicKey;
+};

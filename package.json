@@ -82,6 +82,7 @@
     "recharts": "^2.13.3",
     "sha3": "^2.1.4",
     "sort-keys": "^5.1.0",
+    "tweetnacl": "^1.0.3",
     "use-debounce": "^10.0.4",
     "uuid": "^11.0.3",
     "zustand": "^5.0.0"

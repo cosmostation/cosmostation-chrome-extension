@@ -51,6 +51,7 @@ import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/
 import { Route as WalletCancelUnstakingCoinIdIndexImport } from './pages/wallet/cancel-unstaking/$coinId/index'
 import { Route as PopupSuiTransactionIndexImport } from './pages/popup/sui/transaction/index'
 import { Route as PopupSuiSignMessageIndexImport } from './pages/popup/sui/sign-message/index'
+import { Route as PopupSolanaSignMessageIndexImport } from './pages/popup/solana/sign-message/index'
 import { Route as PopupIotaTransactionIndexImport } from './pages/popup/iota/transaction/index'
 import { Route as PopupIotaSignMessageIndexImport } from './pages/popup/iota/sign-message/index'
 import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/transaction/index'
@@ -357,6 +358,13 @@ const PopupSuiSignMessageIndexRoute = PopupSuiSignMessageIndexImport.update({
   path: '/popup/sui/sign-message/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const PopupSolanaSignMessageIndexRoute =
+  PopupSolanaSignMessageIndexImport.update({
+    id: '/popup/solana/sign-message/',
+    path: '/popup/solana/sign-message/',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 const PopupIotaTransactionIndexRoute = PopupIotaTransactionIndexImport.update({
   id: '/popup/iota/transaction/',
@@ -1127,6 +1135,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupIotaTransactionIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/solana/sign-message/': {
+      id: '/popup/solana/sign-message/'
+      path: '/popup/solana/sign-message'
+      fullPath: '/popup/solana/sign-message'
+      preLoaderRoute: typeof PopupSolanaSignMessageIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/sui/sign-message/': {
       id: '/popup/sui/sign-message/'
       path: '/popup/sui/sign-message'
@@ -1416,6 +1431,7 @@ export interface FileRoutesByFullPath {
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/iota/sign-message': typeof PopupIotaSignMessageIndexRoute
   '/popup/iota/transaction': typeof PopupIotaTransactionIndexRoute
+  '/popup/solana/sign-message': typeof PopupSolanaSignMessageIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
   '/popup/sui/transaction': typeof PopupSuiTransactionIndexRoute
   '/wallet/cancel-unstaking/$coinId': typeof WalletCancelUnstakingCoinIdIndexRoute
@@ -1510,6 +1526,7 @@ export interface FileRoutesByTo {
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
   '/popup/iota/sign-message': typeof PopupIotaSignMessageIndexRoute
   '/popup/iota/transaction': typeof PopupIotaTransactionIndexRoute
+  '/popup/solana/sign-message': typeof PopupSolanaSignMessageIndexRoute
   '/popup/sui/sign-message': typeof PopupSuiSignMessageIndexRoute
   '/popup/sui/transaction': typeof PopupSuiTransactionIndexRoute
   '/wallet/cancel-unstaking/$coinId': typeof WalletCancelUnstakingCoinIdIndexRoute
@@ -1605,6 +1622,7 @@ export interface FileRoutesById {
   '/popup/evm/transaction/': typeof PopupEvmTransactionIndexRoute
   '/popup/iota/sign-message/': typeof PopupIotaSignMessageIndexRoute
   '/popup/iota/transaction/': typeof PopupIotaTransactionIndexRoute
+  '/popup/solana/sign-message/': typeof PopupSolanaSignMessageIndexRoute
   '/popup/sui/sign-message/': typeof PopupSuiSignMessageIndexRoute
   '/popup/sui/transaction/': typeof PopupSuiTransactionIndexRoute
   '/wallet/cancel-unstaking/$coinId/': typeof WalletCancelUnstakingCoinIdIndexRoute
@@ -1701,6 +1719,7 @@ export interface FileRouteTypes {
     | '/popup/evm/transaction'
     | '/popup/iota/sign-message'
     | '/popup/iota/transaction'
+    | '/popup/solana/sign-message'
     | '/popup/sui/sign-message'
     | '/popup/sui/transaction'
     | '/wallet/cancel-unstaking/$coinId'
@@ -1794,6 +1813,7 @@ export interface FileRouteTypes {
     | '/popup/evm/transaction'
     | '/popup/iota/sign-message'
     | '/popup/iota/transaction'
+    | '/popup/solana/sign-message'
     | '/popup/sui/sign-message'
     | '/popup/sui/transaction'
     | '/wallet/cancel-unstaking/$coinId'
@@ -1887,6 +1907,7 @@ export interface FileRouteTypes {
     | '/popup/evm/transaction/'
     | '/popup/iota/sign-message/'
     | '/popup/iota/transaction/'
+    | '/popup/solana/sign-message/'
     | '/popup/sui/sign-message/'
     | '/popup/sui/transaction/'
     | '/wallet/cancel-unstaking/$coinId/'
@@ -1982,6 +2003,7 @@ export interface RootRouteChildren {
   PopupEvmTransactionIndexRoute: typeof PopupEvmTransactionIndexRoute
   PopupIotaSignMessageIndexRoute: typeof PopupIotaSignMessageIndexRoute
   PopupIotaTransactionIndexRoute: typeof PopupIotaTransactionIndexRoute
+  PopupSolanaSignMessageIndexRoute: typeof PopupSolanaSignMessageIndexRoute
   PopupSuiSignMessageIndexRoute: typeof PopupSuiSignMessageIndexRoute
   PopupSuiTransactionIndexRoute: typeof PopupSuiTransactionIndexRoute
   WalletCancelUnstakingCoinIdIndexRoute: typeof WalletCancelUnstakingCoinIdIndexRoute
@@ -2087,6 +2109,7 @@ const rootRouteChildren: RootRouteChildren = {
   PopupEvmTransactionIndexRoute: PopupEvmTransactionIndexRoute,
   PopupIotaSignMessageIndexRoute: PopupIotaSignMessageIndexRoute,
   PopupIotaTransactionIndexRoute: PopupIotaTransactionIndexRoute,
+  PopupSolanaSignMessageIndexRoute: PopupSolanaSignMessageIndexRoute,
   PopupSuiSignMessageIndexRoute: PopupSuiSignMessageIndexRoute,
   PopupSuiTransactionIndexRoute: PopupSuiTransactionIndexRoute,
   WalletCancelUnstakingCoinIdIndexRoute: WalletCancelUnstakingCoinIdIndexRoute,
@@ -2203,6 +2226,7 @@ export const routeTree = rootRoute
         "/popup/evm/transaction/",
         "/popup/iota/sign-message/",
         "/popup/iota/transaction/",
+        "/popup/solana/sign-message/",
         "/popup/sui/sign-message/",
         "/popup/sui/transaction/",
         "/wallet/cancel-unstaking/$coinId/",
@@ -2413,6 +2437,9 @@ export const routeTree = rootRoute
     },
     "/popup/iota/transaction/": {
       "filePath": "popup/iota/transaction/index.tsx"
+    },
+    "/popup/solana/sign-message/": {
+      "filePath": "popup/solana/sign-message/index.tsx"
     },
     "/popup/sui/sign-message/": {
       "filePath": "popup/sui/sign-message/index.tsx"

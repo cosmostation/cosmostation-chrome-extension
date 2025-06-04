@@ -3,12 +3,44 @@
 // import type { EventDetail, SolanaListenerType, SuiListenerType } from '@/types/message';
 import { PublicKey } from '@solana/web3.js';
 
-import type { SolanaConnectResponse, SolanaDisconnectResponse } from '@/types/message/inject/solana';
+import type { BaseRequest } from '@/types/message/inject';
+import type { SolanaConnectResponse, SolanaDisconnectResponse, SolanaSignMessage, SolanaSignMessageResponse } from '@/types/message/inject/solana';
 
 import { solanaRequestApp } from '../request';
 
+interface RequestParams {
+  method: string;
+  params: unknown;
+}
+
+const request = async ({ method, params }: RequestParams) => {
+  const solanaMethod = `solana_${method}` as BaseRequest['method'];
+
+  if (solanaMethod === 'solana_connect') {
+    const response = (await solanaRequestApp({ method: 'solana_connect', params: undefined })) as SolanaConnectResponse;
+    const { publicKey: hexPublicKey } = response;
+
+    const publicKey = new PublicKey(Buffer.from(hexPublicKey as unknown as string, 'hex'));
+    return { publicKey } as SolanaConnectResponse;
+  } else if (solanaMethod === 'solana_signMessage') {
+    const { message, display } = params as SolanaSignMessage['params'];
+    const messageHex = Buffer.from(message).toString('hex');
+
+    const response = (await solanaRequestApp({ method: solanaMethod, params: { message: messageHex, display } })) as SolanaSignMessageResponse;
+
+    const { publicKey: hexPublicKey, signature: hexSignature } = response;
+
+    const publicKey = new PublicKey(Buffer.from(hexPublicKey as unknown as string, 'hex'));
+    const signature = new Uint8Array(Buffer.from(hexSignature as unknown as string, 'hex'));
+
+    return { publicKey, signature };
+  } else {
+    return await solanaRequestApp({ method: solanaMethod, params });
+  }
+};
+
 const connect = async () => {
-  const response = (await solanaRequestApp({ method: 'solana_connect', params: undefined })) as SolanaConnectResponse;
+  const response = (await request({ method: 'connect', params: undefined })) as SolanaConnectResponse;
 
   const { publicKey: hexPublicKey } = response;
 
@@ -16,7 +48,13 @@ const connect = async () => {
   return { publicKey } as SolanaConnectResponse;
 };
 
-const disconnect = () => solanaRequestApp({ method: 'solana_disconnect', params: undefined }) as Promise<SolanaDisconnectResponse>;
+const disconnect = () => request({ method: 'disconnect', params: undefined }) as Promise<SolanaDisconnectResponse>;
+
+const signMessage = async (message: Uint8Array, display = 'utf8') => {
+  const response = (await request({ method: 'signMessage', params: { message, display } })) as SolanaSignMessageResponse;
+
+  return response;
+};
 
 // class SuiStandard implements Wallet {
 //   version: '1.0.0';
@@ -216,6 +254,8 @@ export class CosmostationSolana implements SolanaProvider {
   // }
   connect = connect;
   disconnect = disconnect;
+  signMessage = signMessage;
+  request = request;
 }
 
 // export { SuiStandard };
