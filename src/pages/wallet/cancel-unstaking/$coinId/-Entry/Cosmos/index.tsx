@@ -70,8 +70,8 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
-  const selectedCancelUnstakeCoin = getCosmosAccountAsset();
+  const { getCosmosAccountAssetFillteredByAccoutType } = useGetAccountAsset({ coinId });
+  const selectedCancelUnstakeCoin = getCosmosAccountAssetFillteredByAccoutType();
 
   const undelegation = useUndelegation({ coinId });
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });

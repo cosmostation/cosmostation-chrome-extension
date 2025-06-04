@@ -77,7 +77,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const { getCosmosAccountAssetFillteredByAccoutType } = useGetAccountAsset({ coinId });
   const validators = useValidators({ coinId });
 
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
@@ -100,7 +100,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
 
-  const selectedStakingCoin = getCosmosAccountAsset();
+  const selectedStakingCoin = getCosmosAccountAssetFillteredByAccoutType();
 
   const coinImageURL = selectedStakingCoin?.asset.image || '';
 

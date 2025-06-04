@@ -24,6 +24,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
   const assetFinders = useMemo(() => {
     return {
       cosmos: () => accountAllAssets?.allCosmosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      filteredCosmosAssetByAccountType: () => accountAllAssets?.allCosmosAccountAssetsFiltered.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       evm: () => accountAllAssets?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       aptos: () => accountAllAssets?.aptosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       sui: () => accountAllAssets?.suiAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
@@ -32,6 +33,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
     };
   }, [
     accountAllAssets?.allCosmosAccountAssets,
+    accountAllAssets?.allCosmosAccountAssetsFiltered,
     accountAllAssets?.allEVMAccountAssets,
     accountAllAssets?.aptosAccountAssets,
     accountAllAssets?.bitcoinAccountAssets,
@@ -50,6 +52,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
   return {
     getAccountAsset,
     getCosmosAccountAsset: () => assetFinders.cosmos(),
+    getCosmosAccountAssetFillteredByAccoutType: () => assetFinders.filteredCosmosAssetByAccountType(),
     getEVMAccountAsset: () => assetFinders.evm(),
     getAptosAccountAsset: () => assetFinders.aptos(),
     getSuiAccountAsset: () => assetFinders.sui(),

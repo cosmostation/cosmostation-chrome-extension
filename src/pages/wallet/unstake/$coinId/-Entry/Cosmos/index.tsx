@@ -84,8 +84,8 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
-  const selectedUnstakingCoin = getCosmosAccountAsset();
+  const { getCosmosAccountAssetFillteredByAccoutType } = useGetAccountAsset({ coinId });
+  const selectedUnstakingCoin = getCosmosAccountAssetFillteredByAccoutType();
 
   const delegationInfo = useDelegationInfo({ coinId });
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });

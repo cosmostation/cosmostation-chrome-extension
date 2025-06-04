@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { produce } from 'immer';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -24,6 +25,7 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
@@ -64,12 +66,26 @@ export default function Cosmos({ id }: CosmosProps) {
   const { chainList } = useChainList();
   const { addedCosmosNFTsWithMeta, isLoading: isLoadingCosmsoNFTs } = useCurrentAddedCosmosNFTsWithMetaData();
 
+  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const selectedNFT = useMemo(() => addedCosmosNFTsWithMeta.find((nft) => nft.id === id), [addedCosmosNFTsWithMeta, id]);
 
-  const chain = useMemo(
-    () => chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType),
-    [chainList.cosmosChains, selectedNFT?.chainId, selectedNFT?.chainType],
-  );
+  const chain = useMemo(() => {
+    const originChain = chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType);
+
+    if (originChain && currentPreferAccountType) {
+      const selectedPreferAccountType = currentPreferAccountType[originChain.id];
+
+      if (selectedPreferAccountType) {
+        return produce(originChain, (draft) => {
+          draft.accountTypes = draft.accountTypes.filter(
+            (accountType) => accountType.pubkeyStyle === selectedPreferAccountType.pubkeyStyle && accountType.hdPath === selectedPreferAccountType.hdPath,
+          );
+        });
+      }
+    }
+
+    return originChain;
+  }, [chainList.cosmosChains, currentPreferAccountType, selectedNFT?.chainId, selectedNFT?.chainType]);
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain?.accountPrefix || '', [39]), [chain?.accountPrefix]);
 
   const nftImage = selectedNFT?.image;
