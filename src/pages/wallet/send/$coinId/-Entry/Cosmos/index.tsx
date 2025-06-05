@@ -76,7 +76,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const nodeInfo = useNodeInfo({ coinId });
 
   const { data } = useAccountAllAssets();
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const { getCosmosAccountAssetFilteredByAccountType } = useGetAccountAsset({ coinId });
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -94,7 +94,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 
-  const selectedCoinToSend = getCosmosAccountAsset();
+  const selectedCoinToSend = getCosmosAccountAssetFilteredByAccountType();
 
   const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
 

@@ -85,7 +85,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const { getCosmosAccountAssetFilteredByAccountType } = useGetAccountAsset({ coinId });
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });
 
   const currentFeeStepKey = useMemo(() => {
@@ -97,7 +97,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   }, [defaultGasRateKey, inputFeeStepKey]);
   const { data: coinList } = useCoinList();
 
-  const selectedCoin = getCosmosAccountAsset();
+  const selectedCoin = getCosmosAccountAssetFilteredByAccountType();
 
   const commissionReceiptAddress = selectedCoin?.address.address || '';
 
