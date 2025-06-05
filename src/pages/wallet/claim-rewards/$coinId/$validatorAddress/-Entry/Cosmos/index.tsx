@@ -36,9 +36,10 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import {
   ChainNameContainer,
@@ -60,6 +61,7 @@ type CosmosProps = {
 export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
@@ -440,6 +442,17 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({
+        txHash: response.tx_response.txhash,
+        chainId: uniqueChainId,
+        address: selectedRewardCoin.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'staking',
+      });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -459,6 +472,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     }
   }, [
     account.data?.value.account_number,
+    addTx,
     coinId,
     currentAccount,
     currentBaseFee,
@@ -468,6 +482,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     navigate,
     selectedFeeOption,
     selectedRewardCoin?.address.accountType.pubkeyType,
+    selectedRewardCoin?.address.address,
     selectedRewardCoin?.chain,
   ]);
 

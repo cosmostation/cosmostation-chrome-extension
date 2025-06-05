@@ -34,9 +34,10 @@ import { isTestnetChain } from '@/utils/chain.ts';
 import { ethersProvider } from '@/utils/ethereum/ethers.ts';
 import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase, shorterAddress, toHex } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
 import {
   AddressBookButton,
@@ -60,6 +61,7 @@ type EVMProps = {
 export default function EVM({ coinId }: EVMProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -442,6 +444,10 @@ export default function EVM({ coinId }: EVMProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({ txHash: response.hash, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -460,7 +466,17 @@ export default function EVM({ coinId }: EVMProps) {
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }
-  }, [coinId, currentAccount, currentPassword, finalizedTransaction, navigate, recipientAddress, selectedCoinToSend?.chain]);
+  }, [
+    addTx,
+    coinId,
+    currentAccount,
+    currentPassword,
+    finalizedTransaction,
+    navigate,
+    recipientAddress,
+    selectedCoinToSend?.address.address,
+    selectedCoinToSend?.chain,
+  ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {

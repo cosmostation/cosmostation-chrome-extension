@@ -1,15 +1,25 @@
-import type { AxiosError, AxiosRequestConfig } from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 
-export async function get<T>(path: string, config?: AxiosRequestConfig): Promise<T> {
-  const { data } = await axios.get<T>(path, {
+function getCommonConfig(config?: AxiosRequestConfig): AxiosRequestConfig {
+  return {
     ...config,
     headers: {
       Cosmostation: `extension/${__APP_VERSION__}`,
       ...config?.headers,
     },
-  });
+  };
+}
+
+export async function get<T>(path: string, config?: AxiosRequestConfig): Promise<T> {
+  const { data } = await axios.get<T>(path, getCommonConfig(config));
   return data;
+}
+
+export async function getWithFullResponse<T>(path: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  const response = await axios.get<T>(path, getCommonConfig(config));
+
+  return response;
 }
 
 export async function post<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<T> {

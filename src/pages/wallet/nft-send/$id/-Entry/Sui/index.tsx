@@ -27,9 +27,10 @@ import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
 
@@ -46,6 +47,7 @@ export default function Sui({ id }: SuiProps) {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -181,6 +183,10 @@ export default function Sui({ id }: SuiProps) {
         throw new Error('Chain not found');
       }
 
+      if (!accountAsset) {
+        throw new Error('Asset not found');
+      }
+
       if (!debouncedTx) {
         throw new Error('Transaction not found');
       }
@@ -199,6 +205,9 @@ export default function Sui({ id }: SuiProps) {
       if (!response) {
         throw new Error('Failed to send transaction');
       }
+
+      const uniqueChainId = getUniqueChainIdWithManual(chain.id, chain.chainType);
+      addTx({ txHash: response.digest, chainId: uniqueChainId, address: accountAsset.address.address, addedAt: Date.now(), retryCount: 0, type: 'nft' });
 
       navigate({
         to: TxResult.to,

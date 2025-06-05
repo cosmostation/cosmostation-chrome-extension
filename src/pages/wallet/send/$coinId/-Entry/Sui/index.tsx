@@ -28,11 +28,12 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
 import { getCoinType } from '@/utils/sui/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
 import {
   AddressBookButton,
@@ -55,6 +56,7 @@ type SuiProps = {
 export default function Sui({ coinId }: SuiProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -285,6 +287,10 @@ export default function Sui({ coinId }: SuiProps) {
       if (!response) {
         throw new Error('Failed to send transaction');
       }
+
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({ txHash: response.digest, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
 
       navigate({
         to: TxResult.to,

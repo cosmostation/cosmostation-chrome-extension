@@ -23,7 +23,9 @@ import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import UnstakeObjectBottomSheet from './components/UnstakeObjectBottomSheet';
 import UnstakeObjectSelectBox from './components/UnstakeObjectSelectBox';
@@ -37,6 +39,7 @@ type SuiProps = {
 export default function Sui({ coinId, objectId }: SuiProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -185,6 +188,17 @@ export default function Sui({ coinId, objectId }: SuiProps) {
       if (!response) {
         throw new Error('Failed to send transaction');
       }
+
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({
+        txHash: response.digest,
+        chainId: uniqueChainId,
+        address: selectedUnstakingCoin.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'staking',
+      });
 
       navigate({
         to: TxResult.to,

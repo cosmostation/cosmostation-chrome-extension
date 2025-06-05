@@ -13,8 +13,8 @@ import { process } from './message';
 import { startAutoLockTimer } from './passwordManage';
 import { updateAccountInfo } from './update/account';
 import { address, customChainAddress } from './update/address';
-import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance } from './update/balance';
-import { updateStakingRelatedBalance } from './update/staking';
+import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance, updateSpecificChainBalance } from './update/balance';
+import { updateSpecificChainStaking, updateStakingRelatedBalance } from './update/staking';
 import { v11 } from './update/v11';
 
 initExtensionView();
@@ -68,6 +68,19 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         const [id] = message.params;
         await address(id);
         await customChainAddress(id);
+        sendResponse(null);
+      }
+
+      if (message.method === 'updateChainSpecificBalance') {
+        const [id, chainId, address] = message.params;
+        await updateSpecificChainBalance(id, chainId, address);
+        sendResponse(null);
+      }
+
+      if (message.method === 'updateChainSpecificStakingBalance') {
+        const [id, chainId, address] = message.params;
+        await updateSpecificChainBalance(id, chainId, address);
+        await updateSpecificChainStaking(id, chainId, address);
         sendResponse(null);
       }
 

@@ -35,9 +35,10 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, times } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex';
 import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
 
@@ -59,6 +60,7 @@ export default function Cosmos({ id }: CosmosProps) {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -396,6 +398,16 @@ export default function Cosmos({ id }: CosmosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const uniqueChainId = getUniqueChainIdWithManual(chain.id, chain.chainType);
+      addTx({
+        txHash: response.tx_response.txhash,
+        chainId: uniqueChainId,
+        address: accountAsset.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'nft',
+      });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -417,6 +429,7 @@ export default function Cosmos({ id }: CosmosProps) {
     account.data?.value.account_number,
     accountAsset,
     accountAssetCoinId,
+    addTx,
     chain,
     currentAccount,
     currentBaseFee,

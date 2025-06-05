@@ -37,6 +37,7 @@ import { ceil, gt, times } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { ethereumAddressRegex } from '@/utils/regex';
 import { isEqualsIgnoringCase, isNumber, shorterAddress } from '@/utils/string.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import BalanceButton from './components/BalanceButton';
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
@@ -61,6 +62,7 @@ export default function EVM({ id }: EVMProps) {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -392,6 +394,10 @@ export default function EVM({ id }: EVMProps) {
         throw new Error('Chain not found');
       }
 
+      if (!nativeAccountAsset) {
+        throw new Error('Asset not found');
+      }
+
       if (!finalizedTransaction) {
         throw new Error('Failed to calculate final transaction');
       }
@@ -411,6 +417,9 @@ export default function EVM({ id }: EVMProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const uniqueChainId = getUniqueChainIdWithManual(chain.id, chain.chainType);
+      addTx({ txHash: response.hash, chainId: uniqueChainId, address: nativeAccountAsset.address.address, addedAt: Date.now(), retryCount: 0, type: 'nft' });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -429,7 +438,7 @@ export default function EVM({ id }: EVMProps) {
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }
-  }, [chain, currentAccount, currentPassword, finalizedTransaction, nativeAccountAssetCoinId, navigate, recipientAddress]);
+  }, [addTx, chain, currentAccount, currentPassword, finalizedTransaction, nativeAccountAsset, nativeAccountAssetCoinId, navigate, recipientAddress]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
