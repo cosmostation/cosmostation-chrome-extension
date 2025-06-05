@@ -5,7 +5,14 @@ import type { ChainType } from '@/types/chain';
 
 import type { RequestBase } from '.';
 
-export type SolanaRequest = SolanaConnect | SolanaDisconnect | SolanaSignMessage;
+export type SolanaRequest =
+  | SolanaConnect
+  | SolanaDisconnect
+  | SolanaSignMessage
+  | SolanaSignTransaction
+  | SolanaSignAllTransactions
+  | SolanaSignAndSendTransaction
+  | SolanaSignAndSendAllTransactions;
 
 export interface SolanaResponse {
   [SOLANA_POPUP_METHOD_TYPE.SOLANA__CONNECT]: SolanaConnectResponse;
