@@ -32,7 +32,7 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { ceil, divide, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
-import { isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
@@ -199,6 +199,8 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
 
     return monthlyReward;
   }, [currentValidator, displayStakeAmount]);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const stakeAmountInputErrorMessage = (() => {
     if (displayStakeAmount) {
@@ -467,6 +469,7 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}

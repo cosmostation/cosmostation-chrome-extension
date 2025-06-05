@@ -566,7 +566,9 @@
       "index": {
         "cancel": "취소",
         "confirm": "확인",
-        "title": "완료 전에 한 번 더 검토해 주세요."
+        "title": "완료 전에 한 번 더 검토해 주세요.",
+        "viewDetails": "상세 보기",
+        "jsonDialogTitle": "Tx 데이터"
       }
     },
     "FooterCoinPrice": {
@@ -772,6 +774,9 @@
           }
         }
       }
+    },
+    "JsonPopover": {
+      "title": "데이터"
     }
   },
   "pages": {
@@ -2184,6 +2189,9 @@
               "access": "허용"
             }
           }
+        },
+        "RawTx": {
+          "title": "트랜잭션 데이터"
         }
       },
       "cosmos": {

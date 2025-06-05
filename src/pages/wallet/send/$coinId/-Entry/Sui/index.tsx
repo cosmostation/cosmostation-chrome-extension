@@ -29,7 +29,7 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
 import { getCoinType } from '@/utils/sui/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
@@ -169,6 +169,8 @@ export default function Sui({ coinId }: SuiProps) {
   })();
 
   const displayExpectedBaseFeeAmount = toDisplayDenomAmount(expectedBaseFeeAmount, feeCoinDecimals);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const addressInputErrorMessage = (() => {
     if (recipientAddress && (!isValidSuiAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address))) {
@@ -430,6 +432,7 @@ export default function Sui({ coinId }: SuiProps) {
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Sui.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Sui.index.send')}
         onClickConfirm={handleOnClickConfirm}
+        rawTxString={displayTx}
       />
 
       <TxProcessingOverlay

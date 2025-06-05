@@ -37,7 +37,7 @@ import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, times } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex';
-import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { getUtf8BytesLength, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
@@ -266,6 +266,19 @@ export default function Cosmos({ id }: CosmosProps) {
   }, [baseFee]);
 
   const currentGas = selectedFeeOption.gas || '0';
+
+  const displayTx = useMemo(() => {
+    if (!memoizedNFTSendAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedNFTSendAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedNFTSendAminoTx, selectedFeeOption.denom]);
 
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
@@ -554,6 +567,7 @@ export default function Cosmos({ id }: CosmosProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.nft-send.$id.Entry.Cosmos.index.sendNFTReview')}

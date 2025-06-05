@@ -39,7 +39,7 @@ import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { getUtf8BytesLength, shorterAddress, toPercentages } from '@/utils/string';
+import { getUtf8BytesLength, safeStringify, shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -315,6 +315,19 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const currentDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentBaseFee, selectedFeeOption.decimals), [currentBaseFee, selectedFeeOption.decimals]);
 
   const currentGas = selectedFeeOption.gas || '0';
+
+  const displayTx = useMemo(() => {
+    if (!memoizedCommissionAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedCommissionAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedCommissionAminoTx, selectedFeeOption.denom]);
 
   const inputMemoErrorMessage = useMemo(() => {
     if (inputMemo) {
@@ -593,6 +606,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.claim-commission.$coinId.Entry.Cosmos.index.claimCommissionsReview')}

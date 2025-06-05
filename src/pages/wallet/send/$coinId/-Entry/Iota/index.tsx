@@ -31,7 +31,7 @@ import { getCoinType } from '@/utils/iota/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
@@ -169,6 +169,8 @@ export default function Iota({ coinId }: IotaProps) {
   })();
 
   const displayExpectedBaseFeeAmount = toDisplayDenomAmount(expectedBaseFeeAmount, feeCoinDecimals);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const addressInputErrorMessage = (() => {
     if (recipientAddress && (!isValidIotaAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address))) {
@@ -424,6 +426,7 @@ export default function Iota({ coinId }: IotaProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.send.$coinId.Entry.Iota.index.sendReview')}

@@ -111,7 +111,7 @@ export default function Entry({ request }: EntryProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [tabValue, setTabValue] = useState(0);
-  const tabLabels = ['Detail', 'Data'];
+  const tabLabels = ['Summary', 'View Details'];
 
   const keyPair = useMemo(
     () => currentBitcoinNetwork && getKeypair(currentBitcoinNetwork, currentAccount, currentPassword),

@@ -151,3 +151,32 @@ export function trimTrailingZeros(decimalStr: string): string {
 export function getUtf8BytesLength(str: string): number {
   return new TextEncoder().encode(str).length;
 }
+
+export function safeStringify(value: unknown, space = 4) {
+  const seen = new WeakSet();
+
+  if (!value) return undefined;
+
+  try {
+    return JSON.stringify(
+      value,
+      function (_key, val) {
+        if (typeof val === 'object' && val !== null) {
+          if (seen.has(val)) {
+            return '[Circular]';
+          }
+          seen.add(val);
+        }
+
+        if (typeof val === 'bigint') {
+          return val.toString() + 'n';
+        }
+
+        return val;
+      },
+      space,
+    );
+  } catch {
+    return undefined;
+  }
+}

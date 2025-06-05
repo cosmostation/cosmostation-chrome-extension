@@ -28,7 +28,7 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
-import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -123,6 +123,8 @@ export default function Sui({ id }: SuiProps) {
   })();
 
   const displayExpectedBaseFeeAmount = toDisplayDenomAmount(expectedBaseFeeAmount, feeCoinDecimals);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const addressInputErrorMessage = (() => {
     if (recipientAddress && (!isValidSuiAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, accountAsset?.address.address))) {
@@ -314,6 +316,7 @@ export default function Sui({ id }: SuiProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.nft-send.$id.Entry.Sui.index.sendNFTReview')}

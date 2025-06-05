@@ -24,6 +24,7 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
+import { safeStringify } from '@/utils/string';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -122,6 +123,8 @@ export default function Sui({ coinId, objectId }: SuiProps) {
   ]);
 
   const displayExpectedBaseFeeAmount = useMemo(() => toDisplayDenomAmount(expectedBaseFeeAmount, coinDecimal), [coinDecimal, expectedBaseFeeAmount]);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const errorMessage = useMemo(() => {
     if (!currentUnstakeObject) {
@@ -285,6 +288,7 @@ export default function Sui({ coinId, objectId }: SuiProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Sui.index.unstakeReview')}

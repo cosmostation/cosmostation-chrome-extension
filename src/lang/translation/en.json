@@ -290,7 +290,9 @@
       "index": {
         "title": "Final Review",
         "cancel": "Cancel",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "viewDetails": "View Details",
+        "jsonDialogTitle": "Tx Data"
       }
     },
     "MnemonicBackupChecker": {
@@ -774,6 +776,9 @@
         "evmTokenSubtitle": "For Ethereum-style tokens (0x address)",
         "cosmosTokenSubtitle": "For tokens on CosmWasm chains (starts with {{prefix}})"
       }
+    },
+    "JsonPopover": {
+      "title": "Data"
     }
   },
   "pages": {
@@ -2612,6 +2617,9 @@
               "access": "Access"
             }
           }
+        },
+        "RawTx": {
+          "title": "Transaction Data"
         }
       },
       "cosmos": {

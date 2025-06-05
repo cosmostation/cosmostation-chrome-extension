@@ -530,6 +530,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={txHex}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.send.$coinId.Entry.Bitcoin.index.sendReview')}

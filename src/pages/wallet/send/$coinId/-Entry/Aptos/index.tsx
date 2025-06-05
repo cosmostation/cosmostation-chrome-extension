@@ -31,7 +31,7 @@ import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex } from '@/utils/regex.ts';
-import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
@@ -185,6 +185,22 @@ export default function Aptos({ coinId }: AptosProps) {
 
     return toDisplayDenomAmount(estimatedBaseFeeAmount, coinDecimals);
   }, [coinDecimals, estimatedBaseFeeAmount]);
+
+  const displayTx = useMemo(() => {
+    if (!generateTransaction.data?.rawTransaction) return undefined;
+
+    const tx = generateTransaction.data.rawTransaction;
+
+    return safeStringify({
+      gas_unit_price: tx.gas_unit_price.toString(),
+      max_gas_amount: tx.max_gas_amount.toString(),
+      chain_id: tx.chain_id,
+      expiration_timestamp_secs: tx.expiration_timestamp_secs.toString(),
+      payload: tx.payload,
+      sender: tx.sender.toStringLong(),
+      sequence_number: tx.sequence_number.toString(),
+    });
+  }, [generateTransaction.data?.rawTransaction]);
 
   const handleOnClickMax = () => {
     if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
@@ -459,6 +475,7 @@ export default function Aptos({ coinId }: AptosProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')}

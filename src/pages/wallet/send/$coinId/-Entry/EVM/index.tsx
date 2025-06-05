@@ -35,7 +35,7 @@ import { ethersProvider } from '@/utils/ethereum/ethers.ts';
 import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, isEqualsIgnoringCase, shorterAddress, toHex } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress, toHex } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
@@ -322,6 +322,8 @@ export default function EVM({ coinId }: EVMProps) {
       maxPriorityFeePerGas: currentFeeOption?.type === 'EIP-1559' ? currentFeeOption.maxPriorityFeePerGas : undefined,
     };
   }, [currentFeeOption, debouncedSendTx, selectedCoinToSend]);
+
+  const displayTx = useMemo(() => safeStringify(finalizedTransaction), [finalizedTransaction]);
 
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
@@ -616,6 +618,7 @@ export default function EVM({ coinId }: EVMProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.sendReview')}
