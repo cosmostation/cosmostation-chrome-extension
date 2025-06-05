@@ -76,7 +76,7 @@ export default function AddressBottomSheet({ chainId, headerTitle, filterAddress
             }}
             isPending={isDebouncing}
             disableFilter
-            placeholder={t('components.AddressBottomSheet.index.searchPlacehholder')}
+            placeholder={t('components.AddressBottomSheet.index.searchPlaceholder')}
             onClear={() => {
               setSearch('');
               cancel();

@@ -59,7 +59,7 @@ export default function DraggableMnemonicAccountItem({
 
   const { notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
-  const isNotBackedUp = notBackedUpAccountIds.includes(draggableItem.accounts.map((item) => item.id)[0]);
+  const isNotBackedUp = draggableItem.accounts.length > 0 && notBackedUpAccountIds.includes(draggableItem.accounts[0].id);
 
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -172,7 +172,7 @@ export default function DraggableMnemonicAccountItem({
                 </RightArrowIconContainer>
               }
               onClick={() => {
-                setSupposedToBackupAccountId(draggableItem.accounts[0].id);
+                setSupposedToBackupAccountId(draggableItem.accounts[0]?.id);
               }}
             >
               {t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.backUpNow')}

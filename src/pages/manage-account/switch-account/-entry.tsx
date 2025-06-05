@@ -57,7 +57,7 @@ export default function Entry() {
                 setSearch(event.currentTarget.value);
               }}
               isPending={isDebouncing}
-              placeholder={t('pages.manage-account.switch-account.entry.searchPlacehholder')}
+              placeholder={t('pages.manage-account.switch-account.entry.searchPlaceholder')}
               disableFilter
               onClear={() => {
                 setSearch('');

@@ -65,7 +65,7 @@ export default function Entry() {
                   setSearch(event.currentTarget.value);
                 }}
                 isPending={isDebouncing}
-                placeholder={t('pages.manage-account.manage-wallet-and-account.entry.searchPlacehholder')}
+                placeholder={t('pages.manage-account.manage-wallet-and-account.entry.searchPlaceholder')}
                 disableFilter
                 onClear={() => {
                   setSearch('');
