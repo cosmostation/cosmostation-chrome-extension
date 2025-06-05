@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { t } from 'i18next';
 import { useDebounce } from 'use-debounce';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -10,7 +11,7 @@ import { useSwitchTapStore } from '@/zustand/hooks/useSwitchTabStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
 import PrivateKeyAccount from './-components/PrivateKeyAccount';
-import { StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
+import { SearchContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
 
 export default function Entry() {
   const { manageAccountTapIndex, updatedManateAccountTabIndex } = useSwitchTapStore((state) => state);
@@ -49,18 +50,21 @@ export default function Entry() {
             ))}
           </FilledTabs>
 
-          <Search
-            value={search}
-            onChange={(event) => {
-              setSearch(event.currentTarget.value);
-            }}
-            isPending={isDebouncing}
-            disableFilter
-            onClear={() => {
-              setSearch('');
-              cancel();
-            }}
-          />
+          <SearchContainer>
+            <Search
+              value={search}
+              onChange={(event) => {
+                setSearch(event.currentTarget.value);
+              }}
+              isPending={isDebouncing}
+              placeholder={t('pages.manage-account.switch-account.entry.searchPlacehholder')}
+              disableFilter
+              onClear={() => {
+                setSearch('');
+                cancel();
+              }}
+            />
+          </SearchContainer>
         </StickyTabContainer>
         <StyledTabPanel value={manageAccountTapIndex} index={0}>
           <TabPanelContentsContainer>

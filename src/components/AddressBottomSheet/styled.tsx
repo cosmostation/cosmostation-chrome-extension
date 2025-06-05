@@ -77,3 +77,7 @@ export const StyledTabPanel = styled(FilledTabPanel)<StyledTabPanelProps>(({ ...
   flex: props['data-is-active'] ? '1' : '0',
   height: '100%',
 }));
+
+export const SearchContainer = styled('div')({
+  padding: '0 1.2rem',
+});

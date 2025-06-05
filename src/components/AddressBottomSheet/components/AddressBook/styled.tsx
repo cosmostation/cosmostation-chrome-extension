@@ -13,6 +13,7 @@ export const Container = styled('div')({
   justifyContent: 'center',
 
   paddingBottom: '1.2rem',
+  paddingTop: '1rem',
   overflow: 'auto',
 });
 

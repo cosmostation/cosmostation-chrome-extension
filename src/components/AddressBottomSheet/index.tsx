@@ -7,7 +7,7 @@ import type { UniqueChainId } from '@/types/chain';
 
 import AddressBookItem from './components/AddressBook';
 import MyAddress from './components/MyAddress';
-import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledTabPanel, TabPanelContentsContainer } from './styled';
+import { Body, Container, Header, HeaderTitle, SearchContainer, StyledBottomSheet, StyledButton, StyledTabPanel, TabPanelContentsContainer } from './styled';
 import { FilledTab, FilledTabs } from '../common/FilledTab';
 import Search from '../Search';
 
@@ -68,18 +68,21 @@ export default function AddressBottomSheet({ chainId, headerTitle, filterAddress
           ))}
         </FilledTabs>
 
-        <Search
-          value={search}
-          onChange={(event) => {
-            setSearch(event.currentTarget.value);
-          }}
-          isPending={isDebouncing}
-          disableFilter
-          onClear={() => {
-            setSearch('');
-            cancel();
-          }}
-        />
+        <SearchContainer>
+          <Search
+            value={search}
+            onChange={(event) => {
+              setSearch(event.currentTarget.value);
+            }}
+            isPending={isDebouncing}
+            disableFilter
+            placeholder={t('components.AddressBottomSheet.index.searchPlacehholder')}
+            onClear={() => {
+              setSearch('');
+              cancel();
+            }}
+          />
+        </SearchContainer>
         <Body>
           <StyledTabPanel value={tabValue} index={0} data-is-active={tabValue === 0}>
             <TabPanelContentsContainer>

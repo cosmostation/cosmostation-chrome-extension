@@ -25,7 +25,6 @@ import {
   BodyContainer,
   Container,
   EmptyAssetContainer,
-  IconButtonText,
   LastHdPathIndexText,
   LastHdPathText,
   LastHdPathTextContainer,
@@ -144,15 +143,12 @@ export default function MnemonicAccount({ search }: MnemonicAccountProps) {
                         <PlusIcon />
                       </PlusIconContainer>
                     }
-                  >
-                    <IconButtonText variant="b4_M">{t('pages.manage-account.switch-account.components.createNewWallet')}</IconButtonText>
-                  </IconTextButton>
+                  />
                 )}
               </TopRightContainer>
             </TopContainer>
             <BodyContainer>
               {item.accounts.map((item, i) => {
-                const accountName = accountNamesById[item.id];
                 const lastHdPath = item.type === 'MNEMONIC' ? item.index : '';
                 const isCurrentAccount = currentAccount?.id === item.id;
 
@@ -168,7 +164,7 @@ export default function MnemonicAccount({ search }: MnemonicAccountProps) {
 
                       toastSuccess(
                         t('pages.manage-account.switch-account.components.switchAccountSuccess', {
-                          accountName,
+                          accountName: item.accountName,
                         }),
                       );
                     }}
@@ -179,7 +175,7 @@ export default function MnemonicAccount({ search }: MnemonicAccountProps) {
                       </AccountImgContainer>
 
                       <AccountInfoContainer>
-                        <Base1300Text variant="b2_M">{accountName}</Base1300Text>
+                        <Base1300Text variant="b2_M">{item.accountName}</Base1300Text>
                         <LastHdPathTextContainer>
                           <LastHdPathText variant="b4_R">{`${t('pages.manage-account.switch-account.components.lastHdPath')} :`}</LastHdPathText>
                           &nbsp;

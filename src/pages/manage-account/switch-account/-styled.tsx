@@ -41,3 +41,7 @@ export const StyledTabPanel = styled(FilledTabPanel)({
   display: 'flex',
   flexDirection: 'column',
 });
+
+export const SearchContainer = styled('div')({
+  padding: '0 1.2rem',
+});
