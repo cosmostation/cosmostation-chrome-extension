@@ -672,7 +672,13 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReview')}
+        contentsTitle={
+          selectedUnstakingCoin?.asset.symbol
+            ? t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReviewWithSymbol', {
+                symbol: selectedUnstakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReview')
+        }
         contentsSubTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReviewDescription')}
         confirmButtonText={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstake')}
         onClickConfirm={handleOnClickConfirm}

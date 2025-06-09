@@ -428,7 +428,13 @@ export default function Sui({ coinId }: SuiProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Sui.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Sui.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Sui.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Sui.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Sui.index.send')}
         onClickConfirm={handleOnClickConfirm}

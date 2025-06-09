@@ -949,7 +949,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Cosmos.index.send')}
         onClickConfirm={handleOnClickConfirm}

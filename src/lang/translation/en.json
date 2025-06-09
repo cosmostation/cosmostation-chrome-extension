@@ -1385,7 +1385,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "components": {
@@ -1417,7 +1418,8 @@
                 "noAvailableAmount": "No available amount",
                 "noAmount": "Please enter the amount",
                 "noRecipientAddress": "Please enter the recipient address",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Bitcoin": {
@@ -1439,7 +1441,8 @@
                 "memo": "OP_RETURN (option)",
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Aptos": {
@@ -1461,7 +1464,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Cosmos": {
@@ -1493,7 +1497,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "invalidRewardAmount": "Invalid reward amount",
-                "memoOverflow": "Memo is too long. Please shorten it."
+                "memoOverflow": "Memo is too long. Please shorten it.",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Iota": {
@@ -1515,7 +1520,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             }
           }
@@ -1659,7 +1665,8 @@
             "noAmount": "Please enter the amount",
             "failedToDryRun": "Transaction simulation failed",
             "failedToBuildTransaction": "Failed to build transaction",
-            "tooSmallToStake": "Minimum stake amount is 1"
+            "tooSmallToStake": "Minimum stake amount is 1",
+            "stakeReviewWithSymbol": "Confirm to Stake {{symbol}}"
           },
           "layout": {
             "header": "Stake"
@@ -1703,7 +1710,8 @@
                   "noAmount": "Please enter the amount",
                   "invalidAmount": "Invalid amount",
                   "failedToCalculateTransaction": "Failed to build transaction",
-                  "insufficientFee": "Insufficient fee"
+                  "insufficientFee": "Insufficient fee",
+                  "unstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
                 }
               },
               "Sui": {
@@ -1719,7 +1727,8 @@
                   "unstakeReview": "Confirm Unstake",
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
-                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
                 }
               },
               "Iota": {
@@ -1735,7 +1744,8 @@
                   "unstakeReview": "Confirm Unstake",
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
-                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
                 }
               }
             },
@@ -1875,7 +1885,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "cancelUnstakingAmount": "Amount to Unstake",
                 "cancelUnstakeConfirm": "Cancel Unstake",
-                "memoOverflow": "Memo is too long. Please shorten it."
+                "memoOverflow": "Memo is too long. Please shorten it.",
+                "cancelUnstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
               }
             }
           },

@@ -56,10 +56,19 @@ export const ImageContainer = styled('div')({
   },
 });
 
-export const TitleText = styled(Base1300Text)({
+export const TitleTextContainer = styled('div')({
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
+  maxWidth: '80%',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
+export const TitleText = styled(Base1300Text)({
   marginBottom: '0.6rem',
 });
 

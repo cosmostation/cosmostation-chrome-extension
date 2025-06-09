@@ -2595,7 +2595,8 @@
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "unstakingAmount": "언스테이킹 수량",
                 "validator": "벨리데이터",
-                "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
+                "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요",
+                "cancelUnstakeReviewWithSymbol": "언스테이킹 취소 최종 확인: {{symbol}}"
               }
             }
           },
@@ -2804,7 +2805,8 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "recipientNetwork": "수신 체인"
+                "recipientNetwork": "수신 체인",
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
             },
             "Bitcoin": {
@@ -2826,7 +2828,8 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "recipientNetwork": "수신 체인"
+                "recipientNetwork": "수신 체인",
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
             },
             "Cosmos": {
@@ -2858,7 +2861,8 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
+                "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요",
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
             },
             "EVM": {
@@ -2884,7 +2888,8 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "recipientNetwork": "수신 체인"
+                "recipientNetwork": "수신 체인",
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
             },
             "Sui": {
@@ -2906,7 +2911,8 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "recipientNetwork": "수신 체인"
+                "recipientNetwork": "수신 체인",
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
             },
             "components": {
@@ -2936,7 +2942,8 @@
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "recipientNetwork": "수신 체인",
                 "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
-                "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다"
+                "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
               }
             }
           },
@@ -2996,7 +3003,8 @@
             "txProcessing": "트랜잭션 처리 중",
             "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
             "validator": "벨리데이터 선택",
-            "tooSmallToStake": "최소 스테이킹 수량은 1입니다"
+            "tooSmallToStake": "최소 스테이킹 수량은 1입니다",
+            "stakeReviewWithSymbol": "스테이킹 최종 확인 {{symbol}}"
           },
           "layout": {
             "header": "스테이킹"
@@ -3111,7 +3119,8 @@
                   "unstakeReview": "언스테이킹 최종 확인",
                   "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다.",
                   "unstakingAmount": "언스테이킹할 수량 입력",
-                  "validator": "벨리데이터 선택"
+                  "validator": "벨리데이터 선택",
+                  "unstakeReviewWithSymbol": "언스테이킹 최종 확인 {{symbol}}"
                 }
               },
               "Sui": {
@@ -3127,7 +3136,8 @@
                   "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                   "unstake": "언스테이킹",
                   "unstakeReview": "언스테이킹 최종 확인",
-                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다."
+                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다.",
+                  "unstakeReviewWithSymbol": "언스테이킹 최종 확인 {{symbol}}"
                 }
               },
               "Iota": {
@@ -3143,7 +3153,8 @@
                   "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                   "unstake": "언스테이킹",
                   "unstakeReview": "언스테이킹 최종 확인",
-                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다."
+                  "unstakeReviewDescription": "언스테이킹할 정보를 확인하시고, 계속 진행하시겠습니까? \n 이 작업은 완료 후 취소할 수 없습니다.",
+                  "unstakeReviewWithSymbol": "언스테이킹 최종 확인 {{symbol}}"
                 }
               }
             },

@@ -478,7 +478,13 @@ export default function Aptos({ coinId }: AptosProps) {
         rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}
         onClickConfirm={handleOnClickConfirm}

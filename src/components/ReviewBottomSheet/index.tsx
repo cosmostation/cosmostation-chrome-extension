@@ -17,6 +17,7 @@ import {
   StyledOutlinedChipButton,
   SubTitleText,
   TitleText,
+  TitleTextContainer,
 } from './styled';
 import Base1300Text from '../common/Base1300Text';
 import Button from '../common/Button';
@@ -83,7 +84,11 @@ export default function ReviewBottomSheet({
               <ImageContainer>
                 <Image src={image || finalReviewImage} />
               </ImageContainer>
-              {contentsTitle && <TitleText variant="b1_B">{contentsTitle}</TitleText>}
+              {contentsTitle && (
+                <TitleTextContainer>
+                  <TitleText variant="b1_B">{contentsTitle}</TitleText>
+                </TitleTextContainer>
+              )}
               {contentsSubTitle && <SubTitleText variant="b3_R_Multiline">{contentsSubTitle}</SubTitleText>}
               {rawTxString && (
                 <StyledOutlinedChipButton

@@ -291,7 +291,13 @@ export default function Sui({ coinId, objectId }: SuiProps) {
         rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Sui.index.unstakeReview')}
+        contentsTitle={
+          selectedUnstakingCoin?.asset.symbol
+            ? t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Sui.index.unstakeReviewWithSymbol', {
+                symbol: selectedUnstakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Sui.index.unstakeReview')
+        }
         contentsSubTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Sui.index.unstakeReviewDescription')}
         confirmButtonText={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Sui.index.unstake')}
         onClickConfirm={handleOnClickConfirm}

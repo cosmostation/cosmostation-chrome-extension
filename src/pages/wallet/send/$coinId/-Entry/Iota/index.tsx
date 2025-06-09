@@ -429,7 +429,13 @@ export default function Iota({ coinId }: IotaProps) {
         rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Iota.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Iota.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Iota.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Iota.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Iota.index.send')}
         onClickConfirm={handleOnClickConfirm}

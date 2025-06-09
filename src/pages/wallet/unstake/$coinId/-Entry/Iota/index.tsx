@@ -291,7 +291,13 @@ export default function Iota({ coinId, objectId }: IotaProps) {
         rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReview')}
+        contentsTitle={
+          selectedUnstakingCoin?.asset.symbol
+            ? t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReviewWithSymbol', {
+                symbol: selectedUnstakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReview')
+        }
         contentsSubTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReviewDescription')}
         confirmButtonText={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstake')}
         onClickConfirm={handleOnClickConfirm}

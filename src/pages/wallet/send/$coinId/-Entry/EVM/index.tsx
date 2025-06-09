@@ -621,7 +621,13 @@ export default function EVM({ coinId }: EVMProps) {
         rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.EVM.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.EVM.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.EVM.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.EVM.index.send')}
         onClickConfirm={handleOnClickConfirm}
