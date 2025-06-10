@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { isSidePanelView } from '@/utils/view/sidepanel';
+
 import { BackgroundContainer } from './styled';
 
 type BackgroundLayer = {
@@ -7,9 +9,18 @@ type BackgroundLayer = {
 };
 
 export default function BackgroundLayer({ children }: BackgroundLayer) {
+  const [showBackground, setShowBackground] = useState(false);
+
+  useEffect(() => {
+    if (isSidePanelView()) {
+      setShowBackground(true);
+    }
+  }, []);
+
   return (
     <BackgroundContainer>
-      <BackgroundStars />
+      {showBackground && <BackgroundStars />}
+
       {children}
     </BackgroundContainer>
   );
