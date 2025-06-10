@@ -83,6 +83,7 @@ export type AuthAccountResult = {
 export type AuthAccountsPayload = {
   height: string;
   result: AuthAccountResult;
+  error?: unknown;
 };
 
 export type AuthAccount = {

@@ -37,6 +37,10 @@ const isDesmosModuleAccount = (account: DesmosAccount | DesmosModuleAccount): ac
 
 export function formattingAccount(data: AuthAccountsPayload | null | undefined) {
   if (data) {
+    if (data.error) {
+      return undefined;
+    }
+
     if (isDesmosPayload(data)) {
       const account = isDesmosBasePayload(data.account) || isDesmosModulePayload(data.account) ? data.account : data.account.account || data.account;
 
@@ -104,7 +108,7 @@ export function formattingAccount(data: AuthAccountsPayload | null | undefined) 
       } as AuthAccount;
     }
 
-    const value = data.result.value || data.result;
+    const value = data.result?.value || data.result;
 
     if (isBaseWithStartAndPeriod(value)) {
       const vestingAccount = value.base_vesting_account;
