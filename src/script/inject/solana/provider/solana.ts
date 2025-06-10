@@ -4,7 +4,18 @@
 import { PublicKey } from '@solana/web3.js';
 
 import type { BaseRequest } from '@/types/message/inject';
-import type { SolanaConnectResponse, SolanaDisconnectResponse, SolanaSignMessage, SolanaSignMessageResponse } from '@/types/message/inject/solana';
+import type {
+  SolanaConnectResponse,
+  SolanaDisconnectResponse,
+  SolanaSignAllTransactionsResponse,
+  SolanaSignAndSendAllTransactionsResponse,
+  SolanaSignAndSendTransactionResponse,
+  SolanaSignMessage,
+  SolanaSignMessageResponse,
+  SolanaSignTransactionParams,
+  SolanaSignTransactionResponse,
+} from '@/types/message/inject/solana';
+import { deserializeTransaction } from '@/utils/solana/transaction';
 
 import { solanaRequestApp } from '../request';
 
@@ -34,6 +45,54 @@ const request = async ({ method, params }: RequestParams) => {
     const signature = new Uint8Array(Buffer.from(hexSignature as unknown as string, 'hex'));
 
     return { publicKey, signature };
+  } else if (solanaMethod === 'solana_signTransaction' || solanaMethod === 'solana_signAllTransactions') {
+    const requestParams = params as SolanaSignTransactionParams;
+
+    const serializedTxs = requestParams.map((tx) => {
+      if ('version' in tx) {
+        return Buffer.from(tx.serialize()).toString('hex');
+      } else {
+        return Buffer.from(tx.serialize({ requireAllSignatures: false, verifySignatures: false })).toString('hex');
+      }
+    });
+
+    const hexResponses = (await solanaRequestApp({
+      method: solanaMethod,
+      params: serializedTxs,
+    })) as unknown as string[];
+
+    const unserializedTxs = hexResponses.map((hexResponse) => deserializeTransaction(hexResponse));
+
+    if (solanaMethod === 'solana_signTransaction') {
+      return unserializedTxs[0] as SolanaSignTransactionResponse;
+    }
+
+    if (solanaMethod === 'solana_signAllTransactions') {
+      return unserializedTxs as SolanaSignAllTransactionsResponse;
+    }
+  } else if (solanaMethod === 'solana_signAndSendTransaction' || solanaMethod === 'solana_signAndSendAllTransactions') {
+    const requestParams = params as SolanaSignTransactionParams;
+
+    const serializedTxs = requestParams.map((tx) => {
+      if ('version' in tx) {
+        return Buffer.from(tx.serialize()).toString('hex');
+      } else {
+        return Buffer.from(tx.serialize({ requireAllSignatures: false, verifySignatures: false })).toString('hex');
+      }
+    });
+
+    const response = (await solanaRequestApp({
+      method: solanaMethod,
+      params: serializedTxs,
+    })) as unknown as string;
+
+    if (solanaMethod === 'solana_signAndSendTransaction') {
+      return response as unknown as SolanaSignAndSendTransactionResponse;
+    }
+
+    if (solanaMethod === 'solana_signAndSendAllTransactions') {
+      return response as unknown as SolanaSignAndSendAllTransactionsResponse;
+    }
   } else {
     return await solanaRequestApp({ method: solanaMethod, params });
   }

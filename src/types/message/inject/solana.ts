@@ -1,4 +1,4 @@
-import type { PublicKey, VersionedTransaction } from '@solana/web3.js';
+import type { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 
 import type { SOLANA_METHOD_TYPE, SOLANA_NO_POPUP_METHOD_TYPE, SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
 import type { ChainType } from '@/types/chain';
@@ -58,18 +58,20 @@ export interface SolanaSignMessageResponse {
   publicKey: PublicKey;
 }
 
+export type SolanaSignTransactionParams = (Transaction | VersionedTransaction)[];
+
 export interface SolanaSignTransaction extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_TRANSACTION;
-  params: VersionedTransaction;
+  params: SolanaSignTransactionParams;
 }
 
-export type SolanaSignTransactionResponse = VersionedTransaction;
+export type SolanaSignTransactionResponse = Transaction | VersionedTransaction;
 
 export interface SolanaSignAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
-  method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_TRANSACTION;
-  params: VersionedTransaction[];
+  method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_ALL_TRANSACTIONS;
+  params: SolanaSignTransactionParams;
 }
 
 export type SolanaSignAllTransactionsResponse = SolanaSignTransactionResponse[];
@@ -77,7 +79,7 @@ export type SolanaSignAllTransactionsResponse = SolanaSignTransactionResponse[];
 export interface SolanaSignAndSendTransaction extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_AND_SEND_TRANSACTION;
-  params: VersionedTransaction;
+  params: SolanaSignTransactionParams;
 }
 
 export interface SolanaSignAndSendTransactionResponse {
@@ -87,8 +89,11 @@ export interface SolanaSignAndSendTransactionResponse {
 
 export interface SolanaSignAndSendAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
-  method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_TRANSACTION;
-  params: VersionedTransaction[];
+  method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_AND_SEND_ALL_TRANSACTIONS;
+  params: SolanaSignTransactionParams;
 }
 
-export type SolanaSignAndSendAllTransactionsResponse = SolanaSignAndSendTransactionResponse[];
+export interface SolanaSignAndSendAllTransactionsResponse {
+  publicKey: string;
+  signatures: string[];
+}
