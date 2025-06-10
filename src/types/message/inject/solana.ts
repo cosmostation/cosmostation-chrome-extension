@@ -58,12 +58,12 @@ export interface SolanaSignMessageResponse {
   publicKey: PublicKey;
 }
 
-export type SolanaSignTransactionParams = (Transaction | VersionedTransaction)[];
+export type SolanaSignTransactionParam = Transaction | VersionedTransaction;
 
 export interface SolanaSignTransaction extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_TRANSACTION;
-  params: SolanaSignTransactionParams;
+  params: SolanaSignTransactionParam[];
 }
 
 export type SolanaSignTransactionResponse = Transaction | VersionedTransaction;
@@ -71,7 +71,7 @@ export type SolanaSignTransactionResponse = Transaction | VersionedTransaction;
 export interface SolanaSignAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_ALL_TRANSACTIONS;
-  params: SolanaSignTransactionParams;
+  params: SolanaSignTransactionParam[];
 }
 
 export type SolanaSignAllTransactionsResponse = SolanaSignTransactionResponse[];
@@ -79,7 +79,7 @@ export type SolanaSignAllTransactionsResponse = SolanaSignTransactionResponse[];
 export interface SolanaSignAndSendTransaction extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_AND_SEND_TRANSACTION;
-  params: SolanaSignTransactionParams;
+  params: SolanaSignTransactionParam[];
 }
 
 export interface SolanaSignAndSendTransactionResponse {
@@ -90,7 +90,7 @@ export interface SolanaSignAndSendTransactionResponse {
 export interface SolanaSignAndSendAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_AND_SEND_ALL_TRANSACTIONS;
-  params: SolanaSignTransactionParams;
+  params: SolanaSignTransactionParam[];
 }
 
 export interface SolanaSignAndSendAllTransactionsResponse {

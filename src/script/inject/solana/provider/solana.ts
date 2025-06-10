@@ -12,7 +12,7 @@ import type {
   SolanaSignAndSendTransactionResponse,
   SolanaSignMessage,
   SolanaSignMessageResponse,
-  SolanaSignTransactionParams,
+  SolanaSignTransactionParam,
   SolanaSignTransactionResponse,
 } from '@/types/message/inject/solana';
 import { deserializeTransaction } from '@/utils/solana/transaction';
@@ -46,7 +46,7 @@ const request = async ({ method, params }: RequestParams) => {
 
     return { publicKey, signature };
   } else if (solanaMethod === 'solana_signTransaction' || solanaMethod === 'solana_signAllTransactions') {
-    const requestParams = params as SolanaSignTransactionParams;
+    const requestParams = params as SolanaSignTransactionParam[];
 
     const serializedTxs = requestParams.map((tx) => {
       if ('version' in tx) {
@@ -71,7 +71,7 @@ const request = async ({ method, params }: RequestParams) => {
       return unserializedTxs as SolanaSignAllTransactionsResponse;
     }
   } else if (solanaMethod === 'solana_signAndSendTransaction' || solanaMethod === 'solana_signAndSendAllTransactions') {
-    const requestParams = params as SolanaSignTransactionParams;
+    const requestParams = params as SolanaSignTransactionParam[];
 
     const serializedTxs = requestParams.map((tx) => {
       if ('version' in tx) {
@@ -111,6 +111,29 @@ const disconnect = () => request({ method: 'disconnect', params: undefined }) as
 
 const signMessage = async (message: Uint8Array, display = 'utf8') => {
   const response = (await request({ method: 'signMessage', params: { message, display } })) as SolanaSignMessageResponse;
+
+  return response;
+};
+
+const signTransaction = async (param: SolanaSignTransactionParam) => {
+  const response = (await request({ method: 'signTransaction', params: [param] })) as SolanaSignTransactionResponse;
+
+  return response;
+};
+
+const signAllTransactions = async (params: SolanaSignTransactionParam[]) => {
+  const response = (await request({ method: 'signAllTransactions', params })) as SolanaSignAllTransactionsResponse;
+  return response;
+};
+
+const signAndSendTransaction = async (param: SolanaSignTransactionParam) => {
+  const response = (await request({ method: 'signAndSendTransaction', params: [param] })) as SolanaSignAndSendTransactionResponse;
+
+  return response;
+};
+
+const signAndSendAllTransactions = async (params: SolanaSignTransactionParam[]) => {
+  const response = (await request({ method: 'signAndSendAllTransactions', params })) as SolanaSignAndSendAllTransactionsResponse;
 
   return response;
 };
@@ -314,6 +337,10 @@ export class CosmostationSolana implements SolanaProvider {
   connect = connect;
   disconnect = disconnect;
   signMessage = signMessage;
+  signTransaction = signTransaction;
+  signAllTransactions = signAllTransactions;
+  signAndSendTransaction = signAndSendTransaction;
+  signAndSendAllTransactions = signAndSendAllTransactions;
   request = request;
 }
 

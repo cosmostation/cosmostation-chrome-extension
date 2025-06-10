@@ -40,7 +40,15 @@ import type {
   SuiSignTransactionResponse,
 } from '@/types/message/inject/sui';
 
-import type { SolanaConnectResponse, SolanaSignMessageResponse } from './message/inject/solana';
+import type {
+  SolanaConnectResponse,
+  SolanaSignAllTransactionsResponse,
+  SolanaSignAndSendAllTransactionsResponse,
+  SolanaSignAndSendTransactionResponse,
+  SolanaSignMessageResponse,
+  SolanaSignTransactionParam,
+  SolanaSignTransactionResponse,
+} from './message/inject/solana';
 
 declare global {
   type KeplrInterface = Omit<
@@ -152,11 +160,11 @@ declare global {
     request?: (BaseRequest) => Promise<Unknown>;
     connect?: () => Promise<SolanaConnectResponse>;
     disconnect?: () => Promise<void>;
-    signTransaction?: () => Promise<Unknown>;
-    signAllTransactions?: () => Promise<Unknown>;
     signMessage: (message: Uint8Array, display: 'utf8' | 'hex') => Promise<SolanaSignMessageResponse>;
-    signAndSendTransaction?: () => Promise<Unknown>;
-    signAndSendAllTransaction?: () => Promise<Unknown>;
+    signTransaction?: (param: SolanaSignTransactionParam) => Promise<SolanaSignTransactionResponse>;
+    signAllTransactions?: (params: SolanaSignTransactionParam[]) => Promise<SolanaSignAllTransactionsResponse>;
+    signAndSendTransaction?: (param: SolanaSignTransactionParam) => Promise<SolanaSignAndSendTransactionResponse>;
+    signAndSendAllTransaction?: (params: SolanaSignTransactionParam[]) => Promise<SolanaSignAndSendAllTransactionsResponse>;
     on?: () => Promise<Unknown>;
     off?: () => Promise<Unknown>;
   }
