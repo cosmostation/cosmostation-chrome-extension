@@ -1,7 +1,7 @@
 // import { COSMOSTATION_WALLET_NAME } from '@/constants/common';
 // import type { ApprovedSuiPermissionType } from '@/types/extension';
 // import type { EventDetail, SolanaListenerType, SuiListenerType } from '@/types/message';
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey, Transaction } from '@solana/web3.js';
 
 import type { BaseRequest } from '@/types/message/inject';
 import type {
@@ -61,14 +61,28 @@ const request = async ({ method, params }: RequestParams) => {
       params: serializedTxs,
     })) as unknown as string[];
 
-    const unserializedTxs = hexResponses.map((hexResponse) => deserializeTransaction(hexResponse));
+    const unserializedTxs = hexResponses
+      .map((hexResponse) => deserializeTransaction(hexResponse))
+      .map((tx) => {
+        if (tx instanceof Transaction) {
+          return {
+            message: tx.compileMessage(),
+            signatures: tx.signatures,
+          };
+        }
+
+        return {
+          message: tx.message,
+          signatures: tx.signatures,
+        };
+      });
 
     if (solanaMethod === 'solana_signTransaction') {
-      return unserializedTxs[0] as SolanaSignTransactionResponse;
+      return unserializedTxs[0];
     }
 
     if (solanaMethod === 'solana_signAllTransactions') {
-      return unserializedTxs as SolanaSignAllTransactionsResponse;
+      return unserializedTxs;
     }
   } else if (solanaMethod === 'solana_signAndSendTransaction' || solanaMethod === 'solana_signAndSendAllTransactions') {
     const requestParams = params as SolanaSignTransactionParam[];

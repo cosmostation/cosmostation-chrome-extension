@@ -1,7 +1,7 @@
 import type { MessageV0 } from '@solana/web3.js';
 import { Transaction, VersionedTransaction } from '@solana/web3.js';
 
-type ParsedInstruction = {
+export type ParsedInstruction = {
   index: number;
   programId: string;
   accounts: string[];

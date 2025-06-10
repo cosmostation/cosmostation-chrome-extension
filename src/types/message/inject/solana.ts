@@ -1,4 +1,4 @@
-import type { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
+import type { PublicKey, Transaction, VersionedMessage, VersionedTransaction } from '@solana/web3.js';
 
 import type { SOLANA_METHOD_TYPE, SOLANA_NO_POPUP_METHOD_TYPE, SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
 import type { ChainType } from '@/types/chain';
@@ -66,7 +66,10 @@ export interface SolanaSignTransaction extends RequestBase {
   params: SolanaSignTransactionParam[];
 }
 
-export type SolanaSignTransactionResponse = Transaction | VersionedTransaction;
+export interface SolanaSignTransactionResponse {
+  message: VersionedMessage;
+  signatures: Uint8Array[];
+}
 
 export interface SolanaSignAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;

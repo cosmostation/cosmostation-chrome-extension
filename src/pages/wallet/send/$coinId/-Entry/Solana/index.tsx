@@ -355,7 +355,7 @@ export default function Solana({ coinId }: SolanaProps) {
   const handleOnClickReview = useCallback(() => {
     if (transactionPreview?.simulatedValue?.unitsConsumed && transaction && typeof baseFee === 'number') {
       setConfirmData({
-        transaction: transaction,
+        transaction,
         computeUnitLimit,
         computeUnitPrice,
       });

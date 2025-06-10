@@ -2616,6 +2616,14 @@
             "sign": "사인"
           }
         }
+      },
+      "solana": {
+        "transaction": {
+          "entry": {
+            "reject": "거부",
+            "sign": "사인"
+          }
+        }
       }
     },
     "view": {

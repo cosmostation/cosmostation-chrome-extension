@@ -20,7 +20,6 @@ import { getAddress, getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
-import RawTx from '@/pages/popup/-components/RawTx';
 import type {
   SolanaSignAllTransactions,
   SolanaSignAndSendAllTransactions,
@@ -33,22 +32,15 @@ import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
-import {
-  Divider,
-  DividerContainer,
-  LineDivider,
-  RawTxContainer,
-  SticktFooterInnerBody,
-  StickyTabContainer,
-  StyledTabPanel,
-  TxBaseInfoContainer,
-} from './-styled';
+import { Divider, DividerContainer, LineDivider, SticktFooterInnerBody, StickyTabContainer, StyledTabPanel, TxBaseInfoContainer } from './-styled';
 
 type EntryProps = {
   request: SolanaSignTransaction | SolanaSignAllTransactions | SolanaSignAndSendTransaction | SolanaSignAndSendAllTransactions;
 };
 
 export default function Entry({ request }: EntryProps) {
+  const [currentStep, setCurrentStep] = useState(0);
+
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();
 
@@ -81,7 +73,7 @@ export default function Entry({ request }: EntryProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [tabValue, setTabValue] = useState(0);
-  const tabLabels = ['Detail', 'Data'];
+  const tabLabels = ['Detail'];
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -113,7 +105,7 @@ export default function Entry({ request }: EntryProps) {
     console.log('instructions', instructions);
   });
 
-  const isDiabled = useMemo(() => !false, []);
+  const isDiabled = useMemo(() => !true, []);
 
   const errorMessage = useMemo(() => {
     return '';
@@ -278,12 +270,7 @@ export default function Entry({ request }: EntryProps) {
             </FilledTabs>
           </StickyTabContainer>
           <StyledTabPanel value={tabValue} index={0}>
-            <TxMessage tx={'tx'} />
-          </StyledTabPanel>
-          <StyledTabPanel value={tabValue} index={1}>
-            <RawTxContainer>
-              <RawTx tx={{}} />
-            </RawTxContainer>
+            <TxMessage msgs={instructions} currentStep={currentStep} onPageChange={(page) => setCurrentStep(page)} />
           </StyledTabPanel>
         </EdgeAligner>
       </BaseBody>

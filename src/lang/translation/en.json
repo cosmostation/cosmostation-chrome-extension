@@ -3152,6 +3152,14 @@
             "sign": "Sign"
           }
         }
+      },
+      "solana": {
+        "transaction": {
+          "entry": {
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        }
       }
     },
     "coin-overview": {
