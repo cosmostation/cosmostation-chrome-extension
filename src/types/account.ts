@@ -97,6 +97,14 @@ export interface AccountAddressCommissionsCosmos {
   address: string;
   commissions?: CommissionResponse;
 }
+
+export interface AccountAddressLockedBalanceCosmos {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  lockedBalances: CosmosBalance[];
+}
 export interface AccountAddressAccountInfoCosmos {
   id: Chain['id'];
   chainId: Chain['chainId'];
@@ -186,6 +194,7 @@ export interface AccountCosmosAsset {
   undelegation?: string;
   reward?: string;
   commission?: string;
+  lockedBalance?: string;
   totalBalance?: string;
 }
 

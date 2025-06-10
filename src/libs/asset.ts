@@ -301,6 +301,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const cosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
   const cosmosRewards = storage[`${id}-reward-cosmos`] || [];
   const cosmosCommissions = storage[`${id}-commission-cosmos`] || [];
+  const cosmosLockedBalances = storage[`${id}-locked-cosmos`] || [];
   const cosmosAccountInfo = storage[`${id}-account-info-cosmos`] || [];
 
   const evmBalances = storage[`${id}-balance-evm`] || [];
@@ -387,6 +388,11 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               ?.reduce((ac, cu) => plus(ac, cu.amount), '0')
               .toString() || '0';
 
+          const lockedInfo = cosmosLockedBalances?.find(
+            (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+          );
+          const locked = lockedInfo?.lockedBalances?.find((balance) => balance.denom === type)?.amount || '0';
+
           const resolvedBalance = (() => {
             if (isVestingChainMainAsset && accountInfo) {
               const vestingRemained = getVestingRemained(accountInfo, type);
@@ -410,7 +416,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             return balance;
           })();
 
-          const totalBalance = sum([resolvedBalance, delegation, undelegation, reward, commission]);
+          const totalBalance = sum([resolvedBalance, delegation, undelegation, reward, commission, locked]);
 
           const result: AccountCosmosAsset = {
             chain,
@@ -421,6 +427,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             undelegation,
             reward,
             commission,
+            lockedBalance: locked,
             totalBalance,
           };
 

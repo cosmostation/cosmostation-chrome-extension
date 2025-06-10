@@ -955,7 +955,8 @@
             "unstaking": "Unstaking",
             "rewards": "Rewards",
             "incentive": "Incentive",
-            "commission": "Commission"
+            "commission": "Commission",
+            "locked": "Locked"
           },
           "Sui": {
             "title": "My Coin Details",

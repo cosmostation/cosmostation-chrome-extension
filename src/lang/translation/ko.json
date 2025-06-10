@@ -1138,7 +1138,8 @@
             "unstaking": "Unstaking",
             "rewards": "Rewards",
             "incentive": "Incentive",
-            "commission": "Commission"
+            "commission": "Commission",
+            "locked": "Locked"
           },
           "Sui": {
             "title": "코인의 상세 정보",
