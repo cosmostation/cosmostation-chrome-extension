@@ -12,6 +12,7 @@ import type {
 import { SolanaRPCError } from '@/utils/error';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
+import { deserializeTransaction } from '@/utils/solana/transaction';
 import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 import { solanaSignMessageSchema } from './schema';
@@ -69,6 +70,36 @@ export async function solanaProcess(message: SolanaRequest) {
           const validatedParams = (await schema.validateAsync(params)) as SolanaSignMessage['params'];
 
           void processRequest({ ...message, params: validatedParams as SolanaSignMessage['params'] });
+        } catch (e) {
+          if (e instanceof SolanaRPCError) {
+            throw e;
+          }
+
+          throw new SolanaRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`);
+        }
+      }
+
+      if (
+        method === 'solana_signTransaction' ||
+        method === 'solana_signAllTransactions' ||
+        method === 'solana_signAndSendTransaction' ||
+        method === 'solana_signAndSendAllTransactions'
+      ) {
+        const { params } = message;
+
+        try {
+          if (Array.isArray(params) && params.length === 0) {
+            throw new SolanaRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
+          }
+
+          if ((method === 'solana_signTransaction' || method === 'solana_signAndSendTransaction') && params.length > 1) {
+            throw new SolanaRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
+          }
+
+          for (const param of params) {
+            deserializeTransaction(param as unknown as string);
+          }
+          void processRequest({ ...message });
         } catch (e) {
           if (e instanceof SolanaRPCError) {
             throw e;
