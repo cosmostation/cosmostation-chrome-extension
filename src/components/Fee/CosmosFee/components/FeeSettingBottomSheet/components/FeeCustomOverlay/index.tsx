@@ -37,12 +37,22 @@ type FeeCustomOverlayProps = {
   baseGasRate: string;
   feeCoinId: string;
   feeAssets: CosmosFeeAsset[];
+  currentSelectedFeeOptionKey: number;
   open?: boolean;
   onClose: () => void;
-  onConfirm: (feeCoinId: string, gasAmount: string, gasRate: string) => void;
+  onConfirm: (feeCoinId: string, gasAmount?: string, gasRate?: string) => void;
 };
 
-export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasRate, feeAssets, feeCoinId, onClose, onConfirm }: FeeCustomOverlayProps) {
+export default function FeeCustomOverlay({
+  open = false,
+  baseGasAmount,
+  baseGasRate,
+  feeAssets,
+  feeCoinId,
+  currentSelectedFeeOptionKey,
+  onClose,
+  onConfirm,
+}: FeeCustomOverlayProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -58,7 +68,10 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
   const coinSymbol = selectedFeeCoin?.asset.symbol;
   const decimals = selectedFeeCoin?.asset.decimals || 0;
 
-  const currentGasRate = inputGasRate || baseGasRate;
+  const isFeeCoinChanged = feeCoinId !== selectedFeeCoinId;
+  const isFeeCoinOnlyChanged = isFeeCoinChanged && !inputGasRate && !inputGasAmount;
+
+  const currentGasRate = inputGasRate ? inputGasRate : isFeeCoinChanged ? selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey] || baseGasRate : baseGasRate;
   const currentGas = inputGasAmount || baseGasAmount;
 
   const displayFeeAmount = useMemo(() => toDisplayDenomAmount(times(currentGasRate, currentGas), decimals), [currentGas, currentGasRate, decimals]);
@@ -88,7 +101,11 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
   };
 
   const onHandleConfirm = () => {
-    onConfirm(selectedFeeCoinId, currentGas, currentGasRate);
+    if (isFeeCoinOnlyChanged) {
+      onConfirm(selectedFeeCoinId);
+    } else {
+      onConfirm(selectedFeeCoinId, currentGas, currentGasRate);
+    }
     reset();
   };
 
@@ -161,7 +178,7 @@ export default function FeeCustomOverlay({ open = false, baseGasAmount, baseGasR
           />
           <StandardInput
             label={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.gasRate')}
-            placeholder={baseGasRate}
+            placeholder={isFeeCoinChanged ? selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey] : baseGasRate}
             error={!!inputGasRateErrorMsg}
             helperText={inputGasRateErrorMsg}
             value={inputGasRate}

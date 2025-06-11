@@ -152,11 +152,14 @@ export default function FeeSettingBottomSheet({
           baseGasRate={defatulCustomGasRate}
           feeAssets={availableFeeAssets}
           feeCoinId={selectedCustomFeeCoinId}
+          currentSelectedFeeOptionKey={currentSelectedFeeOptionKey}
           onConfirm={(feeCoinId, gasAmount, gasRate) => {
             onChangeFeeCoinId?.(feeCoinId);
-            onChangeGas?.(gasAmount);
-            onChangeGasRate?.(gasRate);
-            onSelectOption?.(customFeeStepKey);
+            if (gasAmount && gasRate) {
+              onChangeGas?.(gasAmount);
+              onChangeGasRate?.(gasRate);
+              onSelectOption?.(customFeeStepKey);
+            }
 
             onHandelClose();
           }}
