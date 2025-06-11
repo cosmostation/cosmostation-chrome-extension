@@ -1,4 +1,3 @@
-import type { MessageV0 } from '@solana/web3.js';
 import { Transaction, VersionedTransaction } from '@solana/web3.js';
 
 export type ParsedInstruction = {
@@ -11,7 +10,7 @@ export type ParsedInstruction = {
 export function parseInstructionsFromTx(tx: Transaction | VersionedTransaction): ParsedInstruction[] {
   if ('version' in tx) {
     // VersionedTransaction
-    const msg = tx.message as MessageV0;
+    const msg = tx.message;
     return msg.compiledInstructions.map((ix, index) => ({
       index,
       programId: msg.staticAccountKeys[ix.programIdIndex]?.toBase58() ?? 'unknown',
@@ -20,7 +19,7 @@ export function parseInstructionsFromTx(tx: Transaction | VersionedTransaction):
     }));
   } else {
     // Legacy Transaction
-    const msg = tx as Transaction;
+    const msg = tx;
     return msg.instructions.map((ix, index) => ({
       index,
       programId: ix.programId.toBase58(),

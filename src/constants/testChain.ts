@@ -39,9 +39,9 @@ export const solana = {
   ],
   explorer: {
     name: 'Solana Explorer',
-    url: 'https://explorer.solana.com',
-    account: 'https://explorer.solana.com/address/${address}',
-    tx: 'https://explorer.solana.com/tx/${hash}',
+    url: 'https://solscan.io',
+    account: 'https://solscan.io/address/${address}',
+    tx: 'https://solscan.io/tx/${hash}',
     proposal: '',
   },
   about: {

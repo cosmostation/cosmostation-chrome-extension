@@ -110,7 +110,7 @@ Content-Type: application/json
 
 ###
 
-POST https://api.mainnet-beta.solana.com
+POST https://solana-rpc.publicnode.com
 Content-Type: application/json
 
 {
@@ -119,8 +119,7 @@ Content-Type: application/json
     "method": "getSignaturesForAddress",
     "params": ["J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
         { 
-            "limit": 100,
-            "before": "sGwQuUhQJrYvFuDegq4dSimmGK7TKtXzf1At2UAaLB8gCAe4EpuV62tizUkDf2xk1otQv7RT7N1d8qChADg4zUz"
+            "limit": 25
         }
     ]
 }

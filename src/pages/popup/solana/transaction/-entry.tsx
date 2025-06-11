@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Connection, Keypair, Transaction, VersionedTransaction } from '@solana/web3.js';
 
@@ -99,11 +99,6 @@ export default function Entry({ request }: EntryProps) {
       return parseInstructionsFromTx(tx);
     });
   }, [unserializedTxs]);
-
-  useEffect(() => {
-    console.log('address', address);
-    console.log('instructions', instructions);
-  });
 
   const isDiabled = useMemo(() => !true, []);
 
