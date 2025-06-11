@@ -152,6 +152,7 @@ export interface ExtensionStorage {
   autoLockTimeStampAt: number | null;
   migrationStatus: MigrationStatus | null;
   userPriceTrendPreference: PriceTrendType;
+  selectedChainFilterId: UniqueChainId | null;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

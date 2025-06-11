@@ -32,7 +32,6 @@ import { isTestnetChain } from '@/utils/chain';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
-import { usePortfolioFilterChainIdStore } from '@/zustand/hooks/usePortfolioFilterChainId';
 
 import NFTList from './-components/NFTList';
 import SkeletonCoinList from './-components/SkeletonCoinList';
@@ -61,14 +60,14 @@ export default function Entry() {
   const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
   const { data: usdCoinGeckoPrice, isLoading: isCoinGeckoPriceUSDLoading } = useCoinGeckoPrice('usd');
 
-  const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, selectedChainFilterId, updateExtensionStorageStore } = useExtensionStorageStore(
+    (state) => state,
+  );
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
   const isDebouncing = !!search && isPending();
-
-  const { chainId: currentSelectedChainId, updateChainId: setCurrentSelectedChainId } = usePortfolioFilterChainIdStore((state) => state);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -96,7 +95,7 @@ export default function Entry() {
     });
 
     const displayedAssets =
-      (!!search && debouncedSearch.length > 1) || currentSelectedChainId
+      (!!search && debouncedSearch.length > 1) || selectedChainFilterId
         ? [...mappedUngroupAccountAssets, ...(groupAccountAssets?.singleAccountAssets || [])]
         : baseCoinList;
 
@@ -116,15 +115,15 @@ export default function Entry() {
       };
     });
   }, [
-    groupAccountAssets?.groupAccountAssets,
-    groupAccountAssets?.singleAccountAssets,
-    groupAccountAssets?.groupMap,
-    search,
-    debouncedSearch.length,
-    currentSelectedChainId,
     coinGeckoPrice,
-    userCurrencyPreference,
+    debouncedSearch.length,
+    groupAccountAssets?.groupAccountAssets,
+    groupAccountAssets?.groupMap,
+    groupAccountAssets?.singleAccountAssets,
+    search,
+    selectedChainFilterId,
     usdCoinGeckoPrice,
+    userCurrencyPreference,
   ]);
 
   const hideSmallValueAssets = useMemo(() => {
@@ -154,7 +153,7 @@ export default function Entry() {
   );
 
   const filteredAssetsBySearch = useMemo(() => {
-    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
+    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, selectedChainFilterId || undefined);
     if (!!search && debouncedSearch.length > 1) {
       return (
         filterdByChain.filter((asset) => {
@@ -165,7 +164,7 @@ export default function Entry() {
       );
     }
     return filterdByChain;
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
+  }, [debouncedSearch, search, selectedChainFilterId, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -187,9 +186,9 @@ export default function Entry() {
         >
           <Container>
             <PortFolio
-              selectedChainId={currentSelectedChainId}
+              selectedChainId={selectedChainFilterId || undefined}
               onChangeChaindId={(chainId) => {
-                setCurrentSelectedChainId(chainId);
+                updateExtensionStorageStore('selectedChainFilterId', chainId || null);
               }}
             />
 
@@ -286,7 +285,7 @@ export default function Entry() {
               </CoinButtonWrapper>
             </StyledTabPanel>
             <StyledTabPanel value={tabValue} index={1} data-is-active={tabValue === 1}>
-              <NFTList selectedChainId={currentSelectedChainId} />
+              <NFTList selectedChainId={selectedChainFilterId || undefined} />
             </StyledTabPanel>
             <SortBottomSheet
               optionButtonProps={[

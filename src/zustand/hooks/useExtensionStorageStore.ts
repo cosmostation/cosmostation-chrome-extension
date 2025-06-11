@@ -62,6 +62,7 @@ export const initialState: ExtensionStorageState = {
   autoLockTimeStampAt: null,
   migrationStatus: null,
   userPriceTrendPreference: PRICE_TREND_TYPE.GREEN_UP,
+  selectedChainFilterId: null,
 };
 
 export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];
