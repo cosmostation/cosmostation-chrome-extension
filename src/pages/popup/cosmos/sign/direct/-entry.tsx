@@ -132,6 +132,10 @@ export default function Entry({ request, chain }: EntryProps) {
       return feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId));
     }
 
+    if (feeAssets.length === 0) {
+      return undefined;
+    }
+
     const extensionSelected = feeAssets[0];
 
     if (dappFromFeeAsset) {
