@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
+import TextButton from '@/components/common/TextButton';
 
 export const TopContainer = styled('div')({
   display: 'flex',
@@ -21,6 +22,12 @@ export const BodyTopContainer = styled('div')(({ theme }) => ({
   columnGap: '0.4rem',
 
   color: theme.palette.color.base1300,
+}));
+
+export const StyledTextButton = styled(TextButton)(({ theme }) => ({
+  '&.Mui-disabled, &:disabled': {
+    color: theme.palette.color.base1300,
+  },
 }));
 
 export const BodyBottomContainer = styled('div')(({ theme }) => ({

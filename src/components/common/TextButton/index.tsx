@@ -4,7 +4,7 @@ import type { NumberTypoVariants, TypoVariantKeys } from '@/styles/theme';
 
 import { StyledButton } from './styled';
 
-type TextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+export type TextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: TypoVariantKeys | NumberTypoVariants;
   variant?: 'normal' | 'hyperlink' | 'underline' | 'redHyperlink';
 };

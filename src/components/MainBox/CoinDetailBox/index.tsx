@@ -1,14 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import copy from 'copy-to-clipboard';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
-import Base1300Text from '@/components/common/Base1300Text';
 import IconButton from '@/components/common/IconButton';
-import TextButton from '@/components/common/TextButton';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
+import ShortAddressCopyButton from '@/components/ShortAddressCopyButton';
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -19,8 +17,7 @@ import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { isStakeableAsset } from '@/utils/asset';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash, shorterAddress } from '@/utils/string';
-import { toastDefault } from '@/utils/toast';
+import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -33,12 +30,14 @@ import {
   IconContainer,
   SpacedTypography,
   StyledIconTextButton,
+  StyledTextButton,
   TopContainer,
 } from './styled';
 import MainBox from '..';
 
 import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
 import DaoIcon from '@/assets/images/icons/Dao28.svg';
+import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
 import SendIcon from '@/assets/images/icons/Send22.svg';
@@ -137,10 +136,12 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     return undefined;
   })();
 
-  const copyToClipboard = () => {
-    copy(address);
-    toastDefault(t('components.MainBox.CoinDetailBox.index.copied'));
-  };
+  const explorerUrl =
+    currentCoin?.chain.explorer?.account && currentCoin?.address?.address
+      ? currentCoin.chain.explorer.account.replace('${address}', currentCoin.address.address)
+      : undefined;
+
+  const coinGeckoUrl = currentCoin?.asset.coinGeckoId ? ` https://www.coingecko.com/en/coins/${currentCoin.asset.coinGeckoId}` : '';
 
   const handleOnClickChangeAddress = () => {
     setIsShowCosmosStyleAddress(!isShowCosmosStyleAddress);
@@ -186,27 +187,40 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     },
     [coinId, cosmosStyleCoin, currentCoin, navigate],
   );
+
   return (
     <>
       <MainBox
         top={
           <TopContainer>
-            <TextButton onClick={copyToClipboard} variant="underline" typoVarient="h6n_M">
-              {shorterAddress(address, 16)}
-            </TextButton>
+            <ShortAddressCopyButton variant="underline" typoVarient="h6n_M">
+              {address}
+            </ShortAddressCopyButton>
             {cosmosStyleCoin && (
-              <ChangeAddressIconButtonContainer onClick={handleOnClickChangeAddress}>
-                <IconButton>
+              <ChangeAddressIconButtonContainer>
+                <IconButton onClick={handleOnClickChangeAddress}>
                   <ChangeIcon />
                 </IconButton>
               </ChangeAddressIconButtonContainer>
             )}
+            <ChangeAddressIconButtonContainer>
+              <IconButton disabled={!explorerUrl} onClick={() => explorerUrl && window.open(explorerUrl, '_blank')}>
+                <ExplorerIcon />
+              </IconButton>
+            </ChangeAddressIconButtonContainer>
           </TopContainer>
         }
         body={
           <BodyContainer>
             <BodyTopContainer>
-              <Base1300Text variant="h1_B">{symbol}</Base1300Text>
+              <StyledTextButton
+                onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
+                disabled={!coinGeckoUrl}
+                variant="normal"
+                typoVarient="h1_B"
+              >
+                {symbol}
+              </StyledTextButton>
               <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
               </BalanceDisplay>

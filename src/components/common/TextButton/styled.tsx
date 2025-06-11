@@ -22,7 +22,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   padding: 0,
 
-  '&:hover': {
+  '&:hover:not(:disabled)': {
     opacity: 0.8,
   },
 

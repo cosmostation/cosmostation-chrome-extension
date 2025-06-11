@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
+import CenterEllipsisText from '@/components/common/CenterEllipsisText';
 import CopyButton from '@/components/CopyButton';
 
-import { Container, FullContractAddressText, FullContractAddressTextContainer, TitleText } from './styled';
+import { Container, FullContractAddressTextContainer, TitleText } from './styled';
 
 type ContractAddressProps = {
   contractAddress: string;
@@ -25,7 +26,7 @@ export default function ContractAddress({ contractAddress, title }: ContractAddr
         leading={<TitleText variant="h3_B">{title || t('pages.coin-detail.components.ContractAddress.index.contract')}</TitleText>}
       />
       <FullContractAddressTextContainer>
-        <FullContractAddressText variant="b3_M">{contractAddress}</FullContractAddressText>
+        <CenterEllipsisText variant="b3_M">{contractAddress}</CenterEllipsisText>
       </FullContractAddressTextContainer>
     </Container>
   );
