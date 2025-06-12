@@ -12,7 +12,7 @@ import { Route as ManageCustomNetwork } from '@/pages/manage-assets/visibility/n
 import type { ChainBase, UniqueChainId } from '@/types/chain';
 import type { ChainlistSortKeyType } from '@/types/sortKey';
 import { isTestnetChain } from '@/utils/chain';
-import { minus, plus } from '@/utils/numbers';
+import { equal, minus, plus } from '@/utils/numbers';
 import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -141,6 +141,10 @@ export default function ChainListBottomSheet({
               }
 
               if (chainListSortKey === CHAINLIST_SORT_KEY.VALUE_HIGH_ORDER) {
+                if (equal(b.value, a.value)) {
+                  return a.name.localeCompare(b.name);
+                }
+
                 return Number(minus(b.value, a.value));
               }
 
