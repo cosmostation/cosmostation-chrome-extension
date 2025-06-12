@@ -114,6 +114,7 @@ export default function Cosmos() {
         name: data.chainName,
         image: data.chainImage || '',
         mainAssetDenom: data.mainAssetDenom,
+        chainDefaultCoinDenoms: [data.mainAssetDenom],
         accountPrefix: data.accountPrefix,
         isCosmwasm: isSupportCosmwasm === 'True',
         isEvm: false,

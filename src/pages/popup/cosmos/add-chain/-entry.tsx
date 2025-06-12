@@ -70,6 +70,7 @@ export default function Entry({ request }: EntryProps) {
         name: request.params.chainName,
         image: request.params.imageURL || '',
         mainAssetDenom: request.params.baseDenom,
+        chainDefaultCoinDenoms: request.params.baseDenom ? [request.params.baseDenom] : undefined,
         accountPrefix: request.params.addressPrefix,
         isCosmwasm: false,
         isEvm: false,

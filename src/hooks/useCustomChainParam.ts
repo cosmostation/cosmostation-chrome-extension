@@ -28,6 +28,9 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const mainAssetDecimals = chain?.staking_asset_decimals || 6;
       const mainAssetImage = chain?.staking_asset_image || null;
       const mainAssetCoinGeckoId = chain?.staking_asset_coingecko_id || null;
+      const chainDefaultCoinDenoms = [chain?.gas_asset_denom, chain?.staking_asset_denom, chain?.main_asset_denom].filter((denom): denom is string =>
+        Boolean(denom),
+      );
 
       const isCosmwasm = chain?.is_support_cw20 ?? false;
       const isSupportCW721 = chain.is_support_cw721 ?? false;
@@ -67,6 +70,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
         image,
         chainType,
         mainAssetDenom,
+        chainDefaultCoinDenoms,
         mainAssetSymbol,
         mainAssetDecimals,
         mainAssetImage,
@@ -95,6 +99,9 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
       const mainAssetDecimals = chain?.gas_asset_decimals ?? chain?.main_asset_decimals ?? 18;
       const mainAssetImage = chain?.gas_asset_image ?? chain?.main_asset_image ?? null;
       const mainAssetCoinGeckoId = chain?.gas_asset_coin_gecko_id ?? chain?.main_asset_coin_gecko_id ?? null;
+      const chainDefaultCoinDenoms = [chain?.gas_asset_denom, chain?.staking_asset_denom, chain?.main_asset_denom].filter((denom): denom is string =>
+        Boolean(denom),
+      );
 
       const isCosmos = chain?.chain_type?.includes('cosmos') ?? false;
 
@@ -122,6 +129,7 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
         mainAssetDecimals,
         mainAssetImage,
         mainAssetCoinGeckoId,
+        chainDefaultCoinDenoms,
         isCosmos,
         image,
         chainType,

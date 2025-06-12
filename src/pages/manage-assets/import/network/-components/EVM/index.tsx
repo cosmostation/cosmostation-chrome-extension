@@ -91,6 +91,7 @@ export default function EVM() {
         name: data.networkName,
         image: data.chainImage || '',
         mainAssetDenom: NATIVE_EVM_COIN_ADDRESS,
+        chainDefaultCoinDenoms: [NATIVE_EVM_COIN_ADDRESS],
         isCosmos: false,
         rpcUrls: [
           {

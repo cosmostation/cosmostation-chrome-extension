@@ -88,6 +88,7 @@ export interface CustomEvmChainAsset extends ChainBase {
   mainAssetDecimals: number;
   mainAssetImage: string | null;
   mainAssetCoinGeckoId: string | null;
+  chainDefaultCoinDenoms: string[];
   isCosmos: boolean;
   feeInfo: EvmFeeInfo;
   rpcUrls: ChainEndpoint[];
@@ -103,6 +104,7 @@ export interface CustomCosmosChainAsset extends ChainBase {
   mainAssetDecimals: number;
   mainAssetImage: string | null;
   mainAssetCoinGeckoId: string | null;
+  chainDefaultCoinDenoms: string[];
   accountPrefix: string;
   isCosmwasm: boolean;
   isEvm: boolean;

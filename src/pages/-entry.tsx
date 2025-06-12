@@ -20,12 +20,14 @@ import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
+import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
@@ -50,6 +52,13 @@ import {
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
+type PortfolioCoinItem = FlatAccountAssets & {
+  value: string;
+  dollarValue: string;
+  totalDisplayAmount: string;
+  counts: string;
+};
+
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -57,6 +66,7 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
+  const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true });
   const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
   const { data: usdCoinGeckoPrice, isLoading: isCoinGeckoPriceUSDLoading } = useCoinGeckoPrice('usd');
 
@@ -79,7 +89,46 @@ export default function Entry() {
   const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
   const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
-  const computedAssetValues = useMemo(() => {
+  const chainDefaultCoins = useMemo<PortfolioCoinItem[] | undefined>(() => {
+    const chainFilteredAllCoins = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, selectedChainFilterId || undefined);
+    const chainDefaultCoins = chainFilteredAllCoins
+      .filter((item) => {
+        if (item.chain.chainDefaultCoinDenoms) {
+          return item.chain.chainDefaultCoinDenoms.includes(item.asset.id);
+        }
+
+        return item.chain.mainAssetDenom === item.asset.id;
+      })
+      .toSorted((a, b) => {
+        const denoms = a.chain.chainDefaultCoinDenoms;
+        if (!denoms) return 0;
+        const indexA = denoms.indexOf(a.asset.id);
+        const indexB = denoms.indexOf(b.asset.id);
+        return indexA - indexB;
+      });
+
+    if (chainDefaultCoins.length === 0) return undefined;
+
+    return chainDefaultCoins.map((item) => {
+      const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
+      const totalDisplayAmount = toDisplayDenomAmount(balance, item.asset.decimals) || '0';
+
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
+      const coinPriceInDolalr = (item.asset.coinGeckoId && usdCoinGeckoPrice?.[item.asset.coinGeckoId]?.[CURRENCY_TYPE.USD]) || 0;
+
+      const value = times(totalDisplayAmount, coinPrice);
+      const valueInDollar = times(totalDisplayAmount, coinPriceInDolalr);
+      return {
+        ...item,
+        counts: '1',
+        totalDisplayAmount,
+        value,
+        dollarValue: valueInDollar,
+      };
+    });
+  }, [accountAllAssets?.flatAccountAssets, coinGeckoPrice, selectedChainFilterId, usdCoinGeckoPrice, userCurrencyPreference]);
+
+  const computedAssetValues = useMemo<PortfolioCoinItem[]>(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
     const unGroupedAccountAssets = Object.values(groupAccountAssets?.groupMap || []).flat();
@@ -163,8 +212,17 @@ export default function Entry() {
         }) || []
       );
     }
-    return filterdByChain;
-  }, [debouncedSearch, search, selectedChainFilterId, sortedAssets]);
+    if (selectedChainFilterId) {
+      return [...(chainDefaultCoins || []), ...filterdByChain].reduce((acc: PortfolioCoinItem[], item) => {
+        if (!acc.some((existing) => existing.asset.id === item.asset.id)) {
+          acc.push(item as PortfolioCoinItem);
+        }
+        return acc;
+      }, []);
+    } else {
+      return filterdByChain;
+    }
+  }, [chainDefaultCoins, debouncedSearch, search, selectedChainFilterId, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
