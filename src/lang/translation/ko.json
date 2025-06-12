@@ -359,7 +359,9 @@
         "network": "네트워크",
         "searchPlaceholder": "네트워크 검색 (예 : Bitcoin)",
         "switchCoinType": "코인 타입 변경",
-        "title": "네트워크를 선택해주세요"
+        "title": "네트워크를 선택해주세요",
+        "valueHighOrder": "금액 높은 순",
+        "alphabeticalAsc": "알파벳 순 (A -> Z)"
       }
     },
     "CheckLegacyAddressBalanceBottomSheet": {

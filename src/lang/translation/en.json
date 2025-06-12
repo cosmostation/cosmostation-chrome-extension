@@ -130,7 +130,9 @@
         "searchPlaceholder": "Search Network (Ex. Bitcoin)",
         "customNetwork": "Can't find your network?\nYou can manually add a custom network",
         "network": "Network",
-        "switchCoinType": "Switch Coin Type"
+        "switchCoinType": "Switch Coin Type",
+        "valueHighOrder": "Value High Order",
+        "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
       }
     },
     "Lock": {

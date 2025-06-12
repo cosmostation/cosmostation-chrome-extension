@@ -22,6 +22,7 @@ export const initialState: ExtensionStorageState = {
   initCheckLegacyBalanceAccountIds: [],
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
   dappListSortKey: DefaultSortKey.dappListSortKey,
+  chainListSortKey: DefaultSortKey.chainListSortKey,
   userLanguagePreference: 'en',
   comparisonPasswordHash: '',
   accountNamesById: {},

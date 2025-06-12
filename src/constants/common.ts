@@ -1,3 +1,5 @@
+import type { ChainType } from '@/types/chain';
+
 export const PRIVATE_KEY_FOR_TEST = '3ec22888f25112c10a967a45dce4181b6fcff8e41d65c3ae678725f1a124223e';
 
 export const CHAINLIST_RESOURCE_URL = 'https://raw.githubusercontent.com/cosmostation/chainlist/main/wallet_extension';
@@ -18,3 +20,14 @@ export const MOONPAY_API_KEY = 'pk_live_zbG1BOGMVTcfKibboIE2K3vduJBTuuCn';
 
 export const BALANCE_FETCH_TIME_OUT_MS = 1000 * 2;
 export const DEFAULT_FETCH_TIME_OUT_MS = 1000 * 1;
+
+interface MajorChain {
+  id: string;
+  chainType: ChainType;
+}
+
+export const DEFAULT_MAJOR_CHAINS: MajorChain[] = [
+  { id: 'cosmos', chainType: 'cosmos' },
+  { id: 'ethereum', chainType: 'evm' },
+  { id: 'bitcoin', chainType: 'bitcoin' },
+];
