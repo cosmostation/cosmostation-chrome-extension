@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Connection, Keypair, Transaction, VersionedTransaction } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
@@ -27,7 +27,7 @@ import type {
   SolanaSignTransaction,
 } from '@/types/message/inject/solana';
 import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
-import { deserializeTransaction, parseInstructionsFromTx } from '@/utils/solana/transaction';
+import { deserializeTransaction, parseInstructionsFromTx, serializeTransaction, signTransaction } from '@/utils/solana/transaction';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -125,26 +125,19 @@ export default function Entry({ request }: EntryProps) {
       const privateKey = keyPair.privateKey;
       const privateKeyBuffer = Buffer.from(privateKey, 'hex');
 
-      const signer = Keypair.fromSeed(privateKeyBuffer);
-
       const rpcURLs = nativeAccountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 
       if (method === 'solana_signTransaction' || method === 'solana_signAllTransactions') {
-        for (const tx of txs) {
-          if (tx instanceof Transaction) {
-            tx.sign(signer);
-          } else if (tx instanceof VersionedTransaction) {
-            tx.sign([signer]);
-          }
-        }
+        const signedTxs = txs.map((tx) => {
+          return signTransaction(tx, privateKeyBuffer);
+        });
 
-        const result = txs.map((tx) => {
-          if (tx instanceof Transaction) {
-            return tx.serialize().toString('hex');
-          } else if (tx instanceof VersionedTransaction) {
-            return Buffer.from(tx.serialize()).toString('hex');
+        const result = signedTxs.map((tx) => {
+          try {
+            return serializeTransaction(tx);
+          } catch {
+            return undefined;
           }
-          return undefined;
         });
 
         await incrementTxCountForOrigin(origin);
@@ -163,18 +156,14 @@ export default function Entry({ request }: EntryProps) {
       }
 
       if (method === 'solana_signAndSendTransaction' || method === 'solana_signAndSendAllTransactions') {
-        for (const tx of txs) {
-          if (tx instanceof Transaction) {
-            tx.sign(signer);
-          } else if (tx instanceof VersionedTransaction) {
-            tx.sign([signer]);
-          }
-        }
+        const signedTxs = txs.map((tx) => {
+          return signTransaction(tx, privateKeyBuffer);
+        });
 
         const connection = new Connection(rpcURLs[0], 'confirmed');
 
         const responseAll = await Promise.all(
-          txs.map(async (tx) => {
+          signedTxs.map(async (tx) => {
             try {
               return connection.sendRawTransaction(tx.serialize());
             } catch {

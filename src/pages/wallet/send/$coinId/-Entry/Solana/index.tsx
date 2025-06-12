@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
-import { createAssociatedTokenAccountInstruction, createTransferInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
-import { ComputeBudgetProgram, Connection, PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from '@solana/web3.js';
+import { getAssociatedTokenAddressSync } from '@solana/spl-token';
+import type { VersionedTransaction } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
@@ -30,6 +31,7 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { createSplTokenTransferTransaction, createTransferTransaction, overwriteComputeBudgetProgram } from '@/utils/solana/transaction';
 import { isDecimal, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -200,41 +202,18 @@ export default function Solana({ coinId }: SolanaProps) {
           const mint = selectedCoinToSend.asset.id;
           const sender = selectedCoinToSend.address.address;
 
-          const pubProgramId = new PublicKey(programId);
+          const tx = createSplTokenTransferTransaction(sender, recipientAddress, mint, Number(baseSendAmount), latestBlockHash.blockhash, {
+            isAccountCreationNeeded: !toATAInfo,
+            programId,
+          });
 
-          const pubMint = new PublicKey(mint);
-          const pubSender = new PublicKey(sender);
-          const pubRecipient = new PublicKey(recipientAddress);
-
-          const fromATA = getAssociatedTokenAddressSync(pubMint, pubSender);
-          const toATA = getAssociatedTokenAddressSync(pubMint, pubRecipient);
-
-          const createIx = createAssociatedTokenAccountInstruction(pubSender, toATA, pubRecipient, pubMint);
-
-          const transferInstruction = createTransferInstruction(fromATA, toATA, pubSender, Number(baseSendAmount), [], pubProgramId);
-
-          const messageV0 = new TransactionMessage({
-            payerKey: pubSender,
-            recentBlockhash: latestBlockHash.blockhash,
-            instructions: toATAInfo ? [transferInstruction] : [createIx, transferInstruction],
-          }).compileToV0Message();
-
-          return new VersionedTransaction(messageV0);
+          return tx;
         }
 
         const sender = selectedCoinToSend.address.address;
 
-        const pubSender = new PublicKey(sender);
-        const pubRecipient = new PublicKey(recipientAddress);
-
-        const transferInstruction = SystemProgram.transfer({ fromPubkey: pubSender, toPubkey: pubRecipient, lamports: Number(baseSendAmount) });
-
-        const messageV0 = new TransactionMessage({
-          payerKey: pubSender,
-          recentBlockhash: latestBlockHash.blockhash,
-          instructions: [transferInstruction],
-        }).compileToV0Message();
-        return new VersionedTransaction(messageV0);
+        const tx = createTransferTransaction(sender, recipientAddress, Number(baseSendAmount), latestBlockHash.blockhash);
+        return tx;
       }
 
       return undefined;
@@ -373,35 +352,10 @@ export default function Solana({ coinId }: SolanaProps) {
         const transactionToSend = confirmData.transaction;
 
         if (confirmData.computeUnitLimit && confirmData.computeUnitPrice) {
-          const { message } = transactionToSend;
-
-          const computeUnitIx = ComputeBudgetProgram.setComputeUnitLimit({
+          const tx = overwriteComputeBudgetProgram(transactionToSend, {
             units: confirmData.computeUnitLimit,
-          });
-          const computeUnitPriceIx = ComputeBudgetProgram.setComputeUnitPrice({
             microLamports: Math.ceil(confirmData.computeUnitPrice * 1000000),
           });
-
-          const messageWithPriority = new TransactionMessage({
-            payerKey: message.staticAccountKeys[0],
-            recentBlockhash: message.recentBlockhash,
-            instructions: [
-              computeUnitIx,
-              computeUnitPriceIx,
-              ...message.compiledInstructions.map((ix) => ({
-                programId: message.staticAccountKeys[ix.programIdIndex],
-                keys: ix.accountKeyIndexes.map((i) => {
-                  const pubkey = message.staticAccountKeys[i];
-                  const isSigner = message.isAccountSigner(i);
-                  const isWritable = message.isAccountWritable(i);
-                  return { pubkey, isSigner, isWritable };
-                }),
-                data: Buffer.from(ix.data),
-              })),
-            ],
-          }).compileToV0Message();
-
-          const tx = new VersionedTransaction(messageWithPriority);
 
           tx.sign([{ publicKey: new PublicKey(selectedCoinToSend.address.address), secretKey: Buffer.from(keypair.privateKey, 'hex') }]);
 
