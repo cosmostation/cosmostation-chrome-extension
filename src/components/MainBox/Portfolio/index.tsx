@@ -7,9 +7,9 @@ import AllNetworkButton from '@/components/AllNetworkButton';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
+import ShortAddressCopyButton from '@/components/ShortAddressCopyButton';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { Route as AllHistory } from '@/pages/all-history';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
@@ -17,9 +17,9 @@ import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId, getMainAssetByChainId, isStakeableAsset } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -29,7 +29,6 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
-  HistoryButtonTypo,
   SpacedTypography,
   StyledIconContainer,
   StyledIconTextButton,
@@ -44,7 +43,6 @@ import MainBox from '..';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 import DappIcon from '@/assets/images/icons/Dapp22.svg';
-import HistoryIcon from '@/assets/images/icons/History14.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 import SwapIcon from '@/assets/images/icons/Swap22.svg';
@@ -77,16 +75,23 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   const chainList = useMemo(() => getFilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
 
+  const selectedChainMainAsset = useMemo(
+    () => selectedChainId && getMainAssetByChainId(accountAllAssets?.flatAccountAssets, selectedChainId),
+    [accountAllAssets?.flatAccountAssets, selectedChainId],
+  );
+
   const coinIdForReceivePage = useMemo(() => {
-    const selectedCoinAsset =
-      selectedChainId &&
-      accountAllAssets?.flatAccountAssets.find((item) => getUniqueChainId(item.chain) === selectedChainId && item.asset.id === item.chain.mainAssetDenom)
-        ?.asset;
+    if (!selectedChainMainAsset?.asset) return undefined;
 
-    if (!selectedCoinAsset) return undefined;
+    return getCoinId(selectedChainMainAsset.asset);
+  }, [selectedChainMainAsset]);
 
-    return getCoinId(selectedCoinAsset);
-  }, [accountAllAssets?.flatAccountAssets, selectedChainId]);
+  const address = selectedChainMainAsset ? selectedChainMainAsset.address.address : '';
+
+  const explorerUrl =
+    selectedChainMainAsset?.chain.explorer?.account && selectedChainMainAsset?.address?.address
+      ? selectedChainMainAsset.chain.explorer.account.replace('${address}', selectedChainMainAsset.address.address)
+      : undefined;
 
   useEffect(() => {
     setIsProcessing(true);
@@ -172,29 +177,26 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              <IconTextButton leadingIcon={<HistoryIcon />}>
-                <HistoryButtonTypo
-                  onClick={() => {
-                    navigate({
-                      to: AllHistory.to,
-                    });
-                  }}
-                  variant="b3_M"
-                >
-                  {t('components.MainBox.Portfolio.index.history')}
-                </HistoryButtonTypo>
-              </IconTextButton>
+              <ShortAddressCopyButton variant="underline" typoVarient="h6n_M">
+                {address}
+              </ShortAddressCopyButton>
               <BodyBottomChipButtonContainer>
-                <ChipButton
-                  variant="light"
-                  onClick={() => {
-                    navigate({
-                      to: SelectSendCoin.to,
-                    });
-                  }}
-                >
-                  <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
-                </ChipButton>
+                {explorerUrl ? (
+                  <ChipButton variant="light" onClick={() => window.open(explorerUrl, '_blank')}>
+                    <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
+                  </ChipButton>
+                ) : (
+                  <ChipButton
+                    variant="light"
+                    onClick={() => {
+                      navigate({
+                        to: SelectSendCoin.to,
+                      });
+                    }}
+                  >
+                    <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
+                  </ChipButton>
+                )}
                 <ChipButton
                   variant="dark"
                   onClick={() => {

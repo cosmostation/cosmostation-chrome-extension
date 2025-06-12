@@ -40,12 +40,6 @@ export const TopRightContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const HistoryButtonTypo = styled(Typography)(({ theme }) => ({
-  marginLeft: '0.2rem',
-
-  color: theme.palette.color.base1300,
-}));
-
 export const BodyContainer = styled('div')({});
 
 export const BodyTopContainer = styled('div')(({ theme }) => ({

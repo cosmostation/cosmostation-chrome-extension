@@ -6,6 +6,7 @@ import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/ty
 import { emitChangedAddressEvent } from '@/utils/event';
 import { emitToWeb } from '@/utils/message';
 import { removeMnemonicName } from '@/utils/mnemonicNames';
+import { parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { deleteKeysContainingString, getExtensionLocalStorage } from '@/utils/storage';
 import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNames';
 import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
@@ -14,9 +15,21 @@ import { removeInitCheckLegacyBalanceAccountId, removeInitCheckLegacyBalanceAcco
 import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useSyncChainFilterIdWithAccountType } from './useSyncChainFilterIdWithAccountType';
+
 export function useCurrentAccount() {
-  const { userAccounts, accountNamesById, currentAccountId, approvedOrigins, approvedSuiPermissions, approvedIotaPermissions, updateExtensionStorageStore } =
-    useExtensionStorageStore((state) => state);
+  const {
+    userAccounts,
+    accountNamesById,
+    currentAccountId,
+    approvedOrigins,
+    approvedSuiPermissions,
+    approvedIotaPermissions,
+    preferAccountType,
+    selectedChainFilterId,
+    updateExtensionStorageStore,
+  } = useExtensionStorageStore((state) => state);
+  const { syncChainFilterIdWithAccountType } = useSyncChainFilterIdWithAccountType();
 
   const selectedAccount = useMemo(() => userAccounts.find((account) => account.id === currentAccountId), [currentAccountId, userAccounts]);
 
@@ -36,6 +49,18 @@ export function useCurrentAccount() {
     const newAccountId = isExist ? id : accounts[0].id;
 
     await updateExtensionStorageStore('currentAccountId', newAccountId);
+
+    const newAccountPreferAccountType = preferAccountType[newAccountId];
+
+    if (newAccountPreferAccountType && selectedChainFilterId) {
+      const currentParsedChainFilterId = parseUniqueChainId(selectedChainFilterId);
+      if (currentParsedChainFilterId) {
+        const newAccountChainAccountType = newAccountPreferAccountType[currentParsedChainFilterId.id];
+        if (newAccountChainAccountType) {
+          await syncChainFilterIdWithAccountType(newAccountChainAccountType);
+        }
+      }
+    }
 
     await emitChangedAddressEvent(newAccountId);
   };
@@ -59,6 +84,7 @@ export function useCurrentAccount() {
 
     await updateExtensionStorageStore('userAccounts', [...filteredAccounts, account]);
     await updateExtensionStorageStore('accountNamesById', { ...accountNamesById, [account.id]: name });
+    await updateExtensionStorageStore('selectedChainFilterId', null);
   };
 
   const removeAccount = async (id: string) => {

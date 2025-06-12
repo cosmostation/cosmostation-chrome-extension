@@ -29,7 +29,7 @@ import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
+import { getDefaultAssets, getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -92,23 +92,16 @@ export default function Entry() {
 
   const chainDefaultCoins = useMemo<PortfolioCoinItem[] | undefined>(() => {
     const chainFilteredAllCoins = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, selectedChainFilterId || undefined);
-    const chainDefaultCoins = chainFilteredAllCoins
-      .filter((item) => {
-        if (item.chain.chainDefaultCoinDenoms) {
-          return item.chain.chainDefaultCoinDenoms.some((defaultCoinDenom) => isEqualsIgnoringCase(defaultCoinDenom, item.asset.id));
-        }
 
-        return isEqualsIgnoringCase(item.chain.mainAssetDenom || undefined, item.asset.id);
-      })
-      .toSorted((a, b) => {
-        const denoms = a.chain.chainDefaultCoinDenoms;
-        if (!denoms) return 0;
-        const indexA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
-        const indexB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
-        return indexA - indexB;
-      });
+    const chainDefaultCoins = getDefaultAssets(chainFilteredAllCoins)?.toSorted((a, b) => {
+      const denoms = a.chain.chainDefaultCoinDenoms;
+      if (!denoms) return 0;
+      const indexA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
+      const indexB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
+      return indexA - indexB;
+    });
 
-    if (chainDefaultCoins.length === 0) return undefined;
+    if (!chainDefaultCoins || chainDefaultCoins?.length === 0) return undefined;
 
     return chainDefaultCoins.map((item) => {
       const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
