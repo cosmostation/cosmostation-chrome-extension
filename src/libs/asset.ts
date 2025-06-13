@@ -234,6 +234,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-reward-cosmos`,
     `${id}-commission-cosmos`,
     `${id}-account-info-cosmos`,
+    `${id}-locked-cosmos`,
     `${id}-balance-evm`,
     `${id}-balance-aptos`,
     `${id}-balance-sui`,
