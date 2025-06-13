@@ -79,5 +79,5 @@ export const StyledTabPanel = styled(FilledTabPanel)<StyledTabPanelProps>(({ ...
 }));
 
 export const SearchContainer = styled('div')({
-  padding: '0 1.2rem',
+  padding: '0 1.2rem 0.6rem',
 });
