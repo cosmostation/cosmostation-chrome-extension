@@ -16,6 +16,7 @@ import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useAccount } from '@/hooks/cosmos/useAccount';
+import { useAutoFeeCurrencySelectionOnInit } from '@/hooks/cosmos/useAutoFeeCurrencySelectionOnInit';
 import { useCommission } from '@/hooks/cosmos/useCommission';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
@@ -71,6 +72,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
 
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
+  const [autoSetFeeCoinId, setAutoSetFeeCoinId] = useState('');
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
 
@@ -179,10 +181,14 @@ export default function Cosmos({ coinId }: CosmosProps) {
   );
 
   const alternativeFeeAsset = useMemo(
-    () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
-    [customFeeCoinId, feeAssets],
+    () =>
+      customFeeCoinId
+        ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId))
+        : autoSetFeeCoinId
+          ? feeAssets.find((item) => isMatchingCoinId(item.asset, autoSetFeeCoinId))
+          : feeAssets[0],
+    [autoSetFeeCoinId, customFeeCoinId, feeAssets],
   );
-
   const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
 
   const alternativeGasRate = alternativeFeeAsset?.gasRate;
@@ -302,6 +308,11 @@ export default function Cosmos({ coinId }: CosmosProps) {
     isFeemarketActive,
   ]);
 
+  const isCustomStep = useMemo(() => {
+    if (!alternativeGasRate || feeOptions.length === 0) return false;
+    return feeOptions.length - 1 === currentFeeStepKey;
+  }, [alternativeGasRate, currentFeeStepKey, feeOptions.length]);
+
   const selectedFeeOption = useMemo(() => {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
@@ -353,6 +364,16 @@ export default function Cosmos({ coinId }: CosmosProps) {
     commissionAminoTx,
     t,
   ]);
+
+  useAutoFeeCurrencySelectionOnInit({
+    feeAssets: feeAssets,
+    isCustomFee: isCustomStep,
+    currentFeeStepKey: currentFeeStepKey,
+    gas: currentGas,
+    setFeeCoinId: (coinId) => {
+      setAutoSetFeeCoinId(coinId);
+    },
+  });
 
   const handleOnClickConfirm = useCallback(async () => {
     try {

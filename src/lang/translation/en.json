@@ -1488,7 +1488,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "invalidRewardAmount": "Invalid reward amount",
-                "memoOverflow": "Memo is too long. Please shorten it."
+                "memoOverflow": "Memo is too long. Please shorten it.",
+                "insufficientFee": "Insufficient fee"
               }
             },
             "Iota": {

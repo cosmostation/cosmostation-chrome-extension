@@ -19,6 +19,7 @@ import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useAccount } from '@/hooks/cosmos/useAccount';
+import { useAutoFeeCurrencySelectionOnInit } from '@/hooks/cosmos/useAutoFeeCurrencySelectionOnInit';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
@@ -99,6 +100,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   }, [defaultGasRateKey, inputFeeStepKey]);
 
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
+  const [autoSetFeeCoinId, setAutoSetFeeCoinId] = useState('');
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
 
@@ -182,8 +184,13 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   }, [apr, currentValidator, displayStakeAmount]);
 
   const alternativeFeeAsset = useMemo(
-    () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
-    [customFeeCoinId, feeAssets],
+    () =>
+      customFeeCoinId
+        ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId))
+        : autoSetFeeCoinId
+          ? feeAssets.find((item) => isMatchingCoinId(item.asset, autoSetFeeCoinId))
+          : feeAssets[0],
+    [autoSetFeeCoinId, customFeeCoinId, feeAssets],
   );
 
   const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
@@ -321,14 +328,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
 
-  const baseFee = useMemo(() => times(selectedFeeOption.gas || '0', selectedFeeOption.gasRate || '0'), [selectedFeeOption.gas, selectedFeeOption.gasRate]);
+  const isCustomStep = useMemo(() => {
+    if (!alternativeGasRate || feeOptions.length === 0) return false;
+    return feeOptions.length - 1 === currentFeeStepKey;
+  }, [alternativeGasRate, currentFeeStepKey, feeOptions.length]);
+
+  const currentGas = selectedFeeOption.gas || '0';
+
+  const baseFee = useMemo(() => times(currentGas, selectedFeeOption.gasRate || '0'), [currentGas, selectedFeeOption.gasRate]);
 
   const currentBaseFee = useMemo(() => {
     return ceil(baseFee);
   }, [baseFee]);
   const currentDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentBaseFee, selectedFeeOption.decimals), [currentBaseFee, selectedFeeOption.decimals]);
 
-  const currentGas = selectedFeeOption.gas || '0';
+  const currentFeeCoinDisplayAvailableAmount = useMemo(
+    () => toDisplayDenomAmount(selectedFeeOption?.balance || '0', selectedFeeOption?.decimals || 0),
+    [selectedFeeOption?.balance, selectedFeeOption.decimals],
+  );
 
   const stakeAmountInputErrorMessage = useMemo(() => {
     if (displayStakeAmount) {
@@ -387,6 +404,10 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       return stakeAmountInputErrorMessage;
     }
 
+    if (gt(currentDisplayFeeAmount, currentFeeCoinDisplayAvailableAmount)) {
+      return t('pages.wallet.send.$coinId.Entry.Cosmos.index.insufficientFee');
+    }
+
     if (!gt(displayStakeAmount, '0')) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.invalidAmount');
     }
@@ -402,6 +423,8 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     return '';
   }, [
     baseAvailableAmount,
+    currentDisplayFeeAmount,
+    currentFeeCoinDisplayAvailableAmount,
     displayStakeAmount,
     inputMemoErrorMessage,
     selectedStakingCoin?.chain.isSupportStaking,
@@ -409,6 +432,16 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     stakeAmountInputErrorMessage,
     t,
   ]);
+
+  useAutoFeeCurrencySelectionOnInit({
+    feeAssets: feeAssets,
+    isCustomFee: isCustomStep,
+    currentFeeStepKey: currentFeeStepKey,
+    gas: currentGas,
+    setFeeCoinId: (coinId) => {
+      setAutoSetFeeCoinId(coinId);
+    },
+  });
 
   const handleOnClickMax = () => {
     if (selectedStakingCoin && selectedFeeOption && selectedStakingCoin?.asset.id === selectedFeeOption.denom) {
