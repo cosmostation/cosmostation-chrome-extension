@@ -40,7 +40,7 @@ import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { getUtf8BytesLength, shorterAddress, toPercentages } from '@/utils/string';
+import { getUtf8BytesLength, safeStringify, shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -403,6 +403,20 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const totalValidatorCounts = availableValidators.length - 1;
 
+  const displayTx = useMemo(() => {
+    if (!memoizedRewardAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedRewardAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedRewardAminoTx, selectedFeeOption.denom]);
+
   const inputMemoErrorMessage = useMemo(() => {
     if (inputMemo) {
       if (gt(getUtf8BytesLength(inputMemo), COSMOS_MEMO_MAX_BYTES)) {
@@ -684,6 +698,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.claim-all-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimAllRewardsReview')}

@@ -33,7 +33,7 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign';
 import { ceil, divide, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
-import { isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -199,6 +199,8 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
 
     return monthlyReward;
   }, [currentValidator, displayStakeAmount]);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const stakeAmountInputErrorMessage = (() => {
     if (displayStakeAmount) {
@@ -467,9 +469,16 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}
+        contentsTitle={
+          selectedStakingCoin?.asset.symbol
+            ? t('pages.wallet.stake.$coinId.entry.stakeReviewWithSymbol', {
+                symbol: selectedStakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.stake.$coinId.entry.stakeReview')
+        }
         contentsSubTitle={t('pages.wallet.stake.$coinId.entry.stakeReviewSub')}
         confirmButtonText={t('pages.wallet.stake.$coinId.entry.stake')}
         onClickConfirm={handleOnClickConfirm}

@@ -36,7 +36,7 @@ import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign';
 import { ceil, gt, times } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { ethereumAddressRegex } from '@/utils/regex';
-import { isEqualsIgnoringCase, isNumber, shorterAddress } from '@/utils/string.ts';
+import { isEqualsIgnoringCase, isNumber, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import BalanceButton from './components/BalanceButton';
@@ -306,6 +306,8 @@ export default function EVM({ id }: EVMProps) {
     return '0';
   }, [currentFeeOption]);
 
+  const displayTx = useMemo(() => safeStringify(finalizedTransaction), [finalizedTransaction]);
+
   const sendQuantityErrorMessage = useMemo(() => {
     if (sendQuantity) {
       if (!isNumber(sendQuantity)) {
@@ -558,6 +560,7 @@ export default function EVM({ id }: EVMProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.nft-send.$id.Entry.EVM.index.sendNFTReview')}

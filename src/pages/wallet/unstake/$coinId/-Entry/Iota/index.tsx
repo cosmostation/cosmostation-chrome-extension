@@ -25,6 +25,7 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
+import { safeStringify } from '@/utils/string';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import UnstakeObjectBottomSheet from './components/UnstakeObjectBottomSheet';
@@ -122,6 +123,8 @@ export default function Iota({ coinId, objectId }: IotaProps) {
   ]);
 
   const displayExpectedBaseFeeAmount = useMemo(() => toDisplayDenomAmount(expectedBaseFeeAmount, coinDecimal), [coinDecimal, expectedBaseFeeAmount]);
+
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const errorMessage = useMemo(() => {
     if (!currentUnstakeObject) {
@@ -285,9 +288,16 @@ export default function Iota({ coinId, objectId }: IotaProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReview')}
+        contentsTitle={
+          selectedUnstakingCoin?.asset.symbol
+            ? t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReviewWithSymbol', {
+                symbol: selectedUnstakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReview')
+        }
         contentsSubTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstakeReviewDescription')}
         confirmButtonText={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.unstake')}
         onClickConfirm={handleOnClickConfirm}
