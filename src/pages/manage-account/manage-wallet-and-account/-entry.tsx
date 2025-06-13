@@ -1,22 +1,20 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'use-debounce';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
-import EmptyAsset from '@/components/EmptyAsset';
+import Search from '@/components/Search';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewSortedAccountStore } from '@/zustand/hooks/useNewSortedAccountStore';
 import { useSwitchTapStore } from '@/zustand/hooks/useSwitchTabStore';
 
 import DraggableMnemonicAccountList from './-components/DraggableMnemonicAccountList';
 import DraggablePrivateKeyAccountList from './-components/DraggablePrivateKeyAccountList';
-import { EmptyAssetContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
-
-import ImportMnemonicIcon from '@/assets/images/icons/ImportMnemonic70.svg';
-import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
+import { SearchContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
 
 export default function Entry() {
   const { t } = useTranslation();
@@ -25,6 +23,13 @@ export default function Entry() {
   const { userAccounts } = useExtensionStorageStore((state) => state);
 
   const tabLabels = ['Mnenmonic', 'Private Key'];
+
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
+
+  const searchText = useMemo(() => (!!search && debouncedSearch.length > 1 ? debouncedSearch : ''), [debouncedSearch, search]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     updatedManateAccountTabIndex(newTabValue);
@@ -52,39 +57,35 @@ export default function Entry() {
                 <FilledTab key={item} label={item} />
               ))}
             </FilledTabs>
+
+            <SearchContainer>
+              <Search
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.currentTarget.value);
+                }}
+                isPending={isDebouncing}
+                placeholder={t('pages.manage-account.manage-wallet-and-account.entry.searchPlaceholder')}
+                disableFilter
+                onClear={() => {
+                  setSearch('');
+                  cancel();
+                }}
+              />
+            </SearchContainer>
           </StickyTabContainer>
           <StyledTabPanel value={manageAccountTapIndex} index={0}>
             <TabPanelContentsContainer>
-              {uniqueMnemonicRestoreString.length > 0 ? (
-                <DndProvider backend={HTML5Backend}>
-                  <DraggableMnemonicAccountList uniqueMnemonicRestoreStrings={uniqueMnemonicRestoreString} />
-                </DndProvider>
-              ) : (
-                <EmptyAssetContainer>
-                  <EmptyAsset
-                    icon={<ImportMnemonicIcon />}
-                    title={t('pages.manage-account.manage-wallet-and-account.entry.importMnemonic')}
-                    subTitle={t('pages.manage-account.manage-wallet-and-account.entry.importMnemonicDescription')}
-                  />
-                </EmptyAssetContainer>
-              )}
+              <DndProvider backend={HTML5Backend}>
+                <DraggableMnemonicAccountList uniqueMnemonicRestoreStrings={uniqueMnemonicRestoreString} search={searchText} />
+              </DndProvider>
             </TabPanelContentsContainer>
           </StyledTabPanel>
           <StyledTabPanel value={manageAccountTapIndex} index={1}>
             <TabPanelContentsContainer>
-              {privateKeyAccountIds.length > 0 ? (
-                <DndProvider backend={HTML5Backend}>
-                  <DraggablePrivateKeyAccountList privateKeyAccountIds={privateKeyAccountIds} />
-                </DndProvider>
-              ) : (
-                <EmptyAssetContainer>
-                  <EmptyAsset
-                    icon={<ImportPrivateKeyIcon />}
-                    title={t('pages.manage-account.manage-wallet-and-account.entry.importPrivateKey')}
-                    subTitle={t('pages.manage-account.manage-wallet-and-account.entry.importPrivateKeyDescription')}
-                  />
-                </EmptyAssetContainer>
-              )}
+              <DndProvider backend={HTML5Backend}>
+                <DraggablePrivateKeyAccountList privateKeyAccountIds={privateKeyAccountIds} search={searchText} />
+              </DndProvider>
             </TabPanelContentsContainer>
           </StyledTabPanel>
         </EdgeAligner>

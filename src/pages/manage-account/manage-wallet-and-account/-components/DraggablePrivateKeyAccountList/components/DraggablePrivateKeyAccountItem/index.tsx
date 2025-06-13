@@ -15,11 +15,18 @@ import OrderIcon from 'assets/images/icons/Order20.svg';
 type DraggablePrivateKeyAccountItemProps = {
   itemIndex: number;
   draggableItem: IndexedPrivatedKeyAccount;
+  blockDrag?: boolean;
   moveAccountItem: (id: number, atIndex: number) => void;
   findAccountItem: (id: number) => { index: number };
 };
 
-export default function DraggablePrivateKeyAccountItem({ draggableItem, itemIndex, moveAccountItem, findAccountItem }: DraggablePrivateKeyAccountItemProps) {
+export default function DraggablePrivateKeyAccountItem({
+  draggableItem,
+  itemIndex,
+  blockDrag = false,
+  moveAccountItem,
+  findAccountItem,
+}: DraggablePrivateKeyAccountItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { accountNamesById } = useExtensionStorageStore((state) => state);
@@ -33,13 +40,14 @@ export default function DraggablePrivateKeyAccountItem({ draggableItem, itemInde
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
+      canDrag: () => !blockDrag,
       end: (item, monitor) => {
         if (!monitor.didDrop()) {
           moveAccountItem(itemIndex, item.index);
         }
       },
     }),
-    [itemIndex, moveAccountItem],
+    [itemIndex, blockDrag, moveAccountItem],
   );
 
   const [, drop] = useDrop(
@@ -78,9 +86,12 @@ export default function DraggablePrivateKeyAccountItem({ draggableItem, itemInde
             <Base1300Text variant="b2_M">{accountName}</Base1300Text>
           </AccountInfoContainer>
         </AccountLeftContainer>
-        <AccountRightContainer>
-          <OrderIcon />
-        </AccountRightContainer>
+
+        {!blockDrag && (
+          <AccountRightContainer>
+            <OrderIcon />
+          </AccountRightContainer>
+        )}
       </AccountButton>
     </Container>
   );

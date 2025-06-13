@@ -354,7 +354,8 @@
       "index": {
         "myAddress": "My Address",
         "addressBook": "Address Book",
-        "title": "Select Address"
+        "title": "Select Address",
+        "searchPlaceholder": "Search Wallet, Account, Address"
       },
       "components": {
         "PrivatekeyAccount": "Private Key",
@@ -1247,7 +1248,8 @@
           "importPrivateKey": "Import Private Key",
           "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
           "importMnemonic": "Import Mnemonic",
-          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
+          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic",
+          "searchPlaceholder": "Search Wallet, Account"
         }
       },
       "view": {
@@ -1280,7 +1282,8 @@
           "importMnemonic": "Import Mnemonic",
           "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
           "importPrivateKey": "Import Private Key",
-          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
+          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic",
+          "searchPlaceholder": "Search Wallet, Account"
         },
         "layout": {
           "header": "Manage Wallet & Account",

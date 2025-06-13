@@ -42,10 +42,6 @@ export const StyledTabPanel = styled(FilledTabPanel)({
   flexDirection: 'column',
 });
 
-export const EmptyAssetContainer = styled('div')({
-  position: 'absolute',
-
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+export const SearchContainer = styled('div')({
+  padding: '0 1.2rem',
 });
