@@ -2866,7 +2866,8 @@
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요",
-                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})",
+                "insufficientFee": "수수료를 지불할 잔액이 부족합니다."
               }
             },
             "EVM": {

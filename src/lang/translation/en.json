@@ -1502,7 +1502,8 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "invalidRewardAmount": "Invalid reward amount",
                 "memoOverflow": "Memo is too long. Please shorten it.",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "insufficientFee": "Insufficient fee"
               }
             },
             "Iota": {

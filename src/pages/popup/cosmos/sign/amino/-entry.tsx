@@ -121,10 +121,28 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
 
-  const alternativeFeeAsset = useMemo(
-    () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
-    [customFeeCoinId, feeAssets],
-  );
+  const alternativeFeeAsset = useMemo(() => {
+    if (customFeeCoinId) {
+      return feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId));
+    }
+
+    if (feeAssets.length === 0) {
+      return undefined;
+    }
+
+    const extensionSelected = feeAssets[0];
+
+    if (dappFromFeeAsset) {
+      const dappSelectedFeeCoinId = getCoinId(dappFromFeeAsset.asset);
+      const extensionSelectedFeeCoinId = getCoinId(extensionSelected.asset);
+
+      if (dappSelectedFeeCoinId !== extensionSelectedFeeCoinId) {
+        return feeAssets.find((item) => getCoinId(item.asset) === dappSelectedFeeCoinId) || extensionSelected;
+      }
+    }
+
+    return extensionSelected;
+  }, [customFeeCoinId, dappFromFeeAsset, feeAssets]);
 
   const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
 
