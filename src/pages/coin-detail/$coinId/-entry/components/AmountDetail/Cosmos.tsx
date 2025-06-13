@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
-import { KAVA_CHAINLIST_ID, NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { COREUM_CHAINLIST_ID, KAVA_CHAINLIST_ID, NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { useAmount } from '@/hooks/cosmos/useAmount';
 import { useCommission } from '@/hooks/cosmos/useCommission';
 import { useReward } from '@/hooks/cosmos/useReward';
@@ -52,6 +52,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const rewardsCoinCounts = isNTRN ? 0 : reward?.data?.total?.length && reward.data.total.length > 1 ? reward.data.total.length - 1 : 0;
   const incentiveDisplayAmount = toDisplayDenomAmount(incentiveAmount, decimal);
   const commissionDisplayAmount = toDisplayDenomAmount(stakableCoin?.commission || '0', decimal);
+  const lockedDisplayAmount = toDisplayDenomAmount(stakableCoin?.lockedBalance || '0', decimal);
 
   return (
     <Container>
@@ -128,6 +129,16 @@ export default function Cosmos({ coinId }: CosmosProps) {
             <ValueText>
               <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
                 {incentiveDisplayAmount}
+              </BalanceDisplay>
+            </ValueText>
+          </DetailRow>
+        )}
+        {selectedCoin?.chain.id === COREUM_CHAINLIST_ID && (
+          <DetailRow>
+            <LabelText variant="b3_R">{t('pages.coin-detail.components.AmountDetail.Cosmos.locked')}</LabelText>
+            <ValueText>
+              <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" fixed={6}>
+                {lockedDisplayAmount}
               </BalanceDisplay>
             </ValueText>
           </DetailRow>

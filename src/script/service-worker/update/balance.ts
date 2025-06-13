@@ -2,6 +2,7 @@ import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { COREUM_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { chainToDeploymentMap, MULICALL_CONTRACT_ADDRESS } from '@/constants/evm/mutlicall3';
 import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
@@ -14,14 +15,23 @@ import type {
   AccountAddressBalanceEvm,
   AccountAddressBalanceIota,
   AccountAddressBalanceSui,
+  AccountAddressLockedBalanceCosmos,
 } from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { AccountDetail } from '@/types/bitcoin/balance';
 import type { ChainType, UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { upsertList } from '@/utils/array';
-import { fetchCosmosBalances, fetchCW20Balances, fetchERC20Balances, fetchEVMBalances, fetchMultiERC20Balances } from '@/utils/cosmos/fetch/balance';
+import {
+  fetchCoreumSpendableBalances,
+  fetchCosmosBalances,
+  fetchCW20Balances,
+  fetchERC20Balances,
+  fetchEVMBalances,
+  fetchMultiERC20Balances,
+} from '@/utils/cosmos/fetch/balance';
 import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
+import { minus } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { fetchSuiBalances } from '@/utils/sui/fetch/balance';
@@ -323,6 +333,41 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
 
       try {
         const balances = await fetchCosmosBalances(address, lcdUrls.map((item) => item.url).filter(Boolean));
+
+        if (chainId === COREUM_CHAINLIST_ID) {
+          try {
+            const spendableBalances = await fetchCoreumSpendableBalances(address, lcdUrls.map((item) => item.url).filter(Boolean));
+
+            const totalBalance = balances.find((item) => item.denom === chain.mainAssetDenom);
+            const spendableBalance = spendableBalances.find((item) => item.denom === chain.mainAssetDenom);
+
+            const lockedAmount = minus(totalBalance?.amount || '0', spendableBalance?.amount || '0');
+
+            const lockedAssetInfo = {
+              denom: chain.mainAssetDenom,
+              amount: lockedAmount,
+            };
+
+            const lockedResult: AccountAddressLockedBalanceCosmos = {
+              id,
+              chainId,
+              chainType,
+              address,
+              lockedBalances: [lockedAssetInfo],
+            };
+
+            await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [lockedResult] });
+
+            const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: spendableBalances };
+
+            return result;
+          } catch {
+            await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [] });
+
+            const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+            return result;
+          }
+        }
 
         const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
 
