@@ -10,3 +10,5 @@ export const NEUTRON_CHAINLIST_ID = 'neutron';
 export const NEUTRON_TESTNET_CHAINLIST_ID = 'neutron-testnet';
 
 export const UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID = ['babylon', 'babylon-testnet', 'initia', 'initia-testnet'];
+
+export const COREUM_CHAINLIST_ID = 'coreum';

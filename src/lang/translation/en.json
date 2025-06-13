@@ -290,7 +290,9 @@
       "index": {
         "title": "Final Review",
         "cancel": "Cancel",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "viewDetails": "View Details",
+        "jsonDialogTitle": "Tx Data"
       }
     },
     "MnemonicBackupChecker": {
@@ -352,7 +354,8 @@
       "index": {
         "myAddress": "My Address",
         "addressBook": "Address Book",
-        "title": "Select Address"
+        "title": "Select Address",
+        "searchPlaceholder": "Search Wallet, Account, Address"
       },
       "components": {
         "PrivatekeyAccount": "Private Key",
@@ -774,6 +777,9 @@
         "evmTokenSubtitle": "For Ethereum-style tokens (0x address)",
         "cosmosTokenSubtitle": "For tokens on CosmWasm chains (starts with {{prefix}})"
       }
+    },
+    "JsonPopover": {
+      "title": "Data"
     }
   },
   "pages": {
@@ -955,7 +961,8 @@
             "unstaking": "Unstaking",
             "rewards": "Rewards",
             "incentive": "Incentive",
-            "commission": "Commission"
+            "commission": "Commission",
+            "locked": "Locked"
           },
           "Sui": {
             "title": "My Coin Details",
@@ -1242,7 +1249,8 @@
           "importPrivateKey": "Import Private Key",
           "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
           "importMnemonic": "Import Mnemonic",
-          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
+          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic",
+          "searchPlaceholder": "Search Wallet, Account"
         }
       },
       "view": {
@@ -1275,7 +1283,8 @@
           "importMnemonic": "Import Mnemonic",
           "importPrivateKeyDescription": "Account will be displayed after importing with a private key",
           "importPrivateKey": "Import Private Key",
-          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic"
+          "importMnemonicDescription": "Account will be displayed after importing with a mnemonic",
+          "searchPlaceholder": "Search Wallet, Account"
         },
         "layout": {
           "header": "Manage Wallet & Account",
@@ -1380,7 +1389,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "components": {
@@ -1412,7 +1422,8 @@
                 "noAvailableAmount": "No available amount",
                 "noAmount": "Please enter the amount",
                 "noRecipientAddress": "Please enter the recipient address",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Bitcoin": {
@@ -1434,7 +1445,8 @@
                 "memo": "OP_RETURN (option)",
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Aptos": {
@@ -1456,7 +1468,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Cosmos": {
@@ -1489,6 +1502,7 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "invalidRewardAmount": "Invalid reward amount",
                 "memoOverflow": "Memo is too long. Please shorten it.",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
                 "insufficientFee": "Insufficient fee"
               }
             },
@@ -1511,7 +1525,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
-                "recipientNetwork": "Recipient Network"
+                "recipientNetwork": "Recipient Network",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             }
           }
@@ -1655,7 +1670,8 @@
             "noAmount": "Please enter the amount",
             "failedToDryRun": "Transaction simulation failed",
             "failedToBuildTransaction": "Failed to build transaction",
-            "tooSmallToStake": "Minimum stake amount is 1"
+            "tooSmallToStake": "Minimum stake amount is 1",
+            "stakeReviewWithSymbol": "Confirm to Stake {{symbol}}"
           },
           "layout": {
             "header": "Stake"
@@ -1699,7 +1715,8 @@
                   "noAmount": "Please enter the amount",
                   "invalidAmount": "Invalid amount",
                   "failedToCalculateTransaction": "Failed to build transaction",
-                  "insufficientFee": "Insufficient fee"
+                  "insufficientFee": "Insufficient fee",
+                  "unstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
                 }
               },
               "Sui": {
@@ -1715,7 +1732,8 @@
                   "unstakeReview": "Confirm Unstake",
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
-                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
                 }
               },
               "Iota": {
@@ -1731,7 +1749,8 @@
                   "unstakeReview": "Confirm Unstake",
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
-                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
                 }
               }
             },
@@ -1871,7 +1890,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "cancelUnstakingAmount": "Amount to Unstake",
                 "cancelUnstakeConfirm": "Cancel Unstake",
-                "memoOverflow": "Memo is too long. Please shorten it."
+                "memoOverflow": "Memo is too long. Please shorten it.",
+                "cancelUnstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
               }
             }
           },
@@ -2613,6 +2633,9 @@
               "access": "Access"
             }
           }
+        },
+        "RawTx": {
+          "title": "Transaction Data"
         }
       },
       "cosmos": {

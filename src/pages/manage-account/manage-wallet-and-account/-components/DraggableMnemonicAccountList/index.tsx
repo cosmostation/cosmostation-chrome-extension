@@ -1,11 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
+import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 
+import EmptyAsset from '@/components/EmptyAsset';
+import type { Account } from '@/types/account';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewSortedAccountStore } from '@/zustand/hooks/useNewSortedAccountStore';
 
 import DraggableMnemonicAccountItem from './components/DraggableMnemonicAccountItem';
-import { ListContainer } from './styled';
+import { EmptyAssetContainer, ListContainer } from './styled';
+
+import ImportMnemonicIcon from '@/assets/images/icons/ImportMnemonic70.svg';
 
 export const MNEMONIC_ACCOUNT_DND_ITEM_TYPE = {
   MNEMONIC_CARD: 'mnemonic-card',
@@ -13,22 +19,46 @@ export const MNEMONIC_ACCOUNT_DND_ITEM_TYPE = {
 
 type DraggableMnemonicAccountListProps = {
   uniqueMnemonicRestoreStrings: string[];
+  search?: string;
 };
 
 export type IndexedMnemonicAccount = {
   index: number;
   mnemonicRestoreString: string;
+  mnemonicName: string;
+  accounts: (Account & {
+    accountName: string;
+  })[];
 };
 
-export default function DraggableMnemonicAccountList({ uniqueMnemonicRestoreStrings }: DraggableMnemonicAccountListProps) {
+export default function DraggableMnemonicAccountList({ uniqueMnemonicRestoreStrings, search }: DraggableMnemonicAccountListProps) {
+  const { t } = useTranslation();
   const { menmonicRestoreStrings, updatedNewSortedMnemonicAccounts } = useNewSortedAccountStore((state) => state);
+  const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
 
-  const [indexedAccounts, setIndexedAccounts] = useState<IndexedMnemonicAccount[]>(
+  const [indexedAccounts, setIndexedAccounts] = useState(
     menmonicRestoreStrings.length > 0
-      ? menmonicRestoreStrings.map((item, idx) => ({ index: idx, mnemonicRestoreString: item }))
+      ? menmonicRestoreStrings.map((item, idx) => ({
+          index: idx,
+          mnemonicRestoreString: item,
+          mnemonicName: mnemonicNamesByHashedMnemonic[item] || '',
+          accounts: userAccounts
+            .filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === item)
+            .map((item) => ({
+              ...item,
+              accountName: accountNamesById[item.id],
+            })),
+        }))
       : uniqueMnemonicRestoreStrings.map((item, idx) => ({
           index: idx,
           mnemonicRestoreString: item,
+          mnemonicName: mnemonicNamesByHashedMnemonic[item] || '',
+          accounts: userAccounts
+            .filter((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === item)
+            .map((item) => ({
+              ...item,
+              accountName: accountNamesById[item.id],
+            })),
         })),
   );
 
@@ -57,6 +87,32 @@ export default function DraggableMnemonicAccountList({ uniqueMnemonicRestoreStri
 
   const [, drop] = useDrop(() => ({ accept: MNEMONIC_ACCOUNT_DND_ITEM_TYPE.MNEMONIC_CARD }));
 
+  const filteredMnemonicAccounts = useMemo(() => {
+    if (!indexedAccounts) return [];
+
+    const lowerSearch = search?.toLowerCase() ?? '';
+
+    if (!lowerSearch) return indexedAccounts;
+
+    return indexedAccounts
+      .map(({ mnemonicName, accounts, ...rest }) => {
+        const matchesMnemonicName = mnemonicName.toLowerCase().includes(lowerSearch);
+
+        const filteredAccounts = accounts.filter((acc) => (acc.accountName ?? '').toLowerCase().includes(lowerSearch));
+
+        if (matchesMnemonicName || filteredAccounts.length > 0) {
+          return {
+            ...rest,
+            mnemonicName,
+            accounts: filteredAccounts.length > 0 ? filteredAccounts : accounts,
+          };
+        }
+
+        return null;
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+  }, [indexedAccounts, search]);
+
   useEffect(() => {
     if (
       menmonicRestoreStrings.length !== indexedAccounts.length ||
@@ -66,17 +122,46 @@ export default function DraggableMnemonicAccountList({ uniqueMnemonicRestoreStri
     }
   }, [indexedAccounts, menmonicRestoreStrings, updatedNewSortedMnemonicAccounts]);
 
-  return (
-    <ListContainer ref={drop}>
-      {indexedAccounts.map((account) => (
-        <DraggableMnemonicAccountItem
-          draggableItem={account}
-          moveAccountItem={moveAccountItem}
-          findAccountItem={findAccountItem}
-          key={account.mnemonicRestoreString}
-          itemIndex={account.index}
+  if (search && filteredMnemonicAccounts.length === 0) {
+    return (
+      <EmptyAssetContainer>
+        <EmptyAsset
+          icon={<ImportMnemonicIcon />}
+          title={t('pages.manage-account.manage-wallet-and-account.entry.importMnemonic')}
+          subTitle={t('pages.manage-account.manage-wallet-and-account.entry.importMnemonicDescription')}
         />
-      ))}
-    </ListContainer>
-  );
+      </EmptyAssetContainer>
+    );
+  }
+
+  if (search) {
+    return (
+      <ListContainer ref={drop}>
+        {filteredMnemonicAccounts.map((account) => (
+          <DraggableMnemonicAccountItem
+            draggableItem={account}
+            moveAccountItem={moveAccountItem}
+            findAccountItem={findAccountItem}
+            key={account.mnemonicRestoreString}
+            itemIndex={account.index}
+            blockDrag
+          />
+        ))}
+      </ListContainer>
+    );
+  } else {
+    return (
+      <ListContainer ref={drop}>
+        {indexedAccounts.map((account) => (
+          <DraggableMnemonicAccountItem
+            draggableItem={account}
+            moveAccountItem={moveAccountItem}
+            findAccountItem={findAccountItem}
+            key={account.mnemonicRestoreString}
+            itemIndex={account.index}
+          />
+        ))}
+      </ListContainer>
+    );
+  }
 }

@@ -40,7 +40,7 @@ import { cosmosURL } from '@/utils/crypto/cosmos';
 import { getDayFromSeconds } from '@/utils/date';
 import { ceil, gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
+import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -341,6 +341,20 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         : '-',
     [selectedUnstakingCoin?.chain.isSupportStaking, selectedUnstakingCoin?.chain.stakingParams?.unbonding_time],
   );
+
+  const displayTx = useMemo(() => {
+    if (!memoizedUnstakeAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedUnstakeAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedUnstakeAminoTx, selectedFeeOption.denom]);
 
   const unstakeAmountInputErrorMessage = useMemo(() => {
     if (displayUnstakeAmount) {
@@ -677,9 +691,16 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReview')}
+        contentsTitle={
+          selectedUnstakingCoin?.asset.symbol
+            ? t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReviewWithSymbol', {
+                symbol: selectedUnstakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReview')
+        }
         contentsSubTitle={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstakeReviewDescription')}
         confirmButtonText={t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.unstake')}
         onClickConfirm={handleOnClickConfirm}

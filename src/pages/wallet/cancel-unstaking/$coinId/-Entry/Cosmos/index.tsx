@@ -36,7 +36,7 @@ import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string.ts';
+import { getUtf8BytesLength, isEqualsIgnoringCase, safeStringify, shorterAddress, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -299,6 +299,19 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
 
   const currentGas = selectedFeeOption.gas || '0';
 
+  const displayTx = useMemo(() => {
+    if (!memoizedCancelUnstakeAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedCancelUnstakeAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedCancelUnstakeAminoTx, selectedFeeOption.denom]);
+
   const inputMemoErrorMessage = useMemo(() => {
     if (inputMemo) {
       if (gt(getUtf8BytesLength(inputMemo), COSMOS_MEMO_MAX_BYTES)) {
@@ -559,9 +572,16 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeReview')}
+        contentsTitle={
+          selectedCancelUnstakeCoin?.asset.symbol
+            ? t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeReviewWithSymbol', {
+                symbol: selectedCancelUnstakeCoin.asset.symbol,
+              })
+            : t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeReview')
+        }
         contentsSubTitle={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeReviewDescription')}
         confirmButtonText={t('pages.wallet.cancel-unstaking.$coinId.Entry.Cosmos.index.cancelUnstakeConfirm')}
         onClickConfirm={handleOnClickConfirm}

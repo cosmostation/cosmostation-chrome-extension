@@ -38,8 +38,8 @@ export const Body = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    minHeight: '60%',
-    maxHeight: '80%',
+    minHeight: '70%',
+    maxHeight: '90%',
   },
 });
 
@@ -77,3 +77,7 @@ export const StyledTabPanel = styled(FilledTabPanel)<StyledTabPanelProps>(({ ...
   flex: props['data-is-active'] ? '1' : '0',
   height: '100%',
 }));
+
+export const SearchContainer = styled('div')({
+  padding: '0 1.2rem 0.6rem',
+});

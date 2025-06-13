@@ -75,7 +75,7 @@ export default function Entry({ request }: EntryProps) {
   const [txMessagePage, setTxMessagePage] = useState(0);
 
   const [tabValue, setTabValue] = useState(0);
-  const tabLabels = ['Detail', 'Data'];
+  const tabLabels = ['Summary', 'View Details'];
 
   const keyPair = useMemo(
     () => currentBitcoinNetwork && getKeypair(currentBitcoinNetwork, currentAccount, currentPassword),

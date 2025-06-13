@@ -17,6 +17,7 @@ import type {
   AccountAddressDelegationsCosmos,
   AccountAddressDelegationsIota,
   AccountAddressDelegationsSui,
+  AccountAddressLockedBalanceCosmos,
   AccountAddressRewardsCosmos,
   AccountAddressUnbondingsCosmos,
   AccountNamesById,
@@ -103,6 +104,7 @@ export interface ExtensionStorage {
   [key: `${string}-undelegation-cosmos`]: AccountAddressUnbondingsCosmos[];
   [key: `${string}-reward-cosmos`]: AccountAddressRewardsCosmos[];
   [key: `${string}-commission-cosmos`]: AccountAddressCommissionsCosmos[];
+  [key: `${string}-locked-cosmos`]: AccountAddressLockedBalanceCosmos[];
   [key: `${string}-account-info-cosmos`]: AccountAddressAccountInfoCosmos[];
   [key: `${string}-delegation-sui`]: AccountAddressDelegationsSui[];
   [key: `${string}-delegation-iota`]: AccountAddressDelegationsIota[];

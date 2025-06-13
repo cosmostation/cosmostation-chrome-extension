@@ -530,9 +530,16 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={txHex}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Bitcoin.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Bitcoin.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Bitcoin.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Bitcoin.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Bitcoin.index.send')}
         onClickConfirm={handleOnClickConfirm}

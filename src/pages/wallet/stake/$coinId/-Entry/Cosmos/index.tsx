@@ -39,7 +39,7 @@ import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, divide, fix, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
+import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -346,6 +346,20 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     () => toDisplayDenomAmount(selectedFeeOption?.balance || '0', selectedFeeOption?.decimals || 0),
     [selectedFeeOption?.balance, selectedFeeOption.decimals],
   );
+
+  const displayTx = useMemo(() => {
+    if (!memoizedStakeAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedStakeAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedStakeAminoTx, selectedFeeOption.denom]);
 
   const stakeAmountInputErrorMessage = useMemo(() => {
     if (displayStakeAmount) {
@@ -729,9 +743,16 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}
+        contentsTitle={
+          selectedStakingCoin?.asset.symbol
+            ? t('pages.wallet.stake.$coinId.entry.stakeReviewWithSymbol', {
+                symbol: selectedStakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.stake.$coinId.entry.stakeReview')
+        }
         contentsSubTitle={t('pages.wallet.stake.$coinId.entry.stakeReviewSub')}
         confirmButtonText={t('pages.wallet.stake.$coinId.entry.stake')}
         onClickConfirm={handleOnClickConfirm}

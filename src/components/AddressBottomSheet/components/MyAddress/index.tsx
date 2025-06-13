@@ -34,6 +34,7 @@ import PrivatekeyIcon from '@/assets/images/icons/PrivateKey14.svg';
 type MnemonicAccountProps = {
   chainId: UniqueChainId;
   filterAddress?: string;
+  searchText?: string;
   onClickAddress: (address: string) => void;
 };
 
@@ -51,7 +52,7 @@ interface AccountAddressInfo {
   account: Account;
 }
 
-export default function MnemonicAccount({ chainId, filterAddress, onClickAddress }: MnemonicAccountProps) {
+export default function MnemonicAccount({ chainId, filterAddress, searchText, onClickAddress }: MnemonicAccountProps) {
   const { t } = useTranslation();
 
   const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
@@ -111,12 +112,53 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
           return {
             id: restoreString,
+            mnemonicName: mnemonicNamesByHashedMnemonic[restoreString] || '',
             accounts: filteredAccountAddresses,
           };
         })
         .filter((item) => item.accounts.length > 0),
-    [uniqueMnemonicRestoreString, userAccounts, addressesMap, chainId, filterAddress, currentPreferAccountType, accountNamesById],
+    [
+      uniqueMnemonicRestoreString,
+      userAccounts,
+      mnemonicNamesByHashedMnemonic,
+      addressesMap,
+      chainId,
+      filterAddress,
+      currentPreferAccountType,
+      accountNamesById,
+    ],
   );
+
+  const filteredMnemonicAccountsBySearch = useMemo(() => {
+    if (!searchText) return filteredMnemonicAccounts;
+
+    const filterKeyword = searchText.toLowerCase();
+
+    return filteredMnemonicAccounts
+      .map((mnemonicAccount) => {
+        const { mnemonicName, accounts, ...rest } = mnemonicAccount;
+        const matchesMnemonicName = mnemonicName.toLowerCase().includes(filterKeyword);
+
+        const filteredAccounts = accounts.filter((account) => {
+          return account.addressDetails.some((detail) => {
+            const condition = [detail.name, detail.address];
+
+            return condition.some((item) => item.toLowerCase().indexOf(filterKeyword) > -1);
+          });
+        });
+
+        if (matchesMnemonicName || filteredAccounts.length > 0) {
+          return {
+            ...rest,
+            mnemonicName,
+            accounts: filteredAccounts.length > 0 ? filteredAccounts : accounts,
+          };
+        }
+
+        return null;
+      })
+      .filter((account): account is NonNullable<typeof account> => account !== null);
+  }, [filteredMnemonicAccounts, searchText]);
 
   const filteredPrivatekeyAccounts = useMemo(
     () =>
@@ -145,7 +187,19 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
   const privateKeyAddresses = useMemo(() => filteredPrivatekeyAccounts.map((item) => item.addressDetails).flat(), [filteredPrivatekeyAccounts]);
 
-  if (filteredMnemonicAccounts.length === 0 && privateKeyAddresses.length === 0) {
+  const filteredPrivateKeyAddresses = useMemo(() => {
+    if (!searchText) return privateKeyAddresses;
+
+    const filterKeyword = searchText.toLowerCase();
+
+    return privateKeyAddresses.filter((account) => {
+      const condition = [account.name, account.address];
+
+      return condition.some((item) => item.toLowerCase().indexOf(filterKeyword) > -1);
+    });
+  }, [privateKeyAddresses, searchText]);
+
+  if (filteredMnemonicAccountsBySearch.length === 0 && filteredPrivateKeyAddresses.length === 0) {
     return (
       <EmptyAssetContainer>
         <EmptyAsset
@@ -159,9 +213,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
 
   return (
     <WrapperContainer>
-      {filteredMnemonicAccounts.map((item) => {
-        const mnemonicName = mnemonicNamesByHashedMnemonic[item.id];
-
+      {filteredMnemonicAccountsBySearch.map((item) => {
         const flatAddressDetails = item.accounts.flatMap((account) => account.addressDetails);
 
         return (
@@ -169,7 +221,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
             <TopContainer>
               <TopLeftContainer>
                 <MnemonicIcon />
-                <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
+                <Base1300Text variant="h4_B">{item.mnemonicName}</Base1300Text>
               </TopLeftContainer>
             </TopContainer>
             <BodyContainer>
@@ -212,7 +264,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
           </Container>
         );
       })}
-      {privateKeyAddresses.length > 0 && (
+      {filteredPrivateKeyAddresses.length > 0 && (
         <>
           <TopContainer>
             <TopLeftContainer>
@@ -221,7 +273,7 @@ export default function MnemonicAccount({ chainId, filterAddress, onClickAddress
             </TopLeftContainer>
           </TopContainer>
           <BodyContainer>
-            {privateKeyAddresses.map((item, i) => {
+            {filteredPrivateKeyAddresses.map((item, i) => {
               return (
                 <AccountButton
                   key={i}

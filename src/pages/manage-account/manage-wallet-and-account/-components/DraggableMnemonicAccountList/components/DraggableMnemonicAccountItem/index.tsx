@@ -39,22 +39,27 @@ import OrderIcon from 'assets/images/icons/Order20.svg';
 type DraggableMnemonicAccountItemProps = {
   itemIndex: number;
   draggableItem: IndexedMnemonicAccount;
+  blockDrag?: boolean;
   moveAccountItem: (id: number, atIndex: number) => void;
   findAccountItem: (id: number) => { index: number };
 };
 
-export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex, moveAccountItem, findAccountItem }: DraggableMnemonicAccountItemProps) {
+export default function DraggableMnemonicAccountItem({
+  draggableItem,
+  itemIndex,
+  blockDrag = false,
+  moveAccountItem,
+  findAccountItem,
+}: DraggableMnemonicAccountItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [supposedToBackupAccountId, setSupposedToBackupAccountId] = useState<string | undefined>();
 
-  const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic, notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
+  const { notBackedUpAccountIds } = useExtensionStorageStore((state) => state);
 
-  const filteredAccounts = userAccounts.filter((item) => item.type === 'MNEMONIC' && item.encryptedRestoreString === draggableItem.mnemonicRestoreString);
-  const mnemonicName = mnemonicNamesByHashedMnemonic[draggableItem.mnemonicRestoreString] || '';
-  const isNotBackedUp = notBackedUpAccountIds.includes(filteredAccounts.map((item) => item.id)[0]);
+  const isNotBackedUp = draggableItem.accounts.length > 0 && notBackedUpAccountIds.includes(draggableItem.accounts[0].id);
 
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -63,13 +68,14 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
+      canDrag: () => !blockDrag,
       end: (item, monitor) => {
         if (!monitor.didDrop()) {
           moveAccountItem(itemIndex, item.index);
         }
       },
     }),
-    [itemIndex, moveAccountItem],
+    [itemIndex, moveAccountItem, blockDrag],
   );
 
   const [, drop] = useDrop(
@@ -111,18 +117,20 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
       >
         <TopLeftContainer>
           <MnemonicIcon />
-          <Base1300Text variant="h4_B">{mnemonicName}</Base1300Text>
+          <Base1300Text variant="h4_B">{draggableItem.mnemonicName}</Base1300Text>
           {isNotBackedUp && (
             <NotBackedUpText variant="b4_M">{t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.notBackedUp')}</NotBackedUpText>
           )}
         </TopLeftContainer>
-        <TopRightContainer>
-          <OrderIcon />
-        </TopRightContainer>
+        {!blockDrag && (
+          <TopRightContainer>
+            <OrderIcon />
+          </TopRightContainer>
+        )}
       </TopButton>
       <BodyContainer>
-        {filteredAccounts.map((item, i) => {
-          const accountName = accountNamesById[item.id];
+        {draggableItem.accounts.map((item, i) => {
+          const accountName = item.accountName || '';
           const lastHdPath = item.type === 'MNEMONIC' ? item.index : '';
 
           return (
@@ -164,7 +172,7 @@ export default function DraggableMnemonicAccountItem({ draggableItem, itemIndex,
                 </RightArrowIconContainer>
               }
               onClick={() => {
-                setSupposedToBackupAccountId(filteredAccounts[0].id);
+                setSupposedToBackupAccountId(draggableItem.accounts[0]?.id);
               }}
             >
               {t('pages.manage-account.manage-wallet-and-account.components.MnemonicAccount.index.backUpNow')}

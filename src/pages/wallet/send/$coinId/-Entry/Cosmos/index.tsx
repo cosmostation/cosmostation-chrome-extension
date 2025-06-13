@@ -47,7 +47,7 @@ import {
   parseCoinId,
 } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
-import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
@@ -627,6 +627,20 @@ export default function Cosmos({ coinId }: CosmosProps) {
     return '';
   }, [inputMemo, t]);
 
+  const displayTx = useMemo(() => {
+    if (!memoizedSendAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedSendAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentCeilFeeAmount }],
+        gas: currentGas,
+      },
+    };
+
+    return safeStringify(tx);
+  }, [currentCeilFeeAmount, currentGas, memoizedSendAminoTx, selectedFeeOption.denom]);
+
   const errorMessage = useMemo(() => {
     if (selectedCoinToSend?.chain.isDiableSend) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.bankLocked');
@@ -963,10 +977,17 @@ export default function Cosmos({ coinId }: CosmosProps) {
       <ReviewBottomSheet
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Cosmos.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Cosmos.index.send')}
         onClickConfirm={handleOnClickConfirm}
+        rawTxString={displayTx}
       />
 
       <TxProcessingOverlay
