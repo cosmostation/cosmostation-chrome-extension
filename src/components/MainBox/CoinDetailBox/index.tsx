@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import AddressActionButtons from '@/components/AddressActionButtons';
 import BalanceDisplay from '@/components/BalanceDisplay';
-import IconButton from '@/components/common/IconButton';
+import Base1300Text from '@/components/common/Base1300Text';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
-import ShortAddressCopyButton from '@/components/ShortAddressCopyButton';
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -26,18 +26,15 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
-  ChangeAddressIconButtonContainer,
   IconContainer,
   SpacedTypography,
   StyledIconTextButton,
-  StyledTextButton,
-  TopContainer,
+  SymbolButton,
 } from './styled';
 import MainBox from '..';
 
-import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko16.svg';
 import DaoIcon from '@/assets/images/icons/Dao28.svg';
-import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
 import SendIcon from '@/assets/images/icons/Send22.svg';
@@ -61,7 +58,6 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
-  const [isShowCosmosStyleAddress, setIsShowCosmosStyleAddress] = useState(false);
 
   const { getAccountAsset } = useGetAccountAsset({ coinId });
 
@@ -104,8 +100,6 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     return undefined;
   }, [currentAccountAssets?.cosmosAccountAssets, currentCoin]);
 
-  const address = isShowCosmosStyleAddress ? cosmosStyleCoin?.address.address || '' : currentCoin?.address.address || '';
-
   const voteURL = currentCoin?.chain.explorer?.proposal;
   const formattedVoteURL = voteURL && removeTrailingSlash(removeTemplateLiteral(voteURL));
 
@@ -136,16 +130,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     return undefined;
   })();
 
-  const explorerUrl =
-    currentCoin?.chain.explorer?.account && currentCoin?.address?.address
-      ? currentCoin.chain.explorer.account.replace('${address}', currentCoin.address.address)
-      : undefined;
-
   const coinGeckoUrl = currentCoin?.asset.coinGeckoId ? ` https://www.coingecko.com/en/coins/${currentCoin.asset.coinGeckoId}` : '';
-
-  const handleOnClickChangeAddress = () => {
-    setIsShowCosmosStyleAddress(!isShowCosmosStyleAddress);
-  };
 
   const hanldeOnClickSend = () => {
     if (cosmosStyleCoin) {
@@ -191,36 +176,24 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   return (
     <>
       <MainBox
-        top={
-          <TopContainer>
-            <ShortAddressCopyButton variant="underline" typoVarient="h6n_M">
-              {address}
-            </ShortAddressCopyButton>
-            {cosmosStyleCoin && (
-              <ChangeAddressIconButtonContainer>
-                <IconButton onClick={handleOnClickChangeAddress}>
-                  <ChangeIcon />
-                </IconButton>
-              </ChangeAddressIconButtonContainer>
-            )}
-            <ChangeAddressIconButtonContainer>
-              <IconButton disabled={!explorerUrl} onClick={() => explorerUrl && window.open(explorerUrl, '_blank')}>
-                <ExplorerIcon />
-              </IconButton>
-            </ChangeAddressIconButtonContainer>
-          </TopContainer>
-        }
+        top={<AddressActionButtons coinId={coinId} variant="underline" typoVarient="h6n_M" />}
         body={
           <BodyContainer>
             <BodyTopContainer>
-              <StyledTextButton
+              <SymbolButton
                 onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
                 disabled={!coinGeckoUrl}
-                variant="normal"
-                typoVarient="h1_B"
+                trailingIcon={coinGeckoUrl ? <CoinGeckoIcon /> : undefined}
               >
-                {symbol}
-              </StyledTextButton>
+                <Base1300Text
+                  variant="h1_B"
+                  style={{
+                    marginRight: '0.2rem',
+                  }}
+                >
+                  {symbol}
+                </Base1300Text>
+              </SymbolButton>
               <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
               </BalanceDisplay>

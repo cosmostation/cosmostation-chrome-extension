@@ -12,7 +12,8 @@
           "swap": "Swap",
           "buy": "Buy",
           "dapp": "Dapp",
-          "more": "More"
+          "more": "More",
+          "receiveWithSymbol": "{{symbol}} Receive"
         },
         "components": {
           "MoreOptionBottomSheet": {

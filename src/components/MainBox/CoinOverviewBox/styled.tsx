@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import IconTextButton from '@/components/common/IconTextButton';
+
 export const TopContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
@@ -27,4 +29,11 @@ export const BodyBottomContainer = styled('div')(({ theme }) => ({
   marginBottom: '1.4rem',
 
   color: theme.palette.color.base1000,
+}));
+
+export const SymbolButton = styled(IconTextButton)(({ theme }) => ({
+  '&.Mui-disabled, &:disabled': {
+    color: theme.palette.color.base1300,
+  },
+  alignItems: 'flex-start',
 }));

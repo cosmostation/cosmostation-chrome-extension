@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
-import ShortAddressCopyButton from '@/components/ShortAddressCopyButton';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as DappList } from '@/pages/dapp-list';
@@ -29,7 +29,10 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
+  ChipButtonContentsContainer,
   SpacedTypography,
+  StyledChipButton,
+  StyledCoinImageContainer,
   StyledIconContainer,
   StyledIconTextButton,
   TopContainer,
@@ -84,14 +87,17 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
     if (!selectedChainMainAsset?.asset) return undefined;
 
     return getCoinId(selectedChainMainAsset.asset);
-  }, [selectedChainMainAsset]);
+  }, [selectedChainMainAsset?.asset]);
 
-  const address = selectedChainMainAsset ? selectedChainMainAsset.address.address : '';
+  const isShowAccountDetail = !!selectedChainMainAsset?.asset && !!coinIdForReceivePage;
 
-  const explorerUrl =
-    selectedChainMainAsset?.chain.explorer?.account && selectedChainMainAsset?.address?.address
-      ? selectedChainMainAsset.chain.explorer.account.replace('${address}', selectedChainMainAsset.address.address)
-      : undefined;
+  const symbol = selectedChainMainAsset?.asset.symbol;
+
+  const receiveChipButtonText = symbol
+    ? t('components.MainBox.Portfolio.index.receiveWithSymbol', {
+        symbol: symbol.length > 7 ? symbol.slice(0, 6) + '...' : symbol,
+      })
+    : t('components.MainBox.Portfolio.index.receive');
 
   useEffect(() => {
     setIsProcessing(true);
@@ -124,16 +130,20 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
       <MainBox
         top={
           <TopContainer>
-            <TopLeftContainer>
-              <IconTextButton
-                onClick={() => {
-                  updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
-                }}
-                trailingIcon={<ViewIconContainer>{isBalanceVisible ? <ViewIcon /> : <ViewHideIcon />}</ViewIconContainer>}
-              >
-                <ViewTotalValueText variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</ViewTotalValueText>
-              </IconTextButton>
-            </TopLeftContainer>
+            {isShowAccountDetail ? (
+              <AddressActionButtons coinId={coinIdForReceivePage} variant="underline" typoVarient="h6n_M" />
+            ) : (
+              <TopLeftContainer>
+                <IconTextButton
+                  onClick={() => {
+                    updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
+                  }}
+                  trailingIcon={<ViewIconContainer>{isBalanceVisible ? <ViewIcon /> : <ViewHideIcon />}</ViewIconContainer>}
+                >
+                  <ViewTotalValueText variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</ViewTotalValueText>
+                </IconTextButton>
+              </TopLeftContainer>
+            )}
             <TopRightContainer>
               <AllNetworkButton
                 typoVarient="b4_M"
@@ -177,15 +187,8 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              <ShortAddressCopyButton variant="underline" typoVarient="h6n_M">
-                {address}
-              </ShortAddressCopyButton>
               <BodyBottomChipButtonContainer>
-                {explorerUrl ? (
-                  <ChipButton variant="light" onClick={() => window.open(explorerUrl, '_blank')}>
-                    <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
-                  </ChipButton>
-                ) : (
+                {!isShowAccountDetail && (
                   <ChipButton
                     variant="light"
                     onClick={() => {
@@ -197,10 +200,10 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                     <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
                   </ChipButton>
                 )}
-                <ChipButton
+                <StyledChipButton
                   variant="dark"
                   onClick={() => {
-                    if (coinIdForReceivePage) {
+                    if (isShowAccountDetail) {
                       navigate({
                         to: Receive.to,
                         params: {
@@ -214,8 +217,11 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                     }
                   }}
                 >
-                  <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.receive')}</Typography>
-                </ChipButton>
+                  <ChipButtonContentsContainer>
+                    {isShowAccountDetail && <StyledCoinImageContainer imageURL={selectedChainMainAsset.asset.image} />}
+                    <Typography variant="b4_M">{receiveChipButtonText}</Typography>
+                  </ChipButtonContentsContainer>
+                </StyledChipButton>
               </BodyBottomChipButtonContainer>
             </BodyBottomContainer>
           </BodyContainer>

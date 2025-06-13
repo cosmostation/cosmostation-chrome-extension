@@ -9,8 +9,10 @@ import { times } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { BodyBottomContainer, BodyContainer, BodyTopContainer, TopContainer } from './styled';
+import { BodyBottomContainer, BodyContainer, BodyTopContainer, SymbolButton, TopContainer } from './styled';
 import MainBox from '..';
+
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko16.svg';
 
 import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
 
@@ -34,6 +36,7 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
 
   const coinPrice = (currentGroupCoin?.asset?.coinGeckoId && coinGeckoPrice?.[currentGroupCoin.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
   const totalValue = times(totalDisplayAmount, coinPrice);
+  const coinGeckoUrl = currentGroupCoin?.asset?.coinGeckoId ? `https://www.coingecko.com/en/coins/${currentGroupCoin.asset.coinGeckoId}` : '';
 
   return (
     <>
@@ -46,7 +49,20 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
         body={
           <BodyContainer>
             <BodyTopContainer>
-              <Base1300Text variant="h1_B">{symbol}</Base1300Text>
+              <SymbolButton
+                onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
+                disabled={!coinGeckoUrl}
+                trailingIcon={coinGeckoUrl ? <CoinGeckoIcon /> : undefined}
+              >
+                <Base1300Text
+                  variant="h1_B"
+                  style={{
+                    marginRight: '0.2rem',
+                  }}
+                >
+                  {symbol}
+                </Base1300Text>
+              </SymbolButton>
               <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
               </BalanceDisplay>

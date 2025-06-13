@@ -8,7 +8,7 @@ import { toastDefault } from '@/utils/toast';
 import type { TextButtonProps } from '../common/TextButton';
 import TextButton from '../common/TextButton';
 
-type ShortAddressCopyButtonProps = TextButtonProps & {
+export type ShortAddressCopyButtonProps = TextButtonProps & {
   children: string;
 };
 

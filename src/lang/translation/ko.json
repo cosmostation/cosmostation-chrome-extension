@@ -641,7 +641,8 @@
           "send": "전송",
           "stake": "스테이킹",
           "swap": "스왑",
-          "totalValue": "나의 총 자산"
+          "totalValue": "나의 총 자산",
+          "receiveWithSymbol": "{{symbol}} 받기"
         }
       },
       "StakeDetailBox": {

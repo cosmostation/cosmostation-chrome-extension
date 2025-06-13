@@ -2,6 +2,8 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
+import BaseCoinImage from '@/components/common/BaseCoinImage';
+import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 
 export const TopContainer = styled('div')({
@@ -74,7 +76,7 @@ export const StyledIconContainer = styled('div')({
 
 export const BodyBottomContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-end',
   alignItems: 'center',
 
   marginBottom: '1.4rem',
@@ -113,3 +115,20 @@ export const SpacedTypography = styled(Typography)(({ theme }) => ({
 
   color: theme.palette.color.base1300,
 }));
+
+export const StyledCoinImageContainer = styled(BaseCoinImage)(() => {
+  return {
+    width: '1.4rem',
+    height: '1.4rem',
+  };
+});
+
+export const ChipButtonContentsContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.4rem',
+});
+
+export const StyledChipButton = styled(ChipButton)({
+  padding: '0.5rem 0.8rem',
+});

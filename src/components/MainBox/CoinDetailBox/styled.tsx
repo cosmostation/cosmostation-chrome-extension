@@ -4,12 +4,6 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import TextButton from '@/components/common/TextButton';
 
-export const TopContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-});
-
 export const BodyContainer = styled('div')({});
 
 export const BodyTopContainer = styled('div')(({ theme }) => ({
@@ -28,6 +22,13 @@ export const StyledTextButton = styled(TextButton)(({ theme }) => ({
   '&.Mui-disabled, &:disabled': {
     color: theme.palette.color.base1300,
   },
+}));
+
+export const SymbolButton = styled(IconTextButton)(({ theme }) => ({
+  '&.Mui-disabled, &:disabled': {
+    color: theme.palette.color.base1300,
+  },
+  alignItems: 'flex-start',
 }));
 
 export const BodyBottomContainer = styled('div')(({ theme }) => ({
@@ -76,8 +77,4 @@ export const IconContainer = styled('div')({
 
 export const SpacedTypography = styled(Base1300Text)({
   marginTop: '0.4rem',
-});
-
-export const ChangeAddressIconButtonContainer = styled('div')({
-  marginLeft: '0.4rem',
 });
