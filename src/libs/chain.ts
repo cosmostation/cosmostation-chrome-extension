@@ -348,7 +348,12 @@ export async function getChains() {
 
     const isTestnet = coinTypeLevel.replace(/[^0-9]/g, '') === `1`;
 
-    const mainAssetDenom = (chain.params.chainlist_params?.main_asset_denom ?? isTestnet) ? 'sbtc' : 'btc';
+    const mainAssetDenom = (() => {
+      if (chain.params.chainlist_params?.main_asset_denom) return chain.params.chainlist_params.main_asset_denom;
+
+      return isTestnet ? 'sbtc' : 'btc';
+    })();
+
     const chainDefaultCoinDenoms = [
       chain.params.chainlist_params?.gas_asset_denom,
       chain.params.chainlist_params?.staking_asset_denom,
