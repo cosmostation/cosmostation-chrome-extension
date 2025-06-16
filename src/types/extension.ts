@@ -139,7 +139,7 @@ export interface ExtensionStorage {
   isBalanceVisible: boolean;
   isHideSmalValue: boolean;
   approvedSuiPermissions: ApprovedSuiPermission[];
-  approvedIotaPermissions: ApprovedSuiPermission[];
+  approvedIotaPermissions: ApprovedIotaPermission[];
   requestQueue: RequestQueue[];
   chosenEthereumNetworkId: string;
   chosenAptosNetworkId: string;

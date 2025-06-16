@@ -93,13 +93,15 @@ export default function Entry() {
   const chainDefaultCoins = useMemo<PortfolioCoinItem[] | undefined>(() => {
     const chainFilteredAllCoins = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, selectedChainFilterId || undefined);
 
-    const chainDefaultCoins = getDefaultAssets(chainFilteredAllCoins)?.toSorted((a, b) => {
-      const denoms = a.chain.chainDefaultCoinDenoms;
-      if (!denoms) return 0;
-      const indexA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
-      const indexB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
-      return indexA - indexB;
-    });
+    const chainDefaultCoins = getDefaultAssets(chainFilteredAllCoins)
+      ?.slice()
+      .sort((a, b) => {
+        const denoms = a.chain.chainDefaultCoinDenoms ?? [];
+        const idxA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
+        const idxB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
+
+        return (idxA < 0 ? Number.MAX_SAFE_INTEGER : idxA) - (idxB < 0 ? Number.MAX_SAFE_INTEGER : idxB);
+      });
 
     if (!chainDefaultCoins || chainDefaultCoins?.length === 0) return undefined;
 

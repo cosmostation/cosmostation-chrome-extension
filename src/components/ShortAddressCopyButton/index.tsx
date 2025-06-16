@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 
 import { shorterAddress } from '@/utils/string';
-import { toastDefault } from '@/utils/toast';
+import { toastDefault, toastError } from '@/utils/toast';
 
 import type { TextButtonProps } from '../common/TextButton';
 import TextButton from '../common/TextButton';
@@ -17,8 +17,11 @@ export default function ShortAddressCopyButton({ children, ...remainder }: Short
   const { t } = useTranslation();
 
   const copyToClipboard = () => {
-    copy(children);
-    toastDefault(t('components.MainBox.CoinDetailBox.index.copied'));
+    if (copy(children)) {
+      toastDefault(t('components.MainBox.CoinDetailBox.index.copied'));
+    } else {
+      toastError(t('components.MainBox.CoinDetailBox.index.copyFailed'));
+    }
   };
 
   useLayoutEffect(() => {

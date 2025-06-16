@@ -605,7 +605,8 @@
           "swap": "교환",
           "vault": "Vault",
           "vaultDescription": "$NTRN의 Vault기능을 사용해보세요",
-          "vote": "투표"
+          "vote": "투표",
+          "copyFailed": "복사하지 못했습니다"
         }
       },
       "CoinOverview": {

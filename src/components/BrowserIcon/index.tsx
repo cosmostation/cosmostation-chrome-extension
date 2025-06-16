@@ -1,12 +1,11 @@
-import { BROWSWER_ICON } from '@/constants/browser';
+import { BROWSER_ICON } from '@/constants/browser';
 import { getBrowserKeyName } from '@/utils/browser';
 
 export default function BrowserIcon() {
-  const BrowserIcon = (() => {
+  const IconComponent = (() => {
     const browserKey = getBrowserKeyName();
-
-    return BROWSWER_ICON[browserKey];
+    return BROWSER_ICON[browserKey] ?? null;
   })();
 
-  return <BrowserIcon />;
+  return IconComponent ? <IconComponent /> : null;
 }

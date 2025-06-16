@@ -40,12 +40,14 @@ export default function CenterEllipsisText({ children, ...typographyProps }: Cen
 
     updateTruncatedText();
 
-    const resizeObserver = new ResizeObserver(updateTruncatedText);
-    resizeObserver.observe(element);
+    if (typeof ResizeObserver !== 'undefined') {
+      const resizeObserver = new ResizeObserver(updateTruncatedText);
+      resizeObserver.observe(element);
 
-    return () => {
-      resizeObserver.disconnect();
-    };
+      return () => resizeObserver.disconnect();
+    }
+
+    return undefined;
   }, [children]);
 
   return (

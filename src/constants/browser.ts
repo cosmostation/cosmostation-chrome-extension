@@ -1,6 +1,6 @@
 import ChromeIcon from '@/assets/images/icons/Chrome16.svg';
 
-export const BROWSWER_TYPE = {
+export const BROWSER_TYPE = {
   EDGE: 'edge',
   EDGE_CHROMIUM: 'edge-chromium',
   OPERA: 'opr',
@@ -11,24 +11,24 @@ export const BROWSWER_TYPE = {
   ETC: 'etc',
 } as const;
 
-export const BROWSWER_NAME = {
-  [BROWSWER_TYPE.EDGE]: 'MS Edge',
-  [BROWSWER_TYPE.EDGE_CHROMIUM]: 'Edge (chromium bases)',
-  [BROWSWER_TYPE.OPERA]: 'Opera',
-  [BROWSWER_TYPE.CHROME]: 'Chrome',
-  [BROWSWER_TYPE.IE]: 'MS IE',
-  [BROWSWER_TYPE.FIREFOX]: 'Firefox',
-  [BROWSWER_TYPE.SAFARI]: 'Safari',
-  [BROWSWER_TYPE.ETC]: 'etc',
+export const BROWSER_NAME = {
+  [BROWSER_TYPE.EDGE]: 'MS Edge',
+  [BROWSER_TYPE.EDGE_CHROMIUM]: 'Edge (chromium bases)',
+  [BROWSER_TYPE.OPERA]: 'Opera',
+  [BROWSER_TYPE.CHROME]: 'Chrome',
+  [BROWSER_TYPE.IE]: 'MS IE',
+  [BROWSER_TYPE.FIREFOX]: 'Firefox',
+  [BROWSER_TYPE.SAFARI]: 'Safari',
+  [BROWSER_TYPE.ETC]: 'etc',
 } as const;
 
-export const BROWSWER_ICON = {
-  [BROWSWER_TYPE.EDGE]: ChromeIcon,
-  [BROWSWER_TYPE.EDGE_CHROMIUM]: ChromeIcon,
-  [BROWSWER_TYPE.OPERA]: ChromeIcon,
-  [BROWSWER_TYPE.CHROME]: ChromeIcon,
-  [BROWSWER_TYPE.IE]: ChromeIcon,
-  [BROWSWER_TYPE.FIREFOX]: ChromeIcon,
-  [BROWSWER_TYPE.SAFARI]: ChromeIcon,
-  [BROWSWER_TYPE.ETC]: ChromeIcon,
+export const BROWSER_ICON = {
+  [BROWSER_TYPE.EDGE]: ChromeIcon,
+  [BROWSER_TYPE.EDGE_CHROMIUM]: ChromeIcon,
+  [BROWSER_TYPE.OPERA]: ChromeIcon,
+  [BROWSER_TYPE.CHROME]: ChromeIcon,
+  [BROWSER_TYPE.IE]: ChromeIcon,
+  [BROWSER_TYPE.FIREFOX]: ChromeIcon,
+  [BROWSER_TYPE.SAFARI]: ChromeIcon,
+  [BROWSER_TYPE.ETC]: ChromeIcon,
 } as const;

@@ -37,7 +37,7 @@ export default function AddressActionButtons({ coinId, ...remainder }: AddressAc
     if (isEthermint && isMainCoin) {
       return currentAccountAssets?.cosmosAccountAssets.find(
         (item) =>
-          item.asset.id === currentCoin.chain.mainAssetDenom &&
+          isEqualsIgnoringCase(item.asset.id, currentCoin.chain.mainAssetDenom || '') &&
           item.chain.id === currentCoin.chain.id &&
           item.address.chainId === currentCoin.address.chainId &&
           item.address.accountType.hdPath === currentCoin.address.accountType.hdPath,
