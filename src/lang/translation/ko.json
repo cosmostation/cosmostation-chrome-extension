@@ -1120,7 +1120,9 @@
             "nativeCoin": "Native Coin",
             "bridgeCoin": "Bridged COin",
             "type": "코인 타입",
-            "displayDecimals": "{{decimals}} decimals"
+            "displayDecimals": "{{decimals}} decimals",
+            "learnMore": "더 알아보기",
+            "coinGecko": "코인 게코"
           },
           "layout": {
             "about": "{{symbol}} 정보"

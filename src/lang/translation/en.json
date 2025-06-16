@@ -1163,7 +1163,9 @@
             "cw20Coin": "CW20 Token",
             "nativeCoin": "Native Coin",
             "bridgeCoin": "Bridged COin",
-            "type": "Type"
+            "type": "Type",
+            "learnMore": "Learn More",
+            "coinGecko": "CoinGecko"
           },
           "layout": {
             "about": "About {{symbol}}"

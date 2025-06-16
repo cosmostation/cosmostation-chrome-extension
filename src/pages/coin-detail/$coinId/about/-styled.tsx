@@ -148,8 +148,28 @@ export const DetailInfoContainer = styled('div')({
 
   marginTop: '0.4rem',
 });
+
 export const RowContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+});
+
+export const CoingeckoContainer = styled('div')({
+  display: 'flex',
+
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  columnGap: '0.7rem',
+});
+
+export const CoingeckoIconContainer = styled('div')({
+  width: '2.4rem',
+  height: '2.4rem',
+
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+  },
 });
