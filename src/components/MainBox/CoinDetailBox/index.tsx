@@ -50,6 +50,7 @@ type CoinDetailBoxProps = {
 
 export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
+  const [isSymbolButtonHovered, setIsSymbolButtonHovered] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -181,9 +182,11 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
           <BodyContainer>
             <BodyTopContainer>
               <SymbolButton
+                onMouseEnter={() => setIsSymbolButtonHovered(true)}
+                onMouseLeave={() => setIsSymbolButtonHovered(false)}
                 onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
                 disabled={!coinGeckoUrl}
-                trailingIcon={coinGeckoUrl ? <CoinGeckoIcon /> : undefined}
+                trailingIcon={coinGeckoUrl && isSymbolButtonHovered ? <CoinGeckoIcon /> : undefined}
               >
                 <Base1300Text
                   variant="h1_B"

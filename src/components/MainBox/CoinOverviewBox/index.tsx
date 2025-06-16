@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -21,6 +22,8 @@ type CoinOverviewBoxProps = {
 };
 
 export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
+  const [isSymbolButtonHovered, setIsSymbolButtonHovered] = useState(false);
+
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -50,9 +53,11 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
           <BodyContainer>
             <BodyTopContainer>
               <SymbolButton
+                onMouseEnter={() => setIsSymbolButtonHovered(true)}
+                onMouseLeave={() => setIsSymbolButtonHovered(false)}
                 onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
                 disabled={!coinGeckoUrl}
-                trailingIcon={coinGeckoUrl ? <CoinGeckoIcon /> : undefined}
+                trailingIcon={coinGeckoUrl && isSymbolButtonHovered ? <CoinGeckoIcon /> : undefined}
               >
                 <Base1300Text
                   variant="h1_B"
