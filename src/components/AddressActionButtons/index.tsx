@@ -6,12 +6,12 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { ChangeAddressIconButtonContainer, Container, IconDivider } from './styled';
+import BrowserIcon from '../BrowserIcon';
 import IconButton from '../common/IconButton';
 import type { ShortAddressCopyButtonProps } from '../ShortAddressCopyButton';
 import ShortAddressCopyButton from '../ShortAddressCopyButton';
 
-import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
-import ChromeIcon from '@/assets/images/icons/Chrome16.svg';
+import ChangeIcon from '@/assets/images/icons/ChangeGrey16.svg';
 
 type AddressActionButtonsProps = Omit<ShortAddressCopyButtonProps, 'children'> & {
   coinId: string;
@@ -72,7 +72,7 @@ export default function AddressActionButtons({ coinId, ...remainder }: AddressAc
       <IconDivider />
       <ChangeAddressIconButtonContainer>
         <IconButton disabled={!explorerUrl} onClick={() => explorerUrl && window.open(explorerUrl, '_blank')}>
-          <ChromeIcon />
+          <BrowserIcon />
         </IconButton>
       </ChangeAddressIconButtonContainer>
     </Container>
