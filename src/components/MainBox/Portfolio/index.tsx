@@ -13,13 +13,13 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
-import { Route as Receive } from '@/pages/wallet/receive/$coinId';
+import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/$chainId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, getMainAssetByChainId, isStakeableAsset } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -32,7 +32,6 @@ import {
   ChipButtonContentsContainer,
   SpacedTypography,
   StyledChipButton,
-  StyledCoinImageContainer,
   StyledIconContainer,
   StyledIconTextButton,
   TopContainer,
@@ -89,15 +88,13 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
     return getCoinId(selectedChainMainAsset.asset);
   }, [selectedChainMainAsset?.asset]);
 
+  const chainIdForReceivePage = useMemo(() => {
+    if (!selectedChainMainAsset?.chain) return undefined;
+
+    return getUniqueChainId(selectedChainMainAsset.chain);
+  }, [selectedChainMainAsset?.chain]);
+
   const isShowAccountDetail = !!selectedChainMainAsset?.asset && !!coinIdForReceivePage;
-
-  const symbol = selectedChainMainAsset?.asset.symbol;
-
-  const receiveChipButtonText = symbol
-    ? t('components.MainBox.Portfolio.index.receiveWithSymbol', {
-        symbol: symbol.length > 7 ? symbol.slice(0, 6) + '...' : symbol,
-      })
-    : t('components.MainBox.Portfolio.index.receive');
 
   useEffect(() => {
     setIsProcessing(true);
@@ -203,11 +200,11 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                 <StyledChipButton
                   variant="dark"
                   onClick={() => {
-                    if (isShowAccountDetail) {
+                    if (isShowAccountDetail && chainIdForReceivePage) {
                       navigate({
-                        to: Receive.to,
+                        to: ReceiveWithChainId.to,
                         params: {
-                          coinId: coinIdForReceivePage,
+                          chainId: chainIdForReceivePage as UniqueChainId,
                         },
                       });
                     } else {
@@ -218,8 +215,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
                   }}
                 >
                   <ChipButtonContentsContainer>
-                    {isShowAccountDetail && <StyledCoinImageContainer imageURL={selectedChainMainAsset.asset.image} />}
-                    <Typography variant="b4_M">{receiveChipButtonText}</Typography>
+                    <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.receive')}</Typography>
                   </ChipButtonContentsContainer>
                 </StyledChipButton>
               </BodyBottomChipButtonContainer>

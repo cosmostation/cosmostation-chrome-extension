@@ -28,6 +28,6 @@ interface MajorChain {
 
 export const DEFAULT_MAJOR_CHAINS: MajorChain[] = [
   { id: 'cosmos', chainType: 'cosmos' },
-  { id: 'ethereum', chainType: 'evm' },
   { id: 'bitcoin', chainType: 'bitcoin' },
+  { id: 'ethereum', chainType: 'evm' },
 ];

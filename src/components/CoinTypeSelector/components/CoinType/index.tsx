@@ -77,16 +77,20 @@ export default function CoinTypeSelector({
 
           const [rootLevel, purposeLevel, coinTypeLevel, accountLevel, changeLevel, indexLevel] = fullHdPath.split('/');
 
-          const highlightedLeftText = `${rootLevel} / ${isBitcoin ? '' : `${purposeLevel} / `}`;
-          const highlightedText = isBitcoin ? purposeLevel : coinTypeLevel;
-          const highlightedRightText = ` / ${isBitcoin ? `${coinTypeLevel} / ` : ''}${accountLevel} / ${changeLevel} ${indexLevel ? `/ ${indexLevel}` : ''}`;
+          const highlightedLeftText = currentAccount?.type === 'MNEMONIC' ? `${rootLevel} / ${isBitcoin ? '' : `${purposeLevel} / `}` : '';
+          const highlightedText = currentAccount?.type === 'MNEMONIC' ? (isBitcoin ? purposeLevel : coinTypeLevel) : item.accountType.pubkeyStyle;
+          const mainCoinTypeText = isBitcoin ? purposeLevel : coinTypeLevel;
+          const highlightedRightText =
+            currentAccount?.type === 'MNEMONIC'
+              ? ` / ${isBitcoin ? `${coinTypeLevel} / ` : ''}${accountLevel} / ${changeLevel} ${indexLevel ? `/ ${indexLevel}` : ''}`
+              : '';
 
           const pubketStyleLabel = (() => {
             if (chain.chainType === 'bitcoin') {
               return PUBKEY_STYLE_MAP[item.accountType.pubkeyStyle as keyof typeof PUBKEY_STYLE_MAP];
             }
 
-            return `${highlightedText} TYPE`;
+            return `${mainCoinTypeText} TYPE`;
           })();
 
           return (
@@ -112,11 +116,20 @@ export default function CoinTypeSelector({
               </ButtonBodyContainer>
               <ButtonBottomContainer>
                 <HdPathTextContainer>
-                  <HdPathText variant="h6n_M">{highlightedLeftText}</HdPathText>
-                  &nbsp;
+                  {highlightedLeftText && (
+                    <>
+                      <HdPathText variant="h6n_M">{highlightedLeftText}</HdPathText>
+                      &nbsp;
+                    </>
+                  )}
                   <Base1300Text variant="h6n_M">{highlightedText}</Base1300Text>
                   &nbsp;
-                  <HdPathText variant="h6n_M">{highlightedRightText}</HdPathText>
+                  {highlightedRightText && (
+                    <>
+                      <HdPathText variant="h6n_M">{highlightedRightText}</HdPathText>
+                      &nbsp;
+                    </>
+                  )}
                 </HdPathTextContainer>
 
                 <ValueContainer>

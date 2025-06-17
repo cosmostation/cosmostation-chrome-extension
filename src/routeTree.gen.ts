@@ -45,6 +45,7 @@ import { Route as WalletSwapCoinIdIndexImport } from './pages/wallet/swap/$coinI
 import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coinId/index'
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
+import { Route as WalletReceiveChainIdIndexImport } from './pages/wallet/receive/$chainId/index'
 import { Route as WalletNftSendIdIndexImport } from './pages/wallet/nft-send/$id/index'
 import { Route as WalletClaimCommissionCoinIdIndexImport } from './pages/wallet/claim-commission/$coinId/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
@@ -314,6 +315,12 @@ const WalletSendCoinIdIndexRoute = WalletSendCoinIdIndexImport.update({
 const WalletReceiveCoinIdIndexRoute = WalletReceiveCoinIdIndexImport.update({
   id: '/wallet/receive/$coinId/',
   path: '/wallet/receive/$coinId/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WalletReceiveChainIdIndexRoute = WalletReceiveChainIdIndexImport.update({
+  id: '/wallet/receive/$chainId/',
+  path: '/wallet/receive/$chainId/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -1153,6 +1160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletNftSendIdIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/receive/$chainId/': {
+      id: '/wallet/receive/$chainId/'
+      path: '/wallet/receive/$chainId'
+      fullPath: '/wallet/receive/$chainId'
+      preLoaderRoute: typeof WalletReceiveChainIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/receive/$coinId/': {
       id: '/wallet/receive/$coinId/'
       path: '/wallet/receive/$coinId'
@@ -1392,6 +1406,7 @@ export interface FileRoutesByFullPath {
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/claim-commission/$coinId': typeof WalletClaimCommissionCoinIdIndexRoute
   '/wallet/nft-send/$id': typeof WalletNftSendIdIndexRoute
+  '/wallet/receive/$chainId': typeof WalletReceiveChainIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -1484,6 +1499,7 @@ export interface FileRoutesByTo {
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/claim-commission/$coinId': typeof WalletClaimCommissionCoinIdIndexRoute
   '/wallet/nft-send/$id': typeof WalletNftSendIdIndexRoute
+  '/wallet/receive/$chainId': typeof WalletReceiveChainIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -1577,6 +1593,7 @@ export interface FileRoutesById {
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/claim-commission/$coinId/': typeof WalletClaimCommissionCoinIdIndexRoute
   '/wallet/nft-send/$id/': typeof WalletNftSendIdIndexRoute
+  '/wallet/receive/$chainId/': typeof WalletReceiveChainIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
@@ -1671,6 +1688,7 @@ export interface FileRouteTypes {
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/claim-commission/$coinId'
     | '/wallet/nft-send/$id'
+    | '/wallet/receive/$chainId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -1762,6 +1780,7 @@ export interface FileRouteTypes {
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/claim-commission/$coinId'
     | '/wallet/nft-send/$id'
+    | '/wallet/receive/$chainId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -1853,6 +1872,7 @@ export interface FileRouteTypes {
     | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/claim-commission/$coinId/'
     | '/wallet/nft-send/$id/'
+    | '/wallet/receive/$chainId/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
     | '/wallet/stake/$coinId/'
@@ -1946,6 +1966,7 @@ export interface RootRouteChildren {
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletClaimCommissionCoinIdIndexRoute: typeof WalletClaimCommissionCoinIdIndexRoute
   WalletNftSendIdIndexRoute: typeof WalletNftSendIdIndexRoute
+  WalletReceiveChainIdIndexRoute: typeof WalletReceiveChainIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
@@ -2049,6 +2070,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletClaimCommissionCoinIdIndexRoute: WalletClaimCommissionCoinIdIndexRoute,
   WalletNftSendIdIndexRoute: WalletNftSendIdIndexRoute,
+  WalletReceiveChainIdIndexRoute: WalletReceiveChainIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
   WalletStakeCoinIdIndexRoute: WalletStakeCoinIdIndexRoute,
@@ -2163,6 +2185,7 @@ export const routeTree = rootRoute
         "/wallet/claim-all-rewards/$coinId/",
         "/wallet/claim-commission/$coinId/",
         "/wallet/nft-send/$id/",
+        "/wallet/receive/$chainId/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
         "/wallet/stake/$coinId/",
@@ -2383,6 +2406,9 @@ export const routeTree = rootRoute
     },
     "/wallet/nft-send/$id/": {
       "filePath": "wallet/nft-send/$id/index.tsx"
+    },
+    "/wallet/receive/$chainId/": {
+      "filePath": "wallet/receive/$chainId/index.tsx"
     },
     "/wallet/receive/$coinId/": {
       "filePath": "wallet/receive/$coinId/index.tsx"
