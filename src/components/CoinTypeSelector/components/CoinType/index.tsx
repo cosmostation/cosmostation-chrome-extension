@@ -36,7 +36,7 @@ type CoinTypeSelectorProps = {
     totalAssetValue: string;
   }[];
   selectedAccountType?: ChainAccountType;
-  chain: Chain;
+  chain?: Chain;
   isDisableTopContents?: boolean;
   onClickChainType: (id: string, accountType: ChainAccountType) => void;
 };
@@ -52,7 +52,7 @@ export default function CoinTypeSelector({
   const { t } = useTranslation();
   const { userAccounts, userCurrencyPreference } = useExtensionStorageStore((state) => state);
 
-  const isBitcoin = useMemo(() => chain.chainType === 'bitcoin', [chain.chainType]);
+  const isBitcoin = useMemo(() => chain?.chainType === 'bitcoin', [chain?.chainType]);
 
   const currentAccount = useMemo(() => userAccounts.find((account) => account.id === accountId), [accountId, userAccounts]);
   const currentAccountIndex = useMemo(() => (currentAccount?.type === 'MNEMONIC' ? currentAccount.index : '0'), [currentAccount]);
@@ -61,8 +61,8 @@ export default function CoinTypeSelector({
     <Container>
       {!isDisableTopContents && (
         <TopContainer>
-          <ChainImage src={chain.image} />
-          <Base1300Text variant="h3_B">{t('components.CoinTypeSelector.components.CoinType.coinType').replace('${chain}', chain.name)}</Base1300Text>
+          <ChainImage src={chain?.image} />
+          <Base1300Text variant="h3_B">{t('components.CoinTypeSelector.components.CoinType.coinType').replace('${chain}', chain?.name || '')}</Base1300Text>
         </TopContainer>
       )}
       <ButtonWrapper>
@@ -86,7 +86,7 @@ export default function CoinTypeSelector({
               : '';
 
           const pubketStyleLabel = (() => {
-            if (chain.chainType === 'bitcoin') {
+            if (chain?.chainType === 'bitcoin') {
               return PUBKEY_STYLE_MAP[item.accountType.pubkeyStyle as keyof typeof PUBKEY_STYLE_MAP];
             }
 
@@ -94,7 +94,7 @@ export default function CoinTypeSelector({
           })();
 
           return (
-            <OutlinedButton key={item.address} isSelected={isSelected} onClick={() => onClickChainType(chain.id, item.accountType)}>
+            <OutlinedButton key={item.address} isSelected={isSelected} onClick={() => chain && onClickChainType(chain.id, item.accountType)}>
               <ButtonBodyContainer>
                 <CoinTypeNameContainer>
                   <CoinTypeNameTextContainer>

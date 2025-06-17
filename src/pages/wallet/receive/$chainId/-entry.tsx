@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { produce } from 'immer';
 import { QRCodeSVG } from 'qrcode.react';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -11,18 +10,15 @@ import IconTextButton from '@/components/common/IconTextButton/index.tsx';
 import CopyButton from '@/components/CopyButton/index.tsx';
 import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common.ts';
 import { useChainList } from '@/hooks/useChainList.ts';
+import { useChangeCoinAccountType } from '@/hooks/useChangeCoinAccountType.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
 import { useCurrentAccountAddresses } from '@/hooks/useCurrentAccountAddresses.ts';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes.ts';
-import { useSyncChainFilterIdWithAccountType } from '@/hooks/useSyncChainFilterIdWithAccountType.ts';
 import CoinTypeBottomSheet from '@/pages/manage-assets/switch-accout-type/-components/CoinTypeBottomSheet/index.tsx';
 import type { ChainAccountType, UniqueChainId } from '@/types/chain.ts';
 import { devLogger } from '@/utils/devLogger.ts';
-import { emitChangedAddressEvent } from '@/utils/event.ts';
 import { getUniqueChainIdWithManual, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator.ts';
-import { getExtensionLocalStorage } from '@/utils/storage.ts';
-import { toastSuccess } from '@/utils/toast.tsx';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { toastError, toastSuccess } from '@/utils/toast.tsx';
 
 import {
   AddressBodyContainer,
@@ -67,9 +63,7 @@ export default function Entry({ chainId }: EntryProps) {
   const { flatChainList } = useChainList();
   const accountAddress = useCurrentAccountAddresses();
   const { currentAccount } = useCurrentAccount();
-  const { updateCurrentPreferAccountType } = useCurrentPreferAccountTypes();
-  const { selectedChainFilterId } = useExtensionStorageStore((state) => state);
-  const { syncChainFilterIdWithAccountType } = useSyncChainFilterIdWithAccountType();
+  const { changeCoinType } = useChangeCoinAccountType();
 
   const parsedUniqueChainId = parseUniqueChainId(chainId);
 
@@ -173,44 +167,16 @@ export default function Entry({ chainId }: EntryProps) {
   const handleChangeAccountType = useCallback(
     async (id: string, accountType: ChainAccountType) => {
       try {
-        const updateSelectedChainFilterId = async () => {
-          const currentParsedChainFilterId = selectedChainFilterId && parseUniqueChainId(selectedChainFilterId);
-          const isChangeSameChain = id === currentParsedChainFilterId?.id;
-
-          if (isChangeSameChain) {
-            await syncChainFilterIdWithAccountType(accountType);
-          }
-        };
-
-        const updatedPreferAccountTypeFunc = async () => {
-          const storedPreferAccountType = (await getExtensionLocalStorage('preferAccountType')) ?? {};
-
-          const preferredAccountType = storedPreferAccountType[currentAccount.id];
-
-          const updatedPreferAccountType = preferredAccountType
-            ? produce(preferredAccountType, (draft) => {
-                draft[id] = accountType;
-              })
-            : preferredAccountType;
-
-          if (!updatedPreferAccountType) {
-            return;
-          }
-          await updateCurrentPreferAccountType(updatedPreferAccountType);
-        };
-
-        await updatedPreferAccountTypeFunc();
-        await updateSelectedChainFilterId();
-
-        await emitChangedAddressEvent(currentAccount.id);
-
+        await changeCoinType(id, accountType);
         toastSuccess(t('pages.manage-assets.switch-account-type.entry.successSwitch'));
-        setIsOpenBottomSheet(false);
       } catch (error) {
-        devLogger.error(`[ChangeAccountType] Error`, error);
+        devLogger.error(`[ChangeAccountType in ChainlistBottomSheet] Error`, error);
+        toastError(t('pages.manage-assets.switch-account-type.entry.failSwitch'));
+      } finally {
+        setIsOpenBottomSheet(false);
       }
     },
-    [currentAccount.id, selectedChainFilterId, syncChainFilterIdWithAccountType, t, updateCurrentPreferAccountType],
+    [changeCoinType, t],
   );
 
   return (

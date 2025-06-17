@@ -13,19 +13,20 @@ type OptionButtonProps = {
   id?: UniqueChainId;
   isActive?: boolean;
   varient?: 'indicator' | 'label';
+  leftSecondHeader?: JSX.Element;
   rightComponent?: JSX.Element;
   onSelectChain?: (id?: UniqueChainId) => void;
 };
 
 const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(
-  ({ image, name, isActive, id, varient = 'indicator', onSelectChain, rightComponent, ...remainder }, ref) => {
+  ({ image, name, isActive, id, varient = 'indicator', onSelectChain, leftSecondHeader, rightComponent, ...remainder }, ref) => {
     return (
       <BaseOptionButton
         onClick={() => {
           onSelectChain?.(id);
         }}
         leftContent={<ChainImage src={image} />}
-        leftSecondHeader={<ChainNameText variant="b2_M">{name}</ChainNameText>}
+        leftSecondHeader={leftSecondHeader || <ChainNameText variant="b2_M">{name}</ChainNameText>}
         rightContent={
           rightComponent ? (
             rightComponent

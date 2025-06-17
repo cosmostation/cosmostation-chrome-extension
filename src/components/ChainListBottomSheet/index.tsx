@@ -1,25 +1,34 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common';
 import { DEFAULT_MAJOR_CHAINS } from '@/constants/common';
 import { CHAINLIST_SORT_KEY } from '@/constants/sortKey';
 import { usePortfolioValuesByChain } from '@/hooks/current/usePortfolioValuesByChain';
+import { useChainList } from '@/hooks/useChainList';
+import { useChangeCoinAccountType } from '@/hooks/useChangeCoinAccountType';
+import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
+import CoinTypeBottomSheet from '@/pages/manage-assets/switch-accout-type/-components/CoinTypeBottomSheet';
 import { Route as ManageCustomNetwork } from '@/pages/manage-assets/visibility/network';
-import type { ChainBase, UniqueChainId } from '@/types/chain';
+import type { ChainAccountType, ChainBase, UniqueChainId } from '@/types/chain';
 import type { ChainlistSortKeyType } from '@/types/sortKey';
 import { isTestnetChain } from '@/utils/chain';
+import { devLogger } from '@/utils/devLogger';
 import { equal, minus, plus } from '@/utils/numbers';
 import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import OptionButton from './components/OptionButton';
 import { AmountContainer } from './components/OptionButton/styled';
 import {
   Body,
+  ChevronIconContainer,
+  CoinTypeButtonContainer,
   Container,
   CustomNetworkButton,
   CustomNetworkTextContaienr,
@@ -34,6 +43,7 @@ import {
   SwtichCoinType,
 } from './styled';
 import BalanceDisplay from '../BalanceDisplay';
+import Base1000Text from '../common/Base1000Text';
 import Base1300Text from '../common/Base1300Text';
 import IconTextButton from '../common/IconTextButton';
 import Search from '../Search';
@@ -42,6 +52,7 @@ import SortBottomSheet from '../SortBottomSheet';
 import ChangeIcon from 'assets/images/icons/Change14.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
 import CustomNetworkIcon from 'assets/images/icons/CustomNetwork28.svg';
+import RightChevronIcon from 'assets/images/icons/RightChevron20.svg';
 
 import AllNetworkImage from 'assets/images/network.png';
 
@@ -83,12 +94,17 @@ export default function ChainListBottomSheet({
   ...remainder
 }: ChainListBottomSheetProps) {
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
+  const [selectedChangeCoinTypeChainId, setSelectedChangeCoinTypeChainId] = useState<UniqueChainId | undefined>();
 
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
   const { userCurrencyPreference, chainListSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
 
+  const { flatChainList } = useChainList();
+
+  const { changeCoinType } = useChangeCoinAccountType();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
@@ -171,10 +187,27 @@ export default function ChainListBottomSheet({
 
   const chainsCount = chainList.length.toString();
 
+  const currentTempChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, selectedChangeCoinTypeChainId));
+
   const handleClose = () => {
     setSearch('');
     onClose?.({}, 'backdropClick');
   };
+
+  const handleChangeAccountType = useCallback(
+    async (id: string, accountType: ChainAccountType) => {
+      try {
+        await changeCoinType(id, accountType);
+        toastSuccess(t('pages.manage-assets.switch-account-type.entry.successSwitch'));
+        setSelectedChangeCoinTypeChainId(undefined);
+      } catch (error) {
+        devLogger.error(`[ChangeAccountType in ChainlistBottomSheet] Error`, error);
+        toastError(t('pages.manage-assets.switch-account-type.entry.failSwitch'));
+        setSelectedChangeCoinTypeChainId(undefined);
+      }
+    },
+    [changeCoinType, t],
+  );
 
   useEffect(() => {
     if (remainder.open) {
@@ -275,6 +308,29 @@ export default function ChainListBottomSheet({
             {!isDebouncing &&
               filteredChainList.mainnet?.length > 0 &&
               filteredChainList.mainnet.map((item) => {
+                const multiPath = currentPreferAccountType?.[item.id];
+
+                const coinTypeText = (() => {
+                  if (multiPath) {
+                    const hdPathParts = multiPath?.hdPath.split('/');
+                    const coinTypeLevel = item?.chainType === 'bitcoin' ? hdPathParts?.[1] : hdPathParts?.[2];
+
+                    const addressTypeLabel = (() => {
+                      if (item.chainType === 'bitcoin') {
+                        return ADDRESS_FORMAT_MAPPING[coinTypeLevel as keyof typeof ADDRESS_FORMAT_MAPPING];
+                      }
+
+                      return t('pages.manage-assets.switch-account-type.entry.type', {
+                        accountType: coinTypeLevel,
+                      });
+                    })();
+
+                    return addressTypeLabel;
+                  }
+
+                  return undefined;
+                })();
+
                 return (
                   <OptionButton
                     key={getUniqueChainId(item)}
@@ -288,6 +344,38 @@ export default function ChainListBottomSheet({
                     image={item.image}
                     id={getUniqueChainId(item)}
                     varient={buttonVarients}
+                    leftSecondHeader={
+                      customType === 'manageAssets' ? (
+                        <CoinTypeButtonContainer>
+                          <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+
+                          {multiPath && coinTypeText ? (
+                            <IconTextButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedChangeCoinTypeChainId(getUniqueChainId(item));
+                              }}
+                              disabled={!multiPath}
+                              trailingIcon={
+                                multiPath ? (
+                                  <ChevronIconContainer>
+                                    <RightChevronIcon />
+                                  </ChevronIconContainer>
+                                ) : undefined
+                              }
+                            >
+                              <Base1000Text variant="b4_R">
+                                {'Selected :'}
+                                &nbsp;
+                                <span>
+                                  <Base1000Text variant="b4_M">{coinTypeText}</Base1000Text>
+                                </span>
+                              </Base1000Text>
+                            </IconTextButton>
+                          ) : undefined}
+                        </CoinTypeButtonContainer>
+                      ) : undefined
+                    }
                     rightComponent={
                       isShowValue ? (
                         <AmountContainer>
@@ -304,6 +392,28 @@ export default function ChainListBottomSheet({
             {!isDebouncing &&
               filteredChainList.testnet?.length > 0 &&
               filteredChainList.testnet.map((item) => {
+                const multiPath = currentPreferAccountType?.[item.id];
+
+                const coinTypeText = (() => {
+                  if (multiPath) {
+                    const hdPathParts = multiPath?.hdPath.split('/');
+                    const coinTypeLevel = item?.chainType === 'bitcoin' ? hdPathParts?.[1] : hdPathParts?.[2];
+
+                    const addressTypeLabel = (() => {
+                      if (item.chainType === 'bitcoin') {
+                        return ADDRESS_FORMAT_MAPPING[coinTypeLevel as keyof typeof ADDRESS_FORMAT_MAPPING];
+                      }
+
+                      return t('pages.manage-assets.switch-account-type.entry.type', {
+                        accountType: coinTypeLevel,
+                      });
+                    })();
+
+                    return addressTypeLabel;
+                  }
+
+                  return undefined;
+                })();
                 return (
                   <OptionButton
                     key={getUniqueChainId(item)}
@@ -317,6 +427,38 @@ export default function ChainListBottomSheet({
                     image={item.image}
                     id={getUniqueChainId(item)}
                     varient={buttonVarients}
+                    leftSecondHeader={
+                      customType === 'manageAssets' ? (
+                        <CoinTypeButtonContainer>
+                          <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+
+                          {multiPath && coinTypeText ? (
+                            <IconTextButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedChangeCoinTypeChainId(getUniqueChainId(item));
+                              }}
+                              disabled={!multiPath}
+                              trailingIcon={
+                                multiPath ? (
+                                  <ChevronIconContainer>
+                                    <RightChevronIcon />
+                                  </ChevronIconContainer>
+                                ) : undefined
+                              }
+                            >
+                              <Base1000Text variant="b4_R">
+                                {'Selected :'}
+                                &nbsp;
+                                <span>
+                                  <Base1000Text variant="h6n_M">{coinTypeText}</Base1000Text>
+                                </span>
+                              </Base1000Text>
+                            </IconTextButton>
+                          ) : undefined}
+                        </CoinTypeButtonContainer>
+                      ) : undefined
+                    }
                     rightComponent={
                       isShowValue ? (
                         <AmountContainer>
@@ -349,6 +491,14 @@ export default function ChainListBottomSheet({
         onSelectSortOption={(val) => {
           updateExtensionStorageStore('chainListSortKey', val as ChainlistSortKeyType);
         }}
+      />
+      <CoinTypeBottomSheet
+        open={!!currentTempChain}
+        onClose={() => {
+          setSelectedChangeCoinTypeChainId(undefined);
+        }}
+        chain={currentTempChain}
+        onClickChainType={handleChangeAccountType}
       />
     </>
   );

@@ -18,7 +18,7 @@ import { Body, ChainImage, CoinTypeContainer, Container, DescriptionContainer, H
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type CoinTypeBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  chain: Chain;
+  chain?: Chain;
   onClickChainType?: (id: string, accountType: ChainAccountType) => void;
 };
 
@@ -132,10 +132,10 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
       <Container>
         <Header>
           <HeaderTitle>
-            <ChainImage src={chain.image} />
+            <ChainImage src={chain?.image} />
             <Typography variant="h2_B">
               {t('pages.manage-assets.switch-account-type.components.coinTypeBottomSheet.index.coinType', {
-                chainName: chain.name,
+                chainName: chain?.name || '',
               })}
             </Typography>
           </HeaderTitle>

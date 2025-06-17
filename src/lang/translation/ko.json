@@ -1908,7 +1908,8 @@
           "network": "네트워크",
           "selected": "Selected :",
           "successSwitch": "지갑 주소가 업데이트되었습니다",
-          "type": "{{accountType}} TYPE"
+          "type": "{{accountType}} TYPE",
+          "failSwitch": "지갑주소 업데이트에 실패했습니다"
         },
         "layout": {
           "header": "코인 타입 변경"

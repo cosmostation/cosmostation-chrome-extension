@@ -2359,7 +2359,8 @@
           "network": "Network",
           "selected": "Selected :",
           "type": "{{accountType}} TYPE",
-          "successSwitch": "Switched HD path. Your wallet address has been updated"
+          "successSwitch": "Switched HD path. Your wallet address has been updated",
+          "failSwitch": "Failt to switch HD path."
         },
         "components": {
           "coinTypeBottomSheet": {

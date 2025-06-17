@@ -101,3 +101,26 @@ export const SwtichCoinType = styled('div')(({ theme }) => ({
   color: theme.palette.accentColor.purple400,
   marginLeft: '0.2rem',
 }));
+
+export const CoinTypeButtonContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  rowGap: '0.2rem',
+});
+
+export const ChevronIconContainer = styled('div')(({ theme }) => ({
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg': {
+    width: '1.4rem',
+    height: '1.4rem',
+
+    fill: theme.palette.color.base800,
+
+    '& > path': {
+      fill: theme.palette.color.base800,
+    },
+  },
+}));
