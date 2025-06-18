@@ -17,14 +17,17 @@ import type { CommonSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { Container, FilterContaienr, StickyContentsContainer } from './styled';
+import { Container, EmptyAssetContainer, FilterContaienr, StickyContentsContainer } from './styled';
 import { VirtualizedList } from '../common/VirtualizedList';
+import EmptyAsset from '../EmptyAsset';
 import Search from '../Search';
 import { useScroll } from '../Wrapper/components/ScrollProvider';
+
+import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
 type CoinSelectProps = {
   currentCoinId?: string;
@@ -48,7 +51,7 @@ export default function CoinSelect({
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, selectedChainFilterId } = useExtensionStorageStore((state) => state);
 
   const isDisableDupeEthermint = variant === 'stake';
 
@@ -72,7 +75,15 @@ export default function CoinSelect({
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
+  const [userSelectedChainId, setUserSelectedChainId] = useState<UniqueChainId | undefined>();
+
+  const currentSelectedChainId = useMemo(() => {
+    if (selectedChainFilterId && variant === 'stake') {
+      return selectedChainFilterId;
+    }
+
+    return userSelectedChainId;
+  }, [selectedChainFilterId, userSelectedChainId, variant]);
 
   const baseCoinList = useMemo(() => {
     if (coinList) return coinList;
@@ -95,9 +106,19 @@ export default function CoinSelect({
   );
 
   const currentSelectedChain = useMemo(
-    () => baseChainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),
-    [baseChainList, currentSelectedChainId],
+    () =>
+      baseChainList?.find((chain) => {
+        if (variant === 'stake' && currentSelectedChainId) {
+          return chain.id === parseUniqueChainId(currentSelectedChainId).id;
+        }
+
+        return isMatchingUniqueChainId(chain, currentSelectedChainId);
+      }),
+    [baseChainList, currentSelectedChainId, variant],
   );
+
+  const finalSelectedChainFilterId =
+    selectedChainFilterId && variant === 'stake' && currentSelectedChain ? getUniqueChainId(currentSelectedChain) : currentSelectedChainId;
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
@@ -160,9 +181,7 @@ export default function CoinSelect({
   }, [computedAssetValues, sortOption, variant]);
 
   const filteredCoinList = useMemo(() => {
-    const filteredAssetsByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId, {
-      disableDupeEthermint: isDisableDupeEthermint,
-    });
+    const filteredAssetsByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
 
     if (!!search && debouncedSearch.length > 1) {
       return (
@@ -174,7 +193,7 @@ export default function CoinSelect({
       );
     }
     return filteredAssetsByChain;
-  }, [currentSelectedChainId, debouncedSearch, isDisableDupeEthermint, search, sortedAssets]);
+  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
@@ -204,51 +223,62 @@ export default function CoinSelect({
         </FilterContaienr>
 
         <AllNetworkButton
-          currentChainId={currentSelectedChainId}
+          currentChainId={finalSelectedChainFilterId}
           chainList={baseChainList}
           selectChainOption={(id) => {
-            setCurrentSelectedChainId(id);
+            setUserSelectedChainId(id);
           }}
+          disabled={!!selectedChainFilterId && variant === 'stake'}
         />
       </StickyContentsContainer>
 
-      <VirtualizedList
-        items={filteredCoinList}
-        estimateSize={() => 60}
-        renderItem={(coin) => {
-          const balance = isStakeableAsset(coin) ? coin.totalBalance || coin.balance || '0' : coin.balance;
-          const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
+      {filteredCoinList.length > 0 ? (
+        <VirtualizedList
+          items={filteredCoinList}
+          estimateSize={() => 60}
+          renderItem={(coin) => {
+            const balance = isStakeableAsset(coin) ? coin.totalBalance || coin.balance || '0' : coin.balance;
+            const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
 
-          const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
-          const resolvedAssetId =
-            coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
-              ? coin.asset.description
-              : coin.asset.id.length > 15
-                ? shorterAddress(coin.asset.id, 16)
-                : coin.asset.id;
-          return (
-            <CoinWithChainNameButton
-              key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
-              isActive={currentCoinId === getCoinId(coin.asset)}
-              displayAmount={displayAmount}
-              apr={coin.apr ? coin.apr : undefined}
-              symbol={resolvedSymbol}
-              chainName={coin.chain.name}
-              assetId={resolvedAssetId}
-              coinGeckoId={coin.asset.coinGeckoId}
-              displayAssetId={isShowAssetId}
-              coinImageProps={{
-                imageURL: coin.asset.image,
-                badgeImageURL: coin.chain.image || '',
-              }}
-              onClick={() => {
-                onSelectCoin(getCoinId(coin.asset));
-              }}
-            />
-          );
-        }}
-        overscan={5}
-      />
+            const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
+            const resolvedAssetId =
+              coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
+                ? coin.asset.description
+                : coin.asset.id.length > 15
+                  ? shorterAddress(coin.asset.id, 16)
+                  : coin.asset.id;
+            return (
+              <CoinWithChainNameButton
+                key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
+                isActive={currentCoinId === getCoinId(coin.asset)}
+                displayAmount={displayAmount}
+                apr={coin.apr ? coin.apr : undefined}
+                symbol={resolvedSymbol}
+                chainName={coin.chain.name}
+                assetId={resolvedAssetId}
+                coinGeckoId={coin.asset.coinGeckoId}
+                displayAssetId={isShowAssetId}
+                coinImageProps={{
+                  imageURL: coin.asset.image,
+                  badgeImageURL: coin.chain.image || '',
+                }}
+                onClick={() => {
+                  onSelectCoin(getCoinId(coin.asset));
+                }}
+              />
+            );
+          }}
+          overscan={5}
+        />
+      ) : (
+        <EmptyAssetContainer>
+          <EmptyAsset
+            icon={<NoSearchIcon />}
+            title={t('components.CoinSelect.index.noResultsTitle')}
+            subTitle={t('components.CoinSelect.index.noResultsSubtitle')}
+          />
+        </EmptyAssetContainer>
+      )}
 
       <SortBottomSheet
         optionButtonProps={

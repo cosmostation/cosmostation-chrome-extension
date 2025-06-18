@@ -330,7 +330,9 @@
         "searchPlaceholder": "Search Crypto (Ex. BTC)",
         "valueHighOrder": "Value High Order",
         "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
-        "aprDesc": "APR Desc"
+        "aprDesc": "APR Desc",
+        "noResultsTitle": "No Results Found",
+        "noResultsSubtitle": "Try adjusting your filters or search term."
       }
     },
     "History": {

@@ -385,7 +385,9 @@
         "alphabeticalAsc": "알파벳 순 (A -> Z)",
         "aprDesc": "APR 내림차순",
         "searchPlaceholder": "Crypto를 검색하세요 (Ex. BTC)",
-        "valueHighOrder": "금액 높은 순"
+        "valueHighOrder": "금액 높은 순",
+        "noResultsTitle": "검색 결과가 없습니다",
+        "noResultsSubtitle": "다른 조건으로 다시 시도해보세요"
       }
     },
     "CoinTypeSelector": {
