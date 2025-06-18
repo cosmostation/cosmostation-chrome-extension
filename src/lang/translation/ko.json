@@ -1934,7 +1934,9 @@
             "importCrypto": "토큰 가져오기",
             "lastStandingError": "최소 한 개의 코인은 표시되어야 합니다",
             "supportedCrypto": "Supported Crypto",
-            "valueHighOrder": "금액 높은 순"
+            "valueHighOrder": "금액 높은 순",
+            "noResultsTitle": "검색 결과가 없습니다",
+            "noResultsSubtitle": "다른 조건으로 다시 시도해보세요"
           }
         },
         "layout": {

@@ -78,3 +78,13 @@ export const IconContainer = styled('div')({
 export const SpacedTypography = styled(Base1300Text)({
   marginTop: '0.4rem',
 });
+
+export const CoingeckoIconContainer = styled('div')({
+  width: '2rem',
+  height: '2rem',
+
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+  },
+});

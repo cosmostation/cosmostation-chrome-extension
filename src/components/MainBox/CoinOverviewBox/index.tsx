@@ -10,10 +10,10 @@ import { times } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { BodyBottomContainer, BodyContainer, BodyTopContainer, SymbolButton, TopContainer } from './styled';
+import { BodyBottomContainer, BodyContainer, BodyTopContainer, CoingeckoIconContainer, SymbolButton, TopContainer } from './styled';
 import MainBox from '..';
 
-import CoinGeckoIcon from '@/assets/images/icons/CoinGecko16.svg';
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
 
 import DefaultCoinImage from '@/assets/images/coin/defaultCoin.png';
 
@@ -57,7 +57,13 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
                 onMouseLeave={() => setIsSymbolButtonHovered(false)}
                 onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
                 disabled={!coinGeckoUrl}
-                trailingIcon={coinGeckoUrl && isSymbolButtonHovered ? <CoinGeckoIcon /> : undefined}
+                trailingIcon={
+                  coinGeckoUrl && isSymbolButtonHovered ? (
+                    <CoingeckoIconContainer>
+                      <CoinGeckoIcon />
+                    </CoingeckoIconContainer>
+                  ) : undefined
+                }
               >
                 <Base1300Text
                   variant="h1_B"

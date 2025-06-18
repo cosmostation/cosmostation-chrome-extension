@@ -37,3 +37,13 @@ export const SymbolButton = styled(IconTextButton)(({ theme }) => ({
   },
   alignItems: 'flex-start',
 }));
+
+export const CoingeckoIconContainer = styled('div')({
+  width: '2rem',
+  height: '2rem',
+
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+  },
+});

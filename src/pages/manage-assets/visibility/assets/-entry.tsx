@@ -13,6 +13,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import { VirtualizedList } from '@/components/common/VirtualizedList';
 import DeleteConfirmBottomSheet from '@/components/DeleteConfirmBottomSheet';
+import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
@@ -32,7 +33,7 @@ import type { CommonSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId } from '@/utils/asset';
 import { gt, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getCoinIdWithManual, isMatchingCoinId, isMatchingUniqueChainId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator';
-import { shorterAddress } from '@/utils/string';
+import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
 import { toastError } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -43,6 +44,7 @@ import {
   CoinImage,
   CoinSymbolContainer,
   Container,
+  EmptyAssetContainer,
   IconContainer,
   ImportTextContainer,
   PurpleContainer,
@@ -64,7 +66,7 @@ export default function Entry() {
 
   const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, selectedChainFilterId } = useExtensionStorageStore((state) => state);
 
   const { currentHiddenAssetIds, hideAsset, showAsset } = useCurrentHiddenAssetIds();
 
@@ -92,7 +94,15 @@ export default function Entry() {
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
+  const [userSelectedChainId, setUserSelectedChainId] = useState<UniqueChainId | undefined>();
+
+  const currentSelectedChainId = useMemo(() => {
+    if (selectedChainFilterId) {
+      return selectedChainFilterId;
+    }
+
+    return userSelectedChainId;
+  }, [selectedChainFilterId, userSelectedChainId]);
 
   const visibleAssetCoinIds = useMemo(() => currentVisibleAssetIds?.map((item) => getCoinIdWithManual(item)), [currentVisibleAssetIds]);
 
@@ -195,10 +205,21 @@ export default function Entry() {
 
     const hiddenAssets = filteredCoinListBySearch.filter((item) => !visibleAssets.some((visibleAsset) => isSameCoin(visibleAsset.asset, item.asset)));
 
-    return [...visibleAssets, ...hiddenAssets];
+    const displayAssets = [...visibleAssets, ...hiddenAssets];
+
+    return currentSelectedChainId
+      ? displayAssets.sort((a, b) => {
+          const denoms = a.chain.chainDefaultCoinDenoms ?? [];
+          const idxA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
+          const idxB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
+
+          return (idxA < 0 ? Number.MAX_SAFE_INTEGER : idxA) - (idxB < 0 ? Number.MAX_SAFE_INTEGER : idxB);
+        })
+      : displayAssets;
   }, [
     currentCustomCW20Tokens,
     currentCustomERC20Tokens,
+    currentSelectedChainId,
     filteredCoinListBySearch,
     initHiddenAssetCoinIds,
     initHiddenCustomAssetCoinIds,
@@ -342,7 +363,13 @@ export default function Entry() {
   return (
     <>
       <BaseBody>
-        <EdgeAligner>
+        <EdgeAligner
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          }}
+        >
           <Container>
             <StickyContainer>
               <Search
@@ -362,8 +389,9 @@ export default function Entry() {
                 <AllNetworkButton
                   currentChainId={currentSelectedChainId}
                   chainList={chainList}
+                  disabled={!!selectedChainFilterId}
                   selectChainOption={(id) => {
-                    setCurrentSelectedChainId(id);
+                    setUserSelectedChainId(id);
                   }}
                 />
 
@@ -385,82 +413,91 @@ export default function Entry() {
                 </IconTextButton>
               </RowContainer>
             </StickyContainer>
-            <CoinButtonWrapper>
-              {!isDebouncing && (
-                <VirtualizedList
-                  items={sortedCoinListByHidden}
-                  estimateSize={() => 60}
-                  renderItem={(coin) => {
-                    const customToken = currentCustomTokens.find((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
+            {sortedCoinListByHidden && sortedCoinListByHidden.length > 0 ? (
+              <CoinButtonWrapper>
+                {!isDebouncing && (
+                  <VirtualizedList
+                    items={sortedCoinListByHidden}
+                    estimateSize={() => 60}
+                    renderItem={(coin) => {
+                      const customToken = currentCustomTokens.find((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
 
-                    const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
-                    const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(getCoinId(coin.asset));
+                      const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
+                      const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(getCoinId(coin.asset));
 
-                    const isCustomAsset = customAssets.some((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
+                      const isCustomAsset = customAssets.some((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
 
-                    const isHiddenAsset = isCustomAsset ? isHiddenCustomAsset : isHiddenManagedAsset;
-                    const isBalanceZero = coin.balance === '0';
+                      const isHiddenAsset = isCustomAsset ? isHiddenCustomAsset : isHiddenManagedAsset;
+                      const isBalanceZero = coin.balance === '0';
 
-                    const isVisibleAsset = visibleAssetCoinIds?.includes(getCoinId(coin.asset));
+                      const isVisibleAsset = visibleAssetCoinIds?.includes(getCoinId(coin.asset));
 
-                    const isHiddenState = (() => {
-                      if (customToken || isVisibleAsset) {
+                      const isHiddenState = (() => {
+                        if (customToken || isVisibleAsset) {
+                          return false;
+                        }
+
+                        if (isHiddenAsset || isBalanceZero) {
+                          return true;
+                        }
                         return false;
-                      }
+                      })();
+                      const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
 
-                      if (isHiddenAsset || isBalanceZero) {
-                        return true;
-                      }
-                      return false;
-                    })();
-                    const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
-
-                    const resolvedAssetId =
-                      coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
-                        ? coin.asset.description
-                        : coin.asset.id.length > 15
-                          ? shorterAddress(coin.asset.id, 16)
-                          : coin.asset.id;
-                    return (
-                      <>
-                        <CoinWithChainNameButton
-                          key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
-                          displayAmount={displayAmount}
-                          symbol={coin.asset.symbol}
-                          chainName={coin.chain.name}
-                          assetId={resolvedAssetId}
-                          coinGeckoId={coin.asset.coinGeckoId}
-                          displayAssetId={isShowAssetId}
-                          coinImageProps={{
-                            imageURL: coin.asset.image,
-                            badgeImageURL: coin.chain.image || '',
-                          }}
-                          rightComponent={
-                            isHiddenState ? (
-                              <IconContainer>
-                                <AddIcon />
-                              </IconContainer>
-                            ) : (
-                              <IconContainer>
-                                <RemoveIcon />
-                              </IconContainer>
-                            )
-                          }
-                          onClick={() => {
-                            if (customToken) {
-                              setTokenToDelete(coin);
-                            } else {
-                              handleAssetVisibility(getCoinId(coin.asset), isBalanceZero);
+                      const resolvedAssetId =
+                        coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
+                          ? coin.asset.description
+                          : coin.asset.id.length > 15
+                            ? shorterAddress(coin.asset.id, 16)
+                            : coin.asset.id;
+                      return (
+                        <>
+                          <CoinWithChainNameButton
+                            key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
+                            displayAmount={displayAmount}
+                            symbol={coin.asset.symbol}
+                            chainName={coin.chain.name}
+                            assetId={resolvedAssetId}
+                            coinGeckoId={coin.asset.coinGeckoId}
+                            displayAssetId={isShowAssetId}
+                            coinImageProps={{
+                              imageURL: coin.asset.image,
+                              badgeImageURL: coin.chain.image || '',
+                            }}
+                            rightComponent={
+                              isHiddenState ? (
+                                <IconContainer>
+                                  <AddIcon />
+                                </IconContainer>
+                              ) : (
+                                <IconContainer>
+                                  <RemoveIcon />
+                                </IconContainer>
+                              )
                             }
-                          }}
-                        />
-                      </>
-                    );
-                  }}
-                  overscan={5}
+                            onClick={() => {
+                              if (customToken) {
+                                setTokenToDelete(coin);
+                              } else {
+                                handleAssetVisibility(getCoinId(coin.asset), isBalanceZero);
+                              }
+                            }}
+                          />
+                        </>
+                      );
+                    }}
+                    overscan={5}
+                  />
+                )}
+              </CoinButtonWrapper>
+            ) : (
+              <EmptyAssetContainer>
+                <EmptyAsset
+                  title={t('pages.manage-assets.visibility.assets.entry.noResultsTitle')}
+                  subTitle={t('pages.manage-assets.visibility.assets.entry.noResultsSubtitle')}
                 />
-              )}
-            </CoinButtonWrapper>
+              </EmptyAssetContainer>
+            )}
           </Container>
         </EdgeAligner>
       </BaseBody>

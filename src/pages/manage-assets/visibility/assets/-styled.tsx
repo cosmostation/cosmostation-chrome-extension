@@ -3,7 +3,10 @@ import { styled } from '@mui/material/styles';
 import BaseCoinImage from '@/components/common/BaseCoinImage';
 
 export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
 });
 
 export const StickyContainer = styled('div')(({ theme }) => ({
@@ -84,4 +87,14 @@ export const CoinSymbolContainer = styled('div')({
 export const CoinIdContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
+});
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '2rem 0',
 });

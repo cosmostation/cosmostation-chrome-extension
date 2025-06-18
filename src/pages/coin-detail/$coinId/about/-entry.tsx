@@ -37,7 +37,7 @@ import {
 } from './-styled';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
-import CoinGeckoIcon from '@/assets/images/icons/CoinGecko16.svg';
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
 import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
 
 type EntryProps = {

@@ -2315,7 +2315,9 @@
             "customCrypto": "Custom Crypto",
             "contract": "Contract :",
             "deleteDescription": "Would you like to delete this custom coin that you added? If you want to add the coin again after deletion, you will need to re-enter the information.",
-            "lastStandingError": "The last coin cannot be hide."
+            "lastStandingError": "The last coin cannot be hide.",
+            "noResultsTitle": "No Results Found",
+            "noResultsSubtitle": "Try adjusting your filters or search term."
           }
         },
         "asset": {

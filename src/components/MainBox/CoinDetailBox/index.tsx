@@ -26,6 +26,7 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
+  CoingeckoIconContainer,
   IconContainer,
   SpacedTypography,
   StyledIconTextButton,
@@ -33,7 +34,7 @@ import {
 } from './styled';
 import MainBox from '..';
 
-import CoinGeckoIcon from '@/assets/images/icons/CoinGecko16.svg';
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
 import DaoIcon from '@/assets/images/icons/Dao28.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
@@ -186,7 +187,13 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
                 onMouseLeave={() => setIsSymbolButtonHovered(false)}
                 onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
                 disabled={!coinGeckoUrl}
-                trailingIcon={coinGeckoUrl && isSymbolButtonHovered ? <CoinGeckoIcon /> : undefined}
+                trailingIcon={
+                  coinGeckoUrl && isSymbolButtonHovered ? (
+                    <CoingeckoIconContainer>
+                      <CoinGeckoIcon />
+                    </CoingeckoIconContainer>
+                  ) : undefined
+                }
               >
                 <Base1300Text
                   variant="h1_B"
