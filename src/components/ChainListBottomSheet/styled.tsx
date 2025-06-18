@@ -93,6 +93,14 @@ export const NetworkInfoContainer = styled('div')({
   marginBottom: '1.2rem',
 });
 
+export const StickyContainer = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: '0',
+  zIndex: 1,
+  backgroundColor: theme.palette.color.base50,
+  borderBottom: `0.1rem solid ${theme.palette.color.base100}`,
+}));
+
 export const NetworkCounts = styled('span')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));

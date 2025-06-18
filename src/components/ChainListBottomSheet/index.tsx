@@ -38,6 +38,7 @@ import {
   ManageAssetsContaienr,
   NetworkCounts,
   NetworkInfoContainer,
+  StickyContainer,
   StyledBottomSheet,
   StyledButton,
   SwtichCoinType,
@@ -283,27 +284,29 @@ export default function ChainListBottomSheet({
               </ManageAssetsContaienr>
             )}
             {!disableAllNetwork && !isDebouncing && (
-              <OptionButton
-                key={'all-network'}
-                isActive={!currentChainId}
-                onSelectChain={(id) => {
-                  onClickChain(id);
-                  handleClose();
-                }}
-                name={t('components.ChainListBottomSheet.index.allNetwork')}
-                image={AllNetworkImage}
-                id={AllNetworkOptionId}
-                varient={buttonVarients}
-                rightComponent={
-                  isShowValue ? (
-                    <AmountContainer>
-                      <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                        {totalValue}
-                      </BalanceDisplay>
-                    </AmountContainer>
-                  ) : undefined
-                }
-              />
+              <StickyContainer>
+                <OptionButton
+                  key={'all-network'}
+                  isActive={!currentChainId}
+                  onSelectChain={(id) => {
+                    onClickChain(id);
+                    handleClose();
+                  }}
+                  name={t('components.ChainListBottomSheet.index.allNetwork')}
+                  image={AllNetworkImage}
+                  id={AllNetworkOptionId}
+                  varient={buttonVarients}
+                  rightComponent={
+                    isShowValue ? (
+                      <AmountContainer>
+                        <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+                          {totalValue}
+                        </BalanceDisplay>
+                      </AmountContainer>
+                    ) : undefined
+                  }
+                />
+              </StickyContainer>
             )}
             {!isDebouncing &&
               filteredChainList.mainnet?.length > 0 &&
