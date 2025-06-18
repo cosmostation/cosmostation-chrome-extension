@@ -45,7 +45,6 @@ import { Route as WalletSwapCoinIdIndexImport } from './pages/wallet/swap/$coinI
 import { Route as WalletStakeCoinIdIndexImport } from './pages/wallet/stake/$coinId/index'
 import { Route as WalletSendCoinIdIndexImport } from './pages/wallet/send/$coinId/index'
 import { Route as WalletReceiveCoinIdIndexImport } from './pages/wallet/receive/$coinId/index'
-import { Route as WalletReceiveChainIdIndexImport } from './pages/wallet/receive/$chainId/index'
 import { Route as WalletNftSendIdIndexImport } from './pages/wallet/nft-send/$id/index'
 import { Route as WalletClaimCommissionCoinIdIndexImport } from './pages/wallet/claim-commission/$coinId/index'
 import { Route as WalletClaimAllRewardsCoinIdIndexImport } from './pages/wallet/claim-all-rewards/$coinId/index'
@@ -84,6 +83,8 @@ import { Route as AccountCreateWalletMnemonicIndexImport } from './pages/account
 import { Route as AccountBackupCheckAccountIdIndexImport } from './pages/account/backup-check/$accountId/index'
 import { Route as WalletUnstakeCoinIdValidatorAddressIndexImport } from './pages/wallet/unstake/$coinId/$validatorAddress/index'
 import { Route as WalletStakeCoinIdValidatorAddressIndexImport } from './pages/wallet/stake/$coinId/$validatorAddress/index'
+import { Route as WalletSendChainChainIdIndexImport } from './pages/wallet/send/chain/$chainId/index'
+import { Route as WalletReceiveChainChainIdIndexImport } from './pages/wallet/receive/chain/$chainId/index'
 import { Route as WalletClaimRewardsCoinIdValidatorAddressIndexImport } from './pages/wallet/claim-rewards/$coinId/$validatorAddress/index'
 import { Route as PopupEvmSignSignTypedDataIndexImport } from './pages/popup/evm/sign/sign-typed-data/index'
 import { Route as PopupEvmSignPersonalSignIndexImport } from './pages/popup/evm/sign/personal-sign/index'
@@ -315,12 +316,6 @@ const WalletSendCoinIdIndexRoute = WalletSendCoinIdIndexImport.update({
 const WalletReceiveCoinIdIndexRoute = WalletReceiveCoinIdIndexImport.update({
   id: '/wallet/receive/$coinId/',
   path: '/wallet/receive/$coinId/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const WalletReceiveChainIdIndexRoute = WalletReceiveChainIdIndexImport.update({
-  id: '/wallet/receive/$chainId/',
-  path: '/wallet/receive/$chainId/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -580,6 +575,20 @@ const WalletStakeCoinIdValidatorAddressIndexRoute =
   WalletStakeCoinIdValidatorAddressIndexImport.update({
     id: '/wallet/stake/$coinId/$validatorAddress/',
     path: '/wallet/stake/$coinId/$validatorAddress/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const WalletSendChainChainIdIndexRoute =
+  WalletSendChainChainIdIndexImport.update({
+    id: '/wallet/send/chain/$chainId/',
+    path: '/wallet/send/chain/$chainId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const WalletReceiveChainChainIdIndexRoute =
+  WalletReceiveChainChainIdIndexImport.update({
+    id: '/wallet/receive/chain/$chainId/',
+    path: '/wallet/receive/chain/$chainId/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -1160,13 +1169,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletNftSendIdIndexImport
       parentRoute: typeof rootRoute
     }
-    '/wallet/receive/$chainId/': {
-      id: '/wallet/receive/$chainId/'
-      path: '/wallet/receive/$chainId'
-      fullPath: '/wallet/receive/$chainId'
-      preLoaderRoute: typeof WalletReceiveChainIdIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/wallet/receive/$coinId/': {
       id: '/wallet/receive/$coinId/'
       path: '/wallet/receive/$coinId'
@@ -1307,6 +1309,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletClaimRewardsCoinIdValidatorAddressIndexImport
       parentRoute: typeof rootRoute
     }
+    '/wallet/receive/chain/$chainId/': {
+      id: '/wallet/receive/chain/$chainId/'
+      path: '/wallet/receive/chain/$chainId'
+      fullPath: '/wallet/receive/chain/$chainId'
+      preLoaderRoute: typeof WalletReceiveChainChainIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/wallet/send/chain/$chainId/': {
+      id: '/wallet/send/chain/$chainId/'
+      path: '/wallet/send/chain/$chainId'
+      fullPath: '/wallet/send/chain/$chainId'
+      preLoaderRoute: typeof WalletSendChainChainIdIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/wallet/stake/$coinId/$validatorAddress/': {
       id: '/wallet/stake/$coinId/$validatorAddress/'
       path: '/wallet/stake/$coinId/$validatorAddress'
@@ -1406,7 +1422,6 @@ export interface FileRoutesByFullPath {
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/claim-commission/$coinId': typeof WalletClaimCommissionCoinIdIndexRoute
   '/wallet/nft-send/$id': typeof WalletNftSendIdIndexRoute
-  '/wallet/receive/$chainId': typeof WalletReceiveChainIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -1427,6 +1442,8 @@ export interface FileRoutesByFullPath {
   '/popup/evm/sign/personal-sign': typeof PopupEvmSignPersonalSignIndexRoute
   '/popup/evm/sign/sign-typed-data': typeof PopupEvmSignSignTypedDataIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
+  '/wallet/receive/chain/$chainId': typeof WalletReceiveChainChainIdIndexRoute
+  '/wallet/send/chain/$chainId': typeof WalletSendChainChainIdIndexRoute
   '/wallet/stake/$coinId/$validatorAddress': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
@@ -1499,7 +1516,6 @@ export interface FileRoutesByTo {
   '/wallet/claim-all-rewards/$coinId': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/claim-commission/$coinId': typeof WalletClaimCommissionCoinIdIndexRoute
   '/wallet/nft-send/$id': typeof WalletNftSendIdIndexRoute
-  '/wallet/receive/$chainId': typeof WalletReceiveChainIdIndexRoute
   '/wallet/receive/$coinId': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId': typeof WalletStakeCoinIdIndexRoute
@@ -1520,6 +1536,8 @@ export interface FileRoutesByTo {
   '/popup/evm/sign/personal-sign': typeof PopupEvmSignPersonalSignIndexRoute
   '/popup/evm/sign/sign-typed-data': typeof PopupEvmSignSignTypedDataIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
+  '/wallet/receive/chain/$chainId': typeof WalletReceiveChainChainIdIndexRoute
+  '/wallet/send/chain/$chainId': typeof WalletSendChainChainIdIndexRoute
   '/wallet/stake/$coinId/$validatorAddress': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
@@ -1593,7 +1611,6 @@ export interface FileRoutesById {
   '/wallet/claim-all-rewards/$coinId/': typeof WalletClaimAllRewardsCoinIdIndexRoute
   '/wallet/claim-commission/$coinId/': typeof WalletClaimCommissionCoinIdIndexRoute
   '/wallet/nft-send/$id/': typeof WalletNftSendIdIndexRoute
-  '/wallet/receive/$chainId/': typeof WalletReceiveChainIdIndexRoute
   '/wallet/receive/$coinId/': typeof WalletReceiveCoinIdIndexRoute
   '/wallet/send/$coinId/': typeof WalletSendCoinIdIndexRoute
   '/wallet/stake/$coinId/': typeof WalletStakeCoinIdIndexRoute
@@ -1614,6 +1631,8 @@ export interface FileRoutesById {
   '/popup/evm/sign/personal-sign/': typeof PopupEvmSignPersonalSignIndexRoute
   '/popup/evm/sign/sign-typed-data/': typeof PopupEvmSignSignTypedDataIndexRoute
   '/wallet/claim-rewards/$coinId/$validatorAddress/': typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
+  '/wallet/receive/chain/$chainId/': typeof WalletReceiveChainChainIdIndexRoute
+  '/wallet/send/chain/$chainId/': typeof WalletSendChainChainIdIndexRoute
   '/wallet/stake/$coinId/$validatorAddress/': typeof WalletStakeCoinIdValidatorAddressIndexRoute
   '/wallet/unstake/$coinId/$validatorAddress/': typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   '/manage-account/detail/mnemonic/account/$accountId/': typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
@@ -1688,7 +1707,6 @@ export interface FileRouteTypes {
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/claim-commission/$coinId'
     | '/wallet/nft-send/$id'
-    | '/wallet/receive/$chainId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -1709,6 +1727,8 @@ export interface FileRouteTypes {
     | '/popup/evm/sign/personal-sign'
     | '/popup/evm/sign/sign-typed-data'
     | '/wallet/claim-rewards/$coinId/$validatorAddress'
+    | '/wallet/receive/chain/$chainId'
+    | '/wallet/send/chain/$chainId'
     | '/wallet/stake/$coinId/$validatorAddress'
     | '/wallet/unstake/$coinId/$validatorAddress'
     | '/manage-account/detail/mnemonic/account/$accountId'
@@ -1780,7 +1800,6 @@ export interface FileRouteTypes {
     | '/wallet/claim-all-rewards/$coinId'
     | '/wallet/claim-commission/$coinId'
     | '/wallet/nft-send/$id'
-    | '/wallet/receive/$chainId'
     | '/wallet/receive/$coinId'
     | '/wallet/send/$coinId'
     | '/wallet/stake/$coinId'
@@ -1801,6 +1820,8 @@ export interface FileRouteTypes {
     | '/popup/evm/sign/personal-sign'
     | '/popup/evm/sign/sign-typed-data'
     | '/wallet/claim-rewards/$coinId/$validatorAddress'
+    | '/wallet/receive/chain/$chainId'
+    | '/wallet/send/chain/$chainId'
     | '/wallet/stake/$coinId/$validatorAddress'
     | '/wallet/unstake/$coinId/$validatorAddress'
     | '/manage-account/detail/mnemonic/account/$accountId'
@@ -1872,7 +1893,6 @@ export interface FileRouteTypes {
     | '/wallet/claim-all-rewards/$coinId/'
     | '/wallet/claim-commission/$coinId/'
     | '/wallet/nft-send/$id/'
-    | '/wallet/receive/$chainId/'
     | '/wallet/receive/$coinId/'
     | '/wallet/send/$coinId/'
     | '/wallet/stake/$coinId/'
@@ -1893,6 +1913,8 @@ export interface FileRouteTypes {
     | '/popup/evm/sign/personal-sign/'
     | '/popup/evm/sign/sign-typed-data/'
     | '/wallet/claim-rewards/$coinId/$validatorAddress/'
+    | '/wallet/receive/chain/$chainId/'
+    | '/wallet/send/chain/$chainId/'
     | '/wallet/stake/$coinId/$validatorAddress/'
     | '/wallet/unstake/$coinId/$validatorAddress/'
     | '/manage-account/detail/mnemonic/account/$accountId/'
@@ -1966,7 +1988,6 @@ export interface RootRouteChildren {
   WalletClaimAllRewardsCoinIdIndexRoute: typeof WalletClaimAllRewardsCoinIdIndexRoute
   WalletClaimCommissionCoinIdIndexRoute: typeof WalletClaimCommissionCoinIdIndexRoute
   WalletNftSendIdIndexRoute: typeof WalletNftSendIdIndexRoute
-  WalletReceiveChainIdIndexRoute: typeof WalletReceiveChainIdIndexRoute
   WalletReceiveCoinIdIndexRoute: typeof WalletReceiveCoinIdIndexRoute
   WalletSendCoinIdIndexRoute: typeof WalletSendCoinIdIndexRoute
   WalletStakeCoinIdIndexRoute: typeof WalletStakeCoinIdIndexRoute
@@ -1987,6 +2008,8 @@ export interface RootRouteChildren {
   PopupEvmSignPersonalSignIndexRoute: typeof PopupEvmSignPersonalSignIndexRoute
   PopupEvmSignSignTypedDataIndexRoute: typeof PopupEvmSignSignTypedDataIndexRoute
   WalletClaimRewardsCoinIdValidatorAddressIndexRoute: typeof WalletClaimRewardsCoinIdValidatorAddressIndexRoute
+  WalletReceiveChainChainIdIndexRoute: typeof WalletReceiveChainChainIdIndexRoute
+  WalletSendChainChainIdIndexRoute: typeof WalletSendChainChainIdIndexRoute
   WalletStakeCoinIdValidatorAddressIndexRoute: typeof WalletStakeCoinIdValidatorAddressIndexRoute
   WalletUnstakeCoinIdValidatorAddressIndexRoute: typeof WalletUnstakeCoinIdValidatorAddressIndexRoute
   ManageAccountDetailMnemonicAccountAccountIdIndexRoute: typeof ManageAccountDetailMnemonicAccountAccountIdIndexRoute
@@ -2070,7 +2093,6 @@ const rootRouteChildren: RootRouteChildren = {
   WalletClaimAllRewardsCoinIdIndexRoute: WalletClaimAllRewardsCoinIdIndexRoute,
   WalletClaimCommissionCoinIdIndexRoute: WalletClaimCommissionCoinIdIndexRoute,
   WalletNftSendIdIndexRoute: WalletNftSendIdIndexRoute,
-  WalletReceiveChainIdIndexRoute: WalletReceiveChainIdIndexRoute,
   WalletReceiveCoinIdIndexRoute: WalletReceiveCoinIdIndexRoute,
   WalletSendCoinIdIndexRoute: WalletSendCoinIdIndexRoute,
   WalletStakeCoinIdIndexRoute: WalletStakeCoinIdIndexRoute,
@@ -2100,6 +2122,8 @@ const rootRouteChildren: RootRouteChildren = {
   PopupEvmSignSignTypedDataIndexRoute: PopupEvmSignSignTypedDataIndexRoute,
   WalletClaimRewardsCoinIdValidatorAddressIndexRoute:
     WalletClaimRewardsCoinIdValidatorAddressIndexRoute,
+  WalletReceiveChainChainIdIndexRoute: WalletReceiveChainChainIdIndexRoute,
+  WalletSendChainChainIdIndexRoute: WalletSendChainChainIdIndexRoute,
   WalletStakeCoinIdValidatorAddressIndexRoute:
     WalletStakeCoinIdValidatorAddressIndexRoute,
   WalletUnstakeCoinIdValidatorAddressIndexRoute:
@@ -2185,7 +2209,6 @@ export const routeTree = rootRoute
         "/wallet/claim-all-rewards/$coinId/",
         "/wallet/claim-commission/$coinId/",
         "/wallet/nft-send/$id/",
-        "/wallet/receive/$chainId/",
         "/wallet/receive/$coinId/",
         "/wallet/send/$coinId/",
         "/wallet/stake/$coinId/",
@@ -2206,6 +2229,8 @@ export const routeTree = rootRoute
         "/popup/evm/sign/personal-sign/",
         "/popup/evm/sign/sign-typed-data/",
         "/wallet/claim-rewards/$coinId/$validatorAddress/",
+        "/wallet/receive/chain/$chainId/",
+        "/wallet/send/chain/$chainId/",
         "/wallet/stake/$coinId/$validatorAddress/",
         "/wallet/unstake/$coinId/$validatorAddress/",
         "/manage-account/detail/mnemonic/account/$accountId/",
@@ -2407,9 +2432,6 @@ export const routeTree = rootRoute
     "/wallet/nft-send/$id/": {
       "filePath": "wallet/nft-send/$id/index.tsx"
     },
-    "/wallet/receive/$chainId/": {
-      "filePath": "wallet/receive/$chainId/index.tsx"
-    },
     "/wallet/receive/$coinId/": {
       "filePath": "wallet/receive/$coinId/index.tsx"
     },
@@ -2469,6 +2491,12 @@ export const routeTree = rootRoute
     },
     "/wallet/claim-rewards/$coinId/$validatorAddress/": {
       "filePath": "wallet/claim-rewards/$coinId/$validatorAddress/index.tsx"
+    },
+    "/wallet/receive/chain/$chainId/": {
+      "filePath": "wallet/receive/chain/$chainId/index.tsx"
+    },
+    "/wallet/send/chain/$chainId/": {
+      "filePath": "wallet/send/chain/$chainId/index.tsx"
     },
     "/wallet/stake/$coinId/$validatorAddress/": {
       "filePath": "wallet/stake/$coinId/$validatorAddress/index.tsx"

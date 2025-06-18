@@ -5,7 +5,7 @@ import type { UniqueChainId } from '@/types/chain';
 import Entry from './-entry';
 import Layout from './-layout';
 
-export const Route = createFileRoute('/wallet/receive/$chainId/')({
+export const Route = createFileRoute('/wallet/receive/chain/$chainId/')({
   component: ReceiveWithChainId,
 });
 

@@ -13,8 +13,9 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
-import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/$chainId';
+import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/chain/$chainId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
+import { Route as SendCoinWithChainId } from '@/pages/wallet/send/chain/$chainId';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, getMainAssetByChainId, isStakeableAsset } from '@/utils/asset';
@@ -185,18 +186,25 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
             </BodyTopContainer>
             <BodyBottomContainer>
               <BodyBottomChipButtonContainer>
-                {!isShowAccountDetail && (
-                  <ChipButton
-                    variant="light"
-                    onClick={() => {
+                <ChipButton
+                  variant="light"
+                  onClick={() => {
+                    if (isShowAccountDetail) {
+                      navigate({
+                        to: SendCoinWithChainId.to,
+                        params: {
+                          chainId: selectedChainId as string,
+                        },
+                      });
+                    } else {
                       navigate({
                         to: SelectSendCoin.to,
                       });
-                    }}
-                  >
-                    <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
-                  </ChipButton>
-                )}
+                    }
+                  }}
+                >
+                  <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
+                </ChipButton>
                 <StyledChipButton
                   variant="dark"
                   onClick={() => {

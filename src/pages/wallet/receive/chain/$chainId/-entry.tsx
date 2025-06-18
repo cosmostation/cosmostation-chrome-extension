@@ -134,7 +134,7 @@ export default function Entry({ chainId }: EntryProps) {
       };
     }
 
-    const fullHdPath = chainAddress?.accountType.hdPath.replace('${index}', currentAccountIndex);
+    const fullHdPath = chainAddress?.accountType.hdPath ? chainAddress.accountType.hdPath.replace('${index}', currentAccountIndex) : undefined;
     const isBitcoin = chainAddress?.chainType === 'bitcoin';
 
     if (fullHdPath) {
