@@ -3087,7 +3087,9 @@
         "searchPlaceholder": "Search Dapp",
         "pinnedDapps": "Pinned Dapps",
         "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
-        "multiChainSupport": "Multi-Chain Support"
+        "multiChainSupport": "Multi-Chain Support",
+        "noResultsTitle": "No Results Found",
+        "noResultsSubtitle": "Try adjusting your filters or search term."
       },
       "layout": {
         "header": "All Dapps",

@@ -1,7 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   width: '100%',
+  height: '100%',
 });
 
 export const StickyContentsContainer = styled('div')(({ theme }) => ({
@@ -47,4 +50,14 @@ export const GridContainer = styled('div')({
   gridAutoRows: 'minmax(20.2rem, auto)',
   rowGap: '1.6rem',
   columnGap: '1rem',
+});
+
+export const EmptyAssetContainer = styled('div')({
+  flex: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '2rem 0',
 });

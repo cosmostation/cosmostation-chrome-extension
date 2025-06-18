@@ -1219,7 +1219,9 @@
         "alphabeticalAsc": "알파벳 순 (A -> Z)",
         "multiChainSupport": "다중 체인 지원",
         "pinnedDapps": "즐겨찾기",
-        "searchPlaceholder": "Dapp 검색하기"
+        "searchPlaceholder": "Dapp 검색하기",
+        "noResultsTitle": "검색 결과가 없습니다",
+        "noResultsSubtitle": "다른 조건으로 다시 시도해보세요"
       },
       "layout": {
         "githubHeaderTitle": "Dapp 목록 정보",
