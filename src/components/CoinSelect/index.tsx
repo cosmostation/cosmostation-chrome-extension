@@ -160,18 +160,25 @@ export default function CoinSelect({
 
   const sortedAssets = useMemo(() => {
     const sortedValues = [...computedAssetValues].sort((a, b) => {
+      const aIsTestnet = isTestnetChain(a.chain.id);
+      const bIsTestnet = isTestnetChain(b.chain.id);
+
+      if (aIsTestnet && !bIsTestnet) return 1;
+      if (!aIsTestnet && bIsTestnet) return -1;
+
       if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-        return Number(minus(b.value, a.value));
+        const diff = minus(b.value, a.value);
+        if (Number(diff) !== 0) return Number(diff);
       }
 
       if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-        return a.asset.symbol.localeCompare(b.asset.symbol);
+        const result = a.asset.symbol.localeCompare(b.asset.symbol);
+        if (result !== 0) return result;
       }
 
-      if (variant === 'stake') {
-        if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
-          return Number(minus(b.apr || 0, a.apr || 0));
-        }
+      if (variant === 'stake' && sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
+        const diff = minus(b.apr || 0, a.apr || 0);
+        if (Number(diff) !== 0) return Number(diff);
       }
 
       return 0;
