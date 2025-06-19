@@ -71,7 +71,7 @@ export default function Entry({ chainId }: EntryProps) {
     return currentPreferAccountType?.[parsedUniqueChainId.id];
   })();
 
-  const newCoinId = (() => {
+  const newChainId = (() => {
     if (parsedUniqueChainId.chainType === 'evm' || parsedUniqueChainId.chainType === 'cosmos') {
       const currentChainAccountType = currentPreferAccountType?.[parsedUniqueChainId.id];
 
@@ -86,7 +86,7 @@ export default function Entry({ chainId }: EntryProps) {
     return chainId;
   })();
 
-  const selectedChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, newCoinId));
+  const selectedChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, newChainId));
 
   const isEthermint = selectedChain?.chainType === 'evm' && selectedChain.isCosmos;
 
@@ -94,7 +94,7 @@ export default function Entry({ chainId }: EntryProps) {
     if (isEthermint) {
       if (tabValue === 0) {
         const addr = accountAddress.data?.find((item) => {
-          const isSameChain = getUniqueChainIdWithManual(item.chainId, item.chainType) === newCoinId;
+          const isSameChain = getUniqueChainIdWithManual(item.chainId, item.chainType) === newChainId;
           const isSameAccountType = multiPath ? item.accountType.hdPath === multiPath.hdPath : true;
 
           return isSameChain && isSameAccountType;
@@ -105,7 +105,7 @@ export default function Entry({ chainId }: EntryProps) {
       if (tabValue === 1) {
         const addr = accountAddress.data?.find((item) => {
           const isSameChain =
-            getUniqueChainIdWithManual(item.chainId, item.chainType) === getUniqueChainIdWithManual(parseUniqueChainId(newCoinId).id, 'cosmos');
+            getUniqueChainIdWithManual(item.chainId, item.chainType) === getUniqueChainIdWithManual(parseUniqueChainId(newChainId).id, 'cosmos');
           const isSameAccountType = multiPath ? item.accountType.hdPath === multiPath.hdPath : true;
 
           return isSameChain && isSameAccountType;
@@ -116,7 +116,7 @@ export default function Entry({ chainId }: EntryProps) {
     }
 
     return accountAddress.data?.find((item) => {
-      const isSameChain = getUniqueChainIdWithManual(item.chainId, item.chainType) === newCoinId;
+      const isSameChain = getUniqueChainIdWithManual(item.chainId, item.chainType) === newChainId;
       const isSameAccountType = multiPath ? item.accountType.hdPath === multiPath.hdPath : true;
 
       return isSameChain && isSameAccountType;
