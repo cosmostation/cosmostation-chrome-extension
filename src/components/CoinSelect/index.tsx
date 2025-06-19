@@ -8,6 +8,7 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useGetAverageAPY as useIotaGetAverageAPY } from '@/hooks/iota/useGetAverageAPY';
 import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -62,8 +63,8 @@ export default function CoinSelect({
     disableDupeEthermint: isDisableDupeEthermint,
   });
 
-  const suiCoinId = useMemo(() => (data?.suiAccountAssets[0]?.asset.id ? getCoinId(data.suiAccountAssets[0].asset) : ''), [data?.suiAccountAssets]);
-  const { averageAPY } = useGetAverageAPY({ coinId: suiCoinId });
+  const { averageAPY } = useGetAverageAPY({ coinId: '0x2::sui::SUI__sui__sui' });
+  const { averageAPY: iotaAverageAPY } = useIotaGetAverageAPY({ coinId: '0x2::iota::IOTA__iota__iota' });
 
   const { scrollToTop } = useScroll();
 
@@ -144,6 +145,10 @@ export default function CoinSelect({
             if (item.chain.chainType === 'sui') {
               return averageAPY;
             }
+
+            if (item.chain.chainType === 'iota') {
+              return iotaAverageAPY;
+            }
           }
 
           return undefined;
@@ -156,7 +161,7 @@ export default function CoinSelect({
         };
       }) || []
     );
-  }, [averageAPY, baseCoinList, coinGeckoPrice, userCurrencyPreference, variant]);
+  }, [averageAPY, baseCoinList, coinGeckoPrice, iotaAverageAPY, userCurrencyPreference, variant]);
 
   const sortedAssets = useMemo(() => {
     const sortedValues = [...computedAssetValues].sort((a, b) => {
