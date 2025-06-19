@@ -9,6 +9,7 @@ import BaseOptionButton from '@/components/common/BaseOptionButton';
 import { useChainList } from '@/hooks/useChainList';
 import { Route as BuyCoin } from '@/pages/buy-coin';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { removeTemplateLiteral, removeTrailingSlash } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledOptionButton } from './styled';
@@ -28,12 +29,14 @@ export default function MoreOptionBottomSheet({ onClose, ...remainder }: MoreOpt
   const { chainList } = useChainList();
 
   const voteDappURL = useMemo(() => {
-    const selectedChain = selectedChainFilterId && chainList.allCosmosChains.find((chain) => isMatchingUniqueChainId(chain, selectedChainFilterId));
-    if (selectedChain?.isSupportHistory) {
-      return 'https://www.mintscan.io/wallet/vote';
-    }
+    if (!selectedChainFilterId) return 'https://www.mintscan.io/wallet/vote';
 
-    return undefined;
+    const selectedChain = chainList.allCosmosChains.find((chain) => isMatchingUniqueChainId(chain, selectedChainFilterId));
+
+    const voteURL = selectedChain?.explorer?.proposal;
+    const formattedVoteURL = voteURL && removeTrailingSlash(removeTemplateLiteral(voteURL));
+
+    return formattedVoteURL;
   }, [chainList.allCosmosChains, selectedChainFilterId]);
 
   const onHandleClose = () => {
