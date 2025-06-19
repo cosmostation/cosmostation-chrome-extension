@@ -11,6 +11,7 @@ import { removeAccountName, removeAccountNames } from '@/utils/zustand/accountNa
 import { removeAccountFromNotBackedupList, removeAccountFromNotBackedupLists } from '@/utils/zustand/backupAccount';
 import { removeInitAccountId, removeInitAccountIds } from '@/utils/zustand/initAccountIds';
 import { removeInitCheckLegacyBalanceAccountId, removeInitCheckLegacyBalanceAccountIds } from '@/utils/zustand/initCheckLegacyBalanceAccountId';
+import { removeAccountLastRequestTimestamps } from '@/utils/zustand/lastRequestTimestamps';
 import { removePreferAccountType, removePreferAccountTypes } from '@/utils/zustand/preferAccountType';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -76,6 +77,7 @@ export function useCurrentAccount() {
     await removePreferAccountType(id);
     await removeInitAccountId(id);
     await removeInitCheckLegacyBalanceAccountId(id);
+    await removeAccountLastRequestTimestamps([id]);
 
     if (encryptedRestoreString && !newAccounts.some((account) => account.type === 'MNEMONIC' && account.encryptedRestoreString === encryptedRestoreString)) {
       await removeMnemonicName(encryptedRestoreString);
