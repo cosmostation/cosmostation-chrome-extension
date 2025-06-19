@@ -134,6 +134,14 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   const coinGeckoUrl = currentCoin?.asset.coinGeckoId ? ` https://www.coingecko.com/en/coins/${currentCoin.asset.coinGeckoId}` : '';
 
+  const swapDappURL = useMemo(() => {
+    if (currentCoin?.chain.chainType === 'cosmos' && currentCoin.chain.isSupportHistory) {
+      return 'https://www.mintscan.io/wallet/swap';
+    }
+
+    return undefined;
+  }, [currentCoin?.chain]);
+
   const hanldeOnClickSend = () => {
     if (cosmosStyleCoin) {
       setIsOpenBottomSheet(true);
@@ -240,19 +248,21 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.receive')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton
-              onClick={() => {
-                window.open('https://www.mintscan.io/wallet/swap', '_blank');
-              }}
-              leadingIcon={
-                <IconContainer>
-                  <SwapIcon />
-                </IconContainer>
-              }
-              direction="vertical"
-            >
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
-            </StyledIconTextButton>
+            {swapDappURL && (
+              <StyledIconTextButton
+                onClick={() => {
+                  window.open(swapDappURL, '_blank');
+                }}
+                leadingIcon={
+                  <IconContainer>
+                    <SwapIcon />
+                  </IconContainer>
+                }
+                direction="vertical"
+              >
+                <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
+              </StyledIconTextButton>
+            )}
             {isNativeCoin && formattedVoteURL && (
               <StyledIconTextButton
                 onClick={() => {

@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 
+import BaseOptionButton from '@/components/common/BaseOptionButton';
 import BottomSheet from '@/components/common/BottomSheet';
 
 export const Container = styled('div')({
@@ -48,3 +49,9 @@ export const StyledButton = styled('button')(({ theme }) => ({
     fill: theme.palette.color.base400,
   },
 }));
+
+export const StyledOptionButton = styled(BaseOptionButton)({
+  '&:disabled': {
+    opacity: '0.5',
+  },
+});

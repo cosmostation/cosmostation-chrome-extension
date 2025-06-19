@@ -97,6 +97,14 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   const isShowAccountDetail = !!selectedChainMainAsset?.asset && !!coinIdForReceivePage;
 
+  const swapDappURL = useMemo(() => {
+    if (!selectedChainId || (selectedChainMainAsset?.chain.chainType === 'cosmos' && selectedChainMainAsset.chain.isSupportHistory)) {
+      return 'https://www.mintscan.io/wallet/swap';
+    }
+
+    return undefined;
+  }, [selectedChainId, selectedChainMainAsset?.chain]);
+
   useEffect(() => {
     setIsProcessing(true);
 
@@ -246,8 +254,11 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
             <StyledIconTextButton
               leadingIcon={<SwapIcon />}
               direction="vertical"
+              disabled={!swapDappURL}
               onClick={() => {
-                window.open('https://www.mintscan.io/wallet/swap', '_blank');
+                if (swapDappURL) {
+                  window.open(swapDappURL, '_blank');
+                }
               }}
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.swap')}</SpacedTypography>

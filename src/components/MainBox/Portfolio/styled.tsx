@@ -107,6 +107,16 @@ export const StyledIconTextButton = styled(IconTextButton)({
   '&:not(:last-child)': {
     borderRight: '0.1rem solid rgba(255, 255, 255, 0.01)',
   },
+
+  '&:disabled': {
+    opacity: '0.5',
+    cursor: 'not-allowed',
+  },
+  '&:hover': {
+    '&:disabled': {
+      opacity: '0.5',
+    },
+  },
 });
 
 export const SpacedTypography = styled(Typography)(({ theme }) => ({
