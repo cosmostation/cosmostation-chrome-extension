@@ -114,6 +114,7 @@ export default function CheckLegacyAddressBalanceBottomSheet({ ...remainder }: C
     accountAllAssets?.cw20AccountAssets,
     isAlreayChecked,
     isShow,
+    isUpdateBalnaceLoading,
     multipleAccountTypeWithAddress,
   ]);
 
