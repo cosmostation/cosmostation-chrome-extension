@@ -57,7 +57,6 @@ function BackgroundStars() {
           y: Math.random() * height,
           radius: Math.random() * 1.5 + 0.5,
           delay: Math.random() * 2000,
-          blur: (Math.random() * 2 + 0.8) / 10,
         }));
       }
 
