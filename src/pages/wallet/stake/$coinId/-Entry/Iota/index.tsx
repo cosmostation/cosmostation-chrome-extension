@@ -32,8 +32,10 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign';
 import { ceil, divide, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { isDecimal, isEqualsIgnoringCase, toPercentages } from '@/utils/string.ts';
+import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import {
   APRText,
@@ -61,6 +63,7 @@ type IotaProps = {
 export default function Iota({ coinId, validatorAddress }: IotaProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -197,6 +200,8 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
     return monthlyReward;
   }, [currentValidator, displayStakeAmount]);
 
+  const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
+
   const stakeAmountInputErrorMessage = (() => {
     if (displayStakeAmount) {
       const totalCostAmount = plus(displayStakeAmount, displayExpectedBaseFeeAmount);
@@ -292,6 +297,17 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
       if (!response) {
         throw new Error('Failed to send transaction');
       }
+
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({
+        txHash: response.digest,
+        chainId: uniqueChainId,
+        address: selectedStakingCoin.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'staking',
+      });
 
       navigate({
         to: TxResult.to,
@@ -453,9 +469,16 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.stake.$coinId.entry.stakeReview')}
+        contentsTitle={
+          selectedStakingCoin?.asset.symbol
+            ? t('pages.wallet.stake.$coinId.entry.stakeReviewWithSymbol', {
+                symbol: selectedStakingCoin.asset.symbol,
+              })
+            : t('pages.wallet.stake.$coinId.entry.stakeReview')
+        }
         contentsSubTitle={t('pages.wallet.stake.$coinId.entry.stakeReviewSub')}
         confirmButtonText={t('pages.wallet.stake.$coinId.entry.stake')}
         onClickConfirm={handleOnClickConfirm}

@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
+import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 
+import EmptyAsset from '@/components/EmptyAsset';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useNewSortedAccountStore } from '@/zustand/hooks/useNewSortedAccountStore';
 
 import DraggablePrivateKeyAccountItem from './components/DraggablePrivateKeyAccountItem';
-import { ListContainer } from './styled';
+import { EmptyAssetContainer, ListContainer } from './styled';
+
+import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
 
 export const PRIVATE_KEY_ACCOUNT_DND_ITEM_TYPE = {
   PRIVATE_KEY_CARD: 'private-key-card',
@@ -13,22 +18,31 @@ export const PRIVATE_KEY_ACCOUNT_DND_ITEM_TYPE = {
 
 type DraggablePrivateKeyAccountListProps = {
   privateKeyAccountIds: string[];
+  search?: string;
 };
 
 export type IndexedPrivatedKeyAccount = {
   index: number;
   accountId: string;
+  accountName: string;
 };
 
-export default function DraggablePrivateKeyAccountList({ privateKeyAccountIds }: DraggablePrivateKeyAccountListProps) {
+export default function DraggablePrivateKeyAccountList({ privateKeyAccountIds, search }: DraggablePrivateKeyAccountListProps) {
+  const { t } = useTranslation();
   const { privateKeyAccountIds: newSortedPrivateKeyAccountIds, updatedNewSortedPrivateAccounts } = useNewSortedAccountStore((state) => state);
+  const { accountNamesById } = useExtensionStorageStore((state) => state);
 
   const [indexedAccounts, setIndexedAccounts] = useState<IndexedPrivatedKeyAccount[]>(
     newSortedPrivateKeyAccountIds.length > 0
-      ? newSortedPrivateKeyAccountIds.map((item, idx) => ({ index: idx, accountId: item }))
+      ? newSortedPrivateKeyAccountIds.map((item, idx) => ({
+          index: idx,
+          accountId: item,
+          accountName: accountNamesById[item] ?? '',
+        }))
       : privateKeyAccountIds.map((item, idx) => ({
           index: idx,
           accountId: item,
+          accountName: accountNamesById[item] ?? '',
         })),
   );
 
@@ -57,6 +71,19 @@ export default function DraggablePrivateKeyAccountList({ privateKeyAccountIds }:
 
   const [, drop] = useDrop(() => ({ accept: PRIVATE_KEY_ACCOUNT_DND_ITEM_TYPE.PRIVATE_KEY_CARD }));
 
+  const filteredAccounts = useMemo(() => {
+    if (search) {
+      return (
+        indexedAccounts.filter((account) => {
+          const condition = [account.accountName];
+
+          return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
+        }) || []
+      );
+    }
+    return indexedAccounts;
+  }, [indexedAccounts, search]);
+
   useEffect(() => {
     if (
       newSortedPrivateKeyAccountIds.length !== indexedAccounts.length ||
@@ -66,17 +93,46 @@ export default function DraggablePrivateKeyAccountList({ privateKeyAccountIds }:
     }
   }, [indexedAccounts, newSortedPrivateKeyAccountIds, updatedNewSortedPrivateAccounts]);
 
-  return (
-    <ListContainer ref={drop}>
-      {indexedAccounts.map((account) => (
-        <DraggablePrivateKeyAccountItem
-          key={account.accountId}
-          draggableItem={account}
-          moveAccountItem={moveAccountItem}
-          findAccountItem={findAccountItem}
-          itemIndex={account.index}
+  if (search && filteredAccounts.length === 0) {
+    return (
+      <EmptyAssetContainer>
+        <EmptyAsset
+          icon={<ImportPrivateKeyIcon />}
+          title={t('pages.manage-account.manage-wallet-and-account.entry.importPrivateKey')}
+          subTitle={t('pages.manage-account.manage-wallet-and-account.entry.importPrivateKeyDescription')}
         />
-      ))}
-    </ListContainer>
-  );
+      </EmptyAssetContainer>
+    );
+  }
+
+  if (search) {
+    return (
+      <ListContainer ref={drop}>
+        {filteredAccounts.map((account) => (
+          <DraggablePrivateKeyAccountItem
+            key={account.accountId}
+            draggableItem={account}
+            moveAccountItem={moveAccountItem}
+            findAccountItem={findAccountItem}
+            itemIndex={account.index}
+            blockDrag
+          />
+        ))}
+      </ListContainer>
+    );
+  } else {
+    return (
+      <ListContainer ref={drop}>
+        {indexedAccounts.map((account) => (
+          <DraggablePrivateKeyAccountItem
+            key={account.accountId}
+            draggableItem={account}
+            moveAccountItem={moveAccountItem}
+            findAccountItem={findAccountItem}
+            itemIndex={account.index}
+          />
+        ))}
+      </ListContainer>
+    );
+  }
 }

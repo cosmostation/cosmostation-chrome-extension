@@ -16,6 +16,7 @@ import { useCurrentAccount } from './useCurrentAccount';
 export type UseAccountAssetsResponse = AccountAllAssets & {
   flatAccountAssets: FlatAccountAssets[];
   allCosmosAccountAssets: AllCosmosAccountAssets[];
+  allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];
 };
 
@@ -41,8 +42,8 @@ export function useAccountAllAssets({
   const { currentAccount } = useCurrentAccount();
   const extensionStorageState = useExtensionStorageStore((state) => state);
 
-  const param = accountId || currentAccount.id;
-  const accountType = extensionStorageState.preferAccountType[param];
+  const param = useMemo(() => accountId || currentAccount.id, [accountId, currentAccount.id]);
+  const accountType = useMemo(() => extensionStorageState.preferAccountType[param], [extensionStorageState.preferAccountType, param]);
 
   const fetcher = async () => {
     try {
@@ -61,8 +62,7 @@ export function useAccountAllAssets({
     queryKey: ['accountAllAssets', param],
     queryFn: fetcher,
     enabled: !!param,
-    staleTime: 1000 * 14,
-    refetchInterval: 1000 * 15,
+    staleTime: 1000 * 60 * 2,
     ...config,
   });
 
@@ -176,6 +176,20 @@ export function useAccountAllAssets({
           return true;
         });
 
+      const cosmosAssetsWithPreferredAccountType = filteredCosmos.map((item) => {
+        const selectedChainAccountType = accountType?.[item.chain.id];
+
+        if (selectedChainAccountType) {
+          return produce(item, (draft) => {
+            draft.chain.accountTypes = draft.chain.accountTypes.filter(
+              (accountType) => accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle && accountType.hdPath === selectedChainAccountType.hdPath,
+            );
+          });
+        }
+
+        return item;
+      });
+
       const filteredCW20 = filteredByVisibleList.cw20AccountAssets.filter((item) => {
         const selectedChainAccountType = accountType?.[item.chain.id];
 
@@ -194,6 +208,20 @@ export function useAccountAllAssets({
           );
         }
         return true;
+      });
+
+      const cw20AssetsWithPreferredAccountType = filteredCW20.map((item) => {
+        const selectedChainAccountType = accountType?.[item.chain.id];
+
+        if (selectedChainAccountType) {
+          return produce(item, (draft) => {
+            draft.chain.accountTypes = draft.chain.accountTypes.filter(
+              (accountType) => accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle && accountType.hdPath === selectedChainAccountType.hdPath,
+            );
+          });
+        }
+
+        return item;
       });
 
       const filteredEVM = filteredByVisibleList.evmAccountAssets.filter((item) => {
@@ -274,6 +302,12 @@ export function useAccountAllAssets({
           ...filteredAccountAssets.cw20AccountAssets,
           ...filteredAccountAssets.customCw20AccountAssets,
         ],
+        allCosmosAccountAssetsFiltered: [
+          ...cosmosAssetsWithPreferredAccountType,
+          ...filteredAccountAssets.cosmosAccountCustomAssets,
+          ...cw20AssetsWithPreferredAccountType,
+          ...filteredAccountAssets.customCw20AccountAssets,
+        ],
         allEVMAccountAssets: [
           ...filteredAccountAssets.evmAccountAssets,
           ...filteredAccountAssets.evmAccountCustomAssets,
@@ -286,15 +320,18 @@ export function useAccountAllAssets({
     } else {
       const flatAccountAssets = Object.values(filteredByVisibleList).flat();
 
+      const cosmosAccountAssets = [
+        ...filteredByVisibleList.cosmosAccountAssets,
+        ...filteredByVisibleList.cosmosAccountCustomAssets,
+        ...filteredByVisibleList.cw20AccountAssets,
+        ...filteredByVisibleList.customCw20AccountAssets,
+      ];
+
       const returnData: UseAccountAssetsResponse = {
         ...filteredByVisibleList,
         flatAccountAssets: flatAccountAssets,
-        allCosmosAccountAssets: [
-          ...filteredByVisibleList.cosmosAccountAssets,
-          ...filteredByVisibleList.cosmosAccountCustomAssets,
-          ...filteredByVisibleList.cw20AccountAssets,
-          ...filteredByVisibleList.customCw20AccountAssets,
-        ],
+        allCosmosAccountAssets: cosmosAccountAssets,
+        allCosmosAccountAssetsFiltered: cosmosAccountAssets,
         allEVMAccountAssets: [
           ...filteredByVisibleList.evmAccountAssets,
           ...filteredByVisibleList.evmAccountCustomAssets,

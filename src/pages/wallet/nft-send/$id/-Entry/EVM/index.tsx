@@ -36,7 +36,8 @@ import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign';
 import { ceil, gt, times } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { ethereumAddressRegex } from '@/utils/regex';
-import { isEqualsIgnoringCase, isNumber, shorterAddress } from '@/utils/string.ts';
+import { isEqualsIgnoringCase, isNumber, safeStringify, shorterAddress } from '@/utils/string.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import BalanceButton from './components/BalanceButton';
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
@@ -61,6 +62,7 @@ export default function EVM({ id }: EVMProps) {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -304,6 +306,8 @@ export default function EVM({ id }: EVMProps) {
     return '0';
   }, [currentFeeOption]);
 
+  const displayTx = useMemo(() => safeStringify(finalizedTransaction), [finalizedTransaction]);
+
   const sendQuantityErrorMessage = useMemo(() => {
     if (sendQuantity) {
       if (!isNumber(sendQuantity)) {
@@ -392,6 +396,10 @@ export default function EVM({ id }: EVMProps) {
         throw new Error('Chain not found');
       }
 
+      if (!nativeAccountAsset) {
+        throw new Error('Asset not found');
+      }
+
       if (!finalizedTransaction) {
         throw new Error('Failed to calculate final transaction');
       }
@@ -411,6 +419,9 @@ export default function EVM({ id }: EVMProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const uniqueChainId = getUniqueChainIdWithManual(chain.id, chain.chainType);
+      addTx({ txHash: response.hash, chainId: uniqueChainId, address: nativeAccountAsset.address.address, addedAt: Date.now(), retryCount: 0, type: 'nft' });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -429,7 +440,7 @@ export default function EVM({ id }: EVMProps) {
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }
-  }, [chain, currentAccount, currentPassword, finalizedTransaction, nativeAccountAssetCoinId, navigate, recipientAddress]);
+  }, [addTx, chain, currentAccount, currentPassword, finalizedTransaction, nativeAccountAsset, nativeAccountAssetCoinId, navigate, recipientAddress]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
@@ -549,6 +560,7 @@ export default function EVM({ id }: EVMProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.nft-send.$id.Entry.EVM.index.sendNFTReview')}

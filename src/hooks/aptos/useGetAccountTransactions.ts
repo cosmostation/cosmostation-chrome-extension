@@ -78,6 +78,8 @@ export function useGetAccountTransactions({ coinId, config }: UseGetAccountTrans
     },
     config: {
       enabled: !!coinId && !!address && !!rpcURLs.length,
+      staleTime: 1000 * 29,
+      refetchInterval: 1000 * 30,
       ...config,
     },
   });

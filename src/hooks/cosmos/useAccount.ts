@@ -104,6 +104,10 @@ export function useAccount({ coinId, config }: UseAccountProps) {
 
   const result = useMemo(() => {
     if (data) {
+      if (data.error) {
+        return undefined;
+      }
+
       if (isDesmosPayload(data)) {
         const account = isDesmosBasePayload(data.account) || isDesmosModulePayload(data.account) ? data.account : data.account.account || data.account;
 
@@ -171,7 +175,7 @@ export function useAccount({ coinId, config }: UseAccountProps) {
         } as AuthAccount;
       }
 
-      const value = data.result.value || data.result;
+      const value = data.result?.value || data.result;
 
       if (isBaseWithStartAndPeriod(value)) {
         const vestingAccount = value.base_vesting_account;

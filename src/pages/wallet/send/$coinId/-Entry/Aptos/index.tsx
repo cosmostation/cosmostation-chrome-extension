@@ -29,10 +29,11 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
 import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getUniqueChainId } from '@/utils/queryParamGenerator.ts';
+import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex } from '@/utils/regex.ts';
-import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
 import {
   AddressBookButton,
@@ -55,6 +56,7 @@ type AptosProps = {
 export default function Aptos({ coinId }: AptosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
@@ -184,6 +186,22 @@ export default function Aptos({ coinId }: AptosProps) {
     return toDisplayDenomAmount(estimatedBaseFeeAmount, coinDecimals);
   }, [coinDecimals, estimatedBaseFeeAmount]);
 
+  const displayTx = useMemo(() => {
+    if (!generateTransaction.data?.rawTransaction) return undefined;
+
+    const tx = generateTransaction.data.rawTransaction;
+
+    return safeStringify({
+      gas_unit_price: tx.gas_unit_price.toString(),
+      max_gas_amount: tx.max_gas_amount.toString(),
+      chain_id: tx.chain_id,
+      expiration_timestamp_secs: tx.expiration_timestamp_secs.toString(),
+      payload: tx.payload,
+      sender: tx.sender.toStringLong(),
+      sequence_number: tx.sequence_number.toString(),
+    });
+  }, [generateTransaction.data?.rawTransaction]);
+
   const handleOnClickMax = () => {
     if (selectedCoinToSend?.asset.id === APTOS_COIN_TYPE) {
       const displayAmount = minus(displayAvailableAmount, estimatedDisplayFeeAmount);
@@ -296,6 +314,10 @@ export default function Aptos({ coinId }: AptosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({ txHash: response.hash, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -314,7 +336,7 @@ export default function Aptos({ coinId }: AptosProps) {
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }
-  }, [aptosAccount, coinId, generateTransaction.data, navigate, recipientAddress, selectedCoinToSend?.chain]);
+  }, [addTx, aptosAccount, coinId, generateTransaction.data, navigate, recipientAddress, selectedCoinToSend?.address.address, selectedCoinToSend?.chain]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
@@ -453,9 +475,16 @@ export default function Aptos({ coinId }: AptosProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
-        contentsTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')}
+        contentsTitle={
+          selectedCoinToSend?.asset.symbol
+            ? t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewWithSymbol', {
+                symbol: selectedCoinToSend.asset.symbol,
+              })
+            : t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReview')
+        }
         contentsSubTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.sendReviewSub')}
         confirmButtonText={t('pages.wallet.send.$coinId.Entry.Aptos.index.send')}
         onClickConfirm={handleOnClickConfirm}

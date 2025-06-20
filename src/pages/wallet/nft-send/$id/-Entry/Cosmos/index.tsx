@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { produce } from 'immer';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -17,6 +18,7 @@ import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useAccount } from '@/hooks/cosmos/useAccount';
+import { useAutoFeeCurrencySelectionOnInit } from '@/hooks/cosmos/useAutoFeeCurrencySelectionOnInit';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
@@ -24,6 +26,7 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
@@ -33,9 +36,10 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, times } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex';
-import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress } from '@/utils/string.ts';
+import { getUtf8BytesLength, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import { Divider, InputWrapper, NFTContainer, NFTImage, NFTName, NFTSubname } from './styled';
 
@@ -52,11 +56,13 @@ export default function Cosmos({ id }: CosmosProps) {
   const [isDisabled, setIsDisabled] = useState(false);
   const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
+  const [autoSetFeeCoinId, setAutoSetFeeCoinId] = useState('');
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -64,12 +70,26 @@ export default function Cosmos({ id }: CosmosProps) {
   const { chainList } = useChainList();
   const { addedCosmosNFTsWithMeta, isLoading: isLoadingCosmsoNFTs } = useCurrentAddedCosmosNFTsWithMetaData();
 
+  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const selectedNFT = useMemo(() => addedCosmosNFTsWithMeta.find((nft) => nft.id === id), [addedCosmosNFTsWithMeta, id]);
 
-  const chain = useMemo(
-    () => chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType),
-    [chainList.cosmosChains, selectedNFT?.chainId, selectedNFT?.chainType],
-  );
+  const chain = useMemo(() => {
+    const originChain = chainList.cosmosChains?.find((chain) => chain.id === selectedNFT?.chainId && chain.chainType === selectedNFT.chainType);
+
+    if (originChain && currentPreferAccountType) {
+      const selectedPreferAccountType = currentPreferAccountType[originChain.id];
+
+      if (selectedPreferAccountType) {
+        return produce(originChain, (draft) => {
+          draft.accountTypes = draft.accountTypes.filter(
+            (accountType) => accountType.pubkeyStyle === selectedPreferAccountType.pubkeyStyle && accountType.hdPath === selectedPreferAccountType.hdPath,
+          );
+        });
+      }
+    }
+
+    return originChain;
+  }, [chainList.cosmosChains, currentPreferAccountType, selectedNFT?.chainId, selectedNFT?.chainType]);
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain?.accountPrefix || '', [39]), [chain?.accountPrefix]);
 
   const nftImage = selectedNFT?.image;
@@ -103,8 +123,13 @@ export default function Cosmos({ id }: CosmosProps) {
   }, [defaultGasRateKey, inputFeeStepKey]);
 
   const alternativeFeeAsset = useMemo(
-    () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
-    [customFeeCoinId, feeAssets],
+    () =>
+      customFeeCoinId
+        ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId))
+        : autoSetFeeCoinId
+          ? feeAssets.find((item) => isMatchingCoinId(item.asset, autoSetFeeCoinId))
+          : feeAssets[0],
+    [autoSetFeeCoinId, customFeeCoinId, feeAssets],
   );
 
   const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
@@ -237,6 +262,11 @@ export default function Cosmos({ id }: CosmosProps) {
     isFeemarketActive,
   ]);
 
+  const isCustomStep = useMemo(() => {
+    if (!alternativeGasRate || feeOptions.length === 0) return false;
+    return feeOptions.length - 1 === currentFeeStepKey;
+  }, [alternativeGasRate, currentFeeStepKey, feeOptions.length]);
+
   const selectedFeeOption = useMemo(() => {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
@@ -248,6 +278,19 @@ export default function Cosmos({ id }: CosmosProps) {
   }, [baseFee]);
 
   const currentGas = selectedFeeOption.gas || '0';
+
+  const displayTx = useMemo(() => {
+    if (!memoizedNFTSendAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedNFTSendAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedNFTSendAminoTx, selectedFeeOption.denom]);
 
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
@@ -303,6 +346,16 @@ export default function Cosmos({ id }: CosmosProps) {
 
     return '';
   }, [addressRegex, currentBaseFee, inputMemoErrorMessage, recipientAddress, selectedFeeOption.balance, selectedNFT, t]);
+
+  useAutoFeeCurrencySelectionOnInit({
+    feeAssets: feeAssets,
+    isCustomFee: isCustomStep,
+    currentFeeStepKey: currentFeeStepKey,
+    gas: currentGas,
+    setFeeCoinId: (coinId) => {
+      setAutoSetFeeCoinId(coinId);
+    },
+  });
 
   const handleOnClickConfirm = useCallback(async () => {
     try {
@@ -380,6 +433,16 @@ export default function Cosmos({ id }: CosmosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const uniqueChainId = getUniqueChainIdWithManual(chain.id, chain.chainType);
+      addTx({
+        txHash: response.tx_response.txhash,
+        chainId: uniqueChainId,
+        address: accountAsset.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'nft',
+      });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -401,6 +464,7 @@ export default function Cosmos({ id }: CosmosProps) {
     account.data?.value.account_number,
     accountAsset,
     accountAssetCoinId,
+    addTx,
     chain,
     currentAccount,
     currentBaseFee,
@@ -525,6 +589,7 @@ export default function Cosmos({ id }: CosmosProps) {
         />
       )}
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.nft-send.$id.Entry.Cosmos.index.sendNFTReview')}

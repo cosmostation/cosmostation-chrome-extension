@@ -16,6 +16,7 @@ import ValidatorSelectBox from '@/components/ValidatorSelectBox';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useAccount } from '@/hooks/cosmos/useAccount';
+import { useAutoFeeCurrencySelectionOnInit } from '@/hooks/cosmos/useAutoFeeCurrencySelectionOnInit';
 import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useNodeInfo } from '@/hooks/cosmos/useNodeInfo';
@@ -36,9 +37,10 @@ import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { getUtf8BytesLength, isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string';
+import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getUtf8BytesLength, isEqualsIgnoringCase, safeStringify, shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import {
   ChainNameContainer,
@@ -60,6 +62,7 @@ type CosmosProps = {
 export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
 
@@ -68,6 +71,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const [inputFeeStepKey, setInputFeeStepKey] = useState<number | undefined>();
 
   const [customFeeCoinId, setCustomFeeCoinId] = useState('');
+  const [autoSetFeeCoinId, setAutoSetFeeCoinId] = useState('');
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
 
@@ -84,7 +88,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
+  const { getCosmosAccountAssetFilteredByAccountType } = useGetAccountAsset({ coinId });
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: coinId });
 
   const currentFeeStepKey = useMemo(() => {
@@ -97,7 +101,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const { data: coinList } = useCoinList();
 
-  const selectedRewardCoin = getCosmosAccountAsset();
+  const selectedRewardCoin = getCosmosAccountAssetFilteredByAccountType();
 
   const delegationInfo = useDelegationInfo({ coinId });
 
@@ -182,8 +186,13 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   );
 
   const alternativeFeeAsset = useMemo(
-    () => (customFeeCoinId ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId)) : feeAssets[0]),
-    [customFeeCoinId, feeAssets],
+    () =>
+      customFeeCoinId
+        ? feeAssets.find((item) => isMatchingCoinId(item.asset, customFeeCoinId))
+        : autoSetFeeCoinId
+          ? feeAssets.find((item) => isMatchingCoinId(item.asset, autoSetFeeCoinId))
+          : feeAssets[0],
+    [autoSetFeeCoinId, customFeeCoinId, feeAssets],
   );
 
   const alternativeFeeCoinId = useMemo(() => (alternativeFeeAsset?.asset ? getCoinId(alternativeFeeAsset.asset) : ''), [alternativeFeeAsset?.asset]);
@@ -315,6 +324,11 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     isFeemarketActive,
   ]);
 
+  const isCustomStep = useMemo(() => {
+    if (!alternativeGasRate || feeOptions.length === 0) return false;
+    return feeOptions.length - 1 === currentFeeStepKey;
+  }, [alternativeGasRate, currentFeeStepKey, feeOptions.length]);
+
   const selectedFeeOption = useMemo(() => {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
@@ -328,6 +342,19 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const currentDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentBaseFee, selectedFeeOption.decimals), [currentBaseFee, selectedFeeOption.decimals]);
 
   const currentGas = selectedFeeOption.gas || '0';
+
+  const displayTx = useMemo(() => {
+    if (!memoizedRewardAminoTx) return undefined;
+
+    const tx = {
+      ...memoizedRewardAminoTx,
+      fee: {
+        amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
+        gas: currentGas,
+      },
+    };
+    return safeStringify(tx);
+  }, [currentBaseFee, currentGas, memoizedRewardAminoTx, selectedFeeOption.denom]);
 
   const inputMemoErrorMessage = useMemo(() => {
     if (inputMemo) {
@@ -371,6 +398,16 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     selectedRewardCoin?.chain.isSupportStaking,
     t,
   ]);
+
+  useAutoFeeCurrencySelectionOnInit({
+    feeAssets: feeAssets,
+    isCustomFee: isCustomStep,
+    currentFeeStepKey: currentFeeStepKey,
+    gas: currentGas,
+    setFeeCoinId: (coinId) => {
+      setAutoSetFeeCoinId(coinId);
+    },
+  });
 
   const handleOnClickConfirm = useCallback(async () => {
     try {
@@ -440,6 +477,17 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         throw new Error('Failed to send transaction');
       }
 
+      const { chainId, chainType } = parseCoinId(coinId);
+      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+      addTx({
+        txHash: response.tx_response.txhash,
+        chainId: uniqueChainId,
+        address: selectedRewardCoin.address.address,
+        addedAt: Date.now(),
+        retryCount: 0,
+        type: 'staking',
+      });
+
       navigate({
         to: TxResult.to,
         search: {
@@ -459,6 +507,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     }
   }, [
     account.data?.value.account_number,
+    addTx,
     coinId,
     currentAccount,
     currentBaseFee,
@@ -468,6 +517,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     navigate,
     selectedFeeOption,
     selectedRewardCoin?.address.accountType.pubkeyType,
+    selectedRewardCoin?.address.address,
     selectedRewardCoin?.chain,
   ]);
 
@@ -596,6 +646,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         </>
       </BaseFooter>
       <ReviewBottomSheet
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewardsReview')}

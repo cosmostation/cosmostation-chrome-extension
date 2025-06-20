@@ -1,3 +1,4 @@
+import { useTxWatcher } from '@/hooks/common/useTxWatcher';
 import { useUpdateAccountInfo } from '@/hooks/update/useUpdateAccountInfo';
 import { useUpdateAddress } from '@/hooks/update/useUpdateAddress';
 import { useUpdateAutoLockAt } from '@/hooks/update/useUpdateAutoLockAt';
@@ -16,6 +17,7 @@ export default function RefetchController({ children }: RefetchControllerProps) 
   useUpdateStaking();
   useUpdateAccountInfo();
   useUpdateAutoLockAt();
+  useTxWatcher();
 
   return <>{children}</>;
 }

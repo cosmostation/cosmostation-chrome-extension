@@ -51,12 +51,6 @@ export const PlusIconContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
 
-export const IconButtonText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.accentColor.purple400,
-
-  marginLeft: '0.2rem',
-}));
-
 export const BodyContainer = styled('div')({
   width: '100%',
 
@@ -158,3 +152,11 @@ export const RightArrowIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const EmptyAssetContainer = styled('div')({
+  position: 'absolute',
+
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+});

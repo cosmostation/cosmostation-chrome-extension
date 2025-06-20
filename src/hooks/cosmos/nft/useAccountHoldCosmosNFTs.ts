@@ -53,6 +53,8 @@ export function useAccountHoldCosmosNFTs({ accountId, config }: UseAccountHoldCo
       ...config,
       retry: 2,
       retryDelay: 1000 * 3,
+      staleTime: 1000 * 60 * 1,
+      refetchInterval: false,
     },
   });
 

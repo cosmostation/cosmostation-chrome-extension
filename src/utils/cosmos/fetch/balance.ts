@@ -8,13 +8,19 @@ import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 import { removeTrailingSlash } from '@/utils/string';
 
-export const fetchCosmosBalances = async (address: string, lcdUrls: string[]): Promise<CosmosBalance[]> => {
+export const fetchCosmosBalances = async (
+  address: string,
+  lcdUrls: string[],
+  option?: {
+    path: string;
+  },
+): Promise<CosmosBalance[]> => {
   return await fetchWithFailover(lcdUrls, async (lcdUrl) => {
     let nextKey: string | null = null;
     const responseBalances: CosmosBalance[][] = [];
 
     const base = removeTrailingSlash(lcdUrl);
-    const urlPath = `/cosmos/bank/v1beta1/balances/${address}`;
+    const urlPath = option?.path || `/cosmos/bank/v1beta1/balances/${address}`;
     const urlQuery = 'pagination.limit=10000';
     const requestUrl = `${base}${urlPath}?${urlQuery}`;
 
@@ -52,6 +58,12 @@ export const fetchCosmosBalances = async (address: string, lcdUrls: string[]): P
 
     const balances = responseBalances.flat();
     return balances;
+  });
+};
+
+export const fetchCoreumSpendableBalances = async (address: string, lcdUrls: string[]): Promise<CosmosBalance[]> => {
+  return await fetchCosmosBalances(address, lcdUrls, {
+    path: `/cosmos/bank/v1beta1/spendable_balances/${address}`,
   });
 };
 

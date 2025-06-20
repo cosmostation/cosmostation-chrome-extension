@@ -1,40 +1,35 @@
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useEffect, useMemo, useState } from 'react';
+import { t } from 'i18next';
+import { useDebounce } from 'use-debounce';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
-import EmptyAsset from '@/components/EmptyAsset';
+import Search from '@/components/Search';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useSwitchTapStore } from '@/zustand/hooks/useSwitchTabStore';
 
 import MnemonicAccount from './-components/MnemonicAccount';
 import PrivateKeyAccount from './-components/PrivateKeyAccount';
-import { EmptyAssetContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
-
-import ImportMnemonicIcon from '@/assets/images/icons/ImportMnemonic70.svg';
-import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
+import { SearchContainer, StickyTabContainer, StyledTabPanel, TabPanelContentsContainer } from './-styled';
 
 export default function Entry() {
-  const { t } = useTranslation();
   const { manageAccountTapIndex, updatedManateAccountTabIndex } = useSwitchTapStore((state) => state);
-  const { userAccounts } = useExtensionStorageStore((state) => state);
   const { currentAccount } = useCurrentAccount();
 
   const isMnemonicAccount = currentAccount.type === 'MNEMONIC';
   const tabLabels = ['Mnenmonic', 'Private Key'];
 
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
+
+  const isDebouncing = !!search && isPending();
+
+  const searchText = useMemo(() => (!!search && debouncedSearch.length > 1 ? debouncedSearch : ''), [debouncedSearch, search]);
+
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     updatedManateAccountTabIndex(newTabValue);
   };
-
-  const uniqueMnemonicRestoreString = userAccounts
-    .filter((item) => item.type === 'MNEMONIC')
-    .map((account) => account.encryptedRestoreString)
-    .filter((value, index, self) => self.indexOf(value) === index);
-
-  const filteredPrivateKeyAccounts = userAccounts.filter((item) => item.type === 'PRIVATE_KEY');
 
   useEffect(() => {
     if (isMnemonicAccount) {
@@ -54,35 +49,31 @@ export default function Entry() {
               <FilledTab key={item} label={item} />
             ))}
           </FilledTabs>
+
+          <SearchContainer>
+            <Search
+              value={search}
+              onChange={(event) => {
+                setSearch(event.currentTarget.value);
+              }}
+              isPending={isDebouncing}
+              placeholder={t('pages.manage-account.switch-account.entry.searchPlaceholder')}
+              disableFilter
+              onClear={() => {
+                setSearch('');
+                cancel();
+              }}
+            />
+          </SearchContainer>
         </StickyTabContainer>
         <StyledTabPanel value={manageAccountTapIndex} index={0}>
           <TabPanelContentsContainer>
-            {uniqueMnemonicRestoreString.length > 0 ? (
-              uniqueMnemonicRestoreString.map((item, i) => <MnemonicAccount key={i} mnemonicRestoreString={item} />)
-            ) : (
-              <EmptyAssetContainer>
-                <EmptyAsset
-                  icon={<ImportMnemonicIcon />}
-                  title={t('pages.manage-account.switch-account.entry.importMnemonic')}
-                  subTitle={t('pages.manage-account.switch-account.entry.importMnemonicDescription')}
-                />
-              </EmptyAssetContainer>
-            )}
+            <MnemonicAccount search={searchText} />
           </TabPanelContentsContainer>
         </StyledTabPanel>
         <StyledTabPanel value={manageAccountTapIndex} index={1}>
           <TabPanelContentsContainer>
-            {filteredPrivateKeyAccounts.length > 0 ? (
-              <PrivateKeyAccount />
-            ) : (
-              <EmptyAssetContainer>
-                <EmptyAsset
-                  icon={<ImportPrivateKeyIcon />}
-                  title={t('pages.manage-account.switch-account.entry.importPrivateKey')}
-                  subTitle={t('pages.manage-account.switch-account.entry.importPrivateKeyDescription')}
-                />
-              </EmptyAssetContainer>
-            )}
+            <PrivateKeyAccount search={searchText} />
           </TabPanelContentsContainer>
         </StyledTabPanel>
       </EdgeAligner>

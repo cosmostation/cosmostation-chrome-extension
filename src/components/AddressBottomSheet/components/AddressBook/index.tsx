@@ -28,10 +28,11 @@ import ensImage from '@/assets/images/logos/ens.png';
 
 type PrivatekeyAccountProps = {
   chainId: UniqueChainId;
+  searchText?: string;
   onClickAddress: (address: string, memo?: string) => void;
 };
 
-export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyAccountProps) {
+export default function AddressBookItem({ chainId, searchText, onClickAddress }: PrivatekeyAccountProps) {
   const { t } = useTranslation();
 
   const { addressBookList } = useExtensionStorageStore((state) => state);
@@ -48,7 +49,22 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
     [addressBookList, chainId],
   );
 
-  if (filteredAddress.length === 0) {
+  const filteredAddressBySearch = useMemo(() => {
+    if (searchText) {
+      const filterKeyword = searchText.toLowerCase();
+
+      return (
+        filteredAddress.filter((item) => {
+          const condition = [item.label, item.address];
+
+          return condition.some((item) => item.toLowerCase().indexOf(filterKeyword) > -1);
+        }) || []
+      );
+    }
+    return filteredAddress;
+  }, [filteredAddress, searchText]);
+
+  if (filteredAddressBySearch.length === 0) {
     return (
       <EmptyAssetContainer>
         <EmptyAsset
@@ -62,7 +78,7 @@ export default function AddressBookItem({ chainId, onClickAddress }: PrivatekeyA
 
   return (
     <Container>
-      {filteredAddress.map((item) => {
+      {filteredAddressBySearch.map((item) => {
         const { label, address, memo } = item;
         const isBadge = !!memo;
 

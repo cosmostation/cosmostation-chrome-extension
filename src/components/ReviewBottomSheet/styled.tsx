@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Base1000Text from '../common/Base1000Text';
 import Base1300Text from '../common/Base1300Text';
 import BottomSheet from '../common/BottomSheet';
+import OutlinedChipButton from '../OutlinedChipButton';
 
 export const Container = styled('div')({
   display: 'flex',
@@ -55,10 +56,19 @@ export const ImageContainer = styled('div')({
   },
 });
 
-export const TitleText = styled(Base1300Text)({
+export const TitleTextContainer = styled('div')({
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
+  maxWidth: '80%',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
+export const TitleText = styled(Base1300Text)({
   marginBottom: '0.6rem',
 });
 
@@ -79,4 +89,12 @@ export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
     minHeight: '60%',
   },
+});
+
+export const StyledOutlinedChipButton = styled(OutlinedChipButton)({
+  marginTop: '1.6rem',
+});
+
+export const JsonIconContainer = styled('div')({
+  marginRight: '0.4rem',
 });

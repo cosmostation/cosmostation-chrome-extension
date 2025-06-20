@@ -1,3 +1,4 @@
+import type { UniqueChainId } from '@/types/chain';
 import type { MessageBase, TargetType } from '@/types/message';
 import type { Request } from '@/types/message/inject';
 
@@ -33,6 +34,18 @@ export interface UpdateAccountInfoMessage extends MessageBase {
   params: [string];
 }
 
+export interface UpdateChainSpecificBalanceMessage extends MessageBase {
+  target: Extract<TargetType, 'SERVICE_WORKER'>;
+  method: 'updateChainSpecificBalance';
+  params: [string, UniqueChainId, string];
+}
+
+export interface UpdateChainSpecificStakingBalanceMessage extends MessageBase {
+  target: Extract<TargetType, 'SERVICE_WORKER'>;
+  method: 'updateChainSpecificStakingBalance';
+  params: [string, UniqueChainId, string];
+}
+
 export interface RequestAppMessage extends MessageBase {
   target: Extract<TargetType, 'SERVICE_WORKER'>;
   method: 'requestApp';
@@ -52,10 +65,17 @@ export type ServiceWorkerMessage =
   | RequestAppMessage
   | RequestSidePanelOpenMessage
   | UpdateStakingMessage
-  | UpdateAccountInfoMessage;
+  | UpdateAccountInfoMessage
+  | UpdateChainSpecificBalanceMessage
+  | UpdateChainSpecificStakingBalanceMessage;
 
 export interface ServiceWorkerResponse {
   updateBalance: null;
   updateAddress: null;
   requestApp: null;
+  updateDefaultBalance: null;
+  updateStaking: null;
+  updateAccountInfo: null;
+  updateChainSpecificBalance: null;
+  updateChainSpecificStakingBalance: null;
 }
