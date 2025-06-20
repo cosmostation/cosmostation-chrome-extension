@@ -15,7 +15,7 @@ export const BodyTopContainer = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  margin: '1rem 0 0.2rem',
+  margin: '1.2rem 0 0.2rem',
 
   columnGap: '0.4rem',
 

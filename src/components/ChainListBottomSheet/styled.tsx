@@ -93,6 +93,14 @@ export const NetworkInfoContainer = styled('div')({
   marginBottom: '1.2rem',
 });
 
+export const StickyContainer = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: '0',
+  zIndex: 1,
+  backgroundColor: theme.palette.color.base50,
+  borderBottom: `0.1rem solid ${theme.palette.color.base100}`,
+}));
+
 export const NetworkCounts = styled('span')(({ theme }) => ({
   color: theme.palette.color.base1000,
 }));
@@ -100,4 +108,27 @@ export const NetworkCounts = styled('span')(({ theme }) => ({
 export const SwtichCoinType = styled('div')(({ theme }) => ({
   color: theme.palette.accentColor.purple400,
   marginLeft: '0.2rem',
+}));
+
+export const CoinTypeButtonContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  rowGap: '0.2rem',
+});
+
+export const ChevronIconContainer = styled('div')(({ theme }) => ({
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg': {
+    width: '1.4rem',
+    height: '1.4rem',
+
+    fill: theme.palette.color.base800,
+
+    '& > path': {
+      fill: theme.palette.color.base800,
+    },
+  },
 }));

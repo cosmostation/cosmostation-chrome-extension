@@ -86,6 +86,7 @@ export default function Entry({ request }: EntryProps) {
         name: paramData.networkName,
         image: paramData.imageURL || '',
         mainAssetDenom: NATIVE_EVM_COIN_ADDRESS,
+        chainDefaultCoinDenoms: [NATIVE_EVM_COIN_ADDRESS],
         isCosmos: false,
         rpcUrls: [
           {

@@ -12,7 +12,8 @@
           "swap": "Swap",
           "buy": "Buy",
           "dapp": "Dapp",
-          "more": "More"
+          "more": "More",
+          "receiveWithSymbol": "{{symbol}} Receive"
         },
         "components": {
           "MoreOptionBottomSheet": {
@@ -85,7 +86,8 @@
           "vault": "Vault",
           "dao": "Dao",
           "vaultDescription": "Vault to put $NTRN to get voting power",
-          "daoDescription": "Participate in decisions through DAO voting"
+          "daoDescription": "Participate in decisions through DAO voting",
+          "copyFailed": "Failed to Copy"
         }
       }
     },
@@ -130,7 +132,9 @@
         "searchPlaceholder": "Search Network (Ex. Bitcoin)",
         "customNetwork": "Can't find your network?\nYou can manually add a custom network",
         "network": "Network",
-        "switchCoinType": "Switch Coin Type"
+        "switchCoinType": "Switch Coin Type",
+        "valueHighOrder": "Value High Order",
+        "alphabeticalAsc": "Alphabetical Asc. (A -> Z)"
       }
     },
     "Lock": {
@@ -328,7 +332,9 @@
         "searchPlaceholder": "Search Crypto (Ex. BTC)",
         "valueHighOrder": "Value High Order",
         "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
-        "aprDesc": "APR Desc"
+        "aprDesc": "APR Desc",
+        "noResultsTitle": "No Results Found",
+        "noResultsSubtitle": "Try adjusting your filters or search term."
       }
     },
     "History": {
@@ -1166,7 +1172,9 @@
             "cw20Coin": "CW20 Token",
             "nativeCoin": "Native Coin",
             "bridgeCoin": "Bridged COin",
-            "type": "Type"
+            "type": "Type",
+            "learnMore": "Learn More",
+            "coinGecko": "CoinGecko"
           },
           "layout": {
             "about": "About {{symbol}}"
@@ -2328,7 +2336,9 @@
             "customCrypto": "Custom Crypto",
             "contract": "Contract :",
             "deleteDescription": "Would you like to delete this custom coin that you added? If you want to add the coin again after deletion, you will need to re-enter the information.",
-            "lastStandingError": "The last coin cannot be hide."
+            "lastStandingError": "The last coin cannot be hide.",
+            "noResultsTitle": "No Results Found",
+            "noResultsSubtitle": "Try adjusting your filters or search term."
           }
         },
         "asset": {
@@ -2374,7 +2384,8 @@
           "network": "Network",
           "selected": "Selected :",
           "type": "{{accountType}} TYPE",
-          "successSwitch": "Switched HD path. Your wallet address has been updated"
+          "successSwitch": "Switched HD path. Your wallet address has been updated",
+          "failSwitch": "Failt to switch HD path."
         },
         "components": {
           "coinTypeBottomSheet": {
@@ -3104,7 +3115,9 @@
         "searchPlaceholder": "Search Dapp",
         "pinnedDapps": "Pinned Dapps",
         "alphabeticalAsc": "Alphabetical Asc. (A -> Z)",
-        "multiChainSupport": "Multi-Chain Support"
+        "multiChainSupport": "Multi-Chain Support",
+        "noResultsTitle": "No Results Found",
+        "noResultsSubtitle": "Try adjusting your filters or search term."
       },
       "layout": {
         "header": "All Dapps",

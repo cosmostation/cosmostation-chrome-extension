@@ -1,8 +1,10 @@
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { AccountCosmosAsset, AccountEvmAsset, AccountIotaAsset, AccountSuiAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 
-import { isMatchingUniqueChainId, isSameChain, parseUniqueChainId } from './queryParamGenerator';
+import { getUniqueChainId, isMatchingUniqueChainId, isSameChain, parseUniqueChainId } from './queryParamGenerator';
+import { isEqualsIgnoringCase } from './string';
 
 export function filterChainsByChainId<T extends Chain>(chains: T[]): T[] {
   return chains.filter(
@@ -59,6 +61,53 @@ export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
     }
 
     return isMatchingUniqueChainId(item.chain, uniqueChainId);
+  });
+}
+
+export function getMainAssetByChainId<T extends FlatAccountAssets>(
+  accountAssets?: T[],
+  uniqueChainId?: UniqueChainId,
+  option?: {
+    disableDupeEthermint?: boolean;
+  },
+): T | undefined {
+  if (!accountAssets || accountAssets.length === 0 || !uniqueChainId) return undefined;
+
+  const { id } = parseUniqueChainId(uniqueChainId);
+
+  return accountAssets.find((item) => {
+    if (!option?.disableDupeEthermint && item.chain.chainType === 'evm' && item.chain.isCosmos) {
+      return item.chain.id === id && isEqualsIgnoringCase(item.asset.id, NATIVE_EVM_COIN_ADDRESS);
+    }
+
+    return item.chain.mainAssetDenom && getUniqueChainId(item.chain) === uniqueChainId && isEqualsIgnoringCase(item.asset.id, item.chain.mainAssetDenom);
+  });
+}
+
+export function getDefaultAssets<T extends FlatAccountAssets>(
+  accountAssets?: T[],
+  option?: {
+    disableDupeEthermint?: boolean;
+  },
+): T[] | undefined {
+  if (!accountAssets || accountAssets.length === 0) return undefined;
+
+  return accountAssets.filter((item) => {
+    if (!option?.disableDupeEthermint && item.chain.chainType === 'evm' && item.chain.isCosmos) {
+      if (item.chain.chainDefaultCoinDenoms) {
+        const resolvedChainDefaultCoinDenoms = [...item.chain.chainDefaultCoinDenoms, NATIVE_EVM_COIN_ADDRESS];
+
+        return resolvedChainDefaultCoinDenoms.some((defaultCoinDenom) => isEqualsIgnoringCase(defaultCoinDenom || '', item.asset.id));
+      }
+
+      return isEqualsIgnoringCase(NATIVE_EVM_COIN_ADDRESS, item.asset.id);
+    }
+
+    if (item.chain.chainDefaultCoinDenoms) {
+      return item.chain.chainDefaultCoinDenoms.some((defaultCoinDenom) => isEqualsIgnoringCase(defaultCoinDenom, item.asset.id));
+    }
+
+    return isEqualsIgnoringCase(item.chain.mainAssetDenom || undefined, item.asset.id);
   });
 }
 

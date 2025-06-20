@@ -8,6 +8,7 @@ import CoinWithChainNameButton from '@/components/CoinWithChainNameButton';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useGetAverageAPY as useIotaGetAverageAPY } from '@/hooks/iota/useGetAverageAPY';
 import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -17,14 +18,17 @@ import type { CommonSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { Container, FilterContaienr, StickyContentsContainer } from './styled';
+import { Container, EmptyAssetContainer, FilterContaienr, StickyContentsContainer } from './styled';
 import { VirtualizedList } from '../common/VirtualizedList';
+import EmptyAsset from '../EmptyAsset';
 import Search from '../Search';
 import { useScroll } from '../Wrapper/components/ScrollProvider';
+
+import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
 type CoinSelectProps = {
   currentCoinId?: string;
@@ -48,7 +52,7 @@ export default function CoinSelect({
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const { userCurrencyPreference, selectedChainFilterId } = useExtensionStorageStore((state) => state);
 
   const isDisableDupeEthermint = variant === 'stake';
 
@@ -59,8 +63,8 @@ export default function CoinSelect({
     disableDupeEthermint: isDisableDupeEthermint,
   });
 
-  const suiCoinId = useMemo(() => (data?.suiAccountAssets[0]?.asset.id ? getCoinId(data.suiAccountAssets[0].asset) : ''), [data?.suiAccountAssets]);
-  const { averageAPY } = useGetAverageAPY({ coinId: suiCoinId });
+  const { averageAPY } = useGetAverageAPY({ coinId: '0x2::sui::SUI__sui__sui' });
+  const { averageAPY: iotaAverageAPY } = useIotaGetAverageAPY({ coinId: '0x2::iota::IOTA__iota__iota' });
 
   const { scrollToTop } = useScroll();
 
@@ -72,7 +76,15 @@ export default function CoinSelect({
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
+  const [userSelectedChainId, setUserSelectedChainId] = useState<UniqueChainId | undefined>();
+
+  const currentSelectedChainId = useMemo(() => {
+    if (selectedChainFilterId && variant === 'stake') {
+      return selectedChainFilterId;
+    }
+
+    return userSelectedChainId;
+  }, [selectedChainFilterId, userSelectedChainId, variant]);
 
   const baseCoinList = useMemo(() => {
     if (coinList) return coinList;
@@ -95,9 +107,19 @@ export default function CoinSelect({
   );
 
   const currentSelectedChain = useMemo(
-    () => baseChainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),
-    [baseChainList, currentSelectedChainId],
+    () =>
+      baseChainList?.find((chain) => {
+        if (variant === 'stake' && currentSelectedChainId) {
+          return chain.id === parseUniqueChainId(currentSelectedChainId).id;
+        }
+
+        return isMatchingUniqueChainId(chain, currentSelectedChainId);
+      }),
+    [baseChainList, currentSelectedChainId, variant],
   );
+
+  const finalSelectedChainFilterId =
+    selectedChainFilterId && variant === 'stake' && currentSelectedChain ? getUniqueChainId(currentSelectedChain) : currentSelectedChainId;
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
@@ -123,6 +145,10 @@ export default function CoinSelect({
             if (item.chain.chainType === 'sui') {
               return averageAPY;
             }
+
+            if (item.chain.chainType === 'iota') {
+              return iotaAverageAPY;
+            }
           }
 
           return undefined;
@@ -135,22 +161,29 @@ export default function CoinSelect({
         };
       }) || []
     );
-  }, [averageAPY, baseCoinList, coinGeckoPrice, userCurrencyPreference, variant]);
+  }, [averageAPY, baseCoinList, coinGeckoPrice, iotaAverageAPY, userCurrencyPreference, variant]);
 
   const sortedAssets = useMemo(() => {
     const sortedValues = [...computedAssetValues].sort((a, b) => {
+      const aIsTestnet = isTestnetChain(a.chain.id);
+      const bIsTestnet = isTestnetChain(b.chain.id);
+
+      if (aIsTestnet && !bIsTestnet) return 1;
+      if (!aIsTestnet && bIsTestnet) return -1;
+
       if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-        return Number(minus(b.value, a.value));
+        const diff = minus(b.value, a.value);
+        if (Number(diff) !== 0) return Number(diff);
       }
 
       if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-        return a.asset.symbol.localeCompare(b.asset.symbol);
+        const result = a.asset.symbol.localeCompare(b.asset.symbol);
+        if (result !== 0) return result;
       }
 
-      if (variant === 'stake') {
-        if (sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
-          return Number(minus(b.apr || 0, a.apr || 0));
-        }
+      if (variant === 'stake' && sortOption === COIN_SELECT_SORT_KEY.APR_DESC) {
+        const diff = minus(b.apr || 0, a.apr || 0);
+        if (Number(diff) !== 0) return Number(diff);
       }
 
       return 0;
@@ -160,9 +193,7 @@ export default function CoinSelect({
   }, [computedAssetValues, sortOption, variant]);
 
   const filteredCoinList = useMemo(() => {
-    const filteredAssetsByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId, {
-      disableDupeEthermint: isDisableDupeEthermint,
-    });
+    const filteredAssetsByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
 
     if (!!search && debouncedSearch.length > 1) {
       return (
@@ -174,7 +205,7 @@ export default function CoinSelect({
       );
     }
     return filteredAssetsByChain;
-  }, [currentSelectedChainId, debouncedSearch, isDisableDupeEthermint, search, sortedAssets]);
+  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
@@ -204,51 +235,62 @@ export default function CoinSelect({
         </FilterContaienr>
 
         <AllNetworkButton
-          currentChainId={currentSelectedChainId}
+          currentChainId={finalSelectedChainFilterId}
           chainList={baseChainList}
           selectChainOption={(id) => {
-            setCurrentSelectedChainId(id);
+            setUserSelectedChainId(id);
           }}
+          disabled={!!selectedChainFilterId && variant === 'stake'}
         />
       </StickyContentsContainer>
 
-      <VirtualizedList
-        items={filteredCoinList}
-        estimateSize={() => 60}
-        renderItem={(coin) => {
-          const balance = isStakeableAsset(coin) ? coin.totalBalance || coin.balance || '0' : coin.balance;
-          const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
+      {filteredCoinList.length > 0 ? (
+        <VirtualizedList
+          items={filteredCoinList}
+          estimateSize={() => 60}
+          renderItem={(coin) => {
+            const balance = isStakeableAsset(coin) ? coin.totalBalance || coin.balance || '0' : coin.balance;
+            const displayAmount = toDisplayDenomAmount(balance, coin.asset.decimals);
 
-          const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
-          const resolvedAssetId =
-            coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
-              ? coin.asset.description
-              : coin.asset.id.length > 15
-                ? shorterAddress(coin.asset.id, 16)
-                : coin.asset.id;
-          return (
-            <CoinWithChainNameButton
-              key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
-              isActive={currentCoinId === getCoinId(coin.asset)}
-              displayAmount={displayAmount}
-              apr={coin.apr ? coin.apr : undefined}
-              symbol={resolvedSymbol}
-              chainName={coin.chain.name}
-              assetId={resolvedAssetId}
-              coinGeckoId={coin.asset.coinGeckoId}
-              displayAssetId={isShowAssetId}
-              coinImageProps={{
-                imageURL: coin.asset.image,
-                badgeImageURL: coin.chain.image || '',
-              }}
-              onClick={() => {
-                onSelectCoin(getCoinId(coin.asset));
-              }}
-            />
-          );
-        }}
-        overscan={5}
-      />
+            const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
+            const resolvedAssetId =
+              coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
+                ? coin.asset.description
+                : coin.asset.id.length > 15
+                  ? shorterAddress(coin.asset.id, 16)
+                  : coin.asset.id;
+            return (
+              <CoinWithChainNameButton
+                key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
+                isActive={currentCoinId === getCoinId(coin.asset)}
+                displayAmount={displayAmount}
+                apr={coin.apr ? coin.apr : undefined}
+                symbol={resolvedSymbol}
+                chainName={coin.chain.name}
+                assetId={resolvedAssetId}
+                coinGeckoId={coin.asset.coinGeckoId}
+                displayAssetId={isShowAssetId}
+                coinImageProps={{
+                  imageURL: coin.asset.image,
+                  badgeImageURL: coin.chain.image || '',
+                }}
+                onClick={() => {
+                  onSelectCoin(getCoinId(coin.asset));
+                }}
+              />
+            );
+          }}
+          overscan={5}
+        />
+      ) : (
+        <EmptyAssetContainer>
+          <EmptyAsset
+            icon={<NoSearchIcon />}
+            title={t('components.CoinSelect.index.noResultsTitle')}
+            subTitle={t('components.CoinSelect.index.noResultsSubtitle')}
+          />
+        </EmptyAssetContainer>
+      )}
 
       <SortBottomSheet
         optionButtonProps={

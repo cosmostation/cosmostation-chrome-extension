@@ -51,6 +51,7 @@ export interface CosmosChain extends ChainBase {
   chainType: Extract<ChainType, 'cosmos'>;
   chainId: string;
   mainAssetDenom: string;
+  chainDefaultCoinDenoms?: string[] | null;
   accountPrefix: string;
   validatorAccountPrefix?: string;
   isCosmwasm: boolean;
@@ -81,6 +82,7 @@ export interface CustomCosmosChain extends ChainBase {
   chainType: Extract<ChainType, 'cosmos'>;
   chainId: string;
   mainAssetDenom: string;
+  chainDefaultCoinDenoms?: string[] | null;
   accountPrefix: string;
   validatorAccountPrefix?: string;
   isCosmwasm: boolean;
@@ -116,6 +118,7 @@ export interface EvmChain extends ChainBase {
   chainType: Extract<ChainType, 'evm'>;
   chainId: string;
   mainAssetDenom: string | null;
+  chainDefaultCoinDenoms?: string[] | null;
   isCosmos: boolean;
   feeInfo: EvmFeeInfo;
   rpcUrls: ChainEndpoint[];
@@ -129,6 +132,7 @@ export interface CustomEvmChain extends ChainBase {
   chainType: Extract<ChainType, 'evm'>;
   chainId: string;
   mainAssetDenom: string | null;
+  chainDefaultCoinDenoms?: string[] | null;
   isCosmos: boolean;
   feeInfo: EvmFeeInfo;
   rpcUrls: ChainEndpoint[];
@@ -141,6 +145,7 @@ export interface SuiChain extends ChainBase {
   chainType: Extract<ChainType, 'sui'>;
   chainId: string | number;
   mainAssetDenom: string | null;
+  chainDefaultCoinDenoms?: string[] | null;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
@@ -152,6 +157,7 @@ export interface AptosChain extends ChainBase {
   chainType: Extract<ChainType, 'aptos'>;
   chainId: string | number;
   mainAssetDenom: string;
+  chainDefaultCoinDenoms?: string[] | null;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;
@@ -163,6 +169,7 @@ export interface BitcoinChain extends ChainBase {
   chainType: Extract<ChainType, 'bitcoin'>;
   chainId: string | number;
   mainAssetDenom: string;
+  chainDefaultCoinDenoms?: string[] | null;
   rpcUrls: ChainEndpoint[];
   mempoolURL: string;
   accountTypes: ChainAccountType[];
@@ -174,6 +181,7 @@ export interface IotaChain extends ChainBase {
   chainType: Extract<ChainType, 'iota'>;
   chainId: string | number;
   mainAssetDenom: string | null;
+  chainDefaultCoinDenoms?: string[] | null;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;

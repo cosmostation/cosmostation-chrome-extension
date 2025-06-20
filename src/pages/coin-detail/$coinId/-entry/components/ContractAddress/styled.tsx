@@ -17,18 +17,12 @@ export const TitleText = styled(Base1300Text)({
   marginRight: '0.2rem',
 });
 
-export const FullContractAddressTextContainer = styled('div')({
+export const FullContractAddressTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-
-  maxWidth: '100%',
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
+  width: '100%',
+  color: theme.palette.color.base1100,
+  overflow: 'hidden',
+}));
 
 export const FullContractAddressText = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1100,

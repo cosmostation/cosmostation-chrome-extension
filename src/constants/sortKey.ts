@@ -18,3 +18,8 @@ export const DAPPS_SORT_KEY = {
   CONNECTED_DATE_DESC: 'connected_date_desc',
   ALPHABETICAL_ASC: 'alphabetical_asc',
 } as const;
+
+export const CHAINLIST_SORT_KEY = {
+  VALUE_HIGH_ORDER: 'value_high_order',
+  ALPHABETICAL_ASC: 'alphabetical_asc',
+} as const;

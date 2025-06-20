@@ -1,17 +1,14 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { produce } from 'immer';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common';
-import { useCurrentAccount } from '@/hooks/useCurrentAccount';
-import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
-import type { Chain } from '@/types/chain';
-import { emitChangedAddressEvent } from '@/utils/event';
-import { getExtensionLocalStorage } from '@/utils/storage';
-import { toastSuccess } from '@/utils/toast';
+import { useChangeCoinAccountType } from '@/hooks/useChangeCoinAccountType';
+import type { Chain, ChainAccountType } from '@/types/chain';
+import { devLogger } from '@/utils/devLogger';
+import { toastError, toastSuccess } from '@/utils/toast';
 
 import { AccountTypeTextContainer, ChainImage } from './styled';
 import CoinTypeBottomSheet from '../CoinTypeBottomSheet';
@@ -23,8 +20,7 @@ type CoinTypeButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HT
 
 export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: CoinTypeButtonProps) {
   const { t } = useTranslation();
-  const { currentAccount } = useCurrentAccount();
-  const { updateCurrentPreferAccountType } = useCurrentPreferAccountTypes();
+  const { changeCoinType } = useChangeCoinAccountType();
 
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
 
@@ -37,6 +33,21 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
       accountType: coinTypeLevel,
     });
   })();
+
+  const handleChangeAccountType = useCallback(
+    async (id: string, accountType: ChainAccountType) => {
+      try {
+        await changeCoinType(id, accountType);
+        toastSuccess(t('pages.manage-assets.switch-account-type.entry.successSwitch'));
+      } catch (error) {
+        devLogger.error(`[ChangeAccountType in ChainlistBottomSheet] Error`, error);
+        toastError(t('pages.manage-assets.switch-account-type.entry.failSwitch'));
+      } finally {
+        setIsOpenBottomSheet(false);
+      }
+    },
+    [changeCoinType, t],
+  );
 
   return (
     <>
@@ -62,26 +73,7 @@ export default function CoinTypeButton({ chain, coinTypeLevel, ...remainder }: C
           setIsOpenBottomSheet(false);
         }}
         chain={chain}
-        onClickChainType={async (chainId, accountType) => {
-          const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');
-
-          const preferredAccountType = storedPreferAccountType[currentAccount.id];
-
-          const updatedPreferAccountType = preferredAccountType
-            ? produce(preferredAccountType, (draft) => {
-                draft[chainId] = accountType;
-              })
-            : preferredAccountType;
-
-          if (!updatedPreferAccountType) {
-            return;
-          }
-          await updateCurrentPreferAccountType(updatedPreferAccountType);
-          await emitChangedAddressEvent(currentAccount.id);
-
-          toastSuccess(t('pages.manage-assets.switch-account-type.entry.successSwitch'));
-          setIsOpenBottomSheet(false);
-        }}
+        onClickChainType={handleChangeAccountType}
       />
     </>
   );

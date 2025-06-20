@@ -2,7 +2,6 @@ import { useNavigate } from '@tanstack/react-router';
 
 import BaseLayout from '@/components/BaseLayout';
 import Base1300Text from '@/components/common/Base1300Text';
-import IconButton from '@/components/common/IconButton';
 import FloatingButton from '@/components/FloatingButton';
 import FloatingContents from '@/components/FloatingButton/components/FloatingContents';
 import FooterCoinPrice from '@/components/FooterCoinPrice';
@@ -10,16 +9,13 @@ import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
 import { BABYLON_POPOVER_ID, DROP_POPOVER_ID } from '@/constants/adPopover';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
-import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as CoinAbout } from '@/pages/coin-detail/$coinId/about';
 import { isStillBlocked } from '@/utils/date';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 import { turnOnAdPopover } from '@/utils/zustand/adPopoverState';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { FloatingButtonContainer, FooterContainer, IconContainer } from './-styled';
-
-import ExplorerIcon from '@/assets/images/icons/Explorer14.svg';
+import { FloatingButtonContainer, FooterContainer } from './-styled';
 
 import BabylonFloatingImage from '@/assets/images/ad/babylonFloating.png';
 import DropFloatingImage from '@/assets/images/ad/dropFloating.png';
@@ -33,11 +29,6 @@ export default function Layout({ children, coinId }: LayoutProps) {
   const navigate = useNavigate();
   const { currentAccount } = useCurrentAccount();
   const { adPopoverState } = useExtensionStorageStore((state) => state);
-
-  const { getAccountAsset } = useGetAccountAsset({ coinId });
-  const currentCoin = getAccountAsset();
-
-  const explorerUrl = currentCoin?.chain.explorer?.account.replace('${address}', currentCoin.address.address);
 
   const floatingContents = (() => {
     const { id, chainId, chainType } = parseCoinId(coinId);
@@ -73,21 +64,7 @@ export default function Layout({ children, coinId }: LayoutProps) {
 
   return (
     <BaseLayout
-      header={
-        <Header
-          leftContent={<NavigationPanel />}
-          middleContent={<Base1300Text variant="h4_B">{currentAccount.name}</Base1300Text>}
-          rightContent={
-            explorerUrl ? (
-              <IconButton onClick={() => window.open(explorerUrl, '_blank')}>
-                <IconContainer>
-                  <ExplorerIcon />
-                </IconContainer>
-              </IconButton>
-            ) : undefined
-          }
-        />
-      }
+      header={<Header leftContent={<NavigationPanel />} middleContent={<Base1300Text variant="h4_B">{currentAccount.name}</Base1300Text>} />}
       footer={
         <FooterContainer>
           <FloatingButtonContainer>

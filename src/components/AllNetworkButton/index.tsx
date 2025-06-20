@@ -53,9 +53,11 @@ export default function AllNetworkButton({
           )
         }
         trailingIcon={
-          <ChevronIconContainer sizeVariant={sizeVariant || 'medium'} data-is-open={isOpenChainListBottomSheet}>
-            <BottomFilledChevronIcon />
-          </ChevronIconContainer>
+          remainder.disabled ? undefined : (
+            <ChevronIconContainer sizeVariant={sizeVariant || 'medium'} data-is-open={isOpenChainListBottomSheet}>
+              <BottomFilledChevronIcon />
+            </ChevronIconContainer>
+          )
         }
         onClick={() => {
           setIsOpenChainListBottomSheet(true);

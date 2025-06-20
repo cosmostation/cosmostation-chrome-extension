@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
+import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 
 export const TopContainer = styled('div')({
@@ -40,12 +41,6 @@ export const TopRightContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const HistoryButtonTypo = styled(Typography)(({ theme }) => ({
-  marginLeft: '0.2rem',
-
-  color: theme.palette.color.base1300,
-}));
-
 export const BodyContainer = styled('div')({});
 
 export const BodyTopContainer = styled('div')(({ theme }) => ({
@@ -80,7 +75,7 @@ export const StyledIconContainer = styled('div')({
 
 export const BodyBottomContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-end',
   alignItems: 'center',
 
   marginBottom: '1.4rem',
@@ -112,6 +107,16 @@ export const StyledIconTextButton = styled(IconTextButton)({
   '&:not(:last-child)': {
     borderRight: '0.1rem solid rgba(255, 255, 255, 0.01)',
   },
+
+  '&:disabled': {
+    opacity: '0.5',
+    cursor: 'not-allowed',
+  },
+  '&:hover': {
+    '&:disabled': {
+      opacity: '0.5',
+    },
+  },
 });
 
 export const SpacedTypography = styled(Typography)(({ theme }) => ({
@@ -119,3 +124,13 @@ export const SpacedTypography = styled(Typography)(({ theme }) => ({
 
   color: theme.palette.color.base1300,
 }));
+
+export const ChipButtonContentsContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.4rem',
+});
+
+export const StyledChipButton = styled(ChipButton)({
+  padding: '0.5rem 0.8rem',
+});

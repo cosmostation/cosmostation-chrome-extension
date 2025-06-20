@@ -1,13 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import copy from 'copy-to-clipboard';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import AddressActionButtons from '@/components/AddressActionButtons';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1300Text from '@/components/common/Base1300Text';
-import IconButton from '@/components/common/IconButton';
-import TextButton from '@/components/common/TextButton';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
@@ -19,8 +17,7 @@ import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { isStakeableAsset } from '@/utils/asset';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash, shorterAddress } from '@/utils/string';
-import { toastDefault } from '@/utils/toast';
+import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -29,15 +26,15 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
-  ChangeAddressIconButtonContainer,
+  CoingeckoIconContainer,
   IconContainer,
   SpacedTypography,
   StyledIconTextButton,
-  TopContainer,
+  SymbolButton,
 } from './styled';
 import MainBox from '..';
 
-import ChangeIcon from '@/assets/images/icons/ChangeGrey14.svg';
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
 import DaoIcon from '@/assets/images/icons/Dao28.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
@@ -54,6 +51,7 @@ type CoinDetailBoxProps = {
 
 export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
+  const [isSymbolButtonHovered, setIsSymbolButtonHovered] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -62,7 +60,6 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
-  const [isShowCosmosStyleAddress, setIsShowCosmosStyleAddress] = useState(false);
 
   const { getAccountAsset } = useGetAccountAsset({ coinId });
 
@@ -105,8 +102,6 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     return undefined;
   }, [currentAccountAssets?.cosmosAccountAssets, currentCoin]);
 
-  const address = isShowCosmosStyleAddress ? cosmosStyleCoin?.address.address || '' : currentCoin?.address.address || '';
-
   const voteURL = currentCoin?.chain.explorer?.proposal;
   const formattedVoteURL = voteURL && removeTrailingSlash(removeTemplateLiteral(voteURL));
 
@@ -137,14 +132,15 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     return undefined;
   })();
 
-  const copyToClipboard = () => {
-    copy(address);
-    toastDefault(t('components.MainBox.CoinDetailBox.index.copied'));
-  };
+  const coinGeckoUrl = currentCoin?.asset.coinGeckoId ? ` https://www.coingecko.com/en/coins/${currentCoin.asset.coinGeckoId}` : '';
 
-  const handleOnClickChangeAddress = () => {
-    setIsShowCosmosStyleAddress(!isShowCosmosStyleAddress);
-  };
+  const swapDappURL = useMemo(() => {
+    if (currentCoin?.chain.chainType === 'cosmos' && currentCoin.chain.isSupportHistory) {
+      return 'https://www.mintscan.io/wallet/swap';
+    }
+
+    return undefined;
+  }, [currentCoin?.chain]);
 
   const hanldeOnClickSend = () => {
     if (cosmosStyleCoin) {
@@ -186,27 +182,36 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     },
     [coinId, cosmosStyleCoin, currentCoin, navigate],
   );
+
   return (
     <>
       <MainBox
-        top={
-          <TopContainer>
-            <TextButton onClick={copyToClipboard} variant="underline" typoVarient="h6n_M">
-              {shorterAddress(address, 16)}
-            </TextButton>
-            {cosmosStyleCoin && (
-              <ChangeAddressIconButtonContainer onClick={handleOnClickChangeAddress}>
-                <IconButton>
-                  <ChangeIcon />
-                </IconButton>
-              </ChangeAddressIconButtonContainer>
-            )}
-          </TopContainer>
-        }
+        top={<AddressActionButtons coinId={coinId} variant="underline" typoVarient="h6n_M" />}
         body={
           <BodyContainer>
             <BodyTopContainer>
-              <Base1300Text variant="h1_B">{symbol}</Base1300Text>
+              <SymbolButton
+                onMouseEnter={() => setIsSymbolButtonHovered(true)}
+                onMouseLeave={() => setIsSymbolButtonHovered(false)}
+                onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')}
+                disabled={!coinGeckoUrl}
+                trailingIcon={
+                  coinGeckoUrl && isSymbolButtonHovered ? (
+                    <CoingeckoIconContainer>
+                      <CoinGeckoIcon />
+                    </CoingeckoIconContainer>
+                  ) : undefined
+                }
+              >
+                <Base1300Text
+                  variant="h1_B"
+                  style={{
+                    marginRight: '0.2rem',
+                  }}
+                >
+                  {symbol}
+                </Base1300Text>
+              </SymbolButton>
               <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
                 {totalDisplayAmount}
               </BalanceDisplay>
@@ -243,19 +248,21 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.receive')}</SpacedTypography>
             </StyledIconTextButton>
-            <StyledIconTextButton
-              onClick={() => {
-                window.open('https://www.mintscan.io/wallet/swap', '_blank');
-              }}
-              leadingIcon={
-                <IconContainer>
-                  <SwapIcon />
-                </IconContainer>
-              }
-              direction="vertical"
-            >
-              <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
-            </StyledIconTextButton>
+            {swapDappURL && (
+              <StyledIconTextButton
+                onClick={() => {
+                  window.open(swapDappURL, '_blank');
+                }}
+                leadingIcon={
+                  <IconContainer>
+                    <SwapIcon />
+                  </IconContainer>
+                }
+                direction="vertical"
+              >
+                <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.swap')}</SpacedTypography>
+              </StyledIconTextButton>
+            )}
             {isNativeCoin && formattedVoteURL && (
               <StyledIconTextButton
                 onClick={() => {

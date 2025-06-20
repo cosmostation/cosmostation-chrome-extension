@@ -220,6 +220,10 @@ async function initializeStorageDefaults() {
     await setExtensionLocalStorage('dashboardCoinSortKey', DefaultSortKey.dashboardCoinSortKey);
   }
 
+  if (!originStorage.chainListSortKey) {
+    await setExtensionLocalStorage('chainListSortKey', DefaultSortKey.chainListSortKey);
+  }
+
   if (!originStorage.userAccounts) {
     await setExtensionLocalStorage('userAccounts', []);
   }

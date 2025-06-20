@@ -20,19 +20,21 @@ import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
+import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
+import { getDefaultAssets, getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
+import { isEqualsIgnoringCase } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
-import { usePortfolioFilterChainIdStore } from '@/zustand/hooks/usePortfolioFilterChainId';
 
 import NFTList from './-components/NFTList';
 import SkeletonCoinList from './-components/SkeletonCoinList';
@@ -51,6 +53,13 @@ import {
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
+type PortfolioCoinItem = FlatAccountAssets & {
+  value: string;
+  dollarValue: string;
+  totalDisplayAmount: string;
+  counts: string;
+};
+
 export default function Entry() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -58,17 +67,18 @@ export default function Entry() {
   const { scrollToTop } = useScroll();
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
+  const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true });
   const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
   const { data: usdCoinGeckoPrice, isLoading: isCoinGeckoPriceUSDLoading } = useCoinGeckoPrice('usd');
 
-  const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, selectedChainFilterId, updateExtensionStorageStore } = useExtensionStorageStore(
+    (state) => state,
+  );
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
   const isDebouncing = !!search && isPending();
-
-  const { chainId: currentSelectedChainId, updateChainId: setCurrentSelectedChainId } = usePortfolioFilterChainIdStore((state) => state);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -80,7 +90,41 @@ export default function Entry() {
   const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
   const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
-  const computedAssetValues = useMemo(() => {
+  const chainDefaultCoins = useMemo<PortfolioCoinItem[] | undefined>(() => {
+    const chainFilteredAllCoins = getFilteredAssetsByChainId(accountAllAssets?.flatAccountAssets, selectedChainFilterId || undefined);
+
+    const chainDefaultCoins = getDefaultAssets(chainFilteredAllCoins)
+      ?.slice()
+      .sort((a, b) => {
+        const denoms = a.chain.chainDefaultCoinDenoms ?? [];
+        const idxA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
+        const idxB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
+
+        return (idxA < 0 ? Number.MAX_SAFE_INTEGER : idxA) - (idxB < 0 ? Number.MAX_SAFE_INTEGER : idxB);
+      });
+
+    if (!chainDefaultCoins || chainDefaultCoins?.length === 0) return undefined;
+
+    return chainDefaultCoins.map((item) => {
+      const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
+      const totalDisplayAmount = toDisplayDenomAmount(balance, item.asset.decimals) || '0';
+
+      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
+      const coinPriceInDolalr = (item.asset.coinGeckoId && usdCoinGeckoPrice?.[item.asset.coinGeckoId]?.[CURRENCY_TYPE.USD]) || 0;
+
+      const value = times(totalDisplayAmount, coinPrice);
+      const valueInDollar = times(totalDisplayAmount, coinPriceInDolalr);
+      return {
+        ...item,
+        counts: '1',
+        totalDisplayAmount,
+        value,
+        dollarValue: valueInDollar,
+      };
+    });
+  }, [accountAllAssets?.flatAccountAssets, coinGeckoPrice, selectedChainFilterId, usdCoinGeckoPrice, userCurrencyPreference]);
+
+  const computedAssetValues = useMemo<PortfolioCoinItem[]>(() => {
     const baseCoinList = [...(groupAccountAssets?.groupAccountAssets || []), ...(groupAccountAssets?.singleAccountAssets || [])];
 
     const unGroupedAccountAssets = Object.values(groupAccountAssets?.groupMap || []).flat();
@@ -96,7 +140,7 @@ export default function Entry() {
     });
 
     const displayedAssets =
-      (!!search && debouncedSearch.length > 1) || currentSelectedChainId
+      (!!search && debouncedSearch.length > 1) || selectedChainFilterId
         ? [...mappedUngroupAccountAssets, ...(groupAccountAssets?.singleAccountAssets || [])]
         : baseCoinList;
 
@@ -116,15 +160,15 @@ export default function Entry() {
       };
     });
   }, [
-    groupAccountAssets?.groupAccountAssets,
-    groupAccountAssets?.singleAccountAssets,
-    groupAccountAssets?.groupMap,
-    search,
-    debouncedSearch.length,
-    currentSelectedChainId,
     coinGeckoPrice,
-    userCurrencyPreference,
+    debouncedSearch.length,
+    groupAccountAssets?.groupAccountAssets,
+    groupAccountAssets?.groupMap,
+    groupAccountAssets?.singleAccountAssets,
+    search,
+    selectedChainFilterId,
     usdCoinGeckoPrice,
+    userCurrencyPreference,
   ]);
 
   const hideSmallValueAssets = useMemo(() => {
@@ -154,7 +198,7 @@ export default function Entry() {
   );
 
   const filteredAssetsBySearch = useMemo(() => {
-    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
+    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, selectedChainFilterId || undefined);
     if (!!search && debouncedSearch.length > 1) {
       return (
         filterdByChain.filter((asset) => {
@@ -164,8 +208,17 @@ export default function Entry() {
         }) || []
       );
     }
-    return filterdByChain;
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
+    if (selectedChainFilterId) {
+      return [...(chainDefaultCoins || []), ...filterdByChain].reduce((acc: PortfolioCoinItem[], item) => {
+        if (!acc.some((existing) => existing.asset.id === item.asset.id)) {
+          acc.push(item as PortfolioCoinItem);
+        }
+        return acc;
+      }, []);
+    } else {
+      return filterdByChain;
+    }
+  }, [chainDefaultCoins, debouncedSearch, search, selectedChainFilterId, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -187,9 +240,9 @@ export default function Entry() {
         >
           <Container>
             <PortFolio
-              selectedChainId={currentSelectedChainId}
+              selectedChainId={selectedChainFilterId || undefined}
               onChangeChaindId={(chainId) => {
-                setCurrentSelectedChainId(chainId);
+                updateExtensionStorageStore('selectedChainFilterId', chainId || null);
               }}
             />
 
@@ -286,7 +339,7 @@ export default function Entry() {
               </CoinButtonWrapper>
             </StyledTabPanel>
             <StyledTabPanel value={tabValue} index={1} data-is-active={tabValue === 1}>
-              <NFTList selectedChainId={currentSelectedChainId} />
+              <NFTList selectedChainId={selectedChainFilterId || undefined} />
             </StyledTabPanel>
             <SortBottomSheet
               optionButtonProps={[

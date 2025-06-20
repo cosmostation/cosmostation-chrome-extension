@@ -3,21 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import { Route as AllHistory } from '@/pages/all-history';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
+import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/chain/$chainId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
+import { Route as SendCoinWithChainId } from '@/pages/wallet/send/chain/$chainId';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
+import { getFilteredAssetsByChainId, getFilteredChainsByChainId, getMainAssetByChainId, isStakeableAsset } from '@/utils/asset';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -27,8 +30,9 @@ import {
   BodyContainer,
   BodyTopContainer,
   BottomButtonContainer,
-  HistoryButtonTypo,
+  ChipButtonContentsContainer,
   SpacedTypography,
+  StyledChipButton,
   StyledIconContainer,
   StyledIconTextButton,
   TopContainer,
@@ -42,7 +46,6 @@ import MainBox from '..';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
 import DappIcon from '@/assets/images/icons/Dapp22.svg';
-import HistoryIcon from '@/assets/images/icons/History14.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import StakeIcon from '@/assets/images/icons/Stake22.svg';
 import SwapIcon from '@/assets/images/icons/Swap22.svg';
@@ -75,6 +78,33 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   const chainList = useMemo(() => getFilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
 
+  const selectedChainMainAsset = useMemo(
+    () => selectedChainId && getMainAssetByChainId(accountAllAssets?.flatAccountAssets, selectedChainId),
+    [accountAllAssets?.flatAccountAssets, selectedChainId],
+  );
+
+  const coinIdForReceivePage = useMemo(() => {
+    if (!selectedChainMainAsset?.asset) return undefined;
+
+    return getCoinId(selectedChainMainAsset.asset);
+  }, [selectedChainMainAsset?.asset]);
+
+  const chainIdForReceivePage = useMemo(() => {
+    if (!selectedChainMainAsset?.chain) return undefined;
+
+    return getUniqueChainId(selectedChainMainAsset.chain);
+  }, [selectedChainMainAsset?.chain]);
+
+  const isShowAccountDetail = !!selectedChainMainAsset?.asset && !!coinIdForReceivePage;
+
+  const swapDappURL = useMemo(() => {
+    if (!selectedChainId || (selectedChainMainAsset?.chain.chainType === 'cosmos' && selectedChainMainAsset.chain.isSupportHistory)) {
+      return 'https://www.mintscan.io/wallet/swap';
+    }
+
+    return undefined;
+  }, [selectedChainId, selectedChainMainAsset?.chain]);
+
   useEffect(() => {
     setIsProcessing(true);
 
@@ -106,16 +136,20 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
       <MainBox
         top={
           <TopContainer>
-            <TopLeftContainer>
-              <IconTextButton
-                onClick={() => {
-                  updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
-                }}
-                trailingIcon={<ViewIconContainer>{isBalanceVisible ? <ViewIcon /> : <ViewHideIcon />}</ViewIconContainer>}
-              >
-                <ViewTotalValueText variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</ViewTotalValueText>
-              </IconTextButton>
-            </TopLeftContainer>
+            {isShowAccountDetail ? (
+              <AddressActionButtons coinId={coinIdForReceivePage} variant="underline" typoVarient="h6n_M" />
+            ) : (
+              <TopLeftContainer>
+                <IconTextButton
+                  onClick={() => {
+                    updateExtensionStorageStore('isBalanceVisible', !isBalanceVisible);
+                  }}
+                  trailingIcon={<ViewIconContainer>{isBalanceVisible ? <ViewIcon /> : <ViewHideIcon />}</ViewIconContainer>}
+                >
+                  <ViewTotalValueText variant="b3_M">{t('components.MainBox.Portfolio.index.totalValue')}</ViewTotalValueText>
+                </IconTextButton>
+              </TopLeftContainer>
+            )}
             <TopRightContainer>
               <AllNetworkButton
                 typoVarient="b4_M"
@@ -159,39 +193,47 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              <IconTextButton leadingIcon={<HistoryIcon />}>
-                <HistoryButtonTypo
-                  onClick={() => {
-                    navigate({
-                      to: AllHistory.to,
-                    });
-                  }}
-                  variant="b3_M"
-                >
-                  {t('components.MainBox.Portfolio.index.history')}
-                </HistoryButtonTypo>
-              </IconTextButton>
               <BodyBottomChipButtonContainer>
                 <ChipButton
                   variant="light"
                   onClick={() => {
-                    navigate({
-                      to: SelectSendCoin.to,
-                    });
+                    if (isShowAccountDetail) {
+                      navigate({
+                        to: SendCoinWithChainId.to,
+                        params: {
+                          chainId: selectedChainId as string,
+                        },
+                      });
+                    } else {
+                      navigate({
+                        to: SelectSendCoin.to,
+                      });
+                    }
                   }}
                 >
                   <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.send')}</Typography>
                 </ChipButton>
-                <ChipButton
+                <StyledChipButton
                   variant="dark"
                   onClick={() => {
-                    navigate({
-                      to: SelectReceiveCoin.to,
-                    });
+                    if (isShowAccountDetail && chainIdForReceivePage) {
+                      navigate({
+                        to: ReceiveWithChainId.to,
+                        params: {
+                          chainId: chainIdForReceivePage as UniqueChainId,
+                        },
+                      });
+                    } else {
+                      navigate({
+                        to: SelectReceiveCoin.to,
+                      });
+                    }
                   }}
                 >
-                  <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.receive')}</Typography>
-                </ChipButton>
+                  <ChipButtonContentsContainer>
+                    <Typography variant="b4_M">{t('components.MainBox.Portfolio.index.receive')}</Typography>
+                  </ChipButtonContentsContainer>
+                </StyledChipButton>
               </BodyBottomChipButtonContainer>
             </BodyBottomContainer>
           </BodyContainer>
@@ -212,8 +254,11 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
             <StyledIconTextButton
               leadingIcon={<SwapIcon />}
               direction="vertical"
+              disabled={!swapDappURL}
               onClick={() => {
-                window.open('https://www.mintscan.io/wallet/swap', '_blank');
+                if (swapDappURL) {
+                  window.open(swapDappURL, '_blank');
+                }
               }}
             >
               <SpacedTypography variant="b3_M">{t('components.MainBox.Portfolio.index.swap')}</SpacedTypography>

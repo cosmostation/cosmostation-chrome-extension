@@ -17,6 +17,9 @@ export const StyledIconButton = styled('button')<StyledIconButtonProps>(({ ...pr
   background: 'none',
 
   cursor: 'pointer',
+  '&:disabled': {
+    cursor: 'default',
+  },
 
   padding: '0',
 

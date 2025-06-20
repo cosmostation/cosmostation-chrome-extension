@@ -22,6 +22,7 @@ export const initialState: ExtensionStorageState = {
   initCheckLegacyBalanceAccountIds: [],
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
   dappListSortKey: DefaultSortKey.dappListSortKey,
+  chainListSortKey: DefaultSortKey.chainListSortKey,
   userLanguagePreference: 'en',
   comparisonPasswordHash: '',
   accountNamesById: {},
@@ -62,6 +63,7 @@ export const initialState: ExtensionStorageState = {
   autoLockTimeStampAt: null,
   migrationStatus: null,
   userPriceTrendPreference: PRICE_TREND_TYPE.GREEN_UP,
+  selectedChainFilterId: null,
 };
 
 export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];

@@ -23,3 +23,13 @@ export function upsertList<T>(
     });
   });
 }
+
+export function removeDuplicates<T>(list: T[], isDuplicate: (a: T, b: T) => boolean): T[] {
+  return list.reduce<T[]>((acc, item) => {
+    const alreadyExists = acc.some((existing) => isDuplicate(existing, item));
+    if (!alreadyExists) {
+      acc.push(item);
+    }
+    return acc;
+  }, []);
+}

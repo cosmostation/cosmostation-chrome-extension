@@ -175,6 +175,8 @@ declare global {
 
     ethereum?: EthereumProvider;
     suiWallet?: SuiProvider;
+
+    opr?: unknown;
   }
 }
 

@@ -7,6 +7,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
+import TextButton from '@/components/common/TextButton';
 import CopyButton from '@/components/CopyButton';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -20,6 +21,8 @@ import {
   ChevronIconContainer,
   CoinContainer,
   CoinDenomContainer,
+  CoingeckoContainer,
+  CoingeckoIconContainer,
   CoinImage,
   CoinSymbolText,
   DetailInfoContainer,
@@ -34,6 +37,7 @@ import {
 } from './-styled';
 
 import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
+import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
 import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
 
 type EntryProps = {
@@ -93,6 +97,8 @@ export default function Entry({ coinId }: EntryProps) {
     : undefined;
 
   const resolvedCoinDenom = cosmosStyleCoin ? cosmosStyleCoin.asset.id : coinDenom;
+
+  const coinGeckoUrl = coinGeckoId ? ` https://www.coingecko.com/en/coins/${coinGeckoId}` : '';
 
   return (
     <BaseBody>
@@ -174,6 +180,22 @@ export default function Entry({ coinId }: EntryProps) {
               </DetailInfoContainer>
             </LabelContainer>
           </SectionContainer>
+
+          {coinGeckoId && (
+            <SectionContainer>
+              <LabelContainer>
+                <TitleText variant="h3_B">{t('pages.coin-detail.$coinId.about.entry.learnMore')}</TitleText>
+                <CoingeckoContainer>
+                  <CoingeckoIconContainer>
+                    <CoinGeckoIcon />
+                  </CoingeckoIconContainer>
+                  <TextButton onClick={() => coinGeckoUrl && window.open(coinGeckoUrl, '_blank')} variant="blueHyperlink" typoVarient="b3_M">
+                    {t('pages.coin-detail.$coinId.about.entry.coinGecko')}
+                  </TextButton>
+                </CoingeckoContainer>
+              </LabelContainer>
+            </SectionContainer>
+          )}
         </SectionWrapper>
       </EdgeAligner>
     </BaseBody>

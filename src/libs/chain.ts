@@ -7,6 +7,10 @@ import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
 
+function collectDefaultDenoms(p: { gas_asset_denom?: string; staking_asset_denom?: string; main_asset_denom?: string }): string[] {
+  return [...new Set([p.gas_asset_denom, p.staking_asset_denom, p.main_asset_denom].filter((denom): denom is string => Boolean(denom)))];
+}
+
 export async function getChains() {
   const { paramsV11: chains } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
 
@@ -42,7 +46,7 @@ export async function getChains() {
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom || '';
-
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
     const isCosmwasm = chain.params.chainlist_params?.is_support_cw20 ?? false;
     const isSupportCW721 = chain.params.chainlist_params?.is_support_cw721 ?? false;
     const isTestnet = isTestnetChain(id);
@@ -108,6 +112,7 @@ export async function getChains() {
       image,
       chainType,
       mainAssetDenom,
+      chainDefaultCoinDenoms,
       isCosmwasm,
       accountPrefix,
       validatorAccountPrefix,
@@ -137,6 +142,8 @@ export async function getChains() {
     const isCosmos = chain.params.chainlist_params?.chain_type?.includes('cosmos') ?? false;
 
     const mainAssetDenom = (isCosmos ? chain.params?.chainlist_params?.staking_asset_denom : chain.params?.chainlist_params?.main_asset_denom) ?? null;
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
+
     const feeInfo = {
       isEip1559: chain.params.chainlist_params?.evm_fee_info?.is_eip1559 ?? false,
       gasCoefficient: chain.params.chainlist_params?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
@@ -194,6 +201,7 @@ export async function getChains() {
       chainId,
       name,
       mainAssetDenom,
+      chainDefaultCoinDenoms,
       isCosmos,
       image,
       chainType,
@@ -215,6 +223,7 @@ export async function getChains() {
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? SUI_COIN_TYPE;
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
@@ -253,6 +262,7 @@ export async function getChains() {
       image,
       chainType,
       mainAssetDenom,
+      chainDefaultCoinDenoms,
       rpcUrls,
       explorer,
       accountTypes,
@@ -268,6 +278,7 @@ export async function getChains() {
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? APTOS_COIN_TYPE;
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
@@ -306,6 +317,7 @@ export async function getChains() {
       image,
       chainType,
       mainAssetDenom,
+      chainDefaultCoinDenoms,
       rpcUrls,
       explorer,
       accountTypes,
@@ -324,7 +336,13 @@ export async function getChains() {
 
     const isTestnet = coinTypeLevel.replace(/[^0-9]/g, '') === `1`;
 
-    const mainAssetDenom = (chain.params.chainlist_params?.main_asset_denom ?? isTestnet) ? 'sbtc' : 'btc';
+    const mainAssetDenom = (() => {
+      if (chain.params.chainlist_params?.main_asset_denom) return chain.params.chainlist_params.main_asset_denom;
+
+      return isTestnet ? 'sbtc' : 'btc';
+    })();
+
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint ??
@@ -375,6 +393,7 @@ export async function getChains() {
       image,
       chainType,
       mainAssetDenom,
+      chainDefaultCoinDenoms,
       rpcUrls,
       mempoolURL,
       explorer,
@@ -392,6 +411,7 @@ export async function getChains() {
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
@@ -430,6 +450,7 @@ export async function getChains() {
       image,
       chainType,
       mainAssetDenom,
+      chainDefaultCoinDenoms,
       rpcUrls,
       explorer,
       accountTypes,

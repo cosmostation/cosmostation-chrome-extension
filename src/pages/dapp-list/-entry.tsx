@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
+import EmptyAsset from '@/components/EmptyAsset';
 import Search from '@/components/Search';
 import SortBottomSheet from '@/components/SortBottomSheet';
 import { DAPP_LIST_SORT_KEY } from '@/constants/sortKey';
@@ -19,16 +20,19 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import GridDappItem from './-components/GridDappItem';
 import ScrollableChips from './-components/ScrollableChips';
-import { Container, FilterContaienr, GridContainer, SortConditionContainer, StickyContentsContainer } from './-styled';
+import { Container, EmptyAssetContainer, FilterContaienr, GridContainer, SortConditionContainer, StickyContentsContainer } from './-styled';
+
+import NoSearchIcon from '@/assets/images/icons/NoSearch70.svg';
 
 const DEFAULT_DAPP_TYPE = 'Popular';
 const ALL_DAPP_TYPE = 'All';
+const ALL_NETWORK_KEY = 'all-network';
 
 export default function Entry() {
   const { t } = useTranslation();
 
   const { data: dappList } = useDappInfos();
-  const { pinnedDappIds } = useExtensionStorageStore((state) => state);
+  const { pinnedDappIds, selectedChainFilterId } = useExtensionStorageStore((state) => state);
 
   const { flatChainList } = useChainList();
 
@@ -37,8 +41,19 @@ export default function Entry() {
 
   const [selectedDappType, setSelectedDappType] = useState(DEFAULT_DAPP_TYPE);
 
-  const [currentSelectedChainId, setCurrentSelectedChainId] = useState<UniqueChainId | undefined>();
+  const [userSelectedChainId, setUserSelectedChainId] = useState<UniqueChainId | typeof ALL_NETWORK_KEY>();
   const [isShowPinnedOnly, setIsShowPinnedOnly] = useState(false);
+
+  const currentSelectedChainId = useMemo(() => {
+    if (userSelectedChainId) {
+      if (userSelectedChainId === ALL_NETWORK_KEY) {
+        return undefined;
+      }
+      return userSelectedChainId;
+    }
+
+    return selectedChainFilterId || undefined;
+  }, [selectedChainFilterId, userSelectedChainId]);
 
   const isDebouncing = !!search && isPending();
 
@@ -142,7 +157,11 @@ export default function Entry() {
                 currentChainId={currentSelectedChainId}
                 chainList={baseChainList}
                 selectChainOption={(id) => {
-                  setCurrentSelectedChainId(id);
+                  if (!id) {
+                    setUserSelectedChainId(ALL_NETWORK_KEY);
+                  } else {
+                    setUserSelectedChainId(id);
+                  }
                 }}
               />
 
@@ -157,11 +176,17 @@ export default function Entry() {
             </SortConditionContainer>
           </StickyContentsContainer>
 
-          <GridContainer>
-            {filteredDappList?.map((dapp) => {
-              return <GridDappItem key={dapp.id} dappItemInfo={dapp} />;
-            })}
-          </GridContainer>
+          {filteredDappList && filteredDappList.length > 0 ? (
+            <GridContainer>
+              {filteredDappList?.map((dapp) => {
+                return <GridDappItem key={dapp.id} dappItemInfo={dapp} />;
+              })}
+            </GridContainer>
+          ) : (
+            <EmptyAssetContainer>
+              <EmptyAsset icon={<NoSearchIcon />} title={t('pages.dapp-list.entry.noResultsTitle')} subTitle={t('pages.dapp-list.entry.noResultsSubtitle')} />
+            </EmptyAssetContainer>
+          )}
         </Container>
       </BaseBody>
       <SortBottomSheet

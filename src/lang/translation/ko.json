@@ -360,7 +360,9 @@
         "network": "네트워크",
         "searchPlaceholder": "네트워크 검색 (예 : Bitcoin)",
         "switchCoinType": "코인 타입 변경",
-        "title": "네트워크를 선택해주세요"
+        "title": "네트워크를 선택해주세요",
+        "valueHighOrder": "금액 높은 순",
+        "alphabeticalAsc": "알파벳 순 (A -> Z)"
       }
     },
     "CheckLegacyAddressBalanceBottomSheet": {
@@ -384,7 +386,9 @@
         "alphabeticalAsc": "알파벳 순 (A -> Z)",
         "aprDesc": "APR 내림차순",
         "searchPlaceholder": "Crypto를 검색하세요 (Ex. BTC)",
-        "valueHighOrder": "금액 높은 순"
+        "valueHighOrder": "금액 높은 순",
+        "noResultsTitle": "검색 결과가 없습니다",
+        "noResultsSubtitle": "다른 조건으로 다시 시도해보세요"
       }
     },
     "CoinTypeSelector": {
@@ -606,7 +610,8 @@
           "swap": "교환",
           "vault": "Vault",
           "vaultDescription": "$NTRN의 Vault기능을 사용해보세요",
-          "vote": "투표"
+          "vote": "투표",
+          "copyFailed": "복사하지 못했습니다"
         }
       },
       "CoinOverview": {
@@ -642,7 +647,8 @@
           "send": "전송",
           "stake": "스테이킹",
           "swap": "스왑",
-          "totalValue": "나의 총 자산"
+          "totalValue": "나의 총 자산",
+          "receiveWithSymbol": "{{symbol}} 받기"
         }
       },
       "StakeDetailBox": {
@@ -1122,7 +1128,9 @@
             "nativeCoin": "Native Coin",
             "bridgeCoin": "Bridged COin",
             "type": "코인 타입",
-            "displayDecimals": "{{decimals}} decimals"
+            "displayDecimals": "{{decimals}} decimals",
+            "learnMore": "더 알아보기",
+            "coinGecko": "코인 게코"
           },
           "layout": {
             "about": "{{symbol}} 정보"
@@ -1220,7 +1228,9 @@
         "alphabeticalAsc": "알파벳 순 (A -> Z)",
         "multiChainSupport": "다중 체인 지원",
         "pinnedDapps": "즐겨찾기",
-        "searchPlaceholder": "Dapp 검색하기"
+        "searchPlaceholder": "Dapp 검색하기",
+        "noResultsTitle": "검색 결과가 없습니다",
+        "noResultsSubtitle": "다른 조건으로 다시 시도해보세요"
       },
       "layout": {
         "githubHeaderTitle": "Dapp 목록 정보",
@@ -1911,7 +1921,8 @@
           "network": "네트워크",
           "selected": "Selected :",
           "successSwitch": "지갑 주소가 업데이트되었습니다",
-          "type": "{{accountType}} TYPE"
+          "type": "{{accountType}} TYPE",
+          "failSwitch": "지갑주소 업데이트에 실패했습니다"
         },
         "layout": {
           "header": "코인 타입 변경"
@@ -1932,7 +1943,9 @@
             "importCrypto": "토큰 가져오기",
             "lastStandingError": "최소 한 개의 코인은 표시되어야 합니다",
             "supportedCrypto": "Supported Crypto",
-            "valueHighOrder": "금액 높은 순"
+            "valueHighOrder": "금액 높은 순",
+            "noResultsTitle": "검색 결과가 없습니다",
+            "noResultsSubtitle": "다른 조건으로 다시 시도해보세요"
           }
         },
         "layout": {
