@@ -52,11 +52,7 @@ export async function getChains() {
     const isTestnet = isTestnetChain(id);
     const isEvm = chain.params.chainlist_params?.chain_type?.includes('evm') ?? false;
 
-    const lcdUrls =
-      chain.params.chainlist_params.lcd_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const lcdUrls = chain.params.chainlist_params.lcd_endpoint ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
@@ -151,11 +147,7 @@ export async function getChains() {
 
     const isTestnet = isTestnetChain(id);
 
-    const rpcUrls =
-      chain.params.chainlist_params.evm_rpc_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const rpcUrls = chain.params.chainlist_params.evm_rpc_endpoint ?? [];
 
     const filteredAccountTypes = chain.params.chainlist_params?.account_type
       ?.filter((item) => {
@@ -225,11 +217,7 @@ export async function getChains() {
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? SUI_COIN_TYPE;
     const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
-    const rpcUrls =
-      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
@@ -280,11 +268,7 @@ export async function getChains() {
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? APTOS_COIN_TYPE;
     const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
-    const rpcUrls =
-      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
@@ -413,11 +397,7 @@ export async function getChains() {
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
     const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
-    const rpcUrls =
-      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {

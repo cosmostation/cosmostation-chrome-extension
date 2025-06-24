@@ -1,3 +1,5 @@
+import { removeLeadingSlash, removeTrailingSlash } from './string';
+
 export class FetchError extends Error {
   public data: Response;
 
@@ -48,7 +50,10 @@ export async function get<T>(URL: string) {
 }
 
 export function buildRequestUrl(baseUrl: string, path?: string, queryParams?: Record<string, string | number | boolean>) {
-  const requestUrl = `${baseUrl}${path || ''}`;
+  const resolvedBaseUrl = removeTrailingSlash(baseUrl);
+  const resolvedPath = removeLeadingSlash(path);
+
+  const requestUrl = resolvedPath ? `${resolvedBaseUrl}/${resolvedPath}` : resolvedBaseUrl;
 
   if (queryParams) {
     const params = new URLSearchParams(Object.entries(queryParams).map(([key, value]) => [key, String(value)]));

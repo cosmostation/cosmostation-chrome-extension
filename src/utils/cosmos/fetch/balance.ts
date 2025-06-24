@@ -5,8 +5,8 @@ import { MulticallWrapper } from 'ethers-multicall-provider';
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
+import { buildRequestUrl } from '@/utils/fetch';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
-import { removeTrailingSlash } from '@/utils/string';
 
 export const fetchCosmosBalances = async (
   address: string,
@@ -19,10 +19,11 @@ export const fetchCosmosBalances = async (
     let nextKey: string | null = null;
     const responseBalances: CosmosBalance[][] = [];
 
-    const base = removeTrailingSlash(lcdUrl);
     const urlPath = option?.path || `/cosmos/bank/v1beta1/balances/${address}`;
-    const urlQuery = 'pagination.limit=10000';
-    const requestUrl = `${base}${urlPath}?${urlQuery}`;
+
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath, {
+      'pagination.limit': '10000',
+    });
 
     const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
@@ -69,9 +70,9 @@ export const fetchCoreumSpendableBalances = async (address: string, lcdUrls: str
 
 export const fetchCW20Balances = async (address: string, contractAddress: string, lcdUrls: string[]): Promise<string> => {
   return await fetchWithFailover(lcdUrls, async (lcdUrl) => {
-    const base = removeTrailingSlash(lcdUrl);
-    const urlPath = `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${btoa(`{"balance":{"address":"${address}"}}`)}`;
-    const requestUrl = `${base}${urlPath}`;
+    const urlPath = `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${encodeURIComponent(btoa(`{"balance":{"address":"${address}"}}`))}`;
+
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
@@ -93,7 +94,7 @@ export const fetchEVMBalances = async (address: string, rpcUrls: string[]): Prom
       id: 1,
     };
 
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
+    const baseRpcUrl = rpcUrl;
     const response = await axios.post<EvmRpcGetBalanceResponse>(baseRpcUrl, body, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
     });
@@ -118,7 +119,7 @@ const ERC20_READ_ABI = [ERC20_TOTAL_SUPPLY, ERC20_DECIMALS, ERC20_SYMBOL, ERC20_
 
 export const fetchERC20Balances = async (address: string, contractAddress: string, rpcUrls: string[]): Promise<string> => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
+    const baseRpcUrl = rpcUrl;
     const provider = new ethers.JsonRpcProvider(baseRpcUrl, undefined, {
       batchMaxCount: 1,
       polling: false,
@@ -151,7 +152,7 @@ export const fetchMultiERC20Balances = async (
   }[]
 > => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
+    const baseRpcUrl = rpcUrl;
     const provider = new ethers.JsonRpcProvider(baseRpcUrl, undefined, {
       polling: false,
       staticNetwork: true,

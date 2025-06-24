@@ -4,11 +4,10 @@ import type { DelegatedStake as IotaDelegatedStake } from '@iota/iota-sdk/client
 import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { IotaRpcGetDelegatedStakeResponse } from '@/types/iota/api';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
-import { removeTrailingSlash } from '@/utils/string';
 
 export const fetchIotaDelegations = async (address: string, rpcUrls: string[]): Promise<IotaDelegatedStake[]> => {
   return await fetchWithFailover(rpcUrls, async (lcdUrl) => {
-    const requestUrl = removeTrailingSlash(lcdUrl);
+    const requestUrl = lcdUrl;
 
     const body = {
       jsonrpc: '2.0',

@@ -59,9 +59,7 @@ export default function Entry({ request }: EntryProps) {
 
       const paramData = request.params[0];
 
-      const trimmedRpcUrl = removeTrailingSlash(paramData.rpcURL);
-
-      const response = await requestRPC<EvmRpc<string>>('eth_chainId', [], '1', trimmedRpcUrl);
+      const response = await requestRPC<EvmRpc<string>>('eth_chainId', [], '1', paramData.rpcURL);
 
       const convertChainId = toHex(paramData.chainId, { addPrefix: true, isStringNumber: true });
 
@@ -91,7 +89,7 @@ export default function Entry({ request }: EntryProps) {
         rpcUrls: [
           {
             provider: 'Custom',
-            url: trimmedRpcUrl,
+            url: paramData.rpcURL,
           },
         ],
         explorer: {
