@@ -1,5 +1,6 @@
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
 import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
@@ -7,8 +8,19 @@ import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
 
-function collectDefaultDenoms(p: { gas_asset_denom?: string; staking_asset_denom?: string; main_asset_denom?: string }): string[] {
-  return [...new Set([p.gas_asset_denom, p.staking_asset_denom, p.main_asset_denom].filter((denom): denom is string => Boolean(denom)))];
+function collectDefaultDenoms(
+  p: { gas_asset_denom?: string; staking_asset_denom?: string; main_asset_denom?: string },
+  config?: {
+    isEvm?: boolean;
+  },
+): string[] {
+  return [
+    ...new Set(
+      [p.gas_asset_denom, p.staking_asset_denom, p.main_asset_denom, config?.isEvm ? NATIVE_EVM_COIN_ADDRESS : null].filter((denom): denom is string =>
+        Boolean(denom),
+      ),
+    ),
+  ];
 }
 
 export async function getChains() {
@@ -142,7 +154,9 @@ export async function getChains() {
     const isCosmos = chain.params.chainlist_params?.chain_type?.includes('cosmos') ?? false;
 
     const mainAssetDenom = (isCosmos ? chain.params?.chainlist_params?.staking_asset_denom : chain.params?.chainlist_params?.main_asset_denom) ?? null;
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params, {
+      isEvm: true,
+    });
 
     const feeInfo = {
       isEip1559: chain.params.chainlist_params?.evm_fee_info?.is_eip1559 ?? false,

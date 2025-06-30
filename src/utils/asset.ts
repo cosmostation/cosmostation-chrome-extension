@@ -64,6 +64,8 @@ export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
   });
 }
 
+const XRPL_CHAINS_ID = ['xrplevm', 'xrplevm-testnet'];
+
 export function getMainAssetByChainId<T extends FlatAccountAssets>(
   accountAssets?: T[],
   uniqueChainId?: UniqueChainId,
@@ -80,7 +82,11 @@ export function getMainAssetByChainId<T extends FlatAccountAssets>(
       return item.chain.id === id && isEqualsIgnoringCase(item.asset.id, NATIVE_EVM_COIN_ADDRESS);
     }
 
-    return item.chain.mainAssetDenom && getUniqueChainId(item.chain) === uniqueChainId && isEqualsIgnoringCase(item.asset.id, item.chain.mainAssetDenom);
+    return (
+      item.chain.mainAssetDenom &&
+      getUniqueChainId(item.chain) === uniqueChainId &&
+      isEqualsIgnoringCase(item.asset.id, XRPL_CHAINS_ID.includes(item.chain.id) ? NATIVE_EVM_COIN_ADDRESS : item.chain.mainAssetDenom)
+    );
   });
 }
 

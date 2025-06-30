@@ -18,7 +18,7 @@ export async function signAndExecuteTxSequentially(
 
     try {
       if (option?.asFeePayer) {
-        const senderAuthenticator = aptosClient.transaction.signAsFeePayer({
+        const senderAuthenticator = await aptosClient.transaction.signAsFeePayer({
           signer: signer,
           transaction,
         });
@@ -30,7 +30,7 @@ export async function signAndExecuteTxSequentially(
 
         return submittedTransaction;
       } else {
-        const senderAuthenticator = aptosClient.transaction.sign({
+        const senderAuthenticator = await aptosClient.transaction.sign({
           signer: signer,
           transaction,
         });
@@ -49,7 +49,7 @@ export async function signAndExecuteTxSequentially(
   throw new Error('All RPC URLs failed');
 }
 
-export function signTxSequentially(
+export async function signTxSequentially(
   signer: Ed25519Account,
   transaction: AnyRawTransaction,
   urls: string[],
@@ -66,14 +66,14 @@ export function signTxSequentially(
 
     try {
       if (option?.asFeePayer) {
-        const senderAuthenticator = aptosClient.transaction.signAsFeePayer({
+        const senderAuthenticator = await aptosClient.transaction.signAsFeePayer({
           signer: signer,
           transaction,
         });
 
         return senderAuthenticator;
       } else {
-        const senderAuthenticator = aptosClient.transaction.sign({
+        const senderAuthenticator = await aptosClient.transaction.sign({
           signer: signer,
           transaction,
         });
