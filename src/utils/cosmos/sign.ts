@@ -26,11 +26,12 @@ export async function signDirectAndexecuteTxSequentially({ privateKey, directDoc
 
   for (const url of urls) {
     try {
-      const response = post<SendTransactionPayload>(url, pTxBytes);
+      const response = await post<SendTransactionPayload>(url, pTxBytes);
 
       return response;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
-    } catch (_) {}
+    } catch {
+      continue;
+    }
   }
   throw new Error('All RPC URLs failed');
 }
