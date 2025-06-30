@@ -5,6 +5,7 @@ import type { ServiceWorkerMessage } from '@/types/message/service-worker';
 import { extension } from '@/utils/browser';
 import { devLogger } from '@/utils/devLogger';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { isRequestThrottled, recordRequestTimestamp } from '@/utils/updateRequest';
 import { openTab } from '@/utils/view/controlView';
 import { closeWindow } from '@/utils/view/window';
 
@@ -40,8 +41,20 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
     if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
       if (message.method === 'updateBalance') {
         const [id] = message.params;
-        await updateActiveAssetsBalance(id);
-        await updateCustomBalance(id);
+
+        if (await isRequestThrottled('updateBalance', id)) {
+          devLogger.log(`[updateBalance] Throttled for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        try {
+          await updateActiveAssetsBalance(id);
+          await updateCustomBalance(id);
+          await recordRequestTimestamp('updateBalance', id);
+        } catch (e) {
+          devLogger.error('updateBalance error', e);
+        }
 
         sendResponse(null);
       }
@@ -54,13 +67,39 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
 
       if (message.method === 'updateStaking') {
         const [id] = message.params;
-        await updateStakingRelatedBalance(id);
+
+        if (await isRequestThrottled('updateStaking', id)) {
+          devLogger.log(`[updateStaking] Throttled for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        try {
+          await updateStakingRelatedBalance(id);
+          await recordRequestTimestamp('updateStaking', id);
+        } catch (e) {
+          devLogger.error('updateStaking error', e);
+        }
+
         sendResponse(null);
       }
 
       if (message.method === 'updateAccountInfo') {
         const [id] = message.params;
-        await updateAccountInfo(id);
+
+        if (await isRequestThrottled('updateAccountInfo', id)) {
+          devLogger.log(`[updateAccountInfo] Throttled for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        try {
+          await updateAccountInfo(id);
+          await recordRequestTimestamp('updateAccountInfo', id);
+        } catch (e) {
+          devLogger.error('updateAccountInfo error', e);
+        }
+
         sendResponse(null);
       }
 

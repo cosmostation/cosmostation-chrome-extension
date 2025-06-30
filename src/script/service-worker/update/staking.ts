@@ -119,7 +119,7 @@ async function cosmosDelegations(id: string, { address, chainId }: BalanceFetchO
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -168,7 +168,7 @@ async function cosmosUnbondings(id: string, { address, chainId }: BalanceFetchOp
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -219,7 +219,7 @@ async function cosmosRewards(id: string, { address, chainId }: BalanceFetchOptio
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -307,7 +307,7 @@ async function cosmosCommissions(id: string, { address, chainId }: BalanceFetchO
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -375,7 +375,7 @@ async function suiStaking(id: string, { address, chainId }: BalanceFetchOption =
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -421,7 +421,7 @@ async function iotaStaking(id: string, { address, chainId }: BalanceFetchOption 
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;

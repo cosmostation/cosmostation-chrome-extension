@@ -1,5 +1,6 @@
 import type { PERMISSION as IOTA_PERMISSION } from '@/constants/iota';
 import type { PERMISSION } from '@/constants/sui';
+import type { RATE_LIMIT_MS } from '@/constants/updateRequest';
 
 import type {
   Account,
@@ -83,6 +84,11 @@ export type PrioritizedProvider = {
 
 export type MigrationStatus = Record<string, boolean>;
 
+type RateLimitedMethod = keyof typeof RATE_LIMIT_MS;
+export type LastRequestTimestampsKey = `${RateLimitedMethod}:${string}`;
+
+type LastRequestTimestamps = Record<LastRequestTimestampsKey, number>;
+
 export interface ExtensionStorage {
   userAccounts: Account[];
   paramsV11: Record<string, V11Param>;
@@ -156,6 +162,7 @@ export interface ExtensionStorage {
   migrationStatus: MigrationStatus | null;
   userPriceTrendPreference: PriceTrendType;
   selectedChainFilterId: UniqueChainId | null;
+  lastRequestTimestamps: LastRequestTimestamps | null;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

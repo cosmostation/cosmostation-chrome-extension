@@ -17,7 +17,7 @@ export const fetchSuiBalances = async (address: string, rpcUrls: string[]): Prom
     const baseRpcUrl = removeTrailingSlash(rpcUrl);
 
     const response = await axios.post<SuiRpcGetBalanceResponse>(baseRpcUrl, body, {
-      timeout: BALANCE_FETCH_TIME_OUT_MS * 2,
+      timeout: BALANCE_FETCH_TIME_OUT_MS,
     });
 
     if (response.data.error) {

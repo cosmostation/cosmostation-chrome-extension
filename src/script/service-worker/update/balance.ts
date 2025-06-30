@@ -328,7 +328,7 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -426,7 +426,7 @@ async function customCosmosBalances(id: string, { address, chainId }: BalanceFet
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -486,7 +486,7 @@ async function evmBalances(id: string, { isMinimal = false, address, chainId }: 
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -548,7 +548,7 @@ async function customEvmBalances(id: string, { address, chainId }: BalanceFetchO
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -607,7 +607,7 @@ async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOpt
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -686,7 +686,7 @@ async function aptosBalances(id: string, { address, chainId }: BalanceFetchOptio
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -760,7 +760,7 @@ async function suiBalances(id: string, { address, chainId }: BalanceFetchOption 
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -820,7 +820,7 @@ async function iotaBalances(id: string, { address, chainId }: BalanceFetchOption
     })
     .filter((addr) => addr.chain);
 
-  const { results } = await PromisePool.withConcurrency(10)
+  const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
@@ -952,7 +952,7 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
           return result;
         }
       } else {
-        const { results: allBalances } = await PromisePool.withConcurrency(10)
+        const { results: allBalances } = await PromisePool.withConcurrency(5)
           .for(assets)
           .process(async (asset) => {
             const { id: contractAddress } = asset;
@@ -1083,7 +1083,7 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
           return result;
         }
       } else {
-        const { results: allBalances } = await PromisePool.withConcurrency(10)
+        const { results: allBalances } = await PromisePool.withConcurrency(5)
           .for(assets)
           .process(async (asset) => {
             const { id: contractAddress } = asset;
@@ -1169,7 +1169,7 @@ async function cw20Balance(id: string, { address, chainId }: BalanceFetchOption 
       const { lcdUrls } = chain;
       const assets = cw20AssetsWithoutHidden.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
 
-      const { results: allBalances } = await PromisePool.withConcurrency(10)
+      const { results: allBalances } = await PromisePool.withConcurrency(5)
         .for(assets)
         .process(async (asset) => {
           const { id: contractAddress } = asset;
@@ -1248,7 +1248,7 @@ async function customCw20Balance(id: string, { address, chainId }: BalanceFetchO
       const { lcdUrls } = chain;
       const assets = customCw20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
 
-      const { results: allBalances } = await PromisePool.withConcurrency(10)
+      const { results: allBalances } = await PromisePool.withConcurrency(5)
         .for(assets)
         .process(async (asset) => {
           const { id: contractAddress } = asset;
