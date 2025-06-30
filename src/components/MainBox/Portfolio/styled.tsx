@@ -8,7 +8,7 @@ import IconTextButton from '@/components/common/IconTextButton';
 export const TopContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'flex-start',
+  alignItems: 'center',
 });
 
 export const TopLeftContainer = styled('div')(({ theme }) => ({
