@@ -6,6 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BalanceDisplay from '@/components/BalanceDisplay';
+import BalanceSyncStatusIcon from '@/components/BalanceSyncStatusIcon';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -193,6 +194,8 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
+              <BalanceSyncStatusIcon lastUpdatedAtMs={selectedChainMainAsset?.lastUpdatedAtMs} />
+
               <BodyBottomChipButtonContainer>
                 <ChipButton
                   variant="light"

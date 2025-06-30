@@ -156,6 +156,32 @@ export function isDateAfter(date1: string, date2: string): boolean {
   return firstDate.getTime() > secondDate.getTime();
 }
 
+export function getTimeDiffInSeconds(timestampMs: number): number {
+  const now = Date.now();
+  const diffMs = Math.abs(now - timestampMs);
+  return Math.floor(diffMs / 1000);
+}
+
+export function checkDataFreshness(timestampMs?: number | null) {
+  if (!timestampMs) return undefined;
+
+  const timeDiffInSec = getTimeDiffInSeconds(timestampMs);
+
+  // note forTest
+  // const fiveMinInSec = 300;
+  const fiveMinInSec = 60;
+  // const tenMinInSec = 600;
+  const tenMinInSec = 120;
+  if (timeDiffInSec > tenMinInSec) {
+    return 'stale';
+  }
+  if (timeDiffInSec > fiveMinInSec) {
+    return 'warning';
+  }
+
+  return 'fresh';
+}
+
 export function getFutureDateIso(day: number) {
   return new Date(Date.now() + day * 24 * 60 * 60 * 1000).toISOString();
 }

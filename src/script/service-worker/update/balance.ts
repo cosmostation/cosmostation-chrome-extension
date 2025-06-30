@@ -18,6 +18,7 @@ import type {
   AccountAddressLockedBalanceCosmos,
 } from '@/types/account';
 import type { AptosResourceResponse } from '@/types/aptos/api';
+import type { AssetId } from '@/types/asset';
 import type { AccountDetail } from '@/types/bitcoin/balance';
 import type { ChainType, UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -33,6 +34,7 @@ import {
 import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
 import { minus } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { getExtensionLocalStorage } from '@/utils/storage';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { fetchSuiBalances } from '@/utils/sui/fetch/balance';
 
@@ -48,9 +50,9 @@ interface EVMBalancesOption extends BalanceFetchOption {
   isMinimal?: boolean;
 }
 
-const defaultCosmosCoinList = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
-const defaultEvmCoinList = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
-const defaultBitcoinCoinList = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
+const defaultCosmosCoinList: AssetId[] = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
+const defaultEvmCoinList: AssetId[] = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
+const defaultBitcoinCoinList: AssetId[] = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
 
 const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
 
@@ -309,6 +311,7 @@ const isSameUpsertItem = (a: UpsertItemBase, b: UpsertItemBase) =>
 async function cosmosBalances(id: string, { isMinimal = false, address, chainId }: CosmosBalancesOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-cosmos`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -332,6 +335,10 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
       const { lcdUrls } = chain;
 
       try {
+        // note 테스트용 코드
+        // if (chainId === 'cosmos') {
+        //   throw new Error('의도적 에러처리');
+        // }
         const balances = await fetchCosmosBalances(address, lcdUrls.map((item) => item.url).filter(Boolean));
 
         if (chainId === COREUM_CHAINLIST_ID) {
@@ -358,33 +365,41 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
 
             await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [lockedResult] });
 
-            const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: spendableBalances };
+            const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: spendableBalances, lastUpdatedAtMs: Date.now() };
 
             return result;
           } catch {
             await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [] });
 
-            const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+            const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances, lastUpdatedAtMs: Date.now() };
             return result;
           }
         }
 
-        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: [] };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-cosmos`]);
-
-    const storedCosmosBalances = storage[`${id}-balance-cosmos`] || [];
-
-    const updatedCosmosBalance = upsertList(storedCosmosBalances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCosmosBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: updatedCosmosBalance });
   } else {
@@ -395,6 +410,7 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
 async function customCosmosBalances(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const customAccountAddress = await getCustomAccountAddress(id);
   const addedCustomChains = await getAddedCustomChains();
+  const stored = (await getExtensionLocalStorage(`${id}-custom-balance-cosmos`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -419,22 +435,30 @@ async function customCosmosBalances(id: string, { address, chainId }: BalanceFet
       try {
         const balances = await fetchCosmosBalances(address, lcdUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances };
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: [] };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+        const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-balance-cosmos`]);
-
-    const storedCustomCosmosBalances = storage[`${id}-custom-balance-cosmos`] || [];
-
-    const updatedCustomCosmosBalance = upsertList(storedCustomCosmosBalances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCustomCosmosBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${id}-custom-balance-cosmos`]: updatedCustomCosmosBalance });
   } else {
@@ -445,6 +469,7 @@ async function customCosmosBalances(id: string, { address, chainId }: BalanceFet
 async function evmBalances(id: string, { isMinimal = false, address, chainId }: EVMBalancesOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { evmChains } = await getChains();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-evm`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -471,22 +496,31 @@ async function evmBalances(id: string, { isMinimal = false, address, chainId }: 
       try {
         const balance = await fetchEVMBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance };
+        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance: '0x0' };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+
+        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance: '0x0', lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-evm`]);
-
-    const storedEVMBalances = storage[`${id}-balance-evm`] || [];
-
-    const updatedEVMBalance = upsertList(storedEVMBalances, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
+    const updatedEVMBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${id}-balance-evm`]: updatedEVMBalance });
   } else {
@@ -497,6 +531,7 @@ async function evmBalances(id: string, { isMinimal = false, address, chainId }: 
 async function customEvmBalances(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const customAccountAddress = await getCustomAccountAddress(id);
   const addedCustomChains = await getAddedCustomChains();
+  const stored = (await getExtensionLocalStorage(`${id}-custom-balance-evm`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -523,22 +558,30 @@ async function customEvmBalances(id: string, { address, chainId }: BalanceFetchO
       try {
         const balance = await fetchEVMBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance };
+        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance: '0x0' };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+        const result: AccountAddressBalanceEvm = { id, chainId, chainType, address, balance: '0x0', lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-balance-evm`]);
-
-    const storedCustomEVMBalances = storage[`${id}-custom-balance-evm`] || [];
-
-    const updatedCustomEVMBalance = upsertList(storedCustomEVMBalances, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
+    const updatedCustomEVMBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${id}-custom-balance-evm`]: updatedCustomEVMBalance });
   } else {
@@ -549,6 +592,7 @@ async function customEvmBalances(id: string, { address, chainId }: BalanceFetchO
 async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { bitcoinChains } = await getChains();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-bitcoin`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -582,10 +626,23 @@ async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOpt
           mempoolStats: response.data?.mempool_stats || undefined,
         };
 
-        const result: AccountAddressBalanceBitcoin = { id, chainId, chainType, address, balance };
+        const result: AccountAddressBalanceBitcoin = { id, chainId, chainType, address, balance, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+
         const result: AccountAddressBalanceBitcoin = {
           id,
           chainId,
@@ -595,6 +652,7 @@ async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOpt
             chainStats: undefined,
             mempoolStats: undefined,
           },
+          lastUpdatedAtMs: Date.now(),
         };
 
         return result;
@@ -602,11 +660,7 @@ async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOpt
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-bitcoin`]);
-
-    const storedBitcoinBalances = storage[`${id}-balance-bitcoin`] || [];
-
-    const updatedBitcoinBalances = upsertList(storedBitcoinBalances, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
+    const updatedBitcoinBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${id}-balance-bitcoin`]: updatedBitcoinBalances });
   } else {
@@ -617,6 +671,7 @@ async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOpt
 async function aptosBalances(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { aptosChains } = await getChains();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-aptos`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -655,22 +710,31 @@ async function aptosBalances(id: string, { address, chainId }: BalanceFetchOptio
 
         const balances = response.filter((resource) => resource.type?.startsWith('0x1::coin::CoinStore'));
 
-        const result: AccountAddressBalanceAptos = { id, chainId, chainType, address, balances };
+        const result: AccountAddressBalanceAptos = { id, chainId, chainType, address, balances, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceAptos = { id, chainId, chainType, address, balances: [] };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+
+        const result: AccountAddressBalanceAptos = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-aptos`]);
-
-    const storedAptosBalances = storage[`${id}-balance-aptos`] || [];
-
-    const updatedAptosBalances = upsertList(storedAptosBalances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedAptosBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos`>>({ [`${id}-balance-aptos`]: updatedAptosBalances });
   } else {
@@ -681,6 +745,7 @@ async function aptosBalances(id: string, { address, chainId }: BalanceFetchOptio
 async function suiBalances(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { suiChains } = await getChains();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-sui`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -705,22 +770,31 @@ async function suiBalances(id: string, { address, chainId }: BalanceFetchOption 
       try {
         const balances = await fetchSuiBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressBalanceSui = { id, chainId, chainType, address, balances };
+        const result: AccountAddressBalanceSui = { id, chainId, chainType, address, balances, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceSui = { id, chainId, chainType, address, balances: [] };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+
+        const result: AccountAddressBalanceSui = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-sui`]);
-
-    const storedSuiBalances = storage[`${id}-balance-sui`] || [];
-
-    const updatedSuiBalances = upsertList(storedSuiBalances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedSuiBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: updatedSuiBalances });
   } else {
@@ -731,6 +805,7 @@ async function suiBalances(id: string, { address, chainId }: BalanceFetchOption 
 async function iotaBalances(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { iotaChains } = await getChains();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-iota`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -755,22 +830,31 @@ async function iotaBalances(id: string, { address, chainId }: BalanceFetchOption
       try {
         const balances = await fetchIotaBalances(address, rpcUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressBalanceIota = { id, chainId, chainType, address, balances };
+        const result: AccountAddressBalanceIota = { id, chainId, chainType, address, balances, lastUpdatedAtMs: Date.now() };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceIota = { id, chainId, chainType, address, balances: [] };
+        const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+
+        if (target) {
+          if (!target.lastUpdatedAtMs) {
+            return {
+              ...target,
+              lastUpdatedAtMs: Date.now(),
+            };
+          }
+
+          return target;
+        }
+
+        const result: AccountAddressBalanceIota = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: Date.now() };
 
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-iota`]);
-
-    const storedIotaBalances = storage[`${id}-balance-iota`] || [];
-
-    const updatedIotaBalances = upsertList(storedIotaBalances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedIotaBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
   } else {
@@ -783,6 +867,7 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
   const hiddenAssets = await getHiddenAssets(id);
   const { evmChains } = await getChains();
   const { erc20Assets } = await getAssets();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-erc20`)) || [];
 
   const erc20AssetsToDisplay = erc20Assets.filter((asset) => {
     const isAssetVisible = !hiddenAssets.find(
@@ -826,13 +911,43 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
             rpcUrls.map((item) => item.url).filter(Boolean),
           );
 
-          const balances = allBalances.filter((balance) => balance.balance !== '0');
+          const balances = allBalances.map((item) => {
+            if (item.isError) {
+              const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+              const realTarget = target?.balances.find((storedItem) => isEqualsIgnoringCase(storedItem.contract, item.contract));
+
+              if (realTarget) {
+                if (!realTarget.lastUpdatedAtMs) {
+                  return {
+                    ...realTarget,
+                    lastUpdatedAtMs: Date.now(),
+                  };
+                }
+
+                return realTarget;
+              }
+
+              return {
+                contract: item.contract,
+                balance: '0',
+                lastUpdatedAtMs: Date.now(),
+              };
+            }
+
+            return item;
+          });
 
           const result = { id, chainId, chainType, address, balances };
 
           return result;
         } catch {
-          const result = { id, chainId, chainType, address, balances: [] };
+          const defaultAssets = assets.map((item) => ({
+            contract: item.id,
+            balance: '0',
+            lastUpdatedAtMs: Date.now(),
+          }));
+
+          const result = { id, chainId, chainType, address, balances: defaultAssets };
 
           return result;
         }
@@ -845,29 +960,39 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
             try {
               const balance = await fetchERC20Balances(address, contractAddress, rpcUrls.map((item) => item.url).filter(Boolean));
 
-              const result = { contract: contractAddress, balance };
+              const result = { contract: contractAddress, balance, lastUpdatedAtMs: Date.now() };
 
               return result;
             } catch {
-              const result = { contract: contractAddress, balance: '0' };
+              const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+              const realTarget = target?.balances.find((storedItem) => isEqualsIgnoringCase(storedItem.contract, asset.id));
 
-              return result;
+              if (realTarget) {
+                if (!realTarget.lastUpdatedAtMs) {
+                  return {
+                    ...realTarget,
+                    lastUpdatedAtMs: Date.now(),
+                  };
+                }
+
+                return realTarget;
+              }
+
+              return {
+                contract: contractAddress,
+                balance: '0',
+                lastUpdatedAtMs: Date.now(),
+              };
             }
           });
 
-        const balances = allBalances.filter((balance) => balance.balance !== '0');
-
-        const result = { id, chainId, chainType, address, balances };
+        const result = { id, chainId, chainType, address, balances: allBalances };
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-erc20`]);
-
-    const storedERC20Balances = storage[`${id}-balance-erc20`] || [];
-
-    const updatedERC20Balances = upsertList(storedERC20Balances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedERC20Balances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${id}-balance-erc20`]: updatedERC20Balances });
   } else {
@@ -883,6 +1008,7 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
   const allEVMChains = allChain.filter((chain) => chain.chainType === 'evm');
 
   const { customErc20Assets } = await getAssets();
+  const stored = (await getExtensionLocalStorage(`${id}-custom-balance-erc20`)) || [];
 
   const isUpdateSpecificAddress = !!address && !!chainId;
 
@@ -917,12 +1043,42 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
             rpcUrls.map((item) => item.url).filter(Boolean),
           );
 
-          const balances = allBalances.filter((balance) => balance.balance !== '0');
+          const balances = allBalances.map((item) => {
+            if (item.isError) {
+              const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+              const realTarget = target?.balances.find((storedItem) => isEqualsIgnoringCase(storedItem.contract, item.contract));
+
+              if (realTarget) {
+                if (!realTarget.lastUpdatedAtMs) {
+                  return {
+                    ...realTarget,
+                    lastUpdatedAtMs: Date.now(),
+                  };
+                }
+
+                return realTarget;
+              }
+
+              return {
+                contract: item.contract,
+                balance: '0',
+                lastUpdatedAtMs: Date.now(),
+              };
+            }
+
+            return item;
+          });
 
           const result = { id, chainId, chainType, address, balances };
           return result;
         } catch {
-          const result = { id, chainId, chainType, address, balances: [] };
+          const defaultAssets = assets.map((item) => ({
+            contract: item.id,
+            balance: '0',
+            lastUpdatedAtMs: Date.now(),
+          }));
+
+          const result = { id, chainId, chainType, address, balances: defaultAssets };
 
           return result;
         }
@@ -935,29 +1091,39 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
             try {
               const balance = await fetchERC20Balances(address, contractAddress, rpcUrls.map((item) => item.url).filter(Boolean));
 
-              const result = { contract: contractAddress, balance };
+              const result = { contract: contractAddress, balance, lastUpdatedAtMs: Date.now() };
 
               return result;
             } catch {
-              const result = { contract: contractAddress, balance: '0' };
+              const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+              const realTarget = target?.balances.find((storedItem) => isEqualsIgnoringCase(storedItem.contract, asset.id));
 
-              return result;
+              if (realTarget) {
+                if (!realTarget.lastUpdatedAtMs) {
+                  return {
+                    ...realTarget,
+                    lastUpdatedAtMs: Date.now(),
+                  };
+                }
+
+                return realTarget;
+              }
+
+              return {
+                contract: asset.id,
+                balance: '0',
+                lastUpdatedAtMs: Date.now(),
+              };
             }
           });
 
-        const balances = allBalances.filter((balance) => balance.balance !== '0');
-
-        const result = { id, chainId, chainType, address, balances };
+        const result = { id, chainId, chainType, address, balances: allBalances };
         return result;
       }
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-balance-erc20`]);
-
-    const storedCustomERC20Balances = storage[`${id}-custom-balance-erc20`] || [];
-
-    const updatedCustomERC20Balances = upsertList(storedCustomERC20Balances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCustomERC20Balances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: updatedCustomERC20Balances });
   } else {
@@ -970,6 +1136,7 @@ async function cw20Balance(id: string, { address, chainId }: BalanceFetchOption 
   const hiddenAssets = await getHiddenAssets(id);
   const { cosmosChains } = await getChains();
   const { cw20Assets } = await getAssets();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-cw20`)) || [];
 
   const cw20AssetsWithoutHidden = cw20Assets.filter((asset) => {
     const isAssetVisible = !hiddenAssets.find(
@@ -1010,28 +1177,38 @@ async function cw20Balance(id: string, { address, chainId }: BalanceFetchOption 
           try {
             const balance = await fetchCW20Balances(address, contractAddress, lcdUrls.map((item) => item.url).filter(Boolean));
 
-            const result = { contract: contractAddress, balance };
+            const result = { contract: contractAddress, balance, lastUpdatedAtMs: Date.now() };
 
             return result;
           } catch {
-            const result = { contract: contractAddress, balance: '0' };
+            const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+            const realTarget = target?.balances.find((storedItem) => isEqualsIgnoringCase(storedItem.contract, asset.id));
 
-            return result;
+            if (realTarget) {
+              if (!realTarget.lastUpdatedAtMs) {
+                return {
+                  ...realTarget,
+                  lastUpdatedAtMs: Date.now(),
+                };
+              }
+
+              return realTarget;
+            }
+
+            return {
+              contract: contractAddress,
+              balance: '0',
+              lastUpdatedAtMs: Date.now(),
+            };
           }
         });
 
-      const balances = allBalances.filter((balance) => balance.balance !== '0');
-
-      const result = { id, chainId, chainType, address, balances };
+      const result = { id, chainId, chainType, address, balances: allBalances };
       return result;
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-cw20`]);
-
-    const storedCW20Balances = storage[`${id}-balance-cw20`] || [];
-
-    const updatedCW20Balances = upsertList(storedCW20Balances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCW20Balances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: updatedCW20Balances });
   } else {
@@ -1047,6 +1224,7 @@ async function customCw20Balance(id: string, { address, chainId }: BalanceFetchO
   const allCosmosChains = allChain.filter((chain) => chain.chainType === 'cosmos');
 
   const { customCw20Assets } = await getAssets();
+  const stored = (await getExtensionLocalStorage(`${id}-balance-cw20`)) || [];
 
   const cosmosChainsWithCosmwasm = allCosmosChains.filter((chain) => chain.isCosmwasm);
 
@@ -1078,28 +1256,38 @@ async function customCw20Balance(id: string, { address, chainId }: BalanceFetchO
           try {
             const balance = await fetchCW20Balances(address, contractAddress, lcdUrls.map((item) => item.url).filter(Boolean));
 
-            const result = { contract: contractAddress, balance };
+            const result = { contract: contractAddress, balance, lastUpdatedAtMs: Date.now() };
 
             return result;
           } catch {
-            const result = { contract: contractAddress, balance: '0' };
+            const target = stored.find((store) => store.chainId === chainId && store.chainType === chainType && isEqualsIgnoringCase(store.address, address));
+            const realTarget = target?.balances.find((storedItem) => isEqualsIgnoringCase(storedItem.contract, asset.id));
 
-            return result;
+            if (realTarget) {
+              if (!realTarget.lastUpdatedAtMs) {
+                return {
+                  ...realTarget,
+                  lastUpdatedAtMs: Date.now(),
+                };
+              }
+
+              return realTarget;
+            }
+
+            return {
+              contract: contractAddress,
+              balance: '0',
+              lastUpdatedAtMs: Date.now(),
+            };
           }
         });
 
-      const balances = allBalances.filter((balance) => balance.balance !== '0');
-
-      const result = { id, chainId, chainType, address, balances };
+      const result = { id, chainId, chainType, address, balances: allBalances };
       return result;
     });
 
   if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-balance-cw20`]);
-
-    const storedCustomCW20Balances = storage[`${id}-custom-balance-cw20`] || [];
-
-    const updatedCustomCW20Balances = upsertList(storedCustomCW20Balances, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCustomCW20Balances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
   } else {

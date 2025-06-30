@@ -75,7 +75,6 @@ export const StyledIconContainer = styled('div')({
 
 export const BodyBottomContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',
   alignItems: 'center',
 
   marginBottom: '1.4rem',
@@ -83,7 +82,9 @@ export const BodyBottomContainer = styled('div')({
 
 export const BodyBottomChipButtonContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-end',
+
+  marginLeft: 'auto',
   columnGap: '0.6rem',
 });
 

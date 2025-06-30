@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { FlatAccountAssets, SingleOrGroupAccountAssets } from '@/types/accountAssets';
 import { isStakeableAsset } from '@/utils/asset';
-import { plus, toDisplayDenomAmount } from '@/utils/numbers';
+import { lt, plus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { useAccountAllAssets } from './useAccountAllAssets';
@@ -116,10 +116,19 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
 
       const firstItem = sortList[0].asset.id === NATIVE_EVM_COIN_ADDRESS ? sortList.find((v) => v.chain.id === 'ethereum') || sortList[0] : sortList[0];
 
+      const oldestItem = sortList.reduce<FlatAccountAssets | null>((min, curr) => {
+        if (!curr.lastUpdatedAtMs) return min;
+
+        if (!min?.lastUpdatedAtMs || lt(curr.lastUpdatedAtMs, min.lastUpdatedAtMs)) return curr;
+
+        return min;
+      }, null);
+
       return {
         ...firstItem,
         totalDisplayAmount: coinGeckoIdToTotalDisplayAmount[firstItem.asset.coinGeckoId || ''] || '0',
         counts: item.length.toString(),
+        lastUpdatedAtMs: oldestItem?.lastUpdatedAtMs,
       };
     });
 

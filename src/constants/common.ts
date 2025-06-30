@@ -31,3 +31,9 @@ export const DEFAULT_MAJOR_CHAINS: MajorChain[] = [
   { id: 'bitcoin', chainType: 'bitcoin' },
   { id: 'ethereum', chainType: 'evm' },
 ];
+
+export const DATA_FRESHNESS = {
+  FRESH: 'fresh',
+  WARNING: 'warning',
+  STALE: 'stale',
+} as const;

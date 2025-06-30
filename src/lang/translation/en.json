@@ -786,6 +786,12 @@
     },
     "JsonPopover": {
       "title": "Data"
+    },
+    "BalanceSyncStatusIcon": {
+      "index": {
+        "warning": "Balance hasn't been updated recently",
+        "stale": "Balance information may be inaccurate."
+      }
     }
   },
   "pages": {
