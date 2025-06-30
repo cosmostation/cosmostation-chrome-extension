@@ -38,7 +38,11 @@ export default function AllNetworkButton({
   const [isOpenChainListBottomSheet, setIsOpenChainListBottomSheet] = useState(false);
 
   const currentChain = chainList?.find((chain) => isMatchingUniqueChainId(chain, currentChainId));
-
+  const resolvedChainName = currentChain
+    ? currentChain.name.length > 20
+      ? currentChain.name.substring(0, 15) + '...'
+      : currentChain?.name
+    : t('components.AllNetworkButton.index.allNetwork');
   return (
     <>
       <StyledIconButton
@@ -64,7 +68,7 @@ export default function AllNetworkButton({
         }}
         {...remainder}
       >
-        <TextContainer variant={typoVarient}>{currentChain ? currentChain.name : t('components.AllNetworkButton.index.allNetwork')}</TextContainer>
+        <TextContainer variant={typoVarient}>{resolvedChainName}</TextContainer>
       </StyledIconButton>
       <ChainListBottomSheet
         currentChainId={currentChainId}
