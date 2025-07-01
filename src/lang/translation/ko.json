@@ -525,7 +525,7 @@
             "components": {
               "OptionButton": {
                 "index": {
-                  "feeToken": "Fee Token"
+                  "feeToken": "Fee Token :"
                 }
               }
             }
