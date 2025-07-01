@@ -22,6 +22,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
+import { checkDataFreshness } from '@/utils/date';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
@@ -126,7 +127,16 @@ export default function Iota({ coinId, objectId }: IotaProps) {
 
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
+  const isBalanceDataStaled = useMemo(() => {
+    const freshness = checkDataFreshness(selectedUnstakingCoin?.lastUpdatedAtMs);
+    return freshness === 'stale' || freshness === 'warning';
+  }, [selectedUnstakingCoin?.lastUpdatedAtMs]);
+
   const errorMessage = useMemo(() => {
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.staledBalance');
+    }
+
     if (!currentUnstakeObject) {
       return t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Iota.index.noObject');
     }
@@ -162,6 +172,7 @@ export default function Iota({ coinId, objectId }: IotaProps) {
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
     expectedBaseFeeAmount,
+    isBalanceDataStaled,
     t,
   ]);
 

@@ -30,6 +30,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
+import { checkDataFreshness } from '@/utils/date';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign';
 import { ceil, divide, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
@@ -202,6 +203,11 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
 
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
+  const isBalanceDataStaled = useMemo(() => {
+    const freshness = checkDataFreshness(selectedStakingCoin?.lastUpdatedAtMs);
+    return freshness === 'stale' || freshness === 'warning';
+  }, [selectedStakingCoin?.lastUpdatedAtMs]);
+
   const stakeAmountInputErrorMessage = (() => {
     if (displayStakeAmount) {
       const totalCostAmount = plus(displayStakeAmount, displayExpectedBaseFeeAmount);
@@ -223,6 +229,10 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
   })();
 
   const errorMessage = useMemo(() => {
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.stake.$coinId.entry.staledBalance');
+    }
+
     if (!currentValidator) {
       return t('pages.wallet.stake.$coinId.entry.noValidator');
     }
@@ -261,6 +271,7 @@ export default function Iota({ coinId, validatorAddress }: IotaProps) {
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
+    isBalanceDataStaled,
     stakeAmountInputErrorMessage,
     t,
   ]);

@@ -27,6 +27,7 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
+import { checkDataFreshness } from '@/utils/date.ts';
 import { getCoinType } from '@/utils/iota/coin.ts';
 import { signAndExecuteTxSequentially } from '@/utils/iota/sign.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -172,6 +173,11 @@ export default function Iota({ coinId }: IotaProps) {
 
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
+  const isBalanceDataStaled = useMemo(() => {
+    const freshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
+    return freshness === 'stale' || freshness === 'warning';
+  }, [selectedCoinToSend?.lastUpdatedAtMs]);
+
   const addressInputErrorMessage = (() => {
     if (recipientAddress && (!isValidIotaAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address))) {
       return t('pages.wallet.send.$coinId.Entry.Iota.index.invalidAddress');
@@ -202,6 +208,10 @@ export default function Iota({ coinId }: IotaProps) {
   })();
 
   const errorMessage = useMemo(() => {
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.send.$coinId.Entry.Iota.index.staledBalance');
+    }
+
     if (!recipientAddress) {
       return t('pages.wallet.send.$coinId.Entry.Iota.index.noRecipientAddress');
     }
@@ -248,6 +258,7 @@ export default function Iota({ coinId }: IotaProps) {
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
+    isBalanceDataStaled,
     recipientAddress,
     sendAmountInputErrorMessage,
     sendDisplayAmount,
@@ -407,6 +418,7 @@ export default function Iota({ coinId }: IotaProps) {
             displayFeeAmount={displayExpectedBaseFeeAmount}
             disableConfirm={!!errorMessage || isDisabled}
             isLoading={isDisabled}
+            errorMessage={errorMessage}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}

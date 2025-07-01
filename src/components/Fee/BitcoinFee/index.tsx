@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Tooltip from '@/components/common/Tooltip';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { times } from '@/utils/numbers';
@@ -14,11 +15,12 @@ type BitcoinFeeProps = {
   feeCoinId: string;
   displayFeeAmount?: string;
   disableConfirm?: boolean;
+  errorMessage?: string;
   isLoading?: boolean;
   onClickConfirm: () => void;
 };
 
-export default function BitcoinFee({ feeCoinId, displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: BitcoinFeeProps) {
+export default function BitcoinFee({ feeCoinId, displayFeeAmount, disableConfirm, errorMessage, isLoading, onClickConfirm }: BitcoinFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
@@ -57,11 +59,13 @@ export default function BitcoinFee({ feeCoinId, displayFeeAmount, disableConfirm
         </FeeCustomButton>
       </LeftContentContainer>
       <RightContentContainer>
-        {
-          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.BitcoinFee.index.continue')}
-          </StyledButton>
-        }
+        <Tooltip title={errorMessage} varient="error" placement="top">
+          <div>
+            <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+              {t('components.Fee.BitcoinFee.index.continue')}
+            </StyledButton>
+          </div>
+        </Tooltip>
       </RightContentContainer>
     </Container>
   );
