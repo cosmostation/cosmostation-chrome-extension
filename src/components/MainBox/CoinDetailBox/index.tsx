@@ -5,10 +5,12 @@ import { useNavigate } from '@tanstack/react-router';
 
 import AddressActionButtons from '@/components/AddressActionButtons';
 import BalanceDisplay from '@/components/BalanceDisplay';
+import BalanceSyncStatusIcon from '@/components/BalanceSyncStatusIcon';
 import Base1300Text from '@/components/common/Base1300Text';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
@@ -16,7 +18,7 @@ import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
 import { isStakeableAsset } from '@/utils/asset';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -29,8 +31,11 @@ import {
   CoingeckoIconContainer,
   IconContainer,
   SpacedTypography,
+  StyledIconContainer,
   StyledIconTextButton,
   SymbolButton,
+  TopContainer,
+  ValueButton,
 } from './styled';
 import MainBox from '..';
 
@@ -38,6 +43,7 @@ import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
 import DaoIcon from '@/assets/images/icons/Dao28.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
+import RefreshIcon from '@/assets/images/icons/Refresh18.svg';
 import SendIcon from '@/assets/images/icons/Send22.svg';
 import SwapIcon from '@/assets/images/icons/Swap22.svg';
 import VaultIcon from '@/assets/images/icons/Vault28.svg';
@@ -52,7 +58,9 @@ type CoinDetailBoxProps = {
 export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
   const [isSymbolButtonHovered, setIsSymbolButtonHovered] = useState(false);
+  const [isBalanceUpdateButtonHovered, setIsBalanceUpdateButtonHovered] = useState(false);
 
+  const { updateChainBalance, isLoadingChainBalance } = useManualBalanceUpdate();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -160,6 +168,14 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
     });
   };
 
+  const handleManualBalanceUpdate = async () => {
+    if (!currentCoin?.chain) return;
+
+    const chainId = getUniqueChainId(currentCoin.chain);
+
+    await updateChainBalance(chainId, currentCoin.address.address);
+  };
+
   const hanldeOnEthermintSend = useCallback(
     (val: 'cosmos' | 'evm') => {
       if (!currentCoin) return;
@@ -186,7 +202,12 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
   return (
     <>
       <MainBox
-        top={<AddressActionButtons coinId={coinId} variant="underline" typoVarient="h6n_M" />}
+        top={
+          <TopContainer>
+            <AddressActionButtons coinId={coinId} variant="underline" typoVarient="h6n_M" />
+            <BalanceSyncStatusIcon lastUpdatedAtMs={currentCoin?.lastUpdatedAtMs} />
+          </TopContainer>
+        }
         body={
           <BodyContainer>
             <BodyTopContainer>
@@ -212,9 +233,23 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
                   {symbol}
                 </Base1300Text>
               </SymbolButton>
-              <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
-                {totalDisplayAmount}
-              </BalanceDisplay>
+
+              <ValueButton
+                onClick={handleManualBalanceUpdate}
+                onMouseEnter={() => setIsBalanceUpdateButtonHovered(true)}
+                onMouseLeave={() => setIsBalanceUpdateButtonHovered(false)}
+                leadingIcon={
+                  isBalanceUpdateButtonHovered || isLoadingChainBalance ? (
+                    <StyledIconContainer data-is-loading={isLoadingChainBalance}>
+                      <RefreshIcon />
+                    </StyledIconContainer>
+                  ) : undefined
+                }
+              >
+                <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
+                  {totalDisplayAmount}
+                </BalanceDisplay>
+              </ValueButton>
             </BodyTopContainer>
             <BodyBottomContainer>
               <Typography variant="b3_M">{chainName}</Typography>

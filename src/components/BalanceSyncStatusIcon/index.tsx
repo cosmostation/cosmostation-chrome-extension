@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TooltipProps } from '@mui/material';
 
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import type { DataFreshnessType } from '@/types/dataFreshness';
@@ -12,9 +13,10 @@ import CautionIcon from '@/assets/images/icons/Caution16.svg';
 
 export type BalanceSyncStatusIconProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   lastUpdatedAtMs?: number | null;
+  tooltipProps?: TooltipProps;
 };
 
-export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, ...remainder }: BalanceSyncStatusIconProps) {
+export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, tooltipProps, ...remainder }: BalanceSyncStatusIconProps) {
   const { t } = useTranslation();
   const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
   const [freshnessStatus, setFreshnessStatus] = useState<DataFreshnessType | undefined>();
@@ -24,6 +26,13 @@ export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, ...remainder }:
     if (freshnessStatus === 'warning') return t('components.BalanceSyncStatusIcon.index.warning');
     if (freshnessStatus === 'stale') return t('components.BalanceSyncStatusIcon.index.stale');
   }, [freshnessStatus, t]);
+
+  const tooltipVarient = useMemo(() => {
+    if (freshnessStatus === 'warning') return 'warning';
+    if (freshnessStatus === 'stale') return 'error';
+
+    return 'basic';
+  }, [freshnessStatus]);
 
   useEffect(() => {
     if (!lastUpdatedAtMs) return;
@@ -42,7 +51,7 @@ export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, ...remainder }:
   if (!tooltipMessage || isUpdateBalanceLoading) return null;
 
   return (
-    <Tooltip title={tooltipMessage} varient="error" placement="top">
+    <Tooltip title={tooltipMessage} varient={tooltipVarient} placement="top" style={{ height: '1.6rem' }} {...tooltipProps}>
       <IconContainer data-sync-status={freshnessStatus} {...remainder}>
         <CautionIcon />
       </IconContainer>

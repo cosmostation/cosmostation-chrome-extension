@@ -399,7 +399,10 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedCosmosBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCosmosBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balances = i.balances;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: updatedCosmosBalance });
   } else {
@@ -458,7 +461,10 @@ async function customCosmosBalances(id: string, { address, chainId }: BalanceFet
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedCustomCosmosBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedCustomCosmosBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balances = i.balances;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${id}-custom-balance-cosmos`]: updatedCustomCosmosBalance });
   } else {
@@ -520,7 +526,10 @@ async function evmBalances(id: string, { isMinimal = false, address, chainId }: 
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedEVMBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
+    const updatedEVMBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balance = i.balance;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${id}-balance-evm`]: updatedEVMBalance });
   } else {
@@ -581,7 +590,10 @@ async function customEvmBalances(id: string, { address, chainId }: BalanceFetchO
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedCustomEVMBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
+    const updatedCustomEVMBalance = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balance = i.balance;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${id}-custom-balance-evm`]: updatedCustomEVMBalance });
   } else {
@@ -660,7 +672,10 @@ async function bitcoinBalances(id: string, { address, chainId }: BalanceFetchOpt
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedBitcoinBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balance = i.balance));
+    const updatedBitcoinBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balance = i.balance;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${id}-balance-bitcoin`]: updatedBitcoinBalances });
   } else {
@@ -734,7 +749,10 @@ async function aptosBalances(id: string, { address, chainId }: BalanceFetchOptio
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedAptosBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedAptosBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balances = i.balances;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos`>>({ [`${id}-balance-aptos`]: updatedAptosBalances });
   } else {
@@ -794,7 +812,10 @@ async function suiBalances(id: string, { address, chainId }: BalanceFetchOption 
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedSuiBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedSuiBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balances = i.balances;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: updatedSuiBalances });
   } else {
@@ -854,7 +875,10 @@ async function iotaBalances(id: string, { address, chainId }: BalanceFetchOption
     });
 
   if (isUpdateSpecificAddress) {
-    const updatedIotaBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => (e.balances = i.balances));
+    const updatedIotaBalances = upsertList(stored, results, isSameUpsertItem, (e, i) => {
+      e.balances = i.balances;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    });
 
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
   } else {

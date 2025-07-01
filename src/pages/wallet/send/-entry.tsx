@@ -47,7 +47,11 @@ export default function Entry() {
 
   return (
     <BaseBody>
-      <EdgeAligner>
+      <EdgeAligner
+        style={{
+          flex: '1',
+        }}
+      >
         <CoinSelect
           onSelectCoin={(coinId) => {
             const currentCoin = currentAccountAssets?.flatAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
