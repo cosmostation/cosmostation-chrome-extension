@@ -5,6 +5,8 @@ import { sendMessage } from '@/libs/extension';
 import type { UniqueChainId } from '@/types/chain';
 import { devLogger } from '@/utils/devLogger';
 
+import { useUpdateBalance } from '../update/useUpdateBalance';
+import { useUpdateStaking } from '../update/useUpdateStaking';
 import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCurrentAccount } from '../useCurrentAccount';
 
@@ -51,6 +53,9 @@ export function useManualBalanceUpdate() {
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { isLoading: isAutoBalanceLoading } = useUpdateBalance();
+  const { isLoading: isAutoStakingLoading } = useUpdateStaking();
+
   const { currentAccount } = useCurrentAccount();
   const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
 
@@ -64,6 +69,8 @@ export function useManualBalanceUpdate() {
 
   const updateAllBalance = async () => {
     defaultTimeout();
+    if (isLoadingAllBalance || isAutoBalanceLoading || isAutoStakingLoading) return;
+
     setIsLoadingAllBalance(true);
 
     try {
@@ -77,6 +84,8 @@ export function useManualBalanceUpdate() {
 
   const updateChainBalance = async (chainId: UniqueChainId, address: string) => {
     defaultTimeout();
+    if (isLoadingChainBalance) return;
+
     setIsLoadingChainBalance(true);
 
     try {
