@@ -479,15 +479,6 @@ export default function ChainListBottomSheet({
                         </CoinTypeButtonContainer>
                       ) : undefined
                     }
-                    rightComponent={
-                      isShowValue ? (
-                        <AmountContainer>
-                          <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                            {item.value}
-                          </BalanceDisplay>
-                        </AmountContainer>
-                      ) : undefined
-                    }
                   />
                 );
               })}
