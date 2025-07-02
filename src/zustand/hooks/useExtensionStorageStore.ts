@@ -103,3 +103,11 @@ export const loadExtensionStorageStoreFromStorage = async () => {
     ...allStorage,
   });
 };
+
+export const loadExtensionStorageStoreFromStorageByKey = async <K extends ExtensionStorageKeys>(key: K) => {
+  const value = (await getExtensionLocalStorage(key)) as ExtensionStorageStore[K];
+
+  useExtensionStorageStore.setState({
+    [key]: value,
+  } as Pick<ExtensionStorageStore, K>);
+};
