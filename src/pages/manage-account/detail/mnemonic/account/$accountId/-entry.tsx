@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
-import AccountImage from '@/components/AccountImage';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
@@ -24,7 +23,6 @@ import { updateAccountName } from '@/utils/zustand/accountNames';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
-  AccountImgContainer,
   Caution,
   CautionIconContainer,
   CautionText,
@@ -33,7 +31,6 @@ import {
   MainContentSubtitleText,
   MainContentTitleText,
   OptionButtonContainer,
-  SmallAccountImgContainer,
 } from './-styled';
 import MainContentsLayout from '../../../-components/MainContentsLayout';
 
@@ -117,11 +114,7 @@ export default function Entry({ accountId }: EntryProps) {
         <>
           <MainContentsContainer>
             <MainContentsLayout
-              top={
-                <AccountImgContainer>
-                  <AccountImage accountId={accountId} />
-                </AccountImgContainer>
-              }
+              top={<></>}
               body={
                 <MainContentBody>
                   <IconTextButton
@@ -222,11 +215,7 @@ export default function Entry({ accountId }: EntryProps) {
         onClose={() => setIsOpenDeleteAccountBottomSheet(false)}
         contents={
           <MainContentsLayout
-            top={
-              <SmallAccountImgContainer>
-                <AccountImage accountId={accountId} />
-              </SmallAccountImgContainer>
-            }
+            top={<></>}
             body={
               <MainContentBody>
                 <MainContentTitleText variant="b1_B">{accountName}</MainContentTitleText>

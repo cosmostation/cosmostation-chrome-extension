@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import EmptyAsset from '@/components/EmptyAsset';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
@@ -13,7 +12,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import {
   AccountButton,
-  AccountImgContainer,
   AccountInfoContainer,
   AccountLeftContainer,
   AddressText,
@@ -234,10 +232,6 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
                     }}
                   >
                     <AccountLeftContainer>
-                      <AccountImgContainer>
-                        <AccountImage accountId={addressDetail.accountId} />
-                      </AccountImgContainer>
-
                       <AccountInfoContainer>
                         <TitleContainer>
                           <Base1300Text
@@ -282,10 +276,6 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
                   }}
                 >
                   <AccountLeftContainer>
-                    <AccountImgContainer>
-                      <AccountImage accountId={item.accountId} />
-                    </AccountImgContainer>
-
                     <AccountInfoContainer>
                       <TitleContainer>
                         <Base1300Text

@@ -18,11 +18,6 @@ export const BodyContainer = styled('div')({
   justifyContent: 'center',
 });
 
-export const AccountImgContainer = styled('div')({
-  width: '2.8rem',
-  height: '2.8rem',
-});
-
 export const EmptyAssetContainer = styled('div')({
   position: 'absolute',
 

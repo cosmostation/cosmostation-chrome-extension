@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
-import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
 import NumberTypo from '@/components/common/NumberTypo';
@@ -17,7 +16,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import {
   AccountButton,
-  AccountImgContainer,
   AccountInfoContainer,
   AccountLeftContainer,
   AccountRightContainer,
@@ -170,10 +168,6 @@ export default function MnemonicAccount({ search }: MnemonicAccountProps) {
                     }}
                   >
                     <AccountLeftContainer>
-                      <AccountImgContainer>
-                        <AccountImage accountId={item.id} />
-                      </AccountImgContainer>
-
                       <AccountInfoContainer>
                         <Base1300Text variant="b2_M">{item.accountName}</Base1300Text>
                         <LastHdPathTextContainer>

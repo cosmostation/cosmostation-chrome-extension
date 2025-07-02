@@ -2,12 +2,11 @@ import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useNavigate } from '@tanstack/react-router';
 
-import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import { Route as PrivateKeyAccountDetail } from '@/pages/manage-account/detail/privateKey/account/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { AccountButton, AccountImgContainer, AccountInfoContainer, AccountLeftContainer, AccountRightContainer, Container } from './styled';
+import { AccountButton, AccountInfoContainer, AccountLeftContainer, AccountRightContainer, Container } from './styled';
 import { type IndexedPrivatedKeyAccount, PRIVATE_KEY_ACCOUNT_DND_ITEM_TYPE } from '../..';
 
 import OrderIcon from 'assets/images/icons/Order20.svg';
@@ -78,10 +77,6 @@ export default function DraggablePrivateKeyAccountItem({
         }}
       >
         <AccountLeftContainer>
-          <AccountImgContainer>
-            <AccountImage accountId={draggableItem.accountId} />
-          </AccountImgContainer>
-
           <AccountInfoContainer>
             <Base1300Text variant="b2_M">{accountName}</Base1300Text>
           </AccountInfoContainer>

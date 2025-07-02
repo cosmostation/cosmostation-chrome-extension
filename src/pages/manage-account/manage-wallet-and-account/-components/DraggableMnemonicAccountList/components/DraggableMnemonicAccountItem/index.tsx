@@ -3,7 +3,6 @@ import { useDrag, useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
-import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import NumberTypo from '@/components/common/NumberTypo';
 import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
@@ -14,7 +13,6 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 
 import {
   AccountButton,
-  AccountImgContainer,
   AccountInfoContainer,
   AccountLeftContainer,
   BodyContainer,
@@ -144,9 +142,6 @@ export default function DraggableMnemonicAccountItem({
               }}
             >
               <AccountLeftContainer>
-                <AccountImgContainer>
-                  <AccountImage accountId={item.id} />
-                </AccountImgContainer>
                 <AccountInfoContainer>
                   <Base1300Text variant="b2_M">{accountName}</Base1300Text>
                   <LastHdPathTextContainer>

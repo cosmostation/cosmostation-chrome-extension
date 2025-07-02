@@ -70,11 +70,6 @@ export const AccountLeftContainer = styled('div')({
 
 export const AccountRightContainer = styled('div')({});
 
-export const AccountImgContainer = styled('div')({
-  width: '2.8rem',
-  height: '2.8rem',
-});
-
 export const AccountInfoContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
