@@ -38,8 +38,7 @@ export const Body = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    minHeight: '70%',
-    maxHeight: '90%',
+    height: '90%',
   },
 });
 
