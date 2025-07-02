@@ -6,8 +6,9 @@ import type { NTRNRewardsResponse } from '@/types/cosmos/contract';
 import type { DelegationPayload, KavaDelegationPayload, LcdDelegationResponse } from '@/types/cosmos/delegation';
 import type { RewardDetails, RewardPayload } from '@/types/cosmos/reward';
 import type { UnbondingPayload, UnbondingResponses } from '@/types/cosmos/undelegation';
+import { buildRequestUrl } from '@/utils/fetch';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
-import { removeTrailingSlash, toBase64 } from '@/utils/string';
+import { toBase64 } from '@/utils/string';
 
 const isKavaPayload = (payload: DelegationPayload | KavaDelegationPayload): payload is KavaDelegationPayload =>
   (payload as KavaDelegationPayload).result?.[0]?.delegation?.delegator_address !== undefined;
@@ -17,9 +18,8 @@ export const fetchCosmosDelegations = async (address: string, lcdUrls: string[])
     let nextKey: string | null = null;
     const responseDelegations: LcdDelegationResponse[][] = [];
 
-    const base = removeTrailingSlash(lcdUrl);
     const urlPath = `/cosmos/staking/v1beta1/delegations/${address}`;
-    const requestUrl = `${base}${urlPath}`;
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<DelegationPayload | KavaDelegationPayload>(requestUrl, {
       timeout: DEFAULT_FETCH_TIME_OUT_MS,
@@ -95,9 +95,8 @@ export const fetchCosmosUnbondings = async (address: string, lcdUrls: string[]):
     let nextKey: string | null = null;
     const responseUnbondings: UnbondingResponses[][] = [];
 
-    const base = removeTrailingSlash(lcdUrl);
     const urlPath = `/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`;
-    const requestUrl = `${base}${urlPath}`;
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<UnbondingPayload>(requestUrl, {
       timeout: DEFAULT_FETCH_TIME_OUT_MS,
@@ -161,9 +160,8 @@ export const fetchCosmosUnbondings = async (address: string, lcdUrls: string[]):
 
 export const fetchCosmosRewards = async (address: string, lcdUrls: string[]): Promise<RewardDetails> => {
   return await fetchWithFailover(lcdUrls, async (lcdUrl) => {
-    const base = removeTrailingSlash(lcdUrl);
     const urlPath = `/cosmos/distribution/v1beta1/delegators/${address}/rewards`;
-    const requestUrl = `${base}${urlPath}`;
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<RewardPayload>(requestUrl, {
       timeout: DEFAULT_FETCH_TIME_OUT_MS,
@@ -204,9 +202,8 @@ export const fetchCosmosRewards = async (address: string, lcdUrls: string[]): Pr
 
 export const fetchNTRNRewards = async (address: string, rewardContractAddress: string, lcdUrls: string[]): Promise<RewardDetails> => {
   return await fetchWithFailover(lcdUrls, async (lcdUrl) => {
-    const base = removeTrailingSlash(lcdUrl);
-    const urlPath = `/cosmwasm/wasm/v1/contract/${rewardContractAddress}/smart/${toBase64(`{"rewards":{"user":"${address}"}}`)}`;
-    const requestUrl = `${base}${urlPath}`;
+    const urlPath = `/cosmwasm/wasm/v1/contract/${rewardContractAddress}/smart/${encodeURIComponent(toBase64(`{"rewards":{"user":"${address}"}}`))}`;
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<NTRNRewardsResponse>(requestUrl, {
       timeout: DEFAULT_FETCH_TIME_OUT_MS,
@@ -239,9 +236,9 @@ export const fetchNTRNRewards = async (address: string, rewardContractAddress: s
 
 export const fetchCosmosCommission = async (validatorAddress: string, lcdUrls: string[]): Promise<CommissionResponse> => {
   return await fetchWithFailover(lcdUrls, async (lcdUrl) => {
-    const base = removeTrailingSlash(lcdUrl);
     const urlPath = `/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`;
-    const requestUrl = `${base}${urlPath}`;
+
+    const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<CommissionResponse>(requestUrl, {
       timeout: DEFAULT_FETCH_TIME_OUT_MS,

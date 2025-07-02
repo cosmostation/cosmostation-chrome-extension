@@ -4,7 +4,7 @@ import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CosmosValidator } from '@/types/cosmos/validator';
 
 import { get } from '../axios';
-import { removeTrailingSlash } from '../string';
+import { buildRequestUrl } from '../fetch';
 
 export function isValidCosmosAddress(address: string, addressPrefix: string): boolean {
   try {
@@ -34,8 +34,8 @@ export function getAddressPrefix(address?: string) {
 }
 
 export async function isValidatorAddress(address: string, lcdUrl: string): Promise<boolean> {
-  const base = removeTrailingSlash(lcdUrl);
-  const url = `${base}/cosmos/staking/v1beta1/validators/${address}`;
+  const url = buildRequestUrl(lcdUrl, `/cosmos/staking/v1beta1/validators/${address}`);
+
   try {
     const response = await get<{
       validator: CosmosValidator;

@@ -4,11 +4,10 @@ import type { DelegatedStake as SuiDelegatedStake } from '@mysten/sui/client';
 import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { SuiRpcGetDelegatedStakeResponse } from '@/types/sui/api';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
-import { removeTrailingSlash } from '@/utils/string';
 
 export const fetchSuiDelegations = async (address: string, rpcUrls: string[]): Promise<SuiDelegatedStake[]> => {
   return await fetchWithFailover(rpcUrls, async (lcdUrl) => {
-    const requestUrl = removeTrailingSlash(lcdUrl);
+    const requestUrl = lcdUrl;
 
     const body = {
       jsonrpc: '2.0',

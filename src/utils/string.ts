@@ -82,6 +82,11 @@ export function removeTrailingSlash(path: string) {
   return path.endsWith('/') ? path.slice(0, -1) : path;
 }
 
+export function removeLeadingSlash(val?: string): string {
+  if (!val) return '';
+  return val.startsWith('/') ? val.slice(1) : val;
+}
+
 export function removeTemplateLiteral(path: string) {
   return path.replace(/\$\{\w+\}/g, '');
 }

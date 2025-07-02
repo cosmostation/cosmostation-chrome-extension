@@ -3,6 +3,7 @@ import { throttle } from 'lodash';
 import type { AccountTxPayload } from '@/types/bitcoin/txs';
 import { get } from '@/utils/axios';
 import { sortByLatestDate } from '@/utils/date';
+import { buildRequestUrl } from '@/utils/fetch';
 
 import { useInfiniteFetch, type UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
@@ -19,7 +20,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
   const mempoolSpaceURL = accountAsset?.chain.mempoolURL || '';
   const address = accountAsset?.address.address || '';
 
-  const requestURL = mempoolSpaceURL && `${mempoolSpaceURL}/address/${address}/txs`;
+  const requestURL = mempoolSpaceURL && buildRequestUrl(mempoolSpaceURL, `/address/${address}/txs`);
 
   const fetcher = async (pageParam: string, requestURL: string) => {
     const paginatedRequestURL = pageParam ? `${requestURL}?after_txid=${pageParam}` : requestURL;

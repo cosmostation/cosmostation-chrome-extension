@@ -22,7 +22,6 @@ import { sendMessage } from '@/libs/extension';
 import type { CustomAsset } from '@/types/asset';
 import type { CustomCosmosChain } from '@/types/chain';
 import type { CosRequestAddChain, CosRequestAddChainResponse } from '@/types/message/inject/cosmos';
-import { removeTrailingSlash } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import { DetailWrapper, Divider, InformationContainer, LabelContainer, LineDivider } from './-styled';
@@ -53,8 +52,6 @@ export default function Entry({ request }: EntryProps) {
     try {
       setIsProcessing(true);
 
-      const trimmedRestUrl = removeTrailingSlash(request.params.restURL);
-
       const chainId = request.params.chainId;
 
       const formattedCoinType = request.params.coinType
@@ -77,7 +74,7 @@ export default function Entry({ request }: EntryProps) {
         lcdUrls: [
           {
             provider: 'Custom',
-            url: trimmedRestUrl,
+            url: request.params.restURL,
           },
         ],
         explorer: null,

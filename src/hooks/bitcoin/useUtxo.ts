@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import type { Utxo } from '@/types/bitcoin/balance';
 import { get } from '@/utils/axios';
+import { buildRequestUrl } from '@/utils/fetch';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -20,7 +21,7 @@ export function useUtxo({ coinId, config }: UseUtxoProps) {
   const requestURL = useMemo(() => {
     if (!asset?.chain.mempoolURL || !asset.address.address) return '';
 
-    return `${asset.chain.mempoolURL}/address/${asset.address.address}/utxo`;
+    return buildRequestUrl(asset.chain.mempoolURL, `/address/${asset.address.address}/utxo`);
   }, [asset?.chain.mempoolURL, asset?.address.address]);
 
   const fetcher = async () => {
