@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
-import AccountImage from '@/components/AccountImage';
 import Base1300Text from '@/components/common/Base1300Text';
 import BaseOptionButton from '@/components/common/BaseOptionButton';
 import EmptyAsset from '@/components/EmptyAsset';
@@ -10,7 +9,7 @@ import VerifyPasswordBottomSheet from '@/components/VerifyPasswordBottomSheet';
 import { Route as ViewPrivateKey } from '@/pages/manage-account/view/privateKey/$accountId';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { AccountImgContainer, BodyContainer, Container, EmptyAssetContainer } from './styled';
+import { BodyContainer, Container, EmptyAssetContainer } from './styled';
 
 import ImportPrivateKeyIcon from '@/assets/images/icons/ImportPrivateKey70.svg';
 
@@ -38,11 +37,6 @@ export default function PrivateKeyAccountList() {
                   onClick={() => {
                     setSupposedToBackupAccountId(item.id);
                   }}
-                  leftContent={
-                    <AccountImgContainer>
-                      <AccountImage accountId={item.id} />
-                    </AccountImgContainer>
-                  }
                   leftSecondHeader={<Base1300Text variant="b2_M">{accountName}</Base1300Text>}
                   style={{
                     padding: '1.6rem',

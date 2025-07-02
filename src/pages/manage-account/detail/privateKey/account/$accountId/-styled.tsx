@@ -26,13 +26,3 @@ export const MainContentBody = styled('div')({
 export const MainContentTitleText = styled(Base1300Text)({
   marginRight: '0.2rem',
 });
-
-export const AccountImgContainer = styled('div')({
-  width: '5.4rem',
-  height: '5.4rem',
-});
-
-export const SmallAccountImgContainer = styled('div')({
-  width: '4.2rem',
-  height: '4.2rem',
-});

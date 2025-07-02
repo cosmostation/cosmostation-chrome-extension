@@ -10,7 +10,7 @@ export const Container = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
 
   paddingBottom: '1.2rem',
   paddingTop: '1rem',

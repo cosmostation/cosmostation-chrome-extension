@@ -11,7 +11,7 @@ export const Container = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
 
   paddingBottom: '1.2rem',
 
@@ -71,12 +71,6 @@ export const AccountButton = styled('button')(({ theme }) => ({
     backgroundColor: theme.palette.color.base200,
   },
 }));
-
-export const AccountImgContainer = styled('div')({
-  width: '2.8rem',
-  height: '2.8rem',
-  minWidth: '2.8rem',
-});
 
 export const AccountLeftContainer = styled('div')({
   display: 'flex',

@@ -62,6 +62,7 @@ export const BodyContainer = styled('div')({
 
 export const AccountButton = styled('button')(({ theme }) => ({
   width: '100%',
+  height: '6rem',
 
   display: 'flex',
   alignItems: 'center',
@@ -71,7 +72,7 @@ export const AccountButton = styled('button')(({ theme }) => ({
 
   cursor: 'pointer',
 
-  padding: '1.3rem 1.6rem 1.2rem',
+  paddingLeft: '1.6rem',
 
   '&:hover': {
     backgroundColor: theme.palette.color.base200,
@@ -89,11 +90,6 @@ export const AccountLeftContainer = styled('div')({
 });
 
 export const AccountRightContainer = styled('div')({});
-
-export const AccountImgContainer = styled('div')({
-  width: '2.8rem',
-  height: '2.8rem',
-});
 
 export const AccountInfoContainer = styled('div')({
   display: 'flex',
