@@ -11,6 +11,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -63,9 +64,16 @@ export default function Entry({ request }: EntryProps) {
     () => currentBitcoinNetwork && accountAllAssets?.bitcoinAccountAssets.find((item) => isSameChain(item.chain, currentBitcoinNetwork)),
     [accountAllAssets?.bitcoinAccountAssets, currentBitcoinNetwork],
   );
+  const balance = useBalance({ coinId: nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : '' });
 
   const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
-  const nativeCoinAvailableAmount = useMemo(() => nativeAccountAsset?.balance || '0', [nativeAccountAsset?.balance]);
+  const nativeCoinAvailableAmount = useMemo(() => {
+    if (!balance.data) {
+      return 0;
+    }
+
+    return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
+  }, [balance.data]);
 
   const { siteIconURL } = useSiteIconURL(origin);
   const siteTitle = getSiteTitle(origin);

@@ -5,7 +5,6 @@ import BalanceDisplay from '@/components/BalanceDisplay';
 import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { toDisplayDenomAmount } from '@/utils/numbers';
-import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { AmountDetailWrapper, Container, DetailRow, LabelText, PendingAmountContainer, TitleText, ValueText } from './styled';
 
@@ -17,19 +16,15 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   const { t } = useTranslation();
 
   const { getBitcoinAccountAsset } = useGetAccountAsset({ coinId });
-  const { data: currentAccountBalance } = useBalance();
+  const { data: currentAccountBalance } = useBalance({ coinId });
 
   const selectedCoin = getBitcoinAccountAsset();
-
-  const address = selectedCoin?.address.address || '';
 
   const decimal = selectedCoin?.asset.decimals || 0;
 
   const availableDisplayAmount = toDisplayDenomAmount(selectedCoin?.balance || '0', decimal);
 
-  const currentBitcoinTypeBalance = currentAccountBalance?.find((item) => isEqualsIgnoringCase(item.address, address));
-
-  const pendingReceiveDisplayAmount = toDisplayDenomAmount(currentBitcoinTypeBalance?.balance?.mempoolStats?.funded_txo_sum || '0', decimal);
+  const pendingReceiveDisplayAmount = toDisplayDenomAmount(currentAccountBalance?.mempool_stats?.funded_txo_sum || '0', decimal);
 
   return (
     <Container>
