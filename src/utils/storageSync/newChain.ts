@@ -17,9 +17,9 @@ export async function checkMissingAddresses() {
   for (const { id: accountId } of userAccounts) {
     try {
       const userAccountAddressess = await getAccountAddress(accountId);
-      const userAccountSet = new Set(userAccountAddressess.map((item) => getUniqueChainIdWithManual(item.chainId, item.chainType)));
+      const storedChainIdSet = new Set(userAccountAddressess.map((item) => getUniqueChainIdWithManual(item.chainId, item.chainType)));
 
-      if (flatChainIds.some((aa) => !userAccountSet.has(aa))) {
+      if (flatChainIds.some((newChainId) => !storedChainIdSet.has(newChainId))) {
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
         await loadExtensionStorageStoreFromStorageByKey(`${accountId}-address`);
       }
