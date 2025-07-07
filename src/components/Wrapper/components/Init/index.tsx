@@ -6,7 +6,6 @@ import type { ExtensionStorageKeys } from '@/types/extension';
 import type { LanguageType } from '@/types/language';
 import { extension } from '@/utils/browser';
 import { getExtensionLocalStorage, initExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
-import { checkMissingAddresses } from '@/utils/storageSync/newChain';
 import { loadExtensionSessionStorageStoreFromStorage } from '@/zustand/hooks/useExtensionSessionStorageStore';
 import { loadAllStoreFromStorage } from '@/zustand/utils';
 
@@ -63,7 +62,6 @@ export default function Init({ children }: InitProps) {
       await loadAllStoreFromStorage();
 
       setIsHydrated(true);
-      startPostHydrationWorks();
     })();
 
     return () => {
@@ -77,8 +75,4 @@ export default function Init({ children }: InitProps) {
   }
 
   return <>{children}</>;
-}
-
-function startPostHydrationWorks() {
-  void checkMissingAddresses();
 }
