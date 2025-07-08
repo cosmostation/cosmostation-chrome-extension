@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 import type { TransactionResponse } from '@aptos-labs/ts-sdk';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 

@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 import type { SuiTransactionBlockResponseQuery } from '@mysten/sui/client';
 
 import type { SuiRpcGetTransactionBlocksResponse } from '@/types/sui/api';

@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import { throttle } from 'lodash-es';
 
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { AccountTxsPayload } from '@/types/evm/txs';
