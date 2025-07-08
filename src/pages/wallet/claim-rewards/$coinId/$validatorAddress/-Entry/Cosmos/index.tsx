@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
+import { SignMode } from '@keplr-wallet/proto-types/cosmos/tx/signing/v1beta1/signing';
 import { InputAdornment, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -29,7 +30,6 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
 import { isTestnetChain } from '@/utils/chain';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
@@ -261,7 +261,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         rewardAminoTx,
         [''],
         { type: selectedRewardCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        SignMode.SIGN_MODE_DIRECT,
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
@@ -446,7 +446,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
         finalizedTransaction,
         [''],
         { type: selectedRewardCoin.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: base64PublicKey },
-        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        SignMode.SIGN_MODE_DIRECT,
       );
 
       if (!pTx) {

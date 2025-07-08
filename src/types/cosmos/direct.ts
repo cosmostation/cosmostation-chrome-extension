@@ -29,6 +29,22 @@ export type MsgTransfer = {
   memo: string;
 };
 
+export type MsgTransfer2 = {
+  receiver: string;
+  sender: string;
+  source_channel: string;
+  source_port: string;
+  timeout_height?: Height2;
+  timeout_timestamp: Long;
+  token?: Amount;
+  memo: string;
+};
+
+export type Height2 = {
+  revision_height?: Long;
+  revision_number?: Long;
+};
+
 export type MsgCommission = {
   validator_address: string;
 };

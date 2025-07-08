@@ -3,11 +3,11 @@ import sha256 from 'crypto-js/sha256';
 import { keccak256 } from 'ethers/crypto';
 import sortKeys from 'sort-keys';
 import ecc from '@bitcoinerlab/secp256k1';
+import { SignDoc } from '@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx';
 
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { COSMOS_EUREKA_CONTRCT_LIST } from '@/constants/cosmos/eureka';
-import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type {
   Msg,
@@ -44,14 +44,14 @@ export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer, chain: Cosm
 }
 
 export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: CosmosChain) {
-  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({
-    ...signDoc,
-    auth_info_bytes: toUint8Array(signDoc.auth_info_bytes),
-    body_bytes: toUint8Array(signDoc.body_bytes),
-    account_number: Number(signDoc.account_number),
+  const txSignDoc = SignDoc.fromPartial({
+    chainId: signDoc.chain_id,
+    authInfoBytes: toUint8Array(signDoc.auth_info_bytes),
+    bodyBytes: toUint8Array(signDoc.body_bytes),
+    accountNumber: signDoc.account_number,
   });
 
-  const txSignDocHex = Buffer.from(cosmos.tx.v1beta1.SignDoc.encode(txSignDoc).finish()).toString('hex');
+  const txSignDocHex = Buffer.from(SignDoc.encode(txSignDoc).finish()).toString('hex');
 
   const sha256SignDoc = (() => {
     const { accountTypes } = chain;

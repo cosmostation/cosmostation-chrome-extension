@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AuthInfo, Fee, TxBody } from '@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx';
 import { Typography } from '@mui/material';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -29,7 +30,6 @@ import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import MemoInput from '@/pages/popup/-components/MemoInput';
 import RawTx from '@/pages/popup/-components/RawTx';
-import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type { Msg } from '@/types/cosmos/direct';
 import type { CosSignDirect, CosSignDirectResponse } from '@/types/message/inject/cosmos';
@@ -93,8 +93,8 @@ export default function Entry({ request, chain }: EntryProps) {
   const auth_info_bytes = useMemo(() => toUint8Array(doc.auth_info_bytes), [doc.auth_info_bytes]);
   const body_bytes = useMemo(() => toUint8Array(doc.body_bytes), [doc.body_bytes]);
 
-  const decodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(body_bytes), [body_bytes]);
-  const decodedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
+  const decodedBodyBytes = useMemo(() => TxBody.decode(body_bytes), [body_bytes]);
+  const decodedAuthInfoBytes = useMemo(() => AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
 
   const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
 
@@ -103,7 +103,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: accountAssetCoinId });
 
-  const { fee, signer_infos } = decodedAuthInfoBytes;
+  const { fee, signerInfos: signer_infos } = decodedAuthInfoBytes;
 
   const inputFee = useMemo(
     () =>
@@ -173,7 +173,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const simulate = useSimulate({ coinId: accountAssetCoinId, txBytes: memoizedProtoTx?.tx_bytes });
 
-  const dappFromGas = useMemo(() => (fee?.gas_limit ? String(fee.gas_limit) : '0'), [fee?.gas_limit]);
+  const dappFromGas = useMemo(() => (fee?.gasLimit ? String(fee?.gasLimit) : '0'), [fee?.gasLimit]);
   const dappFromGasRate = useMemo(() => (equal(dappFromGas, '0') ? '0' : divide(inputFee.amount || '0', dappFromGas)), [dappFromGas, inputFee.amount]);
 
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
@@ -259,16 +259,16 @@ export default function Entry({ request, chain }: EntryProps) {
     return ceil(baseFee);
   }, [baseFee]);
 
-  const encodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo: signingMemo }).finish(), [decodedBodyBytes, signingMemo]);
+  const encodedBodyBytes = useMemo(() => TxBody.encode({ ...decodedBodyBytes, memo: signingMemo }).finish(), [decodedBodyBytes, signingMemo]);
   const encodedAuthInfoBytes = useMemo(
     () =>
-      cosmos.tx.v1beta1.AuthInfo.encode({
+      AuthInfo.encode({
         ...decodedAuthInfoBytes,
-        fee: {
+        fee: Fee.fromPartial({
           ...fee,
           amount: [{ denom: selectedFeeOption.denom || chain.mainAssetDenom, amount: currentFee }],
-          gas_limit: Number(selectedFeeOption.gas || '0'),
-        },
+          gasLimit: selectedFeeOption.gas || '0',
+        }),
       }).finish(),
     [chain.mainAssetDenom, currentFee, decodedAuthInfoBytes, fee, selectedFeeOption.denom, selectedFeeOption.gas],
   );
@@ -279,8 +279,8 @@ export default function Entry({ request, chain }: EntryProps) {
     [auth_info_bytes, encodedAuthInfoBytes, isFeeUpdateAllowed],
   );
 
-  const decodedChangedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(bodyBytes), [bodyBytes]);
-  const decodedChangedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes), [authInfoBytes]);
+  const decodedChangedBodyBytes = useMemo(() => TxBody.decode(bodyBytes), [bodyBytes]);
+  const decodedChangedAuthInfoBytes = useMemo(() => AuthInfo.decode(authInfoBytes), [authInfoBytes]);
 
   const decodedTxData = useProtoBuilderDecoder({
     authInfoBytes: Buffer.from(authInfoBytes).toString('hex'),
