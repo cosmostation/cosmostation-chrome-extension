@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import Base1300Text from '@/components/common/Base1300Text';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
+import TextButton from '@/components/common/TextButton';
 
 export const TopContainer = styled('div')({
   display: 'flex',
@@ -92,6 +93,16 @@ export const BodyBottomContainer = styled('div')({
 
   marginBottom: '1.4rem',
 });
+
+type LastBalanceUpdateTextProps = {
+  'data-is-hovering': boolean;
+};
+
+export const LastBalanceUpdateText = styled(TextButton)<LastBalanceUpdateTextProps>(({ theme, ...props }) => ({
+  color: theme.palette.color.base900,
+
+  opacity: props['data-is-hovering'] ? 0.7 : 1,
+}));
 
 export const BodyBottomChipButtonContainer = styled('div')({
   display: 'flex',

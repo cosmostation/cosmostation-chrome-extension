@@ -4,12 +4,13 @@ export type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttrib
   leadingIcon?: JSX.Element;
   trailingIcon?: JSX.Element;
   children?: JSX.Element;
+  isHovering?: boolean;
   direction?: 'horizontal' | 'vertical';
 };
 
-export default function IconTextButton({ leadingIcon, trailingIcon, children, direction = 'horizontal', ...remainder }: IconTextButtonProps) {
+export default function IconTextButton({ leadingIcon, trailingIcon, children, direction = 'horizontal', isHovering, ...remainder }: IconTextButtonProps) {
   return (
-    <StyledIconButton type="button" direction={direction} {...remainder}>
+    <StyledIconButton type="button" direction={direction} data-is-hovering={isHovering} {...remainder}>
       {leadingIcon}
       {children}
       {trailingIcon}

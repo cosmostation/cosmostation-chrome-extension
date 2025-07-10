@@ -792,6 +792,13 @@
         "warning": "Balance hasn't been updated recently",
         "stale": "Balance information may be inaccurate."
       }
+    },
+    "StaleBalanceErrorBanner": {
+      "index": {
+        "warning": "Displayed balance may not be up to date",
+        "stale": "Network error. Balance will be auto-updated",
+        "refresh": "Refresh"
+      }
     }
   },
   "pages": {
@@ -3358,6 +3365,12 @@
           }
         }
       }
+    }
+  },
+  "hooks": {
+    "useLastUpdateChecker": {
+      "criticalError": "Network Error",
+      "minAgo": "Updated {{minutes}} min ago"
     }
   }
 }

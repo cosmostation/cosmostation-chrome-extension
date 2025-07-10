@@ -790,6 +790,13 @@
         "stale": "현재 잔액정보를 최신화할 수 없습니다",
         "warning": "잔액이 최신이 아닐 수 있습니다"
       }
+    },
+    "StaleBalanceErrorBanner": {
+      "index": {
+        "warning": "잔액이 최신 상태가 아닐 수 있습니다",
+        "stale": "일시적인 네트워크 오류입니다. 복구되면 자동으로 갱신됩니다",
+        "refresh": "새로고침"
+      }
     }
   },
   "pages": {
@@ -3358,6 +3365,12 @@
           "only": "'RESET'을 정확히 입력하세요."
         }
       }
+    }
+  },
+  "hooks": {
+    "useLastUpdateChecker": {
+      "criticalError": "네트워크 에러",
+      "minAgo": "{{minutes}}분 전에 업데이트됨"
     }
   }
 }

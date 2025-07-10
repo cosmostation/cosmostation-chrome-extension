@@ -123,3 +123,26 @@ export const TopContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 });
+
+type TotalValueButtonProps = {
+  'data-is-hovering': boolean;
+};
+
+export const TotalValueButton = styled('button')<TotalValueButtonProps>(({ theme, ...props }) => ({
+  padding: '0',
+  border: 'none',
+  backgroundColor: 'transparent',
+  color: theme.palette.color.base1000,
+  cursor: 'pointer',
+
+  opacity: props['data-is-hovering'] ? 0.7 : 1,
+
+  '&:hover': {
+    opacity: 0.7,
+  },
+
+  '&:disabled': {
+    backgroundColor: 'transparent',
+    cursor: 'not-allowed',
+  },
+}));

@@ -5,9 +5,9 @@ import { useNavigate } from '@tanstack/react-router';
 
 import AddressActionButtons from '@/components/AddressActionButtons';
 import BalanceDisplay from '@/components/BalanceDisplay';
-import BalanceSyncStatusIcon from '@/components/BalanceSyncStatusIcon';
 import Base1300Text from '@/components/common/Base1300Text';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
+import StaleBalanceErrorBanner from '@/components/StaleBalanceErrorBanner';
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
@@ -35,6 +35,7 @@ import {
   StyledIconTextButton,
   SymbolButton,
   TopContainer,
+  TotalValueButton,
   ValueButton,
 } from './styled';
 import MainBox from '..';
@@ -149,6 +150,8 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
     return undefined;
   }, [currentCoin?.chain]);
+  const handleMouseEnterOnValue = () => setIsBalanceUpdateButtonHovered(true);
+  const handleMouseLeaveOnValue = () => setIsBalanceUpdateButtonHovered(false);
 
   const hanldeOnClickSend = () => {
     if (cosmosStyleCoin) {
@@ -201,11 +204,17 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   return (
     <>
+      {currentCoin?.lastUpdatedAtMs && (
+        <StaleBalanceErrorBanner
+          chainId={getUniqueChainId(currentCoin.chain)}
+          address={currentCoin.address.address}
+          lastUpdatedAtMs={currentCoin.lastUpdatedAtMs}
+        />
+      )}
       <MainBox
         top={
           <TopContainer>
             <AddressActionButtons coinId={coinId} variant="underline" typoVarient="h6n_M" />
-            <BalanceSyncStatusIcon lastUpdatedAtMs={currentCoin?.lastUpdatedAtMs} />
           </TopContainer>
         }
         body={
@@ -236,8 +245,9 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
               <ValueButton
                 onClick={handleManualBalanceUpdate}
-                onMouseEnter={() => setIsBalanceUpdateButtonHovered(true)}
-                onMouseLeave={() => setIsBalanceUpdateButtonHovered(false)}
+                onMouseEnter={handleMouseEnterOnValue}
+                onMouseLeave={handleMouseLeaveOnValue}
+                isHovering={isBalanceUpdateButtonHovered}
                 leadingIcon={
                   isBalanceUpdateButtonHovered || isLoadingChainBalance ? (
                     <StyledIconContainer data-is-loading={isLoadingChainBalance}>
@@ -253,9 +263,16 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
             </BodyTopContainer>
             <BodyBottomContainer>
               <Typography variant="b3_M">{chainName}</Typography>
-              <BalanceDisplay typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency={userCurrencyPreference}>
-                {totalValue}
-              </BalanceDisplay>
+              <TotalValueButton
+                onMouseEnter={handleMouseEnterOnValue}
+                onMouseLeave={handleMouseLeaveOnValue}
+                data-is-hovering={isBalanceUpdateButtonHovered}
+                onClick={handleManualBalanceUpdate}
+              >
+                <BalanceDisplay typoOfIntegers="h4n_M" typoOfDecimals="h6n_R" currency={userCurrencyPreference}>
+                  {totalValue}
+                </BalanceDisplay>
+              </TotalValueButton>
             </BodyBottomContainer>
           </BodyContainer>
         }

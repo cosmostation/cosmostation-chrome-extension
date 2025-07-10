@@ -6,12 +6,13 @@ import { useNavigate } from '@tanstack/react-router';
 import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import BalanceDisplay from '@/components/BalanceDisplay';
-import BalanceSyncStatusIcon from '@/components/BalanceSyncStatusIcon';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
+import StaleBalanceErrorBanner from '@/components/StaleBalanceErrorBanner';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useLastUpdateChecker } from '@/hooks/useLastUpdateChecker';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
@@ -33,6 +34,7 @@ import {
   BodyTopContainer,
   BottomButtonContainer,
   ChipButtonContentsContainer,
+  LastBalanceUpdateText,
   SpacedTypography,
   StyledChipButton,
   StyledIconContainer,
@@ -110,6 +112,11 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   const isUpdatingBalance = selectedChainId && selectedChainMainAsset?.address.address ? isLoadingChainBalance : isLoadingAllBalance;
 
+  const lastUpdateStatusText = useLastUpdateChecker(selectedChainMainAsset?.lastUpdatedAtMs);
+
+  const handleMouseEnter = () => setIsBalanceUpdateButtonHovered(true);
+  const handleMouseLeave = () => setIsBalanceUpdateButtonHovered(false);
+
   const handleManualBalanceUpdate = async () => {
     if (selectedChainId && selectedChainMainAsset?.address.address) {
       await updateChainBalance(selectedChainId, selectedChainMainAsset.address.address);
@@ -147,6 +154,13 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   return (
     <>
+      {selectedChainMainAsset?.lastUpdatedAtMs && (
+        <StaleBalanceErrorBanner
+          chainId={getUniqueChainId(selectedChainMainAsset.chain)}
+          address={selectedChainMainAsset.address.address}
+          lastUpdatedAtMs={selectedChainMainAsset.lastUpdatedAtMs}
+        />
+      )}
       <MainBox
         top={
           <TopContainer>
@@ -185,8 +199,9 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
             <BodyTopContainer>
               <IconTextButton
                 onClick={handleManualBalanceUpdate}
-                onMouseEnter={() => setIsBalanceUpdateButtonHovered(true)}
-                onMouseLeave={() => setIsBalanceUpdateButtonHovered(false)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                isHovering={isBalanceUpdateButtonHovered}
                 trailingIcon={
                   isBalanceUpdateButtonHovered || isUpdatingBalance ? (
                     <StyledIconContainer data-is-loading={isUpdatingBalance}>
@@ -209,7 +224,17 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
               </IconTextButton>
             </BodyTopContainer>
             <BodyBottomContainer>
-              {selectedChainMainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={selectedChainMainAsset.lastUpdatedAtMs} />}
+              {lastUpdateStatusText && (
+                <LastBalanceUpdateText
+                  typoVarient="b5_M"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  data-is-hovering={isBalanceUpdateButtonHovered}
+                  onClick={handleManualBalanceUpdate}
+                >
+                  {lastUpdateStatusText}
+                </LastBalanceUpdateText>
+              )}
 
               <BodyBottomChipButtonContainer>
                 <ChipButton
