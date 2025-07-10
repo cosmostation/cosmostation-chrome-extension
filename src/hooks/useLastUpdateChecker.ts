@@ -22,6 +22,8 @@ export function useLastUpdateChecker(lastUpdate?: number | null) {
 
       if (elapsedMin > 20) {
         setStatus(t('hooks.useLastUpdateChecker.criticalError'));
+      } else if (elapsedMin < 3) {
+        setStatus(t('hooks.useLastUpdateChecker.justNow'));
       } else {
         setStatus(
           t('hooks.useLastUpdateChecker.minAgo', {
