@@ -335,10 +335,6 @@ async function cosmosBalances(id: string, { isMinimal = false, address, chainId 
       const { lcdUrls } = chain;
 
       try {
-        // note 테스트용 코드
-        // if (chainId === 'cosmos') {
-        //   throw new Error('의도적 에러처리');
-        // }
         const balances = await fetchCosmosBalances(address, lcdUrls.map((item) => item.url).filter(Boolean));
 
         if (chainId === COREUM_CHAINLIST_ID) {

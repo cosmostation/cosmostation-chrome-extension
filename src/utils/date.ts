@@ -167,15 +167,12 @@ export function checkDataFreshness(timestampMs?: number | null) {
 
   const timeDiffInSec = getTimeDiffInSeconds(timestampMs);
 
-  // note forTest
-  // const fiveMinInSec = 300;
-  const fiveMinInSec = 60;
-  // const tenMinInSec = 600;
-  const tenMinInSec = 120;
+  const sixMinInSec = 360;
+  const tenMinInSec = 600;
   if (timeDiffInSec > tenMinInSec) {
     return 'stale';
   }
-  if (timeDiffInSec > fiveMinInSec) {
+  if (timeDiffInSec > sixMinInSec) {
     return 'warning';
   }
 

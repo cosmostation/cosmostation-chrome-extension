@@ -24,7 +24,6 @@ export const StyledIconButton = styled('button')<StyledIconButtonProps>(({ ...pr
 
   padding: '0',
 
-  // note 이게 data-is-hovering이 값이 할당이 안되는 컴포넌트에 한해서 호버링에 영향주는지 확인필요.
   opacity: props['data-is-hovering'] ? 0.7 : 1,
 
   '&:hover': {
