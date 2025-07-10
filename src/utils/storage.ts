@@ -565,7 +565,7 @@ async function patchDukongPreferAccountTypeMismatching() {
       const chains = draft[id];
       const mantra = chains?.['mantra-testnet'];
 
-      if (mantra && mantra.pubkeyType !== '/cosmos.evm.crypto.v1.ethsecp256k1.PubKey') {
+      if (mantra && mantra.pubkeyType === '/ethermint.crypto.v1.ethsecp256k1.PubKey') {
         mantra.pubkeyType = '/cosmos.evm.crypto.v1.ethsecp256k1.PubKey';
         hasChanges = true;
       }
