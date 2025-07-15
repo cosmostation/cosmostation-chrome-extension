@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { minus } from '@/utils/numbers';
 import { getCoinId, isMatchingCoinId, isSameChain, parseCoinId } from '@/utils/queryParamGenerator';
 
+import { useBalance } from './useBalance';
 import { useGasRate } from './useGasRate';
 import type { UseFetchConfig } from '../common/useFetch';
 import { useAccountAllAssets } from '../useAccountAllAssets';
@@ -13,6 +14,8 @@ type UseFeesProps = {
 };
 
 export function useFees({ coinId, config }: UseFeesProps) {
+  const { data: cosmosBalances } = useBalance({ coinId });
+
   const { data: accountAssets } = useAccountAllAssets({ disableDupeEthermint: true, filterByPreferAccountType: true });
 
   const baseCoinList = useMemo(() => [...(accountAssets?.allCosmosAccountAssets || [])], [accountAssets?.allCosmosAccountAssets]);
@@ -67,5 +70,14 @@ export function useFees({ coinId, config }: UseFeesProps) {
     return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : defaultFeeCoin ? [defaultFeeCoin] : [];
   }, [assetGasRate.data.gasRate, baseCoinList, chain, defaultFeeCoin]);
 
-  return { feeAssets, defaultGasRateKey: assetGasRate.data.defaultGasRateKey, isFeemarketActive: assetGasRate.data.isFeemarketActive };
+  const wrappedFeeAssets = useMemo(
+    () =>
+      feeAssets.map((item) => ({
+        ...item,
+        balance: cosmosBalances?.balances?.find((balanceItem) => balanceItem.denom === item.asset.id)?.amount || '0',
+      })),
+    [cosmosBalances?.balances, feeAssets],
+  );
+
+  return { feeAssets: wrappedFeeAssets, defaultGasRateKey: assetGasRate.data.defaultGasRateKey, isFeemarketActive: assetGasRate.data.isFeemarketActive };
 }

@@ -63,6 +63,7 @@ export interface AccountAddressBalanceCosmos {
   chainType: ChainType;
   address: string;
   balances: CosmosBalance[];
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressDelegationsCosmos {
@@ -119,6 +120,7 @@ export interface AccountAddressBalanceEvm {
   chainType: ChainType;
   address: string;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressBalanceAptos {
@@ -127,6 +129,7 @@ export interface AccountAddressBalanceAptos {
   chainType: ChainType;
   address: string;
   balances: AptosResourceResponse[];
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressDelegationsSui {
@@ -135,6 +138,7 @@ export interface AccountAddressDelegationsSui {
   chainType: ChainType;
   address: string;
   delegations: DelegatedStake[];
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressBalanceSui {
@@ -143,6 +147,7 @@ export interface AccountAddressBalanceSui {
   chainType: ChainType;
   address: string;
   balances: SuiGetBalance[];
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressBalanceIota {
@@ -151,6 +156,7 @@ export interface AccountAddressBalanceIota {
   chainType: ChainType;
   address: string;
   balances: IotaGetBalance[];
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressDelegationsIota {
@@ -166,6 +172,7 @@ export interface AccountAddressBalanceBitcoin {
   chainType: ChainType;
   address: string;
   balance: BitcoinBalance;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountAddressBalanceErc20 {
@@ -196,6 +203,7 @@ export interface AccountCosmosAsset {
   commission?: string;
   lockedBalance?: string;
   totalBalance?: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountCustomCosmosAsset {
@@ -203,6 +211,7 @@ export interface AccountCustomCosmosAsset {
   asset: CustomCosmosAsset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountCw20Asset {
@@ -210,6 +219,7 @@ export interface AccountCw20Asset {
   asset: CosmosCw20Asset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountEvmAsset {
@@ -222,6 +232,7 @@ export interface AccountEvmAsset {
   reward?: string;
   commission?: string;
   totalBalance?: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountCustomEvmAsset {
@@ -229,6 +240,7 @@ export interface AccountCustomEvmAsset {
   asset: EvmAsset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountErc20Asset {
@@ -236,12 +248,14 @@ export interface AccountErc20Asset {
   asset: EvmErc20Asset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 export interface AccountAptosAsset {
   chain: AptosChain;
   asset: AptosAsset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountSuiAsset {
@@ -252,12 +266,14 @@ export interface AccountSuiAsset {
   delegation?: string;
   reward?: string;
   totalBalance?: string;
+  lastUpdatedAtMs?: number | null;
 }
 export interface AccountBitcoinAsset {
   chain: BitcoinChain;
   asset: BitcoinAsset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export interface AccountIotaAsset {
@@ -268,6 +284,7 @@ export interface AccountIotaAsset {
   delegation?: string;
   reward?: string;
   totalBalance?: string;
+  lastUpdatedAtMs?: number | null;
 }
 
 export type AccountNamesById = Record<AccountBase['id'], string>;

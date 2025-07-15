@@ -17,6 +17,7 @@ import Tooltip from '@/components/common/Tooltip';
 import EmptyAsset from '@/components/EmptyAsset';
 import { P2PKH__V_BYTES, P2SH__V_BYTES, P2TR__V_BYTES, P2WPKH__V_BYTES } from '@/constants/bitcoin/tx';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useEstimateSmartFee } from '@/hooks/bitcoin/useEstimateSmartFee';
 import { useUtxo } from '@/hooks/bitcoin/useUtxo';
@@ -88,6 +89,8 @@ export default function Entry({ request }: EntryProps) {
     [accountAllAssets?.bitcoinAccountAssets, currentBitcoinNetwork],
   );
 
+  const balance = useBalance({ coinId: nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : '' });
+
   const displaySendAmount = useMemo(
     () => toDisplayDenomAmount(satAmount, nativeAccountAsset?.asset.decimals || 8),
     [nativeAccountAsset?.asset.decimals, satAmount],
@@ -101,7 +104,13 @@ export default function Entry({ request }: EntryProps) {
   );
 
   const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
-  const nativeCoinAvailableAmount = useMemo(() => nativeAccountAsset?.balance || '0', [nativeAccountAsset?.balance]);
+  const nativeCoinAvailableAmount = useMemo(() => {
+    if (!balance.data) {
+      return 0;
+    }
+
+    return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
+  }, [balance.data]);
 
   const utxo = useUtxo({ coinId: nativeAccountAssetCoinId });
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { STAKING_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CommissionResponse } from '@/types/cosmos/balance';
 import type { NTRNRewardsResponse } from '@/types/cosmos/contract';
 import type { DelegationPayload, KavaDelegationPayload, LcdDelegationResponse } from '@/types/cosmos/delegation';
@@ -22,7 +22,7 @@ export const fetchCosmosDelegations = async (address: string, lcdUrls: string[])
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<DelegationPayload | KavaDelegationPayload>(requestUrl, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
       headers: {
         Cosmostation: `extension/${__APP_VERSION__}`,
       },
@@ -52,7 +52,7 @@ export const fetchCosmosDelegations = async (address: string, lcdUrls: string[])
         const paginatedRequestUrl = `${requestUrl}&pagination.key=${nextKey}`;
 
         const paginatedResponse = await axios.get<DelegationPayload | KavaDelegationPayload>(paginatedRequestUrl, {
-          timeout: DEFAULT_FETCH_TIME_OUT_MS,
+          timeout: STAKING_FETCH_TIME_OUT_MS,
           headers: {
             Cosmostation: `extension/${__APP_VERSION__}`,
           },
@@ -99,7 +99,7 @@ export const fetchCosmosUnbondings = async (address: string, lcdUrls: string[]):
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<UnbondingPayload>(requestUrl, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
       headers: {
         Cosmostation: `extension/${__APP_VERSION__}`,
       },
@@ -124,7 +124,7 @@ export const fetchCosmosUnbondings = async (address: string, lcdUrls: string[]):
         const paginatedRequestUrl = `${requestUrl}&pagination.key=${nextKey}`;
 
         const paginatedResponse = await axios.get<UnbondingPayload>(paginatedRequestUrl, {
-          timeout: DEFAULT_FETCH_TIME_OUT_MS,
+          timeout: STAKING_FETCH_TIME_OUT_MS,
           headers: {
             Cosmostation: `extension/${__APP_VERSION__}`,
           },
@@ -164,7 +164,7 @@ export const fetchCosmosRewards = async (address: string, lcdUrls: string[]): Pr
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<RewardPayload>(requestUrl, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
       headers: {
         Cosmostation: `extension/${__APP_VERSION__}`,
       },
@@ -206,7 +206,7 @@ export const fetchNTRNRewards = async (address: string, rewardContractAddress: s
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<NTRNRewardsResponse>(requestUrl, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
       headers: {
         Cosmostation: `extension/${__APP_VERSION__}`,
       },
@@ -241,7 +241,7 @@ export const fetchCosmosCommission = async (validatorAddress: string, lcdUrls: s
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await axios.get<CommissionResponse>(requestUrl, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
       headers: {
         Cosmostation: `extension/${__APP_VERSION__}`,
       },

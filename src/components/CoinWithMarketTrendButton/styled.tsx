@@ -24,6 +24,25 @@ export const RightChevronIconContainer = styled('div')({
   },
 });
 
+export const SymbolConatiner = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.4rem',
+});
+
+export const SymbolTextConatiner = styled('div')({
+  display: 'flex',
+
+  maxWidth: '20rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const SymbolTypograpy = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));

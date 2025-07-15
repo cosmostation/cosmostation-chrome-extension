@@ -149,6 +149,8 @@ export const fetchMultiERC20Balances = async (
   {
     contract: string;
     balance: string;
+    lastUpdatedAtMs?: number | null;
+    isError?: boolean;
   }[]
 > => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
@@ -170,33 +172,25 @@ export const fetchMultiERC20Balances = async (
         };
       });
 
-      const settledTokenBalances = await Promise.allSettled(
+      const tokensBalances = await Promise.all(
         tokenContracts.map(async ({ contractAddress, erc20ContractInstance }) => {
-          const response: bigint = await erc20ContractInstance.balanceOf(address);
+          try {
+            const response: bigint = await erc20ContractInstance.balanceOf(address);
 
-          const balance = response.toString();
+            const balance = response.toString();
 
-          const result = { contract: contractAddress, balance };
+            const result = { contract: contractAddress, balance, lastUpdatedAtMs: Date.now() };
 
-          return result;
+            return result;
+          } catch {
+            const result = { contract: contractAddress, balance: '0', isError: true };
+
+            return result;
+          }
         }),
       );
 
-      const filteredAllBalances = settledTokenBalances
-        .map((balance) => {
-          if (balance.status === 'fulfilled') {
-            return balance.value;
-          } else {
-            return undefined;
-          }
-        })
-        .filter((item) => !!item);
-
-      if (filteredAllBalances.length === 0) {
-        throw new Error('No balance');
-      }
-
-      return filteredAllBalances;
+      return tokensBalances;
     } finally {
       multicallProvider.destroy();
     }

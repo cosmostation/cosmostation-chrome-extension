@@ -1,9 +1,10 @@
-import { Typography } from '@mui/material';
+import { keyframes, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import ChipButton from '@/components/common/ChipButton';
 import IconTextButton from '@/components/common/IconTextButton';
+import TextButton from '@/components/common/TextButton';
 
 export const TopContainer = styled('div')({
   display: 'flex',
@@ -61,29 +62,53 @@ export const TotalBalanceContainer = styled('div')(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));
 
-export const StyledIconContainer = styled('div')({
-  width: '1.2rem',
-  height: '1.2rem',
+const rotate360 = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
 
-  marginLeft: '0.2rem',
+type StyledIconContainerProps = {
+  'data-is-loading': boolean;
+};
+
+export const StyledIconContainer = styled('div')<StyledIconContainerProps>(({ ...props }) => ({
+  width: '1.8rem',
+  height: '1.8rem',
+  marginLeft: '0.4rem',
 
   '& > svg': {
-    width: '1.2rem',
-    height: '1.2rem',
+    width: '1.8rem',
+    height: '1.8rem',
+    animation: props['data-is-loading'] ? `${rotate360} 1.5s linear infinite` : 'none',
   },
-});
+}));
 
 export const BodyBottomContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',
   alignItems: 'center',
 
   marginBottom: '1.4rem',
 });
 
+type LastBalanceUpdateTextProps = {
+  'data-is-hovering': boolean;
+};
+
+export const LastBalanceUpdateText = styled(TextButton)<LastBalanceUpdateTextProps>(({ theme, ...props }) => ({
+  color: theme.palette.color.base900,
+
+  opacity: props['data-is-hovering'] ? 0.7 : 1,
+}));
+
 export const BodyBottomChipButtonContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-end',
+
+  marginLeft: 'auto',
   columnGap: '0.6rem',
 });
 

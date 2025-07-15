@@ -318,6 +318,7 @@ export default function Entry() {
                               },
                             });
                           }}
+                          lastUpdatedAtMs={isUpdateBalnaceLoading ? null : coin.lastUpdatedAtMs}
                           displayAmount={coin.totalDisplayAmount || '0'}
                           symbol={resolvedSymbol}
                           coinGeckoId={coin.asset.coinGeckoId}

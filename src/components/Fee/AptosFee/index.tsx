@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
+import Tooltip from '@/components/common/Tooltip';
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -13,11 +14,12 @@ import NumberTypo from '../../common/NumberTypo';
 type AptosFeeProps = {
   displayFeeAmount?: string;
   disableConfirm?: boolean;
+  errorMessage?: string;
   isLoading?: boolean;
   onClickConfirm: () => void;
 };
 
-export default function AptosFee({ displayFeeAmount, disableConfirm, isLoading, onClickConfirm }: AptosFeeProps) {
+export default function AptosFee({ displayFeeAmount, disableConfirm, errorMessage, isLoading, onClickConfirm }: AptosFeeProps) {
   const { t } = useTranslation();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
@@ -56,11 +58,13 @@ export default function AptosFee({ displayFeeAmount, disableConfirm, isLoading, 
         </FeeCustomButton>
       </LeftContentContainer>
       <RightContentContainer>
-        {
-          <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
-            {t('components.Fee.AptosFee.index.continue')}
-          </StyledButton>
-        }
+        <Tooltip title={errorMessage} varient="error" placement="top">
+          <div>
+            <StyledButton isProgress={isLoading} disabled={disableConfirm} onClick={onClickConfirm}>
+              {t('components.Fee.AptosFee.index.continue')}
+            </StyledButton>
+          </div>
+        </Tooltip>
       </RightContentContainer>
     </Container>
   );

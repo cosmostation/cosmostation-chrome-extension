@@ -31,6 +31,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { isTestnetChain } from '@/utils/chain.ts';
+import { checkDataFreshness } from '@/utils/date.ts';
 import { ethersProvider } from '@/utils/ethereum/ethers.ts';
 import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -325,6 +326,21 @@ export default function EVM({ coinId }: EVMProps) {
 
   const displayTx = useMemo(() => safeStringify(finalizedTransaction), [finalizedTransaction]);
 
+  const isBalanceDataStaled = useMemo(() => {
+    const sendCoinfreshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
+
+    const isSendCoinStaled = sendCoinfreshness === 'stale' || sendCoinfreshness === 'warning';
+
+    if (!isEqualsIgnoringCase(selectedCoinToSend?.asset.id, NATIVE_EVM_COIN_ADDRESS)) {
+      const feeCoinBalanceFreshness = checkDataFreshness(nativeAccountAsset?.lastUpdatedAtMs);
+      const isFeeStaled = feeCoinBalanceFreshness === 'stale' || feeCoinBalanceFreshness === 'warning';
+
+      return isSendCoinStaled || isFeeStaled;
+    }
+
+    return isSendCoinStaled;
+  }, [nativeAccountAsset?.lastUpdatedAtMs, selectedCoinToSend?.asset.id, selectedCoinToSend?.lastUpdatedAtMs]);
+
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
       if (
@@ -373,6 +389,10 @@ export default function EVM({ coinId }: EVMProps) {
       return t('pages.wallet.send.$coinId.Entry.EVM.index.bankLocked');
     }
 
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.send.$coinId.Entry.EVM.index.staledBalance');
+    }
+
     if (addressInputErrorMessage) {
       return addressInputErrorMessage;
     }
@@ -401,6 +421,7 @@ export default function EVM({ coinId }: EVMProps) {
   }, [
     addressInputErrorMessage,
     baseAvailableAmount,
+    isBalanceDataStaled,
     recipientAddress,
     selectedCoinToSend?.chain.isDiableSend,
     sendAmountInputErrorMessage,

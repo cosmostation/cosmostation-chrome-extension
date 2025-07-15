@@ -2,7 +2,8 @@ import { Typography } from '@mui/material';
 
 import { gt } from '@/utils/numbers';
 
-import { APRText, APRTextContainer, ChainNameContainer, ChainNameTypography, ContentsContainer, SymbolTypography } from './styled';
+import { APRText, APRTextContainer, ChainNameContainer, ChainNameTypography, ContentsContainer, SymbolContainer, SymbolTypography } from './styled';
+import BalanceSyncStatusIcon from '../BalanceSyncStatusIcon';
 import Base1000Text from '../common/Base1000Text';
 import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
 import BaseCoinButton from '../common/BaseCoinButton';
@@ -37,7 +38,10 @@ export default function CoinWithChainNameButton({
         <>
           <BaseCoinImage {...coinImageProps} />
           <ContentsContainer>
-            <SymbolTypography variant="b2_M">{resolvedSymbol}</SymbolTypography>{' '}
+            <SymbolContainer>
+              <SymbolTypography variant="b2_M">{resolvedSymbol}</SymbolTypography>
+              <BalanceSyncStatusIcon lastUpdatedAtMs={remainder.lastUpdatedAtMs} />
+            </SymbolContainer>
             {apr ? (
               <APRTextContainer>
                 <Base1000Text variant="b4_R">{`APR : `}</Base1000Text>

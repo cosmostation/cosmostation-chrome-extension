@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { DelegatedStake as IotaDelegatedStake } from '@iota/iota-sdk/client';
 
-import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { STAKING_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { IotaRpcGetDelegatedStakeResponse } from '@/types/iota/api';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
@@ -17,7 +17,7 @@ export const fetchIotaDelegations = async (address: string, rpcUrls: string[]): 
     };
 
     const response = await axios.post<IotaRpcGetDelegatedStakeResponse>(requestUrl, body, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
     });
 
     if (response.data.error) {

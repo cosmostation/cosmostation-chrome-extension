@@ -132,3 +132,9 @@ export const ChevronIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const ChainNameContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.4rem',
+});

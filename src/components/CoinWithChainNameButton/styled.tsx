@@ -11,6 +11,12 @@ export const ContentsContainer = styled('div')({
   minWidth: 0,
 });
 
+export const SymbolContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.4rem',
+});
+
 export const SymbolTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.color.base1300,
 }));

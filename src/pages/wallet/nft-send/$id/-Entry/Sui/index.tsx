@@ -26,6 +26,7 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
+import { checkDataFreshness } from '@/utils/date';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
@@ -126,6 +127,11 @@ export default function Sui({ id }: SuiProps) {
 
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
+  const isBalanceDataStaled = useMemo(() => {
+    const freshness = checkDataFreshness(accountAsset?.lastUpdatedAtMs);
+    return freshness === 'stale' || freshness === 'warning';
+  }, [accountAsset?.lastUpdatedAtMs]);
+
   const addressInputErrorMessage = (() => {
     if (recipientAddress && (!isValidSuiAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, accountAsset?.address.address))) {
       return t('pages.wallet.nft-send.$id.Entry.Sui.index.invalidAddress');
@@ -134,6 +140,10 @@ export default function Sui({ id }: SuiProps) {
   })();
 
   const errorMessage = useMemo(() => {
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.send.$coinId.Entry.Sui.index.staledBalance');
+    }
+
     if (!recipientAddress) {
       return t('pages.wallet.send.$coinId.Entry.Sui.index.noRecipientAddress');
     }
@@ -173,6 +183,7 @@ export default function Sui({ id }: SuiProps) {
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
     expectedBaseFeeAmount,
+    isBalanceDataStaled,
     recipientAddress,
     t,
   ]);
@@ -297,6 +308,7 @@ export default function Sui({ id }: SuiProps) {
             displayFeeAmount={displayExpectedBaseFeeAmount}
             disableConfirm={!!errorMessage || isDisabled}
             isLoading={isDisabled}
+            errorMessage={errorMessage}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}

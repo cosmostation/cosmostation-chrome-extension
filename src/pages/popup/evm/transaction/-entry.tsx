@@ -14,6 +14,7 @@ import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { DEFAULT_GAS_MULTIPLY, EVM_DEFAULT_GAS } from '@/constants/evm/fee';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useBalance } from '@/hooks/evm/useBalance';
 import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
 import { useDetermineTxType } from '@/hooks/evm/useDetermineTxType';
 import { useFee } from '@/hooks/evm/useFee';
@@ -74,6 +75,7 @@ export default function Entry({ request }: EntryProps) {
   );
 
   const accountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
+  const { data: gasCoinBalance } = useBalance({ coinId: accountAssetCoinId });
 
   const { params, origin } = request;
 
@@ -328,7 +330,7 @@ export default function Entry({ request }: EntryProps) {
     return currentDisplayFee;
   }, [currentDisplayFee, isSpendNativeCoin, nativeCoinTransferDisplayAmount]);
 
-  const nativeCoinBaseBalance = nativeAccountAsset?.balance || '0';
+  const nativeCoinBaseBalance = gasCoinBalance?.result ? BigInt(gasCoinBalance.result).toString(10) : '0';
   const nativeCoinDisplayBalance = useMemo(
     () => toDisplayDenomAmount(nativeCoinBaseBalance, nativeAccountAsset?.asset.decimals || 0),
     [nativeAccountAsset?.asset.decimals, nativeCoinBaseBalance],

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { DelegatedStake as SuiDelegatedStake } from '@mysten/sui/client';
 
-import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { STAKING_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { SuiRpcGetDelegatedStakeResponse } from '@/types/sui/api';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
@@ -17,7 +17,7 @@ export const fetchSuiDelegations = async (address: string, rpcUrls: string[]): P
     };
 
     const response = await axios.post<SuiRpcGetDelegatedStakeResponse>(requestUrl, body, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS * 2,
+      timeout: STAKING_FETCH_TIME_OUT_MS,
     });
 
     if (response.data.error) {
