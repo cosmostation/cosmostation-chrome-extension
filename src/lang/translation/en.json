@@ -2405,7 +2405,7 @@
                 "contractAddress": "Contract Address",
                 "symbol": "Symbol",
                 "decimals": "Decimals",
-                "logoUrl": "Crypyo Logo URL (Optional)",
+                "logoUrl": "Crypto Logo URL (Optional)",
                 "addCustomCrypto": "Add Custom Crypto",
                 "error": "Failed to add ERC20 token",
                 "supportedAssets": "This token is already supported!"
@@ -2419,7 +2419,7 @@
                 "contractAddress": "Contract Address",
                 "symbol": "Symbol",
                 "decimals": "Decimals",
-                "logoUrl": "Crypyo Logo URL (Optional)",
+                "logoUrl": "Crypto Logo URL (Optional)",
                 "addCustomCrypto": "Add Custom Crypto"
               }
             }
