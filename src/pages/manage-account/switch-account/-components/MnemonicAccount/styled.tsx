@@ -49,6 +49,14 @@ export const PlusIconContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
 
   color: theme.palette.color.base1000,
+
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg': {
+    width: '1.4rem',
+    height: '1.4rem',
+  },
 }));
 
 export const BodyContainer = styled('div')({
