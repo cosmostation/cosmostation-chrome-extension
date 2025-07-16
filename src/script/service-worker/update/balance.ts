@@ -4,7 +4,7 @@ import { PromisePool } from '@supercharge/promise-pool';
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import { COREUM_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
-import { chainToDeploymentMap, MULICALL_CONTRACT_ADDRESS } from '@/constants/evm/mutlicall3';
+import { chainToDeploymentMap } from '@/constants/evm/mutlicall3';
 import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
@@ -918,11 +918,8 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
       const { rpcUrls } = chain;
       const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const chainIdDecimal = parseInt(chain.chainId, 16).toString();
-
-      const isMulticallEnabled =
-        !!chainToDeploymentMap[chainIdDecimal] && isEqualsIgnoringCase(chainToDeploymentMap[chainIdDecimal], MULICALL_CONTRACT_ADDRESS);
-
+      const chainIdDecimal = parseInt(chain.chainId, 16);
+      const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
       if (isMulticallEnabled) {
         try {
           const allBalances = await fetchMultiERC20Balances(
@@ -1050,11 +1047,9 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
       const { rpcUrls } = chain;
       const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const chainIdDecimal = parseInt(chain.chainId, 16).toString();
+      const chainIdDecimal = parseInt(chain.chainId, 16);
 
-      const isMulticallEnabled =
-        !!chainToDeploymentMap[chainIdDecimal] && isEqualsIgnoringCase(chainToDeploymentMap[chainIdDecimal], MULICALL_CONTRACT_ADDRESS);
-
+      const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
       if (isMulticallEnabled) {
         try {
           const allBalances = await fetchMultiERC20Balances(
