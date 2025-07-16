@@ -79,7 +79,7 @@ export const AccountButton = styled('button')(({ theme }) => ({
 
   cursor: 'pointer',
 
-  paddingLeft: '1.6rem',
+  padding: '0 1.6rem',
 
   '&:hover': {
     backgroundColor: theme.palette.color.base200,

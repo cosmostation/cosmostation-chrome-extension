@@ -4,8 +4,18 @@ import NumberTypo from '@/components/common/NumberTypo';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { ChangeRateContainer, ChevronIconContainer, CoinValueContainer, ContentsContainer, SymbolTypograpy, ValueContainer } from './styled';
+import {
+  ChangeRateContainer,
+  ChevronIconContainer,
+  CoinValueContainer,
+  ContentsContainer,
+  SymbolConatiner,
+  SymbolTextConatiner,
+  SymbolTypograpy,
+  ValueContainer,
+} from './styled';
 import BalanceDisplay from '../BalanceDisplay';
+import BalanceSyncStatusIcon from '../BalanceSyncStatusIcon';
 import type { BaseCoinButtonProps } from '../common/BaseCoinButton';
 import BaseCoinButton from '../common/BaseCoinButton';
 import type { BaseCoinImageProps } from '../common/BaseCoinImage';
@@ -19,7 +29,7 @@ type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
 };
 
 export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
-  const { coinGeckoId } = remainder;
+  const { coinGeckoId, lastUpdatedAtMs } = remainder;
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference, userPriceTrendPreference } = useExtensionStorageStore((state) => state);
 
@@ -36,7 +46,12 @@ export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...r
         <>
           <BaseCoinImage {...coinImageProps} />
           <ContentsContainer>
-            <SymbolTypograpy variant="b2_M">{coinSymbol}</SymbolTypograpy>
+            <SymbolConatiner>
+              <SymbolTextConatiner>
+                <SymbolTypograpy variant="b2_M">{coinSymbol}</SymbolTypograpy>
+              </SymbolTextConatiner>
+              <BalanceSyncStatusIcon lastUpdatedAtMs={lastUpdatedAtMs} />
+            </SymbolConatiner>
             <CoinValueContainer>
               <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>
                 {String(chainPrice)}

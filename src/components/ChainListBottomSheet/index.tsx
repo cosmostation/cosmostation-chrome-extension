@@ -8,14 +8,17 @@ import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common';
 import { DEFAULT_MAJOR_CHAINS } from '@/constants/common';
 import { CHAINLIST_SORT_KEY } from '@/constants/sortKey';
 import { usePortfolioValuesByChain } from '@/hooks/current/usePortfolioValuesByChain';
+import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useChangeCoinAccountType } from '@/hooks/useChangeCoinAccountType';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
 import CoinTypeBottomSheet from '@/pages/manage-assets/switch-accout-type/-components/CoinTypeBottomSheet';
 import { Route as ManageCustomNetwork } from '@/pages/manage-assets/visibility/network';
+import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { ChainAccountType, ChainBase, UniqueChainId } from '@/types/chain';
 import type { ChainlistSortKeyType } from '@/types/sortKey';
+import { getMainAssetByChainId } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { devLogger } from '@/utils/devLogger';
 import { equal, minus, plus } from '@/utils/numbers';
@@ -27,6 +30,7 @@ import OptionButton from './components/OptionButton';
 import { AmountContainer } from './components/OptionButton/styled';
 import {
   Body,
+  ChainNameContainer,
   ChevronIconContainer,
   CoinTypeButtonContainer,
   Container,
@@ -44,6 +48,7 @@ import {
   SwtichCoinType,
 } from './styled';
 import BalanceDisplay from '../BalanceDisplay';
+import BalanceSyncStatusIcon from '../BalanceSyncStatusIcon';
 import Base1000Text from '../common/Base1000Text';
 import Base1300Text from '../common/Base1300Text';
 import IconTextButton from '../common/IconTextButton';
@@ -60,6 +65,7 @@ import AllNetworkImage from 'assets/images/network.png';
 interface ChainWithValue extends ChainBase {
   isActive: boolean;
   value: string;
+  mainAsset?: FlatAccountAssets;
 }
 
 interface CategorizedChain {
@@ -102,6 +108,9 @@ export default function ChainListBottomSheet({
   const navigate = useNavigate();
   const { userCurrencyPreference, chainListSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
+  const { data: accountAllAssets } = useAccountAllAssets({
+    filterByPreferAccountType: true,
+  });
 
   const { flatChainList } = useChainList();
 
@@ -126,11 +135,13 @@ export default function ChainListBottomSheet({
       (acc: CategorizedChain, item) => {
         const isActive = isMatchingUniqueChainId(item, currentChainId);
         const value = portfolioValuesByChain.find((chain) => isSameChain(chain.chain, item));
+        const mainAsset = customType === 'manageAssets' ? getMainAssetByChainId(accountAllAssets?.flatAccountAssets, getUniqueChainId(item)) : undefined;
 
         const chainWithValue: ChainWithValue = {
           ...item,
           isActive: isActive,
           value: value?.totalValue || '0',
+          mainAsset,
         };
 
         (isTestnetChain(chainWithValue.id) ? acc.testnet : acc.mainnet).push(chainWithValue);
@@ -139,7 +150,7 @@ export default function ChainListBottomSheet({
       },
       { testnet: [], mainnet: [] },
     );
-  }, [chainList, currentChainId, portfolioValuesByChain]);
+  }, [accountAllAssets?.flatAccountAssets, chainList, currentChainId, customType, portfolioValuesByChain]);
 
   const sortedChainList = useMemo(
     () =>
@@ -350,7 +361,10 @@ export default function ChainListBottomSheet({
                     leftSecondHeader={
                       customType === 'manageAssets' ? (
                         <CoinTypeButtonContainer>
-                          <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+                          <ChainNameContainer>
+                            <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+                            {item.mainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={item.mainAsset.lastUpdatedAtMs} />}
+                          </ChainNameContainer>
 
                           {multiPath && coinTypeText ? (
                             <IconTextButton
@@ -433,7 +447,10 @@ export default function ChainListBottomSheet({
                     leftSecondHeader={
                       customType === 'manageAssets' ? (
                         <CoinTypeButtonContainer>
-                          <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+                          <ChainNameContainer>
+                            <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+                            {item.mainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={item.mainAsset.lastUpdatedAtMs} />}
+                          </ChainNameContainer>
 
                           {multiPath && coinTypeText ? (
                             <IconTextButton
@@ -460,15 +477,6 @@ export default function ChainListBottomSheet({
                             </IconTextButton>
                           ) : undefined}
                         </CoinTypeButtonContainer>
-                      ) : undefined
-                    }
-                    rightComponent={
-                      isShowValue ? (
-                        <AmountContainer>
-                          <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                            {item.value}
-                          </BalanceDisplay>
-                        </AmountContainer>
                       ) : undefined
                     }
                   />

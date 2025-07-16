@@ -37,6 +37,7 @@ import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
+import { checkDataFreshness } from '@/utils/date.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import {
   getCoinId,
@@ -507,6 +508,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
       denom: alternativeFeeAsset?.asset.id,
       coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
       symbol: alternativeFeeAsset?.asset.symbol || '',
+      feeAsset: alternativeFeeAsset,
       title: 'Custom',
     };
 
@@ -522,24 +524,14 @@ export default function Cosmos({ coinId }: CosmosProps) {
           denom: alternativeFeeAsset?.asset.id,
           coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
           symbol: alternativeFeeAsset?.asset.symbol || '',
+          feeAsset: alternativeFeeAsset,
+
           title: feeStepNames[i],
         }))
       : [];
 
     return [...alternativeFeeOptions, customOption];
-  }, [
-    alternativeFeeAsset?.asset.coinGeckoId,
-    alternativeFeeAsset?.asset.decimals,
-    alternativeFeeAsset?.asset.id,
-    alternativeFeeAsset?.asset.symbol,
-    alternativeFeeAsset?.balance,
-    alternativeFeeCoinId,
-    alternativeGas,
-    alternativeGasRate,
-    customGasAmount,
-    customGasRate,
-    isFeemarketActive,
-  ]);
+  }, [alternativeFeeAsset, alternativeFeeCoinId, alternativeGas, alternativeGasRate, customGasAmount, customGasRate, isFeemarketActive]);
 
   const isCustomStep = useMemo(() => {
     if (!alternativeGasRate || feeOptions.length === 0) return false;
@@ -574,6 +566,17 @@ export default function Cosmos({ coinId }: CosmosProps) {
       setDisplaySendAmount(displayAvailableAmount);
     }
   };
+
+  const isBalanceDataStaled = useMemo(() => {
+    const sendCoinfreshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
+
+    const isSendCoinStaled = sendCoinfreshness === 'stale' || sendCoinfreshness === 'warning';
+
+    const feeCoinBalanceFreshness = checkDataFreshness(selectedFeeOption.feeAsset?.lastUpdatedAtMs);
+    const isFeeStaled = feeCoinBalanceFreshness === 'stale' || feeCoinBalanceFreshness === 'warning';
+
+    return isSendCoinStaled || isFeeStaled;
+  }, [selectedCoinToSend?.lastUpdatedAtMs, selectedFeeOption.feeAsset?.lastUpdatedAtMs]);
 
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
@@ -644,6 +647,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const errorMessage = useMemo(() => {
     if (selectedCoinToSend?.chain.isDiableSend) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.bankLocked');
+    }
+
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.send.$coinId.Entry.Cosmos.index.staledBalance');
     }
 
     if (isIBCSend && !latestHeight) {

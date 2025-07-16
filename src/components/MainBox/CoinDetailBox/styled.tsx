@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { keyframes, styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import IconTextButton from '@/components/common/IconTextButton';
@@ -88,3 +88,61 @@ export const CoingeckoIconContainer = styled('div')({
     height: '100%',
   },
 });
+
+const rotate360 = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+type StyledIconContainerProps = {
+  'data-is-loading': boolean;
+};
+
+export const StyledIconContainer = styled('div')<StyledIconContainerProps>(({ ...props }) => ({
+  width: '1.8rem',
+  height: '1.8rem',
+  marginRight: '0.4rem',
+
+  '& > svg': {
+    width: '1.8rem',
+    height: '1.8rem',
+    animation: props['data-is-loading'] ? `${rotate360} 1.5s linear infinite` : 'none',
+  },
+}));
+
+export const ValueButton = styled(IconTextButton)(({ theme }) => ({
+  color: theme.palette.color.base1300,
+}));
+
+export const TopContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+});
+
+type TotalValueButtonProps = {
+  'data-is-hovering': boolean;
+};
+
+export const TotalValueButton = styled('button')<TotalValueButtonProps>(({ theme, ...props }) => ({
+  padding: '0',
+  border: 'none',
+  backgroundColor: 'transparent',
+  color: theme.palette.color.base1000,
+  cursor: 'pointer',
+
+  opacity: props['data-is-hovering'] ? 0.7 : 1,
+
+  '&:hover': {
+    opacity: 0.7,
+  },
+
+  '&:disabled': {
+    backgroundColor: 'transparent',
+    cursor: 'not-allowed',
+  },
+}));

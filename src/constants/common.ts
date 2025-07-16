@@ -18,7 +18,8 @@ export const MOONPAY_API_URL = 'https://buy.moonpay.com';
 
 export const MOONPAY_API_KEY = 'pk_live_zbG1BOGMVTcfKibboIE2K3vduJBTuuCn';
 
-export const BALANCE_FETCH_TIME_OUT_MS = 1000 * 2;
+export const BALANCE_FETCH_TIME_OUT_MS = 1000 * 15;
+export const STAKING_FETCH_TIME_OUT_MS = 1000 * 15;
 export const DEFAULT_FETCH_TIME_OUT_MS = 1000 * 1;
 
 interface MajorChain {
@@ -31,3 +32,9 @@ export const DEFAULT_MAJOR_CHAINS: MajorChain[] = [
   { id: 'bitcoin', chainType: 'bitcoin' },
   { id: 'ethereum', chainType: 'evm' },
 ];
+
+export const DATA_FRESHNESS = {
+  FRESH: 'fresh',
+  WARNING: 'warning',
+  STALE: 'stale',
+} as const;

@@ -21,6 +21,7 @@ export function useUpdateBalance() {
     enabled: !!currentAccount.id,
     queryFn: fetcher,
     staleTime: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60 * 5,
   });
 
   return { data, isLoading, error };

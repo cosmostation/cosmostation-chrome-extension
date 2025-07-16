@@ -49,6 +49,14 @@ export const PlusIconContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
 
   color: theme.palette.color.base1000,
+
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg': {
+    width: '1.4rem',
+    height: '1.4rem',
+  },
 }));
 
 export const BodyContainer = styled('div')({
@@ -72,7 +80,7 @@ export const AccountButton = styled('button')(({ theme }) => ({
 
   cursor: 'pointer',
 
-  paddingLeft: '1.6rem',
+  padding: '0 1.6rem',
 
   '&:hover': {
     backgroundColor: theme.palette.color.base200,

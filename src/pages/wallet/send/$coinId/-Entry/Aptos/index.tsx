@@ -28,6 +28,7 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
 import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
+import { checkDataFreshness } from '@/utils/date.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex } from '@/utils/regex.ts';
@@ -211,6 +212,11 @@ export default function Aptos({ coinId }: AptosProps) {
     }
   };
 
+  const isBalanceDataStaled = useMemo(() => {
+    const freshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
+    return freshness === 'stale' || freshness === 'warning';
+  }, [selectedCoinToSend?.lastUpdatedAtMs]);
+
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
       if (isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)) {
@@ -247,6 +253,10 @@ export default function Aptos({ coinId }: AptosProps) {
   }, [baseAvailableAmount, estimatedBaseFeeAmount, selectedCoinToSend?.asset.id, sendBaseAmount, sendDisplayAmount, t]);
 
   const errorMessage = useMemo(() => {
+    if (isBalanceDataStaled) {
+      return t('pages.wallet.send.$coinId.Entry.Aptos.index.staledBalance');
+    }
+
     if (!recipientAddress) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.noRecipientAddress');
     }
@@ -280,6 +290,7 @@ export default function Aptos({ coinId }: AptosProps) {
     addressInputErrorMessage,
     baseAvailableAmount,
     generateTransaction,
+    isBalanceDataStaled,
     recipientAddress,
     sendAmountInputErrorMessage,
     sendDisplayAmount,
@@ -455,6 +466,7 @@ export default function Aptos({ coinId }: AptosProps) {
             displayFeeAmount={estimatedDisplayFeeAmount}
             disableConfirm={isDisabled || !!errorMessage}
             isLoading={isDisabled}
+            errorMessage={errorMessage}
             onClickConfirm={() => {
               setIsOpenReviewBottomSheet(true);
             }}

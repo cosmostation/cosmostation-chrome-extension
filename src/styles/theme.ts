@@ -82,6 +82,7 @@ const b3_M_Multiline = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: 
 const b3_R_Multiline = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const b4_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 const b4_R = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
+const b4_B = { fontFamily: 'Spoqa700', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 const b4_R_Multiline = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const b5_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
 const c1_M = { fontFamily: 'Spoqa500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.4rem', letterSpacing: 'normal' };
@@ -125,6 +126,7 @@ export const typoVariants = {
   b3_R_Multiline,
   b4_M,
   b4_R,
+  b4_B,
   b4_R_Multiline,
   b5_M,
   c1_M,

@@ -36,6 +36,8 @@ export async function initExtensionLocalStorage() {
   await setMissingPreferAccountType();
 
   await initializePreferAccountType();
+
+  await patchDukongPreferAccountTypeMismatching();
 }
 
 export async function setExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]) {
@@ -548,6 +550,32 @@ async function setMissingPreferAccountType() {
   }
 }
 
+async function patchDukongPreferAccountTypeMismatching() {
+  const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');
+  const paramsV11 = await getExtensionLocalStorage('paramsV11');
+  const userAccounts = await getExtensionLocalStorage('userAccounts');
+
+  if (!storedPreferAccountType || Object.keys(storedPreferAccountType).length === 0 || !paramsV11 || !userAccounts) {
+    return;
+  }
+
+  let hasChanges = false;
+  const updated = produce(storedPreferAccountType, (draft) => {
+    for (const id in draft) {
+      const chains = draft[id];
+      const mantra = chains?.['mantra-testnet'];
+
+      if (mantra && mantra.pubkeyType === '/ethermint.crypto.v1.ethsecp256k1.PubKey') {
+        mantra.pubkeyType = '/cosmos.evm.crypto.v1.ethsecp256k1.PubKey';
+        hasChanges = true;
+      }
+    }
+  });
+
+  if (hasChanges) {
+    await setExtensionLocalStorage('preferAccountType', updated);
+  }
+}
 async function initializePreferAccountType() {
   const storedPreferAccountType = await getExtensionLocalStorage('preferAccountType');
   const paramsV11 = await getExtensionLocalStorage('paramsV11');

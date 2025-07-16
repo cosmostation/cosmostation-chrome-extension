@@ -12,7 +12,7 @@ export default function MultipleCoinImage({ imageURLs, ...remainder }: MultipleC
 
         const imageCountLimit = (() => {
           if (imageURLCount === 5) {
-            return 39;
+            return 37.5;
           }
           if (imageURLCount === 4) {
             return 40;

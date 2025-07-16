@@ -343,6 +343,8 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.denom === type)?.amount || '0';
 
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
           const delegationInfo = cosmosDelegations?.find(
             (balance) =>
               balance.assetId === type && balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
@@ -430,6 +432,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             commission,
             lockedBalance: locked,
             totalBalance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -451,13 +454,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = cw20Balances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+          const targetCW20BalanceInfo = balanceInfo?.balances?.find((balance) => balance.contract === type);
+
+          const balance = targetCW20BalanceInfo?.balance || '0';
+          const lastUpdatedAtMs = targetCW20BalanceInfo?.lastUpdatedAtMs;
 
           const result: AccountCw20Asset = {
             chain,
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -480,6 +487,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
 
           const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
           if (chain.isCosmos) {
             const mainAssetDenom = chain.mainAssetDenom;
@@ -552,6 +560,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               reward: resolvedReward,
               commission: resolvedCommission,
               totalBalance,
+              lastUpdatedAtMs,
             };
 
             return result;
@@ -562,6 +571,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -583,13 +593,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = erc20Balances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+          const targetERC20BalanceInfo = balanceInfo?.balances?.find((balance) => balance.contract === type);
+
+          const balance = targetERC20BalanceInfo?.balance || '0';
+          const lastUpdatedAtMs = targetERC20BalanceInfo?.lastUpdatedAtMs;
 
           const result: AccountErc20Asset = {
             chain,
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -611,13 +625,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = customErc20Balances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+          const targetERC20BalanceInfo = balanceInfo?.balances?.find((balance) => balance.contract === type);
+
+          const balance = targetERC20BalanceInfo?.balance || '0';
+          const lastUpdatedAtMs = targetERC20BalanceInfo?.lastUpdatedAtMs;
 
           const result: AccountErc20Asset = {
             chain,
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -639,13 +657,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = customCw20Balances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance = balanceInfo?.balances?.find((balance) => balance.contract === type)?.balance || '0';
+          const targetCW20BalanceInfo = balanceInfo?.balances?.find((balance) => balance.contract === type);
+
+          const balance = targetCW20BalanceInfo?.balance || '0';
+          const lastUpdatedAtMs = targetCW20BalanceInfo?.lastUpdatedAtMs;
 
           const result: AccountCw20Asset = {
             chain,
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -668,11 +690,14 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.type === type)?.data?.coin?.value || '0';
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
           const result: AccountAptosAsset = {
             chain,
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -695,6 +720,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.coinType === type)?.totalBalance || '0';
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
           if (type === SUI_COIN_TYPE) {
             const delegationInfo = suiDelegations?.find(
@@ -732,6 +758,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               delegation,
               reward,
               totalBalance,
+              lastUpdatedAtMs,
             };
 
             return result;
@@ -742,6 +769,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -762,6 +790,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = bitcoinBalances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
           const specificAccountTypeChain: BitcoinChain = {
             ...chain,
@@ -781,6 +810,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;
@@ -803,6 +833,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.coinType === type)?.totalBalance || '0';
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
           if (type === IOTA_COIN_TYPE) {
             const delegationInfo = iotaDelegations?.find(
@@ -840,6 +871,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               delegation,
               reward,
               totalBalance,
+              lastUpdatedAtMs,
             };
 
             return result;
@@ -850,6 +882,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             asset,
             address,
             balance: balance,
+            lastUpdatedAtMs,
           };
 
           return result;

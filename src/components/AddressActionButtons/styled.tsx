@@ -16,3 +16,8 @@ export const IconDivider = styled('div')(({ theme }) => ({
   borderRight: `0.1rem solid ${theme.palette.color.base600}`,
   marginLeft: '0.4rem',
 }));
+
+export const RightContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});

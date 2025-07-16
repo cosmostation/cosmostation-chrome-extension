@@ -64,6 +64,7 @@ export const initialState: ExtensionStorageState = {
   migrationStatus: null,
   userPriceTrendPreference: PRICE_TREND_TYPE.GREEN_UP,
   selectedChainFilterId: null,
+  lastRequestTimestamps: null,
 };
 
 export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];
@@ -102,4 +103,12 @@ export const loadExtensionStorageStoreFromStorage = async () => {
   useExtensionStorageStore.setState({
     ...allStorage,
   });
+};
+
+export const loadExtensionStorageStoreFromStorageByKey = async <K extends ExtensionStorageKeys>(key: K) => {
+  const value = (await getExtensionLocalStorage(key)) as ExtensionStorageStore[K];
+
+  useExtensionStorageStore.setState({
+    [key]: value,
+  } as Pick<ExtensionStorageStore, K>);
 };

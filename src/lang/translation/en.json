@@ -227,7 +227,7 @@
             "components": {
               "OptionButton": {
                 "index": {
-                  "feeToken": "Fee Token"
+                  "feeToken": "Fee Token :"
                 }
               }
             }
@@ -786,6 +786,19 @@
     },
     "JsonPopover": {
       "title": "Data"
+    },
+    "BalanceSyncStatusIcon": {
+      "index": {
+        "warning": "Balance hasn't been updated recently",
+        "stale": "Balance information may be inaccurate."
+      }
+    },
+    "StaleBalanceErrorBanner": {
+      "index": {
+        "warning": "Displayed balance may not be up to date",
+        "stale": "Network error. Balance will be auto-updated",
+        "refresh": "Refresh"
+      }
     }
   },
   "pages": {
@@ -1398,7 +1411,8 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             },
             "components": {
@@ -1431,7 +1445,8 @@
                 "noAmount": "Please enter the amount",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             },
             "Bitcoin": {
@@ -1454,7 +1469,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             },
             "Aptos": {
@@ -1477,7 +1493,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             },
             "Cosmos": {
@@ -1511,7 +1528,8 @@
                 "invalidRewardAmount": "Invalid reward amount",
                 "memoOverflow": "Memo is too long. Please shorten it.",
                 "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "insufficientFee": "Insufficient fee"
+                "insufficientFee": "Insufficient fee",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             },
             "Iota": {
@@ -1534,7 +1552,8 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             }
           }
@@ -1679,7 +1698,8 @@
             "failedToDryRun": "Transaction simulation failed",
             "failedToBuildTransaction": "Failed to build transaction",
             "tooSmallToStake": "Minimum stake amount is 1",
-            "stakeReviewWithSymbol": "Confirm to Stake {{symbol}}"
+            "stakeReviewWithSymbol": "Confirm to Stake {{symbol}}",
+            "staledBalance": "Balance is outdated. Please refresh before proceeding"
           },
           "layout": {
             "header": "Stake"
@@ -1724,7 +1744,8 @@
                   "invalidAmount": "Invalid amount",
                   "failedToCalculateTransaction": "Failed to build transaction",
                   "insufficientFee": "Insufficient fee",
-                  "unstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
+                  "unstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}",
+                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
                 }
               },
               "Sui": {
@@ -1741,7 +1762,8 @@
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}",
+                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
                 }
               },
               "Iota": {
@@ -1758,7 +1780,8 @@
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}",
+                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
                 }
               }
             },
@@ -1836,7 +1859,8 @@
                   "failedToCalculateTransaction": "Failed to build transaction",
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "subtitle": "{{symbol}} + {{coinCount}} Coins"
+                  "subtitle": "{{symbol}} + {{coinCount}} Coins",
+                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
                 }
               }
             },
@@ -1869,7 +1893,8 @@
                   "insufficientAmount": "Insufficient fee",
                   "failedToCalculateTransaction": "Failed to build transaction",
                   "txProcessing": "Transaction Processing",
-                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
                 }
               }
             }
@@ -1899,7 +1924,8 @@
                 "cancelUnstakingAmount": "Amount to Unstake",
                 "cancelUnstakeConfirm": "Cancel Unstake",
                 "memoOverflow": "Memo is too long. Please shorten it.",
-                "cancelUnstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
+                "cancelUnstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             }
           },
@@ -1928,7 +1954,8 @@
                 "sendNFT": "Send NFT",
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                "contract": "Contract : "
+                "contract": "Contract : ",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             },
             "Sui": {
@@ -1967,7 +1994,8 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "quantity": "Quantity",
                 "insufficientNFTAmount": "Cannot send more than the amount you have",
-                "contract": "Contract : "
+                "contract": "Contract : ",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             }
           },
@@ -1999,7 +2027,8 @@
                 "claimCommissions": "Claim Commissions",
                 "claimSymbolCommissions": "Claim {{symbol}} Commissions",
                 "claimCommissionsReview": "Confirm Claim Commissions",
-                "claimCommissionsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed."
+                "claimCommissionsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed.",
+                "staledBalance": "Balance is outdated. Please refresh before proceeding"
               }
             }
           }
@@ -2405,7 +2434,7 @@
                 "contractAddress": "Contract Address",
                 "symbol": "Symbol",
                 "decimals": "Decimals",
-                "logoUrl": "Crypyo Logo URL (Optional)",
+                "logoUrl": "Crypto Logo URL (Optional)",
                 "addCustomCrypto": "Add Custom Crypto",
                 "error": "Failed to add ERC20 token",
                 "supportedAssets": "This token is already supported!"
@@ -2419,7 +2448,7 @@
                 "contractAddress": "Contract Address",
                 "symbol": "Symbol",
                 "decimals": "Decimals",
-                "logoUrl": "Crypyo Logo URL (Optional)",
+                "logoUrl": "Crypto Logo URL (Optional)",
                 "addCustomCrypto": "Add Custom Crypto"
               }
             }
@@ -3336,6 +3365,13 @@
           }
         }
       }
+    }
+  },
+  "hooks": {
+    "useLastUpdateChecker": {
+      "criticalError": "Network Error",
+      "minAgo": "Updated {{minutes}} min ago",
+      "justNow": "Just now"
     }
   }
 }

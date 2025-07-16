@@ -13,6 +13,7 @@ export type BaseCoinButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttrib
   leftComponent?: JSX.Element;
   rightComponent?: JSX.Element;
   isActive?: boolean;
+  lastUpdatedAtMs?: number | null;
   onClick?: () => void;
 };
 
