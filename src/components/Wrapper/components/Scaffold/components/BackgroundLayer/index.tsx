@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { isSidePanelView } from '@/utils/view/sidepanel';
+import { getCurrentExtensionTabInfo } from '@/utils/view/tab';
 
 import { BackgroundContainer } from './styled';
 
@@ -12,9 +13,13 @@ export default function BackgroundLayer({ children }: BackgroundLayer) {
   const [showBackground, setShowBackground] = useState(false);
 
   useEffect(() => {
-    if (isSidePanelView()) {
-      setShowBackground(true);
-    }
+    const init = async () => {
+      if (isSidePanelView() || !!(await getCurrentExtensionTabInfo())?.id) {
+        setShowBackground(true);
+      }
+    };
+
+    init();
   }, []);
 
   return (
