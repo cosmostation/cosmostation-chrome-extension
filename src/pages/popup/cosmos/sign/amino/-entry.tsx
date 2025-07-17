@@ -112,7 +112,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
 
   const currentFeeStepKey = useMemo(() => {
-    if (customFeeStepKey) return customFeeStepKey;
+    if (customFeeStepKey !== undefined) return customFeeStepKey;
 
     return isEditFee ? defaultGasRateKey + 1 : 0;
   }, [customFeeStepKey, defaultGasRateKey, isEditFee]);
