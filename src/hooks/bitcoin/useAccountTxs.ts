@@ -1,4 +1,4 @@
-import { throttle } from 'lodash-es';
+import { throttle } from 'es-toolkit';
 
 import type { AccountTxPayload } from '@/types/bitcoin/txs';
 import { get } from '@/utils/axios';
