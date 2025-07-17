@@ -43,6 +43,13 @@ export default [
   },
   {
     rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [{ regex: '^@mui/[^/]+$' }],
+        },
+      ],
+
       // 유사한 항목을 그룹으로 묶어서 정렬합니다.
       'simple-import-sort/imports': [
         'error',
