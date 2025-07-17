@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import CoinSelectBox from '@/components/CoinSelectBox';
 import Base1000Text from '@/components/common/Base1000Text';

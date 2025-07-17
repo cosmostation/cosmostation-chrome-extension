@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { isValidAddress } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import { InputAdornment, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';

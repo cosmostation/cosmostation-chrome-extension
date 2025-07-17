@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { sha512 } from '@/utils/crypto/password';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { TooltipProps } from '@mui/material';
+import type { TooltipProps } from '@mui/material/Tooltip';
 
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import type { DataFreshnessType } from '@/types/dataFreshness';

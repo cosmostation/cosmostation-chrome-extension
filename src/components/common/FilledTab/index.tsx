@@ -1,4 +1,5 @@
-import type { TabProps, TabsProps } from '@mui/material';
+import type { TabProps } from '@mui/material/Tab';
+import type { TabsProps } from '@mui/material/Tabs';
 
 import { StyledTab, StyledTabs, TabPanelContainer, TabsContainer, TabsWrapper } from './styled';
 

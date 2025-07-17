@@ -4,7 +4,8 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { Transaction, type Transaction as TransactionType } from '@iota/iota-sdk/transactions';
 import { isValidIotaAddress } from '@iota/iota-sdk/utils';
-import { InputAdornment, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';

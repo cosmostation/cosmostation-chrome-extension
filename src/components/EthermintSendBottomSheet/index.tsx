@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton } from './styled';
 import Base1000Text from '../common/Base1000Text';

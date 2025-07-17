@@ -6,7 +6,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { produce } from 'immer';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { isValidIotaAddress } from '@iota/iota-sdk/utils';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { isValidSuiAddress } from '@mysten/sui/utils';
 import { useRouter } from '@tanstack/react-router';
 

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import Button from '@/components/common/Button';
 import Image from '@/components/common/Image';

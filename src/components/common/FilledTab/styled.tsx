@@ -1,6 +1,7 @@
-import type { TabsProps } from '@mui/material';
-import { Tab, Tabs } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import type { TabsProps } from '@mui/material/Tabs';
+import Tabs from '@mui/material/Tabs';
 
 export const StyledTabs = styled((props: TabsProps) => <Tabs {...props} TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }} />)(
   ({ theme }) => ({

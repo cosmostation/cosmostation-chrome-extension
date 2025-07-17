@@ -1,6 +1,6 @@
-import type { TextFieldProps } from '@mui/material';
-import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import type { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 
 import BaseChainImage from '../common/BaseChainImage';
 

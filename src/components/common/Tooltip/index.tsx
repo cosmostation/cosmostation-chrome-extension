@@ -1,4 +1,4 @@
-import type { TooltipProps } from '@mui/material';
+import type { TooltipProps } from '@mui/material/Tooltip';
 
 import { StyledTooltip } from './styled';
 

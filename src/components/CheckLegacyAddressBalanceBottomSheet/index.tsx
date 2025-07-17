@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';

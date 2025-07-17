@@ -4,7 +4,7 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { Ed25519Keypair } from '@iota/iota-sdk/keypairs/ed25519';
 import { Transaction, type Transaction as TransactionType } from '@iota/iota-sdk/transactions';
 import { IOTA_SYSTEM_STATE_OBJECT_ID, isValidIotaObjectId } from '@iota/iota-sdk/utils';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';

@@ -1,4 +1,4 @@
-import type { TypographyProps } from '@mui/material';
+import type { TypographyProps } from '@mui/material/Typography';
 
 import { StyledTypography } from './styled';
 

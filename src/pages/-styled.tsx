@@ -1,5 +1,5 @@
-import { Typography as BaseTypography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import Image from '@/components/common/Image';
 import { TabPanel } from '@/components/common/Tab';
@@ -33,13 +33,13 @@ export const StyledTabPanel = styled(TabPanel)<StyledTabPanelProps>(({ ...props 
   height: '100%',
 }));
 
-export const MarginTopTypography = styled(BaseTypography)(({ theme }) => ({
+export const MarginTopTypography = styled(Typography)(({ theme }) => ({
   marginTop: '0.4rem',
 
   color: theme.palette.color.base1300,
 }));
 
-export const MarginLeftTypography = styled(BaseTypography)(({ theme }) => ({
+export const MarginLeftTypography = styled(Typography)(({ theme }) => ({
   marginLeft: '0.4rem',
 
   color: theme.palette.color.base1300,

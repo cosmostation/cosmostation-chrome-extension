@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { LANGUAGE_TYPE } from '@/constants/language';
 import type { LanguageType } from '@/types/language';

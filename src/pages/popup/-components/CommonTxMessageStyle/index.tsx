@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 export const Container = styled('div')({
   padding: '0 1.6rem',

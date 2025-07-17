@@ -1,4 +1,4 @@
-import type { DrawerProps } from '@mui/material';
+import type { DrawerProps } from '@mui/material/Drawer';
 
 import { StyledDrawer } from './styled';
 

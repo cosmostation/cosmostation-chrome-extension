@@ -1,4 +1,4 @@
-import type { AccordionSummaryProps } from '@mui/material';
+import type { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { styled } from '@mui/material/styles';
 
 import Accordion, { AccordionDetails, AccordionSummary } from '@/components/common/Accordion';

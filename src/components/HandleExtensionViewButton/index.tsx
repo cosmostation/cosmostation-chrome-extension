@@ -1,4 +1,4 @@
-import type { IconButtonProps } from '@mui/material';
+import type { IconButtonProps } from '@mui/material/IconButton';
 import { useLocation } from '@tanstack/react-router';
 
 import { setPopupAsDefaultView, setSidePanelWithDefaultView } from '@/utils/view/controlView';

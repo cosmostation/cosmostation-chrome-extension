@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import NumberTypo from '@/components/common/NumberTypo';
 import type { Asset } from '@/types/asset';

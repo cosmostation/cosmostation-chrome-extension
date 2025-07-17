@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { IconButtonProps, PopoverProps } from '@mui/material';
+import type { IconButtonProps } from '@mui/material/IconButton';
+import type { PopoverProps } from '@mui/material/Popover';
 
 import IconButton from '@/components/common/IconButton';
 import SettingPopover from '@/components/SettingPopover';

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { CURRENCY_TYPE } from '@/constants/currency';
 import type { CurrencyType } from '@/types/currency';

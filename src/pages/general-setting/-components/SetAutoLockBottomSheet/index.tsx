@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { LOCK_UP_TIME_OPTIONS, NEVER_LOCK_KEY } from '@/constants/autoLock';
 import type { LockupTimeOptions } from '@/types/autoLock';

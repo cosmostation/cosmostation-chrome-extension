@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 export const Body = styled('div')({
   paddingTop: '1.2rem',

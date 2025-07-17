@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { isEqualsIgnoringCase } from '@/utils/string';

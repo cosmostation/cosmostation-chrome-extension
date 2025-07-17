@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import IconButton from '@/components/common/IconButton';
 

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import type { DialogProps } from '@mui/material';
-import { Typography } from '@mui/material';
+import type { DialogProps } from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
 
 import { Body, Container, ContentsContainer, Header, HeaderTitle, JsonContainer, StyledButton, StyledDialog } from './styled';
 import Base1000Text from '../common/Base1000Text';

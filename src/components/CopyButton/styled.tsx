@@ -1,4 +1,4 @@
-import type { IconButtonProps } from '@mui/material';
+import type { IconButtonProps } from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 
 import IconButton from '../common/IconButton';

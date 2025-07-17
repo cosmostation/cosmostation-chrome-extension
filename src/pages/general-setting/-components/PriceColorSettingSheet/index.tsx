@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import type { PriceTrendType } from '@/types/price';

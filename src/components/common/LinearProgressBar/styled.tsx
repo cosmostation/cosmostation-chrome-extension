@@ -1,4 +1,4 @@
-import { LinearProgress, linearProgressClasses } from '@mui/material';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { styled } from '@mui/material/styles';
 
 export const StyledLinearProgressBar = styled(LinearProgress)(({ theme }) => ({

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import { InputAdornment, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import Typography from '@mui/material/Typography';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Transaction, type Transaction as TransactionType } from '@mysten/sui/transactions';
 import { isValidSuiAddress, SUI_SYSTEM_STATE_OBJECT_ID } from '@mysten/sui/utils';

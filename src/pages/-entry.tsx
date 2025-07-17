@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -79,6 +79,8 @@ export default function Entry() {
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
   const isDebouncing = !!search && isPending();
+
+  console.log('🚀 ~ Entry ~ isDebouncing:', isDebouncing);
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
   const [tabValue, setTabValue] = useState(0);

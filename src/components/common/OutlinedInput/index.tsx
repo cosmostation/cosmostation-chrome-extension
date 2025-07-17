@@ -1,7 +1,8 @@
 import type { HTMLInputTypeAttribute } from 'react';
 import { useState } from 'react';
-import type { OutlinedInputProps as BaseOutlinedInputProps } from '@mui/material';
-import { InputAdornment, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import type { OutlinedInputProps as BaseOutlinedInputProps } from '@mui/material/OutlinedInput';
+import Typography from '@mui/material/Typography';
 
 import { BottomContainer, BottomWrapper, Container, HelperTextContainer, RightBottomAdornmentContainer, StyledIconButton, StyledInput } from './styled';
 

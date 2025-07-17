@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import copy from 'copy-to-clipboard';
-import type { IconButtonProps } from '@mui/material';
+import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { ContentWrapper, IconWrapper, StyledButton, StyledIconWrapper } from './styled';
 

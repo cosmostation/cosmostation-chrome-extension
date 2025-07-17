@@ -1,4 +1,4 @@
-import type { SkeletonProps } from '@mui/material';
+import type { SkeletonProps } from '@mui/material/Skeleton';
 
 import { StyledSkeleton } from './styled';
 

@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import type { PriceTrendType } from '@/types/price';

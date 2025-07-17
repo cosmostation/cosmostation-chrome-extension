@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { SignMode } from '@keplr-wallet/proto-types/cosmos/tx/signing/v1beta1/signing';
-import { InputAdornment, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';

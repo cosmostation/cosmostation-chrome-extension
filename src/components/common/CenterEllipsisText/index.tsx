@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Typography, type TypographyProps } from '@mui/material';
+import type { TypographyProps } from '@mui/material/Typography';
+import Typography from '@mui/material/Typography';
 
 import { shorterAddress } from '@/utils/string';
 

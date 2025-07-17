@@ -1,6 +1,6 @@
 import type { TypeOptions as ToastTypeOptions } from 'react-toastify';
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import IconButton from '@/components/common/IconButton';
 

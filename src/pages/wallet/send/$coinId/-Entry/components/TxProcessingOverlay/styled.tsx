@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import Base1300Text from '@/components/common/Base1300Text';

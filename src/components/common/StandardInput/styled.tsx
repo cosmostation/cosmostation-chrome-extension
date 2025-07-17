@@ -1,6 +1,7 @@
-import type { TextFieldProps } from '@mui/material';
-import { CircularProgress, TextField } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { styled } from '@mui/material/styles';
+import type { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 
 import IconButton from '../IconButton';
 

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import validate from 'bitcoin-address-validation';
 import { networks, payments, Psbt } from 'bitcoinjs-lib';
 import { isTaprootInput, toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';

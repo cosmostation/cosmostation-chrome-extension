@@ -1,5 +1,5 @@
-import { Typography as BaseTypography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 export const Contaienr = styled('div')({
   width: '100%',
@@ -36,7 +36,7 @@ export const ManageCryptoContainer = styled('div')({
   marginTop: '1.2rem',
 });
 
-export const MarginLeftTypography = styled(BaseTypography)(({ theme }) => ({
+export const MarginLeftTypography = styled(Typography)(({ theme }) => ({
   marginLeft: '0.4rem',
 
   color: theme.palette.color.base1300,

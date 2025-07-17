@@ -4,7 +4,8 @@ import { Network, validate } from 'bitcoin-address-validation';
 import { networks, payments, Psbt } from 'bitcoinjs-lib';
 import { isTaprootInput, toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
 import { useDebouncedCallback } from 'use-debounce';
-import { InputAdornment, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';

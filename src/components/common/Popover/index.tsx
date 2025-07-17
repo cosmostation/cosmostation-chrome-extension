@@ -1,4 +1,4 @@
-import type { PopoverProps } from '@mui/material';
+import type { PopoverProps } from '@mui/material/Popover';
 
 import { StyledPopover } from './styled';
 

@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import IconTextButton from '../common/IconTextButton';
 import Popover from '../common/Popover';

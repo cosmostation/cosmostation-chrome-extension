@@ -1,5 +1,5 @@
-import type { OutlinedInputProps } from '@mui/material';
-import { OutlinedInput } from '@mui/material';
+import type { OutlinedInputProps } from '@mui/material/OutlinedInput';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/material/styles';
 
 import IconButton from '../IconButton';

@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
-import { InputAdornment, type TextFieldProps, Typography } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import type { TextFieldProps } from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 import type { ChainBase, UniqueChainId } from '@/types/chain';
 import { isMatchingUniqueChainId } from '@/utils/queryParamGenerator';

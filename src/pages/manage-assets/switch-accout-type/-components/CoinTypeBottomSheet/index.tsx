@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import CoinType from '@/components/CoinTypeSelector/components/CoinType';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';

@@ -1,4 +1,4 @@
-import { Popover } from '@mui/material';
+import Popover from '@mui/material/Popover';
 import { styled } from '@mui/material/styles';
 
 export const StyledPopover = styled(Popover)(({ theme }) => ({

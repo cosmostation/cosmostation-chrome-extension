@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { type PopoverProps } from '@mui/material';
+import type { PopoverProps } from '@mui/material/Popover';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import type { MnemonicBits } from '@/pages/account/create-wallet/mnemonic/-entry';

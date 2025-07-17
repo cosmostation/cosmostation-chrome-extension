@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import BaseCoinImage from '@/components/common/BaseCoinImage';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 import { QRCodeSVG } from 'qrcode.react';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import Base1000Text from '@/components/common/Base1000Text/index.tsx';

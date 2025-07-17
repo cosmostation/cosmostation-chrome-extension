@@ -1,4 +1,4 @@
-import type { LinearProgressProps } from '@mui/material';
+import type { LinearProgressProps } from '@mui/material/LinearProgress';
 
 import { StyledLinearProgressBar } from './styled';
 

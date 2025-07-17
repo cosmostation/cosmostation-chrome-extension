@@ -1,4 +1,4 @@
-import type { DialogProps } from '@mui/material';
+import type { DialogProps } from '@mui/material/Dialog';
 
 import { StyledDialog } from './styled';
 

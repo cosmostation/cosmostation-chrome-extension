@@ -1,4 +1,4 @@
-import { InputAdornment } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import { Container, FilterIconButton, StyledCircularProgress, StyledInput } from './styled';
 import IconButton from '../common/IconButton';

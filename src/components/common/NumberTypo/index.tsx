@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { CURRENCY_DECIMALS, CURRENCY_SYMBOL } from '@/constants/currency';
 import type { NumberTypoVariants } from '@/styles/theme';

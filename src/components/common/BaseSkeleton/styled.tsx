@@ -1,4 +1,4 @@
-import { Skeleton } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 
 export const StyledSkeleton = styled(Skeleton)({

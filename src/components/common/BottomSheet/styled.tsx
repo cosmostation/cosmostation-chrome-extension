@@ -1,4 +1,4 @@
-import { Drawer } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 
 export const StyledDrawer = styled(Drawer)(({ theme }) => ({

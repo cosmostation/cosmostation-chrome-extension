@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import type { PopoverProps } from '@mui/material';
-import { Typography } from '@mui/material';
+import type { PopoverProps } from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
 
 import CheckBoxTextButton from '@/components/common/CheckBoxTextButton';
 

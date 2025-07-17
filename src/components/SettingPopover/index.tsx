@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { type PopoverProps } from '@mui/material';
+import type { PopoverProps } from '@mui/material/Popover';
 import { useNavigate } from '@tanstack/react-router';
 
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';

@@ -1,5 +1,7 @@
-import type { AccordionProps } from '@mui/material';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import type { AccordionProps } from '@mui/material/Accordion';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import { styled } from '@mui/material/styles';
 
 export const StyledAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({

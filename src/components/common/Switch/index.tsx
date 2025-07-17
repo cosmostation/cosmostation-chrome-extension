@@ -1,4 +1,4 @@
-import type { SwitchProps } from '@mui/material';
+import type { SwitchProps } from '@mui/material/Switch';
 
 import { StyledSwitch } from './styled';
 
