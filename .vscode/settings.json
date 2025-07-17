@@ -55,5 +55,6 @@
     "**/dist-dev": true
   },
   "explorer.sortOrder": "filesFirst",
-  "explorer.sortOrderLexicographicOptions": "lower"
+  "explorer.sortOrderLexicographicOptions": "lower",
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^@mui/[^/]+$"]
 }
