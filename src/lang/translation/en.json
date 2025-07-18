@@ -747,8 +747,8 @@
     },
     "EthermintSendBottomSheet": {
       "index": {
-        "cosmosTitle": "Send to COSMOS Style Address",
-        "evmTitle": "Send to EVM Style Address",
+        "cosmosTitle": "Send to COSMOS Type Address",
+        "evmTitle": "Send to EVM Type Address",
         "cosmosSubtitle": "Use this option for {{bech32Prefix}} address or IBC Send",
         "evmSubtitle": "Use this option for 0x address",
         "title": "Select Send Type"
@@ -2199,10 +2199,10 @@
           "components": {
             "EthermintSelectBottomSheet": {
               "index": {
-                "evmTitle": "EVM Style Address",
+                "evmTitle": "EVM Type Address",
                 "evmSubtitle": "Register addresses in '0x...' format",
                 "cosmosSubtitle": "Register addresses in '{{bech32Prefix}}...' format",
-                "cosmosTitle": "COSMOS Style Address",
+                "cosmosTitle": "COSMOS Type Address",
                 "title": "Select Address Type"
               }
             }
