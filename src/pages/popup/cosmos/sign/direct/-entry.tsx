@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -57,6 +57,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+  const isInitialAutoFeeSelectionDone = useRef(false);
 
   const { data: accountAllAssets } = useAccountAllAssets({
     filterByPreferAccountType: true,
@@ -118,7 +119,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
 
   const currentFeeStepKey = useMemo(() => {
-    if (customFeeStepKey) return customFeeStepKey;
+    if (customFeeStepKey !== undefined) return customFeeStepKey;
 
     return isEditFee ? defaultGasRateKey + 1 : 0;
   }, [customFeeStepKey, defaultGasRateKey, isEditFee]);
@@ -430,6 +431,22 @@ export default function Entry({ request, chain }: EntryProps) {
       await deQueue();
     }
   };
+
+  useEffect(() => {
+    const initAutoFeeSelection = () => {
+      if (!isInitialAutoFeeSelectionDone.current && isEditFee) {
+        const dappFee = inputFee.amount || '0';
+        const defaultFee = ceil(times(alternativeGas, alternativeGasRate?.[defaultGasRateKey] || '0'));
+
+        if (gt(dappFee, defaultFee)) {
+          setCustomFeeStepKey(0);
+          isInitialAutoFeeSelectionDone.current = true;
+        }
+      }
+    };
+
+    initAutoFeeSelection();
+  }, [alternativeGas, alternativeGasRate, defaultGasRateKey, inputFee.amount, isEditFee]);
 
   return (
     <>
