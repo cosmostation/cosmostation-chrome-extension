@@ -20,7 +20,7 @@ import type {
 import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { AssetId } from '@/types/asset';
 import type { AccountDetail } from '@/types/bitcoin/balance';
-import type { ChainType, UniqueChainId } from '@/types/chain';
+import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { upsertList } from '@/utils/array';
 import {
@@ -55,6 +55,17 @@ const defaultEvmCoinList: AssetId[] = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: '
 const defaultBitcoinCoinList: AssetId[] = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
 
 const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
+
+const CHAIN_MULTICALL_CONFIGS: Record<
+  ChainId['id'],
+  {
+    maxMulticallDataLength: number;
+  }
+> = {
+  evmos: {
+    maxMulticallDataLength: 500,
+  },
+};
 
 export async function updateDefaultAssetsBalance(id: string) {
   console.time(`default-balance-${id}`);
@@ -915,17 +926,20 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const { rpcUrls } = chain;
+      const { rpcUrls, id } = chain;
       const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
       const chainIdDecimal = parseInt(chain.chainId, 16);
       const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
       if (isMulticallEnabled) {
         try {
+          const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[id];
+
           const allBalances = await fetchMultiERC20Balances(
             address,
             assets.map((item) => item.id),
             rpcUrls.map((item) => item.url).filter(Boolean),
+            multicallWrapperOption,
           );
 
           const balances = allBalances.map((item) => {
@@ -1052,10 +1066,13 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
       const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
       if (isMulticallEnabled) {
         try {
+          const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[id];
+
           const allBalances = await fetchMultiERC20Balances(
             address,
             assets.map((item) => item.id),
             rpcUrls.map((item) => item.url).filter(Boolean),
+            multicallWrapperOption,
           );
 
           const balances = allBalances.map((item) => {
