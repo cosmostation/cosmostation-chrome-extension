@@ -24,7 +24,7 @@ type StaleBalanceErrorBannerProps = React.DetailedHTMLProps<React.HTMLAttributes
 export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, address, ...remainer }: StaleBalanceErrorBannerProps) {
   const { t } = useTranslation();
   const { updateChainBalance, isLoadingChainBalance } = useManualBalanceUpdate();
-  const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
+  const { isLoading: isUpdateBalanceLoading, fetchStatus } = useUpdateBalance();
   const [freshnessStatus, setFreshnessStatus] = useState<DataFreshnessType | undefined>();
 
   const title = useMemo(() => {
@@ -54,7 +54,7 @@ export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, addr
   }, [lastUpdatedAtMs]);
 
   return (
-    <Collapse in={!!title && !isUpdateBalanceLoading && (freshnessStatus === 'warning' || freshnessStatus === 'stale')}>
+    <Collapse in={!!title && !isUpdateBalanceLoading && fetchStatus !== 'idle' && (freshnessStatus === 'warning' || freshnessStatus === 'stale')}>
       <Container data-variant={freshnessStatus} {...remainer}>
         <TitleTextContainer>
           <CautionIcon />
