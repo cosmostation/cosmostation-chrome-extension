@@ -18,7 +18,7 @@ export type BalanceSyncStatusIconProps = React.DetailedHTMLProps<React.HTMLAttri
 
 export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, tooltipProps, ...remainder }: BalanceSyncStatusIconProps) {
   const { t } = useTranslation();
-  const { isLoading: isUpdateBalanceLoading, fetchStatus } = useUpdateBalance();
+  const { isLoading: isUpdateBalanceLoading, isFetching: isUpdateBalanceFetching, isAutoRefetchPaused } = useUpdateBalance();
   const [freshnessStatus, setFreshnessStatus] = useState<DataFreshnessType | undefined>();
 
   const tooltipMessage = useMemo(() => {
@@ -48,7 +48,7 @@ export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, tooltipProps, .
     return () => clearInterval(interval);
   }, [lastUpdatedAtMs]);
 
-  if (!tooltipMessage || isUpdateBalanceLoading || fetchStatus === 'idle') return null;
+  if (!tooltipMessage || isUpdateBalanceLoading || isUpdateBalanceFetching || isAutoRefetchPaused) return null;
 
   return (
     <Tooltip title={tooltipMessage} varient={tooltipVarient} placement="top" style={{ height: '1.6rem' }} {...tooltipProps}>
