@@ -36,6 +36,7 @@ export const AmountContainer = styled('div')(({ theme }) => ({
 export const ChainImage = styled(BaseChainImage)({
   width: '3.6rem',
   height: '3.6rem',
+  display: 'block',
 });
 
 export const ChainNameText = styled(Base1300Text)({});

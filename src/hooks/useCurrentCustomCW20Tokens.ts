@@ -3,12 +3,13 @@ import { getCoinId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
+import { useRefreshAccountAllAssets } from './useRefreshAccountAllAssets';
 
 export function useCurrentCustomCW20Tokens() {
-  const { customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const customCw20Assets = useExtensionStorageStore((state) => state.customCw20Assets);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const currentCustomCW20Tokens = customCw20Assets;
 
@@ -28,7 +29,7 @@ export function useCurrentCustomCW20Tokens() {
 
     await updateExtensionStorageStore('customCw20Assets', updatedCustomTokens);
 
-    await refetchAccountAllAssets();
+    await refreshAssets();
   };
 
   const addCustomCW20Tokens = async (assets: CosmosCw20Asset[]) => {
@@ -51,7 +52,7 @@ export function useCurrentCustomCW20Tokens() {
 
     await updateExtensionStorageStore('customCw20Assets', updatedCustomTokens);
 
-    await refetchAccountAllAssets();
+    await refreshAssets();
   };
 
   const removeCustomCW20Token = async (coinId: string) => {
@@ -60,7 +61,7 @@ export function useCurrentCustomCW20Tokens() {
 
     await updateExtensionStorageStore('customCw20Assets', updatedCustomTokens);
 
-    await refetchAccountAllAssets();
+    await refreshAssets();
   };
 
   return { currentCustomCW20Tokens, addCustomCW20Token, addCustomCW20Tokens, removeCustomCW20Token };

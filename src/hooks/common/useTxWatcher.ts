@@ -21,9 +21,9 @@ import { useAccountHoldCosmosNFTs } from '../cosmos/nft/useAccountHoldCosmosNFTs
 import { useCurrentAddedEVMNFTsWithMetaData } from '../evm/nft/useCurrentAddedEVMNFTsWithMetaData';
 import { useAccountHoldIotaNFTs } from '../iota/useAccountHoldIotaNFTs';
 import { useAccountHoldSuiNFTs } from '../sui/useAccountHoldSuiNFTs';
-import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useChainList } from '../useChainList';
 import { useCurrentAccount } from '../useCurrentAccount';
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
 const MAX_RETRY_COUNT = 5;
 const TX_TIMEOUT_MS = 5 * 60 * 1000;
@@ -36,8 +36,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
   const { refetch: refetchSuiNFTs } = useAccountHoldSuiNFTs();
   const { refetch: refetchIotaNFTs } = useAccountHoldIotaNFTs();
   const { refetch: refetchEVMNFTs } = useCurrentAddedEVMNFTsWithMetaData();
-
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   const { chainList } = useChainList();
   const { currentAccount } = useCurrentAccount();
@@ -107,7 +106,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
               });
             }
 
-            refetchAccountAllAssets();
+            refreshAssets();
             if (tx.type === 'nft') {
               refetchCosmosNFTs();
             }
@@ -158,7 +157,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
               params: [currentAccount.id, tx.chainId, tx.address],
             });
 
-            refetchAccountAllAssets();
+            refreshAssets();
 
             if (tx.type === 'nft') {
               refetchEVMNFTs();
@@ -212,7 +211,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
               params: [currentAccount.id, tx.chainId, tx.address],
             });
 
-            refetchAccountAllAssets();
+            refreshAssets();
           }
 
           removeTx(tx.txHash);
@@ -287,7 +286,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
               });
             }
 
-            refetchAccountAllAssets();
+            refreshAssets();
 
             if (tx.type === 'nft') {
               refetchSuiNFTs();
@@ -316,7 +315,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
             method: 'updateChainSpecificBalance',
             params: [currentAccount.id, tx.chainId, tx.address],
           });
-          refetchAccountAllAssets();
+          refreshAssets();
 
           removeTx(tx.txHash);
         } catch (error) {
@@ -390,7 +389,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
               });
             }
 
-            refetchAccountAllAssets();
+            refreshAssets();
 
             if (tx.type === 'nft') {
               refetchIotaNFTs();

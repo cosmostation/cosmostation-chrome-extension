@@ -2,16 +2,17 @@ import { useQuery } from '@tanstack/react-query';
 
 import { sendMessage } from '@/libs/extension';
 
-import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCurrentAccount } from '../useCurrentAccount';
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
 export function useUpdateStaking() {
   const { currentAccount } = useCurrentAccount();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   const fetcher = async () => {
     const response = await sendMessage({ target: 'SERVICE_WORKER', method: 'updateStaking', params: [currentAccount.id] });
-    await refetchAccountAllAssets();
+
+    await refreshAssets();
 
     return response;
   };
