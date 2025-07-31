@@ -3371,7 +3371,7 @@
     "useLastUpdateChecker": {
       "criticalError": "네트워크 에러",
       "minAgo": "{{minutes}}분 전에 업데이트됨",
-      "justNow": "Synced just now"
+      "justNow": "Updated just now"
     }
   }
 }
