@@ -9,7 +9,7 @@ import { get } from '@/utils/axios';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCoinGeckoPrice(currency?: CurrencyType, config?: UseQueryOptions<CoinGeckoPriceResponse>) {
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   const selectedCurrency = currency || userCurrencyPreference;
   const requestURL = `${MINTSCAN_FRONT_API_V10_URL}/utils/market/prices?currency=${selectedCurrency}`;

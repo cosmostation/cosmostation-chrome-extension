@@ -46,10 +46,22 @@ export function useAccountAllAssets({
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
   const accountType = useMemo(() => preferAccountType[param], [param, preferAccountType]);
 
+<<<<<<< Updated upstream
   const hiddenAssetIds = useExtensionStorageStore((state) => state[`${param}-hidden-assetIds`] || []);
   const hiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds || []);
   const visibleAssetIds = useExtensionStorageStore((state) => state[`${param}-visible-assetIds`] || []);
   const bitcoinBalanceInfo = useExtensionStorageStore((state) => state[`${param}-balance-bitcoin`] || []);
+=======
+  const storedHiddenAssetIds = useExtensionStorageStore((state) => state[`${param}-hidden-assetIds`]);
+  const storedHiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
+  const storedVisibleAssetIds = useExtensionStorageStore((state) => state[`${param}-visible-assetIds`]);
+  const storedBitcoinBalanceInfo = useExtensionStorageStore((state) => state[`${param}-balance-bitcoin`]);
+
+  const hiddenAssetIds = useMemo(() => storedHiddenAssetIds || [], [storedHiddenAssetIds]);
+  const hiddenCustomAssetIds = useMemo(() => storedHiddenCustomAssetIds || [], [storedHiddenCustomAssetIds]);
+  const visibleAssetIds = useMemo(() => storedVisibleAssetIds || [], [storedVisibleAssetIds]);
+  const bitcoinBalanceInfo = useMemo(() => storedBitcoinBalanceInfo || [], [storedBitcoinBalanceInfo]);
+>>>>>>> Stashed changes
 
   const fetcher = async () => {
     try {

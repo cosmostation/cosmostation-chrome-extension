@@ -14,30 +14,33 @@ type UseCurrentAccountNFTProps =
 
 export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = {}) {
   const { currentAccount } = useCurrentAccount();
-  const { updateExtensionStorageStore, ...storeData } = useExtensionStorageStore((state) => state);
 
   const currentAccountId = useMemo(() => accountId || currentAccount.id, [accountId, currentAccount.id]);
 
-  const currentAccountNFTs = useMemo(() => {
-    const evmNFT = storeData[`${currentAccountId}-nft-evm`] || [];
-    const cosmosNFT = storeData[`${currentAccountId}-nft-cosmos`] || [];
-    const suiNFT = storeData[`${currentAccountId}-nft-sui`] || [];
-    const iotaNFT = storeData[`${currentAccountId}-nft-iota`] || [];
+  const evmNFT = useExtensionStorageStore((state) => state[`${currentAccountId}-nft-evm`]);
+  const cosmosNFT = useExtensionStorageStore((state) => state[`${currentAccountId}-nft-cosmos`]);
+  const suiNFT = useExtensionStorageStore((state) => state[`${currentAccountId}-nft-sui`]);
+  const iotaNFT = useExtensionStorageStore((state) => state[`${currentAccountId}-nft-iota`]);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
+  const storedAddedSuiNFTs = useMemo(() => suiNFT || [], [suiNFT]);
+  const storedAddedIotaNFTs = useMemo(() => iotaNFT || [], [iotaNFT]);
+  const storedAddedCosmosNFTs = useMemo(() => cosmosNFT || [], [cosmosNFT]);
+  const storedAddedEVMNFTs = useMemo(() => evmNFT || [], [evmNFT]);
+
+  const currentAccountNFTs = useMemo(() => {
     const flatNFTs = [...(evmNFT || []), ...(cosmosNFT || []), ...(suiNFT || []), ...(iotaNFT || [])];
 
     return {
-      evm: evmNFT,
-      cosmos: cosmosNFT,
-      sui: suiNFT,
-      iota: iotaNFT,
-      flat: flatNFTs,
+      evm: evmNFT || [],
+      cosmos: cosmosNFT || [],
+      sui: suiNFT || [],
+      iota: iotaNFT || [],
+      flat: flatNFTs || [],
     };
-  }, [currentAccountId, storeData]);
+  }, [cosmosNFT, evmNFT, iotaNFT, suiNFT]);
 
   const addSuiNFT = async (newNFT: Omit<SuiNFT, 'id'>) => {
-    const storedAddedSuiNFTs = storeData[`${currentAccountId}-nft-sui`] || [];
-
     const isAlreadyAdded = storedAddedSuiNFTs.some(
       (item) => item.objectId.toLowerCase() === newNFT.objectId.toLowerCase() && item.chainId === newNFT.chainId && item.chainType === newNFT.chainType,
     );
@@ -62,15 +65,13 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   };
 
   const removeSuiNFT = async (id: string) => {
-    const storedAddedSuiNFTs = storeData[`${currentAccountId}-nft-sui`] || [];
-
     const updatedNFTs = storedAddedSuiNFTs.filter((item) => item.id !== id);
 
     await updateExtensionStorageStore(`${currentAccountId}-nft-sui`, updatedNFTs);
   };
 
   const addIotaNFT = async (newNFT: Omit<IotaNFT, 'id'>) => {
-    const storedAddedIotaNFTs = storeData[`${currentAccountId}-nft-iota`] || [];
+    const storedAddedIotaNFTs = iotaNFT;
 
     const isAlreadyAdded = storedAddedIotaNFTs.some(
       (item) => item.objectId.toLowerCase() === newNFT.objectId.toLowerCase() && item.chainId === newNFT.chainId && item.chainType === newNFT.chainType,
@@ -96,16 +97,12 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   };
 
   const removeIotaNFT = async (id: string) => {
-    const storedAddedIotaNFTs = storeData[`${currentAccountId}-nft-iota`] || [];
-
     const updatedNFTs = storedAddedIotaNFTs.filter((item) => item.id !== id);
 
     await updateExtensionStorageStore(`${currentAccountId}-nft-iota`, updatedNFTs);
   };
 
   const addEVMNFT = async (newNFT: Omit<EvmNFT, 'id'>) => {
-    const storedAddedEVMNFTs = storeData[`${currentAccountId}-nft-evm`] || [];
-
     const isAlreadyAdded = storedAddedEVMNFTs.some(
       (item) =>
         item.contractAddress.toLowerCase() === newNFT.contractAddress.toLowerCase() &&
@@ -145,16 +142,12 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   };
 
   const removeEVMNFT = async (id: string) => {
-    const storedAddedSuiNFTs = storeData[`${currentAccountId}-nft-evm`] || [];
-
-    const updatedNFTs = storedAddedSuiNFTs.filter((item) => item.id !== id);
+    const updatedNFTs = storedAddedEVMNFTs.filter((item) => item.id !== id);
 
     await updateExtensionStorageStore(`${currentAccountId}-nft-evm`, updatedNFTs);
   };
 
   const addCosmosNFT = async (newNFT: Omit<CosmosNFT, 'id'>) => {
-    const storedAddedCosmosNFTs = storeData[`${currentAccountId}-nft-cosmos`] || [];
-
     const isAlreadyAdded = storedAddedCosmosNFTs.some(
       (item) =>
         item.contractAddress.toLowerCase() === newNFT.contractAddress.toLowerCase() &&
@@ -194,8 +187,6 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   };
 
   const removeCosmosNFT = async (id: string) => {
-    const storedAddedCosmosNFTs = storeData[`${currentAccountId}-nft-cosmos`] || [];
-
     const updatedNFTs = storedAddedCosmosNFTs.filter((item) => item.id !== id);
 
     await updateExtensionStorageStore(`${currentAccountId}-nft-cosmos`, updatedNFTs);
@@ -214,11 +205,6 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   };
 
   const removeNFT = async (id: string) => {
-    const storedAddedCosmosNFTs = storeData[`${currentAccountId}-nft-cosmos`] || [];
-    const storedAddedEVMNFTs = storeData[`${currentAccountId}-nft-evm`] || [];
-    const storedAddedSuiNFTs = storeData[`${currentAccountId}-nft-sui`] || [];
-    const storedAddedIotaNFTs = storeData[`${currentAccountId}-nft-iota`] || [];
-
     const isCosmosNFT = storedAddedCosmosNFTs.some((item) => item.id === id);
     const isEVMNFT = storedAddedEVMNFTs.some((item) => item.id === id);
     const isSuiNFT = storedAddedSuiNFTs.some((item) => item.id === id);
