@@ -1,9 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-<<<<<<< Updated upstream
-import { Typography } from '@mui/material';
-=======
->>>>>>> Stashed changes
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressActionButtons from '@/components/AddressActionButtons';
