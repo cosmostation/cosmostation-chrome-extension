@@ -3370,8 +3370,8 @@
   "hooks": {
     "useLastUpdateChecker": {
       "criticalError": "Network Error",
-      "minAgo": "Synced {{minutes}} min ago",
-      "justNow": "Synced just now"
+      "minAgo": "Updated {{minutes}} min ago",
+      "justNow": "Updated just now"
     }
   }
 }
