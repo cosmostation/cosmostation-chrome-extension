@@ -8,7 +8,7 @@ import { useCurrentAccount } from './useCurrentAccount';
 
 export function useCurrentPreferAccountTypes() {
   const { currentAccount } = useCurrentAccount();
-  const { preferAccountType } = useExtensionStorageStore((state) => state);
+  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
 
   const currentPreferAccountType = useMemo(() => preferAccountType[currentAccount.id], [currentAccount.id, preferAccountType]);
 
