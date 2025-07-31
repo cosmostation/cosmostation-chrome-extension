@@ -3371,7 +3371,7 @@
     "useLastUpdateChecker": {
       "criticalError": "Network Error",
       "minAgo": "Synced {{minutes}} min ago",
-      "justNow": "Synced Just now"
+      "justNow": "Synced just now"
     }
   }
 }
