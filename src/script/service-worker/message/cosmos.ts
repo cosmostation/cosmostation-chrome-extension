@@ -39,7 +39,7 @@ import type {
   CosVerifyMessageResponse,
   SendTransactionPayload,
 } from '@/types/message/inject/cosmos';
-import { getMsgSignData } from '@/utils/cosmos/msg';
+import { getMsgSignData } from '@/utils/cosmos/msgParse';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { CosmosRPCError } from '@/utils/error';
 import { FetchError, get, post } from '@/utils/fetch';

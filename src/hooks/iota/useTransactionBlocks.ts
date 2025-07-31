@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import { throttle } from 'es-toolkit';
 import type { IotaTransactionBlockResponseQuery } from '@iota/iota-sdk/client';
 
 import type { IotaRpcGetTransactionBlocksResponse } from '@/types/iota/api';

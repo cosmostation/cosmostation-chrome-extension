@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { throttle } from 'lodash';
+import { throttle } from 'es-toolkit';
 
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { AccountTx as AccountTxsPayload } from '@/types/cosmos/txs';

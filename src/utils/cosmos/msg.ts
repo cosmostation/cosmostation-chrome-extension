@@ -135,25 +135,3 @@ export function isAminoExecuteEurekaContract(chain: CosmosChain, msg: Msg): msg 
 export function isAminoMsgSignData(msg: Msg): msg is Msg<MsgSignData> {
   return msg.type === 'sign/MsgSignData';
 }
-
-export function getMsgSignData(signer: string, message: string) {
-  return {
-    account_number: '0',
-    chain_id: '',
-    fee: {
-      amount: [],
-      gas: '0',
-    },
-    memo: '',
-    msgs: [
-      {
-        type: 'sign/MsgSignData',
-        value: {
-          data: Buffer.from(message, 'utf8').toString('base64'),
-          signer,
-        },
-      },
-    ],
-    sequence: '0',
-  };
-}

@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import esToolkitPlugin from 'vite-plugin-es-toolkit';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
@@ -50,6 +51,7 @@ export default defineConfig(({ mode }) => {
         include: '**/*.svg',
       }),
       ...modePlugins,
+      esToolkitPlugin(),
     ],
     build: {
       outDir,
