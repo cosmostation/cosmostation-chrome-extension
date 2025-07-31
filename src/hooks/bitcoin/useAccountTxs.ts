@@ -56,5 +56,5 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     }
   }, 2000);
 
-  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
+  return { accountAsset, data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, isLoading, status, isPending };
 }

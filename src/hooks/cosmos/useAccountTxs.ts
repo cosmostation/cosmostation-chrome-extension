@@ -70,5 +70,16 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     }
   }, 2000);
 
-  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isLoading, isFetchingNextPage, status, isPending };
+  return {
+    data,
+    error,
+    fetchNextPage: handleIntersect,
+    hasNextPage,
+    isFetching,
+    isLoading,
+    isFetchingNextPage,
+    status,
+    isPending,
+    accountAssets: cosmosAccountAsset,
+  };
 }
