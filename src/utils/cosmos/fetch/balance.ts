@@ -145,6 +145,9 @@ export const fetchMultiERC20Balances = async (
   address: string,
   contractAddresses: string[],
   rpcUrls: string[],
+  multicallWrapperOption?: {
+    maxMulticallDataLength: number;
+  },
 ): Promise<
   {
     contract: string;
@@ -153,6 +156,8 @@ export const fetchMultiERC20Balances = async (
     isError?: boolean;
   }[]
 > => {
+  const { maxMulticallDataLength } = multicallWrapperOption || {};
+
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const baseRpcUrl = rpcUrl;
     const provider = new ethers.JsonRpcProvider(baseRpcUrl, undefined, {
@@ -162,7 +167,7 @@ export const fetchMultiERC20Balances = async (
 
     provider._getConnection().timeout = BALANCE_FETCH_TIME_OUT_MS;
 
-    const multicallProvider = MulticallWrapper.wrap(provider);
+    const multicallProvider = MulticallWrapper.wrap(provider, maxMulticallDataLength);
 
     try {
       const tokenContracts = contractAddresses.map((contractAddress) => {

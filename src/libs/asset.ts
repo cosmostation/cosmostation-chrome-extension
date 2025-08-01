@@ -959,7 +959,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               balance.chainId === asset.address.chainId && balance.chainType === asset.address.chainType && balance.address === asset.address.address,
           );
 
-          const pendingFundedAmount = balanceInfo?.balance.chainStats?.funded_txo_sum || '0';
+          const pendingFundedAmount = balanceInfo?.balance.mempoolStats?.funded_txo_sum || '0';
           const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
 
           const isBalanceGreaterThanZero = gt(asset.balance, '0');
