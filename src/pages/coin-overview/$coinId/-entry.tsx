@@ -33,7 +33,7 @@ export default function Entry({ coinId }: EntryProps) {
   const navigate = useNavigate();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
   const [search, setSearch] = useState('');

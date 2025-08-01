@@ -1048,14 +1048,14 @@ export const MULTICALL3_DEPLOYMENTS = [
     url: 'https://testnet.sankoscan.io/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
   },
   {
-    name: 'Berachain Testnet (Artio)',
-    chainId: 80085,
-    url: 'https://artio.beratrail.io/address/0xcA11bde05977b3631167028862bE2a173976CA11',
-  },
-  {
     name: 'Berachain Mainnet',
     chainId: 80094,
-    url: 'https://beratrail.io/address/0xcA11bde05977b3631167028862bE2a173976CA11',
+    url: 'https://berascan.com/address/0xcA11bde05977b3631167028862bE2a173976CA11',
+  },
+  {
+    name: 'Berachain Bepolia Testnet',
+    chainId: 80069,
+    url: 'https://bepolia.beratrail.io/address/0xca11bde05977b3631167028862be2a173976ca11',
   },
   {
     name: 'Shibarium',
@@ -1234,17 +1234,12 @@ export const MULTICALL3_DEPLOYMENTS = [
   },
   {
     name: 'Plume Testnet',
-    chainId: 161221135,
+    chainId: 98867,
     url: 'https://testnet-explorer.plumenetwork.xyz/address/0xca11bde05977b3631167028862be2a173976ca11?tab=contract',
   },
   {
-    name: 'Plume Testnet v2',
-    chainId: 98864,
-    url: 'https://test-explorer.plumenetwork.xyz/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
-  },
-  {
     name: 'Plume Mainnet',
-    chainId: 98865,
+    chainId: 98866,
     url: 'https://phoenix-explorer.plumenetwork.xyz/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
   },
   {
@@ -1403,14 +1398,53 @@ export const MULTICALL3_DEPLOYMENTS = [
     chainId: 10143,
     url: 'https://testnet.monadexplorer.com/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=Contract',
   },
+  {
+    name: 'Powerloom Mainnet',
+    chainId: 7869,
+    url: 'https://explorer-v2.powerloom.network/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
+  },
+  {
+    name: 'Hoodi',
+    chainId: 560048,
+    url: 'https://hoodi.etherscan.io/address/0xca11bde05977b3631167028862be2a173976ca11#code',
+  },
+  {
+    name: 'MegaETH Testnet',
+    chainId: 6342,
+    url: 'https://www.megaexplorer.xyz/address/0xcA11bde05977b3631167028862bE2a173976CA11',
+  },
+  {
+    name: 'Ink Sepolia',
+    chainId: 763373,
+    url: 'https://explorer-sepolia.inkonchain.com/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
+  },
+  {
+    name: 'Ink',
+    chainId: 57073,
+    url: 'https://explorer.inkonchain.com/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
+  },
+  {
+    name: 'Bittensor',
+    chainId: 964,
+    url: 'https://evm.taostats.io/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
+  },
+  {
+    name: 'Whitechain',
+    chainId: 1875,
+    url: 'https://explorer.whitechain.io/address/0xcA11bde05977b3631167028862bE2a173976CA11/contract',
+  },
+  {
+    name: 'Tangle Testnet',
+    chainId: 3799,
+    url: 'https://testnet-explorer.tangle.tools/address/0xca11bde05977b3631167028862be2a173976ca11?tab=contract',
+  },
+  {
+    name: 'Tangle Mainnet',
+    chainId: 8545,
+    url: 'https://explorer.tangle.tools/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
+  },
 ];
 
-export const chainToDeploymentMap = Object.fromEntries(
-  MULTICALL3_DEPLOYMENTS.map((deployment) => {
-    const p = deployment.url.indexOf('0x');
-    const address = p > -1 ? deployment.url.slice(p, p + 42) : '0x' + deployment.url.slice(-40);
-    return [deployment.chainId.toString(), address];
-  }),
-);
+export const chainToDeploymentMap = new Map<number, boolean>(MULTICALL3_DEPLOYMENTS.map(({ chainId, address }) => [chainId, !address]));
 
 export const MULICALL_CONTRACT_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11';

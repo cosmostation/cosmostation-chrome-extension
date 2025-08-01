@@ -33,6 +33,12 @@ export async function post<T>(path: string, body?: unknown, config?: AxiosReques
   return data;
 }
 
+export async function postWithFullResponse<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  const response = await axios.post<T>(path, body, getCommonConfig(config));
+
+  return response;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isAxiosError(e: any): e is AxiosError {
   return typeof e?.response?.status === 'number';

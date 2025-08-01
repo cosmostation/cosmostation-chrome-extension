@@ -1,15 +1,37 @@
 import { useMemo } from 'react';
 
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
+import type { FlatAccountAssets } from '@/types/accountAssets';
+import type { ChainBase, UniqueChainId } from '@/types/chain';
+import { getFilteredAssetsByChainId, getMainAssetByChainId, isStakeableAsset } from '@/utils/asset';
+import { isTestnetChain } from '@/utils/chain';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getUniqueChainId } from '@/utils/queryParamGenerator';
+import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCoinGeckoPrice } from '../useCoinGeckoPrice';
 import { useCurrentAccount } from '../useCurrentAccount';
 
-export function usePortfolioValuesByChain(accountId?: string) {
+interface ChainWithValue extends ChainBase {
+  isActive: boolean;
+  value: string;
+  mainAsset?: FlatAccountAssets;
+  isTestnet: boolean;
+  isAllNetwork?: boolean;
+}
+interface CategorizedChain {
+  testnet: ChainWithValue[];
+  mainnet: ChainWithValue[];
+}
+
+interface UsePortfolioValuesByChainProps {
+  chainList: ChainBase[];
+  accountId?: string;
+  currentChainId?: UniqueChainId;
+  isManageAsset?: boolean;
+}
+
+export function usePortfolioValuesByChain({ chainList, accountId, currentChainId, isManageAsset = false }: UsePortfolioValuesByChainProps) {
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
@@ -20,8 +42,6 @@ export function usePortfolioValuesByChain(accountId?: string) {
     accountId: currentAccountId,
     filterByPreferAccountType: true,
   });
-
-  const chainList = useMemo(() => getFilteredChainsByChainId(accountAllAssets?.flatAccountAssets), [accountAllAssets?.flatAccountAssets]);
 
   const portfolioValuesByChain = useMemo(
     () =>
@@ -47,5 +67,30 @@ export function usePortfolioValuesByChain(accountId?: string) {
     [accountAllAssets?.flatAccountAssets, chainList, coinGeckoPrice, userCurrencyPreference],
   );
 
-  return { portfolioValuesByChain };
+  const categorizedChainsWithValue = useMemo(() => {
+    return chainList.reduce(
+      (acc: CategorizedChain, item) => {
+        const isActive = isMatchingUniqueChainId(item, currentChainId);
+        const value = portfolioValuesByChain.find((chain) => isSameChain(chain.chain, item));
+        const mainAsset = isManageAsset ? getMainAssetByChainId(accountAllAssets?.flatAccountAssets, getUniqueChainId(item)) : undefined;
+
+        const isTestnet = isTestnetChain(item.id);
+
+        const chainWithValue: ChainWithValue = {
+          ...item,
+          isActive: isActive,
+          value: value?.totalValue || '0',
+          mainAsset,
+          isTestnet,
+        };
+
+        (isTestnet ? acc.testnet : acc.mainnet).push(chainWithValue);
+
+        return acc;
+      },
+      { testnet: [], mainnet: [] },
+    );
+  }, [accountAllAssets?.flatAccountAssets, chainList, currentChainId, isManageAsset, portfolioValuesByChain]);
+
+  return { portfolioValuesByChain, categorizedChainsWithValue };
 }

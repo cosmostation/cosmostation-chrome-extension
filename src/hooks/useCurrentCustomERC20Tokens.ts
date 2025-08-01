@@ -3,12 +3,12 @@ import { getCoinId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
+import { useRefreshAccountAllAssets } from './useRefreshAccountAllAssets';
 
 export function useCurrentCustomERC20Tokens() {
-  const { customErc20Assets, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const customErc20Assets = useExtensionStorageStore((state) => state.customErc20Assets);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   const currentCustomERC20Tokens = customErc20Assets;
 
@@ -28,7 +28,7 @@ export function useCurrentCustomERC20Tokens() {
 
     await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
 
-    await refetchAccountAllAssets();
+    await refreshAssets();
   };
 
   const addCustomERC20Tokens = async (assets: EvmErc20Asset[]) => {
@@ -51,7 +51,7 @@ export function useCurrentCustomERC20Tokens() {
 
     await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
 
-    await refetchAccountAllAssets();
+    await refreshAssets();
   };
 
   const removeCustomERC20Token = async (coinId: string) => {
@@ -60,7 +60,7 @@ export function useCurrentCustomERC20Tokens() {
 
     await updateExtensionStorageStore('customErc20Assets', updatedCustomTokens);
 
-    await refetchAccountAllAssets();
+    await refreshAssets();
   };
 
   return { currentCustomERC20Tokens, addCustomERC20Token, addCustomERC20Tokens, removeCustomERC20Token };

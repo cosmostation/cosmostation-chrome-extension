@@ -701,6 +701,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     displaySendAmount,
     inputMemoErrorMessage,
+    isBalanceDataStaled,
     isIBCSend,
     latestHeight,
     recipientAddress,

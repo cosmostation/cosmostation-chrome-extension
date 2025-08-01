@@ -5,19 +5,12 @@ import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import CoinSelect from '@/components/CoinSelect';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
-import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
-import { getCoinId, isMatchingCoinId } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase } from '@/utils/string';
+import type { AccountCosmosAsset } from '@/types/account';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 export default function Entry() {
   const navigate = useNavigate();
-
-  const { data: currentAccountAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-    disableDupeEthermint: true,
-  });
 
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
 
@@ -25,6 +18,26 @@ export default function Entry() {
   const [selectedCosmosCoinId, setSelectedCosmosCoinId] = useState('');
 
   const [selectedCoinAccountPrefix, setSelectedCoinAccountPrefix] = useState('');
+
+  const handleOnClickCoin = useCallback(
+    (coinId: string, ethermintCoin?: AccountCosmosAsset) => {
+      if (ethermintCoin) {
+        setSelectedEVMCoinId(coinId);
+        setSelectedCosmosCoinId(getCoinId(ethermintCoin.asset));
+
+        setSelectedCoinAccountPrefix(ethermintCoin.chain.accountPrefix + 1);
+        setIsOpenBottomSheet(true);
+      } else {
+        navigate({
+          to: Send.to,
+          params: {
+            coinId,
+          },
+        });
+      }
+    },
+    [navigate],
+  );
 
   const hanldeOnEthermintSend = useCallback(
     (val: 'cosmos' | 'evm') => {
@@ -52,44 +65,7 @@ export default function Entry() {
           flex: '1',
         }}
       >
-        <CoinSelect
-          onSelectCoin={(coinId) => {
-            const currentCoin = currentAccountAssets?.flatAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-
-            const cosmosStyleEthermintCoin = (() => {
-              const isEthermint = currentCoin?.chain.chainType === 'evm' && currentCoin.chain.isCosmos;
-
-              const isMainCoin = isEqualsIgnoringCase(currentCoin?.asset.id, NATIVE_EVM_COIN_ADDRESS);
-
-              if (isEthermint && isMainCoin) {
-                return currentAccountAssets?.cosmosAccountAssets.find(
-                  (item) =>
-                    item.asset.id === currentCoin.chain.mainAssetDenom &&
-                    item.chain.id === currentCoin.chain.id &&
-                    item.address.chainId === currentCoin.address.chainId &&
-                    item.address.accountType.hdPath === currentCoin.address.accountType.hdPath,
-                );
-              }
-
-              return undefined;
-            })();
-
-            if (cosmosStyleEthermintCoin) {
-              setSelectedEVMCoinId(coinId);
-              setSelectedCosmosCoinId(getCoinId(cosmosStyleEthermintCoin.asset));
-
-              setSelectedCoinAccountPrefix(cosmosStyleEthermintCoin.chain.accountPrefix + 1);
-              setIsOpenBottomSheet(true);
-            } else {
-              navigate({
-                to: Send.to,
-                params: {
-                  coinId,
-                },
-              });
-            }
-          }}
-        />
+        <CoinSelect onSelectCoin={handleOnClickCoin} />
       </EdgeAligner>
       <EthermintSendBottomSheet
         open={isOpenBottomSheet}

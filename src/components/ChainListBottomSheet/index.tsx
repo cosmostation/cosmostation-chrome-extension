@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
@@ -8,18 +8,13 @@ import { ADDRESS_FORMAT_MAPPING } from '@/constants/bitcoin/common';
 import { DEFAULT_MAJOR_CHAINS } from '@/constants/common';
 import { CHAINLIST_SORT_KEY } from '@/constants/sortKey';
 import { usePortfolioValuesByChain } from '@/hooks/current/usePortfolioValuesByChain';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { useChainList } from '@/hooks/useChainList';
 import { useChangeCoinAccountType } from '@/hooks/useChangeCoinAccountType';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { Route as SwitchAccountType } from '@/pages/manage-assets/switch-accout-type';
 import CoinTypeBottomSheet from '@/pages/manage-assets/switch-accout-type/-components/CoinTypeBottomSheet';
 import { Route as ManageCustomNetwork } from '@/pages/manage-assets/visibility/network';
-import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { ChainAccountType, ChainBase, UniqueChainId } from '@/types/chain';
 import type { ChainlistSortKeyType } from '@/types/sortKey';
-import { getMainAssetByChainId } from '@/utils/asset';
-import { isTestnetChain } from '@/utils/chain';
 import { devLogger } from '@/utils/devLogger';
 import { equal, minus, plus } from '@/utils/numbers';
 import { getUniqueChainId, isMatchingUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
@@ -30,6 +25,7 @@ import OptionButton from './components/OptionButton';
 import { AmountContainer } from './components/OptionButton/styled';
 import {
   Body,
+  ChainButtonWrapper,
   ChainNameContainer,
   ChevronIconContainer,
   CoinTypeButtonContainer,
@@ -46,12 +42,14 @@ import {
   StyledBottomSheet,
   StyledButton,
   SwtichCoinType,
+  VirtualizedListContainer,
 } from './styled';
 import BalanceDisplay from '../BalanceDisplay';
 import BalanceSyncStatusIcon from '../BalanceSyncStatusIcon';
 import Base1000Text from '../common/Base1000Text';
 import Base1300Text from '../common/Base1300Text';
 import IconTextButton from '../common/IconTextButton';
+import { ForwardRefVirtualizedList } from '../common/VirtualizedList/ForwardRefVirtualizedList';
 import Search from '../Search';
 import SortBottomSheet from '../SortBottomSheet';
 
@@ -61,17 +59,6 @@ import CustomNetworkIcon from 'assets/images/icons/CustomNetwork28.svg';
 import RightChevronIcon from 'assets/images/icons/RightChevron20.svg';
 
 import AllNetworkImage from 'assets/images/network.png';
-
-interface ChainWithValue extends ChainBase {
-  isActive: boolean;
-  value: string;
-  mainAsset?: FlatAccountAssets;
-}
-
-interface CategorizedChain {
-  testnet: ChainWithValue[];
-  mainnet: ChainWithValue[];
-}
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   chainList: ChainBase[];
@@ -104,15 +91,15 @@ export default function ChainListBottomSheet({
   const [selectedChangeCoinTypeChainId, setSelectedChangeCoinTypeChainId] = useState<UniqueChainId | undefined>();
 
   const { t } = useTranslation();
-  const ref = useRef<HTMLButtonElement>(null);
-  const navigate = useNavigate();
-  const { userCurrencyPreference, chainListSortKey, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
-  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
+  const bodyRef = useRef<HTMLDivElement>(null);
 
-  const { flatChainList } = useChainList();
+  const navigate = useNavigate();
+
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
+  const chainListSortKey = useExtensionStorageStore((state) => state.chainListSortKey);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
+
+  const { currentPreferAccountType } = useCurrentPreferAccountTypes();
 
   const { changeCoinType } = useChangeCoinAccountType();
   const [search, setSearch] = useState('');
@@ -122,35 +109,21 @@ export default function ChainListBottomSheet({
 
   const AllNetworkOptionId = undefined;
 
-  const { portfolioValuesByChain } = usePortfolioValuesByChain();
+  const { portfolioValuesByChain, categorizedChainsWithValue } = usePortfolioValuesByChain({
+    chainList,
+    currentChainId,
+    isManageAsset: customType === 'manageAssets',
+  });
 
-  const totalValue = isShowValue
-    ? portfolioValuesByChain.reduce((acc, item) => {
-        return plus(acc, item.totalValue);
-      }, '0')
-    : '0';
-
-  const categorizedChainsWithValue = useMemo(() => {
-    return chainList.reduce(
-      (acc: CategorizedChain, item) => {
-        const isActive = isMatchingUniqueChainId(item, currentChainId);
-        const value = portfolioValuesByChain.find((chain) => isSameChain(chain.chain, item));
-        const mainAsset = customType === 'manageAssets' ? getMainAssetByChainId(accountAllAssets?.flatAccountAssets, getUniqueChainId(item)) : undefined;
-
-        const chainWithValue: ChainWithValue = {
-          ...item,
-          isActive: isActive,
-          value: value?.totalValue || '0',
-          mainAsset,
-        };
-
-        (isTestnetChain(chainWithValue.id) ? acc.testnet : acc.mainnet).push(chainWithValue);
-
-        return acc;
-      },
-      { testnet: [], mainnet: [] },
-    );
-  }, [accountAllAssets?.flatAccountAssets, chainList, currentChainId, customType, portfolioValuesByChain]);
+  const totalValue = useMemo(
+    () =>
+      isShowValue
+        ? portfolioValuesByChain.reduce((acc, item) => {
+            return plus(acc, item.totalValue);
+          }, '0')
+        : '0',
+    [isShowValue, portfolioValuesByChain],
+  );
 
   const sortedChainList = useMemo(
     () =>
@@ -197,9 +170,19 @@ export default function ChainListBottomSheet({
     return sortedChainList;
   }, [debouncedSearch, search, sortedChainList]);
 
+  const mergedChainList = useMemo(
+    () => [...(filteredChainList.mainnet || []), ...(filteredChainList.testnet || [])],
+    [filteredChainList.mainnet, filteredChainList.testnet],
+  );
+
   const chainsCount = chainList.length.toString();
 
-  const currentTempChain = flatChainList.find((chain) => isMatchingUniqueChainId(chain, selectedChangeCoinTypeChainId));
+  const currentTempChain = useMemo(
+    () => chainList.find((chain) => isMatchingUniqueChainId(chain, selectedChangeCoinTypeChainId)),
+    [chainList, selectedChangeCoinTypeChainId],
+  );
+
+  const activeItemIndex = useMemo(() => mergedChainList.findIndex((item) => item.isActive), [mergedChainList]);
 
   const handleClose = () => {
     setSearch('');
@@ -220,12 +203,6 @@ export default function ChainListBottomSheet({
     },
     [changeCoinType, t],
   );
-
-  useEffect(() => {
-    if (remainder.open) {
-      setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
-    }
-  }, [remainder.open]);
 
   return (
     <>
@@ -256,7 +233,7 @@ export default function ChainListBottomSheet({
               }}
             />
           </FilterContaienr>
-          <Body>
+          <Body ref={bodyRef}>
             {customType === 'manageAssets' && (
               <ManageAssetsContaienr>
                 <CustomNetworkButton
@@ -294,194 +271,120 @@ export default function ChainListBottomSheet({
                 </NetworkInfoContainer>
               </ManageAssetsContaienr>
             )}
-            {!disableAllNetwork && !isDebouncing && (
-              <StickyContainer>
-                <OptionButton
-                  key={'all-network'}
-                  isActive={!currentChainId}
-                  onSelectChain={(id) => {
-                    onClickChain(id);
-                    handleClose();
-                  }}
-                  name={t('components.ChainListBottomSheet.index.allNetwork')}
-                  image={AllNetworkImage}
-                  id={AllNetworkOptionId}
-                  varient={buttonVarients}
-                  rightComponent={
-                    isShowValue ? (
-                      <AmountContainer>
-                        <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                          {totalValue}
-                        </BalanceDisplay>
-                      </AmountContainer>
-                    ) : undefined
-                  }
-                />
-              </StickyContainer>
-            )}
-            {!isDebouncing &&
-              filteredChainList.mainnet?.length > 0 &&
-              filteredChainList.mainnet.map((item) => {
-                const multiPath = currentPreferAccountType?.[item.id];
-
-                const coinTypeText = (() => {
-                  if (multiPath) {
-                    const hdPathParts = multiPath?.hdPath.split('/');
-                    const coinTypeLevel = item?.chainType === 'bitcoin' ? hdPathParts?.[1] : hdPathParts?.[2];
-
-                    const addressTypeLabel = (() => {
-                      if (item.chainType === 'bitcoin') {
-                        return ADDRESS_FORMAT_MAPPING[coinTypeLevel as keyof typeof ADDRESS_FORMAT_MAPPING];
-                      }
-
-                      return t('pages.manage-assets.switch-account-type.entry.type', {
-                        accountType: coinTypeLevel,
-                      });
-                    })();
-
-                    return addressTypeLabel;
-                  }
-
-                  return undefined;
-                })();
-
-                return (
+            <ChainButtonWrapper>
+              {!disableAllNetwork && !isDebouncing && (
+                <StickyContainer>
                   <OptionButton
-                    key={getUniqueChainId(item)}
-                    isActive={item.isActive}
-                    ref={item.isActive ? ref : undefined}
+                    key={'all-network'}
+                    isActive={!currentChainId}
                     onSelectChain={(id) => {
                       onClickChain(id);
                       handleClose();
                     }}
-                    name={item.name}
-                    image={item.image}
-                    id={getUniqueChainId(item)}
+                    name={t('components.ChainListBottomSheet.index.allNetwork')}
+                    image={AllNetworkImage}
+                    id={AllNetworkOptionId}
                     varient={buttonVarients}
-                    leftSecondHeader={
-                      customType === 'manageAssets' ? (
-                        <CoinTypeButtonContainer>
-                          <ChainNameContainer>
-                            <Base1300Text variant="b2_M">{item.name}</Base1300Text>
-                            {item.mainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={item.mainAsset.lastUpdatedAtMs} />}
-                          </ChainNameContainer>
-
-                          {multiPath && coinTypeText ? (
-                            <IconTextButton
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedChangeCoinTypeChainId(getUniqueChainId(item));
-                              }}
-                              disabled={!multiPath}
-                              trailingIcon={
-                                multiPath ? (
-                                  <ChevronIconContainer>
-                                    <RightChevronIcon />
-                                  </ChevronIconContainer>
-                                ) : undefined
-                              }
-                            >
-                              <Base1000Text variant="b4_R">
-                                {'Selected :'}
-                                &nbsp;
-                                <span>
-                                  <Base1000Text variant="b4_M">{coinTypeText}</Base1000Text>
-                                </span>
-                              </Base1000Text>
-                            </IconTextButton>
-                          ) : undefined}
-                        </CoinTypeButtonContainer>
-                      ) : undefined
-                    }
                     rightComponent={
                       isShowValue ? (
                         <AmountContainer>
                           <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
-                            {item.value}
+                            {totalValue}
                           </BalanceDisplay>
                         </AmountContainer>
                       ) : undefined
                     }
                   />
-                );
-              })}
-
-            {!isDebouncing &&
-              filteredChainList.testnet?.length > 0 &&
-              filteredChainList.testnet.map((item) => {
-                const multiPath = currentPreferAccountType?.[item.id];
-
-                const coinTypeText = (() => {
-                  if (multiPath) {
-                    const hdPathParts = multiPath?.hdPath.split('/');
-                    const coinTypeLevel = item?.chainType === 'bitcoin' ? hdPathParts?.[1] : hdPathParts?.[2];
-
-                    const addressTypeLabel = (() => {
-                      if (item.chainType === 'bitcoin') {
-                        return ADDRESS_FORMAT_MAPPING[coinTypeLevel as keyof typeof ADDRESS_FORMAT_MAPPING];
-                      }
-
-                      return t('pages.manage-assets.switch-account-type.entry.type', {
-                        accountType: coinTypeLevel,
-                      });
-                    })();
-
-                    return addressTypeLabel;
-                  }
-
-                  return undefined;
-                })();
-                return (
-                  <OptionButton
-                    key={getUniqueChainId(item)}
-                    isActive={item.isActive}
-                    ref={item.isActive ? ref : undefined}
-                    onSelectChain={(id) => {
-                      onClickChain(id);
-                      handleClose();
+                </StickyContainer>
+              )}
+              <VirtualizedListContainer>
+                {!isDebouncing && mergedChainList.length > 0 && (
+                  <ForwardRefVirtualizedList
+                    items={mergedChainList}
+                    estimateSize={() => 60}
+                    renderItem={(item, virtualItem) => {
+                      const multiPath = currentPreferAccountType?.[item.id];
+                      const coinTypeText = (() => {
+                        if (multiPath) {
+                          const hdPathParts = multiPath?.hdPath.split('/');
+                          const coinTypeLevel = item?.chainType === 'bitcoin' ? hdPathParts?.[1] : hdPathParts?.[2];
+                          const addressTypeLabel = (() => {
+                            if (item.chainType === 'bitcoin') {
+                              return ADDRESS_FORMAT_MAPPING[coinTypeLevel as keyof typeof ADDRESS_FORMAT_MAPPING];
+                            }
+                            return t('pages.manage-assets.switch-account-type.entry.type', {
+                              accountType: coinTypeLevel,
+                            });
+                          })();
+                          return addressTypeLabel;
+                        }
+                        return undefined;
+                      })();
+                      return (
+                        <OptionButton
+                          key={getUniqueChainId(item) + virtualItem.index}
+                          isActive={item.isActive}
+                          onSelectChain={(id) => {
+                            onClickChain(id);
+                            handleClose();
+                          }}
+                          name={item.name}
+                          image={item.image}
+                          id={getUniqueChainId(item)}
+                          varient={buttonVarients}
+                          leftSecondHeader={
+                            customType === 'manageAssets' ? (
+                              <CoinTypeButtonContainer>
+                                <ChainNameContainer>
+                                  <Base1300Text variant="b2_M">{item.name}</Base1300Text>
+                                  {item.mainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={item.mainAsset.lastUpdatedAtMs} />}
+                                </ChainNameContainer>
+                                {multiPath && coinTypeText ? (
+                                  <IconTextButton
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedChangeCoinTypeChainId(getUniqueChainId(item));
+                                    }}
+                                    disabled={!multiPath}
+                                    trailingIcon={
+                                      multiPath ? (
+                                        <ChevronIconContainer>
+                                          <RightChevronIcon />
+                                        </ChevronIconContainer>
+                                      ) : undefined
+                                    }
+                                  >
+                                    <Base1000Text variant="b4_R">
+                                      {'Selected :'}
+                                      &nbsp;
+                                      <span>
+                                        <Base1000Text variant="b4_M">{coinTypeText}</Base1000Text>
+                                      </span>
+                                    </Base1000Text>
+                                  </IconTextButton>
+                                ) : undefined}
+                              </CoinTypeButtonContainer>
+                            ) : undefined
+                          }
+                          rightComponent={
+                            isShowValue && !item.isTestnet ? (
+                              <AmountContainer>
+                                <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference}>
+                                  {item.value}
+                                </BalanceDisplay>
+                              </AmountContainer>
+                            ) : undefined
+                          }
+                        />
+                      );
                     }}
-                    name={item.name}
-                    image={item.image}
-                    id={getUniqueChainId(item)}
-                    varient={buttonVarients}
-                    leftSecondHeader={
-                      customType === 'manageAssets' ? (
-                        <CoinTypeButtonContainer>
-                          <ChainNameContainer>
-                            <Base1300Text variant="b2_M">{item.name}</Base1300Text>
-                            {item.mainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={item.mainAsset.lastUpdatedAtMs} />}
-                          </ChainNameContainer>
-
-                          {multiPath && coinTypeText ? (
-                            <IconTextButton
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedChangeCoinTypeChainId(getUniqueChainId(item));
-                              }}
-                              disabled={!multiPath}
-                              trailingIcon={
-                                multiPath ? (
-                                  <ChevronIconContainer>
-                                    <RightChevronIcon />
-                                  </ChevronIconContainer>
-                                ) : undefined
-                              }
-                            >
-                              <Base1000Text variant="b4_R">
-                                {'Selected :'}
-                                &nbsp;
-                                <span>
-                                  <Base1000Text variant="h6n_M">{coinTypeText}</Base1000Text>
-                                </span>
-                              </Base1000Text>
-                            </IconTextButton>
-                          ) : undefined}
-                        </CoinTypeButtonContainer>
-                      ) : undefined
-                    }
+                    overscan={5}
+                    ref={bodyRef}
+                    scrollToIndex={activeItemIndex}
                   />
-                );
-              })}
+                )}
+              </VirtualizedListContainer>
+            </ChainButtonWrapper>
           </Body>
         </Container>
       </StyledBottomSheet>

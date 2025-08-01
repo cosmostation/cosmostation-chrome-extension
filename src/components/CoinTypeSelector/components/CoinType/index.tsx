@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1300Text from '@/components/common/Base1300Text';
 import { PUBKEY_STYLE_MAP } from '@/constants/bitcoin/common';
-import type { Chain, ChainAccountType } from '@/types/chain';
+import type { ChainAccountType, ChainBase } from '@/types/chain';
 import { equal } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -36,7 +36,7 @@ type CoinTypeSelectorProps = {
     totalAssetValue: string;
   }[];
   selectedAccountType?: ChainAccountType;
-  chain?: Chain;
+  chain?: ChainBase;
   isDisableTopContents?: boolean;
   onClickChainType: (id: string, accountType: ChainAccountType) => void;
 };

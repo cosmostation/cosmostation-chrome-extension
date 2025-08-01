@@ -33,7 +33,7 @@ import { formattingAccount } from '@/utils/cosmos/account';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
 import { getObjectDisplay as getIotaObjectDisplay, isKiosk as isIotaKiosk } from '@/utils/iota/nft';
 import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
-import { getCoinIdWithManual } from '@/utils/queryParamGenerator';
+import { getCoinId, getCoinIdWithManual } from '@/utils/queryParamGenerator';
 import { getObjectDisplay, isKiosk } from '@/utils/sui/nft';
 
 import { getAccountAddress, getAllAccountAddress } from './account';
@@ -45,6 +45,14 @@ export async function getHiddenAssets(id: string) {
   const hiddenAssetIds = storage[`${id}-hidden-assetIds`];
 
   return hiddenAssetIds ?? [];
+}
+
+export async function getHiddenAssetsSet(id: string): Promise<Set<string>> {
+  const hiddenAssetIds = await getHiddenAssets(id);
+
+  const hiddenAssetIdSet = new Set(hiddenAssetIds.map((item) => getCoinId(item)));
+
+  return hiddenAssetIdSet;
 }
 
 export async function updateHiddenAssets(id: string, hiddenAssetIds: AssetId[]) {
@@ -67,12 +75,28 @@ export async function getHiddenCustomAssets() {
   return hiddenCustomAssetIds ?? [];
 }
 
+export async function getHiddenCustomAssetsSet(): Promise<Set<string>> {
+  const hiddenCustomAssetIds = await getHiddenCustomAssets();
+
+  const hiddenCustomAssetSet = new Set(hiddenCustomAssetIds.map((item) => getCoinId(item)));
+
+  return hiddenCustomAssetSet;
+}
+
 export async function getVisibleAssets(id: string) {
   const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-visible-assetIds`);
 
   const visibleAssetIds = storage[`${id}-visible-assetIds`];
 
   return visibleAssetIds ?? [];
+}
+
+export async function getVisibleAssetsSet(id: string): Promise<Set<string>> {
+  const visibleAssetIds = await getVisibleAssets(id);
+
+  const visibleAssetIdSet = new Set(visibleAssetIds.map((item) => getCoinId(item)));
+
+  return visibleAssetIdSet;
 }
 
 export async function getAssets() {
@@ -248,8 +272,8 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-custom-balance-cw20`,
   ]);
 
-  const hiddenAssetIds = await getHiddenAssets(id);
-  const visibleAssetIds = await getVisibleAssets(id);
+  const hiddenAssetIdSet = await getHiddenAssetsSet(id);
+  const visibleAssetIdSet = await getVisibleAssetsSet(id);
 
   const { aptosChains, cosmosChains, evmChains, suiChains, bitcoinChains, iotaChains } = await getChains();
   const addedCustomChains = await getAddedCustomChains();
@@ -265,16 +289,13 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       return assets;
     } else {
       return assets.filter((asset) => {
-        const isVisible = visibleAssetIds.find(
-          (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
-        );
+        const isVisible = visibleAssetIdSet.has(getCoinId(asset));
+
         if (isVisible) {
           return true;
         }
 
-        const isHidden = hiddenAssetIds.find(
-          (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
-        );
+        const isHidden = hiddenAssetIdSet.has(getCoinId(asset));
 
         if (isHidden) {
           return false;
@@ -926,9 +947,8 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       return assets;
     } else {
       return assets.filter((asset) => {
-        const isVisible = visibleAssetIds.find(
-          (assetId) => assetId.chainId === asset.asset.chainId && assetId.id === asset.asset.id && assetId.chainType === asset.asset.chainType,
-        );
+        const isVisible = visibleAssetIdSet.has(getCoinId(asset.asset));
+
         if (isVisible) {
           return true;
         }
@@ -939,7 +959,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               balance.chainId === asset.address.chainId && balance.chainType === asset.address.chainType && balance.address === asset.address.address,
           );
 
-          const pendingFundedAmount = balanceInfo?.balance.chainStats?.funded_txo_sum || '0';
+          const pendingFundedAmount = balanceInfo?.balance.mempoolStats?.funded_txo_sum || '0';
           const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
 
           const isBalanceGreaterThanZero = gt(asset.balance, '0');
@@ -959,9 +979,8 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       return assets;
     } else {
       return assets.filter((asset) => {
-        const isVisible = visibleAssetIds.find(
-          (assetId) => assetId.chainId === asset.asset.chainId && assetId.id === asset.asset.id && assetId.chainType === asset.asset.chainType,
-        );
+        const isVisible = visibleAssetIdSet.has(getCoinId(asset.asset));
+
         if (isVisible) {
           return true;
         }
@@ -1012,9 +1031,6 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
   const concurrency = 10;
   const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
 
-  const hiddenAssetIds = await getHiddenCustomAssets();
-  const visibleAssetIds = await getVisibleAssets(id);
-
   const customChains = await getAddedCustomChains();
 
   const cosmosChains = customChains.filter((chain) => chain.chainType === 'cosmos');
@@ -1022,17 +1038,19 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
 
   const { customAssets } = await chrome.storage.local.get<ExtensionStorage>(['customAssets']);
 
+  const visibleAssetIdSet = await getVisibleAssetsSet(id);
+  const hiddenAssetIdSet = await getHiddenCustomAssetsSet();
+
   const visibleCustomAssets = option?.disableFilterHidden
     ? customAssets
     : customAssets.filter((asset) => {
-        const isVisible = visibleAssetIds.find(
-          (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
-        );
+        const isVisible = visibleAssetIdSet.has(getCoinId(asset));
+
         if (isVisible) {
           return true;
         }
 
-        const isHidden = hiddenAssetIds.find((assetId) => getCoinIdWithManual(assetId) === getCoinIdWithManual(asset));
+        const isHidden = hiddenAssetIdSet.has(getCoinId(asset));
 
         if (isHidden) {
           return false;
@@ -1120,9 +1138,8 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
       return assets;
     } else {
       return assets.filter((asset) => {
-        const isVisible = visibleAssetIds.find(
-          (assetId) => assetId.chainId === asset.asset.chainId && assetId.id === asset.asset.id && assetId.chainType === asset.asset.chainType,
-        );
+        const isVisible = visibleAssetIdSet.has(getCoinId(asset.asset));
+
         if (isVisible) {
           return true;
         }

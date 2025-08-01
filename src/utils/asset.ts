@@ -1,9 +1,9 @@
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { AccountCosmosAsset, AccountEvmAsset, AccountIotaAsset, AccountSuiAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
-import type { Chain, UniqueChainId } from '@/types/chain';
+import type { Chain, CustomChain, UniqueChainId } from '@/types/chain';
 
-import { getUniqueChainId, isMatchingUniqueChainId, isSameChain, parseUniqueChainId } from './queryParamGenerator';
+import { getUniqueChainId, getUniqueChainIdWithManual, isMatchingUniqueChainId, isSameChain, parseUniqueChainId } from './queryParamGenerator';
 import { isEqualsIgnoringCase } from './string';
 
 export function filterChainsByChainId<T extends Chain>(chains: T[]): T[] {
@@ -22,24 +22,39 @@ export function filterChainsByChainId<T extends Chain>(chains: T[]): T[] {
 export function getFilteredChainsByChainId<T extends FlatAccountAssets>(accountAssets?: T[], option?: { disableDupeEthermint?: boolean }) {
   if (!accountAssets?.length) return [];
 
-  const ethermintEVMChainIdMap = new Map<string, boolean>();
-  accountAssets.forEach((asset) => {
-    if (asset.chain.chainType === 'evm' && asset.chain.isCosmos) {
-      ethermintEVMChainIdMap.set(asset.chain.id, true);
+  const chainMap = new Map<string, Chain | CustomChain>();
+  const ethermintCosmosChains: { chainKey: string; chain: Chain | CustomChain }[] = [];
+  const shouldCheckEthermint = !option?.disableDupeEthermint;
+
+  for (const asset of accountAssets) {
+    const { chain, address } = asset;
+    const chainKey = getUniqueChainId(chain);
+
+    if (chainMap.has(chainKey)) continue;
+
+    if (chain.chainType === 'evm' && chain.isCosmos) {
+      chainMap.set(chainKey, chain);
+      continue;
     }
-  });
 
-  return accountAssets
-    .filter((asset, index, self) => {
-      const isEthermintCosmosChain = asset.address.accountType.pubkeyStyle === 'keccak256' && asset.chain.chainType === 'cosmos' && asset.chain.isEvm;
-      const isEthermintEVMChainExisting = ethermintEVMChainIdMap.has(asset.chain.id);
-      if (!option?.disableDupeEthermint && isEthermintCosmosChain && isEthermintEVMChainExisting) {
-        return false;
+    if (shouldCheckEthermint && address.accountType.pubkeyStyle === 'keccak256' && chain.chainType === 'cosmos' && chain.isEvm) {
+      ethermintCosmosChains.push({ chainKey, chain });
+      continue;
+    }
+
+    chainMap.set(chainKey, chain);
+  }
+
+  if (shouldCheckEthermint) {
+    for (const { chainKey, chain } of ethermintCosmosChains) {
+      const evmChainKey = getUniqueChainIdWithManual(chain.id, 'evm');
+      if (!chainMap.has(evmChainKey)) {
+        chainMap.set(chainKey, chain);
       }
+    }
+  }
 
-      return self.findIndex((t) => isSameChain(t.chain, asset.chain)) === index;
-    })
-    .map((item) => item.chain);
+  return Array.from(chainMap.values());
 }
 
 export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
@@ -49,19 +64,30 @@ export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
     disableDupeEthermint?: boolean;
   },
 ): T[] {
-  if (!accountAssets || accountAssets.length === 0) return [];
-
+  if (!accountAssets?.length) return [];
   if (!uniqueChainId) return accountAssets;
 
-  const { id } = parseUniqueChainId(uniqueChainId);
+  const { id: targetChainId } = parseUniqueChainId(uniqueChainId);
+  const shouldCheckEthermint = !option?.disableDupeEthermint;
 
-  return accountAssets.filter((item) => {
-    if (!option?.disableDupeEthermint && item.address.accountType.pubkeyStyle === 'keccak256' && item.chain.chainType === 'cosmos' && item.chain.isEvm) {
-      return item.chain.id === id;
+  const result: T[] = [];
+
+  for (const asset of accountAssets) {
+    const { chain, address } = asset;
+
+    if (shouldCheckEthermint && address.accountType.pubkeyStyle === 'keccak256' && chain.chainType === 'cosmos' && chain.isEvm) {
+      if (chain.id === targetChainId) {
+        result.push(asset);
+      }
+      continue;
     }
 
-    return isMatchingUniqueChainId(item.chain, uniqueChainId);
-  });
+    if (isMatchingUniqueChainId(chain, uniqueChainId)) {
+      result.push(asset);
+    }
+  }
+
+  return result;
 }
 
 const XRPL_CHAINS_ID = ['xrplevm', 'xrplevm-testnet'];

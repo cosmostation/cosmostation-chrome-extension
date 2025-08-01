@@ -4,14 +4,14 @@ import { getCoinChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/u
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
+import { useRefreshAccountAllAssets } from './useRefreshAccountAllAssets';
 
 export function useCustomChain() {
   const { userAccounts, addedCustomChainList, customAssets, customErc20Assets, customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore(
     (state) => state,
   );
 
-  const { refetch } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   const addCustomChain = async (newChain: CustomChain) => {
     const storedAddedCustomChainList = await getExtensionLocalStorage('addedCustomChainList');
@@ -40,7 +40,7 @@ export function useCustomChain() {
       }),
     );
 
-    await refetch();
+    await refreshAssets();
   };
 
   const removeCustomChain = async (chainId: UniqueChainId) => {
@@ -66,7 +66,7 @@ export function useCustomChain() {
 
     await updateExtensionStorageStore('addedCustomChainList', updatedAddedCustomChainList);
 
-    await refetch();
+    await refreshAssets();
   };
 
   const editCustomChain = async (chainId: UniqueChainId, newChain: CustomChain) => {
@@ -82,7 +82,7 @@ export function useCustomChain() {
 
     await updateExtensionStorageStore('addedCustomChainList', updatedAddedCustomChainList);
 
-    await refetch();
+    await refreshAssets();
   };
 
   return { addedCustomChainList, addCustomChain, removeCustomChain, editCustomChain };

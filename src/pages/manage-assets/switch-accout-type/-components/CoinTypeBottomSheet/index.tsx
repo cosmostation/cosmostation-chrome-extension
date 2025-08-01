@@ -9,7 +9,7 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import { useMultipleAccountTypes } from '@/hooks/useMultipleAccountTypes';
-import type { Chain, ChainAccountType } from '@/types/chain';
+import type { ChainAccountType, ChainBase } from '@/types/chain';
 import { plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -18,14 +18,14 @@ import { Body, ChainImage, CoinTypeContainer, Container, DescriptionContainer, H
 import Close24Icon from 'assets/images/icons/Close24.svg';
 
 type CoinTypeBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  chain?: Chain;
+  chain?: ChainBase;
   onClickChainType?: (id: string, accountType: ChainAccountType) => void;
 };
 
 export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, ...remainder }: CoinTypeBottomSheetProps) {
   const { t } = useTranslation();
 
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   const { currentAccount } = useCurrentAccount();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();

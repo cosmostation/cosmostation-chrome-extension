@@ -1,10 +1,10 @@
-import axios from 'axios';
 import { Contract, ethers } from 'ethers';
 import { MulticallWrapper } from 'ethers-multicall-provider';
 
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
+import { getWithFullResponse, postWithFullResponse } from '@/utils/axios';
 import { buildRequestUrl } from '@/utils/fetch';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
@@ -25,11 +25,8 @@ export const fetchCosmosBalances = async (
       'pagination.limit': '10000',
     });
 
-    const response = await axios.get<CosmosBalanceResponse>(requestUrl, {
+    const response = await getWithFullResponse<CosmosBalanceResponse>(requestUrl, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     const initialResponse = response.data;
@@ -41,11 +38,8 @@ export const fetchCosmosBalances = async (
       try {
         const paginatedRequestUrl = `${requestUrl}&pagination.key=${nextKey}`;
 
-        const paginatedResponse = await axios.get<CosmosBalanceResponse>(paginatedRequestUrl, {
+        const paginatedResponse = await getWithFullResponse<CosmosBalanceResponse>(paginatedRequestUrl, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
         });
 
         const paginatedData = paginatedResponse.data;
@@ -74,11 +68,8 @@ export const fetchCW20Balances = async (address: string, contractAddress: string
 
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
-    const response = await axios.get<CosmosCw20BalanceResponse>(requestUrl, {
+    const response = await getWithFullResponse<CosmosCw20BalanceResponse>(requestUrl, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     return response.data?.data?.balance ?? '0';
@@ -95,7 +86,7 @@ export const fetchEVMBalances = async (address: string, rpcUrls: string[]): Prom
     };
 
     const baseRpcUrl = rpcUrl;
-    const response = await axios.post<EvmRpcGetBalanceResponse>(baseRpcUrl, body, {
+    const response = await postWithFullResponse<EvmRpcGetBalanceResponse>(baseRpcUrl, body, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
     });
 
@@ -145,6 +136,9 @@ export const fetchMultiERC20Balances = async (
   address: string,
   contractAddresses: string[],
   rpcUrls: string[],
+  multicallWrapperOption?: {
+    maxMulticallDataLength: number;
+  },
 ): Promise<
   {
     contract: string;
@@ -153,6 +147,8 @@ export const fetchMultiERC20Balances = async (
     isError?: boolean;
   }[]
 > => {
+  const { maxMulticallDataLength } = multicallWrapperOption || {};
+
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const baseRpcUrl = rpcUrl;
     const provider = new ethers.JsonRpcProvider(baseRpcUrl, undefined, {
@@ -162,7 +158,7 @@ export const fetchMultiERC20Balances = async (
 
     provider._getConnection().timeout = BALANCE_FETCH_TIME_OUT_MS;
 
-    const multicallProvider = MulticallWrapper.wrap(provider);
+    const multicallProvider = MulticallWrapper.wrap(provider, maxMulticallDataLength);
 
     try {
       const tokenContracts = contractAddresses.map((contractAddress) => {
