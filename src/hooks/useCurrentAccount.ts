@@ -19,17 +19,16 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { useSyncChainFilterIdWithAccountType } from './useSyncChainFilterIdWithAccountType';
 
 export function useCurrentAccount() {
-  const {
-    userAccounts,
-    accountNamesById,
-    currentAccountId,
-    approvedOrigins,
-    approvedSuiPermissions,
-    approvedIotaPermissions,
-    preferAccountType,
-    selectedChainFilterId,
-    updateExtensionStorageStore,
-  } = useExtensionStorageStore((state) => state);
+  const userAccounts = useExtensionStorageStore((state) => state.userAccounts);
+  const accountNamesById = useExtensionStorageStore((state) => state.accountNamesById);
+  const currentAccountId = useExtensionStorageStore((state) => state.currentAccountId);
+  const approvedOrigins = useExtensionStorageStore((state) => state.approvedOrigins);
+  const approvedSuiPermissions = useExtensionStorageStore((state) => state.approvedSuiPermissions);
+  const approvedIotaPermissions = useExtensionStorageStore((state) => state.approvedIotaPermissions);
+  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
+  const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
+
   const { syncChainFilterIdWithAccountType } = useSyncChainFilterIdWithAccountType();
 
   const selectedAccount = useMemo(() => userAccounts.find((account) => account.id === currentAccountId), [currentAccountId, userAccounts]);

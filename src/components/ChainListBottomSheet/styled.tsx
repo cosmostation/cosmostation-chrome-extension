@@ -4,9 +4,9 @@ import BaseOptionButton from '../common/BaseOptionButton';
 import BottomSheet from '../common/BottomSheet';
 
 export const Container = styled('div')({
-  overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
+  height: '100%',
 });
 
 export const Header = styled('div')({
@@ -25,7 +25,22 @@ export const HeaderTitle = styled('div')(({ theme }) => ({
 
 export const Body = styled('div')({
   width: '100%',
+  height: '100%',
   overflow: 'auto',
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+export const ChainButtonWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flex: '1',
+});
+
+export const VirtualizedListContainer = styled('div')({
+  flex: '1',
+  width: '100%',
 });
 
 export const StyledBottomSheet = styled(BottomSheet)({

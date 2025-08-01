@@ -50,6 +50,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
   }, [assetFinders, coinId]);
 
   return {
+    accountAllAssets,
     getAccountAsset,
     getCosmosAccountAsset: () => assetFinders.cosmos(),
     getCosmosAccountAssetFilteredByAccountType: () => assetFinders.filteredCosmosAssetByAccountType(),

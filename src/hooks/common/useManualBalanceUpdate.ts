@@ -7,8 +7,8 @@ import { devLogger } from '@/utils/devLogger';
 
 import { useUpdateBalance } from '../update/useUpdateBalance';
 import { useUpdateStaking } from '../update/useUpdateStaking';
-import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCurrentAccount } from '../useCurrentAccount';
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
 const throttledUpdateAllBalanceFn = throttle(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +57,7 @@ export function useManualBalanceUpdate() {
   const { isLoading: isAutoStakingLoading } = useUpdateStaking();
 
   const { currentAccount } = useCurrentAccount();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   const defaultTimeout = () => {
     setDefaultLoadingTime(true);
@@ -74,7 +74,7 @@ export function useManualBalanceUpdate() {
     setIsLoadingAllBalance(true);
 
     try {
-      await throttledUpdateAllBalanceFn(currentAccount.id, refetchAccountAllAssets);
+      await throttledUpdateAllBalanceFn(currentAccount.id, refreshAssets);
     } catch (e) {
       devLogger.error(`[useManualBalanceUpdate]  updateAllBalance`, e);
     } finally {
@@ -89,7 +89,7 @@ export function useManualBalanceUpdate() {
     setIsLoadingChainBalance(true);
 
     try {
-      await throttledUpdateChainBalanceFn(currentAccount.id, chainId, address, refetchAccountAllAssets);
+      await throttledUpdateChainBalanceFn(currentAccount.id, chainId, address, refreshAssets);
     } catch (e) {
       devLogger.error(`[useManualBalanceUpdate]  updateChainBalance`, e);
     } finally {

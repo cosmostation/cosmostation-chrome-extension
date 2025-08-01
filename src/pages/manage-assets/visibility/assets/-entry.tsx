@@ -66,7 +66,8 @@ export default function Entry() {
 
   const { scrollToTop } = useScroll();
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference, selectedChainFilterId } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
+  const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
 
   const { currentHiddenAssetIds, hideAsset, showAsset } = useCurrentHiddenAssetIds();
 
@@ -76,8 +77,6 @@ export default function Entry() {
 
   const { currentCustomERC20Tokens, removeCustomERC20Token } = useCurrentCustomERC20Tokens();
   const { currentCustomCW20Tokens, removeCustomCW20Token } = useCurrentCustomCW20Tokens();
-
-  const currentCustomTokens = [...currentCustomERC20Tokens, ...currentCustomCW20Tokens];
 
   const { data: currentAccountAllAssets } = useAccountAllAssets({
     filterByPreferAccountType: true,
@@ -225,6 +224,62 @@ export default function Entry() {
     initHiddenCustomAssetCoinIds,
     initVisibleAssetCoinIds,
   ]);
+
+  const finalCoinList = useMemo(
+    () =>
+      sortedCoinListByHidden.map((coin) => {
+        const currentCoinId = getCoinId(coin.asset);
+
+        const currentCustomTokens = [...currentCustomERC20Tokens, ...currentCustomCW20Tokens];
+        const customToken = currentCustomTokens.find((item) => isMatchingCoinId(item, currentCoinId));
+
+        const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(currentCoinId);
+        const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(currentCoinId);
+
+        const isCustomAsset = customAssets.some((item) => isMatchingCoinId(item, currentCoinId));
+
+        const isHiddenAsset = isCustomAsset ? isHiddenCustomAsset : isHiddenManagedAsset;
+        const isBalanceZero = coin.balance === '0';
+
+        const isVisibleAsset = visibleAssetCoinIds?.includes(currentCoinId);
+
+        const isHiddenState = (() => {
+          if (customToken || isVisibleAsset) {
+            return false;
+          }
+
+          if (isHiddenAsset || isBalanceZero) {
+            return true;
+          }
+          return false;
+        })();
+        const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
+
+        const resolvedAssetId =
+          coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
+            ? coin.asset.description
+            : coin.asset.id.length > 15
+              ? shorterAddress(coin.asset.id, 16)
+              : coin.asset.id;
+        return {
+          ...coin,
+          isHiddenState,
+          displayAmount,
+          resolvedAssetId,
+          isBalanceZero,
+          isCustomToken: !!customToken,
+        };
+      }),
+    [
+      currentCustomCW20Tokens,
+      currentCustomERC20Tokens,
+      customAssets,
+      hiddenAssetCoinIds,
+      hiddenCustomAssetCoinIds,
+      sortedCoinListByHidden,
+      visibleAssetCoinIds,
+    ],
+  );
 
   const isLastStanding = useMemo(
     () =>
@@ -417,47 +472,17 @@ export default function Entry() {
               <CoinButtonWrapper>
                 {!isDebouncing && (
                   <VirtualizedList
-                    items={sortedCoinListByHidden}
+                    items={finalCoinList}
                     estimateSize={() => 60}
                     renderItem={(coin) => {
-                      const customToken = currentCustomTokens.find((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
-
-                      const isHiddenManagedAsset = hiddenAssetCoinIds?.includes(getCoinId(coin.asset));
-                      const isHiddenCustomAsset = hiddenCustomAssetCoinIds?.includes(getCoinId(coin.asset));
-
-                      const isCustomAsset = customAssets.some((item) => isMatchingCoinId(item, getCoinId(coin.asset)));
-
-                      const isHiddenAsset = isCustomAsset ? isHiddenCustomAsset : isHiddenManagedAsset;
-                      const isBalanceZero = coin.balance === '0';
-
-                      const isVisibleAsset = visibleAssetCoinIds?.includes(getCoinId(coin.asset));
-
-                      const isHiddenState = (() => {
-                        if (customToken || isVisibleAsset) {
-                          return false;
-                        }
-
-                        if (isHiddenAsset || isBalanceZero) {
-                          return true;
-                        }
-                        return false;
-                      })();
-                      const displayAmount = toDisplayDenomAmount(coin.balance, coin.asset.decimals);
-
-                      const resolvedAssetId =
-                        coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
-                          ? coin.asset.description
-                          : coin.asset.id.length > 15
-                            ? shorterAddress(coin.asset.id, 16)
-                            : coin.asset.id;
                       return (
                         <>
                           <CoinWithChainNameButton
                             key={getCoinId(coin.asset).concat(coin.chain.id).concat(String(coin.chain.chainId))}
-                            displayAmount={displayAmount}
+                            displayAmount={coin.displayAmount}
                             symbol={coin.asset.symbol}
                             chainName={coin.chain.name}
-                            assetId={resolvedAssetId}
+                            assetId={coin.resolvedAssetId}
                             coinGeckoId={coin.asset.coinGeckoId}
                             displayAssetId={isShowAssetId}
                             coinImageProps={{
@@ -465,7 +490,7 @@ export default function Entry() {
                               badgeImageURL: coin.chain.image || '',
                             }}
                             rightComponent={
-                              isHiddenState ? (
+                              coin.isHiddenState ? (
                                 <IconContainer>
                                   <AddIcon />
                                 </IconContainer>
@@ -476,10 +501,10 @@ export default function Entry() {
                               )
                             }
                             onClick={() => {
-                              if (customToken) {
+                              if (coin.isCustomToken) {
                                 setTokenToDelete(coin);
                               } else {
-                                handleAssetVisibility(getCoinId(coin.asset), isBalanceZero);
+                                handleAssetVisibility(getCoinId(coin.asset), coin.isBalanceZero);
                               }
                             }}
                           />

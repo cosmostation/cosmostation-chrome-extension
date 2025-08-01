@@ -88,5 +88,5 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     };
   });
 
-  return { formattedTxBlocks, error, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading, isPending };
+  return { accountAsset, formattedTxBlocks, error, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading, isPending };
 }

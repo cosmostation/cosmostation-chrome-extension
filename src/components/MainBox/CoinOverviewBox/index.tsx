@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
@@ -27,11 +27,14 @@ export default function CoinOverviewBox({ coinId }: CoinOverviewBoxProps) {
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   const { groupAccountAssets } = useGroupAccountAssets();
 
-  const currentGroupCoin = groupAccountAssets?.groupAccountAssets.find(({ asset }) => getCoinId(asset) === coinId);
+  const currentGroupCoin = useMemo(
+    () => groupAccountAssets?.groupAccountAssets.find(({ asset }) => getCoinId(asset) === coinId),
+    [coinId, groupAccountAssets?.groupAccountAssets],
+  );
 
   const symbol = currentGroupCoin?.asset.symbol;
   const networkCount = currentGroupCoin?.counts || '1';

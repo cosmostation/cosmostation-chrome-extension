@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
@@ -5,9 +6,8 @@ import { InfiniteVirtualizedList } from '@/components/common/InfiniteVirtualized
 import EmptyAsset from '@/components/EmptyAsset';
 import ListLoading from '@/components/Loading/ListLoading';
 import { useAccountTxs } from '@/hooks/evm/useAccountTxs';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import type { AccountTx } from '@/types/evm/txs';
 import { formatDateForHistory } from '@/utils/date';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import EVMTxItem from './components/EVMTxItem';
 import { Container, ContentsContainer, DateLineContainer, EmptyAssetContainer, IconContainer, TxDetailContainer } from './styled';
@@ -23,11 +23,8 @@ type EVMAccountTxHistory = {
 export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
   const { t } = useTranslation();
 
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
-
   const {
+    accountAsset: selectedAsset,
     data: accountTxData,
     error,
     fetchNextPage,
@@ -38,33 +35,32 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
     coinId: coinId,
   });
 
-  const selectedAsset = accountAllAssets?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-
   const accountExplorerUrl = selectedAsset?.chain.explorer?.account
     ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
     : '';
 
-  const flattenedTxs = accountTxData?.pages?.flatMap((item) => item?.txs).filter((item) => item) || [];
+  const txsGroupedByDate = useMemo(() => {
+    const groupedByFormattedDate: Record<string, AccountTx[]> = {};
 
-  const txsGroupedByDate = (() => {
-    const formattedDates = flattenedTxs.map((item) => (item?.txTime ? formatDateForHistory(item.txTime) : '')).filter((item) => !!item);
+    if (!accountTxData?.pages) return [];
 
-    const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
+    for (const page of accountTxData.pages) {
+      if (!page?.txs) continue;
+      for (const tx of page.txs) {
+        if (!tx.txTime) continue;
 
-    return uniqueFormattedDates.map((uniqueFormattedDate) => {
-      const filteredActivites = flattenedTxs.filter((tx) => {
-        if (!tx?.txTime) {
-          return false;
+        const formatted = formatDateForHistory(tx.txTime);
+        if (!groupedByFormattedDate[formatted]) {
+          groupedByFormattedDate[formatted] = [];
         }
+        groupedByFormattedDate[formatted].push(tx);
+      }
+    }
 
-        return formatDateForHistory(tx.txTime) === uniqueFormattedDate;
-      });
-
-      return {
-        [uniqueFormattedDate]: filteredActivites,
-      };
-    });
-  })();
+    return Object.entries(groupedByFormattedDate).map(([date, txs]) => ({
+      [date]: txs,
+    }));
+  }, [accountTxData?.pages]);
 
   const isExistTxHistory = !!txsGroupedByDate.length;
 

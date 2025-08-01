@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
@@ -5,9 +6,7 @@ import { InfiniteVirtualizedList } from '@/components/common/InfiniteVirtualized
 import EmptyAsset from '@/components/EmptyAsset';
 import ListLoading from '@/components/Loading/ListLoading';
 import { useAccountTxs } from '@/hooks/sui/useAccountTxs';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { formatDateForHistory } from '@/utils/date';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import SuiTxItem from './components/SuiTxItem';
 import { Container, ContentsContainer, DateLineContainer, EmptyAssetContainer, IconContainer, TxDetailContainer } from './styled';
@@ -23,41 +22,40 @@ type SuiAccountTxHistory = {
 export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
   const { t } = useTranslation();
 
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
-
-  const { formattedTxBlocks, error, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useAccountTxs({
+  const {
+    accountAsset: selectedAsset,
+    formattedTxBlocks,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useAccountTxs({
     coinId: coinId,
   });
-
-  const selectedAsset = accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
 
   const accountExplorerUrl = selectedAsset?.chain.explorer?.account
     ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
     : '';
 
-  const txsGroupedByDate = (() => {
-    const formattedDates = formattedTxBlocks
-      .map((item) => (item.analyzedTransaction.timestampMs ? formatDateForHistory(item.analyzedTransaction.timestampMs) : ''))
-      .filter((item) => !!item);
+  const txsGroupedByDate = useMemo(() => {
+    const groupedByFormattedDate: Record<string, typeof formattedTxBlocks> = {};
 
-    const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
+    for (const tx of formattedTxBlocks) {
+      const ts = tx.analyzedTransaction.timestampMs;
+      if (!ts) continue;
 
-    return uniqueFormattedDates.map((uniqueFormattedDate) => {
-      const filteredActivites = formattedTxBlocks.filter((tx) => {
-        if (!tx.analyzedTransaction.timestampMs) {
-          return false;
-        }
+      const formatted = formatDateForHistory(ts);
+      if (!groupedByFormattedDate[formatted]) {
+        groupedByFormattedDate[formatted] = [];
+      }
+      groupedByFormattedDate[formatted].push(tx);
+    }
 
-        return formatDateForHistory(tx.analyzedTransaction.timestampMs) === uniqueFormattedDate;
-      });
-
-      return {
-        [uniqueFormattedDate]: filteredActivites,
-      };
-    });
-  })();
+    return Object.entries(groupedByFormattedDate).map(([date, txs]) => ({
+      [date]: txs,
+    }));
+  }, [formattedTxBlocks]);
 
   const isExistTxHistory = !!txsGroupedByDate.length;
 

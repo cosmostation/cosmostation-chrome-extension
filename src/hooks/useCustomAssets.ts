@@ -3,12 +3,14 @@ import { isMatchingCoinId, isSameCoin } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAllAssets } from './useAccountAllAssets';
+import { useRefreshAccountAllAssets } from './useRefreshAccountAllAssets';
 
 export function useCustomAssets() {
-  const { customAssets, customHiddenAssetIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const customAssets = useExtensionStorageStore((state) => state.customAssets);
+  const customHiddenAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
-  const { refetch } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   const addCustomAsset = async (newAsset: CustomAsset) => {
     const storedCustomAssets = await getExtensionLocalStorage('customAssets');
@@ -25,7 +27,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refetch();
+    await refreshAssets();
   };
 
   const removeCustomAsset = async (coinId: string) => {
@@ -35,7 +37,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refetch();
+    await refreshAssets();
   };
 
   const editCustomAsset = async (coinId: string, newAsset: CustomAsset) => {
@@ -45,7 +47,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customAssets', updatedCustomAssets);
 
-    await refetch();
+    await refreshAssets();
   };
 
   const hideCustomAsset = async (targetAsset: AssetId) => {
@@ -61,7 +63,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
-    await refetch();
+    await refreshAssets();
   };
 
   const showCustomAsset = async (assetId: AssetId) => {
@@ -71,7 +73,7 @@ export function useCustomAssets() {
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
-    await refetch();
+    await refreshAssets();
   };
 
   return {

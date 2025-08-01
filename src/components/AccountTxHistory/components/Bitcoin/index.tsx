@@ -7,9 +7,7 @@ import EmptyAsset from '@/components/EmptyAsset';
 import ListLoading from '@/components/Loading/ListLoading';
 import { useScaffoldRef } from '@/components/Wrapper/components/Scaffold/components/AppLayout';
 import { useAccountTxs } from '@/hooks/bitcoin/useAccountTxs';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { formatDateForHistory, sortByLatestDate } from '@/utils/date';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import BitcoinMempoolTxItem from './components/BitcoinMempoolTxItem';
 import BitcoinTxItem from './components/BitcoinTxItem';
@@ -34,11 +32,9 @@ type BitcoinAccountTxHistory = {
 
 export default function BitcoinAccountTxHistory({ coinId }: BitcoinAccountTxHistory) {
   const { t } = useTranslation();
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
 
   const {
+    accountAsset: selectedAsset,
     data: accountTxData,
     error,
     fetchNextPage,
@@ -49,42 +45,38 @@ export default function BitcoinAccountTxHistory({ coinId }: BitcoinAccountTxHist
     coinId: coinId,
   });
 
-  const selectedAsset = accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-
   const accountExplorerUrl = selectedAsset?.chain.explorer.account
     ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
     : '';
 
-  const mempoolTxs = useMemo(() => {
-    const flattenedTxs = accountTxData?.pages?.flatMap((item) => item).filter((item) => !!item) || [];
+  const flattenedTxs = useMemo(() => accountTxData?.pages?.flatMap((item) => item).filter((item) => !!item) || [], [accountTxData?.pages]);
 
+  const mempoolTxs = useMemo(() => {
     return flattenedTxs.filter((item) => item.status?.confirmed === false && !item.status.block_time);
-  }, [accountTxData?.pages]);
+  }, [flattenedTxs]);
 
   const txsGroupedByDate = useMemo(() => {
-    const flattenedTxs = accountTxData?.pages?.flatMap((item) => item).filter((item) => !!item) || [];
+    const groupedByDate: Record<string, typeof flattenedTxs> = {};
 
-    const formattedDates = flattenedTxs
-      .sort((a, b) => sortByLatestDate(a?.status?.block_time, b?.status?.block_time))
-      .map((item) => (item?.status?.block_time ? formatDateForHistory(String(item.status.block_time)) : ''))
-      .filter((item) => !!item);
+    const sortedTxs = [...flattenedTxs].sort((a, b) => sortByLatestDate(a?.status?.block_time, b?.status?.block_time));
 
-    const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
+    for (const tx of sortedTxs) {
+      if (!tx?.status?.block_time) continue;
 
-    return uniqueFormattedDates.map((uniqueFormattedDate) => {
-      const filteredActivites = flattenedTxs.filter((tx) => {
-        if (!tx?.status?.block_time) {
-          return false;
-        }
+      const dateKey = formatDateForHistory(String(tx.status.block_time));
+      if (!dateKey) continue;
 
-        return formatDateForHistory(String(tx.status.block_time)) === uniqueFormattedDate;
-      });
+      if (!groupedByDate[dateKey]) {
+        groupedByDate[dateKey] = [];
+      }
 
-      return {
-        [uniqueFormattedDate]: filteredActivites,
-      };
-    });
-  }, [accountTxData?.pages]);
+      groupedByDate[dateKey].push(tx);
+    }
+
+    return Object.entries(groupedByDate).map(([date, txs]) => ({
+      [date]: txs,
+    }));
+  }, [flattenedTxs]);
 
   const isExistTxHistory = !!txsGroupedByDate.length || !!mempoolTxs.length;
 

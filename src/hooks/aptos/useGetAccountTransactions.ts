@@ -90,5 +90,5 @@ export function useGetAccountTransactions({ coinId, config }: UseGetAccountTrans
     }
   }, 2000);
 
-  return { data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, status, isLoading, isPending };
+  return { accountAsset, data, error, fetchNextPage: handleIntersect, hasNextPage, isFetching, isFetchingNextPage, status, isLoading, isPending };
 }

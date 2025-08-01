@@ -35,7 +35,8 @@ export default function FooterCoinPrice({ coinId, onClick }: FooterCoinPriceProp
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference, userPriceTrendPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
+  const userPriceTrendPreference = useExtensionStorageStore((state) => state.userPriceTrendPreference);
 
   const { getAccountAsset } = useGetAccountAsset({ coinId });
   const currentCoin = getAccountAsset();

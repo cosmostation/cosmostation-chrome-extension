@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 
 import { sendMessage } from '@/libs/extension';
 
-import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCurrentAccount } from '../useCurrentAccount';
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
 export function useUpdateBalance() {
   const { currentAccount } = useCurrentAccount();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
   const [isBackground, setIsBackground] = useState<boolean>(document.hidden);
 
   useEffect(() => {
@@ -35,7 +35,8 @@ export function useUpdateBalance() {
 
   const fetcher = async () => {
     const response = await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
-    await refetchAccountAllAssets();
+
+    await refreshAssets();
 
     return response;
   };
