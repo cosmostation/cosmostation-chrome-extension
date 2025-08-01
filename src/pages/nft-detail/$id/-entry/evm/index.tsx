@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { gt } from 'lodash';
 import { useNavigate } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -14,6 +13,7 @@ import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { Route as NFTSend } from '@/pages/wallet/nft-send/$id';
 import { toDisplayTokenId, toDisplayTokenStandard } from '@/utils/nft';
+import { gt } from '@/utils/numbers';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 
@@ -160,7 +160,7 @@ export default function EVM({ id }: EVMProps) {
             {tokenType === 'ERC1155' && (
               <DetailRowContainer>
                 <Base1000Text variant="b3_R">{t('pages.nft-detail.$id.entry.evm.index.balance')}</Base1000Text>
-                <Base1300Text variant="b3_M">{gt(currentNFTBalance, '0') ? currentNFTBalance || '-' : '-'}</Base1300Text>
+                <Base1300Text variant="b3_M">{gt(currentNFTBalance || '0', '0') ? currentNFTBalance || '-' : '-'}</Base1300Text>
               </DetailRowContainer>
             )}
           </DetailContainer>

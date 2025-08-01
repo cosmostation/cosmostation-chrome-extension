@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { gt } from 'lodash';
 import { Typography } from '@mui/material';
 
 import CoinSelectBox from '@/components/CoinSelectBox';
@@ -14,7 +13,7 @@ import Header from '@/components/Header';
 import InformationPanel from '@/components/InformationPanel';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
-import { isDecimal, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, isDecimal, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { trimTrailingZeros } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 

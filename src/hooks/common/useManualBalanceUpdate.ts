@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import throttle from 'lodash/throttle';
+import { throttle } from 'es-toolkit';
 
 import { sendMessage } from '@/libs/extension';
 import type { UniqueChainId } from '@/types/chain';
@@ -21,7 +21,7 @@ const throttledUpdateAllBalanceFn = throttle(
     await callbackFunc();
   },
   10000,
-  { leading: true, trailing: false },
+  { edges: ['leading'] },
 );
 
 const throttledUpdateChainBalanceFn = throttle(
@@ -43,7 +43,7 @@ const throttledUpdateChainBalanceFn = throttle(
     await callbackFunc();
   },
   10000,
-  { leading: true, trailing: false },
+  { edges: ['leading'] },
 );
 
 export function useManualBalanceUpdate() {

@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import { debounce } from 'es-toolkit';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { sendMessage } from '@/libs/extension';
@@ -60,7 +60,7 @@ export const setQueues = debounce(
     }
   },
   500,
-  { leading: true },
+  { edges: ['leading'] },
 );
 
 export function enqueueRequest(queue: RequestQueue) {
