@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
@@ -5,9 +6,8 @@ import { InfiniteVirtualizedList } from '@/components/common/InfiniteVirtualized
 import EmptyAsset from '@/components/EmptyAsset';
 import ListLoading from '@/components/Loading/ListLoading';
 import { useAccountTxs } from '@/hooks/cosmos/useAccountTxs';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import type { AccountTx } from '@/types/cosmos/txs';
 import { formatDateForHistory } from '@/utils/date';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import CosmosTxItem from './components/CosmosTxItem';
 import { Container, ContentsContainer, DateLineContainer, EmptyAssetContainer, IconContainer, TxDetailContainer } from './styled';
@@ -22,11 +22,9 @@ type CosmosAccountTxHistory = {
 
 export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistory) {
   const { t } = useTranslation();
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
 
   const {
+    accountAssets: selectedAsset,
     data: accountTxData,
     error,
     fetchNextPage,
@@ -37,33 +35,32 @@ export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistor
     coinId: coinId,
   });
 
-  const selectedAsset = accountAllAssets?.allCosmosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-
   const accountExplorerUrl = selectedAsset?.chain.explorer?.account
     ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
     : '';
 
-  const flattenedTxs = accountTxData?.pages?.flatMap((item) => item).filter((item) => item) || [];
+  const txsGroupedByDate = useMemo(() => {
+    const groupedByFormattedDate: Record<string, AccountTx[]> = {};
 
-  const txsGroupedByDate = (() => {
-    const formattedDates = flattenedTxs.map((item) => (item?.data?.timestamp ? formatDateForHistory(item?.data?.timestamp) : '')).filter((item) => !!item);
+    if (!accountTxData?.pages) return [];
 
-    const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
+    for (const page of accountTxData.pages) {
+      if (!page) continue;
+      for (const tx of page) {
+        if (!tx?.data?.timestamp) continue;
 
-    return uniqueFormattedDates.map((uniqueFormattedDate) => {
-      const filteredActivites = flattenedTxs.filter((tx) => {
-        if (!tx?.data?.timestamp) {
-          return false;
+        const formatted = formatDateForHistory(tx.data.timestamp);
+        if (!groupedByFormattedDate[formatted]) {
+          groupedByFormattedDate[formatted] = [];
         }
+        groupedByFormattedDate[formatted].push(tx);
+      }
+    }
 
-        return formatDateForHistory(tx.data.timestamp) === uniqueFormattedDate;
-      });
-
-      return {
-        [uniqueFormattedDate]: filteredActivites,
-      };
-    });
-  })();
+    return Object.entries(groupedByFormattedDate).map(([date, txs]) => ({
+      [date]: txs,
+    }));
+  }, [accountTxData?.pages]);
 
   const isExistTxHistory = !!txsGroupedByDate.length;
 

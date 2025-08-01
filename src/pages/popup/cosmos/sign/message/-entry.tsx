@@ -22,7 +22,8 @@ import RequestMethodTitle from '@/pages/popup/-components/RequestMethodTitle';
 import type { CosmosChain } from '@/types/chain';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { CosSignMessage } from '@/types/message/inject/cosmos';
-import { getMsgSignData, getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
+import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
+import { getMsgSignData } from '@/utils/cosmos/msgParse';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 

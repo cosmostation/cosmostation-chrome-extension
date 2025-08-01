@@ -133,7 +133,7 @@ export default function Entry({ request }: EntryProps) {
   const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
 
   const currentFeeStepKey = useMemo(() => {
-    if (customFeeStepKey) return customFeeStepKey;
+    if (customFeeStepKey !== undefined) return customFeeStepKey;
 
     const isDappFeePositive = (() => {
       if (originEthereumTx.gasPrice) {

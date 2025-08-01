@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { getVisibleAssets } from '@/libs/asset';
 import type { AssetId } from '@/types/asset';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -7,9 +9,11 @@ import { useCurrentAccount } from './useCurrentAccount';
 export function useCurrentVisibleAssetIds() {
   const { currentAccount } = useCurrentAccount();
 
-  const { updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
-  const currentVisibleAssetIds = useExtensionStorageStore.getState()[`${currentAccount.id}-visible-assetIds`] || [];
+  const storedCurrenVisibleAssetIds = useExtensionStorageStore((state) => state[`${currentAccount.id}-visible-assetIds`]);
+
+  const currentVisibleAssetIds = useMemo(() => storedCurrenVisibleAssetIds || [], [storedCurrenVisibleAssetIds]);
 
   const addVisibleAsset = async (assetId: AssetId) => {
     const storedVisibleAssetIds = await getVisibleAssets(currentAccount.id);

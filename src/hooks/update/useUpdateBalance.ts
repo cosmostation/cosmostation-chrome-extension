@@ -1,22 +1,47 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { sendMessage } from '@/libs/extension';
 
-import { useAccountAllAssets } from '../useAccountAllAssets';
 import { useCurrentAccount } from '../useCurrentAccount';
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
 export function useUpdateBalance() {
   const { currentAccount } = useCurrentAccount();
-  const { refetch: refetchAccountAllAssets } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
+  const [isBackground, setIsBackground] = useState<boolean>(document.hidden);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const handleVisibilityChange = (): void => {
+      if (document.hidden) {
+        clearTimeout(timeoutId);
+        setIsBackground(true);
+      } else {
+        timeoutId = setTimeout(() => {
+          setIsBackground(false);
+        }, 5000);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   const fetcher = async () => {
     const response = await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
-    await refetchAccountAllAssets();
+
+    await refreshAssets();
 
     return response;
   };
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error, fetchStatus } = useQuery({
     queryKey: ['updateBalance', currentAccount.id],
     enabled: !!currentAccount.id,
     queryFn: fetcher,
@@ -24,5 +49,15 @@ export function useUpdateBalance() {
     refetchInterval: 1000 * 60 * 5,
   });
 
-  return { data, isLoading, error };
+  const isAutoRefetchPaused = isBackground;
+
+  return {
+    data,
+    isLoading,
+    isFetching,
+    error,
+    fetchStatus,
+    isAutoRefetchPaused,
+    isBackground,
+  };
 }

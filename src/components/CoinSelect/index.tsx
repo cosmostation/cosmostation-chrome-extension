@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import Typography from '@mui/material/Typography';
@@ -12,14 +12,15 @@ import { useGetAverageAPY as useIotaGetAverageAPY } from '@/hooks/iota/useGetAve
 import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import type { AccountCosmosAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
-import { shorterAddress, toPercentages } from '@/utils/string';
+import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { Container, EmptyAssetContainer, FilterContaienr, StickyContentsContainer } from './styled';
@@ -37,7 +38,7 @@ type CoinSelectProps = {
   isBottomSheet?: boolean;
   searchPlaceholder?: string;
   variant?: 'default' | 'stake' | 'all';
-  onSelectCoin: (coinId: string) => void;
+  onSelectCoin: (coinId: string, ethermintCoin?: AccountCosmosAsset) => void;
 };
 
 export default function CoinSelect({
@@ -52,7 +53,8 @@ export default function CoinSelect({
   const { t } = useTranslation();
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const { userCurrencyPreference, selectedChainFilterId } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
+  const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
 
   const isDisableDupeEthermint = variant === 'stake';
 
@@ -207,6 +209,37 @@ export default function CoinSelect({
     return filteredAssetsByChain;
   }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
 
+  const handleOnClickCoin = useCallback(
+    (coinId: string) => {
+      if (parseCoinId(coinId).chainType !== 'evm') {
+        onSelectCoin(coinId);
+      } else {
+        const currentCoin = data?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+
+        const cosmosStyleEthermintCoin = (() => {
+          const isEthermint = currentCoin?.chain.chainType === 'evm' && currentCoin.chain.isCosmos;
+
+          const isMainCoin = isEqualsIgnoringCase(currentCoin?.asset.id, NATIVE_EVM_COIN_ADDRESS);
+
+          if (isEthermint && isMainCoin) {
+            return data?.cosmosAccountAssets.find(
+              (item) =>
+                item.asset.id === currentCoin.chain.mainAssetDenom &&
+                item.chain.id === currentCoin.chain.id &&
+                item.address.chainId === currentCoin.address.chainId &&
+                item.address.accountType.hdPath === currentCoin.address.accountType.hdPath,
+            );
+          }
+
+          return undefined;
+        })();
+
+        onSelectCoin(coinId, cosmosStyleEthermintCoin);
+      }
+    },
+    [data?.allEVMAccountAssets, data?.cosmosAccountAssets, onSelectCoin],
+  );
+
   useEffect(() => {
     if (search.length > 1 || search.length === 0 || currentSelectedChainId) {
       scrollToTop();
@@ -275,7 +308,7 @@ export default function CoinSelect({
                   badgeImageURL: coin.chain.image || '',
                 }}
                 onClick={() => {
-                  onSelectCoin(getCoinId(coin.asset));
+                  handleOnClickCoin(getCoinId(coin.asset));
                 }}
               />
             );

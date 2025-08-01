@@ -8,6 +8,7 @@ import type { AccountAddress } from '@/types/account';
 import type { AccountAssets as AccountAllAssets, AllCosmosAccountAssets, AllEVMAccountAssets, FlatAccountAssets } from '@/types/accountAssets';
 import type { AssetId } from '@/types/asset';
 import { gt } from '@/utils/numbers';
+import { getCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -40,10 +41,20 @@ export function useAccountAllAssets({
   config,
 }: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
-  const extensionStorageState = useExtensionStorageStore((state) => state);
-
   const param = useMemo(() => accountId || currentAccount.id, [accountId, currentAccount.id]);
-  const accountType = useMemo(() => extensionStorageState.preferAccountType[param], [extensionStorageState.preferAccountType, param]);
+
+  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
+  const accountType = useMemo(() => preferAccountType[param], [param, preferAccountType]);
+
+  const storedHiddenAssetIds = useExtensionStorageStore((state) => state[`${param}-hidden-assetIds`]);
+  const storedHiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
+  const storedVisibleAssetIds = useExtensionStorageStore((state) => state[`${param}-visible-assetIds`]);
+  const storedBitcoinBalanceInfo = useExtensionStorageStore((state) => state[`${param}-balance-bitcoin`]);
+
+  const hiddenAssetIds = useMemo(() => storedHiddenAssetIds || [], [storedHiddenAssetIds]);
+  const hiddenCustomAssetIds = useMemo(() => storedHiddenCustomAssetIds || [], [storedHiddenCustomAssetIds]);
+  const visibleAssetIds = useMemo(() => storedVisibleAssetIds || [], [storedVisibleAssetIds]);
+  const bitcoinBalanceInfo = useMemo(() => storedBitcoinBalanceInfo || [], [storedBitcoinBalanceInfo]);
 
   const fetcher = async () => {
     try {
@@ -66,26 +77,20 @@ export function useAccountAllAssets({
     ...config,
   });
 
-  const hiddenAssetIds = useMemo(() => extensionStorageState[`${param}-hidden-assetIds`] || [], [extensionStorageState, param]);
-  const hiddenCustomAssetIds = useMemo(() => extensionStorageState['customHiddenAssetIds'] || [], [extensionStorageState]);
-  const visibleAssetIds = useMemo(() => extensionStorageState[`${param}-visible-assetIds`] || [], [extensionStorageState, param]);
-
-  const bitcoinBalanceInfo = useMemo(() => extensionStorageState[`${param}-balance-bitcoin`] || [], [extensionStorageState, param]);
-
   const filteredByVisibleList = useMemo(() => {
     if (!data) return null;
 
+    const visibleAssetIdSet = new Set(visibleAssetIds.map((item) => getCoinId(item)));
+    const hiddenAssetIdSet = new Set(hiddenAssetIds.map((item) => getCoinId(item)));
+    const hiddenCustomAssetIdSet = new Set(hiddenCustomAssetIds.map((item) => getCoinId(item)));
+
     const shouldShowAsset = (asset: AssetId, balance: string, address: AccountAddress) => {
-      const isVisible = visibleAssetIds.some(
-        (assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType,
-      );
+      const isVisible = visibleAssetIdSet.has(getCoinId(asset));
 
       if (isVisible) return true;
 
-      const isHidden = disableHiddenFilter
-        ? false
-        : hiddenAssetIds.some((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType) ||
-          hiddenCustomAssetIds.some((assetId) => assetId.chainId === asset.chainId && assetId.id === asset.id && assetId.chainType === asset.chainType);
+      const isHidden = disableHiddenFilter ? false : hiddenAssetIdSet.has(getCoinId(asset)) || hiddenCustomAssetIdSet.has(getCoinId(asset));
+
       if (isHidden) return false;
 
       const isBalanceGreaterThanZero = (() => {
@@ -95,7 +100,7 @@ export function useAccountAllAssets({
               isEqualsIgnoringCase(balance.address, address.address) && balance.chainId === address.chainId && balance.chainType === address.chainType,
           );
 
-          const pendingFundedAmount = balanceInfo?.balance.chainStats?.funded_txo_sum || '0';
+          const pendingFundedAmount = balanceInfo?.balance.mempoolStats?.funded_txo_sum || '0';
           const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
 
           const isBalanceGreaterThanZero = gt(balance, '0');

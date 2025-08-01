@@ -3,7 +3,8 @@ import { getUniqueChainIdWithManual, parseUniqueChainId } from '@/utils/queryPar
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useSyncChainFilterIdWithAccountType() {
-  const { selectedChainFilterId, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const syncChainFilterIdWithAccountType = async (chainPreferAccountType: ChainAccountType) => {
     const currentParsedChainFilterId = selectedChainFilterId && parseUniqueChainId(selectedChainFilterId);

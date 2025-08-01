@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
+import { useRefreshAccountAllAssets } from '@/hooks/useRefreshAccountAllAssets';
 import { sendMessage } from '@/libs/extension';
 import type { ExtensionStorage } from '@/types/extension';
 import { devLogger } from '@/utils/devLogger';
@@ -20,7 +20,7 @@ export default function AccountInitializer({ children }: AccountInitializerProps
   const { mnemonicNamesByHashedMnemonic: storedMnemonicNames, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
-  const { refetch: refetchAccountAssets } = useAccountAllAssets();
+  const { refreshAssets } = useRefreshAccountAllAssets();
 
   useEffect(() => {
     const initializeAccountData = async () => {
@@ -68,7 +68,7 @@ export default function AccountInitializer({ children }: AccountInitializerProps
 
           await loadExtensionStorageStoreFromStorage();
 
-          await refetchAccountAssets();
+          await refreshAssets();
         } catch (e) {
           devLogger.error(e);
         } finally {

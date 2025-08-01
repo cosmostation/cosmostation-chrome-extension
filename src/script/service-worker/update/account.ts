@@ -10,7 +10,7 @@ import { fetchCosmosAccountInfo } from '@/utils/cosmos/fetch/accountInfo';
 const vestingChainIds = new Set([KAVA_CHAINLIST_ID]);
 
 export async function updateAccountInfo(id: string) {
-  console.time(`update-cosmos-account-${id}`);
+  console.time(`update-account-info-${id}`);
   try {
     await getAccount(id);
 

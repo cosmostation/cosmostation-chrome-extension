@@ -71,9 +71,12 @@ export default function Entry() {
   const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
   const { data: usdCoinGeckoPrice, isLoading: isCoinGeckoPriceUSDLoading } = useCoinGeckoPrice('usd');
 
-  const { dashboardCoinSortKey, userCurrencyPreference, isHideSmalValue, selectedChainFilterId, updateExtensionStorageStore } = useExtensionStorageStore(
-    (state) => state,
-  );
+  const dashboardCoinSortKey = useExtensionStorageStore((state) => state.dashboardCoinSortKey);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
+  const isHideSmalValue = useExtensionStorageStore((state) => state.isHideSmalValue);
+  const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
+
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -305,9 +308,9 @@ export default function Entry() {
                     renderItem={(coin, virtualItem) => {
                       if (!coin) return null;
 
-                      const destinationRoute = coin.counts && gt(coin.counts, '1') ? CoinOverview.to : CoinDetail.to;
-
                       const isGroupToken = gt(coin.counts || '0', '1');
+                      const destinationRoute = isGroupToken ? CoinOverview.to : CoinDetail.to;
+
                       const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
                       return (
                         <CoinWithMarketTrendButton

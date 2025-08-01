@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isPendingTransactionResponse } from '@aptos-labs/ts-sdk';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -8,10 +8,8 @@ import EmptyAsset from '@/components/EmptyAsset';
 import ListLoading from '@/components/Loading/ListLoading';
 import { useScaffoldRef } from '@/components/Wrapper/components/Scaffold/components/AppLayout';
 import { useGetAccountTransactions } from '@/hooks/aptos/useGetAccountTransactions';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { formatAptosTxTimestamp, getTimestamp } from '@/utils/aptos/tx';
 import { sortByLatestDate } from '@/utils/date';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import AptosPendingTxItem from './components/AptosPendingTxItem';
 import AptosTxItem from './components/AptosTxItem';
@@ -36,12 +34,11 @@ type AptosAccountTxHistory = {
 
 export default function AptosAccountTxHistory({ coinId }: AptosAccountTxHistory) {
   const { t } = useTranslation();
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
+
   const scaffoldRef = useScaffoldRef();
 
   const {
+    accountAsset: selectedAsset,
     data: accountTxData,
     error,
     fetchNextPage,
@@ -52,37 +49,35 @@ export default function AptosAccountTxHistory({ coinId }: AptosAccountTxHistory)
     coinId: coinId,
   });
 
-  const selectedAsset = accountAllAssets?.aptosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
-
   const accountExplorerUrl = selectedAsset?.chain.explorer.account
     ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
     : '';
 
-  const flattenedTxs = accountTxData?.pages?.flatMap((item) => item).filter((item) => !!item) || [];
+  const flattenedTxs = useMemo(() => accountTxData?.pages?.flatMap((item) => item).filter((item) => !!item) || [], [accountTxData?.pages]);
 
-  const pendingTxs = flattenedTxs.filter((tx) => !!isPendingTransactionResponse(tx));
+  const pendingTxs = useMemo(() => flattenedTxs.filter((tx) => !!isPendingTransactionResponse(tx)), [flattenedTxs]);
 
-  const txsGroupedByDate = (() => {
-    const formattedDates = flattenedTxs
-      .filter((item) => !isPendingTransactionResponse(item))
-      .sort((a, b) => sortByLatestDate(getTimestamp(a), getTimestamp(b)))
-      .map((item) => formatAptosTxTimestamp(item))
-      .filter((item) => !!item);
+  const txsGroupedByDate = useMemo(() => {
+    const groupedByDate: Record<string, typeof flattenedTxs> = {};
 
-    const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
+    const sortedByDate = [...flattenedTxs].sort((a, b) => sortByLatestDate(getTimestamp(a), getTimestamp(b)));
 
-    return uniqueFormattedDates.map((uniqueFormattedDate) => {
-      const filteredActivites = flattenedTxs.filter((tx) => {
-        const formattedAptosTransactionTimestamp = formatAptosTxTimestamp(tx);
+    for (const tx of sortedByDate) {
+      if (isPendingTransactionResponse(tx)) continue;
 
-        return formattedAptosTransactionTimestamp === uniqueFormattedDate;
-      });
+      const formattedDate = formatAptosTxTimestamp(tx);
+      if (!formattedDate) continue;
 
-      return {
-        [uniqueFormattedDate]: filteredActivites,
-      };
-    });
-  })();
+      if (!groupedByDate[formattedDate]) {
+        groupedByDate[formattedDate] = [];
+      }
+      groupedByDate[formattedDate].push(tx);
+    }
+
+    return Object.entries(groupedByDate).map(([date, txs]) => ({
+      [date]: txs,
+    }));
+  }, [flattenedTxs]);
 
   const isExistTxHistory = !!txsGroupedByDate.length || !!pendingTxs.length;
 

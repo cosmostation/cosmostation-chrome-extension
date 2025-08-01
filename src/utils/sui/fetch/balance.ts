@@ -1,7 +1,6 @@
-import axios from 'axios';
-
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { SuiGetBalance, SuiRpcGetBalanceResponse } from '@/types/sui/api';
+import { postWithFullResponse } from '@/utils/axios';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 export const fetchSuiBalances = async (address: string, rpcUrls: string[]): Promise<SuiGetBalance[]> => {
@@ -15,7 +14,7 @@ export const fetchSuiBalances = async (address: string, rpcUrls: string[]): Prom
 
     const baseRpcUrl = rpcUrl;
 
-    const response = await axios.post<SuiRpcGetBalanceResponse>(baseRpcUrl, body, {
+    const response = await postWithFullResponse<SuiRpcGetBalanceResponse>(baseRpcUrl, body, {
       timeout: BALANCE_FETCH_TIME_OUT_MS,
     });
 

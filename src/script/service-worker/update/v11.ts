@@ -6,6 +6,7 @@ import { getChains } from '@/libs/chain';
 import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
 import type { CosmosCw20Asset, EvmErc20Asset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
+import { getWithFullResponse } from '@/utils/axios';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 // params, assets, erc20, cw20
@@ -13,7 +14,7 @@ export async function v11() {
   console.time('chainsAndAsset');
   try {
     const paramsUrl = 'https://front.api.mintscan.io/v11/utils/params';
-    const paramResponse = await axios.get<Record<string, V11Param>>(paramsUrl);
+    const paramResponse = await getWithFullResponse<Record<string, V11Param>>(paramsUrl);
     const params = paramResponse.data;
     const chains = params;
 
@@ -22,7 +23,7 @@ export async function v11() {
     }
 
     const assetsUrl = 'https://front.api.mintscan.io/v11/assets';
-    const assetResponse = await axios.get<Record<'assets', V11Asset[]>>(assetsUrl);
+    const assetResponse = await getWithFullResponse<Record<'assets', V11Asset[]>>(assetsUrl);
     const assets = assetResponse.data?.assets;
 
     if (!assets || assets.length === 0) {
@@ -44,7 +45,7 @@ export async function v11() {
       })
       .process(async (evmChain) => {
         const { id } = evmChain;
-        const erc20AssetResponse = await axios.get<V11Erc20[]>(`https://front.api.mintscan.io/v11/assets/${id}/erc20/info`);
+        const erc20AssetResponse = await getWithFullResponse<V11Erc20[]>(`https://front.api.mintscan.io/v11/assets/${id}/erc20/info`);
         const erc20Asset = erc20AssetResponse.data;
 
         const erc20Assets: EvmErc20Asset[] = erc20Asset.map((asset) => {
@@ -71,7 +72,7 @@ export async function v11() {
       })
       .process(async (cosmosChain) => {
         const { id } = cosmosChain;
-        const cw20AssetResponse = await axios.get<V11Cw20[]>(`https://front.api.mintscan.io/v11/assets/${id}/cw20/info`);
+        const cw20AssetResponse = await getWithFullResponse<V11Cw20[]>(`https://front.api.mintscan.io/v11/assets/${id}/cw20/info`);
         const cw20Asset = cw20AssetResponse.data;
 
         const cw20Assets: CosmosCw20Asset[] = cw20Asset.map((asset) => {

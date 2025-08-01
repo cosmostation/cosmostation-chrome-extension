@@ -4,7 +4,7 @@ import { PromisePool } from '@supercharge/promise-pool';
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import { COREUM_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
-import { chainToDeploymentMap, MULICALL_CONTRACT_ADDRESS } from '@/constants/evm/mutlicall3';
+import { chainToDeploymentMap } from '@/constants/evm/mutlicall3';
 import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAddress } from '@/libs/account';
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
@@ -20,9 +20,10 @@ import type {
 import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { AssetId } from '@/types/asset';
 import type { AccountDetail } from '@/types/bitcoin/balance';
-import type { ChainType, UniqueChainId } from '@/types/chain';
+import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { upsertList } from '@/utils/array';
+import { getWithFullResponse } from '@/utils/axios';
 import {
   fetchCoreumSpendableBalances,
   fetchCosmosBalances,
@@ -55,6 +56,17 @@ const defaultEvmCoinList: AssetId[] = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: '
 const defaultBitcoinCoinList: AssetId[] = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
 
 const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
+
+const CHAIN_MULTICALL_CONFIGS: Record<
+  ChainId['id'],
+  {
+    maxMulticallDataLength: number;
+  }
+> = {
+  evmos: {
+    maxMulticallDataLength: 500,
+  },
+};
 
 export async function updateDefaultAssetsBalance(id: string) {
   console.time(`default-balance-${id}`);
@@ -709,7 +721,7 @@ async function aptosBalances(id: string, { address, chainId }: BalanceFetchOptio
         const url = rpcUrl.url.endsWith('/') ? rpcUrl.url.slice(0, -1) : rpcUrl.url;
         const requestUrl = `${url}${urlPath}`;
 
-        const response = await axios.get<AptosResourceResponse[]>(requestUrl, {
+        const response = await getWithFullResponse<AptosResourceResponse[]>(requestUrl, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
 
@@ -915,20 +927,20 @@ async function erc20Balance(id: string, { address, chainId }: BalanceFetchOption
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const { rpcUrls } = chain;
+      const { rpcUrls, id } = chain;
       const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const chainIdDecimal = parseInt(chain.chainId, 16).toString();
-
-      const isMulticallEnabled =
-        !!chainToDeploymentMap[chainIdDecimal] && isEqualsIgnoringCase(chainToDeploymentMap[chainIdDecimal], MULICALL_CONTRACT_ADDRESS);
-
+      const chainIdDecimal = parseInt(chain.chainId, 16);
+      const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
       if (isMulticallEnabled) {
         try {
+          const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[id];
+
           const allBalances = await fetchMultiERC20Balances(
             address,
             assets.map((item) => item.id),
             rpcUrls.map((item) => item.url).filter(Boolean),
+            multicallWrapperOption,
           );
 
           const balances = allBalances.map((item) => {
@@ -1050,17 +1062,18 @@ async function customErc20Balance(id: string, { address, chainId }: BalanceFetch
       const { rpcUrls } = chain;
       const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-      const chainIdDecimal = parseInt(chain.chainId, 16).toString();
+      const chainIdDecimal = parseInt(chain.chainId, 16);
 
-      const isMulticallEnabled =
-        !!chainToDeploymentMap[chainIdDecimal] && isEqualsIgnoringCase(chainToDeploymentMap[chainIdDecimal], MULICALL_CONTRACT_ADDRESS);
-
+      const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
       if (isMulticallEnabled) {
         try {
+          const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[id];
+
           const allBalances = await fetchMultiERC20Balances(
             address,
             assets.map((item) => item.id),
             rpcUrls.map((item) => item.url).filter(Boolean),
+            multicallWrapperOption,
           );
 
           const balances = allBalances.map((item) => {
