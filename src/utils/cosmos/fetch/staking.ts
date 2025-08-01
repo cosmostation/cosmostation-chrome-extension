@@ -1,11 +1,10 @@
-import axios from 'axios';
-
 import { STAKING_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CommissionResponse } from '@/types/cosmos/balance';
 import type { NTRNRewardsResponse } from '@/types/cosmos/contract';
 import type { DelegationPayload, KavaDelegationPayload, LcdDelegationResponse } from '@/types/cosmos/delegation';
 import type { RewardDetails, RewardPayload } from '@/types/cosmos/reward';
 import type { UnbondingPayload, UnbondingResponses } from '@/types/cosmos/undelegation';
+import { getWithFullResponse } from '@/utils/axios';
 import { buildRequestUrl } from '@/utils/fetch';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 import { toBase64 } from '@/utils/string';
@@ -21,11 +20,8 @@ export const fetchCosmosDelegations = async (address: string, lcdUrls: string[])
     const urlPath = `/cosmos/staking/v1beta1/delegations/${address}`;
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
-    const response = await axios.get<DelegationPayload | KavaDelegationPayload>(requestUrl, {
+    const response = await getWithFullResponse<DelegationPayload | KavaDelegationPayload>(requestUrl, {
       timeout: STAKING_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     const contentType = response.headers['content-type'] ?? '';
@@ -51,11 +47,8 @@ export const fetchCosmosDelegations = async (address: string, lcdUrls: string[])
       try {
         const paginatedRequestUrl = `${requestUrl}&pagination.key=${nextKey}`;
 
-        const paginatedResponse = await axios.get<DelegationPayload | KavaDelegationPayload>(paginatedRequestUrl, {
+        const paginatedResponse = await getWithFullResponse<DelegationPayload | KavaDelegationPayload>(paginatedRequestUrl, {
           timeout: STAKING_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
         });
 
         const contentType = paginatedResponse.headers['content-type'] ?? '';
@@ -98,11 +91,8 @@ export const fetchCosmosUnbondings = async (address: string, lcdUrls: string[]):
     const urlPath = `/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`;
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
-    const response = await axios.get<UnbondingPayload>(requestUrl, {
+    const response = await getWithFullResponse<UnbondingPayload>(requestUrl, {
       timeout: STAKING_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     const contentType = response.headers['content-type'] ?? '';
@@ -123,11 +113,8 @@ export const fetchCosmosUnbondings = async (address: string, lcdUrls: string[]):
       try {
         const paginatedRequestUrl = `${requestUrl}&pagination.key=${nextKey}`;
 
-        const paginatedResponse = await axios.get<UnbondingPayload>(paginatedRequestUrl, {
+        const paginatedResponse = await getWithFullResponse<UnbondingPayload>(paginatedRequestUrl, {
           timeout: STAKING_FETCH_TIME_OUT_MS,
-          headers: {
-            Cosmostation: `extension/${__APP_VERSION__}`,
-          },
         });
 
         const contentType = paginatedResponse.headers['content-type'] ?? '';
@@ -163,11 +150,8 @@ export const fetchCosmosRewards = async (address: string, lcdUrls: string[]): Pr
     const urlPath = `/cosmos/distribution/v1beta1/delegators/${address}/rewards`;
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
-    const response = await axios.get<RewardPayload>(requestUrl, {
+    const response = await getWithFullResponse<RewardPayload>(requestUrl, {
       timeout: STAKING_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     const contentType = response.headers['content-type'] ?? '';
@@ -205,11 +189,8 @@ export const fetchNTRNRewards = async (address: string, rewardContractAddress: s
     const urlPath = `/cosmwasm/wasm/v1/contract/${rewardContractAddress}/smart/${encodeURIComponent(toBase64(`{"rewards":{"user":"${address}"}}`))}`;
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
-    const response = await axios.get<NTRNRewardsResponse>(requestUrl, {
+    const response = await getWithFullResponse<NTRNRewardsResponse>(requestUrl, {
       timeout: STAKING_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     const contentType = response.headers['content-type'] ?? '';
@@ -240,11 +221,8 @@ export const fetchCosmosCommission = async (validatorAddress: string, lcdUrls: s
 
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
-    const response = await axios.get<CommissionResponse>(requestUrl, {
+    const response = await getWithFullResponse<CommissionResponse>(requestUrl, {
       timeout: STAKING_FETCH_TIME_OUT_MS,
-      headers: {
-        Cosmostation: `extension/${__APP_VERSION__}`,
-      },
     });
 
     const contentType = response.headers['content-type'] ?? '';

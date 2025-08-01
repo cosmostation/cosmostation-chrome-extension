@@ -23,6 +23,7 @@ import type { AccountDetail } from '@/types/bitcoin/balance';
 import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { upsertList } from '@/utils/array';
+import { getWithFullResponse } from '@/utils/axios';
 import {
   fetchCoreumSpendableBalances,
   fetchCosmosBalances,
@@ -720,7 +721,7 @@ async function aptosBalances(id: string, { address, chainId }: BalanceFetchOptio
         const url = rpcUrl.url.endsWith('/') ? rpcUrl.url.slice(0, -1) : rpcUrl.url;
         const requestUrl = `${url}${urlPath}`;
 
-        const response = await axios.get<AptosResourceResponse[]>(requestUrl, {
+        const response = await getWithFullResponse<AptosResourceResponse[]>(requestUrl, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,
         });
 

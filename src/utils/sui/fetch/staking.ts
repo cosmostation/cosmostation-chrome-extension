@@ -1,8 +1,8 @@
-import axios from 'axios';
 import type { DelegatedStake as SuiDelegatedStake } from '@mysten/sui/client';
 
 import { STAKING_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { SuiRpcGetDelegatedStakeResponse } from '@/types/sui/api';
+import { postWithFullResponse } from '@/utils/axios';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 export const fetchSuiDelegations = async (address: string, rpcUrls: string[]): Promise<SuiDelegatedStake[]> => {
@@ -16,7 +16,7 @@ export const fetchSuiDelegations = async (address: string, rpcUrls: string[]): P
       id: 1,
     };
 
-    const response = await axios.post<SuiRpcGetDelegatedStakeResponse>(requestUrl, body, {
+    const response = await postWithFullResponse<SuiRpcGetDelegatedStakeResponse>(requestUrl, body, {
       timeout: STAKING_FETCH_TIME_OUT_MS,
     });
 
