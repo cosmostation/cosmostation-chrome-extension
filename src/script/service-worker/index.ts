@@ -21,7 +21,63 @@ import { v11 } from './update/v11';
 initExtensionView();
 
 startAutoLockTimer();
-// const response = await chrome.runtime.sendMessage({ })
+
+const inProgressMap: Record<string, Set<string>> = {};
+const inProgressTimestamps: Record<string, Record<string, number>> = {};
+
+const CLEANUP_INTERVAL = 5 * 60 * 1000;
+const MAX_PROGRESS_TIME = 10 * 60 * 1000;
+
+function isInProgress(method: string, id: string): boolean {
+  return inProgressMap[method]?.has(id) ?? false;
+}
+
+function setInProgress(method: string, id: string) {
+  if (!inProgressMap[method]) {
+    inProgressMap[method] = new Set();
+    inProgressTimestamps[method] = {};
+  }
+
+  inProgressMap[method].add(id);
+  inProgressTimestamps[method][id] = Date.now();
+}
+
+function clearInProgress(method: string, id: string): void {
+  inProgressMap[method]?.delete(id);
+  if (inProgressTimestamps[method]) {
+    delete inProgressTimestamps[method][id];
+  }
+}
+
+function cleanupStaleProgress(): void {
+  const now = Date.now();
+  let cleanedCount = 0;
+
+  for (const [method, timestamps] of Object.entries(inProgressTimestamps)) {
+    for (const [id, timestamp] of Object.entries(timestamps)) {
+      if (now - timestamp > MAX_PROGRESS_TIME) {
+        inProgressMap[method]?.delete(id);
+        delete inProgressTimestamps[method][id];
+        cleanedCount++;
+        devLogger.warn(`Cleaned up stale progress entry: ${method}:${id}`);
+      }
+    }
+  }
+
+  if (cleanedCount > 0) {
+    devLogger.log(`Cleaned up ${cleanedCount} stale progress entries`);
+  }
+}
+
+function forceCleanupAllProgress(): void {
+  devLogger.log('Force cleaning up all progress entries');
+  Object.keys(inProgressMap).forEach((key) => delete inProgressMap[key]);
+  Object.keys(inProgressTimestamps).forEach((key) => delete inProgressTimestamps[key]);
+}
+
+forceCleanupAllProgress();
+
+setInterval(cleanupStaleProgress, CLEANUP_INTERVAL);
 
 extension.storage.onChanged.addListener((changes) => {
   for (const [key, { newValue }] of Object.entries(changes)) {
@@ -39,103 +95,196 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
     devLogger.log('service worker sender', sender);
 
     if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
-      if (message.method === 'updateBalance') {
-        const [id] = message.params;
+      const { method, params } = message;
 
-        if (await isRequestThrottled('updateBalance', id)) {
-          devLogger.log(`[updateBalance] Throttled for id=${id}`);
+      if (method === 'updateBalance') {
+        const [id] = params;
+
+        if (isInProgress(method, id)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
           sendResponse(null);
           return;
         }
+
+        if (await isRequestThrottled(method, id)) {
+          devLogger.log(`[${method}] Throttled for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        setInProgress(method, id);
 
         try {
           await updateActiveAssetsBalance(id);
           await updateCustomBalance(id);
-          await recordRequestTimestamp('updateBalance', id);
+          await recordRequestTimestamp(method, id);
         } catch (e) {
-          devLogger.error('updateBalance error', e);
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, id);
         }
 
         sendResponse(null);
       }
 
-      if (message.method === 'updateDefaultBalance') {
-        const [id] = message.params;
-        await updateDefaultAssetsBalance(id);
-        sendResponse(null);
-      }
+      if (method === 'updateStaking') {
+        const [id] = params;
 
-      if (message.method === 'updateStaking') {
-        const [id] = message.params;
-
-        if (await isRequestThrottled('updateStaking', id)) {
-          devLogger.log(`[updateStaking] Throttled for id=${id}`);
+        if (isInProgress(method, id)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
           sendResponse(null);
           return;
         }
+
+        if (await isRequestThrottled(method, id)) {
+          devLogger.log(`[${method}] Throttled for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        setInProgress(method, id);
 
         try {
           await updateStakingRelatedBalance(id);
-          await recordRequestTimestamp('updateStaking', id);
+          await recordRequestTimestamp(method, id);
         } catch (e) {
-          devLogger.error('updateStaking error', e);
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, id);
         }
 
         sendResponse(null);
       }
 
-      if (message.method === 'updateAccountInfo') {
-        const [id] = message.params;
+      if (method === 'updateAccountInfo') {
+        const [id] = params;
 
-        if (await isRequestThrottled('updateAccountInfo', id)) {
-          devLogger.log(`[updateAccountInfo] Throttled for id=${id}`);
+        if (isInProgress(method, id)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
           sendResponse(null);
           return;
         }
 
+        if (await isRequestThrottled(method, id)) {
+          devLogger.log(`[${method}] Throttled for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+        setInProgress(method, id);
+
         try {
           await updateAccountInfo(id);
-          await recordRequestTimestamp('updateAccountInfo', id);
+          await recordRequestTimestamp(method, id);
         } catch (e) {
-          devLogger.error('updateAccountInfo error', e);
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, id);
         }
 
         sendResponse(null);
       }
 
-      if (message.method === 'updateAddress') {
-        const [id] = message.params;
-        await address(id);
-        await customChainAddress(id);
+      if (method === 'updateDefaultBalance') {
+        const [id] = params;
+
+        if (isInProgress(method, id)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        setInProgress(method, id);
+
+        try {
+          await updateDefaultAssetsBalance(id);
+        } catch (e) {
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, id);
+        }
+
         sendResponse(null);
       }
 
-      if (message.method === 'updateChainSpecificBalance') {
-        const [id, chainId, address] = message.params;
-        await updateSpecificChainBalance(id, chainId, address);
+      if (method === 'updateAddress') {
+        const [id] = params;
+
+        if (isInProgress(method, id)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+          sendResponse(null);
+          return;
+        }
+
+        setInProgress(method, id);
+
+        try {
+          await address(id);
+          await customChainAddress(id);
+        } catch (e) {
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, id);
+        }
+
         sendResponse(null);
       }
 
-      if (message.method === 'updateChainSpecificStakingBalance') {
-        const [id, chainId, address] = message.params;
-        await updateSpecificChainBalance(id, chainId, address);
-        await updateSpecificChainStaking(id, chainId, address);
+      if (method === 'updateChainSpecificBalance') {
+        const [id, chainId, address] = params;
+
+        const key = `${id}:${chainId}:${address}`;
+        if (isInProgress(method, key)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
+          sendResponse(null);
+          return;
+        }
+
+        setInProgress(method, key);
+
+        try {
+          await updateSpecificChainBalance(id, chainId, address);
+        } catch (e) {
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, key);
+        }
+
         sendResponse(null);
       }
 
-      if (message.method === 'requestApp') {
-        const { params } = message;
+      if (method === 'updateChainSpecificStakingBalance') {
+        const [id, chainId, address] = params;
 
+        const key = `${id}:${chainId}:${address}`;
+
+        if (isInProgress(method, key)) {
+          devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
+          sendResponse(null);
+          return;
+        }
+
+        setInProgress(method, key);
+        try {
+          await updateSpecificChainBalance(id, chainId, address);
+          await updateSpecificChainStaking(id, chainId, address);
+        } catch (e) {
+          devLogger.error(`${method} error`, e);
+        } finally {
+          clearInProgress(method, key);
+        }
+
+        sendResponse(null);
+      }
+
+      if (method === 'requestApp') {
         await process({ ...params, tabId: sender.tab?.id });
         sendResponse(null);
       }
 
-      if (message.method === 'openSidePanel') {
+      if (method === 'openSidePanel') {
         if (sender.tab?.id && typeof chrome !== 'undefined' && typeof chrome.sidePanel !== 'undefined') {
           if (__APP_BROWSER__ === 'chrome') {
-            if (!chrome.sidePanel) {
-              return;
-            }
+            if (!chrome.sidePanel) return;
 
             await chrome.sidePanel.open({ tabId: sender.tab.id });
             await chrome.sidePanel.setOptions({
@@ -144,10 +293,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
               enabled: true,
             });
           } else {
-            browser.sidebarAction.setPanel({
-              panel: 'sidepanel.html',
-            });
-
+            browser.sidebarAction.setPanel({ panel: 'sidepanel.html' });
             browser.sidebarAction.open();
           }
         }
@@ -156,6 +302,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
       }
     }
   })();
+
   return true;
 });
 

@@ -95,7 +95,7 @@ export function useAccountAllAssets({
               isEqualsIgnoringCase(balance.address, address.address) && balance.chainId === address.chainId && balance.chainType === address.chainType,
           );
 
-          const pendingFundedAmount = balanceInfo?.balance.chainStats?.funded_txo_sum || '0';
+          const pendingFundedAmount = balanceInfo?.balance.mempoolStats?.funded_txo_sum || '0';
           const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
 
           const isBalanceGreaterThanZero = gt(balance, '0');
