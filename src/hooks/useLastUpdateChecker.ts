@@ -7,10 +7,10 @@ export function useLastUpdateChecker(lastUpdate?: number | null) {
   const [status, setStatus] = useState<string>('');
 
   const { t } = useTranslation();
-  const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
+  const { isLoading: isUpdateBalanceLoading, isFetching: isUpdateBalanceFetching, isAutoRefetchPaused } = useUpdateBalance();
 
   useEffect(() => {
-    if (!lastUpdate || isUpdateBalanceLoading) {
+    if (!lastUpdate || isUpdateBalanceLoading || isUpdateBalanceFetching || isAutoRefetchPaused) {
       setStatus('');
       return;
     }
@@ -38,7 +38,7 @@ export function useLastUpdateChecker(lastUpdate?: number | null) {
     const intervalId = setInterval(updateStatus, 60000);
 
     return () => clearInterval(intervalId);
-  }, [isUpdateBalanceLoading, lastUpdate, t]);
+  }, [isAutoRefetchPaused, isUpdateBalanceFetching, isUpdateBalanceLoading, lastUpdate, t]);
 
   return status;
 }
