@@ -1,10 +1,10 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 
 import { EthereumRPCError } from './error';
-import { extensionLocalStorage } from './storage';
+import { getCurrentEVMNetwork } from './storage/localStorage';
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentEthereumNetwork } = await extensionLocalStorage();
+  const { currentEthereumNetwork } = await getCurrentEVMNetwork();
 
   const rpcURL = url || currentEthereumNetwork.rpcUrls[0].url;
 
