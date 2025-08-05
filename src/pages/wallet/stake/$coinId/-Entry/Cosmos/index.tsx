@@ -37,7 +37,6 @@ import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
-import { checkDataFreshness } from '@/utils/date';
 import { ceil, divide, fix, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
@@ -352,11 +351,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     return safeStringify(tx);
   }, [currentBaseFee, currentGas, memoizedStakeAminoTx, selectedFeeOption.denom]);
 
-  const isBalanceDataStaled = useMemo(() => {
-    const freshness = checkDataFreshness(selectedFeeOption.feeAsset?.lastUpdatedAtMs);
-    return freshness === 'stale' || freshness === 'warning';
-  }, [selectedFeeOption.feeAsset?.lastUpdatedAtMs]);
-
   const stakeAmountInputErrorMessage = useMemo(() => {
     if (displayStakeAmount) {
       if (selectedStakingCoin?.asset.id === selectedFeeOption?.denom) {
@@ -402,10 +396,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.bankLocked');
     }
 
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.send.$coinId.Entry.Cosmos.index.staledBalance');
-    }
-
     if (!gt(baseAvailableAmount, '0')) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.noAvailableAmount');
     }
@@ -441,7 +431,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     displayStakeAmount,
     inputMemoErrorMessage,
-    isBalanceDataStaled,
     selectedStakingCoin?.chain.isSupportStaking,
     stakeAminoTx,
     stakeAmountInputErrorMessage,
