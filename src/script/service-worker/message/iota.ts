@@ -20,7 +20,8 @@ import { IotaRPCError } from '@/utils/error';
 import { requestRPC as iotaRequestRPC } from '@/utils/iota/rpc';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { getIotaDefaultStorageData } from '@/utils/storage/localStorage';
 import { isEqualsIgnoringCase } from '@/utils/string';
 
 import { iotaConnectSchema, iotaSignMessageSchema } from './schema';
@@ -36,16 +37,20 @@ export async function iotaProcess(message: IotaRequest) {
   const iotaPopupMethods = Object.values(IOTA_POPUP_METHOD_TYPE) as string[];
   const iotaNoPopupMethods = Object.values(IOTA_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccountAllowedOrigins, currentAccount, currentIotaNetwork, approvedOrigins, approvedIotaPermissions } = await extensionLocalStorage();
+  const { currentAccountAllowedOrigins, currentAccount, currentIotaNetwork, approvedOrigins, approvedIotaPermissions } = await getIotaDefaultStorageData();
 
   const { currentPassword } = await extensionSessionStorage();
 
   const currentAccountIotaPermissions =
     approvedIotaPermissions
-      ?.filter((permission) => permission.accountId === currentAccount.id && permission.origin === origin)
+      ?.filter((permission) => permission.accountId === currentAccount?.id && permission.origin === origin)
       .map((permission) => permission.permission) || [];
 
   try {
+    if (!currentAccount) {
+      throw new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
+
     if (!message?.method || !iotaMethods.includes(message.method)) {
       throw new IotaRPCError(RPC_ERROR.UNSUPPORTED_METHOD, IOTA_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
     }

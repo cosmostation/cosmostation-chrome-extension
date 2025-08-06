@@ -24,7 +24,8 @@ import { BitcoinRPCError } from '@/utils/error';
 import { get, post } from '@/utils/fetch';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage } from '@/utils/storage';
+import { extensionSessionStorage } from '@/utils/storage';
+import { getBitcoinDefaultStorageData } from '@/utils/storage/localStorage';
 
 export async function bitcoinProcess(message: BitcoinRequest) {
   const { method, requestId, tabId, origin } = message;
@@ -33,12 +34,16 @@ export async function bitcoinProcess(message: BitcoinRequest) {
   const bitcoinPopupMethods = Object.values(BITCOIN_POPUP_METHOD_TYPE) as string[];
   const bitcoinNoPopupMethods = Object.values(BITCOIN_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccount, currentAccountAllowedOrigins, currentBitcoinNetwork } = await extensionLocalStorage();
+  const { currentAccount, currentAccountAllowedOrigins, currentBitcoinNetwork } = await getBitcoinDefaultStorageData();
   const { currentPassword } = await extensionSessionStorage();
 
   const chain = currentBitcoinNetwork;
 
   try {
+    if (!currentAccount) {
+      throw new BitcoinRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
+
     if (!method || !bitcoinMethods.includes(method)) {
       throw new BitcoinRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
     }

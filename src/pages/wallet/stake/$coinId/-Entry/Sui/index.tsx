@@ -30,7 +30,6 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { checkDataFreshness } from '@/utils/date';
 import { ceil, divide, gt, gte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
@@ -203,11 +202,6 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
 
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
-  const isBalanceDataStaled = useMemo(() => {
-    const freshness = checkDataFreshness(selectedStakingCoin?.lastUpdatedAtMs);
-    return freshness === 'stale' || freshness === 'warning';
-  }, [selectedStakingCoin?.lastUpdatedAtMs]);
-
   const stakeAmountInputErrorMessage = (() => {
     if (displayStakeAmount) {
       const totalCostAmount = plus(displayStakeAmount, displayExpectedBaseFeeAmount);
@@ -229,10 +223,6 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
   })();
 
   const errorMessage = useMemo(() => {
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.stake.$coinId.entry.staledBalance');
-    }
-
     if (!currentValidator) {
       return t('pages.wallet.stake.$coinId.entry.noValidator');
     }
@@ -271,7 +261,6 @@ export default function Sui({ coinId, validatorAddress }: SuiProps) {
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
-    isBalanceDataStaled,
     stakeAmountInputErrorMessage,
     t,
   ]);

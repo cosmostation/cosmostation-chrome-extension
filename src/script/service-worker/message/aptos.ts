@@ -15,7 +15,8 @@ import type {
 import { AptosRPCError } from '@/utils/error';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { getAptosDefaultStorageData } from '@/utils/storage/localStorage';
 
 import { aptosSignMessageSchema, aptosSignTransactionSchema } from './schema';
 
@@ -26,12 +27,15 @@ export async function aptosProcess(message: AptosRequest) {
   const aptosPopupMethods = Object.values(APTOS_POPUP_METHOD_TYPE) as string[];
   const aptosNoPopupMethods = Object.values(APTOS_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccount, currentAccountAllowedOrigins, currentAptosNetwork, approvedOrigins } = await extensionLocalStorage();
+  const { currentAccount, currentAccountAllowedOrigins, currentAptosNetwork, approvedOrigins } = await getAptosDefaultStorageData();
   const { currentPassword } = await extensionSessionStorage();
 
   const chain = currentAptosNetwork;
 
   try {
+    if (!currentAccount) {
+      throw new AptosRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
     if (!method || !aptosMethods.includes(method)) {
       throw new AptosRPCError(RPC_ERROR.UNSUPPORTED_METHOD, APTOS_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD]);
     }

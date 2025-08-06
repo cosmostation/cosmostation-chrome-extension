@@ -27,7 +27,6 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { checkDataFreshness } from '@/utils/date.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
@@ -173,11 +172,6 @@ export default function Sui({ coinId }: SuiProps) {
 
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
-  const isBalanceDataStaled = useMemo(() => {
-    const freshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
-    return freshness === 'stale' || freshness === 'warning';
-  }, [selectedCoinToSend?.lastUpdatedAtMs]);
-
   const addressInputErrorMessage = (() => {
     if (recipientAddress && (!isValidSuiAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address))) {
       return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAddress');
@@ -208,10 +202,6 @@ export default function Sui({ coinId }: SuiProps) {
   })();
 
   const errorMessage = useMemo(() => {
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.staledBalance');
-    }
-
     if (!recipientAddress) {
       return t('pages.wallet.send.$coinId.Entry.Sui.index.noRecipientAddress');
     }
@@ -258,7 +248,6 @@ export default function Sui({ coinId }: SuiProps) {
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
     dryRunTransactionError?.message,
-    isBalanceDataStaled,
     recipientAddress,
     sendAmountInputErrorMessage,
     sendDisplayAmount,

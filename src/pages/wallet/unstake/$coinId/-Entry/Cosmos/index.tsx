@@ -37,7 +37,7 @@ import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
 import { cosmosURL } from '@/utils/crypto/cosmos';
-import { checkDataFreshness, getDayFromSeconds } from '@/utils/date';
+import { getDayFromSeconds } from '@/utils/date';
 import { ceil, gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress, toPercentages } from '@/utils/string.ts';
@@ -346,11 +346,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     return safeStringify(tx);
   }, [currentBaseFee, currentGas, memoizedUnstakeAminoTx, selectedFeeOption.denom]);
 
-  const isBalanceDataStaled = useMemo(() => {
-    const freshness = checkDataFreshness(selectedFeeOption.feeAsset?.lastUpdatedAtMs);
-    return freshness === 'stale' || freshness === 'warning';
-  }, [selectedFeeOption.feeAsset?.lastUpdatedAtMs]);
-
   const unstakeAmountInputErrorMessage = useMemo(() => {
     if (displayUnstakeAmount) {
       if (gt(displayUnstakeAmount, availableUnstakeDisplayAmount)) {
@@ -376,10 +371,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   const errorMessage = useMemo(() => {
     if (!selectedUnstakingCoin?.chain.isSupportStaking) {
       return t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.bankLocked');
-    }
-
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.unstake.$coinId.$validatorAddress.Entry.Cosmos.index.staledBalance');
     }
 
     if (!gt(baseAvailableAmount, '0')) {
@@ -416,7 +407,6 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     currentDisplayFeeAmount,
     displayUnstakeAmount,
     inputMemoErrorMessage,
-    isBalanceDataStaled,
     selectedFeeOption.balance,
     selectedFeeOption.decimals,
     selectedUnstakingCoin?.chain.isSupportStaking,

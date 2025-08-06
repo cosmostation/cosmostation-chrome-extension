@@ -45,7 +45,8 @@ import { CosmosRPCError } from '@/utils/error';
 import { FetchError, get, post } from '@/utils/fetch';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { getCosmosDefaultStorageData } from '@/utils/storage/localStorage';
 
 import {
   cosAddChainParamsSchema,
@@ -66,7 +67,8 @@ export async function cosmosProcess(message: CosmosRequest) {
   const { cosmosChains } = await getChains();
 
   const { currentAccount, currentAccountAllowedOrigins, currentAccountName, approvedOrigins, preferAccountType, currentAccountAddressInfo } =
-    await extensionLocalStorage();
+    await getCosmosDefaultStorageData();
+
   const { currentPassword } = await extensionSessionStorage();
 
   const addedCustomChains = await getAddedCustomChains();
@@ -85,7 +87,7 @@ export async function cosmosProcess(message: CosmosRequest) {
   const getChain = (chainName?: string) => {
     const chain = allCosmosChains.find((item) => item.name.toLowerCase() === chainName?.toLowerCase());
 
-    if (!chain) return chain;
+    if (!chain || !currentAccount) return chain;
 
     const inAppSelectedPreferAccountType = preferAccountType[currentAccount.id]?.[chain.id];
 
@@ -103,6 +105,10 @@ export async function cosmosProcess(message: CosmosRequest) {
   const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
 
   try {
+    if (!currentAccount) {
+      throw new CosmosRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
+
     if (!message?.method || !cosmosMethods.includes(message.method)) {
       throw new CosmosRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
     }

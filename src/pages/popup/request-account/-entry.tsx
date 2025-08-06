@@ -32,8 +32,6 @@ export default function Entry() {
 
   useEffect(() => {
     const handleRequestAccount = async () => {
-      const currentAccountAddressInfo = await getExtensionLocalStorage(`${currentAccount.id}-address`);
-
       try {
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
           const { tabId, requestId, origin, params } = currentRequestQueue;
@@ -90,6 +88,8 @@ export default function Entry() {
         }
 
         if (currentRequestQueue?.method === 'cos_requestAccountsSettled' && currentPassword) {
+          const currentAccountAddressInfo = await getExtensionLocalStorage(`${currentAccount.id}-address`);
+
           const { tabId, requestId, origin, params } = currentRequestQueue;
 
           const inputChainIds = params.chainIds;
@@ -420,6 +420,15 @@ export default function Entry() {
     };
 
     handleRequestAccount();
-  }, [chainList?.allCosmosChains, currentAccount, currentPassword, currentPreferAccountType, currentRequestQueue, deQueue, refreshOriginConnectionTime]);
+  }, [
+    chainList.allCosmosChains,
+    chainList.cosmosChains,
+    currentAccount,
+    currentPassword,
+    currentPreferAccountType,
+    currentRequestQueue,
+    deQueue,
+    refreshOriginConnectionTime,
+  ]);
   return null;
 }

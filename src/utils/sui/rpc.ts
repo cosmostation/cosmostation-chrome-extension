@@ -1,10 +1,10 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 
 import { SuiRPCError } from '../error';
-import { extensionLocalStorage } from '../storage';
+import { getSuiDefaultStorageData } from '../storage/localStorage';
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentSuiNetwork } = await extensionLocalStorage();
+  const { currentSuiNetwork } = await getSuiDefaultStorageData();
 
   const rpcURL = url ?? currentSuiNetwork.rpcUrls[0].url;
 

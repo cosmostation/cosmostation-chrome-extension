@@ -1411,8 +1411,7 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "components": {
@@ -1445,8 +1444,7 @@
                 "noAmount": "Please enter the amount",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Bitcoin": {
@@ -1469,8 +1467,7 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Aptos": {
@@ -1493,8 +1490,7 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             },
             "Cosmos": {
@@ -1528,8 +1524,7 @@
                 "invalidRewardAmount": "Invalid reward amount",
                 "memoOverflow": "Memo is too long. Please shorten it.",
                 "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "insufficientFee": "Insufficient fee",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "insufficientFee": "Insufficient fee"
               }
             },
             "Iota": {
@@ -1552,8 +1547,7 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
               }
             }
           }
@@ -1698,8 +1692,7 @@
             "failedToDryRun": "Transaction simulation failed",
             "failedToBuildTransaction": "Failed to build transaction",
             "tooSmallToStake": "Minimum stake amount is 1",
-            "stakeReviewWithSymbol": "Confirm to Stake {{symbol}}",
-            "staledBalance": "Balance is outdated. Please refresh before proceeding"
+            "stakeReviewWithSymbol": "Confirm to Stake {{symbol}}"
           },
           "layout": {
             "header": "Stake"
@@ -1744,8 +1737,7 @@
                   "invalidAmount": "Invalid amount",
                   "failedToCalculateTransaction": "Failed to build transaction",
                   "insufficientFee": "Insufficient fee",
-                  "unstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}",
-                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                  "unstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
                 }
               },
               "Sui": {
@@ -1762,8 +1754,7 @@
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}",
-                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
                 }
               },
               "Iota": {
@@ -1780,8 +1771,7 @@
                   "unstakeReviewDescription": "Are you sure you want to proceed with the unstake? \nThis action cannot be undone once completed.",
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}",
-                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                  "unstakeReviewWithSymbol": "Confirm to Unstake {{symbol}}"
                 }
               }
             },
@@ -1859,8 +1849,7 @@
                   "failedToCalculateTransaction": "Failed to build transaction",
                   "txProcessing": "Transaction Processing",
                   "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "subtitle": "{{symbol}} + {{coinCount}} Coins",
-                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                  "subtitle": "{{symbol}} + {{coinCount}} Coins"
                 }
               }
             },
@@ -1893,8 +1882,7 @@
                   "insufficientAmount": "Insufficient fee",
                   "failedToCalculateTransaction": "Failed to build transaction",
                   "txProcessing": "Transaction Processing",
-                  "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                  "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                  "txProcessingSub": "Please wait a moment while the transaction is being processed"
                 }
               }
             }
@@ -1924,8 +1912,7 @@
                 "cancelUnstakingAmount": "Amount to Unstake",
                 "cancelUnstakeConfirm": "Cancel Unstake",
                 "memoOverflow": "Memo is too long. Please shorten it.",
-                "cancelUnstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "cancelUnstakeReviewWithSymbol": "Confirm to Cancel Unstake {{symbol}}"
               }
             }
           },
@@ -1954,8 +1941,7 @@
                 "sendNFT": "Send NFT",
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                "contract": "Contract : ",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "contract": "Contract : "
               }
             },
             "Sui": {
@@ -1994,8 +1980,7 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "quantity": "Quantity",
                 "insufficientNFTAmount": "Cannot send more than the amount you have",
-                "contract": "Contract : ",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "contract": "Contract : "
               }
             }
           },
@@ -2027,8 +2012,7 @@
                 "claimCommissions": "Claim Commissions",
                 "claimSymbolCommissions": "Claim {{symbol}} Commissions",
                 "claimCommissionsReview": "Confirm Claim Commissions",
-                "claimCommissionsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed.",
-                "staledBalance": "Balance is outdated. Please refresh before proceeding"
+                "claimCommissionsReviewDescription": "Are you sure you want to proceed with the claim rewards? \nThis action cannot be undone once completed."
               }
             }
           }

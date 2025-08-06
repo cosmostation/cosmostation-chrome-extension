@@ -7,7 +7,8 @@ import { isSidePanelView } from '@/utils/view/sidepanel';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 export function useCurrentRequestQueue() {
-  const { requestQueue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const requestQueue = useExtensionStorageStore((state) => state.requestQueue);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const navigate = useNavigate();
 

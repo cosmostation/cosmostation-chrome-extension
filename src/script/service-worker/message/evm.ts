@@ -6,8 +6,9 @@ import { PRIVATE_KEY_FOR_TEST } from '@/constants/common';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { EVM_METHOD_TYPE, EVM_NO_POPUP_METHOD_TYPE } from '@/constants/evm/message';
 import { getAddress, getKeypair } from '@/libs/address';
-import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
+import type { Account } from '@/types/account';
+import type { EvmChain } from '@/types/chain';
 import type { EvmRpc } from '@/types/evm/api';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type {
@@ -38,7 +39,8 @@ import { ethersProvider } from '@/utils/ethereum/ethers';
 import { signTypedData } from '@/utils/ethereum/sign';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { enqueueRequest, processRequest, setQueues } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage } from '@/utils/storage';
+import { extensionSessionStorage } from '@/utils/storage';
+import { getCurrentEVMAddressInfo, getEVMDefaultStorageData } from '@/utils/storage/localStorage';
 import { isEqualsIgnoringCase, toHex } from '@/utils/string';
 
 import {
@@ -57,17 +59,9 @@ import {
 export async function evmProcess(message: EvmRequest) {
   const { method, requestId, tabId, origin } = message;
 
-  const { evmChains } = await getChains();
-
-  const addedCustomChains = await getAddedCustomChains();
-
-  const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
-
-  const allEVMChainIds = allEVMChains.map((chain) => chain.chainId);
+  const { currentAccountAllowedOrigins, currentEthereumNetwork, currentAccount, allEthereumNetworks: allEVMChains } = await getEVMDefaultStorageData();
 
   const evmChain = allEVMChains.find((chain) => chain.chainId === '0x1') || allEVMChains[0];
-
-  const { currentAccountAllowedOrigins, currentEthereumNetwork, currentAccount } = await extensionLocalStorage();
 
   const { currentPassword } = await extensionSessionStorage();
 
@@ -75,6 +69,10 @@ export async function evmProcess(message: EvmRequest) {
   const ethereumNoPopupMethods = Object.values(EVM_NO_POPUP_METHOD_TYPE) as string[];
 
   try {
+    if (!currentAccount || !evmChain) {
+      throw new EthereumRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
+
     if (!message?.method || !ethereumMethods.includes(message.method)) {
       throw new EthereumRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
     }
@@ -89,10 +87,9 @@ export async function evmProcess(message: EvmRequest) {
           const validatedParams = (await schema.validateAsync(params)) as EthSign['params'];
 
           if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-            const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-            const address = getAddress(evmChain, keyPair?.publicKey);
+            const address = await getEVMAddress(evmChain, currentAccount, currentPassword);
 
-            if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+            if (address?.toLowerCase() !== validatedParams[0].toLowerCase()) {
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
             }
           }
@@ -119,10 +116,9 @@ export async function evmProcess(message: EvmRequest) {
           const validatedParams = (await schema.validateAsync(params)) as EthSignTypedData['params'];
 
           if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-            const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-            const address = getAddress(evmChain, keyPair?.publicKey);
+            const address = await getEVMAddress(evmChain, currentAccount, currentPassword);
 
-            if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+            if (address?.toLowerCase() !== validatedParams[0].toLowerCase()) {
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
             }
           }
@@ -168,14 +164,17 @@ export async function evmProcess(message: EvmRequest) {
         const schema = personalSignParamsSchema();
 
         try {
+          let address: string | undefined;
+
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            address = await getEVMAddress(evmChain, currentAccount, currentPassword);
+          }
+
           const reorderedParams = (() => {
             if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-              const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-              const address = getAddress(evmChain, keyPair?.publicKey);
-
               const updatedParams = params.some((item, index) => isEqualsIgnoringCase(item, address) && index !== 1) ? [params[1], params[0]] : params;
 
-              if (address.toLowerCase() !== updatedParams[1].toLowerCase()) {
+              if (address?.toLowerCase() !== updatedParams[1].toLowerCase()) {
                 throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
               }
 
@@ -208,8 +207,7 @@ export async function evmProcess(message: EvmRequest) {
           const validatedParams = (await schema.validateAsync(params)) as EthSignTransaction['params'];
 
           if (evmChain && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-            const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-            const address = getAddress(evmChain, keyPair?.publicKey);
+            const address = await getEVMAddress(evmChain, currentAccount, currentPassword);
 
             if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.requestId);
@@ -251,8 +249,7 @@ export async function evmProcess(message: EvmRequest) {
         if (evmChain && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
           void refreshOriginConnectionTime(currentAccount.id, origin);
 
-          const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-          const address = getAddress(evmChain, keyPair?.publicKey);
+          const address = await getEVMAddress(evmChain, currentAccount, currentPassword);
 
           const result: EthRequestAccountsResponse = [address];
 
@@ -290,6 +287,7 @@ export async function evmProcess(message: EvmRequest) {
               { chainId: response.result },
             );
           }
+          const allEVMChainIds = allEVMChains.map((chain) => chain.chainId);
 
           if (allEVMChainIds.includes(validatedParams[0].chainId)) {
             throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.requestId, { chainId: response.result });
@@ -520,8 +518,7 @@ export async function evmProcess(message: EvmRequest) {
       if (ethereumNoPopupMethods.includes(method)) {
         if (method === 'eth_accounts') {
           if (evmChain && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-            const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-            const address = getAddress(evmChain, keyPair?.publicKey);
+            const address = await getEVMAddress(evmChain, currentAccount, currentPassword);
 
             const result: EthRequestAccountsResponse = address ? [address] : [];
 
@@ -553,8 +550,7 @@ export async function evmProcess(message: EvmRequest) {
           }
         } else if (method === 'eth_coinbase') {
           if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-            const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
-            const address = getAddress(evmChain, keyPair?.publicKey);
+            const address = await getEVMAddress(evmChain, currentAccount, currentPassword);
 
             const result: EthCoinbaseResponse = address || null;
 
@@ -674,4 +670,24 @@ export async function evmProcess(message: EvmRequest) {
       },
     });
   }
+}
+
+async function getEVMAddress(evmChain: EvmChain, account: Account, password: string) {
+  let address;
+  const storedEVMAddressInfo = await getCurrentEVMAddressInfo();
+
+  const storedAddress = storedEVMAddressInfo ? storedEVMAddressInfo.address : undefined;
+
+  if (storedAddress) {
+    address = storedAddress;
+  } else {
+    const keyPair = getKeypair(evmChain, account, password);
+    address = getAddress(evmChain, keyPair?.publicKey);
+  }
+
+  if (!address) {
+    throw new EthereumRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+  }
+
+  return address;
 }

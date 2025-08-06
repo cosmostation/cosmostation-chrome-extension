@@ -3,7 +3,7 @@ import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '@/constants/mes
 import { sendMessage } from '@/libs/extension';
 import type { CommonRequest, ComProvidersResponse } from '@/types/message/inject/common';
 import { CommonRPCError } from '@/utils/error';
-import { extensionLocalStorage } from '@/utils/storage';
+import { getCommonDefaultStorageData } from '@/utils/storage/localStorage';
 
 export async function commonProcess(message: CommonRequest) {
   const { requestId, tabId, origin } = message;
@@ -17,7 +17,7 @@ export async function commonProcess(message: CommonRequest) {
     }
     const { method } = message;
 
-    const { prioritizedProvider } = await extensionLocalStorage();
+    const { prioritizedProvider } = await getCommonDefaultStorageData();
 
     if (commonNoPopupMethods.includes(method)) {
       if (method === 'com_providers') {

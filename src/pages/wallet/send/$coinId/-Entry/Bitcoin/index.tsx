@@ -28,7 +28,6 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { executeTransactionSequentially } from '@/utils/bitcoin/sign.ts';
 import { ecpairFromPrivateKey, getTweakSigner, initBitcoinEcc } from '@/utils/bitcoin/tx.ts';
-import { checkDataFreshness } from '@/utils/date.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { isDecimal, isEqualsIgnoringCase } from '@/utils/string.ts';
@@ -328,11 +327,6 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
     }
   };
 
-  const isBalanceDataStaled = useMemo(() => {
-    const freshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
-    return freshness === 'stale' || freshness === 'warning';
-  }, [selectedCoinToSend?.lastUpdatedAtMs]);
-
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
       if (isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)) {
@@ -370,10 +364,6 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
   }, [currentMemoBytes, t]);
 
   const errorMessage = useMemo(() => {
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.staledBalance');
-    }
-
     if (!recipientAddress) {
       return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.noRecipientAddress');
     }
@@ -412,7 +402,6 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
     baseAvailableAmount,
     gasRate,
     inputMemoErrorMessage,
-    isBalanceDataStaled,
     recipientAddress,
     sendAmountInputErrorMessage,
     sendDisplayAmount,
