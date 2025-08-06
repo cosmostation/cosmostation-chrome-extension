@@ -11,6 +11,7 @@ import type { IotaTxInfoResponse } from '@/types/iota/api';
 import type { SuiTxInfoResponse } from '@/types/sui/api';
 import { getWithFullResponse, post } from '@/utils/axios';
 import { devLogger } from '@/utils/devLogger';
+import { buildRequestUrl } from '@/utils/fetch';
 import { wait } from '@/utils/fetch/wait';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
@@ -77,7 +78,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const requestUrls = targetChain.lcdUrls
             .map((item) => item.url)
             .filter(Boolean)
-            .map((url) => `${url}/cosmos/tx/v1beta1/txs/${tx.txHash}`);
+            .map((url) => buildRequestUrl(url, `/cosmos/tx/v1beta1/txs/${tx.txHash}`));
 
           const response = await Promise.any(requestUrls.map((rpcUrl) => getWithFullResponse<TxInfoResponse>(rpcUrl, { timeout: 5000 })));
 
