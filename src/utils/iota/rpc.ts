@@ -1,10 +1,10 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 
 import { IotaRPCError } from '../error';
-import { extensionLocalStorage } from '../storage';
+import { getIotaDefaultStorageData } from '../storage/localStorage';
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentIotaNetwork } = await extensionLocalStorage();
+  const { currentIotaNetwork } = await getIotaDefaultStorageData();
 
   const rpcURL = url ?? currentIotaNetwork.rpcUrls[0].url;
 

@@ -38,7 +38,6 @@ import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
 import { cosmosURL } from '@/utils/crypto/cosmos.ts';
-import { checkDataFreshness } from '@/utils/date.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import {
   getCoinId,
@@ -568,17 +567,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
     }
   };
 
-  const isBalanceDataStaled = useMemo(() => {
-    const sendCoinfreshness = checkDataFreshness(selectedCoinToSend?.lastUpdatedAtMs);
-
-    const isSendCoinStaled = sendCoinfreshness === 'stale' || sendCoinfreshness === 'warning';
-
-    const feeCoinBalanceFreshness = checkDataFreshness(selectedFeeOption.feeAsset?.lastUpdatedAtMs);
-    const isFeeStaled = feeCoinBalanceFreshness === 'stale' || feeCoinBalanceFreshness === 'warning';
-
-    return isSendCoinStaled || isFeeStaled;
-  }, [selectedCoinToSend?.lastUpdatedAtMs, selectedFeeOption.feeAsset?.lastUpdatedAtMs]);
-
   const addressInputErrorMessage = useMemo(() => {
     if (recipientAddress) {
       if (isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)) {
@@ -650,10 +638,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.bankLocked');
     }
 
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.send.$coinId.Entry.Cosmos.index.staledBalance');
-    }
-
     if (isIBCSend && !latestHeight) {
       return t('pages.wallet.send.$coinId.Entry.Cosmos.index.timeoutHeightError');
     }
@@ -702,7 +686,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     displaySendAmount,
     inputMemoErrorMessage,
-    isBalanceDataStaled,
     isIBCSend,
     latestHeight,
     recipientAddress,

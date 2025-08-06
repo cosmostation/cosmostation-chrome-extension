@@ -32,7 +32,6 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { checkDataFreshness } from '@/utils/date';
 import { ethersProvider } from '@/utils/ethereum/ethers';
 import { signAndExecuteTxSequentially } from '@/utils/ethereum/sign';
 import { ceil, gt, times } from '@/utils/numbers.ts';
@@ -310,11 +309,6 @@ export default function EVM({ id }: EVMProps) {
 
   const displayTx = useMemo(() => safeStringify(finalizedTransaction), [finalizedTransaction]);
 
-  const isBalanceDataStaled = useMemo(() => {
-    const freshness = checkDataFreshness(nativeAccountAsset?.lastUpdatedAtMs);
-    return freshness === 'stale' || freshness === 'warning';
-  }, [nativeAccountAsset?.lastUpdatedAtMs]);
-
   const sendQuantityErrorMessage = useMemo(() => {
     if (sendQuantity) {
       if (!isNumber(sendQuantity)) {
@@ -342,10 +336,6 @@ export default function EVM({ id }: EVMProps) {
   const errorMessage = useMemo(() => {
     if (!selectedNFT) {
       return t('pages.wallet.nft-send.$id.Entry.EVM.index.missingNFT');
-    }
-
-    if (isBalanceDataStaled) {
-      return t('pages.wallet.nft-send.$id.Entry.EVM.index.staledBalance');
     }
 
     if (!selectedNFT.isOwned) {
@@ -388,7 +378,6 @@ export default function EVM({ id }: EVMProps) {
     currentBaseFee,
     currentNFTBalance,
     finalizedTransaction,
-    isBalanceDataStaled,
     nftSourceURI,
     recipientAddress,
     selectedNFT,

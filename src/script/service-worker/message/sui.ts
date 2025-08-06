@@ -19,7 +19,8 @@ import type { SuiRpc } from '@/types/sui/api';
 import { SuiRPCError } from '@/utils/error';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { getSuiDefaultStorageData } from '@/utils/storage/localStorage';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { requestRPC as suiRequestRPC } from '@/utils/sui/rpc';
 
@@ -36,16 +37,19 @@ export async function suiProcess(message: SuiRequest) {
   const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
   const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccountAllowedOrigins, currentAccount, currentSuiNetwork, approvedOrigins, approvedSuiPermissions } = await extensionLocalStorage();
+  const { currentAccountAllowedOrigins, currentAccount, currentSuiNetwork, approvedOrigins, approvedSuiPermissions } = await getSuiDefaultStorageData();
 
   const { currentPassword } = await extensionSessionStorage();
 
   const currentAccountSuiPermissions =
     approvedSuiPermissions
-      ?.filter((permission) => permission.accountId === currentAccount.id && permission.origin === origin)
+      ?.filter((permission) => permission.accountId === currentAccount?.id && permission.origin === origin)
       .map((permission) => permission.permission) || [];
 
   try {
+    if (!currentAccount) {
+      throw new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
     if (!message?.method || !suiMethods.includes(message.method)) {
       throw new SuiRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
     }
