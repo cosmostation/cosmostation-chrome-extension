@@ -5,6 +5,7 @@ import Collapse from '@mui/material/Collapse';
 import Base1300Text from '@/components/common/Base1300Text';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import { useAccountChangeDelay } from '@/hooks/util/useAccountChangeDelay';
 import type { UniqueChainId } from '@/types/chain';
 import type { DataFreshnessType } from '@/types/dataFreshness';
 import { checkDataFreshness } from '@/utils/date';
@@ -27,6 +28,7 @@ export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, addr
   const { isLoading: isUpdateBalanceLoading, isFetching: isUpdateBalanceFetching, isAutoRefetchPaused } = useUpdateBalance();
 
   const [freshnessStatus, setFreshnessStatus] = useState<DataFreshnessType | undefined>();
+  const isAccountChangeDelayActive = useAccountChangeDelay();
 
   const title = useMemo(() => {
     if (!freshnessStatus || freshnessStatus === 'fresh') return null;
@@ -57,7 +59,12 @@ export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, addr
   return (
     <Collapse
       in={
-        !!title && !isUpdateBalanceLoading && !isUpdateBalanceFetching && !isAutoRefetchPaused && (freshnessStatus === 'warning' || freshnessStatus === 'stale')
+        !!title &&
+        !isUpdateBalanceLoading &&
+        !isUpdateBalanceFetching &&
+        !isAutoRefetchPaused &&
+        !isAccountChangeDelayActive &&
+        (freshnessStatus === 'warning' || freshnessStatus === 'stale')
       }
     >
       <Container data-variant={freshnessStatus} {...remainer}>

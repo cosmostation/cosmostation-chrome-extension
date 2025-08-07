@@ -20,7 +20,7 @@ type CoinTypeSelectorProps = {
 };
 
 export default function CoinTypeSelector({ accountId, currentPreferAccountTypes, variant = 'default', onClickChainType }: CoinTypeSelectorProps) {
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   const { flatChainList } = useChainList();
   const { data: multipleAccountTypeWithAddress } = useMultipleAccountTypes({ accountId });

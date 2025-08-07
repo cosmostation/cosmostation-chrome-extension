@@ -33,6 +33,7 @@ import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type { Msg } from '@/types/cosmos/direct';
 import type { CosSignDirect, CosSignDirectResponse } from '@/types/message/inject/cosmos';
+import { resolvePubkeyType, resolveSeiChainConfig } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signDirect } from '@/utils/cosmos/msg';
 import { decodeProtobufMessage, protoTxBytes } from '@/utils/cosmos/proto';
@@ -97,7 +98,7 @@ export default function Entry({ request, chain }: EntryProps) {
   const decodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(body_bytes), [body_bytes]);
   const decodedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
 
-  const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
+  const keyPair = useMemo(() => getKeypair(resolveSeiChainConfig(chain), currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
 
   const [inputMemo, setInputMemo] = useState(decodedBodyBytes.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : decodedBodyBytes.memo), [decodedBodyBytes.memo, inputMemo, isEditMemo]);
@@ -370,7 +371,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
           const privateKeyBuffer = Buffer.from(keyPair.privateKey, 'hex');
 
-          return signDirect(signedDoc, privateKeyBuffer, chain);
+          return signDirect(signedDoc, privateKeyBuffer, resolveSeiChainConfig(chain));
         }
 
         throw new Error('Unknown type account');
@@ -380,7 +381,7 @@ export default function Entry({ request, chain }: EntryProps) {
       const base64PublicKey = Buffer.from(keyPair.publicKey, 'hex').toString('base64');
 
       const publicKeyType = accountAsset.address.accountType.pubkeyType
-        ? getPublicKeyType(accountAsset.address.accountType.pubkeyType)
+        ? getPublicKeyType(resolvePubkeyType(chain, accountAsset.address))
         : PUBLIC_KEY_TYPE.SECP256K1;
 
       const pubKey = { type: publicKeyType, value: base64PublicKey };
