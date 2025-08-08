@@ -15,6 +15,7 @@ import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee/CosmosFee';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
+import { COSMOS_SIGN_MODE } from '@/constants/cosmos/sign';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { useCurrentAddedCosmosNFTsWithMetaData } from '@/hooks/cosmos/nft/useCurrentAddedCosmosNFTsWithMetaData';
 import { useAccount } from '@/hooks/cosmos/useAccount';
@@ -27,16 +28,12 @@ import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
-import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
-import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
+import { executeNFTSendTransaction } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
-import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
-import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, gt, times } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex';
 import { getUtf8BytesLength, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
@@ -199,7 +196,7 @@ export default function Cosmos({ id }: CosmosProps) {
         nftSendAminoTx,
         [''],
         { type: accountAsset?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
@@ -348,110 +345,21 @@ export default function Cosmos({ id }: CosmosProps) {
   });
 
   const handleOnClickConfirm = useCallback(async () => {
-    try {
-      setIsOpenTxProcessingOverlay(true);
-
-      if (!chain) {
-        throw new Error('Chain not found');
-      }
-
-      if (!selectedNFT) {
-        throw new Error('NFT not found');
-      }
-
-      if (!accountAsset) {
-        throw new Error('Account asset not found');
-      }
-
-      if (!account.data?.value.account_number) {
-        throw new Error('Account number not found');
-      }
-
-      if (!memoizedNFTSendAminoTx) {
-        throw new Error('Failed to calculate final transaction');
-      }
-
-      if (!selectedFeeOption || !selectedFeeOption.denom) {
-        throw new Error('Failed to get current fee asset');
-      }
-
-      const finalizedTransaction = {
-        ...memoizedNFTSendAminoTx,
-        fee: {
-          amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
-          gas: currentGas,
-        },
-      };
-
-      const keyPair = getKeypair(chain, currentAccount, currentPassword);
-      const privateKey = keyPair.privateKey;
-
-      const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : '';
-
-      const pTx = protoTx(
-        finalizedTransaction,
-        [''],
-        { type: accountAsset.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: base64PublicKey },
-        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
-      );
-
-      if (!pTx) {
-        throw new Error('Failed to calculate proto transaction');
-      }
-
-      const directDoc = {
-        chain_id: chain.chainId,
-        account_number: account.data.value.account_number,
-        auth_info_bytes: [...Array.from(pTx.authInfoBytes)],
-        body_bytes: [...Array.from(pTx.txBodyBytes)],
-      };
-
-      const requestURLs = chain.lcdUrls.map((item) => cosmosURL(item.url, chain.chainId).postBroadcast()) || [];
-
-      if (!requestURLs.length) {
-        throw new Error('RPC URLs not found');
-      }
-
-      const response = await signDirectAndexecuteTxSequentially({
-        privateKey,
-        directDoc,
-        chain: chain,
-        urls: requestURLs,
-      });
-
-      if (!response) {
-        throw new Error('Failed to send transaction');
-      }
-
-      const uniqueChainId = getUniqueChainIdWithManual(chain.id, chain.chainType);
-      addTx({
-        txHash: response.tx_response.txhash,
-        chainId: uniqueChainId,
-        address: accountAsset.address.address,
-        addedAt: Date.now(),
-        retryCount: 0,
-        type: 'nft',
-      });
-
-      navigate({
-        to: TxResult.to,
-        search: {
-          coinId: accountAssetCoinId,
-          txHash: response.tx_response.txhash,
-        },
-      });
-    } catch {
-      navigate({
-        to: TxResult.to,
-        search: {
-          coinId: accountAssetCoinId,
-        },
-      });
-    } finally {
-      setIsOpenTxProcessingOverlay(false);
-    }
+    await executeNFTSendTransaction(
+      chain,
+      accountAsset,
+      account.data,
+      memoizedNFTSendAminoTx,
+      selectedFeeOption,
+      currentBaseFee,
+      currentGas,
+      currentAccount,
+      currentPassword,
+      accountAssetCoinId,
+      { addTx, navigate, setIsOpenTxProcessingOverlay },
+    );
   }, [
-    account.data?.value.account_number,
+    account.data,
     accountAsset,
     accountAssetCoinId,
     addTx,
@@ -463,7 +371,6 @@ export default function Cosmos({ id }: CosmosProps) {
     memoizedNFTSendAminoTx,
     navigate,
     selectedFeeOption,
-    selectedNFT,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {

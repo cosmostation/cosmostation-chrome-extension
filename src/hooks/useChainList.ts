@@ -8,7 +8,8 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { useCurrentAccount } from './useCurrentAccount';
 
 export function useChainList() {
-  const { addedCustomChainList, preferAccountType } = useExtensionStorageStore((state) => state);
+  const addedCustomChainList = useExtensionStorageStore((state) => state.addedCustomChainList);
+  const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
   const { currentAccount } = useCurrentAccount();
   const accountType = preferAccountType[currentAccount.id];
 

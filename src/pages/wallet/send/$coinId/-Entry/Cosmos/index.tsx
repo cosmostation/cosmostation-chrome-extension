@@ -15,6 +15,7 @@ import StandardInput from '@/components/common/StandardInput/index.tsx';
 import Fee from '@/components/Fee/CosmosFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas.ts';
+import { COSMOS_SIGN_MODE } from '@/constants/cosmos/sign.ts';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx.ts';
 import { useAccount } from '@/hooks/cosmos/useAccount.ts';
 import { useAutoFeeCurrencySelectionOnInit } from '@/hooks/cosmos/useAutoFeeCurrencySelectionOnInit.ts';
@@ -28,24 +29,13 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
-import { getKeypair } from '@/libs/address.ts';
-import { Route as TxResult } from '@/pages/wallet/tx-result';
-import { cosmos } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { isTestnetChain } from '@/utils/chain.ts';
+import { executeSendTransaction } from '@/utils/cosmos/executeTx.ts';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
-import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign.ts';
-import { cosmosURL } from '@/utils/crypto/cosmos.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import {
-  getCoinId,
-  getUniqueChainId,
-  getUniqueChainIdWithManual,
-  isMatchingCoinId,
-  isMatchingUniqueChainId,
-  parseCoinId,
-} from '@/utils/queryParamGenerator.ts';
+import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
 import { getCosmosAddressRegex } from '@/utils/regex.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
@@ -478,7 +468,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         sendAminoTx,
         [''],
         { type: selectedCoinToSend?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
@@ -705,97 +695,21 @@ export default function Cosmos({ coinId }: CosmosProps) {
   });
 
   const handleOnClickConfirm = useCallback(async () => {
-    try {
-      setIsOpenTxProcessingOverlay(true);
-
-      if (!selectedCoinToSend?.chain) {
-        throw new Error('Chain not found');
-      }
-
-      if (!account.data?.value.account_number) {
-        throw new Error('Account number not found');
-      }
-
-      if (!memoizedSendAminoTx) {
-        throw new Error('Failed to calculate final transaction');
-      }
-
-      if (!selectedFeeOption || !selectedFeeOption.denom) {
-        throw new Error('Failed to get current fee asset');
-      }
-
-      const finalizedTransaction = {
-        ...memoizedSendAminoTx,
-        fee: {
-          amount: [{ denom: selectedFeeOption.denom, amount: currentCeilFeeAmount }],
-          gas: currentGas,
-        },
-      };
-
-      const keyPair = getKeypair(selectedCoinToSend.chain, currentAccount, currentPassword);
-      const privateKey = keyPair.privateKey;
-
-      const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : '';
-
-      const pTx = protoTx(
-        finalizedTransaction,
-        [''],
-        { type: selectedCoinToSend.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: base64PublicKey },
-        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
-      );
-
-      if (!pTx) {
-        throw new Error('Failed to calculate proto transaction');
-      }
-
-      const directDoc = {
-        chain_id: selectedCoinToSend.chain.chainId,
-        account_number: account.data.value.account_number,
-        auth_info_bytes: [...Array.from(pTx.authInfoBytes)],
-        body_bytes: [...Array.from(pTx.txBodyBytes)],
-      };
-
-      const requestURLs = selectedCoinToSend?.chain.lcdUrls.map((item) => cosmosURL(item.url, parseCoinId(coinId).chainId).postBroadcast()) || [];
-
-      if (!requestURLs.length) {
-        throw new Error('RPC URLs not found');
-      }
-
-      const response = await signDirectAndexecuteTxSequentially({
-        privateKey,
-        directDoc,
-        chain: selectedCoinToSend.chain,
-        urls: requestURLs,
-      });
-
-      if (!response) {
-        throw new Error('Failed to send transaction');
-      }
-
-      const { chainId, chainType } = parseCoinId(coinId);
-      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
-      addTx({ txHash: response.tx_response.txhash, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
-
-      navigate({
-        to: TxResult.to,
-        search: {
-          address: recipientAddress,
-          coinId,
-          txHash: response.tx_response.txhash,
-        },
-      });
-    } catch {
-      navigate({
-        to: TxResult.to,
-        search: {
-          coinId,
-        },
-      });
-    } finally {
-      setIsOpenTxProcessingOverlay(false);
-    }
+    await executeSendTransaction(
+      selectedCoinToSend,
+      account.data,
+      memoizedSendAminoTx,
+      selectedFeeOption,
+      currentCeilFeeAmount,
+      currentGas,
+      currentAccount,
+      currentPassword,
+      coinId,
+      recipientAddress,
+      { addTx, navigate, setIsOpenTxProcessingOverlay },
+    );
   }, [
-    account.data?.value.account_number,
+    account.data,
     addTx,
     coinId,
     currentAccount,
@@ -805,9 +719,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
     memoizedSendAminoTx,
     navigate,
     recipientAddress,
-    selectedCoinToSend?.address.accountType.pubkeyType,
-    selectedCoinToSend?.address.address,
-    selectedCoinToSend?.chain,
+    selectedCoinToSend,
     selectedFeeOption,
   ]);
 

@@ -28,6 +28,7 @@ import MemoInput from '@/pages/popup/-components/MemoInput';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { CosmosChain } from '@/types/chain';
 import type { CosSignAmino, CosSignAminoResponse } from '@/types/message/inject/cosmos';
+import { resolvePubkeyType, resolveSeiChainConfig } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
@@ -93,7 +94,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const { doc, isEditFee = true, isEditMemo = true, isCheckBalance = true } = params;
 
-  const keyPair = useMemo(() => getKeypair(chain, currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
+  const keyPair = useMemo(() => getKeypair(resolveSeiChainConfig(chain), currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
 
   const [inputMemo, setInputMemo] = useState(doc.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : doc.memo), [doc.memo, inputMemo, isEditMemo]);
@@ -326,7 +327,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
           const privateKeyBuffer = Buffer.from(keyPair.privateKey, 'hex');
 
-          return signAmino(tx, privateKeyBuffer, chain);
+          return signAmino(tx, privateKeyBuffer, resolveSeiChainConfig(chain));
         }
 
         throw new Error('Unknown type account');
@@ -336,7 +337,7 @@ export default function Entry({ request, chain }: EntryProps) {
       const base64PublicKey = Buffer.from(keyPair.publicKey, 'hex').toString('base64');
 
       const publicKeyType = accountAsset.address.accountType.pubkeyType
-        ? getPublicKeyType(accountAsset.address.accountType.pubkeyType)
+        ? getPublicKeyType(resolvePubkeyType(chain, accountAsset.address))
         : PUBLIC_KEY_TYPE.SECP256K1;
 
       const pubKey = { type: publicKeyType, value: base64PublicKey };

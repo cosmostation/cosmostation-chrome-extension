@@ -56,7 +56,7 @@ export type V11Param = {
       account_type?: {
         hd_path: string;
         pubkey_style: string;
-        pubkey_type: string;
+        pubkey_type?: string;
         is_default?: boolean;
       }[];
       cosmos_fee_info?: {
@@ -95,7 +95,13 @@ export type V11Param = {
         tx: string;
         proposal: string;
       };
-      about: {
+      evm_explorer?: {
+        name: string;
+        url: string;
+        account: string;
+        tx: string;
+      };
+      about?: {
         website: string;
         docs: string;
         github: string;
@@ -104,7 +110,7 @@ export type V11Param = {
         twitter: string;
         coingecko: string;
       };
-      forum: {
+      forum?: {
         main: string;
         governance: string;
       };
