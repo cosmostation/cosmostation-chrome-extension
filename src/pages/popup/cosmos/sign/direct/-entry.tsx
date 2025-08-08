@@ -157,14 +157,44 @@ export default function Entry({ request, chain }: EntryProps) {
     if (isEditFee) {
       const signatures = signer_infos.map(() => Buffer.from(new Uint8Array(64)).toString('base64'));
 
+      const encodedAuthInfoBytesForSimul = (() => {
+        const defaultFeeCoinDenom = feeAssets[0]?.asset.id || chain.mainAssetDenom;
+        const defaultFeeRate = feeAssets[0]?.gasRate[defaultGasRateKey] || '0';
+
+        const defaultGas = gt(fee?.gas_limit || '0', chain.feeInfo.defaultGasLimit) ? fee?.gas_limit || '0' : chain.feeInfo.defaultGasLimit;
+
+        const defaultFeeAmount = ceil(times(defaultGas, defaultFeeRate));
+        const appliedFeeAmount = gt(inputFee.amount || '0', defaultFeeAmount) ? inputFee.amount : defaultFeeAmount;
+
+        return cosmos.tx.v1beta1.AuthInfo.encode({
+          ...decodedAuthInfoBytes,
+          fee: {
+            ...fee,
+            amount: [{ denom: defaultFeeCoinDenom, amount: appliedFeeAmount }],
+            gas_limit: Number(defaultGas),
+          },
+        }).finish();
+      })();
+
       return protoTxBytes({
         signatures,
         txBodyBytes: body_bytes,
-        authInfoBytes: auth_info_bytes,
+        authInfoBytes: encodedAuthInfoBytesForSimul,
       });
     }
     return null;
-  }, [auth_info_bytes, body_bytes, isEditFee, signer_infos]);
+  }, [
+    body_bytes,
+    chain.feeInfo.defaultGasLimit,
+    chain.mainAssetDenom,
+    decodedAuthInfoBytes,
+    defaultGasRateKey,
+    fee,
+    feeAssets,
+    inputFee.amount,
+    isEditFee,
+    signer_infos,
+  ]);
 
   const isPossibleSimulating =
     !!accountAssetCoinId &&

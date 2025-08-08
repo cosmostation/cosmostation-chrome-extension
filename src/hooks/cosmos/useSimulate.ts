@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { SimulateResponse } from '@/types/cosmos/simulate';
 import { isAxiosError, post } from '@/utils/axios';
@@ -16,6 +16,8 @@ type UseSimulateProps = {
 };
 
 export function useSimulate({ coinId, txBytes, config }: UseSimulateProps) {
+  const [hasFailedPermanently, setHasFailedPermanently] = useState(false);
+
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
   const asset = getCosmosAccountAsset();
@@ -59,20 +61,29 @@ export function useSimulate({ coinId, txBytes, config }: UseSimulateProps) {
     queryKey: ['cosmosSimulate', coinId, txBytes],
     fetchFunction: () => fetcher(),
     config: {
-      enabled: !!coinId && !!txBytes && !!requestURLs.length && asset?.chain.feeInfo.isSimulable,
-      refetchInterval: 1000 * 15,
+      ...config,
+      enabled: !!coinId && !!txBytes && !!requestURLs.length && Boolean(asset?.chain.feeInfo?.isSimulable),
+      refetchInterval: hasFailedPermanently ? false : (config?.refetchInterval ?? 1000 * 15),
       retry: (failureCount, error) => {
         if (isAxiosError(error)) {
           if (error.response?.status === 404) {
             return false;
           }
         }
-        return failureCount < 3;
+
+        const shouldRetry = failureCount < 3;
+        if (!shouldRetry) {
+          setHasFailedPermanently(true);
+        }
+        return shouldRetry;
       },
-      retryDelay: 1000 * 5,
-      ...config,
+      retryDelay: config?.retryDelay ?? 1000 * 5,
     },
   });
+
+  useEffect(() => {
+    setHasFailedPermanently(false);
+  }, [coinId, txBytes]);
 
   return { data, error, refetch, isLoading, isFetching, isFetched };
 }
