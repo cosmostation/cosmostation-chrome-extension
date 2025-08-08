@@ -1,7 +1,7 @@
 {
   "name": "cosmostation",
   "private": true,
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "chrome extension cosmos wallet",
   "type": "module",
   "scripts": {
