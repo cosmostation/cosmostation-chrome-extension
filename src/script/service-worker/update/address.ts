@@ -15,7 +15,7 @@ const SEI_CHAIN_CONFIG = {
 };
 
 function shouldUseSeiConfig(chainId: string, chainType: string, pubkeyStyle: string): boolean {
-  return chainId === 'sei' && chainType === 'cosmos' && pubkeyStyle === 'keccac256';
+  return chainId === 'sei' && chainType === 'cosmos' && pubkeyStyle === 'keccak256';
 }
 
 export async function address(id: string) {
@@ -44,7 +44,7 @@ export async function address(id: string) {
             throw error;
           })
           .process(async (accountType) => {
-            if (storedAccountAddresses && storedAccountAddresses.length > 0) {
+            if (etc.id !== 'sei' && storedAccountAddresses && storedAccountAddresses.length > 0) {
               const existingAddress = storedAccountAddresses.find((storedAddress) => {
                 const isSamePubkeyType = (() => {
                   if (storedAddress.accountType.pubkeyType && accountType.pubkeyType) {
