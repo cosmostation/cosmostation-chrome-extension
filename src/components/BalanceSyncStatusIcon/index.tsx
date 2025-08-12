@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { TooltipProps } from '@mui/material/Tooltip';
 
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import { useAccountChangeDelay } from '@/hooks/util/useAccountChangeDelay';
 import type { DataFreshnessType } from '@/types/dataFreshness';
 import { checkDataFreshness } from '@/utils/date';
 
@@ -20,6 +21,8 @@ export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, tooltipProps, .
   const { t } = useTranslation();
   const { isLoading: isUpdateBalanceLoading, isFetching: isUpdateBalanceFetching, isAutoRefetchPaused } = useUpdateBalance();
   const [freshnessStatus, setFreshnessStatus] = useState<DataFreshnessType | undefined>();
+
+  const isAccountChangeDelayActive = useAccountChangeDelay();
 
   const tooltipMessage = useMemo(() => {
     if (!freshnessStatus || freshnessStatus === 'fresh') return null;
@@ -48,7 +51,7 @@ export default function BalanceSyncStatusIcon({ lastUpdatedAtMs, tooltipProps, .
     return () => clearInterval(interval);
   }, [lastUpdatedAtMs]);
 
-  if (!tooltipMessage || isUpdateBalanceLoading || isUpdateBalanceFetching || isAutoRefetchPaused) return null;
+  if (!tooltipMessage || isUpdateBalanceLoading || isUpdateBalanceFetching || isAutoRefetchPaused || isAccountChangeDelayActive) return null;
 
   return (
     <Tooltip title={tooltipMessage} varient={tooltipVarient} placement="top" style={{ height: '1.6rem' }} {...tooltipProps}>

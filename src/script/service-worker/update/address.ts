@@ -8,6 +8,16 @@ import type { AccountAddress } from '@/types/account';
 import type { ExtensionStorage } from '@/types/extension';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
+const SEI_CHAIN_CONFIG = {
+  hdPath: "m/44'/60'/0'/0/${index}",
+  pubkeyStyle: 'secp256k1',
+  pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+};
+
+function shouldUseSeiConfig(chainId: string, chainType: string, pubkeyStyle: string): boolean {
+  return chainId === 'sei' && chainType === 'cosmos' && pubkeyStyle === 'keccak256';
+}
+
 export async function address(id: string) {
   console.time(`address-${id}`);
   try {
@@ -34,7 +44,7 @@ export async function address(id: string) {
             throw error;
           })
           .process(async (accountType) => {
-            if (storedAccountAddresses && storedAccountAddresses.length > 0) {
+            if (etc.id !== 'sei' && storedAccountAddresses && storedAccountAddresses.length > 0) {
               const existingAddress = storedAccountAddresses.find((storedAddress) => {
                 const isSamePubkeyType = (() => {
                   if (storedAddress.accountType.pubkeyType && accountType.pubkeyType) {
@@ -51,12 +61,21 @@ export async function address(id: string) {
                 );
               });
 
-              if (existingAddress) {
+              if (existingAddress && existingAddress.accountType.isDefault === accountType.isDefault) {
                 return existingAddress;
               }
             }
 
-            const chainItem = { ...etc, accountTypes: [accountType] };
+            const resolvedAccountType = (() => {
+              if (shouldUseSeiConfig(etc.id, etc.chainType, accountType.pubkeyStyle)) {
+                return SEI_CHAIN_CONFIG;
+              } else {
+                return accountType;
+              }
+            })();
+
+            const chainItem = { ...etc, accountTypes: [resolvedAccountType] };
+
             const keypair = getKeypair(chainItem, account, password);
             const address = getAddress(chainItem, keypair.publicKey);
 

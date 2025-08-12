@@ -30,16 +30,13 @@ import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
-import { getKeypair } from '@/libs/address';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
-import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { isTestnetChain } from '@/utils/chain';
+import { executeStakeTransaction } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
-import { signDirectAndexecuteTxSequentially } from '@/utils/cosmos/sign';
-import { cosmosURL } from '@/utils/crypto/cosmos';
 import { ceil, divide, fix, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
-import { getCoinId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator.ts';
+import { getCoinId, isMatchingCoinId } from '@/utils/queryParamGenerator.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, toPercentages } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
@@ -459,103 +456,20 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
   };
 
   const handleOnClickConfirm = useCallback(async () => {
-    try {
-      setIsOpenTxProcessingOverlay(true);
-
-      if (!selectedStakingCoin?.chain) {
-        throw new Error('Chain not found');
-      }
-
-      if (!account.data?.value.account_number) {
-        throw new Error('Account number not found');
-      }
-
-      if (!memoizedStakeAminoTx) {
-        throw new Error('Failed to calculate final transaction');
-      }
-
-      if (!selectedFeeOption || !selectedFeeOption.denom) {
-        throw new Error('Failed to get current fee asset');
-      }
-
-      const finalizedTransaction = {
-        ...memoizedStakeAminoTx,
-        fee: {
-          amount: [{ denom: selectedFeeOption.denom, amount: currentBaseFee }],
-          gas: currentGas,
-        },
-      };
-
-      const keyPair = getKeypair(selectedStakingCoin.chain, currentAccount, currentPassword);
-      const privateKey = keyPair.privateKey;
-
-      const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : '';
-
-      const pTx = protoTx(
-        finalizedTransaction,
-        [''],
-        { type: selectedStakingCoin.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: base64PublicKey },
-        SignMode.SIGN_MODE_DIRECT,
-      );
-
-      if (!pTx) {
-        throw new Error('Failed to calculate proto transaction');
-      }
-
-      const directDoc = {
-        chain_id: selectedStakingCoin.chain.chainId,
-        account_number: account.data.value.account_number,
-        auth_info_bytes: [...Array.from(pTx.authInfoBytes)],
-        body_bytes: [...Array.from(pTx.txBodyBytes)],
-      };
-
-      const requestURLs = selectedStakingCoin?.chain.lcdUrls.map((item) => cosmosURL(item.url, parseCoinId(coinId).chainId).postBroadcast()) || [];
-
-      if (!requestURLs.length) {
-        throw new Error('RPC URLs not found');
-      }
-
-      const response = await signDirectAndexecuteTxSequentially({
-        privateKey,
-        directDoc,
-        chain: selectedStakingCoin.chain,
-        urls: requestURLs,
-      });
-
-      if (!response) {
-        throw new Error('Failed to send transaction');
-      }
-
-      const { chainId, chainType } = parseCoinId(coinId);
-      const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
-      addTx({
-        txHash: response.tx_response.txhash,
-        chainId: uniqueChainId,
-        address: selectedStakingCoin.address.address,
-        addedAt: Date.now(),
-        retryCount: 0,
-        type: 'staking',
-      });
-
-      navigate({
-        to: TxResult.to,
-        search: {
-          coinId,
-          txHash: response.tx_response.txhash,
-        },
-      });
-    } catch {
-      navigate({
-        to: TxResult.to,
-        search: {
-          coinId,
-        },
-      });
-    } finally {
-      setIsOpenTxProcessingOverlay(false);
-    }
+    await executeStakeTransaction(
+      selectedStakingCoin,
+      account.data,
+      memoizedStakeAminoTx,
+      selectedFeeOption,
+      currentBaseFee,
+      currentGas,
+      currentAccount,
+      currentPassword,
+      coinId,
+      { addTx, navigate, setIsOpenTxProcessingOverlay },
+    );
   }, [
-    account.data?.value.account_number,
+    account.data,
     addTx,
     coinId,
     currentAccount,
@@ -565,9 +479,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
     memoizedStakeAminoTx,
     navigate,
     selectedFeeOption,
-    selectedStakingCoin?.address.accountType.pubkeyType,
-    selectedStakingCoin?.address.address,
-    selectedStakingCoin?.chain,
+    selectedStakingCoin,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
