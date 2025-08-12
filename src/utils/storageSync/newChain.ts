@@ -5,7 +5,7 @@ import { loadExtensionStorageStoreFromStorageByKey } from '@/zustand/hooks/useEx
 
 import { devLogger } from '../devLogger';
 import { getUniqueChainIdWithManual } from '../queryParamGenerator';
-import { getExtensionLocalStorage } from '../storage';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
 export async function checkMissingAddresses() {
   const userAccounts = await getExtensionLocalStorage('userAccounts');
@@ -25,6 +25,39 @@ export async function checkMissingAddresses() {
       }
     } catch (error) {
       devLogger.error(`[checkMissingAddresses]`, error);
+    }
+  }
+}
+
+export async function fixSeiAddress() {
+  const bugFixFlag: Record<string, boolean> | undefined = await getExtensionLocalStorage('bugFix');
+
+  if (bugFixFlag?.['seiAddressBook']) return;
+
+  const params = await getExtensionLocalStorage('paramsV11');
+
+  if (params?.['sei']?.params?.chainlist_params?.is_support_extension_wallet) {
+    const userAccounts = await getExtensionLocalStorage('userAccounts');
+    let allSuccess = true;
+
+    if (!Array.isArray(userAccounts) || userAccounts.length === 0) return;
+    for (const { id: accountId } of userAccounts) {
+      try {
+        await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
+        await loadExtensionStorageStoreFromStorageByKey(`${accountId}-address`);
+      } catch (error) {
+        devLogger.error(`[fixSeiAddress]`, error);
+        allSuccess = false;
+      }
+    }
+
+    if (allSuccess) {
+      const updatedBugFixFlag: Record<string, boolean> = {
+        ...(bugFixFlag ?? {}),
+        seiAddressBook: true,
+      };
+
+      await setExtensionLocalStorage('bugFix', updatedBugFixFlag);
     }
   }
 }

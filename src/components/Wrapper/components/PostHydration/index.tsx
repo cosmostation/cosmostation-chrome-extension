@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { checkMissingAddresses } from '@/utils/storageSync/newChain';
+import { checkMissingAddresses, fixSeiAddress } from '@/utils/storageSync/newChain';
 
 type PostHydrationProps = {
   children: JSX.Element;
@@ -18,4 +18,5 @@ export default function PostHydration({ children }: PostHydrationProps) {
 
 function startPostHydrationWorks() {
   void checkMissingAddresses();
+  void fixSeiAddress();
 }
