@@ -163,6 +163,7 @@ export interface ExtensionStorage {
   userPriceTrendPreference: PriceTrendType;
   selectedChainFilterId: UniqueChainId | null;
   lastRequestTimestamps: LastRequestTimestamps | null;
+  bugFix?: Record<string, boolean>;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

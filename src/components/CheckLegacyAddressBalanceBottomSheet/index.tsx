@@ -67,7 +67,7 @@ export default function CheckLegacyAddressBalanceBottomSheet({ ...remainder }: C
       const multipleAccountTypes = Object.values(multipleAccountTypeWithAddress);
 
       const isLegacyAddressHasBalance = multipleAccountTypes.some((item) => {
-        const legacyAccountTypes = item.filter((i) => i.accountType.isDefault === false);
+        const legacyAccountTypes = item.filter((i) => i && i.accountType.isDefault === false);
 
         const hasBalance = legacyAccountTypes.some((i) => {
           const address = i.address;

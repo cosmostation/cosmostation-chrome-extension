@@ -31,7 +31,9 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
     if (multipleAccountTypeWithAddress && flatChainList) {
       const multipleAccountTypes = Object.values(multipleAccountTypeWithAddress);
       const mappedAccountTypes = multipleAccountTypes.map((item) => {
-        const chain = flatChainList.find((chain) => chain.id === item[0].chainId && chain.chainType === item[0].chainType)!;
+        const first = item[0];
+
+        const chain = first ? flatChainList.find((c) => c.id === first.chainId && c.chainType === first.chainType) : undefined;
 
         return {
           chain,
@@ -130,7 +132,7 @@ export default function CoinTypeSelector({ accountId, currentPreferAccountTypes,
           key={i}
           accountId={accountId}
           chain={item.chain}
-          selectedAccountType={currentPreferAccountTypes[item.chain.id]}
+          selectedAccountType={item.chain?.id ? currentPreferAccountTypes[item.chain.id] : undefined}
           accountTypeDetails={item.accountTypes}
           onClickChainType={onClickChainType}
         />
