@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { ClientStateResonse } from '@/types/cosmos/clientState';
 import { get, isAxiosError } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
@@ -42,7 +43,9 @@ export function useClientState({ coinId, channelId, port, config }: UseClientSta
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<ClientStateResonse>(requestURLs[index]);
+      const response = await get<ClientStateResonse>(requestURLs[index], {
+        timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
+      });
 
       setIsAllRequestsFailed(false);
 

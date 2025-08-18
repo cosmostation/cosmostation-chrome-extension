@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { NodeInfoResponse } from '@/types/cosmos/nodeInfo';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
@@ -40,7 +41,9 @@ export function useNodeInfo({ coinId, config }: UseNodeInfoProps) {
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<NodeInfoResponse>(requestURLs[index]);
+      const response = await get<NodeInfoResponse>(requestURLs[index], {
+        timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
+      });
 
       setIsAllRequestsFailed(false);
 

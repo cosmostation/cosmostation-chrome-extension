@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type {
   AuthAccount,
   AuthAccountPubKey,
@@ -52,7 +53,9 @@ export function useAccount({ coinId, config }: UseAccountProps) {
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<AuthAccountsPayload>(requestURLs[index]);
+      const response = await get<AuthAccountsPayload>(requestURLs[index], {
+        timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
+      });
 
       setIsAllRequestsFailed(false);
 

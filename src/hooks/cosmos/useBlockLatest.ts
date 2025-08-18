@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { UniqueChainId } from '@/types/chain';
 import type { BlockLatestResponse } from '@/types/cosmos/block';
 import { get, isAxiosError } from '@/utils/axios';
@@ -38,7 +39,9 @@ export function useBlockLatest({ chainId, config }: UseBlockLatestProps) {
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<BlockLatestResponse>(requestURLs[index]);
+      const response = await get<BlockLatestResponse>(requestURLs[index], {
+        timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
+      });
 
       setIsAllRequestsFailed(false);
 
