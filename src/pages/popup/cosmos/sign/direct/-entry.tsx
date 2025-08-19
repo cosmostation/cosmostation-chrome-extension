@@ -162,18 +162,18 @@ export default function Entry({ request, chain }: EntryProps) {
         const defaultFeeCoinDenom = feeAssets[0]?.asset.id || chain.mainAssetDenom;
         const defaultFeeRate = feeAssets[0]?.gasRate[defaultGasRateKey] || '0';
 
-        const defaultGas = gt(fee?.gas_limit || '0', chain.feeInfo.defaultGasLimit) ? fee?.gas_limit || '0' : chain.feeInfo.defaultGasLimit;
+        const defaultGas = gt(fee?.gasLimit || '0', chain.feeInfo.defaultGasLimit) ? fee?.gasLimit || '0' : chain.feeInfo.defaultGasLimit;
 
         const defaultFeeAmount = ceil(times(defaultGas, defaultFeeRate));
         const appliedFeeAmount = gt(inputFee.amount || '0', defaultFeeAmount) ? inputFee.amount : defaultFeeAmount;
 
-        return cosmos.tx.v1beta1.AuthInfo.encode({
+        return AuthInfo.encode({
           ...decodedAuthInfoBytes,
-          fee: {
+          fee: Fee.fromPartial({
             ...fee,
             amount: [{ denom: defaultFeeCoinDenom, amount: appliedFeeAmount }],
-            gas_limit: Number(defaultGas),
-          },
+            gasLimit: String(defaultGas),
+          }),
         }).finish();
       })();
 
