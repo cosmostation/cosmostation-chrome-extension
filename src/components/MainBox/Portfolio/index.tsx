@@ -68,11 +68,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   return (
     <>
       {selectedChainMainAsset?.lastUpdatedAtMs && (
-        <StaleBalanceErrorBanner
-          chainId={getUniqueChainId(selectedChainMainAsset.chain)}
-          address={selectedChainMainAsset.address.address}
-          lastUpdatedAtMs={selectedChainMainAsset.lastUpdatedAtMs}
-        />
+        <StaleBalanceErrorBanner chainId={getUniqueChainId(selectedChainMainAsset.chain)} lastUpdatedAtMs={selectedChainMainAsset.lastUpdatedAtMs} />
       )}
       <MainBox
         top={

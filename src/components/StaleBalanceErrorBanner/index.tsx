@@ -18,11 +18,10 @@ import RefreshIcon from '@/assets/images/icons/Refresh18.svg';
 
 type StaleBalanceErrorBannerProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   chainId: UniqueChainId;
-  address?: string;
   lastUpdatedAtMs?: number | null;
 };
 
-export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, address, ...remainer }: StaleBalanceErrorBannerProps) {
+export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, ...remainer }: StaleBalanceErrorBannerProps) {
   const { t } = useTranslation();
   const { updateChainBalance, isLoadingChainBalance } = useManualBalanceUpdate();
   const { isLoading: isUpdateBalanceLoading, isFetching: isUpdateBalanceFetching, isAutoRefetchPaused } = useUpdateBalance();
@@ -37,7 +36,7 @@ export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, addr
   }, [freshnessStatus, t]);
 
   const handleOnClick = async () => {
-    if (freshnessStatus === 'warning' && address) {
+    if (freshnessStatus === 'warning') {
       await updateChainBalance(chainId);
     }
   };

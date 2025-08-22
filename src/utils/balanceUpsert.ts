@@ -18,6 +18,8 @@ import type {
   AccountAddressUnbondingsCosmos,
 } from '@/types/account';
 
+import { isEqualsIgnoringCase } from './string';
+
 interface UpsertItemBase {
   address: string;
   chainId: string | number;
@@ -222,24 +224,24 @@ export const upsertIotaBalance = <T extends AccountAddressBalanceIota>(originalL
 
 export const upsertERC20Balance = <T extends AccountAddressBalanceErc20>(originalList: T[], incomingList: T[]) => {
   return upsertBalanceList(originalList, incomingList, (e, i) => {
-    const resovled = i.balances.map((incoming) => {
+    const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exsist) => exsist.contract === incoming.contract) || incoming;
+      return e.balances.find((exsist) => isEqualsIgnoringCase(exsist.contract, incoming.contract)) || incoming;
     });
 
-    e.balances = resovled;
+    e.balances = resolved;
   });
 };
 
 export const upsertCW20Balance = <T extends AccountAddressBalanceCw20>(originalList: T[], incomingList: T[]) => {
   return upsertBalanceList(originalList, incomingList, (e, i) => {
-    const resovled = i.balances.map((incoming) => {
+    const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exsist) => exsist.contract === incoming.contract) || incoming;
+      return e.balances.find((exsist) => isEqualsIgnoringCase(exsist.contract, incoming.contract)) || incoming;
     });
 
-    e.balances = resovled;
+    e.balances = resolved;
   });
 };
