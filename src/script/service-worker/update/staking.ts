@@ -15,12 +15,19 @@ import type {
 } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
-import { upsertList } from '@/utils/array';
+import {
+  upsertCosmosCommission,
+  upsertCosmosDelegation,
+  upsertCosmosReward,
+  upsertCosmosUndelegation,
+  upsertIotaDelegation,
+  upsertSuiDelegation,
+} from '@/utils/balanceUpsert';
 import { convertToValidatorAddress, isValidatorAddress } from '@/utils/cosmos/address';
 import { fetchCosmosCommission, fetchCosmosDelegations, fetchCosmosRewards, fetchCosmosUnbondings, fetchNTRNRewards } from '@/utils/cosmos/fetch/staking';
 import { fetchIotaDelegations } from '@/utils/iota/fetch/staking';
-import { getUniqueChainIdWithManual, parseUniqueChainId } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase } from '@/utils/string';
+import { getUniqueChainIdWithManual, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { getExtensionLocalStorage } from '@/utils/storage';
 import { fetchSuiDelegations } from '@/utils/sui/fetch/staking';
 
 import type { BalanceFetchOption } from './balance';
@@ -42,12 +49,12 @@ export async function updateStakingRelatedBalance(id: string) {
   }
 }
 
-export async function updateSpecificChainStaking(id: string, chainId: UniqueChainId, address: string) {
-  console.time(`chain-staking-balance-${id}-${chainId}-${address}`);
+export async function updateSpecificChainStaking(id: string, chainId: UniqueChainId) {
+  console.time(`chain-staking-balance-${id}-${chainId}`);
   try {
     await getAccount(id);
 
-    await fetchStakingByChainType(id, chainId, address);
+    await fetchStakingByChainType(id, chainId);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
@@ -55,66 +62,54 @@ export async function updateSpecificChainStaking(id: string, chainId: UniqueChai
       console.error(error);
     }
   } finally {
-    console.timeEnd(`chain-staking-balance-${id}-${chainId}-${address}`);
+    console.timeEnd(`chain-staking-balance-${id}-${chainId}`);
   }
 }
 
-async function fetchStakingByChainType(id: string, chainId: UniqueChainId, address: string) {
+async function fetchStakingByChainType(id: string, chainId: UniqueChainId) {
   const { chainType } = parseUniqueChainId(chainId);
 
   if (chainType === 'cosmos') {
-    await cosmosStaking(id, { chainId, address });
+    await cosmosStaking(id, { chainId });
   }
 
   if (chainType === 'sui') {
-    await suiStaking(id, { chainId, address });
+    await suiStaking(id, { chainId });
   }
 
   if (chainType === 'iota') {
-    await iotaStaking(id, { chainId, address });
+    await iotaStaking(id, { chainId });
   }
 }
 
-async function cosmosStaking(id: string, { address, chainId }: BalanceFetchOption = {}) {
+async function cosmosStaking(id: string, { chainId }: BalanceFetchOption = {}) {
   await Promise.all([
-    cosmosDelegations(id, { chainId, address }),
-    cosmosUnbondings(id, { chainId, address }),
-    cosmosRewards(id, { chainId, address }),
-    cosmosCommissions(id, { chainId, address }),
+    cosmosDelegations(id, { chainId }),
+    cosmosUnbondings(id, { chainId }),
+    cosmosRewards(id, { chainId }),
+    cosmosCommissions(id, { chainId }),
   ]);
 }
 
-interface UpsertItemBase {
-  address: string;
-  chainId: string | number;
-  chainType: string;
-  id: string;
-}
+async function cosmosDelegations(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
 
-interface UpsertItemWithAssetId extends UpsertItemBase {
-  assetId: string;
-}
-
-const isSameUpsertItemWithAssetId = (a: UpsertItemWithAssetId, b: UpsertItemWithAssetId) =>
-  isEqualsIgnoringCase(a.address, b.address) && a.chainId === b.chainId && a.chainType === b.chainType && a.assetId === b.assetId && a.id === b.id;
-
-const isSameUpsertItemWithoutAssetId = (a: UpsertItemBase, b: UpsertItemBase) =>
-  isEqualsIgnoringCase(a.address, b.address) && a.chainId === b.chainId && a.chainType === b.chainType && a.id === b.id;
-
-async function cosmosDelegations(id: string, { address, chainId }: BalanceFetchOption = {}) {
   const accountAddress = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
 
-  const isUpdateSpecificAddress = !!address && !!chainId;
+  const isUpdateSpecificAddress = !!chainId;
 
   const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId && isEqualsIgnoringCase(addr.address, address))
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
 
   const stakingEnabledChain = cosmosChains.filter((chain) => chain.isSupportStaking);
+
+  const targetChain = chainId && stakingEnabledChain.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
   const addressWithChain = addressList
     .map((addr) => {
-      const chain = stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = targetChain || stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);
@@ -127,43 +122,58 @@ async function cosmosDelegations(id: string, { address, chainId }: BalanceFetchO
 
       try {
         const delegations = await fetchCosmosDelegations(address, lcdUrls.map((item) => item.url).filter(Boolean));
-        const result: AccountAddressDelegationsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, delegations };
+        const result: AccountAddressDelegationsCosmos = {
+          id,
+          assetId: chain.mainAssetDenom,
+          chainId,
+          chainType,
+          address,
+          delegations,
+          lastUpdatedAtMs: startUpdateTime,
+        };
 
         return result;
       } catch {
-        const result: AccountAddressDelegationsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, delegations: [] };
+        const result: AccountAddressDelegationsCosmos = {
+          id,
+          assetId: chain.mainAssetDenom,
+          chainId,
+          chainType,
+          address,
+          delegations: [],
+          lastUpdatedAtMs: startUpdateTime,
+        };
 
         return result;
       }
     });
 
-  if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-delegation-cosmos`]);
+  const storage = (await getExtensionLocalStorage(`${id}-delegation-cosmos`)) || [];
 
-    const storedCosmosDelegations = storage[`${id}-delegation-cosmos`] || [];
+  const updatedCosmosDelegations = upsertCosmosDelegation(storage, results);
 
-    const updatedCosmosDelegations = upsertList(storedCosmosDelegations, results, isSameUpsertItemWithAssetId, (e, i) => (e.delegations = i.delegations));
-
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${id}-delegation-cosmos`]: updatedCosmosDelegations });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${id}-delegation-cosmos`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${id}-delegation-cosmos`]: updatedCosmosDelegations });
 }
 
-async function cosmosUnbondings(id: string, { address, chainId }: BalanceFetchOption = {}) {
+async function cosmosUnbondings(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
   const accountAddress = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
 
-  const isUpdateSpecificAddress = !!address && !!chainId;
+  const isUpdateSpecificAddress = !!chainId;
 
   const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId && isEqualsIgnoringCase(addr.address, address))
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
 
   const stakingEnabledChain = cosmosChains.filter((chain) => chain.isSupportStaking);
+
+  const targetChain = chainId && stakingEnabledChain.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
   const addressWithChain = addressList
     .map((addr) => {
-      const chain = stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = targetChain || stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);
@@ -178,43 +188,58 @@ async function cosmosUnbondings(id: string, { address, chainId }: BalanceFetchOp
       try {
         const unbondings = await fetchCosmosUnbondings(address, lcdUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressUnbondingsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, unbondings };
+        const result: AccountAddressUnbondingsCosmos = {
+          id,
+          assetId: chain.mainAssetDenom,
+          chainId,
+          chainType,
+          address,
+          unbondings,
+          lastUpdatedAtMs: startUpdateTime,
+        };
 
         return result;
       } catch {
-        const result: AccountAddressUnbondingsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, unbondings: [] };
+        const result: AccountAddressUnbondingsCosmos = {
+          id,
+          assetId: chain.mainAssetDenom,
+          chainId,
+          chainType,
+          address,
+          unbondings: [],
+          lastUpdatedAtMs: startUpdateTime,
+        };
 
         return result;
       }
     });
 
-  if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-undelegation-cosmos`]);
+  const stored = (await getExtensionLocalStorage(`${id}-undelegation-cosmos`)) || [];
 
-    const storedCosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
+  const updatedCosmosUndelegations = upsertCosmosUndelegation(stored, results);
 
-    const updatedCosmosUndelegations = upsertList(storedCosmosUndelegations, results, isSameUpsertItemWithAssetId, (e, i) => (e.unbondings = i.unbondings));
-
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${id}-undelegation-cosmos`]: updatedCosmosUndelegations });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${id}-undelegation-cosmos`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${id}-undelegation-cosmos`]: updatedCosmosUndelegations });
 }
 
-async function cosmosRewards(id: string, { address, chainId }: BalanceFetchOption = {}) {
+async function cosmosRewards(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
   const accountAddress = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
 
-  const isUpdateSpecificAddress = !!address && !!chainId;
+  const isUpdateSpecificAddress = !!chainId;
 
   const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId && isEqualsIgnoringCase(addr.address, address))
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
 
   const stakingEnabledChain = cosmosChains.filter((chain) => chain.isSupportStaking);
+
+  const targetChain = chainId && stakingEnabledChain.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
   const addressWithChain = addressList
     .map((addr) => {
-      const chain = stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = targetChain || stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);
@@ -241,7 +266,15 @@ async function cosmosRewards(id: string, { address, chainId }: BalanceFetchOptio
         };
 
         const rewards = await getRewards();
-        const result: AccountAddressRewardsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, rewards };
+        const result: AccountAddressRewardsCosmos = {
+          id,
+          assetId: chain.mainAssetDenom,
+          chainId,
+          chainType,
+          address,
+          rewards,
+          lastUpdatedAtMs: startUpdateTime,
+        };
 
         return result;
       } catch {
@@ -255,23 +288,18 @@ async function cosmosRewards(id: string, { address, chainId }: BalanceFetchOptio
             rewards: [],
             total: [],
           },
+          lastUpdatedAtMs: startUpdateTime,
         };
 
         return result;
       }
     });
 
-  if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-reward-cosmos`]);
+  const stored = (await getExtensionLocalStorage(`${id}-reward-cosmos`)) || [];
 
-    const storedCosmosRewards = storage[`${id}-reward-cosmos`] || [];
+  const updatedCosmosRewards = upsertCosmosReward(stored, results);
 
-    const updatedCosmosRewards = upsertList(storedCosmosRewards, results, isSameUpsertItemWithAssetId, (e, i) => (e.rewards = i.rewards));
-
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: updatedCosmosRewards });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: updatedCosmosRewards });
 }
 
 const validatorAddressCache = new Map<string, boolean>();
@@ -289,20 +317,25 @@ async function isValidatorCached(address: string, lcdUrl: string, validatorPrefi
   return isValidator;
 }
 
-async function cosmosCommissions(id: string, { address, chainId }: BalanceFetchOption = {}) {
+async function cosmosCommissions(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
   const accountAddress = await getAccountAddress(id);
   const { cosmosChains } = await getChains();
 
-  const isUpdateSpecificAddress = !!address && !!chainId;
+  const isUpdateSpecificAddress = !!chainId;
 
   const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId && isEqualsIgnoringCase(addr.address, address))
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
 
   const stakingEnabledChain = cosmosChains.filter((chain) => chain.isSupportStaking);
+
+  const targetChain = chainId && stakingEnabledChain.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
   const addressWithChain = addressList
     .map((addr) => {
-      const chain = stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = targetChain || stakingEnabledChain.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);
@@ -328,7 +361,15 @@ async function cosmosCommissions(id: string, { address, chainId }: BalanceFetchO
 
         const commissions = await fetchCosmosCommission(validatorAddress, lcdUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressCommissionsCosmos = { id, assetId: chain.mainAssetDenom, chainId, chainType, address, commissions };
+        const result: AccountAddressCommissionsCosmos = {
+          id,
+          assetId: chain.mainAssetDenom,
+          chainId,
+          chainType,
+          address,
+          commissions,
+          lastUpdatedAtMs: startUpdateTime,
+        };
 
         return result;
       } catch {
@@ -339,33 +380,30 @@ async function cosmosCommissions(id: string, { address, chainId }: BalanceFetchO
           chainType,
           address,
           commissions: undefined,
+          lastUpdatedAtMs: startUpdateTime,
         };
 
         return result;
       }
     });
 
-  if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-commission-cosmos`]);
+  const stored = (await getExtensionLocalStorage(`${id}-commission-cosmos`)) || [];
 
-    const storedCosmosCommission = storage[`${id}-commission-cosmos`] || [];
+  const updatedCosmosCommission = upsertCosmosCommission(stored, results);
 
-    const updatedCosmosCommission = upsertList(storedCosmosCommission, results, isSameUpsertItemWithAssetId, (e, i) => (e.commissions = i.commissions));
-
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${id}-commission-cosmos`]: updatedCosmosCommission });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${id}-commission-cosmos`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${id}-commission-cosmos`]: updatedCosmosCommission });
 }
 
-async function suiStaking(id: string, { address, chainId }: BalanceFetchOption = {}) {
+async function suiStaking(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
   const accountAddress = await getAccountAddress(id);
   const { suiChains } = await getChains();
 
-  const isUpdateSpecificAddress = !!address && !!chainId;
+  const isUpdateSpecificAddress = !!chainId;
 
   const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId && isEqualsIgnoringCase(addr.address, address))
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
 
   const addressWithChain = addressList
@@ -382,36 +420,38 @@ async function suiStaking(id: string, { address, chainId }: BalanceFetchOption =
 
       const { rpcUrls } = chain;
 
-      const response = await fetchSuiDelegations(address, rpcUrls.map((item) => item.url).filter(Boolean));
+      try {
+        const response = await fetchSuiDelegations(address, rpcUrls.map((item) => item.url).filter(Boolean));
 
-      const delegations = response ?? [];
+        const delegations = response ?? [];
 
-      const result: AccountAddressDelegationsSui = { id, chainId, chainType, address, delegations };
+        const result: AccountAddressDelegationsSui = { id, chainId, chainType, address, delegations, lastUpdatedAtMs: startUpdateTime };
 
-      return result;
+        return result;
+      } catch {
+        const result: AccountAddressDelegationsSui = { id, chainId, chainType, address, delegations: [], lastUpdatedAtMs: startUpdateTime };
+
+        return result;
+      }
     });
 
-  if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-delegation-sui`]);
+  const stored = (await getExtensionLocalStorage(`${id}-delegation-sui`)) || [];
 
-    const storedSuiDelegations = storage[`${id}-delegation-sui`] || [];
+  const updatedSuiDelegations = upsertSuiDelegation(stored, results);
 
-    const updatedSuiDelegations = upsertList(storedSuiDelegations, results, isSameUpsertItemWithoutAssetId, (e, i) => (e.delegations = i.delegations));
-
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: updatedSuiDelegations });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: updatedSuiDelegations });
 }
 
-async function iotaStaking(id: string, { address, chainId }: BalanceFetchOption = {}) {
+async function iotaStaking(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
   const accountAddress = await getAccountAddress(id);
   const { iotaChains } = await getChains();
 
-  const isUpdateSpecificAddress = !!address && !!chainId;
+  const isUpdateSpecificAddress = !!chainId;
 
   const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId && isEqualsIgnoringCase(addr.address, address))
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
 
   const addressWithChain = addressList
@@ -428,24 +468,24 @@ async function iotaStaking(id: string, { address, chainId }: BalanceFetchOption 
 
       const { rpcUrls } = chain;
 
-      const response = await fetchIotaDelegations(address, rpcUrls.map((item) => item.url).filter(Boolean));
+      try {
+        const response = await fetchIotaDelegations(address, rpcUrls.map((item) => item.url).filter(Boolean));
 
-      const delegations = response ?? [];
+        const delegations = response ?? [];
 
-      const result: AccountAddressDelegationsIota = { id, chainId, chainType, address, delegations };
+        const result: AccountAddressDelegationsIota = { id, chainId, chainType, address, delegations, lastUpdatedAtMs: startUpdateTime };
 
-      return result;
+        return result;
+      } catch {
+        const result: AccountAddressDelegationsIota = { id, chainId, chainType, address, delegations: [], lastUpdatedAtMs: startUpdateTime };
+
+        return result;
+      }
     });
 
-  if (isUpdateSpecificAddress) {
-    const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-delegation-iota`]);
+  const stored = (await getExtensionLocalStorage(`${id}-delegation-iota`)) || [];
 
-    const storedIotaDelegations = storage[`${id}-delegation-iota`] || [];
+  const updatedIotaDelegations = upsertIotaDelegation(stored, results);
 
-    const updatedIotaDelegations = upsertList(storedIotaDelegations, results, isSameUpsertItemWithoutAssetId, (e, i) => (e.delegations = i.delegations));
-
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: updatedIotaDelegations });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: updatedIotaDelegations });
 }

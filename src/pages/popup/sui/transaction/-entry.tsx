@@ -16,6 +16,7 @@ import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentSuiNetwork } from '@/hooks/sui/useCurrentSuiNetwork';
 import { useDryRunTransaction } from '@/hooks/sui/useDryRunTransaction';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -26,7 +27,7 @@ import DappInfo from '@/pages/popup/-components/DappInfo';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { SuiSignAndExecuteTransaction, SuiSignAndExecuteTransactionBlock, SuiSignTransaction, SuiSignTransactionBlock } from '@/types/message/inject/sui';
 import { gt, minus, plus } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/sui/sign';
 import { getSiteTitle } from '@/utils/website';
@@ -52,6 +53,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
+  useAutoBalanceRefresh(currentSuiNetwork && [getUniqueChainId(currentSuiNetwork)]);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

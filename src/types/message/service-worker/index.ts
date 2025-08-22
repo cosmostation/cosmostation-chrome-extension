@@ -37,13 +37,13 @@ export interface UpdateAccountInfoMessage extends MessageBase {
 export interface UpdateChainSpecificBalanceMessage extends MessageBase {
   target: Extract<TargetType, 'SERVICE_WORKER'>;
   method: 'updateChainSpecificBalance';
-  params: [string, UniqueChainId, string];
+  params: [string, UniqueChainId];
 }
 
 export interface UpdateChainSpecificStakingBalanceMessage extends MessageBase {
   target: Extract<TargetType, 'SERVICE_WORKER'>;
   method: 'updateChainSpecificStakingBalance';
-  params: [string, UniqueChainId, string];
+  params: [string, UniqueChainId];
 }
 
 export interface RequestAppMessage extends MessageBase {

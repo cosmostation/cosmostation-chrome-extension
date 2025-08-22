@@ -26,17 +26,12 @@ const throttledUpdateAllBalanceFn = throttle(
 
 const throttledUpdateChainBalanceFn = throttle(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async (accountId, chainId: UniqueChainId, address: string, callbackFunc: () => Promise<any>) => {
+  async (accountId, chainId: UniqueChainId, callbackFunc: () => Promise<any>) => {
     await Promise.all([
       sendMessage({
         target: 'SERVICE_WORKER',
-        method: 'updateChainSpecificBalance',
-        params: [accountId, chainId, address],
-      }),
-      sendMessage({
-        target: 'SERVICE_WORKER',
         method: 'updateChainSpecificStakingBalance',
-        params: [accountId, chainId, address],
+        params: [accountId, chainId],
       }),
     ]);
 
@@ -82,14 +77,14 @@ export function useManualBalanceUpdate() {
     }
   };
 
-  const updateChainBalance = async (chainId: UniqueChainId, address: string) => {
+  const updateChainBalance = async (chainId: UniqueChainId) => {
     defaultTimeout();
     if (isLoadingChainBalance) return;
 
     setIsLoadingChainBalance(true);
 
     try {
-      await throttledUpdateChainBalanceFn(currentAccount.id, chainId, address, refreshAssets);
+      await throttledUpdateChainBalanceFn(currentAccount.id, chainId, refreshAssets);
     } catch (e) {
       devLogger.error(`[useManualBalanceUpdate]  updateChainBalance`, e);
     } finally {

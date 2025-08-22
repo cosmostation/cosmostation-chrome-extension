@@ -1,4 +1,6 @@
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { getUniqueChainIdFromCoinId } from '@/utils/queryParamGenerator';
 
 import Aptos from './aptos';
 import Bitcoin from './bitcoin';
@@ -12,6 +14,7 @@ type EntryProps = {
 };
 
 export default function Entry({ coinId }: EntryProps) {
+  useAutoBalanceRefresh([getUniqueChainIdFromCoinId(coinId)]);
   const { getAccountAsset } = useGetAccountAsset({ coinId });
 
   const selectedAccountAsset = getAccountAsset();

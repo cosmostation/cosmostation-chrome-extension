@@ -38,7 +38,7 @@ export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, addr
 
   const handleOnClick = async () => {
     if (freshnessStatus === 'warning' && address) {
-      await updateChainBalance(chainId, address);
+      await updateChainBalance(chainId);
     }
   };
 

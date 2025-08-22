@@ -19,6 +19,7 @@ import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
 import { useDetermineTxType } from '@/hooks/evm/useDetermineTxType';
 import { useFee } from '@/hooks/evm/useFee';
 import { useTransactionCount } from '@/hooks/evm/useTransactionCount';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -31,7 +32,7 @@ import type { ResponseAppMessage } from '@/types/message/content';
 import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '@/types/message/inject/evm';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/ethereum/sign';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { hexOrDecimalToDecimal, isEqualsIgnoringCase, toHex } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -56,6 +57,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentEVMNetwork } = useCurrentEVMNetwork();
+  useAutoBalanceRefresh(currentEVMNetwork && [getUniqueChainId(currentEVMNetwork)]);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

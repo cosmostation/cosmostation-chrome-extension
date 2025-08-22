@@ -16,6 +16,7 @@ import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentIotaNetwork } from '@/hooks/iota/useCurrentIotaNetwork';
 import { useDryRunTransaction } from '@/hooks/iota/useDryRunTransaction';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -27,7 +28,7 @@ import RawTx from '@/pages/popup/-components/RawTx';
 import type { IotaSignAndExecuteTransaction, IotaSignTransaction } from '@/types/message/inject/iota';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/iota/sign';
 import { gt, minus, plus } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -52,6 +53,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentIotaNetwork } = useCurrentIotaNetwork();
+  useAutoBalanceRefresh(currentIotaNetwork && [getUniqueChainId(currentIotaNetwork)]);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

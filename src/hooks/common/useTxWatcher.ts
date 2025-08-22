@@ -93,17 +93,17 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const isTxSuccess = response.data.tx_response.code === 0;
 
           if (isTxSuccess) {
-            await sendMessage({
-              target: 'SERVICE_WORKER',
-              method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
-            });
-
             if (tx.type === 'staking') {
               await sendMessage({
                 target: 'SERVICE_WORKER',
                 method: 'updateChainSpecificStakingBalance',
-                params: [currentAccount.id, tx.chainId, tx.address],
+                params: [currentAccount.id, tx.chainId],
+              });
+            } else {
+              await sendMessage({
+                target: 'SERVICE_WORKER',
+                method: 'updateChainSpecificBalance',
+                params: [currentAccount.id, tx.chainId],
               });
             }
 
@@ -155,7 +155,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
             await sendMessage({
               target: 'SERVICE_WORKER',
               method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
+              params: [currentAccount.id, tx.chainId],
             });
 
             refreshAssets();
@@ -209,7 +209,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
             await sendMessage({
               target: 'SERVICE_WORKER',
               method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
+              params: [currentAccount.id, tx.chainId],
             });
 
             refreshAssets();
@@ -273,17 +273,17 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const isTxSuccess = response.result.effects.status.status === SUI_TX_RESULT.SUCCESS;
 
           if (isTxSuccess) {
-            await sendMessage({
-              target: 'SERVICE_WORKER',
-              method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
-            });
-
             if (tx.type === 'staking') {
               await sendMessage({
                 target: 'SERVICE_WORKER',
                 method: 'updateChainSpecificStakingBalance',
-                params: [currentAccount.id, tx.chainId, tx.address],
+                params: [currentAccount.id, tx.chainId],
+              });
+            } else {
+              await sendMessage({
+                target: 'SERVICE_WORKER',
+                method: 'updateChainSpecificBalance',
+                params: [currentAccount.id, tx.chainId],
               });
             }
 
@@ -314,7 +314,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
           await sendMessage({
             target: 'SERVICE_WORKER',
             method: 'updateChainSpecificBalance',
-            params: [currentAccount.id, tx.chainId, tx.address],
+            params: [currentAccount.id, tx.chainId],
           });
           refreshAssets();
 
@@ -376,20 +376,19 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const isTxSuccess = response.result.effects.status.status === IOTA_TX_RESULT.SUCCESS;
 
           if (isTxSuccess) {
-            await sendMessage({
-              target: 'SERVICE_WORKER',
-              method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
-            });
-
             if (tx.type === 'staking') {
               await sendMessage({
                 target: 'SERVICE_WORKER',
                 method: 'updateChainSpecificStakingBalance',
-                params: [currentAccount.id, tx.chainId, tx.address],
+                params: [currentAccount.id, tx.chainId],
+              });
+            } else {
+              await sendMessage({
+                target: 'SERVICE_WORKER',
+                method: 'updateChainSpecificBalance',
+                params: [currentAccount.id, tx.chainId],
               });
             }
-
             refreshAssets();
 
             if (tx.type === 'nft') {

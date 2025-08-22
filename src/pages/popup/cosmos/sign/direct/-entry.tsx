@@ -20,6 +20,7 @@ import { useFees } from '@/hooks/cosmos/useFees';
 import { useProtoBuilderDecoder } from '@/hooks/cosmos/useProtoBuilderDecoder';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -39,7 +40,7 @@ import { getPublicKeyType, signDirect } from '@/utils/cosmos/msg';
 import { decodeProtobufMessage, protoTxBytes } from '@/utils/cosmos/proto';
 import { toUint8Array } from '@/utils/crypto';
 import { ceil, divide, equal, gt, gte, times } from '@/utils/numbers';
-import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
 import { getUtf8BytesLength } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -55,6 +56,7 @@ type EntryProps = {
 export default function Entry({ request, chain }: EntryProps) {
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();
+  useAutoBalanceRefresh([getUniqueChainId(chain)]);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
