@@ -571,7 +571,6 @@ async function bitcoinBalances(id: string, { chainId }: BalanceFetchOption = {})
 
   const isUpdateSpecificAddress = !!chainId;
 
-  // FIXME 이거 chainId만 물면 4타입 다 업데이트하는거라 비효율적.
   const addressList = isUpdateSpecificAddress
     ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
     : accountAddress;
