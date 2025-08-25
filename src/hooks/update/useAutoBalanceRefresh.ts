@@ -38,9 +38,9 @@ export function useAutoBalanceRefresh(uniqueChainIds?: UniqueChainId[] | null, i
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   const { data, isLoading, isFetching, error, fetchStatus } = useQuery({
-    queryKey: ['useAutoBalanceRefresh', JSON.stringify(uniqueChainIds?.sort() || []), currentAccount.id],
-    enabled: !!uniqueChainIds?.length && !!currentAccount.id,
-    queryFn: () => createFetcher(uniqueChainIds || [], currentAccount.id, refreshAssets)(),
+    queryKey: ['useAutoBalanceRefresh', JSON.stringify([...(uniqueChainIds ?? [])].sort()), currentAccount?.id ?? null],
+    enabled: !!(uniqueChainIds?.length && currentAccount?.id),
+    queryFn: () => createFetcher(uniqueChainIds ?? [], currentAccount?.id ?? '', refreshAssets)(),
     staleTime: Infinity,
     refetchInterval: interval,
   });

@@ -74,7 +74,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
-  useAutoBalanceRefresh(currentBitcoinNetwork && [getUniqueChainId(currentBitcoinNetwork)]);
+  useAutoBalanceRefresh(currentBitcoinNetwork ? [getUniqueChainId(currentBitcoinNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

@@ -227,7 +227,7 @@ export const upsertERC20Balance = <T extends AccountAddressBalanceErc20>(origina
     const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exsist) => isEqualsIgnoringCase(exsist.contract, incoming.contract)) || incoming;
+      return e.balances.find((exist) => isEqualsIgnoringCase(exist.contract, incoming.contract)) || incoming;
     });
 
     e.balances = resolved;
@@ -239,7 +239,7 @@ export const upsertCW20Balance = <T extends AccountAddressBalanceCw20>(originalL
     const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exsist) => isEqualsIgnoringCase(exsist.contract, incoming.contract)) || incoming;
+      return e.balances.find((exist) => isEqualsIgnoringCase(exist.contract, incoming.contract)) || incoming;
     });
 
     e.balances = resolved;

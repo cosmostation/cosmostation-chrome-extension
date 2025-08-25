@@ -57,7 +57,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentEVMNetwork } = useCurrentEVMNetwork();
-  useAutoBalanceRefresh(currentEVMNetwork && [getUniqueChainId(currentEVMNetwork)]);
+  useAutoBalanceRefresh(currentEVMNetwork ? [getUniqueChainId(currentEVMNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

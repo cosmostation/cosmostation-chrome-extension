@@ -53,7 +53,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentIotaNetwork } = useCurrentIotaNetwork();
-  useAutoBalanceRefresh(currentIotaNetwork && [getUniqueChainId(currentIotaNetwork)]);
+  useAutoBalanceRefresh(currentIotaNetwork ? [getUniqueChainId(currentIotaNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

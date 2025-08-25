@@ -56,7 +56,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentAptosNetwork } = useCurrentAptosNetwork();
-  useAutoBalanceRefresh(currentAptosNetwork && [getUniqueChainId(currentAptosNetwork)]);
+  useAutoBalanceRefresh(currentAptosNetwork ? [getUniqueChainId(currentAptosNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

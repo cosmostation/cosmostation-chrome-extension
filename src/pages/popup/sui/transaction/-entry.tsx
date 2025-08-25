@@ -53,7 +53,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
-  useAutoBalanceRefresh(currentSuiNetwork && [getUniqueChainId(currentSuiNetwork)]);
+  useAutoBalanceRefresh(currentSuiNetwork ? [getUniqueChainId(currentSuiNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
