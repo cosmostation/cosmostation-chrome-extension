@@ -260,7 +260,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-account-info-cosmos`,
     `${id}-locked-cosmos`,
     `${id}-balance-evm`,
-    `${id}-balance-aptos`,
+    `${id}-balance-aptos-v2`,
     `${id}-balance-sui`,
     `${id}-delegation-sui`,
     `${id}-balance-bitcoin`,
@@ -327,7 +327,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const cosmosAccountInfo = storage[`${id}-account-info-cosmos`] || [];
 
   const evmBalances = storage[`${id}-balance-evm`] || [];
-  const aptosBalances = storage[`${id}-balance-aptos`] || [];
+  const aptosBalances = storage[`${id}-balance-aptos-v2`] || [];
 
   const suiBalances = storage[`${id}-balance-sui`] || [];
   const suiDelegations = storage[`${id}-delegation-sui`] || [];
@@ -706,11 +706,11 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
       const { results } = await PromisePool.withConcurrency(concurrency)
         .for(addresses)
         .process((address) => {
-          const type = `0x1::coin::CoinStore<${asset.id}>`;
+          const type = asset.id;
           const balanceInfo = aptosBalances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance = balanceInfo?.balances?.find((balance) => balance.type === type)?.data?.coin?.value || '0';
+          const balance = balanceInfo?.balances?.find((balance) => balance?.asset_type === type)?.amount || '0';
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
           const result: AccountAptosAsset = {

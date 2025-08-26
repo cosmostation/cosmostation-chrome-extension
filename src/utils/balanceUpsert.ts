@@ -2,7 +2,7 @@ import type { Draft } from 'immer';
 import { produce } from 'immer';
 
 import type {
-  AccountAddressBalanceAptos,
+  AccountAddressBalanceAptosV2,
   AccountAddressBalanceBitcoin,
   AccountAddressBalanceCosmos,
   AccountAddressBalanceCw20,
@@ -183,7 +183,7 @@ export const upsertBitcoinBalance = <T extends AccountAddressBalanceBitcoin>(ori
   });
 };
 
-export const upsertAptosBalance = <T extends AccountAddressBalanceAptos>(originalList: T[], incomingList: T[]) => {
+export const upsertAptosBalance = <T extends AccountAddressBalanceAptosV2>(originalList: T[], incomingList: T[]) => {
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balances = i.balances;

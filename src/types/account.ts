@@ -1,3 +1,4 @@
+import type { GetAccountCoinsDataResponse } from '@aptos-labs/ts-sdk';
 import type { DelegatedStake as IotaDelegatedStake } from '@iota/iota-sdk/client';
 import type { DelegatedStake } from '@mysten/sui/client';
 
@@ -139,6 +140,16 @@ export interface AccountAddressBalanceAptos {
   chainType: ChainType;
   address: string;
   balances: AptosResourceResponse[];
+  lastUpdatedAtMs?: number | null;
+  status?: RequestStatus;
+}
+
+export interface AccountAddressBalanceAptosV2 {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balances: GetAccountCoinsDataResponse;
   lastUpdatedAtMs?: number | null;
   status?: RequestStatus;
 }

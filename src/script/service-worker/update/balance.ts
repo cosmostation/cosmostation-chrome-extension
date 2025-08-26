@@ -9,7 +9,7 @@ import { getAccount, getAccountAddress, getAllAccountAddress, getCustomAccountAd
 import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
 import { getAddedCustomChains, getAllChains, getChains } from '@/libs/chain';
 import type {
-  AccountAddressBalanceAptos,
+  AccountAddressBalanceAptosV2,
   AccountAddressBalanceBitcoin,
   AccountAddressBalanceCosmos,
   AccountAddressBalanceErc20,
@@ -18,14 +18,13 @@ import type {
   AccountAddressBalanceSui,
   AccountAddressLockedBalanceCosmos,
 } from '@/types/account';
-import type { AptosResourceResponse } from '@/types/aptos/api';
 import type { AssetId } from '@/types/asset';
 import type { AccountDetail } from '@/types/bitcoin/balance';
 import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { Cw20Balance } from '@/types/cosmos/balance';
 import type { Erc20Balance } from '@/types/evm/balance';
 import type { ExtensionStorage } from '@/types/extension';
-import { getWithFullResponse } from '@/utils/axios';
+import { fetchAptosBalances } from '@/utils/aptos/fetch/balance';
 import {
   upsertAptosBalance,
   upsertBitcoinBalance,
@@ -655,42 +654,26 @@ async function aptosBalances(id: string, { chainId }: BalanceFetchOption = {}) {
   const { results } = await PromisePool.withConcurrency(5)
     .for(addressWithChain)
     .process(async (addr) => {
-      const { chainId, chainType, address, chain } = addr;
-      const urlPath = `/v1/accounts/${address}/resources`;
-
-      const { rpcUrls } = chain;
-
-      const promises = rpcUrls.map(async (rpcUrl) => {
-        const url = rpcUrl.url.endsWith('/') ? rpcUrl.url.slice(0, -1) : rpcUrl.url;
-        const requestUrl = `${url}${urlPath}`;
-
-        const response = await getWithFullResponse<AptosResourceResponse[]>(requestUrl, {
-          timeout: BALANCE_FETCH_TIME_OUT_MS,
-        });
-
-        return response.data;
-      });
+      const { chainId, chainType, address } = addr;
 
       try {
-        const response = await Promise.any(promises);
+        const balances = await fetchAptosBalances(address);
 
-        const balances = response.filter((resource) => resource.type?.startsWith('0x1::coin::CoinStore'));
-
-        const result: AccountAddressBalanceAptos = { id, chainId, chainType, address, balances, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+        const result: AccountAddressBalanceAptosV2 = { id, chainId, chainType, address, balances, lastUpdatedAtMs: startUpdateTime, status: 'success' };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceAptos = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: startUpdateTime, status: 'error' };
+        const result: AccountAddressBalanceAptosV2 = { id, chainId, chainType, address, balances: [], lastUpdatedAtMs: startUpdateTime, status: 'error' };
 
         return result;
       }
     });
 
-  const stored = (await getExtensionLocalStorage(`${id}-balance-aptos`)) || [];
+  const stored = (await getExtensionLocalStorage(`${id}-balance-aptos-v2`)) || [];
 
   const updatedAptosBalances = upsertAptosBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos`>>({ [`${id}-balance-aptos`]: updatedAptosBalances });
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${id}-balance-aptos-v2`]: updatedAptosBalances });
 }
 
 async function suiBalances(id: string, { chainId }: BalanceFetchOption = {}) {
