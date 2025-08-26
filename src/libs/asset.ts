@@ -710,7 +710,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = aptosBalances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance = balanceInfo?.balances?.find((balance) => balance.asset_type === type)?.amount || '0';
+          const balance = balanceInfo?.balances?.find((balance) => balance?.asset_type === type)?.amount || '0';
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
           const result: AccountAptosAsset = {
