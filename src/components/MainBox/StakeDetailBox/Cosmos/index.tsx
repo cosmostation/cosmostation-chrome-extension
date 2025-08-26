@@ -5,7 +5,6 @@ import BalanceDisplay from '@/components/BalanceDisplay';
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
-import { useAmount } from '@/hooks/cosmos/useAmount';
 import { useDelegationInfo } from '@/hooks/cosmos/useDelegationInfo';
 import { useNTRNReward } from '@/hooks/cosmos/useNTRNReward';
 import { useReward } from '@/hooks/cosmos/useReward';
@@ -13,6 +12,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ClaimAllRewards } from '@/pages/wallet/claim-all-rewards/$coinId';
 import { Route as Stake } from '@/pages/wallet/stake/$coinId';
 import { Route as UnStake } from '@/pages/wallet/unstake/$coinId';
+import { isStakeableAsset } from '@/utils/asset';
 import { gt, toDisplayDenomAmount } from '@/utils/numbers';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 
@@ -42,14 +42,15 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const { data: ntrnRewards } = useNTRNReward({ coinId: isNTRN ? coinId : undefined });
 
-  const { delegationAmount, rewardAmount } = useAmount(coinId);
+  const stakableCoin = currentCoin && isStakeableAsset(currentCoin) ? currentCoin : undefined;
+
   const reward = useReward({ coinId });
 
   const symbol = currentCoin?.asset.symbol;
   const decimals = currentCoin?.asset.decimals;
-  const totalStakedDisplayAmount = toDisplayDenomAmount(delegationAmount, decimals || 0);
+  const totalStakedDisplayAmount = toDisplayDenomAmount(stakableCoin?.delegation || '0', decimals || 0);
 
-  const rewardsDisplayAmount = toDisplayDenomAmount(isNTRN ? ntrnRewards?.data.pending_rewards.amount || '0' : rewardAmount, decimals || 0);
+  const rewardsDisplayAmount = toDisplayDenomAmount(isNTRN ? ntrnRewards?.data.pending_rewards.amount || '0' : stakableCoin?.reward || '0', decimals || 0);
   const rewardsCoinCounts = isNTRN ? 0 : reward?.data?.total?.length && reward.data.total.length > 1 ? reward.data.total.length - 1 : 0;
 
   return (

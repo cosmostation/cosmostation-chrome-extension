@@ -19,6 +19,7 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -77,6 +78,7 @@ export default function Entry() {
   const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
   const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
+  useAutoBalanceRefresh(selectedChainFilterId && [selectedChainFilterId]);
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);

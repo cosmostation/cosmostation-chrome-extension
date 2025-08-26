@@ -43,7 +43,7 @@ export default function ValueButtonWrapper({ currentCoin }: ValueButtonWrapperPr
 
     const chainId = getUniqueChainId(currentCoin.chain);
 
-    await updateChainBalance(chainId, currentCoin.address.address);
+    await updateChainBalance(chainId);
   };
 
   return (

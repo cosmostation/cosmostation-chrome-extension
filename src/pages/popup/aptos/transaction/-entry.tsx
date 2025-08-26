@@ -16,6 +16,7 @@ import { useEstimateGasPrice } from '@/hooks/aptos/useEstimateGasPrice';
 import { useSimulateTx } from '@/hooks/aptos/useSimulateTx';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -29,7 +30,7 @@ import type { AptosSignTransaction } from '@/types/message/inject/aptos';
 import { signTxSequentially } from '@/utils/aptos/sign';
 import { getOriginalTx } from '@/utils/aptos/tx';
 import { ceil, gt, times } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -55,6 +56,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentAptosNetwork } = useCurrentAptosNetwork();
+  useAutoBalanceRefresh(currentAptosNetwork ? [getUniqueChainId(currentAptosNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

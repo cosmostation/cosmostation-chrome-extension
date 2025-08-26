@@ -146,13 +146,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   return (
     <>
-      {currentCoin?.lastUpdatedAtMs && (
-        <StaleBalanceErrorBanner
-          chainId={getUniqueChainId(currentCoin.chain)}
-          address={currentCoin.address.address}
-          lastUpdatedAtMs={currentCoin.lastUpdatedAtMs}
-        />
-      )}
+      {currentCoin?.lastUpdatedAtMs && <StaleBalanceErrorBanner chainId={getUniqueChainId(currentCoin.chain)} lastUpdatedAtMs={currentCoin.lastUpdatedAtMs} />}
       <MainBox
         top={
           <TopContainer>

@@ -230,9 +230,9 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
       }
 
       if (method === 'updateChainSpecificBalance') {
-        const [id, chainId, address] = params;
+        const [id, chainId] = params;
 
-        const key = `${id}:${chainId}:${address}`;
+        const key = `${id}:${chainId}`;
         if (isInProgress(method, key)) {
           devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
           sendResponse(null);
@@ -242,7 +242,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         setInProgress(method, key);
 
         try {
-          await updateSpecificChainBalance(id, chainId, address);
+          await updateSpecificChainBalance(id, chainId);
         } catch (e) {
           devLogger.error(`${method} error`, e);
         } finally {
@@ -253,9 +253,9 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
       }
 
       if (method === 'updateChainSpecificStakingBalance') {
-        const [id, chainId, address] = params;
+        const [id, chainId] = params;
 
-        const key = `${id}:${chainId}:${address}`;
+        const key = `${id}:${chainId}`;
 
         if (isInProgress(method, key)) {
           devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
@@ -265,8 +265,8 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
 
         setInProgress(method, key);
         try {
-          await updateSpecificChainBalance(id, chainId, address);
-          await updateSpecificChainStaking(id, chainId, address);
+          await updateSpecificChainBalance(id, chainId);
+          await updateSpecificChainStaking(id, chainId);
         } catch (e) {
           devLogger.error(`${method} error`, e);
         } finally {

@@ -4,6 +4,7 @@ import { MulticallWrapper } from 'ethers-multicall-provider';
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
 import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
+import type { Erc20Balance } from '@/types/evm/balance';
 import { getWithFullResponse, postWithFullResponse } from '@/utils/axios';
 import { buildRequestUrl } from '@/utils/fetch';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
@@ -139,14 +140,7 @@ export const fetchMultiERC20Balances = async (
   multicallWrapperOption?: {
     maxMulticallDataLength: number;
   },
-): Promise<
-  {
-    contract: string;
-    balance: string;
-    lastUpdatedAtMs?: number | null;
-    isError?: boolean;
-  }[]
-> => {
+): Promise<Erc20Balance[]> => {
   const { maxMulticallDataLength } = multicallWrapperOption || {};
 
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
@@ -175,11 +169,11 @@ export const fetchMultiERC20Balances = async (
 
             const balance = response.toString();
 
-            const result = { contract: contractAddress, balance, lastUpdatedAtMs: Date.now() };
+            const result: Erc20Balance = { contract: contractAddress, balance, status: 'success' };
 
             return result;
           } catch {
-            const result = { contract: contractAddress, balance: '0', isError: true };
+            const result: Erc20Balance = { contract: contractAddress, balance: '0', status: 'error' };
 
             return result;
           }

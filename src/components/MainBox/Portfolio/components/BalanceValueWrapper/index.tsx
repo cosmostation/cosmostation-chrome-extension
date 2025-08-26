@@ -49,8 +49,8 @@ export default function BalanceValueWrapper({ accountAssets, selectedChainId, se
   }, [selectedChainMainAsset?.chain]);
 
   const handleManualBalanceUpdate = async () => {
-    if (selectedChainId && selectedChainMainAsset?.address.address) {
-      await updateChainBalance(selectedChainId, selectedChainMainAsset.address.address);
+    if (selectedChainId) {
+      await updateChainBalance(selectedChainId);
       return;
     }
 

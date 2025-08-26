@@ -11,6 +11,7 @@ import IntersectionObserver from '@/components/common/IntersectionObserver';
 import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
 import Search from '@/components/Search';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
@@ -18,7 +19,7 @@ import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -98,6 +99,10 @@ export default function Entry({ coinId }: EntryProps) {
   }, [baseCoinList, coinGeckoPrice, userCurrencyPreference, currentSelectedChainId, debouncedSearch.length, search, viewLimit]);
 
   const chainList = useMemo(() => getFilteredChainsByChainId(baseCoinList), [baseCoinList]);
+
+  const chainIdList = useMemo(() => chainList.map((item) => getUniqueChainId(item)), [chainList]);
+
+  useAutoBalanceRefresh(chainIdList);
 
   const currentSelectedChain = useMemo(
     () => chainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),

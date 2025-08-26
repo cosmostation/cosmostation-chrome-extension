@@ -15,6 +15,7 @@ import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -26,7 +27,7 @@ import type { ResponseAppMessage } from '@/types/message/content';
 import type { BitSignPsbts, BitSignPsbtsResposne } from '@/types/message/inject/bitcoin';
 import { decodedPsbt, ecpairFromPrivateKey, formatPsbtHex, getTweakSigner } from '@/utils/bitcoin/tx';
 import { gte, plus } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
 import {
@@ -51,6 +52,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
+  useAutoBalanceRefresh(currentBitcoinNetwork ? [getUniqueChainId(currentBitcoinNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

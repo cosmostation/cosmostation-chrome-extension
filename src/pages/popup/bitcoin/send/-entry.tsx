@@ -23,6 +23,7 @@ import { useEstimateSmartFee } from '@/hooks/bitcoin/useEstimateSmartFee';
 import { useUtxo } from '@/hooks/bitcoin/useUtxo';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -45,7 +46,7 @@ import type { BitSendBitcoin } from '@/types/message/inject/bitcoin';
 import { executeTransactionSequentially } from '@/utils/bitcoin/sign';
 import { ecpairFromPrivateKey, getTweakSigner, initBitcoinEcc } from '@/utils/bitcoin/tx';
 import { gt, minus, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
 import {
@@ -73,6 +74,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
+  useAutoBalanceRefresh(currentBitcoinNetwork ? [getUniqueChainId(currentBitcoinNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
