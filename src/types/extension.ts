@@ -7,6 +7,7 @@ import type {
   AccountAddress,
   AccountAddressAccountInfoCosmos,
   AccountAddressBalanceAptos,
+  AccountAddressBalanceAptosV2,
   AccountAddressBalanceBitcoin,
   AccountAddressBalanceCosmos,
   AccountAddressBalanceCw20,
@@ -101,6 +102,7 @@ export interface ExtensionStorage {
   [key: `${string}-balance-cosmos`]: AccountAddressBalanceCosmos[];
   [key: `${string}-balance-evm`]: AccountAddressBalanceEvm[];
   [key: `${string}-balance-aptos`]: AccountAddressBalanceAptos[];
+  [key: `${string}-balance-aptos-v2`]: AccountAddressBalanceAptosV2[];
   [key: `${string}-balance-sui`]: AccountAddressBalanceSui[];
   [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
   [key: `${string}-balance-iota`]: AccountAddressBalanceIota[];
