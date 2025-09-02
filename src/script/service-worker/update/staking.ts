@@ -83,12 +83,9 @@ async function fetchStakingByChainType(id: string, chainId: UniqueChainId) {
 }
 
 async function cosmosStaking(id: string, { chainId }: BalanceFetchOption = {}) {
-  await Promise.all([
-    cosmosDelegations(id, { chainId }),
-    cosmosUnbondings(id, { chainId }),
-    cosmosRewards(id, { chainId }),
-    cosmosCommissions(id, { chainId }),
-  ]);
+  await Promise.all([cosmosDelegations(id, { chainId }), cosmosUnbondings(id, { chainId }), cosmosRewards(id, { chainId })]);
+
+  await cosmosCommissions(id, { chainId });
 }
 
 async function cosmosDelegations(id: string, { chainId }: BalanceFetchOption = {}) {

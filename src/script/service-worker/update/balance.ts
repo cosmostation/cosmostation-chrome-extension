@@ -187,18 +187,9 @@ export async function updateBalance(id: string) {
   try {
     await getAccount(id);
 
-    await Promise.all([
-      cosmosBalances(id),
-      evmBalances(id),
-      aptosBalances(id),
-      suiBalances(id),
-      iotaBalances(id),
-      bitcoinBalances(id),
-      erc20Balance(id),
-      cw20Balance(id),
-      customErc20Balance(id),
-      customCw20Balance(id),
-    ]);
+    await Promise.all([cosmosBalances(id), evmBalances(id), aptosBalances(id), suiBalances(id), iotaBalances(id), bitcoinBalances(id)]);
+
+    await Promise.all([erc20Balance(id), cw20Balance(id), customErc20Balance(id), customCw20Balance(id)]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
@@ -808,7 +799,8 @@ async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const { rpcUrls, id } = chain;
+      const { rpcUrls, chainId: networkId, name: networkName, id } = chain;
+
       const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
       const chainIdDecimal = parseInt(chain.chainId, 16);
@@ -820,7 +812,17 @@ async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
           const allBalances = await fetchMultiERC20Balances(
             address,
             assets.map((item) => item.id),
-            rpcUrls.map((item) => item.url).filter(Boolean),
+            rpcUrls
+              .map((item) => {
+                if (!item.url) return undefined;
+
+                return {
+                  networkName: networkName,
+                  chainId: networkId,
+                  rpcUrl: item.url,
+                };
+              })
+              .filter((item) => !!item),
             multicallWrapperOption,
           );
 
@@ -853,7 +855,21 @@ async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
             const { id: contractAddress } = asset;
 
             try {
-              const balance = await fetchERC20Balances(address, contractAddress, rpcUrls.map((item) => item.url).filter(Boolean));
+              const balance = await fetchERC20Balances(
+                address,
+                contractAddress,
+                rpcUrls
+                  .map((item) => {
+                    if (!item.url) return undefined;
+
+                    return {
+                      networkName: networkName,
+                      chainId: networkId,
+                      rpcUrl: item.url,
+                    };
+                  })
+                  .filter((item) => !!item),
+              );
 
               const result: Erc20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
 
@@ -910,7 +926,8 @@ async function customErc20Balance(id: string, { chainId }: BalanceFetchOption = 
     .for(addressWithChain)
     .process(async (addr) => {
       const { chainId, chainType, address, chain } = addr;
-      const { rpcUrls } = chain;
+      const { rpcUrls, chainId: networkId, name: networkName } = chain;
+
       const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
       const chainIdDecimal = parseInt(chain.chainId, 16);
@@ -923,7 +940,17 @@ async function customErc20Balance(id: string, { chainId }: BalanceFetchOption = 
           const allBalances = await fetchMultiERC20Balances(
             address,
             assets.map((item) => item.id),
-            rpcUrls.map((item) => item.url).filter(Boolean),
+            rpcUrls
+              .map((item) => {
+                if (!item.url) return undefined;
+
+                return {
+                  networkName: networkName,
+                  chainId: networkId,
+                  rpcUrl: item.url,
+                };
+              })
+              .filter((item) => !!item),
             multicallWrapperOption,
           );
 
@@ -955,7 +982,21 @@ async function customErc20Balance(id: string, { chainId }: BalanceFetchOption = 
             const { id: contractAddress } = asset;
 
             try {
-              const balance = await fetchERC20Balances(address, contractAddress, rpcUrls.map((item) => item.url).filter(Boolean));
+              const balance = await fetchERC20Balances(
+                address,
+                contractAddress,
+                rpcUrls
+                  .map((item) => {
+                    if (!item.url) return undefined;
+
+                    return {
+                      networkName: networkName,
+                      chainId: networkId,
+                      rpcUrl: item.url,
+                    };
+                  })
+                  .filter((item) => !!item),
+              );
 
               const result: Erc20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
 

@@ -1,13 +1,13 @@
-import { Contract, ethers } from 'ethers';
+import { Contract, ethers, Network } from 'ethers';
 import { MulticallWrapper } from 'ethers-multicall-provider';
 
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
 import type { CosmosBalance, CosmosBalanceResponse, CosmosCw20BalanceResponse } from '@/types/cosmos/api';
-import type { EvmRpcGetBalanceResponse } from '@/types/evm/api';
+import type { EthersProviderParam, EvmRpcGetBalanceResponse } from '@/types/evm/api';
 import type { Erc20Balance } from '@/types/evm/balance';
 import { getWithFullResponse, postWithFullResponse } from '@/utils/axios';
 import { buildRequestUrl } from '@/utils/fetch';
-import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
+import { fetchWithFailover, fetchWithFailoverEVM } from '@/utils/fetch/fetchWithFailover';
 
 export const fetchCosmosBalances = async (
   address: string,
@@ -109,10 +109,12 @@ const ERC20_BALANCE_OF = 'function balanceOf(address account) view returns (uint
 
 const ERC20_READ_ABI = [ERC20_TOTAL_SUPPLY, ERC20_DECIMALS, ERC20_SYMBOL, ERC20_NAME, ERC20_BALANCE_OF];
 
-export const fetchERC20Balances = async (address: string, contractAddress: string, rpcUrls: string[]): Promise<string> => {
-  return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
-    const baseRpcUrl = rpcUrl;
-    const provider = new ethers.JsonRpcProvider(baseRpcUrl, undefined, {
+export const fetchERC20Balances = async (address: string, contractAddress: string, params: EthersProviderParam[]): Promise<string> => {
+  return await fetchWithFailoverEVM(params, async (param) => {
+    const { rpcUrl, networkName, chainId } = param;
+
+    const network = new Network(networkName, chainId);
+    const provider = new ethers.JsonRpcProvider(rpcUrl, network, {
       batchMaxCount: 1,
       polling: false,
       staticNetwork: true,
@@ -136,16 +138,17 @@ export const fetchERC20Balances = async (address: string, contractAddress: strin
 export const fetchMultiERC20Balances = async (
   address: string,
   contractAddresses: string[],
-  rpcUrls: string[],
+  params: EthersProviderParam[],
   multicallWrapperOption?: {
     maxMulticallDataLength: number;
   },
 ): Promise<Erc20Balance[]> => {
   const { maxMulticallDataLength } = multicallWrapperOption || {};
 
-  return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
-    const baseRpcUrl = rpcUrl;
-    const provider = new ethers.JsonRpcProvider(baseRpcUrl, undefined, {
+  return await fetchWithFailoverEVM(params, async (param) => {
+    const { rpcUrl, networkName, chainId } = param;
+    const network = new Network(networkName, chainId);
+    const provider = new ethers.JsonRpcProvider(rpcUrl, network, {
       polling: false,
       staticNetwork: true,
     });
