@@ -45,15 +45,15 @@ export async function getChains() {
             ...chainInfo.params.chainlist_params,
             cosmos_fee_info: {
               ...chainInfo.params.chainlist_params.cosmos_fee_info,
-              rate: ['0.1ugnot'],
-              simulated_gas_multiply: 2,
+              rate: ['5ugnot'],
+              simulated_gas_multiply: 5,
             },
             chain_type: ['gno'],
             is_support_extension_wallet: true,
             cosmos_rpc_endpoint: [
               {
                 provider: 'Gno Land',
-                url: 'https://rpc.archainia.app',
+                url: 'http://192.168.0.20:26657',
               },
             ],
             chain_id_cosmos: 'dev',

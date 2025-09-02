@@ -57,7 +57,7 @@ export function useSimulate({ coinId, messages, memo, config }: UseSimulateProps
       const signedTx = await wallet.signTransaction(
         {
           messages,
-          fee: { gasFee: `0${accountAsset.chain.mainAssetDenom}`, gasWanted: new Long(1000000000000000) },
+          fee: { gas_fee: `0${accountAsset.chain.mainAssetDenom}`, gas_wanted: new Long(1000000000000000) },
           signatures: [],
           memo: memo || '',
         },

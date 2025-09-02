@@ -237,7 +237,7 @@ export default function Entry({ request }: EntryProps) {
 
     const tx: Tx = {
       messages: txMessages,
-      fee: { gasFee: `${currentCeilFeeAmount}${selectedFeeOption.denom}`, gasWanted: new Long(Number(currentGas)) },
+      fee: { gas_fee: `${currentCeilFeeAmount}${selectedFeeOption.denom}`, gas_wanted: new Long(Number(currentGas)) },
       signatures: [],
       memo: inputMemo,
     };
@@ -310,8 +310,8 @@ export default function Entry({ request }: EntryProps) {
       if (method === 'gno_signTransaction') {
         const messages = decodeTxMessages(signedTx.messages);
         const signatures = signedTx.signatures.map((item) => {
-          const pubKeyValue = item.pubKey?.value ? Buffer.from(item.pubKey.value).toString('base64') : '';
-          const pubKeyTypeUrl = item.pubKey?.typeUrl;
+          const pubKeyValue = item.pub_key?.value ? Buffer.from(item.pub_key.value).toString('base64') : '';
+          const pubKeyTypeUrl = item.pub_key?.type_url;
 
           return {
             pubKey: {

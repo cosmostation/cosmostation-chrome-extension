@@ -163,14 +163,14 @@ export default function Gno({ coinId }: GnoProps) {
         MsgCall.create({ pkg_path: contractAddress, func: 'Transfer', args: [recipientAddress, amount], caller: senderAddress, send: undefined }),
       ).finish();
 
-      const messageCall = Any.create({ typeUrl: MsgEndpoint.MSG_CALL, value: msgCall });
+      const messageCall = Any.create({ type_url: MsgEndpoint.MSG_CALL, value: msgCall });
 
       return [messageCall];
     }
 
     const msgSend = MsgSend.encode(MsgSend.create({ from_address: senderAddress, to_address: recipientAddress, amount: `${amount}${coinDenom}` })).finish();
 
-    const messageSend = Any.create({ typeUrl: MsgEndpoint.MSG_SEND, value: msgSend });
+    const messageSend = Any.create({ type_url: MsgEndpoint.MSG_SEND, value: msgSend });
 
     return [messageSend];
   }, [
@@ -266,7 +266,7 @@ export default function Gno({ coinId }: GnoProps) {
 
     const tx: Tx = {
       messages: txMessages,
-      fee: { gasFee: `${currentCeilFeeAmount}${selectedFeeOption.denom}`, gasWanted: new Long(Number(currentGas)) },
+      fee: { gas_fee: `${currentCeilFeeAmount}${selectedFeeOption.denom}`, gas_wanted: new Long(Number(currentGas)) },
       signatures: [],
       memo: '',
     };
