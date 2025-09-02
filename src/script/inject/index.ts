@@ -16,6 +16,7 @@ import { announceEip6963Provider } from './evm/provider/eip6963';
 import { CosmostaionEthereum } from './evm/provider/evm';
 import { CosmostationIota, IotaStandard } from './iota/provider/iota';
 import { CosmostationSolana } from './solana/provider/solana';
+import { initialize } from './solana/provider/solana2';
 import { CosmostationSui, SuiStandard } from './sui/provider/sui';
 
 if (!window.__cosmostationInjected__) {
@@ -47,6 +48,7 @@ if (!window.__cosmostationInjected__) {
       registerSuiWallet(new SuiStandard());
       registerCosmosWallet(cosmosWallet);
       registerAptosWallet(CosmostationAptos.getInstance());
+      initialize();
 
       announceEip6963Provider();
 
