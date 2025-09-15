@@ -21,8 +21,8 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
 
   const asset = getCosmosAccountAsset();
 
-  // const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
-  const isEnabledFeemarket = true;
+  const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
+
   const isEvmFeemarket = asset?.chain.accountTypes?.some(
     (accountType) => accountType.pubkeyType === "/cosmos.evm.crypto.v1.ethsecp256k1.PubKey"
   ) ?? false;
