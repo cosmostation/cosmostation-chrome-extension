@@ -40,6 +40,7 @@ export function cosmosURL(lcdURL: string, chainId: string) {
         : buildRequestUrl(lcdURL, `/cosmos/base/tendermint/v1beta1/blocks/latest`),
     getCommission: (validatorAddress: string) => buildRequestUrl(lcdURL, `/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`),
     getFeemarket: (denom?: string) => buildRequestUrl(lcdURL, `/feemarket/v1/gas_prices${denom ? `/${denom}` : ''}`),
+    getEvmFeemarket: () => buildRequestUrl(lcdURL, `/cosmos/evm/feemarket/v1/base_fee`),
     getValidators: () => buildRequestUrl(lcdURL, `/cosmos/staking/v1beta1/validators?pagination.limit=10000`),
     getNTRNRewards: (contractAddress: string, address: string) =>
       buildRequestUrl(lcdURL, `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${encodeURIComponent(toBase64(`{"rewards":{"user":"${address}"}}`))}`),
