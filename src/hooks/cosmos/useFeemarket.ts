@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import type { FeemarketResponse } from '@/types/cosmos/feemarket';
+import type { EvmFeemarketResponse, FeemarketResponse } from '@/types/cosmos/feemarket';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { parseCoinId } from '@/utils/queryParamGenerator';
@@ -21,7 +21,11 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
 
   const asset = getCosmosAccountAsset();
 
-  const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
+  // const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
+  const isEnabledFeemarket = true;
+  const isEvmFeemarket = asset?.chain.accountTypes?.some(
+    (accountType) => accountType.pubkeyType === "/cosmos.evm.crypto.v1.ethsecp256k1.PubKey"
+  ) ?? false;
 
   const requestURLs = useMemo(() => {
     if (!asset?.chain.lcdUrls) return [];
@@ -29,10 +33,16 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
     const { chainId } = parseCoinId(coinId);
 
     const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
-    const feemarketEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getFeemarket());
+
+    let feemarketEndpoints: string[];
+    if (isEvmFeemarket) {
+      feemarketEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getEvmFeemarket());
+    } else {
+      feemarketEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getFeemarket());
+    }
 
     return feemarketEndpoints;
-  }, [asset?.chain.lcdUrls, coinId]);
+  }, [asset?.chain.lcdUrls, coinId, isEvmFeemarket]);
 
   const fetcher = async (index = 0) => {
     try {
@@ -44,7 +54,20 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
         throw new Error('All endpoints failed');
       }
 
-      const response = await get<FeemarketResponse>(requestURLs[index]);
+      let response: FeemarketResponse;
+      if (isEvmFeemarket) {
+        const evmResponse = await get<EvmFeemarketResponse>(requestURLs[index]);
+        response = {
+          prices: [
+            {
+              amount: evmResponse.base_fee,
+              denom: asset!.chain.mainAssetDenom
+            }
+          ]
+        }
+      } else {
+        response = await get<FeemarketResponse>(requestURLs[index]);
+      }
 
       setIsAllRequestsFailed(false);
 
