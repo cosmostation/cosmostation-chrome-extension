@@ -272,12 +272,12 @@ export function protoTx(signed: SignAminoDoc, signatures: string[], pubKey: PubK
 }
 
 export function protoTxBytes({ signatures, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
-  const resolvedSignature = signatures.map((item) => (!item ? COSMOS_DUMMY_SIGNATURE : item));
+  const resolvedSignatures = signatures.map((item) => (!item ? COSMOS_DUMMY_SIGNATURE : item));
 
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: new Uint8Array(txBodyBytes),
     auth_info_bytes: new Uint8Array(authInfoBytes),
-    signatures: resolvedSignature.map((signature) => Buffer.from(signature, 'base64')),
+    signatures: resolvedSignatures.map((signature) => Buffer.from(signature, 'base64')),
   });
   const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
 
