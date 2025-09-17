@@ -14,13 +14,18 @@ import type {
   AccountAptosAsset,
   AccountBitcoinAsset,
   AccountCosmosAsset,
+  AccountCosmosAssetFetchStatus,
   AccountCustomCosmosAsset,
   AccountCustomEvmAsset,
   AccountCw20Asset,
   AccountErc20Asset,
   AccountEvmAsset,
+  AccountEVMAssetFetchStatus,
   AccountIotaAsset,
+  AccountIotaAssetFetchStatus,
   AccountSuiAsset,
+  AccountSuiAssetFetchStatus,
+  AssetFetchStatus,
 } from '@/types/account';
 import type { AptosAsset, Asset, AssetBase, AssetId, BitcoinAsset, CosmosAsset, EvmAsset, IotaAsset, SuiAsset } from '@/types/asset';
 import type { BitcoinChain } from '@/types/chain';
@@ -442,6 +447,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
           const totalBalance = sum([resolvedBalance, delegation, undelegation, reward, commission, locked]);
 
+          const fetchStatus: AccountCosmosAssetFetchStatus = {
+            balance: balanceInfo?.status,
+          };
+
           const result: AccountCosmosAsset = {
             chain,
             asset,
@@ -454,6 +463,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             lockedBalance: locked,
             totalBalance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -480,12 +490,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balance = targetCW20BalanceInfo?.balance || '0';
           const lastUpdatedAtMs = targetCW20BalanceInfo?.lastUpdatedAtMs;
 
+          const fetchStatus: AssetFetchStatus = {
+            balance: targetCW20BalanceInfo?.status,
+          };
+
           const result: AccountCw20Asset = {
             chain,
             asset,
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -509,6 +524,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
           const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
+          const fetchStatus: AccountEVMAssetFetchStatus = {
+            balance: balanceInfo?.status,
+          };
 
           if (chain.isCosmos) {
             const mainAssetDenom = chain.mainAssetDenom;
@@ -571,6 +590,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
             const totalBalance = sum([balance, resolvedDelegation, resolvedUndelegation, resolvedReward, resolvedCommission]);
 
+            const fetchStatus: AccountEVMAssetFetchStatus = {
+              balance: balanceInfo?.status,
+            };
+
             const result: AccountEvmAsset = {
               chain,
               asset,
@@ -582,6 +605,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               commission: resolvedCommission,
               totalBalance,
               lastUpdatedAtMs,
+              fetchStatus,
             };
 
             return result;
@@ -593,6 +617,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -619,12 +644,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balance = targetERC20BalanceInfo?.balance || '0';
           const lastUpdatedAtMs = targetERC20BalanceInfo?.lastUpdatedAtMs;
 
+          const fetchStatus: AssetFetchStatus = {
+            balance: targetERC20BalanceInfo?.status,
+          };
+
           const result: AccountErc20Asset = {
             chain,
             asset,
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -651,12 +681,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balance = targetERC20BalanceInfo?.balance || '0';
           const lastUpdatedAtMs = targetERC20BalanceInfo?.lastUpdatedAtMs;
 
+          const fetchStatus: AssetFetchStatus = {
+            balance: targetERC20BalanceInfo?.status,
+          };
+
           const result: AccountErc20Asset = {
             chain,
             asset,
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -683,12 +718,16 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balance = targetCW20BalanceInfo?.balance || '0';
           const lastUpdatedAtMs = targetCW20BalanceInfo?.lastUpdatedAtMs;
 
+          const fetchStatus: AssetFetchStatus = {
+            balance: targetCW20BalanceInfo?.status,
+          };
           const result: AccountCw20Asset = {
             chain,
             asset,
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -713,12 +752,17 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balance = balanceInfo?.balances?.find((balance) => balance?.asset_type === type)?.amount || '0';
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
+          const fetchStatus: AssetFetchStatus = {
+            balance: balanceInfo?.status,
+          };
+
           const result: AccountAptosAsset = {
             chain,
             asset,
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -742,6 +786,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.coinType === type)?.totalBalance || '0';
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
+          const fetchStatus: AccountSuiAssetFetchStatus = {
+            balance: balanceInfo?.status,
+          };
 
           if (type === SUI_COIN_TYPE) {
             const delegationInfo = suiDelegations?.find(
@@ -780,6 +828,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               reward,
               totalBalance,
               lastUpdatedAtMs,
+              fetchStatus,
             };
 
             return result;
@@ -791,6 +840,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -813,6 +863,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
 
+          const fetchStatus: AssetFetchStatus = {
+            balance: balanceInfo?.status,
+          };
+
           const specificAccountTypeChain: BitcoinChain = {
             ...chain,
             accountTypes: chain.accountTypes.filter((accountType) => accountType.hdPath === address.accountType.hdPath),
@@ -832,6 +886,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;
@@ -855,6 +910,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
           const balance = balanceInfo?.balances?.find((balance) => balance.coinType === type)?.totalBalance || '0';
           const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
+          const fetchStatus: AccountIotaAssetFetchStatus = {
+            balance: balanceInfo?.status,
+          };
 
           if (type === IOTA_COIN_TYPE) {
             const delegationInfo = iotaDelegations?.find(
@@ -893,6 +952,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
               reward,
               totalBalance,
               lastUpdatedAtMs,
+              fetchStatus,
             };
 
             return result;
@@ -904,6 +964,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
             address,
             balance: balance,
             lastUpdatedAtMs,
+            fetchStatus,
           };
 
           return result;

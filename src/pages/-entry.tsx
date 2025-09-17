@@ -66,7 +66,7 @@ export default function Entry() {
   const navigate = useNavigate();
 
   const { scrollToTop } = useScroll();
-  const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
+  const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
 
   const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true });
   const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
@@ -92,7 +92,7 @@ export default function Entry() {
 
   const { groupAccountAssets, isLoading: isGroupAssetsLoading } = useGroupAccountAssets();
 
-  const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
+  const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalanceLoading;
   const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
   const chainDefaultCoins = useMemo<PortfolioCoinItem[] | undefined>(() => {
@@ -323,7 +323,7 @@ export default function Entry() {
                               },
                             });
                           }}
-                          lastUpdatedAtMs={isUpdateBalnaceLoading ? null : coin.lastUpdatedAtMs}
+                          fetchStatus={coin.fetchStatus?.balance}
                           displayAmount={coin.totalDisplayAmount || '0'}
                           symbol={resolvedSymbol}
                           coinGeckoId={coin.asset.coinGeckoId}

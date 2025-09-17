@@ -29,7 +29,7 @@ type CoinWithMarketTrendButtonProps = BaseCoinButtonProps & {
 };
 
 export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...remainder }: CoinWithMarketTrendButtonProps) {
-  const { coinGeckoId, lastUpdatedAtMs } = remainder;
+  const { coinGeckoId, fetchStatus } = remainder;
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const { userCurrencyPreference, userPriceTrendPreference } = useExtensionStorageStore((state) => state);
 
@@ -50,7 +50,7 @@ export default function CoinWithMarketTrendButton({ symbol, coinImageProps, ...r
               <SymbolTextConatiner>
                 <SymbolTypograpy variant="b2_M">{coinSymbol}</SymbolTypograpy>
               </SymbolTextConatiner>
-              <BalanceSyncStatusIcon lastUpdatedAtMs={lastUpdatedAtMs} />
+              <BalanceSyncStatusIcon fetchStatus={fetchStatus} />
             </SymbolConatiner>
             <CoinValueContainer>
               <BalanceDisplay typoOfIntegers="h6n_M" typoOfDecimals="h8n_R" currency={userCurrencyPreference} isDisableHidden>

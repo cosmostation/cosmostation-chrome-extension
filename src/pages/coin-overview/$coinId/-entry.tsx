@@ -12,7 +12,6 @@ import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
 import Search from '@/components/Search';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
-import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
@@ -35,7 +34,6 @@ export default function Entry({ coinId }: EntryProps) {
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
-  const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -167,7 +165,7 @@ export default function Entry({ coinId }: EntryProps) {
                     imageURL: item.asset.image,
                     badgeImageURL: item.chain.image || '',
                   }}
-                  lastUpdatedAtMs={isUpdateBalnaceLoading ? null : item.lastUpdatedAtMs}
+                  fetchStatus={item.fetchStatus?.balance}
                   displayAssetId={isShowAssetId}
                   onClick={() => {
                     navigate({

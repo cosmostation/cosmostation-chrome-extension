@@ -5,7 +5,8 @@ import { useNavigate } from '@tanstack/react-router';
 
 import ChipButton from '@/components/common/ChipButton';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
-import { useLastUpdateChecker } from '@/hooks/useLastUpdateChecker';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
+import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/chain/$chainId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
@@ -20,7 +21,6 @@ import {
   BodyContainer,
   BodyTopContainer,
   ChipButtonContentsContainer,
-  LastBalanceUpdateText,
   StyledChipButton,
 } from '../../styled';
 import BalanceValueButton from '../BalanceValueButton';
@@ -34,11 +34,16 @@ interface BalanceValueButtonProps {
 export default function BalanceValueWrapper({ accountAssets, selectedChainId, selectedChainMainAsset }: BalanceValueButtonProps) {
   const [isBalanceUpdateButtonHovered, setIsBalanceUpdateButtonHovered] = useState(false);
   const { updateAllBalance, updateChainBalance, isLoadingAllBalance, isLoadingChainBalance } = useManualBalanceUpdate();
+  const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
+  const { isLoading: isUpdateChainBalanceLoading } = useAutoBalanceRefresh(selectedChainId && [selectedChainId]);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const lastUpdateStatusText = useLastUpdateChecker(selectedChainMainAsset?.lastUpdatedAtMs);
-  const isUpdatingBalance = selectedChainId && selectedChainMainAsset?.address.address ? isLoadingChainBalance : isLoadingAllBalance;
+
+  const isUpdatingBalance =
+    selectedChainId && selectedChainMainAsset?.address.address
+      ? isLoadingChainBalance || isUpdateChainBalanceLoading
+      : isLoadingAllBalance || isUpdateBalanceLoading;
 
   const isShowAccountDetail = !!selectedChainMainAsset?.asset;
 
@@ -72,22 +77,6 @@ export default function BalanceValueWrapper({ accountAssets, selectedChainId, se
         />
       </BodyTopContainer>
       <BodyBottomContainer>
-        {lastUpdateStatusText && (
-          <LastBalanceUpdateText
-            typoVarient="b5_M"
-            onMouseEnter={() => {
-              setIsBalanceUpdateButtonHovered(true);
-            }}
-            onMouseLeave={() => {
-              setIsBalanceUpdateButtonHovered(false);
-            }}
-            data-is-hovering={isBalanceUpdateButtonHovered}
-            onClick={handleManualBalanceUpdate}
-          >
-            {lastUpdateStatusText}
-          </LastBalanceUpdateText>
-        )}
-
         <BodyBottomChipButtonContainer>
           <ChipButton
             variant="light"

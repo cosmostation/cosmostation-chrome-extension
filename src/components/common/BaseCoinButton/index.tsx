@@ -1,5 +1,6 @@
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import type { RequestStatus } from '@/types/account';
 import { times } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -14,6 +15,7 @@ export type BaseCoinButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttrib
   rightComponent?: JSX.Element;
   isActive?: boolean;
   lastUpdatedAtMs?: number | null;
+  fetchStatus?: RequestStatus;
   onClick?: () => void;
 };
 

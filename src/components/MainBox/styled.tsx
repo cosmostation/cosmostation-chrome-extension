@@ -13,7 +13,7 @@ export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
 
   '&.portfoiloBackground': {
     background: `
-  ${props['backgroundImage'] && `url(${props['backgroundImage']}) no-repeat center right/ 70% auto`} ,
+  ${props['backgroundImage'] && `url(${props['backgroundImage']}) no-repeat center right/ auto auto`} ,
      linear-gradient(105.36deg, #373C46 0%, #1B1F27 100%)`,
   },
 
@@ -71,7 +71,7 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
       width: '100%',
       height: '100%',
       content: '""',
-      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(30%)/ 55% auto`,
+      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(30%)/ auto auto`,
       position: 'absolute',
 
       top: '0',
@@ -86,7 +86,7 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
       width: '100%',
       height: '100%',
       content: '""',
-      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(7.5%)/ 55% auto`,
+      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(7.5%)/ auto auto`,
       position: 'absolute',
 
       top: '0',
@@ -99,7 +99,7 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
 
 export const BlurEffectLayer = styled('div')({
   position: 'absolute',
-  width: '16rem',
+  width: '45%',
   height: '16rem',
   top: '50%',
   left: '50%',

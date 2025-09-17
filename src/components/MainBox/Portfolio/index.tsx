@@ -11,7 +11,7 @@ import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBot
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredChainsByChainId, getMainAssetByChainId } from '@/utils/asset';
-import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId } from '@/utils/queryParamGenerator';
 
 import BalanceValueWrapper from './components/BalanceValueWrapper';
 import BalanceVisibleControlButton from './components/BalanceVisibleControlButton';
@@ -67,9 +67,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
 
   return (
     <>
-      {selectedChainMainAsset?.lastUpdatedAtMs && (
-        <StaleBalanceErrorBanner chainId={getUniqueChainId(selectedChainMainAsset.chain)} lastUpdatedAtMs={selectedChainMainAsset.lastUpdatedAtMs} />
-      )}
+      <StaleBalanceErrorBanner chainId={selectedChainId} fetchStatus={selectedChainMainAsset?.fetchStatus?.balance} />
       <MainBox
         top={
           <TopContainer>

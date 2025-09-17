@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import { isStakeableAsset } from '@/utils/asset';
@@ -23,6 +24,7 @@ export default function ValueButtonWrapper({ currentCoin }: ValueButtonWrapperPr
   const [isBalanceUpdateButtonHovered, setIsBalanceUpdateButtonHovered] = useState(false);
 
   const { updateChainBalance, isLoadingChainBalance } = useManualBalanceUpdate();
+  const { isLoading: isUpdateChainBalanceLoading } = useAutoBalanceRefresh(currentCoin?.chain && [getUniqueChainId(currentCoin.chain)]);
   const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
@@ -34,6 +36,8 @@ export default function ValueButtonWrapper({ currentCoin }: ValueButtonWrapperPr
 
   const chainPrice = (coinGeckoId && coinGeckoPrice?.[coinGeckoId]?.[userCurrencyPreference]) || 0;
   const totalValue = times(totalDisplayAmount, chainPrice);
+
+  const isUpdatingBalance = isLoadingChainBalance || isUpdateChainBalanceLoading;
 
   const handleMouseEnterOnValue = () => setIsBalanceUpdateButtonHovered(true);
   const handleMouseLeaveOnValue = () => setIsBalanceUpdateButtonHovered(false);
@@ -56,12 +60,11 @@ export default function ValueButtonWrapper({ currentCoin }: ValueButtonWrapperPr
           onMouseEnter={handleMouseEnterOnValue}
           onMouseLeave={handleMouseLeaveOnValue}
           isHovering={isBalanceUpdateButtonHovered}
+          disabled={isUpdatingBalance}
           leadingIcon={
-            isBalanceUpdateButtonHovered || isLoadingChainBalance ? (
-              <StyledIconContainer data-is-loading={isLoadingChainBalance}>
-                <RefreshIcon />
-              </StyledIconContainer>
-            ) : undefined
+            <StyledIconContainer data-is-loading={isUpdatingBalance}>
+              <RefreshIcon />
+            </StyledIconContainer>
           }
         >
           <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" fixed={6}>
@@ -74,6 +77,7 @@ export default function ValueButtonWrapper({ currentCoin }: ValueButtonWrapperPr
         <TotalValueButton
           onMouseEnter={handleMouseEnterOnValue}
           onMouseLeave={handleMouseLeaveOnValue}
+          disabled={isUpdatingBalance}
           data-is-hovering={isBalanceUpdateButtonHovered}
           onClick={handleManualBalanceUpdate}
         >

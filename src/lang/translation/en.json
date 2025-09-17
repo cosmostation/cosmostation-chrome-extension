@@ -795,7 +795,7 @@
     },
     "StaleBalanceErrorBanner": {
       "index": {
-        "warning": "Displayed balance may not be up to date",
+        "warning": "Updating your balance...Please wait.",
         "stale": "Network error. Balance will be auto-updated",
         "refresh": "Refresh"
       }
