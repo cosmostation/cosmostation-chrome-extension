@@ -4,7 +4,7 @@ import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import type { VersionedTransaction } from '@solana/web3.js';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
@@ -28,9 +28,11 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
+import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { requestRPC } from '@/utils/solana/rpc';
 import { createSplTokenTransferTransaction, createTransferTransaction, overwriteComputeBudgetProgram } from '@/utils/solana/transaction';
 import { isDecimal, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -347,7 +349,6 @@ export default function Solana({ coinId }: SolanaProps) {
       setIsOpenTxProcessingOverlay(true);
       if (confirmData.transaction && selectedCoinToSend) {
         const currentChain = selectedCoinToSend?.chain;
-        const connection = new Connection(currentChain.rpcUrls[0].url, 'confirmed');
         const keypair = getKeypair(currentChain, currentAccount, currentPassword);
         const transactionToSend = confirmData.transaction;
 
@@ -359,7 +360,12 @@ export default function Solana({ coinId }: SolanaProps) {
 
           tx.sign([{ publicKey: new PublicKey(selectedCoinToSend.address.address), secretKey: Buffer.from(keypair.privateKey, 'hex') }]);
 
-          const signature = await connection.sendRawTransaction(tx.serialize());
+          const { result: signature } = await requestRPC<SolanaRpcSendTransactionResponse>('sendTransaction', [
+            Buffer.from(tx.serialize()).toString('base64'),
+            {
+              encoding: 'base64',
+            },
+          ]);
 
           if (!signature) {
             throw new Error('Failed to send transaction');

@@ -30,7 +30,9 @@ export const BITCOIN_LISTENER_TYPE = {
 
 export const SOLANA_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
-  CHAIN_CHANGED: 'networkChange',
+  CONNECT: 'connect',
+  DISCONNECT: 'disconnect',
+  CHANGE: 'change',
 } as const;
 
 export const COMMON_NO_POPUP_METHOD_TYPE = {

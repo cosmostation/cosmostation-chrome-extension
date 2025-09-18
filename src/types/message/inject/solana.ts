@@ -1,4 +1,5 @@
-import type { PublicKey, Transaction, VersionedMessage, VersionedTransaction } from '@solana/web3.js';
+import type { SolanaTransactionCommitment } from '@solana/wallet-standard-features';
+import type { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 
 import type { SOLANA_METHOD_TYPE, SOLANA_NO_POPUP_METHOD_TYPE, SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
 import type { ChainType } from '@/types/chain';
@@ -44,7 +45,6 @@ export type SolanaDisconnectResponse = undefined;
 
 export interface SolanaSingMessageParams {
   message: Uint8Array;
-  display: 'utf8' | 'hex';
 }
 
 export interface SolanaSignMessage extends RequestBase {
@@ -58,23 +58,49 @@ export interface SolanaSignMessageResponse {
   publicKey: PublicKey;
 }
 
-export type SolanaSignTransactionParam = Transaction | VersionedTransaction;
+export interface SolanaInternalSignMessageResponse {
+  signature: string;
+  publicKey: string;
+}
+
+export type SolanaSignTransactionParam = {
+  tx: Transaction | VersionedTransaction;
+};
+
+export type SolanaInternalSignTransactionParam = {
+  serializedTx: string;
+};
+
+export type SolanaSignAndSendTransactionParam = {
+  tx: Transaction | VersionedTransaction;
+  minContextSlot?: number;
+  preflightCommitment?: SolanaTransactionCommitment;
+  skipPreflight?: boolean;
+  maxRetries?: number;
+};
+
+export type SolanaInternalSignAndSendTransactionParam = {
+  serializedTx: string;
+  minContextSlot?: number;
+  preflightCommitment?: SolanaTransactionCommitment;
+  skipPreflight?: boolean;
+  maxRetries?: number;
+};
 
 export interface SolanaSignTransaction extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_TRANSACTION;
-  params: SolanaSignTransactionParam[];
+  params: SolanaInternalSignTransactionParam[];
 }
 
 export interface SolanaSignTransactionResponse {
-  message: VersionedMessage;
-  signatures: Uint8Array[];
+  tx: Transaction | VersionedTransaction;
 }
 
 export interface SolanaSignAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_ALL_TRANSACTIONS;
-  params: SolanaSignTransactionParam[];
+  params: SolanaInternalSignTransactionParam[];
 }
 
 export type SolanaSignAllTransactionsResponse = SolanaSignTransactionResponse[];
@@ -82,7 +108,7 @@ export type SolanaSignAllTransactionsResponse = SolanaSignTransactionResponse[];
 export interface SolanaSignAndSendTransaction extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_AND_SEND_TRANSACTION;
-  params: SolanaSignTransactionParam[];
+  params: SolanaInternalSignAndSendTransactionParam[];
 }
 
 export interface SolanaSignAndSendTransactionResponse {
@@ -93,7 +119,7 @@ export interface SolanaSignAndSendTransactionResponse {
 export interface SolanaSignAndSendAllTransactions extends RequestBase {
   chainType: Extract<ChainType, 'solana'>;
   method: typeof SOLANA_METHOD_TYPE.SOLANA__SIGN_AND_SEND_ALL_TRANSACTIONS;
-  params: SolanaSignTransactionParam[];
+  params: SolanaInternalSignAndSendTransactionParam[];
 }
 
 export interface SolanaSignAndSendAllTransactionsResponse {

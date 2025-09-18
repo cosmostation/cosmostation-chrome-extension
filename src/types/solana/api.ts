@@ -21,6 +21,8 @@ export interface SolanaGetBalance {
 
 export interface SolanaRpcGetBalanceResponse extends SolanaRpc<SolanaGetBalance> {}
 
+export interface SolanaRpcSendTransactionResponse extends SolanaRpc<string> {}
+
 export interface SolanaGetTokenAccountsByOwnerValue {
   account: {
     data: {

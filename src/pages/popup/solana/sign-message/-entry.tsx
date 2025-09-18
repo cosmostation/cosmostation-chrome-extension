@@ -54,7 +54,7 @@ export default function Entry({ request }: EntryProps) {
 
   const encodedMessage = useMemo(() => Buffer.from(request.params.message as unknown as string, 'hex'), [request.params.message]);
 
-  const decodedMessage = useMemo(() => encodedMessage.toString(request.params.display), [encodedMessage, request.params.display]);
+  const decodedMessage = useMemo(() => encodedMessage.toString('utf-8'), [encodedMessage]);
 
   const handleOnClickSign = async () => {
     try {

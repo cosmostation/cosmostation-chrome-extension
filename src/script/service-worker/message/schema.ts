@@ -460,5 +460,4 @@ export const aptosSignMessageSchema = () =>
 export const solanaSignMessageSchema = () =>
   Joi.object<SolanaSignMessage['params']>({
     message: Joi.string().hex({ prefix: false }),
-    display: Joi.string().valid('utf8', 'hex'),
   }).required();

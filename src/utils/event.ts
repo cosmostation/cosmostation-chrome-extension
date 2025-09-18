@@ -79,4 +79,27 @@ export async function emitChangedAddressEvent(newAccountId: string) {
   const bitcoinAddress = getAddress(currentBitcoinNetwork, bitcoinKeyPair?.publicKey);
 
   emitToWeb({ event: 'accountChanged', chainType: 'bitcoin', data: { result: [bitcoinAddress] } }, currentAccountOrigins);
+
+  const solanaChainForAddress = chainList.solanaChains?.[0];
+
+  const solanaKeyPair = solanaChainForAddress
+    ? getKeypair(solanaChainForAddress, userAccounts.find((item) => item.id === newAccountId)!, currentPassword)
+    : undefined;
+  const solanaAddress = solanaKeyPair && solanaChainForAddress ? getAddress(solanaChainForAddress, solanaKeyPair?.publicKey) : undefined;
+
+  if (solanaAddress) {
+    emitToWeb({ event: 'accountChanged', chainType: 'solana', data: { result: solanaAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'accountChanged', chainType: 'solana', data: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+  }
+}
+
+export async function emitDisconnectDapp() {
+  const { approvedOrigins, currentAccountId } = await extensionLocalStorage();
+
+  const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === currentAccountId).map((item) => item.origin)));
+
+  emitToWeb({ event: 'disconnect', chainType: 'solana', data: { result: undefined } }, currentAccountOrigins);
 }

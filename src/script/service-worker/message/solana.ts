@@ -97,7 +97,7 @@ export async function solanaProcess(message: SolanaRequest) {
           }
 
           for (const param of params) {
-            deserializeTransaction(param as unknown as string);
+            deserializeTransaction(param.serializedTx);
           }
           void processRequest({ ...message });
         } catch (e) {

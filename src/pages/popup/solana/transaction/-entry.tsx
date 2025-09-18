@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Connection } from '@solana/web3.js';
+import type { SendOptions } from '@solana/web3.js';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
@@ -26,7 +26,9 @@ import type {
   SolanaSignAndSendTransaction,
   SolanaSignTransaction,
 } from '@/types/message/inject/solana';
+import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
 import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { requestRPC } from '@/utils/solana/rpc';
 import { deserializeTransaction, parseInstructionsFromTx, serializeTransaction, signTransaction } from '@/utils/solana/transaction';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
@@ -89,8 +91,8 @@ export default function Entry({ request }: EntryProps) {
   );
 
   const unserializedTxs = useMemo(() => {
-    return params.map((hexTx) => {
-      return deserializeTransaction(hexTx as unknown as string);
+    return params.map(({ serializedTx }) => {
+      return deserializeTransaction(serializedTx);
     });
   }, [params]);
 
@@ -110,10 +112,6 @@ export default function Entry({ request }: EntryProps) {
     try {
       setIsProcessing(true);
 
-      const txs = params.map((hexTx) => {
-        return deserializeTransaction(hexTx as unknown as string);
-      });
-
       if (!keyPair) {
         throw new Error('key pair does not exist');
       }
@@ -125,9 +123,11 @@ export default function Entry({ request }: EntryProps) {
       const privateKey = keyPair.privateKey;
       const privateKeyBuffer = Buffer.from(privateKey, 'hex');
 
-      const rpcURLs = nativeAccountAsset?.chain.rpcUrls.map((item) => item.url) || [];
-
       if (method === 'solana_signTransaction' || method === 'solana_signAllTransactions') {
+        const txs = params.map(({ serializedTx }) => {
+          return deserializeTransaction(serializedTx);
+        });
+
         const signedTxs = txs.map((tx) => {
           return signTransaction(tx, privateKeyBuffer);
         });
@@ -156,16 +156,30 @@ export default function Entry({ request }: EntryProps) {
       }
 
       if (method === 'solana_signAndSendTransaction' || method === 'solana_signAndSendAllTransactions') {
-        const signedTxs = txs.map((tx) => {
-          return signTransaction(tx, privateKeyBuffer);
+        const txs = params.map((param) => {
+          const { serializedTx, ...options } = param;
+
+          return { tx: deserializeTransaction(serializedTx), options };
         });
 
-        const connection = new Connection(rpcURLs[0], 'confirmed');
+        const signedTxs = txs.map(({ tx, options }) => {
+          return { signedTx: signTransaction(tx, privateKeyBuffer), options };
+        });
 
         const responseAll = await Promise.all(
-          signedTxs.map(async (tx) => {
+          signedTxs.map(async ({ signedTx, options }) => {
             try {
-              return connection.sendRawTransaction(tx.serialize());
+              const sendOptions: SendOptions = options;
+
+              const { result: signature } = await requestRPC<SolanaRpcSendTransactionResponse>('sendTransaction', [
+                Buffer.from(signedTx.serialize()).toString('base64'),
+                {
+                  encoding: 'base64',
+                  ...sendOptions,
+                },
+              ]);
+
+              return signature;
             } catch {
               return undefined;
             }

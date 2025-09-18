@@ -9,6 +9,7 @@ import type {
   SuiSignTransactionBlockInput,
   SuiSignTransactionInput,
 } from '@mysten/wallet-standard';
+import type { Wallet } from '@wallet-standard/base';
 
 import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/types/extension';
@@ -185,7 +186,7 @@ declare global {
       bitcoin: BitcoinProvider;
       aptos: AptosWallet;
       iota: IotaProvider;
-      solana?: SolanaProvider;
+      solana: Wallet;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;

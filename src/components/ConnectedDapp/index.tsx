@@ -4,6 +4,7 @@ import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useActiveTabInfo } from '@/hooks/current/useActiveTabInfo';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as ManageDapps } from '@/pages/manage-dapps';
+import { emitDisconnectDapp } from '@/utils/event';
 import { getSiteTitle } from '@/utils/website';
 
 import { ContentsContainer, ContentsInfoContainer, StyledIconButton } from './styled';
@@ -26,6 +27,11 @@ export default function ConnectedDapp() {
 
   const { siteIconURL } = useSiteIconURL(isConnected ? origin : '');
   const siteTitle = getSiteTitle(origin);
+
+  const disconnect = () => {
+    removeApprovedOrigin(origin);
+    emitDisconnectDapp();
+  };
 
   if (!origin || !isConnected) {
     return null;
@@ -51,7 +57,7 @@ export default function ConnectedDapp() {
         <StyledIconButton
           onClick={(e) => {
             e.stopPropagation();
-            removeApprovedOrigin(origin);
+            disconnect();
           }}
         >
           <DisconnectIcon />
