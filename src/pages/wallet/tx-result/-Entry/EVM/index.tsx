@@ -9,9 +9,6 @@ import Base1300Text from '@/components/common/Base1300Text/index.tsx';
 import Button from '@/components/common/Button/index.tsx';
 import Image from '@/components/common/Image/index.tsx';
 import TextButton from '@/components/common/TextButton/index.tsx';
-import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error.ts';
-import { TRANSACTION_RESULT } from '@/constants/evm/tx.ts';
-import { TX_CONFIRMED_STATUS } from '@/constants/txStatus.ts';
 import { useTxInfo } from '@/hooks/evm/useTxInfo.ts';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { Route as Dashboard } from '@/pages';
@@ -48,20 +45,8 @@ export default function EVM({ coinId, txHash, address }: EVMProps) {
 
   const txExplorerUrl = selectedAsset?.chain.explorer.account && txHash ? selectedAsset.chain.explorer.tx.replace('${hash}', txHash) : '';
 
-  const txConfirmedStatus = (() => {
-    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;
-
-    if (txInfo.data?.result?.status) {
-      if (BigInt(txInfo.data.result.status).toString(10) !== TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.FAILED;
-
-      if (BigInt(txInfo.data.result.status).toString(10) === TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.CONFIRMED;
-    }
-
-    return undefined;
-  })();
-
-  const isTxConfirmed = txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED;
-  const isTxFailed = txConfirmedStatus === TX_CONFIRMED_STATUS.FAILED || !txHash || txInfo.error;
+  const isTxConfirmed = txInfo.isTxSuccess;
+  const isTxFailed = txInfo.isTxFailed || txInfo.isTxNotFound || txInfo.isTxTimeout;
 
   const title = (() => {
     if (isTxFailed) return t('pages.wallet.tx-result.entry.txFailTitle');

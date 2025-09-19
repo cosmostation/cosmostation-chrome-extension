@@ -1,12 +1,11 @@
+import { ethers } from 'ethers';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
-import { TRANSACTION_RESULT as EVM_TX_RESULT } from '@/constants/evm/tx';
 import { TRANSACTION_RESULT as IOTA_TX_RESULT } from '@/constants/iota';
 import { TRANSACTION_RESULT as SUI_TX_RESULT } from '@/constants/sui';
 import { sendMessage } from '@/libs/extension';
 import type { TxInfoResponse } from '@/types/cosmos/txInfo';
-import type { EvmTxInfoResponse } from '@/types/evm/api';
 import type { IotaTxInfoResponse } from '@/types/iota/api';
 import type { SuiTxInfoResponse } from '@/types/sui/api';
 import { getWithFullResponse, post } from '@/utils/axios';
@@ -127,29 +126,34 @@ export function useTxWatcher(config?: UseFetchConfig) {
           continue;
         }
 
+        const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
+
+        const providers = rpcUrls.map(
+          (url) =>
+            new ethers.JsonRpcProvider(url, undefined, {
+              staticNetwork: true,
+              batchMaxCount: 1,
+            }),
+        );
+
+        const allRpcProvider = new ethers.FallbackProvider(
+          providers.map((provider, index) => ({
+            provider,
+            priority: index + 1,
+            weight: 1,
+          })),
+        );
         try {
-          const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
+          const confirmationsNeeded = 1;
+          const timeout = 4000;
 
-          const status = await Promise.any(
-            rpcUrls.map((rpcUrl) =>
-              post<EvmTxInfoResponse>(
-                rpcUrl,
-                {
-                  method: 'eth_getTransactionReceipt',
-                  params: [tx.txHash],
-                  id: 1,
-                  jsonrpc: '2.0',
-                },
-                { timeout: 5000 },
-              ),
-            ),
-          );
+          const receipt = await allRpcProvider.waitForTransaction(tx.txHash, confirmationsNeeded, timeout);
 
-          if (status.error || status.result === null || !status.result?.status) {
+          const isTxSuccess = receipt?.status === 1;
+
+          if (!isTxSuccess) {
             throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
           }
-
-          const isTxSuccess = BigInt(status.result.status).toString(10) === EVM_TX_RESULT.SUCCESS;
 
           if (isTxSuccess) {
             await sendMessage({
@@ -169,6 +173,8 @@ export function useTxWatcher(config?: UseFetchConfig) {
         } catch (error) {
           devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
           updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
+        } finally {
+          allRpcProvider.destroy();
         }
       }
 
