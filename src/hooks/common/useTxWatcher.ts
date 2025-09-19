@@ -10,6 +10,7 @@ import type { IotaTxInfoResponse } from '@/types/iota/api';
 import type { SuiTxInfoResponse } from '@/types/sui/api';
 import { getWithFullResponse, post } from '@/utils/axios';
 import { devLogger } from '@/utils/devLogger';
+import { ethersProvider } from '@/utils/ethereum/ethers';
 import { buildRequestUrl } from '@/utils/fetch';
 import { wait } from '@/utils/fetch/wait';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
@@ -128,12 +129,11 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
         const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
 
-        const providers = rpcUrls.map(
-          (url) =>
-            new ethers.JsonRpcProvider(url, undefined, {
-              staticNetwork: true,
-              batchMaxCount: 1,
-            }),
+        const providers = rpcUrls.map((url) =>
+          ethersProvider(url, undefined, {
+            staticNetwork: true,
+            batchMaxCount: 1,
+          }),
         );
 
         const allRpcProvider = new ethers.FallbackProvider(

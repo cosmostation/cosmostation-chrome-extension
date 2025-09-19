@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { TransactionReceipt } from 'ethers';
 import { ethers, isError } from 'ethers';
+
+import { ethersProvider } from '@/utils/ethereum/ethers';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -23,19 +25,20 @@ export type EthersTxResult = {
 
 export function useTxInfo({ coinId, txHash, config }: UseTxInfoProps) {
   const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
-  const [provider, setProvider] = useState<ethers.JsonRpcProvider | ethers.FallbackProvider | null>(null);
 
   const accountAsset = getEVMAccountAsset();
 
-  useEffect(() => {
-    const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
+  const rpcURLs = useMemo(() => accountAsset?.chain.rpcUrls.map((item) => item.url) || [], [accountAsset?.chain.rpcUrls]);
+
+  const waitForTransaction = useCallback(async (): Promise<EthersTxResult> => {
+    let allRpcProvider;
     if (rpcURLs.length > 0) {
       const fallbackConfig = {
         staticNetwork: true,
         batchMaxCount: 1,
       };
 
-      const providers = rpcURLs.map((url) => new ethers.JsonRpcProvider(url, undefined, fallbackConfig));
+      const providers = rpcURLs.map((url) => ethersProvider(url, undefined, fallbackConfig));
 
       if (providers.length > 1) {
         const fallbackProvider = new ethers.FallbackProvider(
@@ -45,17 +48,15 @@ export function useTxInfo({ coinId, txHash, config }: UseTxInfoProps) {
             weight: 1,
           })),
         );
-        setProvider(fallbackProvider);
+        allRpcProvider = fallbackProvider;
       } else {
-        setProvider(providers[0]);
+        allRpcProvider = providers[0];
       }
     } else {
-      setProvider(null);
+      allRpcProvider = null;
     }
-  }, [accountAsset?.chain.rpcUrls]);
 
-  const waitForTransaction = useCallback(async (): Promise<EthersTxResult> => {
-    if (!provider) {
+    if (!allRpcProvider) {
       return {
         status: 'invalid',
         error: 'No provider available',
@@ -73,7 +74,7 @@ export function useTxInfo({ coinId, txHash, config }: UseTxInfoProps) {
       const confirmationsNeeded = 1;
       const timeout = 60000;
 
-      const receipt = await provider.waitForTransaction(txHash, confirmationsNeeded, timeout);
+      const receipt = await allRpcProvider.waitForTransaction(txHash, confirmationsNeeded, timeout);
 
       if (!receipt) {
         return {
@@ -124,18 +125,17 @@ export function useTxInfo({ coinId, txHash, config }: UseTxInfoProps) {
         error: 'Transaction not found',
       };
     } finally {
-      provider.destroy();
+      if (allRpcProvider) {
+        allRpcProvider.destroy();
+      }
     }
-  }, [provider, txHash]);
+  }, [rpcURLs, txHash]);
 
   const fetchResult = useFetch<EthersTxResult>({
     queryKey: ['useTxInfo', coinId, txHash],
     fetchFunction: waitForTransaction,
     config: {
-      enabled: !!coinId && !!txHash && !!provider,
-      refetchInterval: (query) => {
-        return query.state.data?.status === 'pending' ? 5000 : false;
-      },
+      enabled: !!coinId && !!txHash && !!rpcURLs.length,
       ...config,
     },
   });
