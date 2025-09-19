@@ -1,89 +1,49 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Collapse from '@mui/material/Collapse';
 
 import Base1300Text from '@/components/common/Base1300Text';
-import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
-import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
-import { useAccountChangeDelay } from '@/hooks/util/useAccountChangeDelay';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
+import type { RequestStatus } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
-import type { DataFreshnessType } from '@/types/dataFreshness';
-import { checkDataFreshness } from '@/utils/date';
 
-import { Container, StyledIconContainer, TitleTextContainer } from './styled';
-import IconTextButton from '../common/IconTextButton';
+import { Container, TitleTextContainer } from './styled';
 
 import CautionIcon from '@/assets/images/icons/Caution16.svg';
-import RefreshIcon from '@/assets/images/icons/Refresh18.svg';
 
 type StaleBalanceErrorBannerProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
-  chainId: UniqueChainId;
-  lastUpdatedAtMs?: number | null;
+  chainId?: UniqueChainId;
+  fetchStatus?: RequestStatus;
 };
 
-export default function StaleBalanceErrorBanner({ lastUpdatedAtMs, chainId, ...remainer }: StaleBalanceErrorBannerProps) {
+export default function StaleBalanceErrorBanner({ fetchStatus, chainId, ...remainer }: StaleBalanceErrorBannerProps) {
   const { t } = useTranslation();
-  const { updateChainBalance, isLoadingChainBalance } = useManualBalanceUpdate();
-  const { isLoading: isUpdateBalanceLoading, isFetching: isUpdateBalanceFetching, isAutoRefetchPaused } = useUpdateBalance();
+  const { isLoading: isUpdateChainBalanceLoading } = useAutoBalanceRefresh(chainId && [chainId]);
 
-  const [freshnessStatus, setFreshnessStatus] = useState<DataFreshnessType | undefined>();
-  const isAccountChangeDelayActive = useAccountChangeDelay();
+  const currentStatus = useMemo(() => {
+    if (fetchStatus === 'error') {
+      if (isUpdateChainBalanceLoading) {
+        return 'updating';
+      }
+      return 'error';
+    }
+    return undefined;
+  }, [fetchStatus, isUpdateChainBalanceLoading]);
 
   const title = useMemo(() => {
-    if (!freshnessStatus || freshnessStatus === 'fresh') return null;
-    if (freshnessStatus === 'warning') return t('components.StaleBalanceErrorBanner.index.warning');
-    if (freshnessStatus === 'stale') return t('components.StaleBalanceErrorBanner.index.stale');
-  }, [freshnessStatus, t]);
+    if (currentStatus === 'updating') return t('components.StaleBalanceErrorBanner.index.warning');
+    if (currentStatus === 'error') return t('components.StaleBalanceErrorBanner.index.stale');
 
-  const handleOnClick = async () => {
-    if (freshnessStatus === 'warning') {
-      await updateChainBalance(chainId);
-    }
-  };
-
-  useEffect(() => {
-    if (!lastUpdatedAtMs) return;
-
-    const update = () => {
-      setFreshnessStatus(checkDataFreshness(lastUpdatedAtMs));
-    };
-
-    update();
-
-    const interval = setInterval(update, 60000);
-
-    return () => clearInterval(interval);
-  }, [lastUpdatedAtMs]);
+    return undefined;
+  }, [currentStatus, t]);
 
   return (
-    <Collapse
-      in={
-        !!title &&
-        !isUpdateBalanceLoading &&
-        !isUpdateBalanceFetching &&
-        !isAutoRefetchPaused &&
-        !isAccountChangeDelayActive &&
-        (freshnessStatus === 'warning' || freshnessStatus === 'stale')
-      }
-    >
-      <Container data-variant={freshnessStatus} {...remainer}>
+    <Collapse in={!!title && !!chainId && fetchStatus === 'error'}>
+      <Container data-variant={currentStatus} {...remainer}>
         <TitleTextContainer>
           <CautionIcon />
           <Base1300Text variant="b4_B">{title}</Base1300Text>
         </TitleTextContainer>
-
-        {freshnessStatus === 'warning' && (
-          <IconTextButton
-            onClick={handleOnClick}
-            leadingIcon={
-              <StyledIconContainer data-is-loading={isLoadingChainBalance}>
-                <RefreshIcon />
-              </StyledIconContainer>
-            }
-          >
-            <Base1300Text variant="b4_B">{t('components.StaleBalanceErrorBanner.index.refresh')}</Base1300Text>
-          </IconTextButton>
-        )}
       </Container>
     </Collapse>
   );

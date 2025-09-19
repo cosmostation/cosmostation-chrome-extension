@@ -17,7 +17,7 @@ export function useUpdateStaking() {
     return response;
   };
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ['updateStaking', currentAccount.id],
     enabled: !!currentAccount.id,
     queryFn: fetcher,
@@ -25,5 +25,5 @@ export function useUpdateStaking() {
     refetchInterval: 1000 * 60 * 5,
   });
 
-  return { data, isLoading, error };
+  return { data, isLoading, isFetching, error };
 }

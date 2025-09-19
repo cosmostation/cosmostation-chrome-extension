@@ -139,12 +139,10 @@ export const upsertCosmosBalance = <T extends AccountAddressBalanceCosmos>(origi
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balances = i.balances;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
 
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -152,12 +150,10 @@ export const upsertCustomCosmosBalance = <T extends AccountAddressBalanceCosmos>
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balances = i.balances;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
 
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -165,8 +161,10 @@ export const upsertEVMBalance = <T extends AccountAddressBalanceEvm>(originalLis
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balance = i.balance;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
+
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -174,12 +172,10 @@ export const upsertBitcoinBalance = <T extends AccountAddressBalanceBitcoin>(ori
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balance = i.balance;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
 
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -187,12 +183,9 @@ export const upsertAptosBalance = <T extends AccountAddressBalanceAptosV2>(origi
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balances = i.balances;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
-
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -200,12 +193,10 @@ export const upsertSuiBalance = <T extends AccountAddressBalanceSui>(originalLis
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balances = i.balances;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
 
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -213,12 +204,10 @@ export const upsertIotaBalance = <T extends AccountAddressBalanceIota>(originalL
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balances = i.balances;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
 
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 
@@ -227,7 +216,9 @@ export const upsertERC20Balance = <T extends AccountAddressBalanceErc20>(origina
     const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exist) => isEqualsIgnoringCase(exist.contract, incoming.contract)) || incoming;
+      const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.contract, incoming.contract));
+
+      return existingBalance ? { ...incoming, balance: existingBalance.balance } : incoming;
     });
 
     e.balances = resolved;
@@ -239,7 +230,9 @@ export const upsertCW20Balance = <T extends AccountAddressBalanceCw20>(originalL
     const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exist) => isEqualsIgnoringCase(exist.contract, incoming.contract)) || incoming;
+      const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.contract, incoming.contract));
+
+      return existingBalance ? { ...incoming, balance: existingBalance.balance } : incoming;
     });
 
     e.balances = resolved;

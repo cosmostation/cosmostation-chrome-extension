@@ -73,13 +73,15 @@ export default function BalanceValueButton({
         handleHovering(false);
       }}
       isHovering={isHovering}
+      disabled={isUpdatingBalance}
       trailingIcon={
-        isHovering || isUpdatingBalance ? (
-          <StyledIconContainer data-is-loading={isUpdatingBalance}>
-            <RefreshIcon />
-          </StyledIconContainer>
-        ) : undefined
+        <StyledIconContainer data-is-loading={isUpdatingBalance}>
+          <RefreshIcon />
+        </StyledIconContainer>
       }
+      style={{
+        cursor: isUpdatingBalance ? 'not-allowed' : 'default',
+      }}
     >
       <TotalBalanceContainer>
         {isProcessing ? (

@@ -10,7 +10,7 @@ import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
-import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainIdFromCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash } from '@/utils/string';
 
 import MoreOptionBottomSheet from './components/MoreOptionBottomSheet';
@@ -146,7 +146,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
   return (
     <>
-      {currentCoin?.lastUpdatedAtMs && <StaleBalanceErrorBanner chainId={getUniqueChainId(currentCoin.chain)} lastUpdatedAtMs={currentCoin.lastUpdatedAtMs} />}
+      <StaleBalanceErrorBanner chainId={getUniqueChainIdFromCoinId(coinId)} fetchStatus={currentCoin?.fetchStatus?.balance} />
       <MainBox
         top={
           <TopContainer>
