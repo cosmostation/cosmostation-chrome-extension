@@ -37,7 +37,8 @@ export default function CheckLegacyAddressBalanceBottomSheet({ ...remainder }: C
   const { t } = useTranslation();
   const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
-  const { initCheckLegacyBalanceAccountIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const initCheckLegacyBalanceAccountIds = useExtensionStorageStore((state) => state.initCheckLegacyBalanceAccountIds);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const { currentAccount } = useCurrentAccount();
   const { data: multipleAccountTypeWithAddress } = useMultipleAccountTypes({ accountId: currentAccount?.id });
