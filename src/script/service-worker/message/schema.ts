@@ -206,18 +206,8 @@ export const cosGetBalanceCW20ParamsSchema = (chainNames: string[], chain: Cosmo
       .lowercase()
       .valid(...chainNames)
       .required(),
-    contractAddress: Joi.string()
-      .custom(cosmosAddressValidator, 'cosmos contract address validation')
-      .required()
-      .messages({
-        'any.invalid': `Contract address must be a valid ${chain.accountPrefix} address with length 39 or 59 characters`,
-      }),
-    address: Joi.string()
-      .custom(cosmosAddressValidator, 'cosmos address validation')
-      .required()
-      .messages({
-        'any.invalid': `Address must be a valid ${chain.accountPrefix} address with length 39 or 59 characters`,
-      }),
+    contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
+    address: Joi.string().custom(cosmosAddressValidator, 'cosmos address validation').required(),
   })
     .label('params')
     .required();
@@ -231,12 +221,7 @@ export const cosGetTokenInfoCW20ParamsSchema = (chainNames: string[], chain: Cos
       .lowercase()
       .valid(...chainNames)
       .required(),
-    contractAddress: Joi.string()
-      .custom(cosmosAddressValidator, 'cosmos contract address validation')
-      .required()
-      .messages({
-        'any.invalid': `Contract address must be a valid ${chain.accountPrefix} address with length 39 or 59 characters`,
-      }),
+    contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
   })
     .label('params')
     .required();
@@ -253,12 +238,7 @@ export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: Cosmos
     tokens: Joi.array()
       .items(
         Joi.object<CosAddTokensCW20['params']['tokens'][0]>({
-          contractAddress: Joi.string()
-            .custom(cosmosAddressValidator, 'cosmos contract address validation')
-            .required()
-            .messages({
-              'any.invalid': `Contract address must be a valid ${chain.accountPrefix} address with length 39 or 59 characters`,
-            }),
+          contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
           coinGeckoId: Joi.string().empty('').optional(),
           imageURL: Joi.string().empty('').optional(),
         }),
@@ -280,12 +260,7 @@ export const cosAddNFTsCW721ParamsSchema = (chainNames: string[], chain: CosmosC
     nfts: Joi.array()
       .items(
         Joi.object<CosAddNFTsCW721['params']['nfts'][0]>({
-          contractAddress: Joi.string()
-            .custom(cosmosAddressValidator, 'cosmos contract address validation')
-            .required()
-            .messages({
-              'any.invalid': `Contract address must be a valid ${chain.accountPrefix} address with length 39 or 59 characters`,
-            }),
+          contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
           tokenId: Joi.string().optional(),
         }),
       )
