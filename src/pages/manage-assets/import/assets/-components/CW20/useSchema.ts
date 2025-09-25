@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import type { CustomHelpers } from 'joi';
 
 import type { CosmosChain } from '@/types/chain';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import Joi from '@/utils/joi';
-import { getCosmosAddressRegex } from '@/utils/regex';
 
 export type ImportCustomCW20TokenForm = {
   address: string;
@@ -18,16 +19,22 @@ type UseSchemaProps = {
 export function useSchema({ chain }: UseSchemaProps) {
   const { t } = useTranslation();
 
-  const regex = getCosmosAddressRegex(chain?.accountPrefix || '', [39, 59]);
+  const cosmosAddressValidator = (value: string, helpers: CustomHelpers) => {
+    if (!isValidCosmosAddress(value, chain?.accountPrefix || '')) {
+      return helpers.error('any.invalid');
+    }
+    return value;
+  };
 
   const importCustomCW20TokenForm = Joi.object<ImportCustomCW20TokenForm>({
     address: Joi.string()
       .required()
-      .pattern(regex)
+      .custom(cosmosAddressValidator, 'cosmos contract address validation')
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
         'string.pattern.base': t('schema.importTokenForm.address.string.pattern.base'),
+        'any.invalid': `Contract address must be a valid ${chain?.accountPrefix} address with length 39 or 59 characters`,
       }),
     symbol: Joi.string()
       .required()

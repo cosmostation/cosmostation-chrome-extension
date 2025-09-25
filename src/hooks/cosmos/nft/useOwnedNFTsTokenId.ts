@@ -7,9 +7,9 @@ import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { NFTIDResponse } from '@/types/cosmos/contract';
 import { get } from '@/utils/axios';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
-import { getCosmosAddressRegex } from '@/utils/regex';
 
 type UseOwnedNFTsTokenIdParam = {
   contractAddress: string;
@@ -51,10 +51,7 @@ export function useOwnedNFTsTokenId({ params, config }: UseOwnedNFTsTokenIdProps
     const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, uniqueChainId));
     if (!chain) return null;
 
-    const regex = getCosmosAddressRegex(chain.accountPrefix || '', [39, 59]);
-    if (!regex.test(contractAddress) || !regex.test(ownerAddress)) {
-      return null;
-    }
+    if (!isValidCosmosAddress(contractAddress, chain.accountPrefix || '') || !isValidCosmosAddress(ownerAddress, chain?.accountPrefix || '')) return null;
 
     const { id: chainlistChainId } = parseUniqueChainId(uniqueChainId);
     const cosmosEndpoints = chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainlistChainId));
