@@ -6,9 +6,9 @@ import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import type { ContractInfoResponse } from '@/types/cosmos/contract';
 import { get, isAxiosError } from '@/utils/axios';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
-import { getCosmosAddressRegex } from '@/utils/regex';
 
 type UseContractsInfoParam = {
   contractAddress: string;
@@ -42,8 +42,7 @@ export function useContractsInfo({ params, config }: UseContractsInfoProps) {
     const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, uniqueChainId));
     if (!chain) return null;
 
-    const regex = getCosmosAddressRegex(chain.accountPrefix || '', [39, 59]);
-    if (!regex.test(contractAddress)) return null;
+    if (!isValidCosmosAddress(contractAddress, chain.accountPrefix || '')) return null;
 
     const { id: chainlistChainId } = parseUniqueChainId(uniqueChainId);
     const cosmosEndpoints = chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainlistChainId));

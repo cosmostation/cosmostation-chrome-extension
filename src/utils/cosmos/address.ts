@@ -6,9 +6,22 @@ import type { CosmosValidator } from '@/types/cosmos/validator';
 import { get } from '../axios';
 import { buildRequestUrl } from '../fetch';
 
-export function isValidCosmosAddress(address: string, addressPrefix: string): boolean {
+export function isValidCosmosAddress(address: string, blockchainPrefix: string): boolean {
+  if (!address.startsWith(blockchainPrefix)) return false;
+
+  const payload = address.slice(blockchainPrefix.length);
+  const validAddressLengths = [39, 59];
+
+  const isWrongAddressLength = !validAddressLengths.includes(payload.length);
+  if (isWrongAddressLength) return false;
+
+  return isBech32(address, blockchainPrefix);
+}
+
+function isBech32(value: string, prefix: string): boolean {
   try {
-    return bech32.decode(address).prefix === addressPrefix;
+    const words = bech32.decode(value);
+    return words.prefix === prefix;
   } catch {
     return false;
   }

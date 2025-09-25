@@ -21,9 +21,9 @@ import { useChainList } from '@/hooks/useChainList.ts';
 import type { ChainType, CosmosChain, UniqueChainId } from '@/types/chain.ts';
 import type { AddressInfo } from '@/types/extension';
 import { isBitcoinChain } from '@/utils/chain';
-import { getAddressPrefix } from '@/utils/cosmos/address';
+import { getAddressPrefix, isValidCosmosAddress } from '@/utils/cosmos/address';
 import { getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator.ts';
-import { aptosAddressRegex, getCosmosAddressRegex } from '@/utils/regex';
+import { aptosAddressRegex } from '@/utils/regex';
 import { toastError, toastSuccess } from '@/utils/toast';
 
 import { Container, FormContainer, InformationPanelContainer, InputWrapper, UniversalContainer } from './-styled';
@@ -84,7 +84,7 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
   const checkIsValidAddress = (address: string) => {
     if (currentChain?.chainType === 'cosmos') {
       const chainCasted = currentChain as CosmosChain;
-      return getCosmosAddressRegex(chainCasted.accountPrefix, [39]).test(address);
+      return isValidCosmosAddress(address, chainCasted.accountPrefix);
     }
 
     if (currentChain?.chainType === 'evm') {

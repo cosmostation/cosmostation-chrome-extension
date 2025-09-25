@@ -31,12 +31,12 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { isTestnetChain } from '@/utils/chain.ts';
+import { isValidCosmosAddress } from '@/utils/cosmos/address.ts';
 import { executeSendTransaction } from '@/utils/cosmos/executeTx.ts';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator.ts';
-import { getCosmosAddressRegex } from '@/utils/regex.ts';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
@@ -263,8 +263,6 @@ export default function Cosmos({ coinId }: CosmosProps) {
     [currentRecipientChain, selectedCoinToSend?.chain.id],
   );
 
-  const addressRegex = useMemo(() => getCosmosAddressRegex(currentRecipientChain?.accountPrefix || '', [39]), [currentRecipientChain?.accountPrefix]);
-
   const currentRecipientAsset = useMemo(
     () => availableRecipientAsset.find((asset) => isMatchingUniqueChainId(asset.chain, currentRecipientChainId)),
     [availableRecipientAsset, currentRecipientChainId],
@@ -373,7 +371,12 @@ export default function Cosmos({ coinId }: CosmosProps) {
         return undefined;
       }
 
-      if (account.data?.value.account_number && addressRegex.test(recipientAddress) && gt(displaySendAmount || '0', '0') && alternativeFeeAsset) {
+      if (
+        account.data?.value.account_number &&
+        isValidCosmosAddress(recipientAddress, currentRecipientChain?.accountPrefix || '') &&
+        gt(displaySendAmount || '0', '0') &&
+        alternativeFeeAsset
+      ) {
         const sequence = String(account.data?.value.sequence || '0');
 
         if (selectedCoinToSend?.asset.type === 'cw20') {
@@ -446,10 +449,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
-    addressRegex,
     alternativeFeeAsset,
     alternativeGasRate,
     currentRecipientAsset,
+    currentRecipientChain?.accountPrefix,
     displaySendAmount,
     inputMemo,
     isIBCSend,
@@ -562,13 +565,13 @@ export default function Cosmos({ coinId }: CosmosProps) {
         return t('pages.wallet.send.$coinId.Entry.Cosmos.index.invalidAddress');
       }
 
-      if (!addressRegex.test(recipientAddress)) {
+      if (!isValidCosmosAddress(recipientAddress, currentRecipientChain?.accountPrefix || '')) {
         return t('pages.wallet.send.$coinId.Entry.Cosmos.index.invalidAddress');
       }
     }
 
     return '';
-  }, [addressRegex, recipientAddress, selectedCoinToSend?.address.address, t]);
+  }, [currentRecipientChain?.accountPrefix, recipientAddress, selectedCoinToSend?.address.address, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
     if (displaySendAmount) {
