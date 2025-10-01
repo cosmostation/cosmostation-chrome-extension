@@ -91,7 +91,7 @@ export async function address(id: string) {
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-address`>>({ [`${account.id}-address`]: addresses });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`address-${id}`, `${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`address-${id}`, `${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(`address-${id}`, error);
     }
@@ -147,7 +147,7 @@ export async function customChainAddress(id: string) {
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-address`>>({ [`${account.id}-custom-address`]: addresses });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`custom-address-${id}`, `${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`custom-address-${id}`, `${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(`custom-address-${id}`, error);
     }

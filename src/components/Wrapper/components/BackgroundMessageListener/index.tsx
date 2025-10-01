@@ -30,9 +30,8 @@ export default function BackgroundMessageListener({ children }: BackgroundMessag
 
       if (request.type === 'updateAssets') {
         refreshAssets();
+        sendResponse({ type: request.type, message: { success: true } });
       }
-
-      return true;
     };
 
     extension.runtime.onMessage.addListener(handler);

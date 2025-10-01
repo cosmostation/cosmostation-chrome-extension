@@ -2,7 +2,6 @@ import PromisePool from '@supercharge/promise-pool';
 
 import { chainToDeploymentMap } from '@/constants/evm/mutlicall3';
 import { getAccountAddress, getAllAccountAddress } from '@/libs/account';
-import { getAssets } from '@/libs/asset';
 import type { AccountAddressBalanceErc20 } from '@/types/account';
 import type { ChainId } from '@/types/chain';
 import type { Cw20Balance } from '@/types/cosmos/balance';
@@ -29,7 +28,7 @@ export async function cw20Balance(id: string, { chainId, priority, updateAssets,
   const accountAddress = await getAccountAddress(id);
   const hiddenAssetIdSet = await createHiddenAssetIdSet(id);
 
-  const { cw20Assets } = await getAssets();
+  const { cw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets']);
 
   const cw20AssetsWithoutHidden = cw20Assets.filter((asset) => {
     const isAssetVisible = !hiddenAssetIdSet?.has(getCoinId(asset));
@@ -133,7 +132,7 @@ export async function erc20Balance(id: string, { chainId, priority, updateAssets
   const hiddenAssetIdSet = await createHiddenAssetIdSet(id);
 
   const chainMapInstance = await createChainMap('evm');
-  const { erc20Assets } = await getAssets();
+  const { erc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['erc20Assets']);
 
   const erc20AssetsToDisplay = erc20Assets.filter((asset) => {
     const isAssetVisible = !hiddenAssetIdSet?.has(getCoinId(asset));
@@ -297,7 +296,7 @@ export async function customErc20Balance(id: string, { chainId, updateAssets, ch
 
   const chainMapInstance = await createChainMap('evm');
 
-  const { customErc20Assets } = await getAssets();
+  const { customErc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['customErc20Assets']);
 
   const isUpdateSpecificAddress = !!chainId;
 
@@ -428,7 +427,7 @@ export async function customCw20Balance(id: string, { chainId, updateAssets, chu
 
   const cosmwasmChainMapInstance = await createCosmwasmChainMap();
 
-  const { customCw20Assets } = await getAssets();
+  const { customCw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['customCw20Assets']);
 
   const isUpdateSpecificAddress = !!chainId;
 

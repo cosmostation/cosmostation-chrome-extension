@@ -97,7 +97,7 @@ export async function v11() {
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }

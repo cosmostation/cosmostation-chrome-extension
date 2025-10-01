@@ -17,7 +17,7 @@ export async function updateAccountInfo(id: string) {
     await Promise.all([cosmosAccountInfo(id)]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }

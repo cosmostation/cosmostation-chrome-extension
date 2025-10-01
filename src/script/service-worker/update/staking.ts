@@ -17,7 +17,7 @@ export async function updateStakingRelatedBalance(id: string) {
     await Promise.all([cosmosStaking(id), suiStaking(id), iotaStaking(id)]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -34,7 +34,7 @@ export async function updateSpecificChainStaking(id: string, chainId: UniqueChai
     await fetchStakingByChainType(id, chainId);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -43,19 +43,23 @@ export async function updateSpecificChainStaking(id: string, chainId: UniqueChai
   }
 }
 
-const CHUNK_SIZE = 30;
-
 export async function updatePriorityChainStaking(id: string, priority: 'high' | 'low', updateAssets: () => void) {
   console.time(`update-${priority}-priority-staking-related-balance-${id}`);
   try {
     await getAccount(id);
 
-    const commonOption = { priority, updateAssets, chunkSize: CHUNK_SIZE };
+    const chunkSize = priority === 'high' ? 10 : 40;
+    const optionUpdatePerChunk = { priority, updateAssets, chunkSize };
+    const optionUpdateAfterAll = { priority, chunkSize };
 
-    await Promise.all([cosmosStaking(id, commonOption), suiStaking(id, commonOption), iotaStaking(id, commonOption)]);
+    await Promise.all([
+      cosmosStaking(id, optionUpdatePerChunk),
+
+      Promise.all([suiStaking(id, optionUpdateAfterAll), iotaStaking(id, optionUpdateAfterAll)]).then(() => updateAssets()),
+    ]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }

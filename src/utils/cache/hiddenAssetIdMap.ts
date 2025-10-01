@@ -1,33 +1,67 @@
 import { getHiddenAssets, getVisibleAssets } from '@/libs/asset';
+import type { AssetId } from '@/types/asset';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
-const hiddenAssetIdMap = new Map<string, Set<string>>();
-const visibleAssetIdMap = new Map<string, Set<string>>();
+const TTL = 5 * 60 * 1000; // 5분
+
+interface CacheItem {
+  data: Set<string>;
+  hash: string;
+  timestamp: number;
+}
+
+const hiddenAssetCache = new Map<string, CacheItem>();
+const visibleAssetCache = new Map<string, CacheItem>();
+
+function isCacheValid(entry: CacheItem | undefined, newHash: string): boolean {
+  if (!entry) return false;
+  if (Date.now() - entry.timestamp >= TTL) return false;
+  return entry.hash === newHash;
+}
+
+function createHash(assetIds: AssetId[]): string {
+  return assetIds
+    .map((item) => getCoinId(item))
+    .sort()
+    .join('|');
+}
 
 export async function createHiddenAssetIdSet(id: string) {
+  const cached = hiddenAssetCache.get(id);
   const hiddenAssets = await getHiddenAssets(id);
+  const newHash = createHash(hiddenAssets);
 
-  if (hiddenAssetIdMap.get(id)?.size !== hiddenAssets.length) {
-    hiddenAssetIdMap.clear();
-
-    const hiddenAssetIdSet = new Set(hiddenAssets.map((item) => getCoinId(item)));
-
-    hiddenAssetIdMap.set(id, hiddenAssetIdSet);
+  if (isCacheValid(cached, newHash)) {
+    return cached!.data;
   }
 
-  return hiddenAssetIdMap.get(id);
+  const hiddenAssetIdSet = new Set(hiddenAssets.map((item) => getCoinId(item)));
+
+  hiddenAssetCache.set(id, {
+    data: hiddenAssetIdSet,
+    hash: newHash,
+    timestamp: Date.now(),
+  });
+
+  return hiddenAssetIdSet;
 }
 
 export async function createVisibleAssetIdSet(id: string) {
+  const cached = visibleAssetCache.get(id);
   const visibleAssets = await getVisibleAssets(id);
+  const newHash = createHash(visibleAssets);
 
-  if (visibleAssetIdMap.get(id)?.size !== visibleAssets.length) {
-    visibleAssetIdMap.clear();
-
-    const visibleAssetIdSet = new Set(visibleAssets.map((item) => getCoinId(item)));
-
-    visibleAssetIdMap.set(id, visibleAssetIdSet);
+  if (isCacheValid(cached, newHash)) {
+    return cached!.data;
   }
 
-  return visibleAssetIdMap.get(id);
+  const visibleAssetIdSet = new Set(visibleAssets.map((item) => getCoinId(item)));
+
+  visibleAssetCache.set(id, {
+    data: visibleAssetIdSet,
+    hash: newHash,
+    timestamp: Date.now(),
+  });
+
+  return visibleAssetIdSet;
 }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 import { getAccount } from '@/libs/account';
-import { getAccountAssets, getAssets, getHiddenAssets } from '@/libs/asset';
+import { getHiddenAssets } from '@/libs/asset';
+import { getAccountAssets } from '@/libs/asset/coin/default/accountAsset';
 import { getAddedCustomChains } from '@/libs/chain';
 import type { UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -36,7 +37,7 @@ export async function updateDefaultAssetsBalance(id: string) {
     updateBalance(id);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -56,7 +57,7 @@ export async function updateActiveAssetsBalance(id: string) {
     await initAccount(id);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -73,7 +74,7 @@ export async function updateSpecificChainBalance(id: string, chainId: UniqueChai
     await fetchChainBalanceByType(id, chainId);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -131,7 +132,7 @@ export async function updateBalance(id: string) {
     await Promise.all([erc20Balance(id), cw20Balance(id), customErc20Balance(id), customCw20Balance(id)]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -147,7 +148,7 @@ export async function updateCustomBalance(id: string) {
     await Promise.all([customCosmosBalances(id), customEvmBalances(id)]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -156,33 +157,35 @@ export async function updateCustomBalance(id: string) {
   }
 }
 
-const CHUNK_SIZE = 20;
-
 export async function updatePriorityBalance(id: string, priority: 'high' | 'low', updateAssets: () => void) {
   console.time(`update-priority-balance-${id}`);
 
   try {
     await getAccount(id);
 
-    const commonOption = { priority, updateAssets, chunkSize: CHUNK_SIZE };
+    const chunkSize = priority === 'high' ? 10 : 30;
+    const optionUpdatePerChunk = { priority, updateAssets, chunkSize };
+    const optionUpdateAfterAll = { priority, chunkSize };
 
     await Promise.all([
-      cosmosBalances(id, commonOption),
-      evmBalances(id, commonOption),
-      aptosBalances(id, commonOption),
-      suiBalances(id, commonOption),
-      iotaBalances(id, commonOption),
-      bitcoinBalances(id, commonOption),
-      erc20Balance(id, commonOption),
-      cw20Balance(id, commonOption),
-      customErc20Balance(id, commonOption),
-      customCw20Balance(id, commonOption),
-      customCosmosBalances(id, commonOption),
-      customEvmBalances(id, commonOption),
+      cosmosBalances(id, optionUpdatePerChunk),
+      evmBalances(id, optionUpdatePerChunk),
+      erc20Balance(id, optionUpdatePerChunk),
+      cw20Balance(id, optionUpdatePerChunk),
+      customErc20Balance(id, optionUpdatePerChunk),
+      customCw20Balance(id, optionUpdatePerChunk),
+      Promise.all([
+        suiBalances(id, optionUpdateAfterAll),
+        iotaBalances(id, optionUpdateAfterAll),
+        aptosBalances(id, optionUpdateAfterAll),
+        bitcoinBalances(id, optionUpdateAfterAll),
+        customCosmosBalances(id, optionUpdateAfterAll),
+        customEvmBalances(id, optionUpdateAfterAll),
+      ]).then(() => updateAssets()),
     ]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
@@ -264,7 +267,7 @@ export async function initAssests(id: string) {
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20Assets, erc20Assets } = await getAssets();
+    const { erc20Assets, cw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets', 'erc20Assets']);
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);

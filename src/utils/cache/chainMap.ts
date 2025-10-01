@@ -2,6 +2,33 @@ import { getAllChains } from '@/libs/chain';
 import type { AptosChain, BitcoinChain, Chain, ChainType, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
+type CacheItem = {
+  data: Chain[];
+  timestamp: number;
+};
+
+let cachedAllChains: CacheItem | null = null;
+const CACHE_TTL = 5 * 60 * 1000;
+
+function isCacheValid(timestamp: number): boolean {
+  return Date.now() - timestamp < CACHE_TTL;
+}
+
+async function getChainsWithTtl(): Promise<Chain[]> {
+  if (cachedAllChains && isCacheValid(cachedAllChains.timestamp)) {
+    return cachedAllChains.data;
+  }
+
+  const newChains = await getAllChains();
+
+  cachedAllChains = {
+    data: newChains,
+    timestamp: Date.now(),
+  };
+
+  return newChains;
+}
+
 const cosmosChainMap = new Map<string, CosmosChain>();
 const evmChainMap = new Map<string, EvmChain>();
 const bitcoinChainMap = new Map<string, BitcoinChain>();
@@ -11,7 +38,7 @@ const iotaChainMap = new Map<string, IotaChain>();
 const cosmwasmChainMap = new Map<string, CosmosChain>();
 const stakingSupportCosmosChainMap = new Map<string, CosmosChain>();
 
-type ChainMapByType = {
+export type ChainMapByType = {
   cosmos: Map<string, CosmosChain>;
   evm: Map<string, EvmChain>;
   bitcoin: Map<string, BitcoinChain>;
@@ -81,10 +108,11 @@ function updateChainMap(chainType: ChainType, chains: Chain[]) {
     }
   }
 }
+
 export async function createChainMap(): Promise<ChainMapByType>;
 export async function createChainMap<T extends ChainType>(chainType: T): Promise<ChainMapByType[T]>;
 export async function createChainMap<T extends ChainType>(chainType?: T): Promise<ChainMapByType | ChainMapByType[T]> {
-  const allChains = await getAllChains();
+  const allChains = await getChainsWithTtl();
 
   if (chainType) {
     updateChainMap(chainType, allChains);
@@ -105,7 +133,7 @@ export async function createAllChainMap(): Promise<ChainMapByType | undefined> {
 }
 
 export async function createCosmwasmChainMap() {
-  const allChains = await getAllChains();
+  const allChains = await getChainsWithTtl();
   const allCosmwasmChains = allChains.filter((chain) => chain.chainType === 'cosmos' && chain.isCosmwasm) as CosmosChain[];
 
   if (cosmwasmChainMap.size !== allCosmwasmChains.length) {
@@ -119,7 +147,7 @@ export async function createCosmwasmChainMap() {
 }
 
 export async function createStakingSupportCosmosChainMap() {
-  const allChains = await getAllChains();
+  const allChains = await getChainsWithTtl();
   const allStakingSupportChains = allChains.filter((chain) => chain.chainType === 'cosmos' && chain.isSupportStaking) as CosmosChain[];
 
   if (stakingSupportCosmosChainMap.size !== allStakingSupportChains.length) {
