@@ -418,7 +418,7 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
               chainType: 'iota',
             },
             chain: iotaChain,
-            addresses: addressesMap.get(iotaChainKey) || [],
+            addresses: addressList,
           });
         }
       }

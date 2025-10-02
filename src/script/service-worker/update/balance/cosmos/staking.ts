@@ -281,7 +281,7 @@ async function getCosmosCommissionsForAddresses(accountId: string, startUpdateTi
       const { lcdUrls } = chain;
 
       try {
-        const shouldFetchCommission = await isValidatorCached(address, lcdUrls[0].url, chain.validatorAccountPrefix);
+        const shouldFetchCommission = lcdUrls.length > 0 && (await isValidatorCached(address, lcdUrls[0].url, chain.validatorAccountPrefix));
         if (!shouldFetchCommission) {
           throw new Error('Not a validator account');
         }

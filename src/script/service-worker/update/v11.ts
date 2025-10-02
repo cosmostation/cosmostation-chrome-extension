@@ -7,11 +7,12 @@ import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
 import type { CosmosCw20Asset, EvmErc20Asset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
 import { getWithFullResponse } from '@/utils/axios';
+import { devLogger } from '@/utils/devLogger';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
 // params, assets, erc20, cw20
 export async function v11() {
-  console.time('chainsAndAsset');
+  devLogger.time('chainsAndAsset');
   try {
     const paramsUrl = 'https://front.api.mintscan.io/v11/utils/params';
     const paramResponse = await getWithFullResponse<Record<string, V11Param>>(paramsUrl);
@@ -102,7 +103,7 @@ export async function v11() {
       console.error(error);
     }
   } finally {
-    console.timeEnd('chainsAndAsset');
+    devLogger.timeEnd('chainsAndAsset');
   }
 }
 

@@ -2,7 +2,8 @@ import PromisePool from '@supercharge/promise-pool';
 
 import { chainToDeploymentMap } from '@/constants/evm/mutlicall3';
 import { getAccountAddress, getAllAccountAddress } from '@/libs/account';
-import type { AccountAddressBalanceErc20 } from '@/types/account';
+import { getHiddenAssetsSet } from '@/libs/asset';
+import type { AccountAddressBalanceCw20, AccountAddressBalanceErc20 } from '@/types/account';
 import type { ChainId } from '@/types/chain';
 import type { Cw20Balance } from '@/types/cosmos/balance';
 import type { Erc20Balance } from '@/types/evm/balance';
@@ -11,7 +12,6 @@ import type { BalanceFetchOption } from '@/types/message/service-worker/updateRe
 import { chunkArray } from '@/utils/array';
 import { upsertCW20Balance, upsertERC20Balance } from '@/utils/balanceUpsert';
 import { createChainMap, createCosmwasmChainMap } from '@/utils/cache/chainMap';
-import { createHiddenAssetIdSet } from '@/utils/cache/hiddenAssetIdMap';
 import { fetchCW20Balances, fetchERC20Balances, fetchMultiERC20Balances } from '@/utils/cosmos/fetch/balance';
 import { getCoinId, getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
@@ -25,8 +25,7 @@ const CHAIN_MULTICALL_CONFIGS: Record<ChainId['id'], { maxMulticallDataLength: n
 export async function cw20Balance(id: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
   const startUpdateTime = Date.now();
 
-  const accountAddress = await getAccountAddress(id);
-  const hiddenAssetIdSet = await createHiddenAssetIdSet(id);
+  const hiddenAssetIdSet = await getHiddenAssetsSet(id);
 
   const { cw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets']);
 
@@ -37,101 +36,60 @@ export async function cw20Balance(id: string, { chainId, priority, updateAssets,
     return isAssetVisible || isPreload;
   });
 
-  const cosmwasmChainMapInstance = await createCosmwasmChainMap();
-
-  if (priority) {
-    const cw20BalanceData = (await getExtensionLocalStorage(`${id}-balance-cw20`)) || [];
-
-    const balanceChainIds = new Set(
-      cw20BalanceData
-        .filter((data) => {
-          const hasBalance = data.balances.length > 0;
-          return priority === 'high' ? hasBalance : !hasBalance;
-        })
-        .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),
-    );
-
-    return accountAddress
-      .map((address) => {
-        const uniqueId = getUniqueChainIdWithManual(address.chainId, address.chainType);
-
-        if (balanceChainIds?.has(uniqueId)) {
-          const chain = cosmwasmChainMapInstance.get(uniqueId);
-
-          return chain ? { ...address, chain } : null;
-        }
-        return null;
-      })
-      .filter((item) => !!item);
-  }
-
-  const isUpdateSpecificAddress = !!chainId;
-
-  const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
-    : accountAddress;
-
-  const targetChain = chainId && cosmwasmChainMapInstance.get(chainId);
-
-  const addressWithChain = addressList
-    .map((addr) => {
-      const chain = targetChain || cosmwasmChainMapInstance.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
-      return chain ? { ...addr, chain } : null;
-    })
-    .filter((item) => !!item);
+  const addressWithChain = await getFilteredCW20AccountAddresses(id, { chainId, priority });
 
   let stored = (await getExtensionLocalStorage(`${id}-balance-cw20`)) || [];
 
   const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
   for (const chunk of chunks) {
-    const { results } = await PromisePool.withConcurrency(5)
-      .for(chunk)
-      .process(async (addr) => {
-        const { chainId, chainType, address, chain } = addr;
-        const { lcdUrls } = chain;
-        const assets = cw20AssetsWithoutHidden.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
+    for (const addr of chunk) {
+      const { chainId, chainType, address, chain } = addr;
+      const { lcdUrls } = chain;
+      const assets = cw20AssetsWithoutHidden.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
 
-        const { results: allBalances } = await PromisePool.withConcurrency(5)
-          .for(assets)
-          .process(async (asset) => {
-            const { id: contractAddress } = asset;
+      const { results: allBalances } = await PromisePool.withConcurrency(5)
+        .for(assets)
+        .process(async (asset) => {
+          const { id: contractAddress } = asset;
 
-            try {
-              const balance = await fetchCW20Balances(address, contractAddress, lcdUrls.map((item) => item.url).filter(Boolean));
+          try {
+            const balance = await fetchCW20Balances(address, contractAddress, lcdUrls.map((item) => item.url).filter(Boolean));
 
-              const result: Cw20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+            const result: Cw20Balance = {
+              contract: contractAddress,
+              balance,
+              lastUpdatedAtMs: startUpdateTime,
+              status: 'success',
+            };
 
-              return result;
-            } catch {
-              return {
-                contract: contractAddress,
-                balance: '0',
-                lastUpdatedAtMs: startUpdateTime,
-                status: 'error',
-              } as Cw20Balance;
-            }
-          });
+            return result;
+          } catch {
+            return {
+              contract: contractAddress,
+              balance: '0',
+              lastUpdatedAtMs: startUpdateTime,
+              status: 'error',
+            } as Cw20Balance;
+          }
+        });
 
-        const result = { id, chainId, chainType, address, balances: allBalances };
-        return result;
-      });
+      const result: AccountAddressBalanceCw20 = { id, chainId, chainType, address, balances: allBalances };
 
-    stored = upsertCW20Balance(stored, results);
+      stored = upsertCW20Balance(stored, [result]);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
   }
 }
 
-export async function erc20Balance(id: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
+export async function erc20Balance(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
   const startUpdateTime = Date.now();
 
-  const accountAddress = await getAccountAddress(id);
-  const hiddenAssetIdSet = await createHiddenAssetIdSet(id);
+  const hiddenAssetIdSet = await getHiddenAssetsSet(accountId);
 
-  const chainMapInstance = await createChainMap('evm');
   const { erc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['erc20Assets']);
 
   const erc20AssetsToDisplay = erc20Assets.filter((asset) => {
@@ -141,48 +99,9 @@ export async function erc20Balance(id: string, { chainId, priority, updateAssets
     return isAssetVisible || isPreload;
   });
 
-  const isUpdateSpecificAddress = !!chainId;
+  const addressWithChain = await getFilteredERC20AccountAddresses(accountId, { chainId, priority });
 
-  if (priority) {
-    const erc20BalanceData = (await getExtensionLocalStorage(`${id}-balance-erc20`)) || [];
-
-    const balanceChainIds = new Set(
-      erc20BalanceData
-        .filter((data) => {
-          const hasBalance = data.balances.length > 0;
-          return priority === 'high' ? hasBalance : !hasBalance;
-        })
-        .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),
-    );
-
-    return accountAddress
-      .map((address) => {
-        const uniqueId = getUniqueChainIdWithManual(address.chainId, address.chainType);
-
-        if (balanceChainIds?.has(uniqueId)) {
-          const chain = chainMapInstance?.get(uniqueId);
-
-          return chain ? { ...address, chain } : null;
-        }
-        return null;
-      })
-      .filter((item) => !!item);
-  }
-
-  const addressList = isUpdateSpecificAddress
-    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
-    : accountAddress;
-
-  const targetChain = chainId && chainMapInstance?.get(chainId);
-
-  const addressWithChain = addressList
-    .map((addr) => {
-      const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
-      return chain ? { ...addr, chain } : null;
-    })
-    .filter((item) => !!item);
-
-  let stored = (await getExtensionLocalStorage(`${id}-balance-erc20`)) || [];
+  let stored = (await getExtensionLocalStorage(`${accountId}-balance-erc20`)) || [];
 
   const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
@@ -283,7 +202,7 @@ export async function erc20Balance(id: string, { chainId, priority, updateAssets
 
     stored = upsertERC20Balance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${id}-balance-erc20`]: stored });
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${accountId}-balance-erc20`]: stored });
 
     updateAssets?.();
   }
@@ -331,7 +250,7 @@ export async function customErc20Balance(id: string, { chainId, updateAssets, ch
         const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
         if (isMulticallEnabled) {
           try {
-            const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[id];
+            const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[chainId];
 
             const allBalances = await fetchMultiERC20Balances(
               address,
@@ -449,42 +368,130 @@ export async function customCw20Balance(id: string, { chainId, updateAssets, chu
   const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
   for (const chunk of chunks) {
-    const { results } = await PromisePool.withConcurrency(5)
-      .for(chunk)
-      .process(async (addr) => {
-        const { chainId, chainType, address, chain } = addr;
-        const { lcdUrls } = chain;
-        const assets = customCw20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
+    for (const addr of chunk) {
+      const { chainId, chainType, address, chain } = addr;
+      const { lcdUrls } = chain;
+      const assets = customCw20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'cw20');
 
-        const { results: allBalances } = await PromisePool.withConcurrency(5)
-          .for(assets)
-          .process(async (asset) => {
-            const { id: contractAddress } = asset;
+      const { results: allBalances } = await PromisePool.withConcurrency(5)
+        .for(assets)
+        .process(async (asset) => {
+          const { id: contractAddress } = asset;
 
-            try {
-              const balance = await fetchCW20Balances(address, contractAddress, lcdUrls.map((item) => item.url).filter(Boolean));
+          try {
+            const balance = await fetchCW20Balances(address, contractAddress, lcdUrls.map((item) => item.url).filter(Boolean));
 
-              const result: Cw20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+            const result: Cw20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
 
-              return result;
-            } catch {
-              return {
-                contract: contractAddress,
-                balance: '0',
-                lastUpdatedAtMs: startUpdateTime,
-                status: 'error',
-              } as Cw20Balance;
-            }
-          });
+            return result;
+          } catch {
+            return {
+              contract: contractAddress,
+              balance: '0',
+              lastUpdatedAtMs: startUpdateTime,
+              status: 'error',
+            } as Cw20Balance;
+          }
+        });
 
-        const result = { id, chainId, chainType, address, balances: allBalances };
-        return result;
-      });
+      const result = { id, chainId, chainType, address, balances: allBalances };
 
-    stored = upsertCW20Balance(stored, results);
+      stored = upsertCW20Balance(stored, [result]);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
   }
+}
+
+export async function getFilteredERC20AccountAddresses(accountId: string, { chainId, priority }: BalanceFetchOption = {}) {
+  const accountAddress = await getAccountAddress(accountId);
+  const chainMapInstance = await createChainMap('evm');
+
+  if (priority) {
+    const erc20BalanceData = (await getExtensionLocalStorage(`${accountId}-balance-erc20`)) || [];
+
+    const balanceChainIds = new Set(
+      erc20BalanceData
+        .filter((data) => {
+          const hasBalance = data.balances.length > 0;
+          return priority === 'high' ? hasBalance : !hasBalance;
+        })
+        .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),
+    );
+
+    return accountAddress
+      .map((address) => {
+        const uniqueId = getUniqueChainIdWithManual(address.chainId, address.chainType);
+
+        if (balanceChainIds?.has(uniqueId)) {
+          const chain = chainMapInstance?.get(uniqueId);
+
+          return chain ? { ...address, chain } : null;
+        }
+        return null;
+      })
+      .filter((item) => !!item);
+  }
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && chainMapInstance?.get(chainId);
+
+  return addressList
+    .map((addr) => {
+      const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
+      return chain ? { ...addr, chain } : null;
+    })
+    .filter((item) => !!item);
+}
+
+export async function getFilteredCW20AccountAddresses(accountId: string, { chainId, priority }: BalanceFetchOption = {}) {
+  const accountAddress = await getAccountAddress(accountId);
+  const cosmwasmChainMapInstance = await createCosmwasmChainMap();
+
+  if (priority) {
+    const cw20BalanceData = (await getExtensionLocalStorage(`${accountId}-balance-cw20`)) || [];
+
+    const balanceChainIds = new Set(
+      cw20BalanceData
+        .filter((data) => {
+          const hasBalance = data.balances.length > 0;
+          return priority === 'high' ? hasBalance : !hasBalance;
+        })
+        .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),
+    );
+
+    return accountAddress
+      .map((address) => {
+        const uniqueId = getUniqueChainIdWithManual(address.chainId, address.chainType);
+
+        if (balanceChainIds?.has(uniqueId)) {
+          const chain = cosmwasmChainMapInstance.get(uniqueId);
+
+          return chain ? { ...address, chain } : null;
+        }
+        return null;
+      })
+      .filter((item) => !!item);
+  }
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && cosmwasmChainMapInstance.get(chainId);
+
+  return addressList
+    .map((addr) => {
+      const chain = targetChain || cosmwasmChainMapInstance.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
+      return chain ? { ...addr, chain } : null;
+    })
+    .filter((item) => !!item);
 }

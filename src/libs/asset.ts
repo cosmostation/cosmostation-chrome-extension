@@ -27,6 +27,14 @@ export async function getHiddenAssets(id: string) {
   return hiddenAssetIds ?? [];
 }
 
+export async function getHiddenAssetsSet(id: string): Promise<Set<string>> {
+  const hiddenAssetIds = await getHiddenAssets(id);
+
+  const hiddenAssetIdSet = new Set(hiddenAssetIds.map((item) => getCoinId(item)));
+
+  return hiddenAssetIdSet;
+}
+
 export async function updateHiddenAssets(id: string, hiddenAssetIds: AssetId[]) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
@@ -61,6 +69,14 @@ export async function getVisibleAssets(id: string) {
   const visibleAssetIds = storage[`${id}-visible-assetIds`];
 
   return visibleAssetIds ?? [];
+}
+
+export async function getVisibleAssetsSet(id: string): Promise<Set<string>> {
+  const visibleAssetIds = await getVisibleAssets(id);
+
+  const visibleAssetIdSet = new Set(visibleAssetIds.map((item) => getCoinId(item)));
+
+  return visibleAssetIdSet;
 }
 
 type GetSuiNFTSOption = {
@@ -548,5 +564,3 @@ export async function getIotaMultiObjects(
 
   return multiGetObjectResponses.flat();
 }
-
-// 장난감

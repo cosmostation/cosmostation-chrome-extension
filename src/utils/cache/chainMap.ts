@@ -58,55 +58,19 @@ const chainMapStore = {
 
 function updateChainMap(chainType: ChainType, chains: Chain[]) {
   const filteredChains = chains.filter((chain) => chain.chainType === chainType);
+  const targetMap = chainMapStore[chainType];
 
-  if (chainType === 'cosmos') {
-    if (cosmosChainMap.size !== filteredChains.length) {
-      cosmosChainMap.clear();
-      filteredChains.forEach((chain) => {
-        cosmosChainMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as CosmosChain);
-      });
-    }
+  const needsUpdate = targetMap.size !== filteredChains.length;
+
+  if (!needsUpdate) {
+    return;
   }
-  if (chainType === 'evm') {
-    if (evmChainMap.size !== filteredChains.length) {
-      evmChainMap.clear();
-      filteredChains.forEach((chain) => {
-        evmChainMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as EvmChain);
-      });
-    }
-  }
-  if (chainType === 'bitcoin') {
-    if (bitcoinChainMap.size !== filteredChains.length) {
-      bitcoinChainMap.clear();
-      filteredChains.forEach((chain) => {
-        bitcoinChainMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as BitcoinChain);
-      });
-    }
-  }
-  if (chainType === 'aptos') {
-    if (aptosChainMap.size !== filteredChains.length) {
-      aptosChainMap.clear();
-      filteredChains.forEach((chain) => {
-        aptosChainMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as AptosChain);
-      });
-    }
-  }
-  if (chainType === 'sui') {
-    if (suiChainMap.size !== filteredChains.length) {
-      suiChainMap.clear();
-      filteredChains.forEach((chain) => {
-        suiChainMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as SuiChain);
-      });
-    }
-  }
-  if (chainType === 'iota') {
-    if (iotaChainMap.size !== filteredChains.length) {
-      iotaChainMap.clear();
-      filteredChains.forEach((chain) => {
-        iotaChainMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as IotaChain);
-      });
-    }
-  }
+
+  targetMap.clear();
+  filteredChains.forEach((chain) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    targetMap.set(getUniqueChainIdWithManual(chain.id, chain.chainType), chain as any);
+  });
 }
 
 export async function createChainMap(): Promise<ChainMapByType>;

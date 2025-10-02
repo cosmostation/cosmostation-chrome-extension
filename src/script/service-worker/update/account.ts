@@ -6,11 +6,12 @@ import { getChains } from '@/libs/chain';
 import type { AccountAddressAccountInfoCosmos } from '@/types/account';
 import type { ExtensionStorage } from '@/types/extension';
 import { fetchCosmosAccountInfo } from '@/utils/cosmos/fetch/accountInfo';
+import { devLogger } from '@/utils/devLogger';
 
 const vestingChainIds = new Set([KAVA_CHAINLIST_ID]);
 
 export async function updateAccountInfo(id: string) {
-  console.time(`update-account-info-${id}`);
+  devLogger.time(`update-account-info-${id}`);
   try {
     await getAccount(id);
 
@@ -22,7 +23,7 @@ export async function updateAccountInfo(id: string) {
       console.error(error);
     }
   } finally {
-    console.timeEnd(`update-account-info-${id}`);
+    devLogger.timeEnd(`update-account-info-${id}`);
   }
 }
 

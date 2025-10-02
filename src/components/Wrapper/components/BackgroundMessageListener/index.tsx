@@ -13,9 +13,7 @@ export default function BackgroundMessageListener({ children }: BackgroundMessag
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   useEffect(() => {
-    const handler = (request: any, _: any, sendResponse: ((response?: any) => void) | ((response?: any) => void)) => {
-      if (!request?.type) return true;
-
+    const handler = (request: any, _: any, sendResponse: (response?: any) => void) => {
       if (request.type === 'sidePanelState') {
         if (isSidePanelView()) {
           try {

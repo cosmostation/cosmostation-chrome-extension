@@ -1,9 +1,9 @@
-import { getHiddenCustomAssetsSet } from '@/libs/asset';
+import { getHiddenCustomAssetsSet, getVisibleAssetsSet } from '@/libs/asset';
 import type { AccountCustomCosmosAsset, AccountCustomEvmAsset } from '@/types/account';
 import type { AssetBase } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
 import { createAllChainMap } from '@/utils/cache/chainMap';
-import { createVisibleAssetIdSet } from '@/utils/cache/hiddenAssetIdMap';
+import { devLogger } from '@/utils/devLogger';
 import { gt } from '@/utils/numbers';
 import { getCoinId, getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
@@ -13,7 +13,7 @@ type GetAccountCustomAssetsOption = {
 };
 
 export async function getAccountCustomAssets(id: string, option?: GetAccountCustomAssetsOption) {
-  console.time('getAccountCustomAssets');
+  devLogger.time('getAccountCustomAssets');
   const storage = await chrome.storage.local.get<ExtensionStorage>([
     `${id}-custom-address`,
     `${id}-custom-balance-cosmos`,
@@ -24,7 +24,7 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
   const chainMaps = await createAllChainMap();
   const { cosmos: cosmosChainsMap, evm: evmChainsMap } = chainMaps || {};
 
-  const visibleAssetIdSet = await createVisibleAssetIdSet(id);
+  const visibleAssetIdSet = await getVisibleAssetsSet(id);
   const hiddenAssetIdSet = await getHiddenCustomAssetsSet();
 
   const customAssets = storage.customAssets ?? [];
@@ -118,7 +118,7 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
   const filteredCosmosAccountCustomAssets = filterHiddenAssetsByBalance(cosmosAccountCustomAssets);
   const filteredEVMAccountCustomAssets = filterHiddenAssetsByBalance(evmAccountCustomAssets);
 
-  console.timeEnd('getAccountCustomAssets');
+  devLogger.timeEnd('getAccountCustomAssets');
 
   return {
     cosmosAccountCustomAssets: filteredCosmosAccountCustomAssets,

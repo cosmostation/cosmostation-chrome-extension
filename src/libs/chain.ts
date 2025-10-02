@@ -38,7 +38,7 @@ const createExplorer = (explorerData?: { name: string; url: string; account: str
   }
 
   return Object.entries(explorerData).reduce((acc, [key, value]) => {
-    acc[key as keyof ChainExplorer] = removeTrailingSlash(value as string);
+    acc[key as keyof ChainExplorer] = key === 'name' ? value : removeTrailingSlash(value as string);
     return acc;
   }, {} as ChainExplorer);
 };

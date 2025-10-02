@@ -6,11 +6,12 @@ import { getAccountAssets } from '@/libs/asset/coin/default/accountAsset';
 import { getAddedCustomChains } from '@/libs/chain';
 import type { UniqueChainId } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
+import { devLogger } from '@/utils/devLogger';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 
 import { aptosBalances } from './balance/aptos/balance';
 import { bitcoinBalances } from './balance/bitcoin/balance';
-import { customCw20Balance, customErc20Balance, cw20Balance, erc20Balance } from './balance/contractToken.ts/balance';
+import { customCw20Balance, customErc20Balance, cw20Balance, erc20Balance } from './balance/contractToken/balance';
 import { cosmosBalances, customCosmosBalances } from './balance/cosmos/balance';
 import { getDefaultVisibleAsset } from './balance/defaultVisibleAssets';
 import { customEvmBalances, evmBalances } from './balance/evm/balance';
@@ -18,7 +19,7 @@ import { iotaBalances } from './balance/iota/balance';
 import { suiBalances } from './balance/sui/balance';
 
 export async function updateDefaultAssetsBalance(id: string) {
-  console.time(`default-balance-${id}`);
+  devLogger.time(`default-balance-${id}`);
   try {
     await getAccount(id);
 
@@ -42,12 +43,12 @@ export async function updateDefaultAssetsBalance(id: string) {
       console.error(error);
     }
   } finally {
-    console.timeEnd(`default-balance-${id}`);
+    devLogger.timeEnd(`default-balance-${id}`);
   }
 }
 
 export async function updateActiveAssetsBalance(id: string) {
-  console.time(`balance-${id}`);
+  devLogger.time(`balance-${id}`);
   try {
     await getAccount(id);
     await initAssests(id);
@@ -62,12 +63,12 @@ export async function updateActiveAssetsBalance(id: string) {
       console.error(error);
     }
   } finally {
-    console.timeEnd(`balance-${id}`);
+    devLogger.timeEnd(`balance-${id}`);
   }
 }
 
 export async function updateSpecificChainBalance(id: string, chainId: UniqueChainId) {
-  console.time(`chain-balance-${id}-${chainId}`);
+  devLogger.time(`chain-balance-${id}-${chainId}`);
   try {
     await getAccount(id);
 
@@ -79,7 +80,7 @@ export async function updateSpecificChainBalance(id: string, chainId: UniqueChai
       console.error(error);
     }
   } finally {
-    console.timeEnd(`chain-balance-${id}-${chainId}`);
+    devLogger.timeEnd(`chain-balance-${id}-${chainId}`);
   }
 }
 
@@ -123,7 +124,7 @@ async function fetchChainBalanceByType(id: string, chainId: UniqueChainId) {
 }
 
 export async function updateBalance(id: string) {
-  console.time(`update-balance-${id}`);
+  devLogger.time(`update-balance-${id}`);
   try {
     await getAccount(id);
 
@@ -137,12 +138,12 @@ export async function updateBalance(id: string) {
       console.error(error);
     }
   } finally {
-    console.timeEnd(`update-balance-${id}`);
+    devLogger.timeEnd(`update-balance-${id}`);
   }
 }
 
 export async function updateCustomBalance(id: string) {
-  console.time(`update-custom-balance-${id}`);
+  devLogger.time(`update-custom-balance-${id}`);
   try {
     await getAccount(id);
     await Promise.all([customCosmosBalances(id), customEvmBalances(id)]);
@@ -153,12 +154,12 @@ export async function updateCustomBalance(id: string) {
       console.error(error);
     }
   } finally {
-    console.timeEnd(`update-custom-balance-${id}`);
+    devLogger.timeEnd(`update-custom-balance-${id}`);
   }
 }
 
 export async function updatePriorityBalance(id: string, priority: 'high' | 'low', updateAssets: () => void) {
-  console.time(`update-priority-balance-${id}`);
+  devLogger.time(`update-priority-balance-${id}`);
 
   try {
     await getAccount(id);
@@ -190,7 +191,7 @@ export async function updatePriorityBalance(id: string, priority: 'high' | 'low'
       console.error(error);
     }
   } finally {
-    console.timeEnd(`update-priority-balance-${id}`);
+    devLogger.timeEnd(`update-priority-balance-${id}`);
   }
 }
 

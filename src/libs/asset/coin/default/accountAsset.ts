@@ -1,6 +1,7 @@
 import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
+import { getHiddenAssetsSet } from '@/libs/asset';
 import type {
   AccountAddress,
   AccountAptosAsset,
@@ -20,9 +21,9 @@ import type {
 import type { AptosAsset, Asset, BitcoinAsset, CosmosAsset, CosmosCw20Asset, EvmAsset, EvmErc20Asset, IotaAsset, SuiAsset } from '@/types/asset';
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
-import { createHiddenAssetIdSet } from '@/utils/cache/hiddenAssetIdMap';
 import { formattingAccount } from '@/utils/cosmos/account';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
+import { devLogger } from '@/utils/devLogger';
 import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
@@ -44,7 +45,7 @@ type GetAccountAssetsOption = {
 };
 
 export async function getAccountAssets(id: string, option?: GetAccountAssetsOption) {
-  console.time('getAccountAssets');
+  devLogger.time('getAccountAssets');
   const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets, bitcoinAssets, iotaAssets } =
     await getAssetsDetailed(id);
 
@@ -75,7 +76,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const isFilterHidden = !option?.disableFilterHidden;
   const isFilterByBalance = !option?.disableBalanceFilter;
 
-  const hiddenAssetIdSet = isFilterHidden ? await createHiddenAssetIdSet(id) : null;
+  const hiddenAssetIdSet = isFilterHidden ? await getHiddenAssetsSet(id) : null;
 
   const filterAssets = <T extends { asset: Asset; balance?: string; totalBalance?: string }>(assets: T[]): T[] => {
     return assets.filter((asset) => {
@@ -94,7 +95,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     });
   };
 
-  console.timeEnd('getAccountAssets');
+  devLogger.timeEnd('getAccountAssets');
 
   return {
     cosmosAccountAssets: filterAssets(baseCosmosAccountAssets),

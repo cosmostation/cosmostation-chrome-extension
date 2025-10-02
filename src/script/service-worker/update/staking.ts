@@ -3,6 +3,7 @@ import axios from 'axios';
 import { getAccount } from '@/libs/account';
 import type { UniqueChainId } from '@/types/chain';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
+import { devLogger } from '@/utils/devLogger';
 import { parseUniqueChainId } from '@/utils/queryParamGenerator';
 
 import { cosmosCommissions, cosmosDelegations, cosmosRewards, cosmosUnbondings } from './balance/cosmos/staking';
@@ -10,7 +11,7 @@ import { iotaStaking } from './balance/iota/staking';
 import { suiStaking } from './balance/sui/staking';
 
 export async function updateStakingRelatedBalance(id: string) {
-  console.time(`update-staking-related-balance-${id}`);
+  devLogger.time(`update-staking-related-balance-${id}`);
   try {
     await getAccount(id);
 
@@ -22,12 +23,12 @@ export async function updateStakingRelatedBalance(id: string) {
       console.error(error);
     }
   } finally {
-    console.timeEnd(`update-staking-related-balance-${id}`);
+    devLogger.timeEnd(`update-staking-related-balance-${id}`);
   }
 }
 
 export async function updateSpecificChainStaking(id: string, chainId: UniqueChainId) {
-  console.time(`chain-staking-balance-${id}-${chainId}`);
+  devLogger.time(`chain-staking-balance-${id}-${chainId}`);
   try {
     await getAccount(id);
 
@@ -39,12 +40,12 @@ export async function updateSpecificChainStaking(id: string, chainId: UniqueChai
       console.error(error);
     }
   } finally {
-    console.timeEnd(`chain-staking-balance-${id}-${chainId}`);
+    devLogger.timeEnd(`chain-staking-balance-${id}-${chainId}`);
   }
 }
 
 export async function updatePriorityChainStaking(id: string, priority: 'high' | 'low', updateAssets: () => void) {
-  console.time(`update-${priority}-priority-staking-related-balance-${id}`);
+  devLogger.time(`update-${priority}-priority-staking-related-balance-${id}`);
   try {
     await getAccount(id);
 
@@ -64,7 +65,7 @@ export async function updatePriorityChainStaking(id: string, priority: 'high' | 
       console.error(error);
     }
   } finally {
-    console.timeEnd(`update-${priority}-priority-staking-related-balance-${id}`);
+    devLogger.timeEnd(`update-${priority}-priority-staking-related-balance-${id}`);
   }
 }
 
