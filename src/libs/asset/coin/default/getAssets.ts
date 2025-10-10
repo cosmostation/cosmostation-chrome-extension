@@ -23,13 +23,13 @@ type AssetsStore = {
   customCw20Assets: { asset: CosmosCw20Asset; chain: CosmosChain; addresses: AccountAddress[] }[];
 };
 
-let store:
-  | {
-      assets: AssetsStore;
-      addressLength: number;
-      timestamp: number;
-    }
-  | undefined = undefined;
+type CacheItem = {
+  assets: AssetsStore;
+  addressLength: number;
+  timestamp: number;
+};
+
+const store = new Map<string, CacheItem>();
 
 const CACHE_TTL = 5 * 60 * 1000;
 
@@ -229,11 +229,13 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
 
   const allAccountAddress = await getAllAccountAddress(id);
 
+  const currentAccountStore = store.get(id);
+
   let addressesMap: Map<string, AccountAddress[]> | undefined;
 
-  if (store) {
+  if (currentAccountStore) {
     const hasCustomErc20Changed = !isEqual(
-      store.assets.customErc20Assets.map((a) => a.asset.id),
+      currentAccountStore.assets.customErc20Assets.map((a) => a.asset.id),
       customErc20AssetsData.map((a) => a.id),
     );
 
@@ -243,11 +245,11 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
       }
 
       const newCustomErc20Assets = await getErc20Assets(customErc20AssetsData, addressesMap);
-      store.assets.customErc20Assets = newCustomErc20Assets;
+      currentAccountStore.assets.customErc20Assets = newCustomErc20Assets;
     }
 
     const hasCustomCW20Changed = !isEqual(
-      store.assets.customCw20Assets.map((a) => a.asset.id),
+      currentAccountStore.assets.customCw20Assets.map((a) => a.asset.id),
       customCw20AssetsData.map((a) => a.id),
     );
 
@@ -257,11 +259,11 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
       }
 
       const newCustomCw20Assets = await getCw20Assets(customCw20AssetsData, addressesMap);
-      store.assets.customCw20Assets = newCustomCw20Assets;
+      currentAccountStore.assets.customCw20Assets = newCustomCw20Assets;
     }
 
-    if (isCacheValid(store.timestamp, store.addressLength, allAccountAddress.length)) {
-      return store.assets;
+    if (isCacheValid(currentAccountStore.timestamp, currentAccountStore.addressLength, allAccountAddress.length)) {
+      return currentAccountStore.assets;
     }
   }
 
@@ -446,8 +448,8 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
     getCw20Assets(cw20AssetsData, addressesMap, cosmosChainsMap),
   ]);
 
-  const customErc20Assets = store?.assets.customErc20Assets || (await getErc20Assets(customErc20AssetsData, addressesMap, evmChainsMap));
-  const customCw20Assets = store?.assets.customCw20Assets || (await getCw20Assets(customCw20AssetsData, addressesMap, cosmosChainsMap));
+  const customErc20Assets = currentAccountStore?.assets.customErc20Assets || (await getErc20Assets(customErc20AssetsData, addressesMap, evmChainsMap));
+  const customCw20Assets = currentAccountStore?.assets.customCw20Assets || (await getCw20Assets(customCw20AssetsData, addressesMap, cosmosChainsMap));
 
   const result: AssetsStore = {
     cosmosAssets,
@@ -462,7 +464,7 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
     customCw20Assets,
   };
 
-  setCachedResult(result, allAccountAddress.length);
+  setCachedResult(id, result, allAccountAddress.length);
 
   return result;
 }
@@ -475,10 +477,10 @@ function isCacheValid(cachedTimestamp: number, length: number, expectedSize: num
   return true;
 }
 
-function setCachedResult(assets: AssetsStore, length: number): void {
-  store = {
+function setCachedResult(accountId: string, assets: AssetsStore, length: number) {
+  store.set(accountId, {
     assets,
     addressLength: length,
     timestamp: Date.now(),
-  };
+  });
 }
