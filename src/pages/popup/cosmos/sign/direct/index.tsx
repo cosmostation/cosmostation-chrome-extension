@@ -1,6 +1,7 @@
 import { produce } from 'immer';
 import { createFileRoute } from '@tanstack/react-router';
 
+import { Splash } from '@/components/Wrapper/components/Init/styled';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import AccessRequest from '@/pages/popup/-components/requests/AccessRequest';
@@ -44,7 +45,8 @@ function CosmosSignDirect() {
       );
     }
   }
-  return null;
+
+  return <Splash />;
 }
 
 function isCosSignDirect(queue: RequestQueue): queue is CosSignDirect {

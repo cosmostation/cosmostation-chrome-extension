@@ -17,22 +17,21 @@ export function useCurrentRequestQueue() {
   const deQueue = async (path?: string) => {
     const newQueues = requestQueue.slice(1);
 
-    await updateExtensionStorageStore('requestQueue', newQueues);
-
     if (newQueues.length === 0) {
       if (isSidePanelView()) {
         navigate({ to: path ?? Home.to });
-        return;
       } else {
-        await closePopupWindow();
-      }
-
-      if (path) {
-        navigate({
-          to: path,
-        });
+        if (path) {
+          navigate({
+            to: path,
+          });
+        } else {
+          await closePopupWindow();
+        }
       }
     }
+
+    await updateExtensionStorageStore('requestQueue', newQueues);
 
     return requestQueue.length > 0 ? requestQueue[0] : null;
   };

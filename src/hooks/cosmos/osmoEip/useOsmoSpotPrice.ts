@@ -19,7 +19,7 @@ export function useOsmoSpotPrice({ feeCoinDenom, config }: UseOsmoEipFeeProps = 
     if (!osmoChain?.lcdUrls || !feeCoinDenom) return [];
 
     const feemarketEndpoints = osmoChain?.lcdUrls.map((chainEndpoint) =>
-      buildRequestUrl(chainEndpoint.url, `osmosis/txfees/v1beta1/spot_price_by_denom?denom=${feeCoinDenom}`),
+      buildRequestUrl(chainEndpoint.url, `osmosis/txfees/v1beta1/spot_price_by_denom?denom=${encodeURIComponent(feeCoinDenom)}`),
     );
 
     return feemarketEndpoints;
