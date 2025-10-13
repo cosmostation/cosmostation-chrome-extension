@@ -155,7 +155,8 @@
       "index": {
         "title": "Select Fee Option",
         "customDescription": "Do you want a advanced setting?",
-        "custom": "Custom"
+        "custom": "Custom",
+        "changesApplied": "Changes applied"
       }
     },
     "Fee": {
@@ -275,7 +276,8 @@
           "index": {
             "title": "Select Fee Option",
             "customDescription": "Do you want a advanced setting?",
-            "custom": "Custom"
+            "custom": "Custom",
+            "changesApplied": "Changes applied"
           }
         },
         "index": {

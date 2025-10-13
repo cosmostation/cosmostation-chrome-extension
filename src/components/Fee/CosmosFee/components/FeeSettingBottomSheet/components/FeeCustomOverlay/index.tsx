@@ -40,7 +40,8 @@ type FeeCustomOverlayProps = {
   currentSelectedFeeOptionKey: number;
   open?: boolean;
   onClose: () => void;
-  onConfirm: (feeCoinId: string, gasAmount?: string, gasRate?: string) => void;
+  onChangeFeeCoin: (feeCoinId: string) => void;
+  onConfirm: (gasAmount?: string, gasRate?: string) => void;
 };
 
 export default function FeeCustomOverlay({
@@ -51,6 +52,7 @@ export default function FeeCustomOverlay({
   feeCoinId,
   currentSelectedFeeOptionKey,
   onClose,
+  onChangeFeeCoin,
   onConfirm,
 }: FeeCustomOverlayProps) {
   const { t } = useTranslation();
@@ -61,17 +63,15 @@ export default function FeeCustomOverlay({
 
   const [inputGasAmount, setInputGasAmount] = useState('');
   const [inputGasRate, setInputGasRate] = useState('');
-  const [selectedFeeCoinId, setSelectedFeeCoinId] = useState(feeCoinId);
 
-  const selectedFeeCoin = useMemo(() => feeAssets.find(({ asset }) => getCoinId(asset) === selectedFeeCoinId), [feeAssets, selectedFeeCoinId]);
+  const selectedFeeCoin = useMemo(() => feeAssets.find(({ asset }) => getCoinId(asset) === feeCoinId), [feeAssets, feeCoinId]);
 
   const coinSymbol = selectedFeeCoin?.asset.symbol;
   const decimals = selectedFeeCoin?.asset.decimals || 0;
 
-  const isFeeCoinChanged = feeCoinId !== selectedFeeCoinId;
-  const isFeeCoinOnlyChanged = isFeeCoinChanged && !inputGasRate && !inputGasAmount;
+  const gasRatePlaceHolder = selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey] || baseGasRate;
 
-  const currentGasRate = inputGasRate ? inputGasRate : isFeeCoinChanged ? selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey] || baseGasRate : baseGasRate;
+  const currentGasRate = inputGasRate ? inputGasRate : selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey] || baseGasRate;
   const currentGas = inputGasAmount || baseGasAmount;
 
   const displayFeeAmount = useMemo(() => toDisplayDenomAmount(times(currentGasRate, currentGas), decimals), [currentGas, currentGasRate, decimals]);
@@ -101,10 +101,8 @@ export default function FeeCustomOverlay({
   };
 
   const onHandleConfirm = () => {
-    if (isFeeCoinOnlyChanged) {
-      onConfirm(selectedFeeCoinId);
-    } else {
-      onConfirm(selectedFeeCoinId, currentGas, currentGasRate);
+    if (inputGasAmount || inputGasRate) {
+      onConfirm(currentGas, currentGasRate);
     }
     reset();
   };
@@ -150,9 +148,9 @@ export default function FeeCustomOverlay({
         <InputContainer>
           <CoinSelectBox
             coinList={feeAssets}
-            currentCoinId={selectedFeeCoinId}
-            onClickCoin={(chainId) => {
-              setSelectedFeeCoinId(chainId);
+            currentCoinId={feeCoinId}
+            onClickCoin={(coinId) => {
+              onChangeFeeCoin(coinId);
             }}
             label={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.feeToken')}
             bottomSheetTitle={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.selectFeeToken')}
@@ -178,7 +176,7 @@ export default function FeeCustomOverlay({
           />
           <StandardInput
             label={t('components.Fee.CosmosFee.components.FeeSettingBottomSheet.components.FeeCustomOverlay.index.gasRate')}
-            placeholder={isFeeCoinChanged ? selectedFeeCoin?.gasRate[currentSelectedFeeOptionKey] : baseGasRate}
+            placeholder={gasRatePlaceHolder}
             error={!!inputGasRateErrorMsg}
             helperText={inputGasRateErrorMsg}
             value={inputGasRate}
