@@ -279,6 +279,8 @@ export default function Entry({ request, chain }: EntryProps) {
     isFeemarketActive,
   ]);
 
+  const isCalculatingFee = useMemo(() => simulate.isFetching, [simulate.isFetching]);
+
   const selectedFeeOption = useMemo(() => {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
@@ -359,6 +361,10 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.direct.entry.insufficientFeeAmount');
     }
 
+    if (isCalculatingFee) {
+      return t('pages.popup.cosmos.sign.direct.entry.calculatingFee');
+    }
+
     if (isEditFee && isPossibleSimulating && !simulate.isFetched) {
       return t('pages.popup.cosmos.sign.direct.entry.notSimulated');
     }
@@ -374,6 +380,7 @@ export default function Entry({ request, chain }: EntryProps) {
     fee?.granter,
     fee?.payer,
     inputMemoErrorMessage,
+    isCalculatingFee,
     isCheckBalance,
     isEditFee,
     isPossibleSimulating,
@@ -493,6 +500,7 @@ export default function Entry({ request, chain }: EntryProps) {
               feeBaseAmount={currentFee}
               disableFee={!isEditFee}
               additionalFees={additionalFee}
+              isLoadingFee={isCalculatingFee}
               onClickFee={() => {
                 setIsOpenFeeCustomBottomSheet(true);
               }}
