@@ -22,24 +22,23 @@ const DEFAULT_GAS_RATES = ['0.04', '0.045', '0.05'];
 const OSMO_CHAIN_ID = 'osmosis';
 const OSMO_COIN_ID = 'uosmo';
 
-export function useOsmoFee(props: UseOsmoFeeProps = {}) {
-  const { selectedFeeCoinId, config } = props;
-
+export function useOsmoFee({ selectedFeeCoinId, config }: UseOsmoFeeProps = {}) {
   const { data: accountAssets, isLoading: isFetchingAccountAssets } = useAccountAllAssets({
     disableDupeEthermint: true,
     filterByPreferAccountType: true,
   });
 
   const { data: baseFeeTokens } = useOsmoFeeToken({ config });
-  const { data: osmoGasPrice, isFetching: isFetchingOsmoEipFee } = useOsmoEipFee({ config });
+  const { data: osmoEipFee, isFetching: isFetchingOsmoEipFee } = useOsmoEipFee({ config });
 
   const isOsmoCoin = useMemo(() => {
     if (!selectedFeeCoinId) return true;
+    const { id, chainId } = parseCoinId(selectedFeeCoinId);
 
-    return parseCoinId(selectedFeeCoinId).id === OSMO_COIN_ID;
+    return id === OSMO_COIN_ID && chainId === OSMO_CHAIN_ID;
   }, [selectedFeeCoinId]);
 
-  const availableFeeTokens = useMemo(() => {
+  const availableFeeCoin = useMemo(() => {
     const osmoCoin = findOsmoCoin(accountAssets?.allCosmosAccountAssets);
     const otherTokens = findOtherFeeTokens(accountAssets?.allCosmosAccountAssets, baseFeeTokens?.fee_tokens);
 
@@ -47,14 +46,14 @@ export function useOsmoFee(props: UseOsmoFeeProps = {}) {
   }, [accountAssets?.allCosmosAccountAssets, baseFeeTokens?.fee_tokens]);
 
   const currentFeeCoin = useMemo(() => {
-    if (isOsmoCoin) return availableFeeTokens[0];
+    if (isOsmoCoin) return availableFeeCoin[0];
 
-    return availableFeeTokens.find((token) => token?.asset && selectedFeeCoinId && isMatchingCoinId(token.asset, selectedFeeCoinId));
-  }, [isOsmoCoin, availableFeeTokens, selectedFeeCoinId]);
+    return availableFeeCoin.find((token) => token?.asset && selectedFeeCoinId && isMatchingCoinId(token.asset, selectedFeeCoinId));
+  }, [isOsmoCoin, availableFeeCoin, selectedFeeCoinId]);
 
   const osmoGasRate = useMemo(() => {
-    return calculateOsmoGasRates(osmoGasPrice?.base_fee);
-  }, [osmoGasPrice?.base_fee]);
+    return calculateOsmoGasRates(osmoEipFee?.base_fee);
+  }, [osmoEipFee?.base_fee]);
 
   const { data: selectedFeeTokenGasRate, isFetching: isFetchingOsmoSpotPrice } = useOsmoSpotPrice(
     !isOsmoCoin && selectedFeeCoinId ? { feeCoinDenom: parseCoinId(selectedFeeCoinId).id, config } : { config },
@@ -72,7 +71,7 @@ export function useOsmoFee(props: UseOsmoFeeProps = {}) {
   const isLoading = isFetchingOsmoEipFee || isFetchingOsmoSpotPrice || isFetchingAccountAssets;
 
   return {
-    availableFeeCoin: availableFeeTokens,
+    availableFeeCoin,
     currentFeeCoin,
     currentFeeCoinGasRateStep,
     isLoading,
