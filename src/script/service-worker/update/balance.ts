@@ -128,9 +128,18 @@ export async function updateBalance(id: string) {
   try {
     await getAccount(id);
 
-    await Promise.all([cosmosBalances(id), evmBalances(id), aptosBalances(id), suiBalances(id), iotaBalances(id), bitcoinBalances(id)]);
-
-    await Promise.all([erc20Balance(id), cw20Balance(id), customErc20Balance(id), customCw20Balance(id)]);
+    await Promise.all([
+      cosmosBalances(id),
+      evmBalances(id),
+      aptosBalances(id),
+      suiBalances(id),
+      iotaBalances(id),
+      bitcoinBalances(id),
+      erc20Balance(id),
+      cw20Balance(id),
+      customErc20Balance(id),
+      customCw20Balance(id),
+    ]);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
