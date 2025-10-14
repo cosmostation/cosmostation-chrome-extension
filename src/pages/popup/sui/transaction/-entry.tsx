@@ -117,7 +117,11 @@ export default function Entry({ request }: EntryProps) {
     return undefined;
   }, [params, request.method]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransaction({
+  const {
+    data: dryRunTransaction,
+    error: dryRunTransactionError,
+    isFetching: isDryRunTxFetching,
+  } = useDryRunTransaction({
     coinId: nativeAccountAssetCoinId,
     transaction: parsedTx,
   });
@@ -308,7 +312,7 @@ export default function Entry({ request }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={origin} />
           <Divider />
           <TxBaseInfoContainer>
-            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={expectedBaseFee} disableFee />
+            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={expectedBaseFee} isLoadingFee={isDryRunTxFetching} disableFee />
           </TxBaseInfoContainer>
           <DividerContainer>
             <Divider />

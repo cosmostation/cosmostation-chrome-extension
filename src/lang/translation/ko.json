@@ -2114,7 +2114,8 @@
             "failedToSimulate": "시뮬레이션에 실패했습니다",
             "insufficientBalance": "잔액이 부족합니다",
             "reject": "거부",
-            "sign": "사인"
+            "sign": "사인",
+            "calculatingFee": "수수료를 계산중입니다"
           }
         }
       },
@@ -2525,7 +2526,8 @@
           "entry": {
             "insufficientBalance": "잔액이 부족합니다",
             "reject": "거부",
-            "sign": "사인"
+            "sign": "사인",
+            "calculatingFee": "수수료를 계산중입니다"
           }
         }
       },

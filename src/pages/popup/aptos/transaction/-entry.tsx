@@ -129,6 +129,11 @@ export default function Entry({ request }: EntryProps) {
   const simulateTransaction = useSimulateTx({ coinId: nativeAccountAssetCoinId, payload: simulationPayload });
   const estimateGasPrice = useEstimateGasPrice({ coinId: nativeAccountAssetCoinId });
 
+  const isCalculatingFee = useMemo(
+    () => simulateTransaction.isFetching || estimateGasPrice.isFetching,
+    [estimateGasPrice.isFetching, simulateTransaction.isFetching],
+  );
+
   const currentGasPrice = useMemo(() => {
     if (!estimateGasPrice.data) {
       return null;
@@ -158,11 +163,14 @@ export default function Entry({ request }: EntryProps) {
     if (gt(estimatedFeeAmount, nativeAccountAsset?.balance || '0')) {
       return t('pages.popup.aptos.transaction.entry.insufficientBalance');
     }
+    if (isCalculatingFee) {
+      return t('pages.popup.aptos.transaction.entry.calculatingFee');
+    }
     if (!simulateTransaction.data?.[0]?.success) {
       return t('pages.popup.aptos.transaction.entry.failedToSimulate');
     }
     return '';
-  }, [estimatedFeeAmount, nativeAccountAsset?.balance, simulateTransaction.data, t]);
+  }, [estimatedFeeAmount, isCalculatingFee, nativeAccountAsset?.balance, simulateTransaction.data, t]);
 
   const handleOnSign = useCallback(async () => {
     try {
@@ -251,7 +259,7 @@ export default function Entry({ request }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={origin} />
           <Divider />
           <TxBaseInfoContainer>
-            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={estimatedFeeAmount} disableFee />
+            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={estimatedFeeAmount} isLoadingFee={isCalculatingFee} disableFee />
           </TxBaseInfoContainer>
           <DividerContainer>
             <Divider />

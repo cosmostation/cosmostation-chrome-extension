@@ -2913,7 +2913,8 @@
           "entry": {
             "insufficientBalance": "Insufficient balance",
             "reject": "Reject",
-            "sign": "Sign"
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
           }
         },
         "add-chain": {
@@ -3065,7 +3066,8 @@
             "insufficientBalance": "Insufficient balance",
             "failedToSimulate": "Fail to simulate",
             "reject": "Reject",
-            "sign": "Sign"
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
           }
         },
         "sign-message": {
