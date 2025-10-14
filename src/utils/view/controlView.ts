@@ -124,10 +124,10 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
   try {
     const res = await extension.windows.getLastFocused();
 
-    if (res.width && res.left) {
+    if (res.width && res.left !== undefined) {
       left = Math.round(res.width - width + res.left);
     }
-    if (res.height && res.top) {
+    if (res.top !== undefined) {
       top = res.top;
     }
   } catch (e) {
