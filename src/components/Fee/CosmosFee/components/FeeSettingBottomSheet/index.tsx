@@ -8,6 +8,7 @@ import TextButton from '@/components/common/TextButton';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { CosmosFeeAsset } from '@/types/cosmos/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { Body, Container, FeeCustomContainer, Header, HeaderTitle, StyledBottomSheet } from './styled';
@@ -153,12 +154,16 @@ export default function FeeSettingBottomSheet({
           feeAssets={availableFeeAssets}
           feeCoinId={selectedCustomFeeCoinId}
           currentSelectedFeeOptionKey={currentSelectedFeeOptionKey}
-          onConfirm={(feeCoinId, gasAmount, gasRate) => {
+          onChangeFeeCoin={(feeCoinId) => {
             onChangeFeeCoinId?.(feeCoinId);
+            toastSuccess(t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.changesApplied'));
+          }}
+          onConfirm={(gasAmount, gasRate) => {
             if (gasAmount && gasRate) {
               onChangeGas?.(gasAmount);
               onChangeGasRate?.(gasRate);
               onSelectOption?.(customFeeStepKey);
+              toastSuccess(t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.changesApplied'));
             }
 
             onHandelClose();

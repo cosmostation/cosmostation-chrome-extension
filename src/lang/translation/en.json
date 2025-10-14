@@ -155,7 +155,8 @@
       "index": {
         "title": "Select Fee Option",
         "customDescription": "Do you want a advanced setting?",
-        "custom": "Custom"
+        "custom": "Custom",
+        "changesApplied": "Changes applied"
       }
     },
     "Fee": {
@@ -275,7 +276,8 @@
           "index": {
             "title": "Select Fee Option",
             "customDescription": "Do you want a advanced setting?",
-            "custom": "Custom"
+            "custom": "Custom",
+            "changesApplied": "Changes applied"
           }
         },
         "index": {
@@ -2674,7 +2676,8 @@
               "reject": "Reject",
               "sign": "Sign",
               "notSimulated": "Simulating transaction...",
-              "memoOverflow": "Memo is too long. Please shorten it."
+              "memoOverflow": "Memo is too long. Please shorten it.",
+              "calculatingFee": "Calculating fee"
             },
             "components": {
               "TxMessage": {
@@ -2777,7 +2780,8 @@
               "reject": "Reject",
               "sign": "Sign",
               "notSimulated": "Simulating transaction...",
-              "memoOverflow": "Memo is too long. Please shorten it."
+              "memoOverflow": "Memo is too long. Please shorten it.",
+              "calculatingFee": "Calculating fee"
             }
           },
           "message": {
@@ -2909,7 +2913,8 @@
           "entry": {
             "insufficientBalance": "Insufficient balance",
             "reject": "Reject",
-            "sign": "Sign"
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
           }
         },
         "add-chain": {
@@ -3061,7 +3066,8 @@
             "insufficientBalance": "Insufficient balance",
             "failedToSimulate": "Fail to simulate",
             "reject": "Reject",
-            "sign": "Sign"
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
           }
         },
         "sign-message": {

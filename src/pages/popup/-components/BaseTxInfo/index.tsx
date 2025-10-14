@@ -28,6 +28,7 @@ import {
   RowContainer,
   RowLeftContainer,
   RowRightContainer,
+  StyledCircularProgress,
   TotalValue,
 } from './styled';
 
@@ -42,10 +43,11 @@ type BaseTxInfoProps = {
     label?: string;
   }[];
   disableFee?: boolean;
+  isLoadingFee?: boolean;
   onClickFee?: () => void;
 };
 
-export default function BaseTxInfo({ feeBaseAmount, feeCoinId, additionalFees, disableFee = false, onClickFee }: BaseTxInfoProps) {
+export default function BaseTxInfo({ feeBaseAmount, feeCoinId, additionalFees, disableFee = false, isLoadingFee = false, onClickFee }: BaseTxInfoProps) {
   const { t } = useTranslation();
 
   const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
@@ -213,26 +215,30 @@ export default function BaseTxInfo({ feeBaseAmount, feeCoinId, additionalFees, d
             <FeeCustomButton disabled={disableFee} onClick={onClickFee}>
               {feeCoin &&
                 (displayFeeAmount ? (
-                  <EstimatedFeeTextContainer data-is-disabled={disableFee}>
-                    <BalanceDisplay
-                      typoOfIntegers="h5n_M"
-                      typoOfDecimals="h7n_R"
-                      currency={userCurrencyPreference}
-                      fixed={6}
-                      isDisableLeadingCurreny
-                      isDisableHidden
-                    >
-                      {displayFeeAmount}
-                    </BalanceDisplay>
-                    &nbsp;
-                    <Base1300Text variant="h7n_M">{feeCoin?.asset.symbol}</Base1300Text>
-                    &nbsp;
-                    <Base1300Text variant="b2_M">{'('}</Base1300Text>
-                    <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
-                      {value}
-                    </BalanceDisplay>
-                    <Base1300Text variant="b2_M">{')'}</Base1300Text>
-                  </EstimatedFeeTextContainer>
+                  isLoadingFee ? (
+                    <StyledCircularProgress size={17} />
+                  ) : (
+                    <EstimatedFeeTextContainer data-is-disabled={disableFee}>
+                      <BalanceDisplay
+                        typoOfIntegers="h5n_M"
+                        typoOfDecimals="h7n_R"
+                        currency={userCurrencyPreference}
+                        fixed={6}
+                        isDisableLeadingCurreny
+                        isDisableHidden
+                      >
+                        {displayFeeAmount}
+                      </BalanceDisplay>
+                      &nbsp;
+                      <Base1300Text variant="h7n_M">{feeCoin?.asset.symbol}</Base1300Text>
+                      &nbsp;
+                      <Base1300Text variant="b2_M">{'('}</Base1300Text>
+                      <BalanceDisplay typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} isDisableHidden>
+                        {value}
+                      </BalanceDisplay>
+                      <Base1300Text variant="b2_M">{')'}</Base1300Text>
+                    </EstimatedFeeTextContainer>
+                  )
                 ) : (
                   <Base1300Text variant="b2_M">{'-'}</Base1300Text>
                 ))}

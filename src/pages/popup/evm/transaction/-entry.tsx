@@ -339,11 +339,15 @@ export default function Entry({ request }: EntryProps) {
   );
 
   const errorMessage = useMemo(() => {
+    if (fee.isFetching) {
+      return t('pages.popup.evm.transaction.entry.calculatingFee');
+    }
+
     if (gt(totalSpendNativeCoinDisplayAmount, nativeCoinDisplayBalance)) {
       return t('pages.popup.evm.transaction.entry.insufficientBalance');
     }
     return '';
-  }, [nativeCoinDisplayBalance, t, totalSpendNativeCoinDisplayAmount]);
+  }, [fee.isFetching, nativeCoinDisplayBalance, t, totalSpendNativeCoinDisplayAmount]);
 
   const handleOnSign = async () => {
     try {
@@ -462,6 +466,7 @@ export default function Entry({ request }: EntryProps) {
             <BaseTxInfo
               feeCoinId={currentFeeOption?.coinId || ''}
               feeBaseAmount={currentBaseFee}
+              isLoadingFee={fee.isFetching}
               onClickFee={() => {
                 setIsOpenFeeCustomBottomSheet(true);
               }}

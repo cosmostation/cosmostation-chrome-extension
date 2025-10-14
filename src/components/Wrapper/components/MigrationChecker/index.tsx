@@ -36,6 +36,7 @@ import {
   LoadingProgressText,
   RightArrowIconContainer,
 } from './styled';
+import { Splash } from '../Init/styled';
 
 import RightArrow from '@/assets/images/icons/RightArrow14.svg';
 
@@ -138,7 +139,7 @@ export default function MigrationChecker({ children }: MigrationCheckerProps) {
   }, []);
 
   if (isMigrateComplete === undefined) {
-    return null;
+    return <Splash />;
   }
 
   if (!isMigrateComplete) {

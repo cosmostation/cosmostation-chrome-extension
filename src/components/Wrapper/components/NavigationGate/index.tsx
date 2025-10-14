@@ -42,7 +42,8 @@ type NavigationGateProps = {
 export default function NavigationGate({ children }: NavigationGateProps) {
   const navigate = useNavigate();
 
-  const { userAccounts, requestQueue } = useExtensionStorageStore((state) => state);
+  const userAccounts = useExtensionStorageStore((state) => state.userAccounts);
+  const requestQueue = useExtensionStorageStore((state) => state.requestQueue);
 
   useEffect(() => {
     void (async () => {
