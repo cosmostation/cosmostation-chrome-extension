@@ -154,7 +154,7 @@
       },
       "index": {
         "title": "Select Fee Option",
-        "customDescription": "Do you want a advanced setting?",
+        "customDescription": "Do you want an advanced setting?",
         "custom": "Custom",
         "changesApplied": "Changes applied"
       }
@@ -275,7 +275,7 @@
         "FeeSettingBottomSheet": {
           "index": {
             "title": "Select Fee Option",
-            "customDescription": "Do you want a advanced setting?",
+            "customDescription": "Do you want an advanced setting?",
             "custom": "Custom",
             "changesApplied": "Changes applied"
           }
