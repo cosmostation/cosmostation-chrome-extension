@@ -18,14 +18,16 @@ const throttle = pThrottle({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const throttledUpdateAllBalanceFn = throttle(async (accountId: string, callbackFunc: () => Promise<any>) => {
+const throttledUpdateAllBalanceFn = throttle(async (accountId: string) => {
   await Promise.all([
-    sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] }),
-    sendMessage({ target: 'SERVICE_WORKER', method: 'updateStaking', params: [accountId] }),
+    sendMessage({ target: 'SERVICE_WORKER', method: 'updateHighPriorityBalance', params: [accountId] }),
+    sendMessage({ target: 'SERVICE_WORKER', method: 'updateHighPriorityStaking', params: [accountId] }),
   ]);
 
-  await callbackFunc();
+  await Promise.all([
+    sendMessage({ target: 'SERVICE_WORKER', method: 'updateLowPriorityBalance', params: [accountId] }),
+    sendMessage({ target: 'SERVICE_WORKER', method: 'updateLowPriorityStaking', params: [accountId] }),
+  ]);
 });
 
 const throttledUpdateChainBalanceFn = throttle(
@@ -71,7 +73,7 @@ export function useManualBalanceUpdate() {
     setIsLoadingAllBalance(true);
 
     try {
-      await throttledUpdateAllBalanceFn(currentAccount.id, refreshAssets);
+      await throttledUpdateAllBalanceFn(currentAccount.id);
     } catch (e) {
       devLogger.error(`[useManualBalanceUpdate]  updateAllBalance`, e);
     } finally {
