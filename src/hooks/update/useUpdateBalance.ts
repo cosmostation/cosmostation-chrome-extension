@@ -11,7 +11,7 @@ export function useUpdateBalance() {
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   const fetcher = async () => {
-    const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+    const { initAccountIds = [] } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
     if (!initAccountIds?.includes(currentAccount.id)) {
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });

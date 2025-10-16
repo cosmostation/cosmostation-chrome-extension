@@ -6,28 +6,33 @@ import type { ExtensionStorage } from '@/types/extension';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { chunkArray } from '@/utils/array';
 import { upsertSuiDelegation } from '@/utils/balanceUpsert';
+import { devLogger } from '@/utils/devLogger';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { fetchSuiDelegations } from '@/utils/sui/fetch/staking';
 
 import { getFilteredAccountAddresses } from '../address';
 
 export async function suiStaking(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'sui', { chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'sui', { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-delegation-sui`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-delegation-sui`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getSuiDelegationsForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getSuiDelegationsForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertSuiDelegation(stored, results);
+      stored = upsertSuiDelegation(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${accountId}-delegation-sui`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${accountId}-delegation-sui`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process suiStaking for account ${accountId}:`, error);
   }
 }
 

@@ -106,4 +106,8 @@ export interface ServiceWorkerResponse {
   updateAccountInfo: null;
   updateChainSpecificBalance: null;
   updateChainSpecificStakingBalance: null;
+  updateHighPriorityBalance: null;
+  updateLowPriorityBalance: null;
+  updateHighPriorityStaking: null;
+  updateLowPriorityStaking: null;
 }

@@ -6,28 +6,33 @@ import type { ExtensionStorage } from '@/types/extension';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { chunkArray } from '@/utils/array';
 import { upsertIotaDelegation } from '@/utils/balanceUpsert';
+import { devLogger } from '@/utils/devLogger';
 import { fetchIotaDelegations } from '@/utils/iota/fetch/staking';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
 
 export async function iotaStaking(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'iota', { chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'iota', { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-delegation-iota`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-delegation-iota`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getIotaDelegationsForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getIotaDelegationsForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertIotaDelegation(stored, results);
+      stored = upsertIotaDelegation(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${accountId}-delegation-iota`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${accountId}-delegation-iota`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process iotaStaking for account ${accountId}:`, error);
   }
 }
 

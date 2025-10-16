@@ -138,6 +138,10 @@ export async function getAssets() {
       if (evmChainIds.has(asset.chain)) {
         const chainParam = chains?.[asset.chain]?.params?.chainlist_params;
 
+        if (!chainParam) {
+          return acc;
+        }
+
         const isOnlyEVM = !chainParam.chain_type.includes('cosmos') && chainParam.chain_type.includes('evm');
 
         const gasCoinDenom = isOnlyEVM
@@ -234,12 +238,14 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
   let addressesMap: Map<string, AccountAddress[]> | undefined;
 
   if (currentAccountStore) {
+    const isCacheStillValid = isCacheValid(currentAccountStore.timestamp, currentAccountStore.addressLength, allAccountAddress.length);
+
     const hasCustomErc20Changed = !isEqual(
       currentAccountStore.assets.customErc20Assets.map((a) => a.asset.id),
       customErc20AssetsData.map((a) => a.id),
     );
 
-    if (hasCustomErc20Changed) {
+    if (hasCustomErc20Changed || !isCacheStillValid) {
       if (!addressesMap) {
         addressesMap = createAddressesMap(allAccountAddress);
       }
@@ -253,7 +259,7 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
       customCw20AssetsData.map((a) => a.id),
     );
 
-    if (hasCustomCW20Changed) {
+    if (hasCustomCW20Changed || !isCacheStillValid) {
       if (!addressesMap) {
         addressesMap = createAddressesMap(allAccountAddress);
       }
@@ -262,7 +268,7 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
       currentAccountStore.assets.customCw20Assets = newCustomCw20Assets;
     }
 
-    if (isCacheValid(currentAccountStore.timestamp, currentAccountStore.addressLength, allAccountAddress.length)) {
+    if (isCacheStillValid) {
       return currentAccountStore.assets;
     }
   }

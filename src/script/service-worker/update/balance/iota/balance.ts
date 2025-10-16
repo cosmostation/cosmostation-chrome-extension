@@ -6,28 +6,33 @@ import type { ExtensionStorage } from '@/types/extension';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { chunkArray } from '@/utils/array';
 import { upsertIotaBalance } from '@/utils/balanceUpsert';
+import { devLogger } from '@/utils/devLogger';
 import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
 
 export async function iotaBalances(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'iota', { chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'iota', { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-balance-iota`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-balance-iota`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getIotaBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getIotaBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertIotaBalance(stored, results);
+      stored = upsertIotaBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${accountId}-balance-iota`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${accountId}-balance-iota`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process iotaBalances for account ${accountId}:`, error);
   }
 }
 

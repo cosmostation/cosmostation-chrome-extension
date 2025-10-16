@@ -9,64 +9,73 @@ import { chunkArray } from '@/utils/array';
 import { upsertEVMBalance } from '@/utils/balanceUpsert';
 import { createChainMap } from '@/utils/cache/chainMap';
 import { fetchEVMBalances } from '@/utils/cosmos/fetch/balance';
+import { devLogger } from '@/utils/devLogger';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
 
 export async function evmBalances(accountId: string, { isMinimal = false, chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'evm', { isMinimal, chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'evm', { isMinimal, chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-balance-evm`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-balance-evm`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getEVMBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getEVMBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertEVMBalance(stored, results);
+      stored = upsertEVMBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${accountId}-balance-evm`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${accountId}-balance-evm`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process evmBalances for account ${accountId}:`, error);
   }
 }
 
 export async function customEvmBalances(accountId: string, { chainId, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const customAccountAddress = await getCustomAccountAddress(accountId);
-  const chainMapInstance = await createChainMap('evm');
+    const customAccountAddress = await getCustomAccountAddress(accountId);
+    const chainMapInstance = await createChainMap('evm');
 
-  const isUpdateSpecificAddress = !!chainId;
+    const isUpdateSpecificAddress = !!chainId;
 
-  const addressList = isUpdateSpecificAddress
-    ? customAccountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
-    : customAccountAddress;
+    const addressList = isUpdateSpecificAddress
+      ? customAccountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+      : customAccountAddress;
 
-  const targetChain = chainId && chainMapInstance?.get(chainId);
+    const targetChain = chainId && chainMapInstance?.get(chainId);
 
-  const addressWithChain = addressList
-    .map((addr) => {
-      const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
-      return chain ? { ...addr, chain } : null;
-    })
-    .filter((item) => !!item);
+    const addressWithChain = addressList
+      .map((addr) => {
+        const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
+        return chain ? { ...addr, chain } : null;
+      })
+      .filter((item) => !!item);
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-custom-balance-evm`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-custom-balance-evm`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getEVMBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getEVMBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertEVMBalance(stored, results);
+      stored = upsertEVMBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${accountId}-custom-balance-evm`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${accountId}-custom-balance-evm`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process customEvmBalances for account ${accountId}:`, error);
   }
 }
 

@@ -9,27 +9,32 @@ import type { ExtensionStorage } from '@/types/extension';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { chunkArray } from '@/utils/array';
 import { upsertBitcoinBalance } from '@/utils/balanceUpsert';
+import { devLogger } from '@/utils/devLogger';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
 
 export async function bitcoinBalances(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'bitcoin', { chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'bitcoin', { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-balance-bitcoin`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-balance-bitcoin`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getBitcoinBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getBitcoinBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertBitcoinBalance(stored, results);
+      stored = upsertBitcoinBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${accountId}-balance-bitcoin`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${accountId}-balance-bitcoin`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process bitcoinBalances for account ${accountId}:`, error);
   }
 }
 

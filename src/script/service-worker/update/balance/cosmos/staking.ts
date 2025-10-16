@@ -19,67 +19,80 @@ import { createStakingSupportCosmosChainMap } from '@/utils/cache/chainMap';
 import { isValidatorCached } from '@/utils/cache/cosmos/validator';
 import { convertToValidatorAddress } from '@/utils/cosmos/address';
 import { fetchCosmosCommission, fetchCosmosDelegations, fetchCosmosRewards, fetchCosmosUnbondings, fetchNTRNRewards } from '@/utils/cosmos/fetch/staking';
+import { devLogger } from '@/utils/devLogger';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getChainIdsByBalancePriority } from '../address';
 
 export async function cosmosDelegations(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
+    const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-delegation-cosmos`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-delegation-cosmos`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getCosmosDelegationsForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getCosmosDelegationsForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertCosmosDelegation(stored, results);
+      stored = upsertCosmosDelegation(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${accountId}-delegation-cosmos`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${accountId}-delegation-cosmos`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process cosmosDelegations for account ${accountId}:`, error);
   }
 }
 
 export async function cosmosUnbondings(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
+    const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-undelegation-cosmos`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-undelegation-cosmos`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getCosmosUnbondingsForAddresses(accountId, startUpdateTime, chunk);
-    stored = upsertCosmosUndelegation(stored, results);
+    for (const chunk of chunks) {
+      const results = await getCosmosUnbondingsForAddresses(accountId, startUpdateTime, chunk);
+      stored = upsertCosmosUndelegation(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${accountId}-undelegation-cosmos`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${accountId}-undelegation-cosmos`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process cosmosUnbondings for account ${accountId}:`, error);
   }
 }
 
 export async function cosmosRewards(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
+    const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-reward-cosmos`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-reward-cosmos`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getCosmosRewardsForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getCosmosRewardsForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertCosmosReward(stored, results);
+      stored = upsertCosmosReward(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${accountId}-reward-cosmos`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${accountId}-reward-cosmos`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process cosmosRewards for account ${accountId}:`, error);
   }
 }
 
@@ -119,22 +132,26 @@ export async function getFilteredCosmosStakingAccountAddresses(id: string, { cha
 }
 
 export async function cosmosCommissions(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
+    const addressWithChain = await getFilteredCosmosStakingAccountAddresses(accountId, { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-commission-cosmos`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-commission-cosmos`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getCosmosCommissionsForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getCosmosCommissionsForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertCosmosCommission(stored, results);
+      stored = upsertCosmosCommission(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${accountId}-commission-cosmos`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${accountId}-commission-cosmos`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process cosmosCommissions for account ${accountId}:`, error);
   }
 }
 

@@ -7,27 +7,32 @@ import type { BalanceFetchOption } from '@/types/message/service-worker/updateRe
 import { fetchAptosBalances } from '@/utils/aptos/fetch/balance';
 import { chunkArray } from '@/utils/array';
 import { upsertAptosBalance } from '@/utils/balanceUpsert';
+import { devLogger } from '@/utils/devLogger';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
 
 export async function aptosBalances(accountId: string, { chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'aptos', { chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'aptos', { chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-balance-aptos-v2`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-balance-aptos-v2`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getAptosBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getAptosBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertAptosBalance(stored, results);
+      stored = upsertAptosBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${accountId}-balance-aptos-v2`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${accountId}-balance-aptos-v2`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process aptosBalances for account ${accountId}:`, error);
   }
 }
 

@@ -10,6 +10,7 @@ import { chunkArray } from '@/utils/array';
 import { upsertCosmosBalance } from '@/utils/balanceUpsert';
 import { createChainMap } from '@/utils/cache/chainMap';
 import { fetchCoreumSpendableBalances, fetchCosmosBalances } from '@/utils/cosmos/fetch/balance';
+import { devLogger } from '@/utils/devLogger';
 import { minus } from '@/utils/numbers';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
@@ -17,22 +18,26 @@ import { getExtensionLocalStorage } from '@/utils/storage';
 import { getFilteredAccountAddresses } from '../address';
 
 export async function cosmosBalances(accountId: string, { isMinimal = false, chainId, priority, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const addressWithChain = await getFilteredAccountAddresses(accountId, 'cosmos', { isMinimal, chainId, priority });
+    const addressWithChain = await getFilteredAccountAddresses(accountId, 'cosmos', { isMinimal, chainId, priority });
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-balance-cosmos`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-balance-cosmos`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getCosmosBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getCosmosBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertCosmosBalance(stored, results);
+      stored = upsertCosmosBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${accountId}-balance-cosmos`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${accountId}-balance-cosmos`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process cosmosBalances for account ${accountId}:`, error);
   }
 }
 
@@ -128,38 +133,42 @@ async function getCosmosBalancesForAddresses(accountId: string, startUpdateTime:
 }
 
 export async function customCosmosBalances(accountId: string, { chainId, updateAssets, chunkSize }: BalanceFetchOption = {}) {
-  const startUpdateTime = Date.now();
+  try {
+    const startUpdateTime = Date.now();
 
-  const customAccountAddress = await getCustomAccountAddress(accountId);
-  const chainMapInstance = await createChainMap('cosmos');
+    const customAccountAddress = await getCustomAccountAddress(accountId);
+    const chainMapInstance = await createChainMap('cosmos');
 
-  const isUpdateSpecificAddress = !!chainId;
+    const isUpdateSpecificAddress = !!chainId;
 
-  const addressList = isUpdateSpecificAddress
-    ? customAccountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
-    : customAccountAddress;
+    const addressList = isUpdateSpecificAddress
+      ? customAccountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+      : customAccountAddress;
 
-  const targetChain = chainId && chainMapInstance?.get(chainId);
+    const targetChain = chainId && chainMapInstance?.get(chainId);
 
-  const addressWithChain = addressList
-    .map((addr) => {
-      const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
-      return chain ? { ...addr, chain } : null;
-    })
-    .filter((item) => !!item);
+    const addressWithChain = addressList
+      .map((addr) => {
+        const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
+        return chain ? { ...addr, chain } : null;
+      })
+      .filter((item) => !!item);
 
-  let stored = (await getExtensionLocalStorage(`${accountId}-custom-balance-cosmos`)) || [];
+    let stored = (await getExtensionLocalStorage(`${accountId}-custom-balance-cosmos`)) || [];
 
-  const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
+    const chunks = chunkSize ? chunkArray(addressWithChain, chunkSize) : [addressWithChain];
 
-  for (const chunk of chunks) {
-    const results = await getCustomCosmosBalancesForAddresses(accountId, startUpdateTime, chunk);
+    for (const chunk of chunks) {
+      const results = await getCustomCosmosBalancesForAddresses(accountId, startUpdateTime, chunk);
 
-    stored = upsertCosmosBalance(stored, results);
+      stored = upsertCosmosBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${accountId}-custom-balance-cosmos`]: stored });
+      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${accountId}-custom-balance-cosmos`]: stored });
 
-    updateAssets?.();
+      updateAssets?.();
+    }
+  } catch (error) {
+    devLogger.error(`Failed to process customCosmosBalances for account ${accountId}:`, error);
   }
 }
 

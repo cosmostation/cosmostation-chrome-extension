@@ -15,13 +15,10 @@ export default function BackgroundMessageListener({ children }: BackgroundMessag
   useEffect(() => {
     const handler = (request: any, _: any, sendResponse: (response?: any) => void) => {
       if (request.type === 'sidePanelState') {
-        if (isSidePanelView()) {
-          try {
-            sendResponse({ type: request.type, message: { enabled: true } });
-          } catch {
-            sendResponse({ type: request.type, message: { enabled: false } });
-          }
-        } else {
+        try {
+          const enabled = isSidePanelView();
+          sendResponse({ type: request.type, message: { enabled } });
+        } catch {
           sendResponse({ type: request.type, message: { enabled: false } });
         }
       }
@@ -30,6 +27,8 @@ export default function BackgroundMessageListener({ children }: BackgroundMessag
         refreshAssets();
         sendResponse({ type: request.type, message: { success: true } });
       }
+
+      return true;
     };
 
     extension.runtime.onMessage.addListener(handler);
