@@ -160,6 +160,32 @@ export class BitcoinRPCError extends Error {
     Object.setPrototypeOf(this, SuiRPCError.prototype);
   }
 }
+
+export class GnoRPCError extends Error {
+  public code: number;
+
+  public id?: string | number;
+
+  public rpcMessage: Record<string, { code: number; message: string }>;
+
+  constructor(code: number, message: string, id?: string | number) {
+    super(message);
+    this.name = 'GnoRPCError';
+    this.code = code;
+    this.id = id;
+
+    const errorMessage = {
+      error: {
+        code,
+        message,
+      },
+    };
+
+    this.rpcMessage = errorMessage;
+
+    Object.setPrototypeOf(this, SuiRPCError.prototype);
+  }
+}
 export class CommonRPCError extends Error {
   public code: number;
 

@@ -8,6 +8,8 @@ import type {
   AccountAddressBalanceCw20,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceGno,
+  AccountAddressBalanceGrc20,
   AccountAddressBalanceIota,
   AccountAddressBalanceSui,
   AccountAddressCommissionsCosmos,
@@ -233,6 +235,31 @@ export const upsertCW20Balance = <T extends AccountAddressBalanceCw20>(originalL
       const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.contract, incoming.contract));
 
       return existingBalance ? { ...incoming, balance: existingBalance.balance } : incoming;
+    });
+
+    e.balances = resolved;
+  });
+};
+
+export const upsertGnoBalance = <T extends AccountAddressBalanceGno>(originalList: T[], incomingList: T[]) => {
+  return upsertBalanceList(originalList, incomingList, (e, i) => {
+    if (i.status !== 'error') {
+      e.balance = i.balance;
+      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    }
+
+    if (e.status !== i.status) {
+      e.status = i.status;
+    }
+  });
+};
+
+export const upsertGrc20Balance = <T extends AccountAddressBalanceGrc20>(originalList: T[], incomingList: T[]) => {
+  return upsertBalanceList(originalList, incomingList, (e, i) => {
+    const resolved = i.balances.map((incoming) => {
+      if (incoming.status !== 'error') return incoming;
+
+      return e.balances.find((exist) => isEqualsIgnoringCase(exist.contract, incoming.contract)) || incoming;
     });
 
     e.balances = resolved;

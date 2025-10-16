@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { produce } from 'immer';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { RESPONSE_MESSAGE as GNO_MESSAGE, RESPONSE_STATUS as GNO_RESPONSE_STATUS } from '@/constants/gno';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -16,6 +17,7 @@ import type { AptosAccount } from '@/types/message/inject/aptos';
 import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
 import type { CosRequestAccount, CosRequestAccountResponse, CosRequestAccountsSettled, CosRequestAccountsSettledResponse } from '@/types/message/inject/cosmos';
 import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/message/inject/evm';
+import type { GnoConnect, GnoConnectResponse, GnoGetAccountResponse } from '@/types/message/inject/gno';
 import type { IotaRequestAccount, IotaRequestAccountResponse, IotaRequestConnect, IotaRequestConnectResponse } from '@/types/message/inject/iota';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
 import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
@@ -478,6 +480,67 @@ export default function Entry() {
 
             void deQueue();
           }
+        }
+
+        if (currentRequestQueue?.method === 'gno_connect') {
+          const { tabId, requestId, origin } = currentRequestQueue;
+
+          const result: GnoConnectResponse = {
+            code: 0,
+            status: GNO_RESPONSE_STATUS.SUCCESS,
+            message: GNO_MESSAGE.CONNECTION_SUCCESS,
+            data: {},
+          };
+
+          void refreshOriginConnectionTime(origin);
+
+          sendMessage<ResponseAppMessage<GnoConnect>>({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin,
+            requestId,
+            tabId,
+            params: {
+              id: requestId,
+              result,
+            },
+          });
+          void deQueue();
+        }
+
+        if (currentRequestQueue?.method === 'gno_getAccount' && currentPassword) {
+          const { tabId, requestId, origin } = currentRequestQueue;
+
+          const { gnoChains } = await getChains();
+          const gnoChain = gnoChains?.[0];
+
+          const keyPair = getKeypair(gnoChain, currentAccount, currentPassword);
+          const address = getAddress(gnoChain, keyPair.publicKey);
+
+          const result: GnoGetAccountResponse = {
+            code: 0,
+            status: GNO_RESPONSE_STATUS.SUCCESS,
+            message: '',
+            data: {
+              address,
+              publicKey: keyPair?.publicKey ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : null,
+            },
+          };
+
+          void refreshOriginConnectionTime(origin);
+
+          sendMessage<ResponseAppMessage<GnoConnect>>({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin,
+            requestId,
+            tabId,
+            params: {
+              id: requestId,
+              result,
+            },
+          });
+          void deQueue();
         }
       } catch (error) {
         console.error('Error fetching data:', error);

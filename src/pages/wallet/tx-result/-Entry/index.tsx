@@ -4,6 +4,7 @@ import Aptos from './Aptos';
 import Bitcoin from './Bitcoin';
 import Cosmos from './Cosmos';
 import EVM from './EVM';
+import Gno from './Gno';
 import Iota from './Iota';
 import Sui from './Sui';
 
@@ -40,6 +41,10 @@ export default function Entry({ coinId, txHash, address }: EntryProps) {
 
   if (selectedAccountAsset?.asset.chainType === 'iota') {
     return <Iota coinId={coinId} txHash={txHash} address={address} />;
+  }
+
+  if (selectedAccountAsset?.asset.chainType === 'gno') {
+    return <Gno coinId={coinId} txHash={txHash} address={address} />;
   }
 
   return null;

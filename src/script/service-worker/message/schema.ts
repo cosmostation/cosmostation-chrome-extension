@@ -455,3 +455,14 @@ export const aptosSignMessageSchema = () =>
     message: Joi.string().required(),
     nonce: Joi.number().required(),
   }).required();
+
+export const gnoSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
+    );

@@ -17,6 +17,7 @@ export const initialState: ExtensionStorageState = {
   erc20Assets: [],
   customErc20Assets: [],
   cw20Assets: [],
+  grc20Assets: [],
   customCw20Assets: [],
   initAccountIds: [],
   initCheckLegacyBalanceAccountIds: [],
@@ -52,6 +53,7 @@ export const initialState: ExtensionStorageState = {
   chosenAptosNetworkId: '',
   chosenBitcoinNetworkId: '',
   chosenIotaNetworkId: '',
+  chosenGnoNetworkId: '',
   currentWindowId: null,
   prioritizedProvider: {
     keplr: false,

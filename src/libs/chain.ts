@@ -3,7 +3,7 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, GnoChain, IotaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -34,6 +34,52 @@ export async function getChains() {
   const chainInfos = chainIds.map((chainId) => {
     const chainInfo = chains[chainId];
 
+    // test
+    if (chainId === 'gno-testnet') {
+      return {
+        id: chainId,
+        ...chainInfo,
+        params: {
+          ...chainInfo.params,
+          chainlist_params: {
+            ...chainInfo.params.chainlist_params,
+            cosmos_fee_info: {
+              ...chainInfo.params.chainlist_params.cosmos_fee_info,
+              rate: ['0.1ugnot'],
+              simulated_gas_multiply: 2,
+            },
+            chain_type: ['gno'],
+            is_support_extension_wallet: true,
+            cosmos_rpc_endpoint: [
+              {
+                provider: 'Gno Land',
+                url: 'https://rpc.archainia.app',
+              },
+            ],
+            chain_id_cosmos: 'dev',
+          },
+        },
+      };
+    }
+
+    // if (chainId === 'gno-testnet') {
+    //   return {
+    //     id: chainId,
+    //     ...chainInfo,
+    //     params: {
+    //       ...chainInfo.params,
+    //       chainlist_params: {
+    //         ...chainInfo.params.chainlist_params,
+    //         chain_type: ['gno'],
+    //         is_support_extension_wallet: true,
+    //         chain_id_cosmos: 'staging',
+    //       },
+    //     },
+    //   };
+    // }
+
+    // test end
+
     return {
       id: chainId,
       ...chainInfo,
@@ -48,6 +94,7 @@ export async function getChains() {
   const aptosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('aptos'));
   const bitcoinChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('bitcoin'));
   const iotaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('iota'));
+  const gnoChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('gno'));
 
   const remappedCosmosChains: CosmosChain[] = cosmosChains.map((chain) => {
     const id = chain.id;
@@ -403,7 +450,7 @@ export async function getChains() {
   const remappedIotaChains: IotaChain[] = iotaChains.map((chain) => {
     const id = chain.id;
     const chainType = 'iota';
-    const chainId = chain.params.chainlist_params.chain_id!;
+    const chainId = chain.params.chainlist_params.chain_id_cosmos!;
 
     const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
@@ -411,7 +458,11 @@ export async function getChains() {
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
     const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
+    const rpcUrls =
+      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
@@ -451,6 +502,74 @@ export async function getChains() {
     };
   });
 
+  const remappedGnoChains: GnoChain[] = gnoChains.map((chain) => {
+    const id = chain.id;
+    const chainType = 'gno';
+    const chainId = chain.params.chainlist_params.chain_id_cosmos!;
+
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
+    const image = chain.params.chainlist_params?.chain_image ?? null;
+
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
+
+    const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
+
+    const rpcUrls =
+      chain.params.chainlist_params.cosmos_rpc_endpoint?.map((endpoint) => ({
+        ...endpoint,
+        url: removeTrailingSlash(endpoint.url),
+      })) ?? [];
+
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : {
+          name: '',
+          url: '',
+          account: '',
+          tx: '',
+          proposal: '',
+        };
+
+    const accountTypes =
+      chain.params.chainlist_params?.account_type?.map((accountType) => {
+        const hdPath = accountType.hd_path.replace('X', '${index}');
+        return {
+          hdPath,
+          pubkeyStyle: accountType.pubkey_style,
+          pubkeyType: accountType.pubkey_type ?? null,
+          isDefault: accountType.is_default ?? null,
+        };
+      }) ?? [];
+
+    const feeInfo = {
+      isSimulable: chain.params.chainlist_params?.cosmos_fee_info?.is_simulable ?? false,
+      isFeemarketEnabled: chain.params.chainlist_params?.cosmos_fee_info?.is_feemarket ?? false,
+      defaultFeeRateKey: chain.params.chainlist_params?.cosmos_fee_info?.base ?? '0',
+      gasRate: chain.params.chainlist_params?.cosmos_fee_info?.rate ?? [],
+      defaultGasLimit: chain.params.chainlist_params?.cosmos_fee_info?.init_gas_limit ?? 200000,
+      gasCoefficient: chain.params.chainlist_params?.cosmos_fee_info?.simulated_gas_multiply ?? 2,
+    };
+
+    return {
+      id,
+      chainId,
+      name,
+      image,
+      chainType,
+      mainAssetDenom,
+      chainDefaultCoinDenoms,
+      rpcUrls,
+      explorer,
+      accountTypes,
+      accountPrefix,
+      feeInfo,
+    };
+  });
+
   return {
     cosmosChains: remappedCosmosChains,
     evmChains: remappedEvmChains,
@@ -458,6 +577,7 @@ export async function getChains() {
     aptosChains: remappedAptosChains,
     bitcoinChains: remappedBitcoinChains,
     iotaChains: remappedIotaChains,
+    gnoChains: remappedGnoChains,
   };
 }
 

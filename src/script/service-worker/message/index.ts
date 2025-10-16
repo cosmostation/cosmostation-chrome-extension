@@ -6,6 +6,7 @@ import { bitcoinProcess } from './bitcoin';
 import { commonProcess } from './common';
 import { cosmosProcess } from './cosmos';
 import { evmProcess } from './evm';
+import { gnoProcess } from './gno';
 import { iotaProcess } from './iota';
 import { suiProcess } from './sui';
 
@@ -33,6 +34,9 @@ export async function process(message: Request) {
     }
     if (message.chainType === 'iota') {
       await iotaProcess(message);
+    }
+    if (message.chainType === 'gno') {
+      await gnoProcess(message);
     }
   } catch (e) {
     devLogger.error('process error', e);

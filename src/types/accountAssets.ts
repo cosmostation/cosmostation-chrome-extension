@@ -7,6 +7,8 @@ import type {
   AccountCw20Asset,
   AccountErc20Asset,
   AccountEvmAsset,
+  AccountGnoAsset,
+  AccountGrc20Asset,
   AccountIotaAsset,
   AccountSuiAsset,
 } from './account';
@@ -18,8 +20,10 @@ export interface AccountAssets {
   suiAccountAssets: AccountSuiAsset[];
   bitcoinAccountAssets: AccountBitcoinAsset[];
   iotaAccountAssets: AccountIotaAsset[];
+  gnoAccountAssets: AccountGnoAsset[];
   cw20AccountAssets: AccountCw20Asset[];
   erc20AccountAssets: AccountErc20Asset[];
+  grc20AccountAssets: AccountGrc20Asset[];
   customErc20AccountAssets: AccountErc20Asset[];
   customCw20AccountAssets: AccountCw20Asset[];
   cosmosAccountCustomAssets: AccountCustomCosmosAsset[];
@@ -35,12 +39,16 @@ export type FlatAccountAssets =
   | AccountBitcoinAsset
   | AccountIotaAsset
   | AccountAptosAsset
+  | AccountGnoAsset
+  | AccountGrc20Asset
   | AccountCustomCosmosAsset
   | AccountCustomEvmAsset;
 
 export type AllCosmosAccountAssets = AccountCosmosAsset | AccountCustomCosmosAsset | AccountCw20Asset;
 
 export type AllEVMAccountAssets = AccountEvmAsset | AccountCustomEvmAsset | AccountErc20Asset;
+
+export type AllGnoAccountAssets = AccountGnoAsset | AccountGrc20Asset;
 
 export interface AccountCustomAssets {
   cosmosAccountCustomAssets: AccountCustomCosmosAsset[];

@@ -3,8 +3,8 @@ import { PromisePool } from '@supercharge/promise-pool';
 
 import { updateHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
-import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
-import type { CosmosCw20Asset, EvmErc20Asset } from '@/types/asset';
+import type { V11Asset, V11Cw20, V11Erc20, V11Grc20, V11Param } from '@/types/apiV11';
+import type { CosmosCw20Asset, EvmErc20Asset, GnoGrc20Asset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
 import { getWithFullResponse } from '@/utils/axios';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -35,7 +35,7 @@ export async function v11() {
       assetsV11: assets,
     });
 
-    const { cosmosChains, evmChains } = await getChains();
+    const { cosmosChains, evmChains, gnoChains } = await getChains();
 
     // ERC20
     const { results: erc20AssetsResponse } = await PromisePool.withConcurrency(5)
@@ -89,11 +89,38 @@ export async function v11() {
 
     const cw20Assets = cw20AssetsResponse.flat();
 
+    // grc20
+    const { results: grc20AssetsResponse } = await PromisePool.withConcurrency(5)
+      .for(gnoChains)
+      .handleError((error) => {
+        throw error;
+      })
+      .process(async (gnoChain) => {
+        const { id } = gnoChain;
+        const grc20AssetResponse = await axios.get<V11Grc20[]>(`https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/${id}/grc20_2.json`);
+        const grc20Asset = grc20AssetResponse.data;
+
+        const grc20Assets: GnoGrc20Asset[] = grc20Asset.map((asset) => {
+          return {
+            ...asset,
+            id: asset.contract,
+            chainId: id,
+            chainType: 'gno',
+            type: 'grc20',
+          };
+        });
+
+        return grc20Assets;
+      });
+
+    const grc20Assets = grc20AssetsResponse.flat();
+
     await hideNewContractTokens(erc20Assets, cw20Assets);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets'>>({
+    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'grc20Assets'>>({
       erc20Assets,
       cw20Assets,
+      grc20Assets,
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {

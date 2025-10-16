@@ -64,6 +64,7 @@ export type V11Param = {
         rate: string[];
         is_simulable: boolean;
         simulated_gas_multiply: number;
+        simulated_gas_adjustment?: number;
         init_gas_limit: number;
         fee_threshold: string;
         is_feemarket?: boolean;
@@ -77,6 +78,10 @@ export type V11Param = {
         url: string;
       }[];
       lcd_endpoint?: {
+        provider: string;
+        url: string;
+      }[];
+      cosmos_rpc_endpoint: {
         provider: string;
         url: string;
       }[];
@@ -178,5 +183,17 @@ export type V11Cw20 = {
   image?: string;
   coinGeckoId?: string;
   color?: string;
+  wallet_preload?: boolean;
+};
+
+export type V11Grc20 = {
+  type: string;
+  contract: string;
+  name: string;
+  symbol: string;
+  description: string;
+  decimals: number;
+  image?: string;
+  coinGeckoId?: string;
   wallet_preload?: boolean;
 };

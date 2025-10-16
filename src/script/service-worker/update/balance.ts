@@ -14,6 +14,7 @@ import type {
   AccountAddressBalanceCosmos,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceGno,
   AccountAddressBalanceIota,
   AccountAddressBalanceSui,
   AccountAddressLockedBalanceCosmos,
@@ -24,6 +25,7 @@ import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { Cw20Balance } from '@/types/cosmos/balance';
 import type { Erc20Balance } from '@/types/evm/balance';
 import type { ExtensionStorage } from '@/types/extension';
+import type { Grc20Balance } from '@/types/gno/balance';
 import { fetchAptosBalances } from '@/utils/aptos/fetch/balance';
 import {
   upsertAptosBalance,
@@ -32,6 +34,8 @@ import {
   upsertCW20Balance,
   upsertERC20Balance,
   upsertEVMBalance,
+  upsertGnoBalance,
+  upsertGrc20Balance,
   upsertIotaBalance,
   upsertSuiBalance,
 } from '@/utils/balanceUpsert';
@@ -43,6 +47,7 @@ import {
   fetchEVMBalances,
   fetchMultiERC20Balances,
 } from '@/utils/cosmos/fetch/balance';
+import { fetchGnoBalance, fetchGrc20Balance } from '@/utils/gno/fetch/balance';
 import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
 import { minus } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
@@ -179,6 +184,9 @@ async function fetchChainBalanceByType(id: string, chainId: UniqueChainId) {
     if (chainType === 'iota') {
       await Promise.all([iotaBalances(id, { chainId })]);
     }
+    if (chainType === 'gno') {
+      await Promise.all([gnoBalance(id, { chainId }), grc20Balance(id, { chainId })]);
+    }
   }
 }
 
@@ -194,8 +202,10 @@ export async function updateBalance(id: string) {
       suiBalances(id),
       iotaBalances(id),
       bitcoinBalances(id),
+      gnoBalance(id),
       erc20Balance(id),
       cw20Balance(id),
+      grc20Balance(id),
       customErc20Balance(id),
       customCw20Balance(id),
     ]);
@@ -1120,4 +1130,129 @@ async function customCw20Balance(id: string, { chainId }: BalanceFetchOption = {
   const updatedCustomCW20Balances = upsertCW20Balance(stored, results);
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
+}
+
+async function grc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
+  const hiddenAssets = await getHiddenAssets(id);
+  const { gnoChains } = await getChains();
+  const { grc20Assets } = await getAssets();
+
+  const grc20AssetsWithoutHidden = grc20Assets.filter((asset) => {
+    const isAssetVisible = !hiddenAssets.find(
+      (hiddenAsset) => hiddenAsset.id === asset.id && hiddenAsset.chainId === asset.chainId && hiddenAsset.chainType === asset.chainType,
+    );
+    const isPreload = asset.wallet_preload;
+
+    return isAssetVisible || isPreload;
+  });
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && gnoChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
+    .map((addr) => {
+      const chain = targetChain || gnoChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(5)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const { rpcUrls } = chain;
+      const assets = grc20AssetsWithoutHidden.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId);
+
+      const urls = rpcUrls.map((item) => item.url).filter(Boolean);
+
+      const { results: allBalances } = await PromisePool.withConcurrency(10)
+        .for(assets)
+        .process(async (asset) => {
+          const { id: contractAddress } = asset;
+
+          try {
+            const balance = await fetchGrc20Balance(contractAddress, address, urls);
+
+            const result: Grc20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+
+            return result;
+          } catch {
+            const result: Grc20Balance = { contract: contractAddress, balance: '0', lastUpdatedAtMs: startUpdateTime, status: 'error' };
+
+            return result;
+          }
+        });
+
+      const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+      const result = { id, chainId, chainType, address, balances };
+      return result;
+    });
+
+  const stored = (await getExtensionLocalStorage(`${id}-balance-grc20`)) || [];
+
+  const updatedGnoBalances = upsertGrc20Balance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-grc20`>>({ [`${id}-balance-grc20`]: updatedGnoBalances });
+}
+
+async function gnoBalance(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  console.log('gnoBalance call', id, chainId);
+
+  const accountAddress = await getAccountAddress(id);
+  const { gnoChains } = await getChains();
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && gnoChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
+    .map((addr) => {
+      const chain = targetChain || gnoChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(5)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const { rpcUrls } = chain;
+
+      try {
+        const balance = await fetchGnoBalance(address, rpcUrls.map((item) => item.url).filter(Boolean));
+
+        const result: AccountAddressBalanceGno = { id, chainId, chainType, address, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceGno = { id, chainId, chainType, address, balance: '0', lastUpdatedAtMs: startUpdateTime, status: 'error' };
+
+        return result;
+      }
+    });
+
+  if (isUpdateSpecificAddress) {
+    const stored = (await getExtensionLocalStorage(`${id}-balance-gno`)) || [];
+
+    const updatedGnoBalance = upsertGnoBalance(stored, results);
+
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: updatedGnoBalance });
+  } else {
+    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: results });
+  }
 }

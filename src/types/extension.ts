@@ -13,6 +13,8 @@ import type {
   AccountAddressBalanceCw20,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceGno,
+  AccountAddressBalanceGrc20,
   AccountAddressBalanceIota,
   AccountAddressBalanceSui,
   AccountAddressCommissionsCosmos,
@@ -27,7 +29,7 @@ import type {
   PreferAccountType,
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
-import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset } from './asset';
+import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset, GnoGrc20Asset } from './asset';
 import type { LockupTimeOptions } from './autoLock';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
@@ -97,6 +99,7 @@ export interface ExtensionStorage {
   erc20Assets: EvmErc20Asset[];
   customErc20Assets: EvmErc20Asset[];
   cw20Assets: CosmosCw20Asset[];
+  grc20Assets: GnoGrc20Asset[];
   customCw20Assets: CosmosCw20Asset[];
   [key: `${string}-address`]: AccountAddress[];
   [key: `${string}-balance-cosmos`]: AccountAddressBalanceCosmos[];
@@ -106,8 +109,10 @@ export interface ExtensionStorage {
   [key: `${string}-balance-sui`]: AccountAddressBalanceSui[];
   [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
   [key: `${string}-balance-iota`]: AccountAddressBalanceIota[];
+  [key: `${string}-balance-gno`]: AccountAddressBalanceGno[];
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
+  [key: `${string}-balance-grc20`]: AccountAddressBalanceGrc20[];
   [key: `${string}-delegation-cosmos`]: AccountAddressDelegationsCosmos[];
   [key: `${string}-undelegation-cosmos`]: AccountAddressUnbondingsCosmos[];
   [key: `${string}-reward-cosmos`]: AccountAddressRewardsCosmos[];
@@ -156,6 +161,7 @@ export interface ExtensionStorage {
   chosenSuiNetworkId: string;
   chosenBitcoinNetworkId: string;
   chosenIotaNetworkId: string;
+  chosenGnoNetworkId: string;
   currentWindowId: number | null;
   prioritizedProvider: PrioritizedProvider;
   pinnedDappIds: number[];
