@@ -245,12 +245,10 @@ export const upsertGnoBalance = <T extends AccountAddressBalanceGno>(originalLis
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     if (i.status !== 'error') {
       e.balance = i.balance;
-      e.lastUpdatedAtMs = i.lastUpdatedAtMs;
     }
 
-    if (e.status !== i.status) {
-      e.status = i.status;
-    }
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
   });
 };
 

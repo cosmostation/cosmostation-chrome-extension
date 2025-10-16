@@ -2,7 +2,6 @@ import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 
 import { GnoRPCError } from '../error';
 
-//path,data,height,prove
 interface GnoRPCParams {
   path: string;
   data?: string;

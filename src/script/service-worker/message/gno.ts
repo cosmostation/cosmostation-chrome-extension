@@ -1,20 +1,18 @@
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
+import { GNO_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { RESPONSE_MESSAGE, RESPONSE_STATUS } from '@/constants/gno';
 import { GNO_METHOD_TYPE, GNO_NO_POPUP_METHOD_TYPE, GNO_POPUP_METHOD_TYPE } from '@/constants/gno/message';
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
-// import { getAddress, getKeypair } from '@/libs/address';
-// import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
 import type { ResponseAppMessage } from '@/types/message/content';
-import type { GnoConnect, GnoConnectResponse, GnoGetAccountResponse, GnoRequest, GnoSwitchNetwork } from '@/types/message/inject/gno';
+import type { GnoConnect, GnoConnectResponse, GnoGetAccountResponse, GnoGetNetwork, GnoRequest, GnoSwitchNetwork } from '@/types/message/inject/gno';
 import { GnoRPCError } from '@/utils/error';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
-import { extensionLocalStorage, extensionSessionStorage } from '@/utils/storage';
+import { extensionSessionStorage } from '@/utils/storage';
+import { getGnoDefaultStorageData } from '@/utils/storage/localStorage';
 
 import { gnoSwitchNetworkParamsSchema } from './schema';
-// import { isEqualsIgnoringCase } from '@/utils/string';
 
 export async function gnoProcess(message: GnoRequest) {
   const { method, requestId, tabId, origin } = message;
@@ -27,13 +25,17 @@ export async function gnoProcess(message: GnoRequest) {
   const gnoPopupMethods = Object.values(GNO_POPUP_METHOD_TYPE) as string[];
   const gnoNoPopupMethods = Object.values(GNO_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccountAllowedOrigins, currentAccount, currentGnoNetwork } = await extensionLocalStorage();
+  const { currentAccountAllowedOrigins, currentAccount, currentGnoNetwork } = await getGnoDefaultStorageData();
 
   const { currentPassword } = await extensionSessionStorage();
 
   try {
+    if (!currentAccount) {
+      throw new GnoRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], message.requestId);
+    }
+
     if (!message?.method || !gnoMethods.includes(message.method)) {
-      throw new GnoRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
+      throw new GnoRPCError(RPC_ERROR.UNSUPPORTED_METHOD, GNO_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message.requestId);
     }
 
     if (gnoPopupMethods.includes(method)) {
@@ -176,10 +178,8 @@ export async function gnoProcess(message: GnoRequest) {
         }
       }
     } else if (gnoNoPopupMethods.includes(method)) {
-      // TODO: Implement gnoNoPopupMethods
-
       if (method === 'gno_getNetwork') {
-        sendMessage<ResponseAppMessage<GnoSwitchNetwork>>({
+        sendMessage<ResponseAppMessage<GnoGetNetwork>>({
           target: 'CONTENT',
           method: 'responseApp',
           origin,
@@ -191,7 +191,13 @@ export async function gnoProcess(message: GnoRequest) {
               code: 0,
               status: RESPONSE_STATUS.SUCCESS,
               message: '',
-              data: { chainId: currentGnoNetwork.chainId },
+              data: {
+                chainId: currentGnoNetwork.chainId,
+                networkName: currentGnoNetwork.name,
+                addressPrefix: currentGnoNetwork.accountPrefix,
+                rpcUrl: currentGnoNetwork?.rpcUrls[0]?.url || '',
+                indexerUrl: '',
+              },
             },
           },
         });

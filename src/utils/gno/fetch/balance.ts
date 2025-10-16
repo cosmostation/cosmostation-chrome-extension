@@ -1,6 +1,5 @@
 import type { GnoAbciQueryResponse } from '@/types/gno/rpc';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
-import { removeTrailingSlash } from '@/utils/string';
 
 import { requestRPC } from '../rpc';
 
@@ -61,11 +60,10 @@ export const fetchGnoBalance = async (address: string, rpcUrls: string[]): Promi
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const path = `bank/balances/${address}`;
 
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
-    const response = await requestRPC<GnoAbciQueryResponse>(baseRpcUrl, 'abci_query', { path });
+    const response = await requestRPC<GnoAbciQueryResponse>(rpcUrl, 'abci_query', { path });
 
     if (response.error) {
-      throw new Error(`[RPC Error] URL: ${baseRpcUrl}, Method: abci_query, Message: ${response.error?.message}`);
+      throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: abci_query, Message: ${response.error?.message}`);
     }
 
     const base64Balance = response.result?.response?.ResponseBase?.Data;
@@ -86,11 +84,10 @@ export const fetchGrc20Balance = async (contract: string, address: string, rpcUr
     const data = `${contract}.Balance("${address}")`;
     const base64Data = btoa(data);
 
-    const baseRpcUrl = removeTrailingSlash(rpcUrl);
-    const response = await requestRPC<GnoAbciQueryResponse>(baseRpcUrl, 'abci_query', { path, data: base64Data });
+    const response = await requestRPC<GnoAbciQueryResponse>(rpcUrl, 'abci_query', { path, data: base64Data });
 
     if (response.error) {
-      throw new Error(`[RPC Error] URL: ${baseRpcUrl}, Method: abci_query, Message: ${response.error?.message}`);
+      throw new Error(`[RPC Error] URL: ${rpcUrl}, Method: abci_query, Message: ${response.error?.message}`);
     }
 
     const base64Balance = response.result?.response?.ResponseBase?.Data;

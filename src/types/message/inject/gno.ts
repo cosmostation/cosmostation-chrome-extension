@@ -102,6 +102,10 @@ export interface GnoGetNetwork extends RequestBase {
 
 export interface GnoGetNetworkData {
   chainId: string;
+  addressPrefix: string;
+  indexerUrl: string;
+  networkName: string;
+  rpcUrl: string;
 }
 
 export interface GnoGetNetworkResponse extends GnoBaseResponse<GnoGetNetworkData> {}
