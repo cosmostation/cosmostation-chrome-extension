@@ -20,12 +20,9 @@ import type {
   AccountCw20Asset,
   AccountErc20Asset,
   AccountEvmAsset,
-<<<<<<< HEAD
   AccountEVMAssetFetchStatus,
-=======
   AccountGnoAsset,
   AccountGrc20Asset,
->>>>>>> c7d9b377 (Add gno info)
   AccountIotaAsset,
   AccountIotaAssetFetchStatus,
   AccountSuiAsset,

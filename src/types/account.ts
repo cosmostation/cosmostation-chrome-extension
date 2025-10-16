@@ -374,6 +374,7 @@ export interface AccountGnoAsset {
   address: AccountAddress;
   balance: string;
   lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
 }
 
 export interface AccountGrc20Asset {
@@ -382,6 +383,7 @@ export interface AccountGrc20Asset {
   address: AccountAddress;
   balance: string;
   lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
 }
 export interface AccountIotaAsset {
   chain: IotaChain;

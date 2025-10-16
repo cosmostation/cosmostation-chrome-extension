@@ -34,52 +34,6 @@ export async function getChains() {
   const chainInfos = chainIds.map((chainId) => {
     const chainInfo = chains[chainId];
 
-    // test
-    if (chainId === 'gno-testnet') {
-      return {
-        id: chainId,
-        ...chainInfo,
-        params: {
-          ...chainInfo.params,
-          chainlist_params: {
-            ...chainInfo.params.chainlist_params,
-            cosmos_fee_info: {
-              ...chainInfo.params.chainlist_params.cosmos_fee_info,
-              rate: ['5ugnot'],
-              simulated_gas_multiply: 5,
-            },
-            chain_type: ['gno'],
-            is_support_extension_wallet: true,
-            cosmos_rpc_endpoint: [
-              {
-                provider: 'Gno Land',
-                url: 'http://192.168.0.20:26657',
-              },
-            ],
-            chain_id_cosmos: 'dev',
-          },
-        },
-      };
-    }
-
-    // if (chainId === 'gno-testnet') {
-    //   return {
-    //     id: chainId,
-    //     ...chainInfo,
-    //     params: {
-    //       ...chainInfo.params,
-    //       chainlist_params: {
-    //         ...chainInfo.params.chainlist_params,
-    //         chain_type: ['gno'],
-    //         is_support_extension_wallet: true,
-    //         chain_id_cosmos: 'staging',
-    //       },
-    //     },
-    //   };
-    // }
-
-    // test end
-
     return {
       id: chainId,
       ...chainInfo,

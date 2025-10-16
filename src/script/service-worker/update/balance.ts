@@ -1246,13 +1246,9 @@ async function gnoBalance(id: string, { chainId }: BalanceFetchOption = {}) {
       }
     });
 
-  if (isUpdateSpecificAddress) {
-    const stored = (await getExtensionLocalStorage(`${id}-balance-gno`)) || [];
+  const stored = (await getExtensionLocalStorage(`${id}-balance-gno`)) || [];
 
-    const updatedGnoBalance = upsertGnoBalance(stored, results);
+  const updatedGnoBalance = upsertGnoBalance(stored, results);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: updatedGnoBalance });
-  } else {
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: results });
-  }
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: updatedGnoBalance });
 }
