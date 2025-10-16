@@ -187,6 +187,7 @@ export type V11Cw20 = {
 };
 
 export type V11Grc20 = {
+  chain: string;
   type: string;
   contract: string;
   name: string;

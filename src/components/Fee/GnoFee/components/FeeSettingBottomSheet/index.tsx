@@ -8,6 +8,7 @@ import TextButton from '@/components/common/TextButton';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { GnoFeeAsset } from '@/types/gno/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import FeeCustomOverlay from './components/FeeCustomOverlay';
@@ -159,6 +160,7 @@ export default function FeeSettingBottomSheet({
               onChangeGas?.(gasAmount);
               onChangeGasRate?.(gasRate);
               onSelectOption?.(customFeeStepKey);
+              toastSuccess(t('components.Fee.CosmosFee.FeeSettingBottomSheet.index.changesApplied'));
             }
 
             onHandelClose();

@@ -97,7 +97,7 @@ export async function v11() {
       })
       .process(async (gnoChain) => {
         const { id } = gnoChain;
-        const grc20AssetResponse = await axios.get<V11Grc20[]>(`https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/${id}/grc20_2.json`);
+        const grc20AssetResponse = await axios.get<V11Grc20[]>(`https://front.api.mintscan.io/v11/assets/${id}/grc20/info`);
         const grc20Asset = grc20AssetResponse.data;
 
         const grc20Assets: GnoGrc20Asset[] = grc20Asset.map((asset) => {
@@ -115,7 +115,7 @@ export async function v11() {
 
     const grc20Assets = grc20AssetsResponse.flat();
 
-    await hideNewContractTokens(erc20Assets, cw20Assets);
+    await hideNewContractTokens(erc20Assets, cw20Assets, grc20Assets);
 
     await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'grc20Assets'>>({
       erc20Assets,
@@ -133,21 +133,24 @@ export async function v11() {
   }
 }
 
-async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[]) {
+async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[], grc20Assets: GnoGrc20Asset[]) {
   const {
     userAccounts: storedAccounts,
     erc20Assets: storedERC20AssetsV11,
     cw20Assets: storedCW20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets']);
+    grc20Assets: storedGRC20Assets,
+  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'grc20Assets']);
 
   const storedAccountsList = storedAccounts || [];
   const storedAccountsIds = storedAccountsList.map((account) => account.id);
 
   const storedERC20Data = storedERC20AssetsV11 || [];
   const storedCW20Data = storedCW20Assets || [];
+  const storedGRC20Data = storedGRC20Assets || [];
 
   const storedERC20Set = new Set(storedERC20Data.map((asset) => getCoinId(asset)));
   const storedCW20Set = new Set(storedCW20Data.map((asset) => getCoinId(asset)));
+  const storedGRC20Set = new Set(storedGRC20Data.map((asset) => getCoinId(asset)));
 
   const newERC20Assets =
     storedERC20Set.size === 0 ? [] : erc20Assets.filter((asset) => !storedERC20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
@@ -155,7 +158,10 @@ async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: C
   const newCW20Assets =
     storedCW20Set.size === 0 ? [] : cw20Assets.filter((asset) => !storedCW20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
 
-  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets];
+  const newGRC20Assets =
+    storedGRC20Set.size === 0 ? [] : grc20Assets.filter((asset) => !storedGRC20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
+
+  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets, ...newGRC20Assets];
 
   if (mergedNewContractAssets.length > 0) {
     const hiddenAssetIds = mergedNewContractAssets.map((asset) => ({
