@@ -29,10 +29,10 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { isTestnetChain } from '@/utils/chain';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import { getGnoFeeStepNames } from '@/utils/gno/fee';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
-import { getCosmosAddressRegex } from '@/utils/regex';
 import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
@@ -61,7 +61,7 @@ export default function Gno({ coinId }: GnoProps) {
   const navigate = useNavigate();
   const { addTx } = useTxTrackerStore();
 
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { currentAccount } = useCurrentAccount();
@@ -148,8 +148,6 @@ export default function Gno({ coinId }: GnoProps) {
 
     return defaultRecipientChainId;
   }, [selectedCoinToSend?.chain]);
-
-  const addressRegex = useMemo(() => getCosmosAddressRegex(selectedCoinToSend?.chain.accountPrefix || '', [39]), [selectedCoinToSend?.chain.accountPrefix]);
 
   const txMessages = useMemo(() => {
     if (!gt(displaySendAmount || '0', '0') || !recipientAddress) return undefined;
@@ -292,20 +290,20 @@ export default function Gno({ coinId }: GnoProps) {
         return t('pages.wallet.send.$coinId.Entry.Gno.index.invalidAddress');
       }
 
-      if (!addressRegex.test(recipientAddress)) {
+      if (!isValidCosmosAddress(recipientAddress, selectedCoinToSend?.chain?.accountPrefix || '')) {
         return t('pages.wallet.send.$coinId.Entry.Gno.index.invalidAddress');
       }
     }
 
     return '';
-  }, [addressRegex, recipientAddress, selectedCoinToSend?.address.address, t]);
+  }, [recipientAddress, selectedCoinToSend?.address.address, selectedCoinToSend?.chain?.accountPrefix, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
     if (displaySendAmount) {
       if (selectedCoinToSend?.asset.id === selectedFeeOption.denom) {
-        const totalCoastAmount = plus(displaySendAmount, currentDisplayFeeAmount);
+        const totalCostAmount = plus(displaySendAmount, currentDisplayFeeAmount);
 
-        if (gt(totalCoastAmount, currentFeeCoinDisplayAvailableAmount)) {
+        if (gt(totalCostAmount, currentFeeCoinDisplayAvailableAmount)) {
           return t('pages.wallet.send.$coinId.Entry.Gno.index.insufficientAmount');
         }
       } else {
