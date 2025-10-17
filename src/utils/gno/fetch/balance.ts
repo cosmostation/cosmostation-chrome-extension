@@ -1,4 +1,5 @@
 import type { GnoAbciQueryResponse } from '@/types/gno/rpc';
+import { devLogger } from '@/utils/devLogger';
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 import { requestRPC } from '../rpc';
@@ -27,7 +28,7 @@ const parseGoReturnValue = (base64Data: string): string => {
     return decoded;
   } catch (error) {
     // base64 디코딩 실패 시 원본 반환
-    console.warn('Failed to parse Go return value:', error);
+    devLogger.warn('Failed to parse Go return value:', error);
     return base64Data;
   }
 };

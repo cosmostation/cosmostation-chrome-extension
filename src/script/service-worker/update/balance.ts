@@ -1207,8 +1207,6 @@ async function grc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
 async function gnoBalance(id: string, { chainId }: BalanceFetchOption = {}) {
   const startUpdateTime = Date.now();
 
-  console.log('gnoBalance call', id, chainId);
-
   const accountAddress = await getAccountAddress(id);
   const { gnoChains } = await getChains();
 

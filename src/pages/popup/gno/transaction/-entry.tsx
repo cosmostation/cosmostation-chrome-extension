@@ -109,16 +109,6 @@ export default function Entry({ request }: EntryProps) {
   const [inputMemo, setInputMemo] = useState(inputTx.memo || '');
   const signingMemo = useMemo(() => inputMemo, [inputMemo]);
 
-  // const inputFee = useMemo(
-  //   () =>
-  //     doc.fee.amount?.find((item) => feeAssets.map((feeCoin) => feeCoin.asset.id).includes(item.denom)) ||
-  //     doc.fee.amount?.[0] || {
-  //       denom: chain.mainAssetDenom,
-  //       amount: '0',
-  //     },
-  //   [chain.mainAssetDenom, doc.fee.amount, feeAssets],
-  // );
-
   const [customFeeStepKey, setCustomFeeStepKey] = useState<number | undefined>(undefined);
 
   const currentFeeStepKey = useMemo(() => {
@@ -215,24 +205,11 @@ export default function Entry({ request }: EntryProps) {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
 
-  console.log('selectedFeeOption', selectedFeeOption);
-  console.log('feeOptions', feeOptions);
-  console.log('currentFeeStepKey', currentFeeStepKey);
-
   const currentGas = selectedFeeOption.gas || '0';
 
   const currentFeeAmount = useMemo(() => times(currentGas, selectedFeeOption.gasRate || '0'), [currentGas, selectedFeeOption.gasRate]);
 
   const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
-
-  // const currentDisplayFeeAmount = useMemo(
-  //   () => toDisplayDenomAmount(currentCeilFeeAmount, selectedFeeOption.decimals || 0),
-  //   [currentCeilFeeAmount, selectedFeeOption.decimals],
-  // );
-  // const currentFeeCoinDisplayAvailableAmount = useMemo(
-  //   () => toDisplayDenomAmount(selectedFeeOption?.balance || '0', selectedFeeOption?.decimals || 0),
-  //   [selectedFeeOption?.balance, selectedFeeOption.decimals],
-  // );
 
   const tx = useMemo(() => {
     if (!txMessages) return undefined;
@@ -382,48 +359,7 @@ export default function Entry({ request }: EntryProps) {
         });
       }
 
-      // const signature = await (async () => {
-      //   if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-      //     if (!keyPair.privateKey) {
-      //       throw new Error('key does not exist');
-      //     }
-
-      //     const privateKeyBuffer = Buffer.from(keyPair.privateKey, 'hex');
-
-      //     return signAmino(tx, privateKeyBuffer, chain);
-      //   }
-
-      //   throw new Error('Unknown type account');
-      // })();
-      // const base64Signature = Buffer.from(signature).toString('base64');
-
-      // const base64PublicKey = Buffer.from(keyPair.publicKey, 'hex').toString('base64');
-
-      // const publicKeyType = accountAsset.address.accountType.pubkeyType
-      //   ? getPublicKeyType(accountAsset.address.accountType.pubkeyType)
-      //   : PUBLIC_KEY_TYPE.SECP256K1;
-
-      // const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-      // const result: CosSignAminoResponse = {
-      //   signature: base64Signature,
-      //   pub_key: pubKey,
-      //   signed_doc: tx,
-      // };
-
       await incrementTxCountForOrigin(request.origin);
-
-      // sendMessage({
-      //   target: 'CONTENT',
-      //   method: 'responseApp',
-      //   origin: request.origin,
-      //   requestId: request.requestId,
-      //   tabId: request.tabId,
-      //   params: {
-      //     id: request.requestId,
-      //     result,
-      //   },
-      // });
     } catch {
       sendMessage({
         target: 'CONTENT',
