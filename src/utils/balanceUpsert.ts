@@ -257,7 +257,9 @@ export const upsertGrc20Balance = <T extends AccountAddressBalanceGrc20>(origina
     const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      return e.balances.find((exist) => isEqualsIgnoringCase(exist.contract, incoming.contract)) || incoming;
+      const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.contract, incoming.contract));
+
+      return existingBalance ? { ...incoming, balance: existingBalance.balance } : incoming;
     });
 
     e.balances = resolved;

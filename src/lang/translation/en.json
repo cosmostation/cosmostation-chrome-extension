@@ -3167,7 +3167,8 @@
             "reject": "Reject",
             "sign": "Sign",
             "notSimulated": "Simulating transaction...",
-            "memoOverflow": "Memo is too long. Please shorten it."
+            "memoOverflow": "Memo is too long. Please shorten it.",
+            "calculatingFee": "Calculating fee"
           }
         }
       }

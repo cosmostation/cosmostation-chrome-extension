@@ -2625,7 +2625,8 @@
             "reject": "거부",
             "sign": "사인",
             "notSimulated": "트랜잭션 확인 중입니다.",
-            "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요"
+            "memoOverflow": "메모를 조금 더 간단하게 입력해 주세요",
+            "calculatingFee": "수수료를 계산중입니다"
           }
         }
       }

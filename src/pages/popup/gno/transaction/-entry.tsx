@@ -150,7 +150,9 @@ export default function Entry({ request }: EntryProps) {
     return messages;
   }, [inputTx.messages]);
 
-  const { data: estimatedGas, isFetched: isSimulated } = useSimulate({ coinId: accountAssetCoinId, messages: txMessages, memo: inputMemo });
+  const { data: estimatedGas, isFetched: isSimulated, isFetching } = useSimulate({ coinId: accountAssetCoinId, messages: txMessages, memo: inputMemo });
+
+  const isCalculatingFee = useMemo(() => isFetching, [isFetching]);
 
   const [customGasAmount, setCustomGasAmount] = useState<string | undefined>();
   const [customGasRate, setCustomGasRate] = useState('');
@@ -259,6 +261,10 @@ export default function Entry({ request }: EntryProps) {
       return t('pages.popup.gno.transaction.entry.insufficientFeeAmount');
     }
 
+    if (isCalculatingFee) {
+      return t('pages.popup.gno.transaction.entry.calculatingFee');
+    }
+
     if (!isSimulated) {
       return t('pages.popup.gno.transaction.entry.notSimulated');
     }
@@ -268,7 +274,7 @@ export default function Entry({ request }: EntryProps) {
     }
 
     return '';
-  }, [alternativeFeeAsset?.balance, currentCeilFeeAmount, inputMemoErrorMessage, isSimulated, t]);
+  }, [alternativeFeeAsset?.balance, currentCeilFeeAmount, inputMemoErrorMessage, isCalculatingFee, isSimulated, t]);
 
   const handleOnSign = async () => {
     try {
@@ -451,6 +457,7 @@ export default function Entry({ request }: EntryProps) {
               feeCoinId={selectedFeeOption.coinId}
               feeBaseAmount={currentFeeAmount}
               disableFee={false}
+              isLoadingFee={isCalculatingFee}
               onClickFee={() => {
                 setIsOpenFeeCustomBottomSheet(true);
               }}

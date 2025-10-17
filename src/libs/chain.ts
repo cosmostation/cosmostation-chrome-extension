@@ -404,7 +404,7 @@ export async function getChains() {
   const remappedIotaChains: IotaChain[] = iotaChains.map((chain) => {
     const id = chain.id;
     const chainType = 'iota';
-    const chainId = chain.params.chainlist_params.chain_id_cosmos!;
+    const chainId = chain.params.chainlist_params.chain_id!;
 
     const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
@@ -412,11 +412,7 @@ export async function getChains() {
     const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
     const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
-    const rpcUrls =
-      chain.params.chainlist_params.rpc_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
@@ -464,16 +460,14 @@ export async function getChains() {
     const name = chain.params.chainlist_params.chain_name.toUpperCase();
     const image = chain.params.chainlist_params?.chain_image ?? null;
 
-    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? '';
     const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
 
     const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
 
-    const rpcUrls =
-      chain.params.chainlist_params.cosmos_rpc_endpoint?.map((endpoint) => ({
-        ...endpoint,
-        url: removeTrailingSlash(endpoint.url),
-      })) ?? [];
+    const isTestnet = isTestnetChain(id);
+
+    const rpcUrls = chain.params.chainlist_params.cosmos_rpc_endpoint ?? [];
 
     const explorer = chain.params.chainlist_params?.explorer
       ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
@@ -521,6 +515,7 @@ export async function getChains() {
       accountTypes,
       accountPrefix,
       feeInfo,
+      isTestnet,
     };
   });
 

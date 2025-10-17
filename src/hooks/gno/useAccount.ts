@@ -3,13 +3,13 @@ import { useMemo } from 'react';
 import type { GnoAbciQueryResponse } from '@/types/gno/rpc';
 import { requestRPC } from '@/utils/gno/rpc';
 
+import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
-import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseAccountProps = {
   coinId: string;
-  config?: UseInfiniteFetchConfig;
+  config?: UseFetchConfig;
 };
 
 export function useAccount({ coinId, config }: UseAccountProps) {

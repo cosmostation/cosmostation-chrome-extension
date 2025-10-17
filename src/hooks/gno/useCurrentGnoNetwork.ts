@@ -9,7 +9,9 @@ import { useChainList } from '../useChainList';
 
 export function useCurrentGnoNetwork() {
   const { chainList } = useChainList();
-  const { chosenGnoNetworkId, approvedOrigins, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const chosenGnoNetworkId = useExtensionStorageStore((state) => state.chosenGnoNetworkId);
+  const approvedOrigins = useExtensionStorageStore((state) => state.approvedOrigins);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const allGnoChains = useMemo(() => [...(chainList?.gnoChains || [])], [chainList?.gnoChains]);
 

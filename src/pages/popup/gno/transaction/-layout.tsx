@@ -11,7 +11,7 @@ type LayoutProps = {
 
 export default function Layout({ children }: LayoutProps) {
   const { currentAccount } = useCurrentAccount();
-  const { accountNamesById } = useExtensionStorageStore((state) => state);
+  const accountNamesById = useExtensionStorageStore((state) => state.accountNamesById);
 
   const accountName = accountNamesById[currentAccount.id];
 
