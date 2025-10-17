@@ -82,7 +82,7 @@ export const fetchGnoBalance = async (address: string, rpcUrls: string[]): Promi
 export const fetchGrc20Balance = async (contract: string, address: string, rpcUrls: string[]): Promise<string> => {
   return await fetchWithFailover(rpcUrls, async (rpcUrl) => {
     const path = 'vm/qeval';
-    const data = `${contract}.Balance("${address}")`;
+    const data = `${contract}.BalanceOf("${address}")`;
     const base64Data = btoa(data);
 
     const response = await requestRPC<GnoAbciQueryResponse>(rpcUrl, 'abci_query', { path, data: base64Data });
