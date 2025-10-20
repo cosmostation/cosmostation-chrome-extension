@@ -69,7 +69,7 @@ export const initialState: ExtensionStorageState = {
   lastRequestTimestamps: null,
 };
 
-export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];
+export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'grc20Assets', 'migrationStatus'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {

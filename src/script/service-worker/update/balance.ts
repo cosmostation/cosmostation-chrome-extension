@@ -243,9 +243,9 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -281,9 +281,9 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -317,12 +317,13 @@ export async function initAssests(id: string) {
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20Assets, erc20Assets } = await getAssets();
+    const { cw20Assets, erc20Assets, grc20Assets } = await getAssets();
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);
+    const nonPreloadedGRC20Assets = grc20Assets.filter((asset) => !asset.wallet_preload);
 
-    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets].map((asset) => {
+    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets, ...nonPreloadedGRC20Assets].map((asset) => {
       return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
     });
 
