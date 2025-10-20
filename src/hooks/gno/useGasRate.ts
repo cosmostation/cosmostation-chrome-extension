@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 
+import { times } from '@/utils/numbers';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 
+import { useGasPrice } from './useGasPrice';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGasRateProps = {
@@ -13,13 +15,19 @@ export function useGasRate({ coinId }: UseGasRateProps) {
 
   const asset = getGnoAccountAsset();
 
+  const gasPrice = useGasPrice({ coinId });
+
   const defaultGasRateKey = useMemo(() => {
+    if (gasPrice.data) return 1;
+
     const baseGasRateKey = asset?.chain.feeInfo.defaultFeeRateKey;
 
     return baseGasRateKey ? parseInt(baseGasRateKey, 10) : 0;
-  }, [asset?.chain.feeInfo.defaultFeeRateKey]);
+  }, [asset?.chain.feeInfo.defaultFeeRateKey, gasPrice]);
 
   const gasRate: Record<string, string[]> = useMemo(() => {
+    if (gasPrice.data) return { ugnot: [gasPrice.data, times(gasPrice.data, '1.1'), times(gasPrice.data, '1.2')] };
+
     const result: Record<string, string[]> = {};
 
     const chainlistFeeRates = asset ? (asset.chain.feeInfo.gasRate ?? []) : [];
@@ -61,7 +69,7 @@ export function useGasRate({ coinId }: UseGasRateProps) {
     });
 
     return result;
-  }, [asset, coinId]);
+  }, [asset, coinId, gasPrice.data]);
 
   const returnData = useMemo(
     () => ({
