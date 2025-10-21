@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 
+import BaseBody from '@/components/BaseLayout/components/BaseBody';
+import Base1000Text from '@/components/common/Base1000Text';
+import Base1300Text from '@/components/common/Base1300Text';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useChainList } from '@/hooks/useChainList';
@@ -22,7 +26,10 @@ import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/u
 import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage';
 import { addHexPrefix } from '@/utils/string';
 
+import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-styled';
+
 export default function Entry() {
+  const { t } = useTranslation();
   const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
@@ -430,5 +437,20 @@ export default function Entry() {
     deQueue,
     refreshOriginConnectionTime,
   ]);
-  return null;
+
+  return (
+    <BaseBody>
+      <ContentsContainer>
+        <StyledCircularProgress size={50} />
+        <TextWrapper>
+          <Base1300Text variant="b1_B">{t('pages.popup.request-account.entry.connecting')}</Base1300Text>
+          <Base1000Text variant="b3_M_Multiline">
+            {t('pages.popup.request-account.entry.connectingWith', {
+              url: origin,
+            })}
+          </Base1000Text>
+        </TextWrapper>
+      </ContentsContainer>
+    </BaseBody>
+  );
 }
