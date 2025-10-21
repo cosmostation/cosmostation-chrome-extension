@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
 
-import { solanaSplAssets as spltokens } from '@/constants/testChain';
 import { updateHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
-import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
+import type { V11Asset, V11Cw20, V11Erc20, V11Param, V11SpltokenResponse } from '@/types/apiV11';
 import type { CosmosCw20Asset, EvmErc20Asset, SolanaSpltokenAsset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
 import { getWithFullResponse } from '@/utils/axios';
@@ -36,7 +35,7 @@ export async function v11() {
       assetsV11: assets,
     });
 
-    const { cosmosChains, evmChains, solanaChains } = await getChains();
+    const { cosmosChains, evmChains } = await getChains();
 
     // ERC20
     const { results: erc20AssetsResponse } = await PromisePool.withConcurrency(5)
@@ -91,31 +90,27 @@ export async function v11() {
     const cw20Assets = cw20AssetsResponse.flat();
 
     // spltoken
-    const { results: spltokenAssetsResponse } = await PromisePool.withConcurrency(5)
-      .for(solanaChains)
-      .handleError((error) => {
-        throw error;
+    const spltokenAssetResponse = await getWithFullResponse<V11SpltokenResponse>(`https://front.api.mintscan.io/v11/assets/spl`);
+    const spltokenAsset = spltokenAssetResponse.data;
+
+    const spltokenAssets: SolanaSpltokenAsset[] = spltokenAsset.assets
+      .map((asset) => {
+        const { name, symbol, description, decimals, image, coinGeckoId } = asset;
+        return {
+          id: asset.address,
+          chainId: asset.chainName,
+          chainType: 'solana' as const,
+          name,
+          symbol,
+          description,
+          decimals,
+          image,
+          coinGeckoId,
+          type: 'spl',
+          wallet_preload: asset.default,
+        };
       })
-      .process(async (solanaChain) => {
-        const { id } = solanaChain;
-        // const spltokenAssetResponse = await axios.get<V11Spltoken[]>(`https://front.api.mintscan.io/v11/assets/${id}/spltoken/info`);
-        // const spltokenAsset = spltokenAssetResponse.data;
-
-        const spltokenAsset = spltokens;
-
-        const spltokenAssets: SolanaSpltokenAsset[] = spltokenAsset.map((asset) => {
-          return {
-            ...asset,
-            id: asset.contract,
-            chainId: id,
-            type: 'spl-token',
-            chainType: 'solana',
-          };
-        });
-        return spltokenAssets;
-      });
-
-    const spltokenAssets = spltokenAssetsResponse.flat().filter((asset) => asset.id);
+      .filter((asset) => asset.id);
 
     await hideNewContractTokens(erc20Assets, cw20Assets, spltokenAssets);
 

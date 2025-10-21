@@ -31,11 +31,12 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { requestRPC } from '@/utils/solana/rpc';
 import { createSplTokenTransferTransaction, createTransferTransaction, overwriteComputeBudgetProgram } from '@/utils/solana/transaction';
 import { isDecimal, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import {
   AddressBookButton,
@@ -54,9 +55,7 @@ import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 
 const defaultPriorityBaseFee = 500; // Default value for priority base fee in microLamports
 
-type SolanaProps = {
-  coinId: string;
-};
+type SolanaProps = { coinId: string };
 
 interface ConfirmData {
   transaction: VersionedTransaction | undefined;
@@ -67,14 +66,13 @@ interface ConfirmData {
 export default function Solana({ coinId }: SolanaProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addTx } = useTxTrackerStore();
 
   const { chainId, chainType } = parseCoinId(coinId);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const [confirmData, setConfirmData] = useState<ConfirmData>({
-    transaction: undefined,
-  });
+  const [confirmData, setConfirmData] = useState<ConfirmData>({ transaction: undefined });
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -119,7 +117,7 @@ export default function Solana({ coinId }: SolanaProps) {
   const coinDecimals = selectedCoinToSend?.asset.decimals || 0;
 
   const coinType = useMemo(() => {
-    if (selectedCoinToSend?.asset.type === 'spl-token') {
+    if (selectedCoinToSend?.asset.type === 'spl') {
       return t('pages.wallet.send.$coinId.Entry.Solana.index.mint');
     }
 
@@ -169,7 +167,7 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const toATA = useMemo(() => {
     try {
-      if (!addressInputErrorMessage && !sendAmountInputErrorMessage && selectedCoinToSend?.asset?.type === 'spl-token' && latestBlockHash) {
+      if (!addressInputErrorMessage && !sendAmountInputErrorMessage && selectedCoinToSend?.asset?.type === 'spl' && latestBlockHash) {
         const mint = selectedCoinToSend.asset.id;
 
         const pubMint = new PublicKey(mint);
@@ -184,10 +182,7 @@ export default function Solana({ coinId }: SolanaProps) {
     return undefined;
   }, [addressInputErrorMessage, latestBlockHash, recipientAddress, selectedCoinToSend?.asset.id, selectedCoinToSend?.asset?.type, sendAmountInputErrorMessage]);
 
-  const { data: toATAInfo, isFetching: isFetchingGetAccountInfo } = useGetAccountInfo({
-    coinId,
-    account: toATA,
-  });
+  const { data: toATAInfo, isFetching: isFetchingGetAccountInfo } = useGetAccountInfo({ coinId, account: toATA });
 
   const transaction = useMemo(() => {
     try {
@@ -199,7 +194,7 @@ export default function Solana({ coinId }: SolanaProps) {
         selectedCoinToSend &&
         latestBlockHash
       ) {
-        if (selectedCoinToSend?.asset.type === 'spl-token') {
+        if (selectedCoinToSend?.asset.type === 'spl') {
           const programId = selectedCoinToSend.chain.programId.splToken;
           const mint = selectedCoinToSend.asset.id;
           const sender = selectedCoinToSend.address.address;
@@ -335,14 +330,12 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const handleOnClickReview = useCallback(() => {
     if (transactionPreview?.simulatedValue?.unitsConsumed && transaction && typeof baseFee === 'number') {
-      setConfirmData({
-        transaction,
-        computeUnitLimit,
-        computeUnitPrice,
-      });
+      setConfirmData({ transaction, computeUnitLimit, computeUnitPrice });
       setIsOpenReviewBottomSheet(true);
     }
   }, [baseFee, computeUnitLimit, computeUnitPrice, transaction, transactionPreview?.simulatedValue?.unitsConsumed]);
+
+  // const displayTx = useMemo(() => safeStringify(), [debouncedTx]);
 
   const handleOnClickConfirm = useCallback(async () => {
     try {
@@ -362,36 +355,27 @@ export default function Solana({ coinId }: SolanaProps) {
 
           const { result: signature } = await requestRPC<SolanaRpcSendTransactionResponse>('sendTransaction', [
             Buffer.from(tx.serialize()).toString('base64'),
-            {
-              encoding: 'base64',
-            },
+            { encoding: 'base64' },
           ]);
 
           if (!signature) {
             throw new Error('Failed to send transaction');
           }
 
-          navigate({
-            to: TxResult.to,
-            search: {
-              address: recipientAddress,
-              coinId,
-              txHash: signature,
-            },
-          });
+          const { chainId, chainType } = parseCoinId(coinId);
+          const uniqueChainId = getUniqueChainIdWithManual(chainId, chainType);
+          addTx({ txHash: signature, chainId: uniqueChainId, address: selectedCoinToSend.address.address, addedAt: Date.now(), retryCount: 0 });
+
+          navigate({ to: TxResult.to, search: { address: recipientAddress, coinId, txHash: signature } });
         }
       }
     } catch {
-      navigate({
-        to: TxResult.to,
-        search: {
-          coinId,
-        },
-      });
+      navigate({ to: TxResult.to, search: { coinId } });
     } finally {
       setIsOpenTxProcessingOverlay(false);
     }
   }, [
+    addTx,
     coinId,
     confirmData.computeUnitLimit,
     confirmData.computeUnitPrice,
@@ -511,6 +495,7 @@ export default function Solana({ coinId }: SolanaProps) {
         />
       )}
       <ReviewBottomSheet
+        // rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.send.$coinId.Entry.Solana.index.sendReview')}

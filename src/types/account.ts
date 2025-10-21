@@ -40,7 +40,7 @@ import type { RewardDetails } from './cosmos/reward';
 import type { UnbondingResponses } from './cosmos/undelegation';
 import type { Erc20Balance } from './evm/balance';
 import type { IotaGetBalance } from './iota/api';
-import type { SolanaGetTokenAccountsByOwnerValue } from './solana/api';
+import type { SplTokenBalance } from './solana/api';
 import type { SuiGetBalance } from './sui/api';
 
 export type AccountType = 'PRIVATE_KEY' | 'MNEMONIC';
@@ -204,6 +204,8 @@ export interface AccountAddressBalanceSolana {
   chainType: ChainType;
   address: string;
   balance: number;
+  lastUpdatedAtMs?: number | null;
+  status?: RequestStatus;
 }
 
 export interface AccountAddressDelegationsIota {
@@ -245,7 +247,7 @@ export interface AccountAddressBalanceSplToken {
   chainId: Chain['chainId'];
   chainType: ChainType;
   address: string;
-  balances: SolanaGetTokenAccountsByOwnerValue[];
+  balances: SplTokenBalance[];
 }
 
 export interface AssetFetchStatus {
@@ -387,6 +389,8 @@ export interface AccountSolanaAsset {
   address: AccountAddress;
   balance: string;
   totalBalance?: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
 }
 
 export interface AccountSpltokenAsset {
@@ -394,6 +398,8 @@ export interface AccountSpltokenAsset {
   asset: SolanaSpltokenAsset;
   address: AccountAddress;
   balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
 }
 
 export type AccountNamesById = Record<AccountBase['id'], string>;

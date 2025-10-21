@@ -197,6 +197,7 @@ export interface SolanaChain extends ChainBase {
   chainType: Extract<ChainType, 'solana'>;
   chainId: string | number;
   mainAssetDenom: string | null;
+  chainDefaultCoinDenoms?: string[] | null;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   explorer: ChainExplorer;

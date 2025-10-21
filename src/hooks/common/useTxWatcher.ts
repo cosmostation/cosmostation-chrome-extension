@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
+import { Connection } from '@solana/web3.js';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
 import { TRANSACTION_RESULT as IOTA_TX_RESULT } from '@/constants/iota';
@@ -193,9 +194,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
           const response = await Promise.any(
             requestUrls.map(async (rpcUrl) => {
-              const aptosClientConfig = new AptosConfig({
-                fullnode: rpcUrl,
-              });
+              const aptosClientConfig = new AptosConfig({ fullnode: rpcUrl });
 
               const aptosClient = new Aptos(aptosClientConfig);
 
@@ -256,9 +255,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, {
-                timeout: 5000,
-              });
+              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, { timeout: 5000 });
 
               if (response.error) {
                 throw new Error(response.error.message);
@@ -359,9 +356,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, {
-                timeout: 5000,
-              });
+              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, { timeout: 5000 });
 
               if (response.error) {
                 throw new Error(response.error.message);
@@ -400,6 +395,42 @@ export function useTxWatcher(config?: UseFetchConfig) {
             if (tx.type === 'nft') {
               refetchIotaNFTs();
             }
+          }
+
+          removeTx(tx.txHash);
+        } catch (error) {
+          devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
+          updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
+        }
+      }
+
+      if (chainType === 'solana') {
+        const targetChain = chainList.solanaChains?.find((item) => isMatchingUniqueChainId(item, tx.chainId));
+        if (!targetChain) {
+          removeTx(tx.txHash);
+          continue;
+        }
+
+        try {
+          const requestUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
+          const response = await Promise.any(
+            requestUrls.map(async (rpcUrl) => {
+              const connection = new Connection(rpcUrl, 'confirmed');
+              const response = await connection.getTransaction(tx.txHash, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+
+              return response;
+            }),
+          );
+
+          if (!response || (response?.meta && response.meta.err)) {
+            throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
+          }
+
+          const isTxSuccess = response?.meta && !response.meta.err;
+
+          if (isTxSuccess) {
+            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateChainSpecificBalance', params: [currentAccount.id, tx.chainId] });
+            refreshAssets();
           }
 
           removeTx(tx.txHash);

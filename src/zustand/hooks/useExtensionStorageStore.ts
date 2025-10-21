@@ -55,11 +55,7 @@ export const initialState: ExtensionStorageState = {
   chosenIotaNetworkId: '',
   chosenSolanaNetworkId: '',
   currentWindowId: null,
-  prioritizedProvider: {
-    keplr: false,
-    metamask: false,
-    aptos: false,
-  },
+  prioritizedProvider: { keplr: false, metamask: false, aptos: false },
   pinnedDappIds: [],
   autoLockTimeInMinutes: '30',
   autoLockTimeStampAt: null,
@@ -69,7 +65,7 @@ export const initialState: ExtensionStorageState = {
   lastRequestTimestamps: null,
 };
 
-export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus'];
+export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus', 'spltokenAssets'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {
@@ -102,15 +98,11 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
 export const loadExtensionStorageStoreFromStorage = async () => {
   const allStorage = await getAllExtensionLocalStorage();
 
-  useExtensionStorageStore.setState({
-    ...allStorage,
-  });
+  useExtensionStorageStore.setState({ ...allStorage });
 };
 
 export const loadExtensionStorageStoreFromStorageByKey = async <K extends ExtensionStorageKeys>(key: K) => {
   const value = (await getExtensionLocalStorage(key)) as ExtensionStorageStore[K];
 
-  useExtensionStorageStore.setState({
-    [key]: value,
-  } as Pick<ExtensionStorageStore, K>);
+  useExtensionStorageStore.setState({ [key]: value } as Pick<ExtensionStorageStore, K>);
 };

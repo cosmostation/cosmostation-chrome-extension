@@ -1,3 +1,5 @@
+import type { RequestStatus } from '../account';
+
 export interface SolanaRpc<T> {
   jsonrpc: '2.0';
   id: number;
@@ -61,6 +63,11 @@ export interface SolanaGetTokenAccountsByOwnerValue {
 export interface SolanaGetTokenAccountsByOwner {
   context: SolanaContext;
   value: SolanaGetTokenAccountsByOwnerValue[];
+}
+
+export interface SplTokenBalance extends SolanaGetTokenAccountsByOwnerValue {
+  lastUpdatedAtMs?: number | null;
+  status?: RequestStatus;
 }
 
 export interface SolanaRpcGetTokenAccountsByOwnerResponse extends SolanaRpc<SolanaGetTokenAccountsByOwner> {}

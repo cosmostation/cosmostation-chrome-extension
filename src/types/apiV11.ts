@@ -3,9 +3,7 @@ export type V11Param = {
   block_time: number;
   params: {
     apr: string;
-    minting_inflation: {
-      inflation: string;
-    };
+    minting_inflation: { inflation: string };
     staking_params: {
       params: {
         unbonding_time?: string;
@@ -68,68 +66,22 @@ export type V11Param = {
         fee_threshold: string;
         is_feemarket?: boolean;
       };
-      evm_fee_info?: {
-        is_eip1559: boolean;
-        simulated_gas_multiply: number;
-      };
-      solana_fee_info?: {
-        simulated_gas_multiply: number;
-      };
-      solana_program_id?: {
-        spl_token: string;
-      };
-      grpc_endpoint?: {
-        provider: string;
-        url: string;
-      }[];
-      lcd_endpoint?: {
-        provider: string;
-        url: string;
-      }[];
-      rpc_endpoint?: {
-        provider: string;
-        url: string;
-      }[];
-      evm_rpc_endpoint?: {
-        provider: string;
-        url: string;
-      }[];
-      explorer: {
-        name: string;
-        url: string;
-        account: string;
-        tx: string;
-        proposal: string;
-      };
-      evm_explorer?: {
-        name: string;
-        url: string;
-        account: string;
-        tx: string;
-      };
-      about?: {
-        website: string;
-        docs: string;
-        github: string;
-        blog: string;
-        medium: string;
-        twitter: string;
-        coingecko: string;
-      };
-      forum?: {
-        main: string;
-        governance: string;
-      };
-      description: {
-        ko: string;
-        en: string;
-        ja: string;
-      };
+      evm_fee_info?: { is_eip1559: boolean; simulated_gas_multiply: number };
+      solana_fee_info?: { simulated_gas_multiply: number };
+      solana_program_id?: { spl_token: string };
+      grpc_endpoint?: { provider: string; url: string }[];
+      lcd_endpoint?: { provider: string; url: string }[];
+      rpc_endpoint?: { provider: string; url: string }[];
+      evm_rpc_endpoint?: { provider: string; url: string }[];
+      solana_rpc_endpoint?: { provider: string; url: string }[];
+      explorer: { name: string; url: string; account: string; tx: string; proposal: string };
+      evm_explorer?: { name: string; url: string; account: string; tx: string };
+      about?: { website: string; docs: string; github: string; blog: string; medium: string; twitter: string; coingecko: string };
+      forum?: { main: string; governance: string };
+      description: { ko: string; en: string; ja: string };
       reported_validators?: string[];
     };
-    interchain_provider_params?: {
-      max_provider_consensus_validators?: string;
-    };
+    interchain_provider_params?: { max_provider_consensus_validators?: string };
   };
   updated_at: string;
   is_support: boolean;
@@ -187,16 +139,18 @@ export type V11Cw20 = {
   wallet_preload?: boolean;
 };
 
+export type V11SpltokenResponse = { assets: V11Spltoken[] };
+
 export type V11Spltoken = {
-  chain: string;
-  type: string;
-  contract: string;
+  id: number;
+  chainName: string;
   name: string;
+  address: string;
   symbol: string;
-  description?: string;
+  description: string;
   decimals: number;
-  image?: string;
-  coinGeckoId?: string;
-  color?: string;
-  wallet_preload?: boolean;
+  display: number;
+  image: string;
+  default: boolean;
+  coinGeckoId: string;
 };

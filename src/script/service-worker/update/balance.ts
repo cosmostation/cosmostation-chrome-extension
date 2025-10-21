@@ -19,6 +19,7 @@ import type {
   AccountAddressBalanceSplToken,
   AccountAddressBalanceSui,
   AccountAddressLockedBalanceCosmos,
+  SplTokenBalance,
 } from '@/types/account';
 import type { AssetId } from '@/types/asset';
 import type { AccountDetail } from '@/types/bitcoin/balance';
@@ -184,6 +185,9 @@ async function fetchChainBalanceByType(id: string, chainId: UniqueChainId) {
     if (chainType === 'iota') {
       await Promise.all([iotaBalances(id, { chainId })]);
     }
+    if (chainType === 'solana') {
+      await Promise.all([solanaBalances(id, { chainId }), splTokenBalance(id, { chainId })]);
+    }
   }
 }
 
@@ -240,9 +244,9 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, spltokenAccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...spltokenAccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -278,9 +282,9 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, spltokenAccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...spltokenAccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -314,12 +318,13 @@ export async function initAssests(id: string) {
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20Assets, erc20Assets } = await getAssets();
+    const { cw20Assets, erc20Assets, spltokenAssets } = await getAssets();
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);
+    const nonPreloadedSPLTokenAssets = spltokenAssets.filter((asset) => !asset.wallet_preload);
 
-    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets].map((asset) => {
+    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets, ...nonPreloadedSPLTokenAssets].map((asset) => {
       return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
     });
 
@@ -779,13 +784,23 @@ async function iotaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
 }
 
-async function solanaBalances(id: string) {
-  const address = await getAccountAddress(id);
+async function solanaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
   const { solanaChains } = await getChains();
 
-  const addressWithChain = address
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && solanaChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
     .map((addr) => {
-      const chain = solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = targetChain || solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);
@@ -803,11 +818,19 @@ async function solanaBalances(id: string) {
           rpcUrls.map((item) => item.url),
         );
 
-        const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: balance.value };
+        const result: AccountAddressBalanceSolana = {
+          id,
+          chainId,
+          chainType,
+          address,
+          balance: balance.value,
+          lastUpdatedAtMs: startUpdateTime,
+          status: 'success',
+        };
 
         return result;
       } catch {
-        const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: 0 };
+        const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: 0, lastUpdatedAtMs: startUpdateTime, status: 'error' };
 
         return result;
       }
@@ -1166,13 +1189,23 @@ async function customCw20Balance(id: string, { chainId }: BalanceFetchOption = {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
 }
 
-async function splTokenBalance(id: string) {
-  const address = await getAccountAddress(id);
+async function splTokenBalance(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
   const { solanaChains } = await getChains();
 
-  const addressWithChain = address
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && solanaChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
     .map((addr) => {
-      const chain = solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      const chain = targetChain || solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
       return { ...addr, chain };
     })
     .filter((addr) => addr.chain);
@@ -1187,7 +1220,10 @@ async function splTokenBalance(id: string) {
       try {
         const balance = await fetchSolanaSplTokenBalances(address, programId.splToken, rpcUrls.map((item) => item.url).filter(Boolean));
 
-        const result: AccountAddressBalanceSplToken = { id, chainId, chainType, address, balances: balance.value };
+        const balances: SplTokenBalance[] = balance.value.map((item) => {
+          return { ...item, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+        });
+        const result: AccountAddressBalanceSplToken = { id, chainId, chainType, address, balances: balances };
 
         return result;
       } catch {

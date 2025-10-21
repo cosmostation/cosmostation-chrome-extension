@@ -9,7 +9,6 @@ import PromisePool from '@supercharge/promise-pool';
 import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import { solanaTestAssets } from '@/constants/testChain';
 import type {
   AccountAddress,
   AccountAptosAsset,
@@ -109,7 +108,7 @@ export async function getVisibleAssetsSet(id: string): Promise<Set<string>> {
 
 export async function getAssets() {
   const {
-    assetsV11: assetsTemp,
+    assetsV11: assets,
     paramsV11: chains,
     erc20Assets,
     cw20Assets,
@@ -126,7 +125,6 @@ export async function getAssets() {
     'spltokenAssets',
   ]);
 
-  const assets = [...assetsTemp, ...solanaTestAssets];
   if (!assets) {
     throw new Error('No assets found');
   }
@@ -148,6 +146,7 @@ export async function getAssets() {
     aptos: filteredAptosAssets,
     bitcoin: filteredBitcoinAssets,
     iota: filteredIotaAssets,
+    solana: filteredSolanaAssets,
   } = assets.reduce(
     (acc, asset) => {
       if (evmChainIds.includes(asset.chain)) {
@@ -178,6 +177,9 @@ export async function getAssets() {
       if (iotaChainIds.includes(asset.chain)) {
         acc.iota.push(asset);
       }
+      if (solanaChainIds.includes(asset.chain)) {
+        acc.solana.push(asset);
+      }
       return acc;
     },
     {
@@ -187,6 +189,7 @@ export async function getAssets() {
       aptos: [] as typeof assets,
       bitcoin: [] as typeof assets,
       iota: [] as typeof assets,
+      solana: [] as typeof assets,
     },
   );
 
@@ -246,7 +249,6 @@ export async function getAssets() {
     };
   });
 
-  const filteredSolanaAssets = assets.filter((asset) => solanaChainIds.includes(asset.chain));
   const solanaAssets: SolanaAsset[] = filteredSolanaAssets.map((asset) => {
     return {
       ...asset,
@@ -1033,13 +1035,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           );
 
           const balance = String(balanceInfo?.balance || 0);
+          const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+          const fetchStatus: AssetFetchStatus = { balance: balanceInfo?.status };
 
-          const result: AccountSolanaAsset = {
-            chain,
-            asset,
-            address,
-            balance: balance,
-          };
+          const result: AccountSolanaAsset = { chain, asset, address, balance: balance, lastUpdatedAtMs, fetchStatus };
 
           return result;
         });
@@ -1060,16 +1059,15 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
           const balanceInfo = spltokenBalances?.find(
             (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
           );
-          const balance =
-            balanceInfo?.balances?.find((balance) => balance.account?.data?.parsed?.info?.mint === type)?.account?.data?.parsed?.info?.tokenAmount?.amount ||
-            '0';
 
-          const result: AccountSpltokenAsset = {
-            chain,
-            asset,
-            address,
-            balance,
-          };
+          const targetBalanceInfo = balanceInfo?.balances?.find((balance) => balance.account?.data?.parsed?.info?.mint === type);
+
+          const balance = targetBalanceInfo?.account?.data?.parsed?.info?.tokenAmount?.amount || '0';
+
+          const lastUpdatedAtMs = targetBalanceInfo?.lastUpdatedAtMs;
+          const fetchStatus: AssetFetchStatus = { balance: targetBalanceInfo?.status };
+
+          const result: AccountSpltokenAsset = { chain, asset, address, balance, lastUpdatedAtMs, fetchStatus };
 
           return result;
         });

@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import { throttle } from 'es-toolkit';
 import type { ConfirmedSignatureInfo } from '@solana/web3.js';
 import { Connection, PublicKey } from '@solana/web3.js';
 
