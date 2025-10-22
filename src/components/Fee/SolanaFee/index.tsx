@@ -19,14 +19,14 @@ type SolanaFeeProps = {
 
 export default function SolanaFee({ displayFeeAmount, displayFeePrice, coinSymbol, disableConfirm, isLoading, errorMessage, onClickConfirm }: SolanaFeeProps) {
   const { t } = useTranslation();
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   return (
     <Container>
       <LeftContentContainer>
         <NetworkFeeText variant="b3_R">{t('components.Fee.SolanaFee.index.networkFee')}</NetworkFeeText>
         <FeeCustomButton disabled>
-          {displayFeeAmount && (
+          {displayFeeAmount ? (
             <EstimatedFeeTextContainer>
               <NumberTypo typoOfIntegers="h5n_M" typoOfDecimals="h7n_R" currency={userCurrencyPreference} fixed={6} isDisableLeadingCurreny>
                 {displayFeeAmount}
@@ -40,6 +40,8 @@ export default function SolanaFee({ displayFeeAmount, displayFeePrice, coinSymbo
               </NumberTypo>
               <Base1300Text variant="b2_M">{')'}</Base1300Text>
             </EstimatedFeeTextContainer>
+          ) : (
+            <Base1300Text variant="b2_M">{'-'}</Base1300Text>
           )}
         </FeeCustomButton>
       </LeftContentContainer>

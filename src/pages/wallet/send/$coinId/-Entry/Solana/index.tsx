@@ -30,11 +30,18 @@ import { getKeypair } from '@/libs/address';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
 import { isTestnetChain } from '@/utils/chain';
-import { gt, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, minus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { requestRPC } from '@/utils/solana/rpc';
-import { createSplTokenTransferTransaction, createTransferTransaction, overwriteComputeBudgetProgram } from '@/utils/solana/transaction';
-import { isDecimal, shorterAddress } from '@/utils/string';
+import {
+  createSplTokenTransferTransaction,
+  createTransferTransaction,
+  deserializeTransaction,
+  overwriteComputeBudgetProgram,
+  parseInstructionsFromTx,
+  serializeTransaction,
+} from '@/utils/solana/transaction';
+import { isDecimal, safeStringify, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -73,6 +80,7 @@ export default function Solana({ coinId }: SolanaProps) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const [confirmData, setConfirmData] = useState<ConfirmData>({ transaction: undefined });
+  const [displayTx, setDisplayTx] = useState<string>('');
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -101,6 +109,7 @@ export default function Solana({ coinId }: SolanaProps) {
   const nativeCoinSymbol = nativeCoin?.asset.symbol || '';
   const nativeCoinDecimals = nativeCoin?.asset.decimals || 0;
   const nativeCoinPrice = (nativeCoin?.asset.coinGeckoId && coinGeckoPrice?.[nativeCoin?.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
+  const displayAvailableFeeAmount = toDisplayDenomAmount(nativeCoin?.balance || '0', nativeCoinDecimals);
 
   const { getSolanaAccountAsset } = useGetAccountAsset({ coinId });
 
@@ -136,6 +145,7 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const baseSendAmount = useMemo(() => toBaseDenomAmount(debouncedSendDisplayAmount || '0', coinDecimals), [coinDecimals, debouncedSendDisplayAmount]);
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
+  const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
 
   const addressInputErrorMessage = useMemo(() => {
     if (debouncedInputRecipientAddress) {
@@ -148,10 +158,6 @@ export default function Solana({ coinId }: SolanaProps) {
 
     return '';
   }, [debouncedInputRecipientAddress, t]);
-
-  const handleOnClickMax = useCallback(() => {
-    return;
-  }, []);
 
   const { data: latestBlockHash, isFetching: isFetchingGetLatestBlockHash } = useGetLatestBlockHash({ coinId });
 
@@ -328,14 +334,49 @@ export default function Solana({ coinId }: SolanaProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction, isFetchingGetAccountInfo, isFetchingGetLatestBlockHash, isFetchingGetRecentPrioritizationFees, isFetchingTransactionPreview]);
 
+  const handleOnClickMax = useCallback(() => {
+    const isSendNativeCoin = selectedCoinToSend?.asset.id === selectedCoinToSend?.chain.mainAssetDenom;
+
+    if (isSendNativeCoin) {
+      const isBeforeCalcFee = !displayTotalFee;
+
+      if (isBeforeCalcFee) {
+        const defaultBaseFee = toDisplayDenomAmount(20000, nativeCoinDecimals);
+        const displayAmount = minus(displayAvailableFeeAmount, defaultBaseFee);
+
+        setSendDisplayAmount(displayAmount);
+      } else {
+        const displayAmount = minus(displayAvailableFeeAmount, displayTotalFee);
+        setSendDisplayAmount(displayAmount);
+      }
+    } else {
+      setSendDisplayAmount(displayAvailableAmount);
+    }
+  }, [
+    displayAvailableAmount,
+    displayAvailableFeeAmount,
+    displayTotalFee,
+    nativeCoinDecimals,
+    selectedCoinToSend?.asset.id,
+    selectedCoinToSend?.chain.mainAssetDenom,
+  ]);
+
   const handleOnClickReview = useCallback(() => {
     if (transactionPreview?.simulatedValue?.unitsConsumed && transaction && typeof baseFee === 'number') {
       setConfirmData({ transaction, computeUnitLimit, computeUnitPrice });
+
+      const clonedTx = deserializeTransaction(serializeTransaction(transaction));
+
+      const tx = overwriteComputeBudgetProgram(clonedTx, {
+        units: computeUnitLimit || 1,
+        microLamports: Math.ceil(computeUnitPrice || 1 * 1000000),
+      });
+
+      setDisplayTx(safeStringify(parseInstructionsFromTx(tx)) || '');
+
       setIsOpenReviewBottomSheet(true);
     }
   }, [baseFee, computeUnitLimit, computeUnitPrice, transaction, transactionPreview?.simulatedValue?.unitsConsumed]);
-
-  // const displayTx = useMemo(() => safeStringify(), [debouncedTx]);
 
   const handleOnClickConfirm = useCallback(async () => {
     try {
@@ -495,7 +536,7 @@ export default function Solana({ coinId }: SolanaProps) {
         />
       )}
       <ReviewBottomSheet
-        // rawTxString={displayTx}
+        rawTxString={displayTx}
         open={isOpenReviewBottomSheet}
         onClose={() => setIsOpenReviewBottomSheet(false)}
         contentsTitle={t('pages.wallet.send.$coinId.Entry.Solana.index.sendReview')}
