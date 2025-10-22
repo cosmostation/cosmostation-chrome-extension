@@ -19,7 +19,6 @@ import type {
   AccountAddressBalanceSplToken,
   AccountAddressBalanceSui,
   AccountAddressLockedBalanceCosmos,
-  SplTokenBalance,
 } from '@/types/account';
 import type { AssetId } from '@/types/asset';
 import type { AccountDetail } from '@/types/bitcoin/balance';
@@ -27,6 +26,7 @@ import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { Cw20Balance } from '@/types/cosmos/balance';
 import type { Erc20Balance } from '@/types/evm/balance';
 import type { ExtensionStorage } from '@/types/extension';
+import type { SplTokenBalance } from '@/types/solana/api';
 import { fetchAptosBalances } from '@/utils/aptos/fetch/balance';
 import {
   upsertAptosBalance,
