@@ -33,7 +33,7 @@ export function useAnalyzeTokenChanges({ transaction, userAddress, config }: Use
 
       const result = await analyzeTokenChanges(connection, transaction, userAddress);
 
-      const filterOnlySol = result.filter((item) => item.mint === SOLANA_MAIN_ASSET_ID);
+      const filterOnlySol = result?.filter((item) => item.mint === SOLANA_MAIN_ASSET_ID);
 
       return filterOnlySol;
     });
