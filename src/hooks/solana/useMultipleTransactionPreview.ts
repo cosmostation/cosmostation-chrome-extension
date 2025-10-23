@@ -70,7 +70,7 @@ export function useMultipleTransactionPreview({ coinId, transactions, config }: 
   };
 
   const { data, isLoading, isFetching, error, refetch } = useFetch({
-    queryKey: ['useTransactionsPreview', coinId, transactions],
+    queryKey: ['useMultipleTransactionPreview', coinId, transactions],
     fetchFunction: () => fetcher(),
     config: {
       enabled: !!coinId && !!rpcURLs.length && !!transactions && transactions.length > 0,
