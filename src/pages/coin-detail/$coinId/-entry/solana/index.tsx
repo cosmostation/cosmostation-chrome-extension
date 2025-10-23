@@ -1,20 +1,16 @@
 import { useTranslation } from 'react-i18next';
 
-// import { useNavigate } from '@tanstack/react-router';
 import AccountTxHistory from '@/components/AccountTxHistory';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import CoinDetailBox from '@/components/MainBox/CoinDetailBox';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
-// import { Route as ManageStake } from '@/pages/coin-detail/$coinId/manage-stake';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 
-// import { shorterAddress } from '@/utils/string';
 import { HistoryContainer, HistorySectionTitle, StyledEdgeAligner } from './styled';
 import AmountDetail from '../components/AmountDetail';
 import SectionContainer from '../components/SectionContainer';
 import SectionStickyContainer from '../components/SectionStickyContainer';
 import SectionWrapper from '../components/SectionWrapper';
-// import StakePromotion from '../components/StakePromotion';
 
 type SolanaProps = {
   coinId: string;

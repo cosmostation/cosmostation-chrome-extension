@@ -40,7 +40,7 @@ export default function Entry({ request }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
 
   const { currentSolanaNetwork } = useCurrentSolanaNetwork();
-  const currentSuiChainId = useMemo(() => currentSolanaNetwork && getUniqueChainId(currentSolanaNetwork), [currentSolanaNetwork]);
+  const currentSolanaChainId = useMemo(() => currentSolanaNetwork && getUniqueChainId(currentSolanaNetwork), [currentSolanaNetwork]);
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -117,7 +117,7 @@ export default function Entry({ request }: EntryProps) {
         <EdgeAligner>
           <DappInfo image={siteIconURL} name={siteTitle} url={currentRequestQueue?.origin} />
           <Divider />
-          {currentSuiChainId && <NetworkInfo chainId={currentSuiChainId} />}
+          {currentSolanaChainId && <NetworkInfo chainId={currentSolanaChainId} />}
           <LineDivider />
           <RequestMethodTitle title={t('pages.popup.sui.sign-message.entry.signatureRequest')} />
         </EdgeAligner>

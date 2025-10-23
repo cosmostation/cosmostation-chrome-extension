@@ -1,23 +1,17 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE, SOLANA_RPC_ERROR_MESSAGE } from '@/constants/error';
 import { SOLANA_METHOD_TYPE, SOLANA_NO_POPUP_METHOD_TYPE, SOLANA_POPUP_METHOD_TYPE } from '@/constants/solana/message';
-import { /* getAddress, */ getKeypair } from '@/libs/address';
+import { getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import type { ResponseAppMessage } from '@/types/message/content';
-import type {
-  SolanaConnect,
-  SolanaConnectResponse,
-  /* SolanaConnectResponse, SolanaDisconnect,*/ SolanaRequest,
-  SolanaSignMessage,
-} from '@/types/message/inject/solana';
+import type { SolanaConnect, SolanaConnectResponse, SolanaRequest, SolanaSignMessage } from '@/types/message/inject/solana';
 import { SolanaRPCError } from '@/utils/error';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { deserializeTransaction } from '@/utils/solana/transaction';
-import { extensionLocalStorage, extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
+import { getSolanaDefaultStorageData } from '@/utils/storage/localStorage';
 
 import { solanaSignMessageSchema } from './schema';
-
-// import { aptosSignMessageSchema, aptosSignTransactionSchema } from './schema';
 
 export async function solanaProcess(message: SolanaRequest) {
   const { method, requestId, tabId, origin } = message;
@@ -26,12 +20,16 @@ export async function solanaProcess(message: SolanaRequest) {
   const solanaPopupMethods = Object.values(SOLANA_POPUP_METHOD_TYPE) as string[];
   const solanaNoPopupMethods = Object.values(SOLANA_NO_POPUP_METHOD_TYPE) as string[];
 
-  const { currentAccount, currentAccountAllowedOrigins, currentSolanaNetwork, approvedOrigins } = await extensionLocalStorage();
+  const { currentAccount, currentAccountAllowedOrigins, currentSolanaNetwork, approvedOrigins } = await getSolanaDefaultStorageData();
   const { currentPassword } = await extensionSessionStorage();
 
   const chain = currentSolanaNetwork;
 
   try {
+    if (!currentAccount) {
+      throw new SolanaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]);
+    }
+
     if (!method || !solanaMethods.includes(method)) {
       throw new SolanaRPCError(RPC_ERROR.UNSUPPORTED_METHOD, SOLANA_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD]);
     }
