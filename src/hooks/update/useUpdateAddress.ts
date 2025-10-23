@@ -15,10 +15,8 @@ export function useUpdateAddress() {
     queryKey: ['updateAddress', currentAccount.id],
     enabled: !!currentAccount.id,
     queryFn: fetcher,
-    // staleTime: 1000 * 60 * 29,
-    // refetchInterval: 1000 * 60 * 30,
-    staleTime: 1000 * 60,
-    refetchInterval: 1000 * 60,
+    staleTime: 1000 * 60 * 29,
+    refetchInterval: 1000 * 60 * 30,
   });
 
   return { data, isLoading, error };
