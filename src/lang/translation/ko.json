@@ -2621,7 +2621,16 @@
         "transaction": {
           "entry": {
             "reject": "거부",
-            "sign": "사인"
+            "sign": "사인",
+            "calculatingFee": "수수료를 계산중입니다"
+          },
+          "components": {
+            "TxMessage": {
+              "index": {
+                "expectedChanges": "잔액 변화량 추정치",
+                "expectedChangesDescription": "잔액변화는 추정치입니다. 관련 금액과 자산은 보장되지 않습니다."
+              }
+            }
           }
         }
       }

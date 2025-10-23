@@ -31,7 +31,7 @@ export const StickyTabContainer = styled('div')(({ theme }) => ({
 }));
 
 export const StyledTabPanel = styled(TabPanel)({
-  marginTop: '0',
+  marginTop: '0.8rem',
   display: 'flex',
   flexDirection: 'column',
 });

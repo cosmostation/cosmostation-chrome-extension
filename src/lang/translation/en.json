@@ -3157,7 +3157,16 @@
         "transaction": {
           "entry": {
             "reject": "Reject",
-            "sign": "Sign"
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
+          },
+          "components": {
+            "TxMessage": {
+              "index": {
+                "expectedChanges": "Expected changes",
+                "expectedChangesDescription": "Balance changes are estimated. Amounts and assets are not guaranteed."
+              }
+            }
           }
         }
       }

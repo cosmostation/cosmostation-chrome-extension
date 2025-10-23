@@ -4,7 +4,8 @@ import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
 import { useExtensionSessionStorageStore } from '@/zustand/hooks/useExtensionSessionStorageStore';
 
 export function useCurrentPassword() {
-  const { sessionPassword, updateExtensionSessionStorageStore } = useExtensionSessionStorageStore((state) => state);
+  const sessionPassword = useExtensionSessionStorageStore((state) => state.sessionPassword);
+  const updateExtensionSessionStorageStore = useExtensionSessionStorageStore((state) => state.updateExtensionSessionStorageStore);
 
   const setCurrentPassword = async (password: string | null) => {
     const timestamp = new Date().getTime();

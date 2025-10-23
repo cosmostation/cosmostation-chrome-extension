@@ -5,17 +5,18 @@ import type { SendOptions } from '@solana/web3.js';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button';
-import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { SOLANA_NATIVE_COIN } from '@/constants/solana';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAnalyzeTokenChanges } from '@/hooks/solana/useAnalyzeTokenChanges';
 import { useCurrentSolanaNetwork } from '@/hooks/solana/useCurrentSolanaNetwork';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import { useMultipleTransactionPreview } from '@/hooks/solana/useMultipleTransactionPreview';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getAddress, getKeypair } from '@/libs/address';
 import { sendMessage } from '@/libs/extension';
 import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
@@ -27,14 +28,14 @@ import type {
   SolanaSignTransaction,
 } from '@/types/message/inject/solana';
 import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { plus } from '@/utils/numbers';
+import { getCoinId, getCoinIdWithManual } from '@/utils/queryParamGenerator';
 import { requestRPC } from '@/utils/solana/rpc';
 import { deserializeTransaction, parseInstructionsFromTx, serializeTransaction, signTransaction } from '@/utils/solana/transaction';
-import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
 import TxMessage from './-components/TxMessage';
-import { Divider, DividerContainer, LineDivider, SticktFooterInnerBody, StickyTabContainer, StyledTabPanel, TxBaseInfoContainer } from './-styled';
+import { Divider, DividerContainer, LineDivider, SticktFooterInnerBody, TxBaseInfoContainer } from './-styled';
 
 type EntryProps = {
   request: SolanaSignTransaction | SolanaSignAllTransactions | SolanaSignAndSendTransaction | SolanaSignAndSendAllTransactions;
@@ -51,19 +52,11 @@ export default function Entry({ request }: EntryProps) {
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-    disableDupeEthermint: true,
+  const { getSolanaAccountAsset } = useGetAccountAsset({
+    coinId: getCoinIdWithManual({ id: SOLANA_NATIVE_COIN, chainType: currentSolanaNetwork?.chainType || 'solana', chainId: currentSolanaNetwork?.id || '' }),
   });
 
-  const nativeAccountAsset = useMemo(
-    () =>
-      currentSolanaNetwork &&
-      accountAllAssets?.solanaAccountAssets.find(
-        (item) => isSameChain(item.chain, currentSolanaNetwork) && isEqualsIgnoringCase(item.asset.id, SOLANA_NATIVE_COIN),
-      ),
-    [accountAllAssets?.solanaAccountAssets, currentSolanaNetwork],
-  );
+  const nativeAccountAsset = getSolanaAccountAsset();
 
   const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
 
@@ -73,13 +66,6 @@ export default function Entry({ request }: EntryProps) {
   const siteTitle = getSiteTitle(origin);
 
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const [tabValue, setTabValue] = useState(0);
-  const tabLabels = ['Detail'];
-
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
-    setTabValue(newTabValue);
-  };
 
   const keyPair = useMemo(
     () => currentSolanaNetwork && getKeypair(currentSolanaNetwork, currentAccount, currentPassword),
@@ -96,17 +82,41 @@ export default function Entry({ request }: EntryProps) {
     });
   }, [params]);
 
+  const { data: expectedTokenChanges } = useAnalyzeTokenChanges({
+    transaction: unserializedTxs[currentStep],
+    userAddress: nativeAccountAsset?.address.address || '',
+  });
+
+  const { data: transactionPreview, isFetching: isFetchingTransactionPreview } = useMultipleTransactionPreview({
+    coinId: nativeAccountAssetCoinId,
+    transactions: unserializedTxs,
+  });
+
+  const baseFee = useMemo(() => {
+    if (transactionPreview && transactionPreview.length > 0) {
+      return transactionPreview.reduce((acc, cur) => {
+        if (cur) {
+          return plus(acc, cur.estimatedValue || 0);
+        }
+        return acc;
+      }, '0');
+    }
+
+    return '0';
+  }, [transactionPreview]);
+
   const instructions = useMemo(() => {
     return unserializedTxs.map((tx) => {
       return parseInstructionsFromTx(tx);
     });
   }, [unserializedTxs]);
 
-  const isDiabled = useMemo(() => !true, []);
-
   const errorMessage = useMemo(() => {
+    if (isFetchingTransactionPreview) {
+      return t('pages.popup.solana.transaction.entry.calculatingFee');
+    }
     return '';
-  }, []);
+  }, [isFetchingTransactionPreview, t]);
 
   const handleOnSign = useCallback(async () => {
     try {
@@ -254,22 +264,13 @@ export default function Entry({ request }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={origin} />
           <Divider />
           <TxBaseInfoContainer>
-            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={'1'} disableFee />
+            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={baseFee} disableFee isLoadingFee={isFetchingTransactionPreview} />
           </TxBaseInfoContainer>
           <DividerContainer>
             <Divider />
           </DividerContainer>
           <LineDivider />
-          <StickyTabContainer>
-            <FilledTabs value={tabValue} onChange={handleChange} variant="fullWidth">
-              {tabLabels.map((item) => (
-                <FilledTab key={item} label={item} />
-              ))}
-            </FilledTabs>
-          </StickyTabContainer>
-          <StyledTabPanel value={tabValue} index={0}>
-            <TxMessage msgs={instructions} currentStep={currentStep} onPageChange={(page) => setCurrentStep(page)} />
-          </StyledTabPanel>
+          <TxMessage msgs={instructions} tokenChanges={expectedTokenChanges} currentStep={currentStep} onPageChange={(page) => setCurrentStep(page)} />
         </EdgeAligner>
       </BaseBody>
 
@@ -303,7 +304,7 @@ export default function Entry({ request }: EntryProps) {
           confirmButton={
             <Tooltip title={errorMessage} varient="error" placement="top">
               <div>
-                <Button isProgress={isProcessing} disabled={isDiabled || !!errorMessage} onClick={handleOnSign}>
+                <Button isProgress={isProcessing} disabled={!!errorMessage} onClick={handleOnSign}>
                   {t('pages.popup.solana.transaction.entry.sign')}
                 </Button>
               </div>
