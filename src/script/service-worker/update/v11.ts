@@ -112,7 +112,7 @@ export async function v11() {
       })
       .filter((asset) => asset.id);
 
-    await hideNewContractTokens(erc20Assets, cw20Assets, spltokenAssets);
+    await hideNewContractTokens(erc20Assets, cw20Assets);
 
     await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'spltokenAssets'>>({
       erc20Assets,
@@ -130,24 +130,21 @@ export async function v11() {
   }
 }
 
-async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[], spltokenAssets: SolanaSpltokenAsset[]) {
+async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[]) {
   const {
     userAccounts: storedAccounts,
     erc20Assets: storedERC20AssetsV11,
     cw20Assets: storedCW20Assets,
-    spltokenAssets: storedSpltokenAssets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'spltokenAssets']);
+  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets']);
 
   const storedAccountsList = storedAccounts || [];
   const storedAccountsIds = storedAccountsList.map((account) => account.id);
 
   const storedERC20Data = storedERC20AssetsV11 || [];
   const storedCW20Data = storedCW20Assets || [];
-  const storedSpltokenData = storedSpltokenAssets || [];
 
   const storedERC20Set = new Set(storedERC20Data.map((asset) => getCoinId(asset)));
   const storedCW20Set = new Set(storedCW20Data.map((asset) => getCoinId(asset)));
-  const storedSpltokenSet = new Set(storedSpltokenData.map((asset) => getCoinId(asset)));
 
   const newERC20Assets =
     storedERC20Set.size === 0 ? [] : erc20Assets.filter((asset) => !storedERC20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
@@ -155,10 +152,7 @@ async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: C
   const newCW20Assets =
     storedCW20Set.size === 0 ? [] : cw20Assets.filter((asset) => !storedCW20Set.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
 
-  const newSpltokenAssets =
-    storedSpltokenSet.size === 0 ? [] : spltokenAssets.filter((asset) => !storedSpltokenSet.has(getCoinId(asset))).filter((asset) => !asset.wallet_preload);
-
-  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets, ...newSpltokenAssets];
+  const mergedNewContractAssets = [...newERC20Assets, ...newCW20Assets];
 
   if (mergedNewContractAssets.length > 0) {
     const hiddenAssetIds = mergedNewContractAssets.map((asset) => ({

@@ -4,6 +4,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
 import StandardInput from '@/components/common/StandardInput';
+import { DEFAULT_MAJOR_CHAINS } from '@/constants/common';
 import { useChainList } from '@/hooks/useChainList';
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, SuiChain } from '@/types/chain';
 import { isNumber } from '@/utils/string';
@@ -55,10 +56,9 @@ export default function HdPathBottomSheet({ currentHdPathIndex, onClose, onChang
   const { hdPathIndex } = watch();
   const isButtonDisabled = !hdPathIndex;
 
-  const majorNetworkIds = ['cosmos', 'bitcoin', 'ethereum'];
-  const majorNetwork = majorNetworkIds
-    .map((id) => flatChainList.find((chain) => chain.id === id))
-    .filter((chain): chain is CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain => chain !== undefined);
+  const majorNetwork = DEFAULT_MAJOR_CHAINS.map(({ id }) => flatChainList.find((chain) => chain.id === id)).filter(
+    (chain): chain is CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain => chain !== undefined,
+  );
 
   const submit = async (data: HdPathIndexForm) => {
     onChangeHdPathIndex?.(data.hdPathIndex);
