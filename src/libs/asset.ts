@@ -306,7 +306,6 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     `${id}-balance-spltoken`,
     `${id}-custom-balance-erc20`,
     `${id}-custom-balance-cw20`,
-    `${id}-balance-solana`,
   ]);
 
   const hiddenAssetIdSet = await getHiddenAssetsSet(id);
