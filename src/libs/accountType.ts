@@ -30,7 +30,7 @@ export async function getMultipleAccountTypesChain(id: string) {
   });
 
   const multipleAccountTypesSupportAddresses = addresses.filter((item) =>
-    multiAccountTypesChainlistParam.some((i) => i.id === item.chainId && i.params.chainlist_params.chain_type.includes(item.chainType)),
+    multiAccountTypesChainlistParam.some((i) => i.id === item.chainId && i.params.chainlist_params?.chain_type.includes(item.chainType)),
   );
 
   const groupedAccountAddressesByChainId = multipleAccountTypesSupportAddresses.reduce(
@@ -89,7 +89,7 @@ export async function getDefaultAccountTypes() {
 
   const defaultAccountTypes = multiAccountTypesChainlistParam.reduce((acc: ChainToAccountTypeMap, item) => {
     const id = item.id;
-    const { account_type } = item.params.chainlist_params;
+    const { account_type } = item.params.chainlist_params || {};
 
     const defaultAccount = account_type?.find((item) => item.is_default !== false);
 

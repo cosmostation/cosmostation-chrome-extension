@@ -9,6 +9,8 @@ import type {
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
   AccountAddressBalanceIota,
+  AccountAddressBalanceSolana,
+  AccountAddressBalanceSplToken,
   AccountAddressBalanceSui,
   AccountAddressCommissionsCosmos,
   AccountAddressDelegationsCosmos,
@@ -211,6 +213,17 @@ export const upsertIotaBalance = <T extends AccountAddressBalanceIota>(originalL
   });
 };
 
+export const upsertSolanaBalance = <T extends AccountAddressBalanceSolana>(originalList: T[], incomingList: T[]) => {
+  return upsertBalanceList(originalList, incomingList, (e, i) => {
+    if (i.status !== 'error') {
+      e.balance = i.balance;
+    }
+
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
+  });
+};
+
 export const upsertERC20Balance = <T extends AccountAddressBalanceErc20>(originalList: T[], incomingList: T[]) => {
   return upsertBalanceList(originalList, incomingList, (e, i) => {
     const resolved = i.balances.map((incoming) => {
@@ -233,6 +246,20 @@ export const upsertCW20Balance = <T extends AccountAddressBalanceCw20>(originalL
       const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.contract, incoming.contract));
 
       return existingBalance ? { ...incoming, balance: existingBalance.balance } : incoming;
+    });
+
+    e.balances = resolved;
+  });
+};
+
+export const upsertSplTokenBalance = <T extends AccountAddressBalanceSplToken>(originalList: T[], incomingList: T[]) => {
+  return upsertBalanceList(originalList, incomingList, (e, i) => {
+    const resolved = i.balances.map((incoming) => {
+      if (incoming.status !== 'error') return incoming;
+
+      const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.account.data.parsed.info.mint, incoming.account.data.parsed.info.mint));
+
+      return existingBalance ? { ...incoming, account: existingBalance.account } : incoming;
     });
 
     e.balances = resolved;

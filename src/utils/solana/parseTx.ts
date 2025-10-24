@@ -1,8 +1,9 @@
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import type { Connection, Transaction, VersionedTransaction } from '@solana/web3.js';
-import { PublicKey } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 
 import { isVersionedTransaction } from './util';
+import { divide, gt, minus } from '../numbers';
 
 export interface TokenChange {
   mint: string;
@@ -78,14 +79,14 @@ const analyzeAccountChanges = (
     if (!before || !after) continue;
 
     if (address === userAddress) {
-      const solDiff = after.lamports - before.lamports;
-      if (solDiff !== 0) {
+      const solDiff = minus(after.lamports, before.lamports);
+      if (solDiff !== '0') {
         changes.push({
           mint: 'sol',
           symbol: 'SOL',
-          amount: solDiff / 1_000_000_000,
+          amount: Number(divide(solDiff, LAMPORTS_PER_SOL)),
           decimals: 9,
-          type: solDiff > 0 ? 'receive' : 'send',
+          type: gt(solDiff, 0) ? 'receive' : 'send',
         });
       }
     }
@@ -94,18 +95,18 @@ const analyzeAccountChanges = (
     const afterToken = parseTokenAccount(after.data, after.owner);
 
     if (beforeToken && afterToken && beforeToken.owner === userAddress && beforeToken.mint === afterToken.mint) {
-      const tokenDiff = afterToken.amount - beforeToken.amount;
+      const tokenDiff = minus(afterToken.amount, beforeToken.amount);
 
-      if (tokenDiff !== 0) {
+      if (tokenDiff !== '0') {
         changes.push({
           mint: beforeToken.mint,
-          amount: tokenDiff,
+          amount: Number(tokenDiff),
           decimals: 0,
-          type: tokenDiff > 0 ? 'receive' : 'send',
+          type: gt(tokenDiff, '0') ? 'receive' : 'send',
         });
       }
     } else if (!before.exists && after.exists && afterToken && afterToken.owner === userAddress) {
-      if (afterToken.amount > 0) {
+      if (gt(afterToken.amount, 0)) {
         changes.push({
           mint: afterToken.mint,
           amount: afterToken.amount,
@@ -114,7 +115,7 @@ const analyzeAccountChanges = (
         });
       }
     } else if (before.exists && !after.exists && beforeToken && beforeToken.owner === userAddress) {
-      if (beforeToken.amount > 0) {
+      if (gt(beforeToken.amount, 0)) {
         changes.push({
           mint: beforeToken.mint,
           amount: beforeToken.amount,

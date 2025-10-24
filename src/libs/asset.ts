@@ -152,7 +152,7 @@ export async function getAssets() {
       if (evmChainIds.includes(asset.chain)) {
         const chainParam = chains?.[asset.chain]?.params?.chainlist_params;
 
-        const isOnlyEVM = !chainParam.chain_type.includes('cosmos') && chainParam.chain_type.includes('evm');
+        const isOnlyEVM = !chainParam?.chain_type.includes('cosmos') && chainParam?.chain_type.includes('evm');
 
         const gasCoinDenom = isOnlyEVM
           ? chainParam?.gas_asset_denom || chainParam?.main_asset_denom
@@ -1141,9 +1141,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     }
   };
 
-  const filterHiddenStakableAssetsByBalance = <T extends AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset | AccountIotaAsset | AccountSolanaAsset>(
-    assets: T[],
-  ): T[] => {
+  const filterHiddenStakableAssetsByBalance = <T extends AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset | AccountIotaAsset>(assets: T[]): T[] => {
     if (option?.disableBalanceFilter) {
       return assets;
     } else {
@@ -1165,8 +1163,8 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const filteredEVMAccountAssets = filterHiddenStakableAssetsByBalance(evmAccountAssets);
   const filteredSuiAccountAssets = filterHiddenStakableAssetsByBalance(suiAccountAssets);
   const filteredIotaAccountAssets = filterHiddenStakableAssetsByBalance(iotaAccountAssets);
-  const filteredSolanaAccountAssets = filterHiddenStakableAssetsByBalance(solanaAccountAssets);
 
+  const filteredSolanaAccountAssets = filterHiddenAssetsByBalance(solanaAccountAssets);
   const filteredAptosAccountAssets = filterHiddenAssetsByBalance(aptosAccountAssets);
   const filteredCW20AccountAssets = filterHiddenAssetsByBalance(cw20AccountAssets);
   const filteredERC20AccountAssets = filterHiddenAssetsByBalance(erc20AccountAssets);

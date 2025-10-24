@@ -534,7 +534,7 @@ async function setMissingPreferAccountType() {
     const newPreferAccountType: ChainToAccountTypeMap = {};
 
     notStoredNewMultiAccountChainName.forEach((item) => {
-      const newChainAccountType = filteredAccountTypes.find((ac) => ac.params.chainlist_params.api_name === item)?.params.chainlist_params.account_type;
+      const newChainAccountType = filteredAccountTypes.find((ac) => ac.params.chainlist_params?.api_name === item)?.params.chainlist_params?.account_type;
       const defaultAccountType = newChainAccountType?.find((type) => type.is_default !== false);
 
       if (defaultAccountType) {
@@ -611,7 +611,7 @@ async function initializePreferAccountType() {
       });
 
     const defaultPreferAccountType = formattedMulitpleAccountTypesParams.reduce((acc: ChainToAccountTypeMap, cur) => {
-      const defaultAccountType = cur.params.chainlist_params.account_type?.find((type) => type.is_default !== false);
+      const defaultAccountType = cur.params.chainlist_params?.account_type?.find((type) => type.is_default !== false);
 
       if (defaultAccountType) {
         const type = {

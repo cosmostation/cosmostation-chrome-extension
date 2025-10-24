@@ -297,32 +297,12 @@ export function useAccountAllAssets({
         return true;
       });
 
-      const filteredSpltokenAssets = filteredByVisibleList.spltokenAccountAssets.filter((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
-
-        if (selectedChainAccountType) {
-          const isSamePubkeyType = (() => {
-            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
-              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
-            }
-            return true;
-          })();
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            isSamePubkeyType
-          );
-        }
-        return true;
-      });
-
       const filteredAccountAssets = produce(filteredByVisibleList, (draft) => {
         draft.cosmosAccountAssets = filteredCosmos;
         draft.cw20AccountAssets = filteredCW20;
         draft.evmAccountAssets = filteredEVM;
         draft.erc20AccountAssets = filteredERC20Assets;
         draft.bitcoinAccountAssets = filteredBitcoin;
-        draft.spltokenAccountAssets = filteredSpltokenAssets;
       });
 
       const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];

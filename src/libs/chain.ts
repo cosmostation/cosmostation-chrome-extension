@@ -3,6 +3,7 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
+import type { SupportedV11Param } from '@/types/apiV11';
 import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
@@ -30,7 +31,7 @@ export async function getChains() {
     throw new Error('No chains found');
   }
 
-  const chainIds = Object.keys({ ...chains });
+  const chainIds = Object.keys(chains);
   const chainInfos = chainIds.map((chainId) => {
     const chainInfo = chains[chainId];
 
@@ -40,7 +41,9 @@ export async function getChains() {
     };
   });
 
-  const supportedChains = chainInfos.filter((chainInfo) => chainInfo.params.chainlist_params?.is_support_extension_wallet);
+  const supportedChains = chainInfos.filter(
+    (chainInfo) => !!chainInfo.params?.chainlist_params && chainInfo.params?.chainlist_params.is_support_extension_wallet,
+  ) as SupportedV11Param[];
 
   const cosmosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('cosmos'));
   const evmChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('evm'));

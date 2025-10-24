@@ -18,12 +18,9 @@ type SolanaProps = {
 
 export default function Solana({ coinId }: SolanaProps) {
   const { t } = useTranslation();
-  // const navigate = useNavigate();
 
   const { getSolanaAccountAsset } = useGetAccountAsset({ coinId });
   const selectedCoin = getSolanaAccountAsset();
-
-  // const symbol = selectedCoin?.asset.symbol || shorterAddress(coinId, 6) || '';
 
   const isSolanaMainCoin = parseCoinId(coinId).id === selectedCoin?.chain.mainAssetDenom;
 

@@ -23,7 +23,7 @@ export type V11Param = {
         slash_fraction_downtime: string;
       };
     };
-    chainlist_params: {
+    chainlist_params?: {
       chain_id?: string;
       chain_id_cosmos?: string;
       chain_id_evm?: string;
@@ -85,6 +85,13 @@ export type V11Param = {
   };
   updated_at: string;
   is_support: boolean;
+};
+
+export type SupportedV11Param = Omit<V11Param, 'params'> & {
+  id: string;
+  params: Omit<V11Param['params'], 'chainlist_params'> & {
+    chainlist_params: NonNullable<V11Param['params']['chainlist_params']>;
+  };
 };
 
 export type V11Asset = {

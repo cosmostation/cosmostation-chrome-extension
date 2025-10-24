@@ -388,7 +388,6 @@ export interface AccountSolanaAsset {
   asset: SolanaAsset;
   address: AccountAddress;
   balance: string;
-  totalBalance?: string;
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AssetFetchStatus;
 }

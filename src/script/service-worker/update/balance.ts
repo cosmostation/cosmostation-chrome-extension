@@ -36,6 +36,8 @@ import {
   upsertERC20Balance,
   upsertEVMBalance,
   upsertIotaBalance,
+  upsertSolanaBalance,
+  upsertSplTokenBalance,
   upsertSuiBalance,
 } from '@/utils/balanceUpsert';
 import {
@@ -836,7 +838,11 @@ async function solanaBalances(id: string, { chainId }: BalanceFetchOption = {}) 
       }
     });
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: results });
+  const stored = (await getExtensionLocalStorage(`${id}-balance-solana`)) || [];
+
+  const updatedSolanaBalances = upsertSolanaBalance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: updatedSolanaBalances });
 }
 
 async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1233,5 +1239,9 @@ async function splTokenBalance(id: string, { chainId }: BalanceFetchOption = {})
       }
     });
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${id}-balance-spltoken`]: results });
+  const stored = (await getExtensionLocalStorage(`${id}-balance-spltoken`)) || [];
+
+  const updatedSplTokenBalances = upsertSplTokenBalance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${id}-balance-spltoken`]: updatedSplTokenBalances });
 }
