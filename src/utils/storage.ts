@@ -360,7 +360,9 @@ async function initializeChosenNetworks() {
   const storedChosenSuiNetworkId = await getExtensionLocalStorage('chosenSuiNetworkId');
   const storedChosenBitcoinNetworkId = await getExtensionLocalStorage('chosenBitcoinNetworkId');
   const storedChosenIotaNetworkId = await getExtensionLocalStorage('chosenIotaNetworkId');
-  const { evmChains, aptosChains, suiChains, bitcoinChains, iotaChains } = await getChains();
+  const storedChosenGnoNetworkId = await getExtensionLocalStorage('chosenGnoNetworkId');
+
+  const { evmChains, aptosChains, suiChains, bitcoinChains, iotaChains, gnoChains } = await getChains();
 
   if (!storedChosenEthereumNetworkId) {
     const defaultEVMNetwork = evmChains.find((item) => item.id === 'ethereum') || evmChains[0];
@@ -400,6 +402,13 @@ async function initializeChosenNetworks() {
     const defaultIotaNetworkId = getUniqueChainId(defaultIotaNetwork);
 
     await setExtensionLocalStorage('chosenIotaNetworkId', defaultIotaNetworkId);
+  }
+  if (!storedChosenGnoNetworkId) {
+    const defaultGnoNetwork = gnoChains.find((item) => item.id === 'gno') || gnoChains[0];
+
+    const defaultGnoNetworkId = getUniqueChainId(defaultGnoNetwork);
+
+    await setExtensionLocalStorage('chosenGnoNetworkId', defaultGnoNetworkId);
   }
 }
 
