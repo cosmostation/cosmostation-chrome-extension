@@ -174,18 +174,28 @@ export default function Entry({ request, chain }: EntryProps) {
     return alternativeFeeAsset?.asset.id === dappFromFeeAsset?.asset.id ? dappFromFeeAsset : alternativeFeeAsset;
   }, [alternativeFeeAsset, dappFromFeeAsset]);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (accountAsset?.address) {
+      const pubkeyType = resolvePubkeyType(chain, accountAsset.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [accountAsset?.address, chain]);
+
   const memoizedProtoTx = useMemo(() => {
     if (isEditFee && assetForSimulation?.asset.id && !isNeedOsmoEip1559) {
       const pTx = protoTx(
         { ...doc, fee: { amount: [{ denom: assetForSimulation.asset.id, amount: '1' }], gas: COSMOS_DEFAULT_GAS } },
         [Buffer.from(new Uint8Array(64)).toString('base64')],
-        { type: accountAsset?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
+        { type: resolvedPubkeyType, value: '' },
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [accountAsset?.address.accountType.pubkeyType, assetForSimulation?.asset.id, doc, isEditFee, isNeedOsmoEip1559]);
+  }, [assetForSimulation?.asset.id, doc, isEditFee, isNeedOsmoEip1559, resolvedPubkeyType]);
 
   const isPossibleSimulating =
     !!accountAssetCoinId &&

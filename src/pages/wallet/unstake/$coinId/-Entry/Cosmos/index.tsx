@@ -31,7 +31,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
 import { isTestnetChain } from '@/utils/chain';
-import { executeUnstakeTransaction } from '@/utils/cosmos/executeTx';
+import { executeUnstakeTransaction, resolvePubkeyType } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { getDayFromSeconds } from '@/utils/date';
@@ -243,19 +243,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [unstakeAminoTx] = useDebounce(memoizedUnstakeAminoTx, 700);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (selectedUnstakingCoin?.chain && selectedUnstakingCoin?.address) {
+      const pubkeyType = resolvePubkeyType(selectedUnstakingCoin.chain, selectedUnstakingCoin.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [selectedUnstakingCoin?.address, selectedUnstakingCoin?.chain]);
+
   const unstakeProtoTx = useMemo(() => {
     if (unstakeAminoTx) {
-      const pTx = protoTx(
-        unstakeAminoTx,
-        [''],
-        { type: selectedUnstakingCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
-      );
+      const pTx = protoTx(unstakeAminoTx, [''], { type: resolvedPubkeyType, value: '' }, COSMOS_SIGN_MODE.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [selectedUnstakingCoin?.address.accountType.pubkeyType, unstakeAminoTx]);
+  }, [resolvedPubkeyType, unstakeAminoTx]);
 
   const simulate = useSimulate({ coinId, txBytes: unstakeProtoTx?.tx_bytes });
 
