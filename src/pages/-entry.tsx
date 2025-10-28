@@ -30,6 +30,7 @@ import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import { removeDuplicates } from '@/utils/array';
 import { getDefaultAssets, getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -203,26 +204,32 @@ export default function Entry() {
   );
 
   const filteredAssetsBySearch = useMemo(() => {
-    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, selectedChainFilterId || undefined);
-    if (!!search && debouncedSearch.length > 1) {
-      return (
-        filterdByChain.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
+    const filteredByChain = getFilteredAssetsByChainId(sortedAssets, selectedChainFilterId || undefined);
 
-          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-        }) || []
-      );
+    const mergeWithChainDefaultCoins = (assets: PortfolioCoinItem[]): PortfolioCoinItem[] => {
+      if (!selectedChainFilterId) return assets;
+
+      return removeDuplicates([...(chainDefaultCoins || []), ...assets], (a, b) => a.asset.id === b.asset.id);
+    };
+
+    const filterBySearchTerm = (assets: PortfolioCoinItem[]): PortfolioCoinItem[] => {
+      return assets.filter((asset) => {
+        const searchTargets = [asset.asset.symbol, asset.asset.id];
+        const lowerSearch = debouncedSearch.toLowerCase();
+
+        return searchTargets.some((target) => target.toLowerCase().includes(lowerSearch));
+      });
+    };
+
+    const hasValidSearch = !!search && debouncedSearch.length > 1;
+
+    if (hasValidSearch) {
+      const baseAssets = mergeWithChainDefaultCoins(filteredByChain);
+
+      return filterBySearchTerm(baseAssets);
     }
-    if (selectedChainFilterId) {
-      return [...(chainDefaultCoins || []), ...filterdByChain].reduce((acc: PortfolioCoinItem[], item) => {
-        if (!acc.some((existing) => existing.asset.id === item.asset.id)) {
-          acc.push(item as PortfolioCoinItem);
-        }
-        return acc;
-      }, []);
-    } else {
-      return filterdByChain;
-    }
+
+    return mergeWithChainDefaultCoins(filteredByChain);
   }, [chainDefaultCoins, debouncedSearch, search, selectedChainFilterId, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
