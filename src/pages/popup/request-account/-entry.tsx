@@ -148,7 +148,7 @@ export default function Entry() {
               );
 
               if (matchedAddressInfo) {
-                const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+                const isEthermint = updatedChain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
                 return {
                   status: 'fulfilled',
                   value: {
