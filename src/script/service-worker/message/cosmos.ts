@@ -94,7 +94,7 @@ export async function cosmosProcess(message: CosmosRequest) {
     return produce(chain, (draft) => {
       if (inAppSelectedPreferAccountType) {
         draft.accountTypes = draft.accountTypes.filter(
-          (item) => item.pubkeyStyle === inAppSelectedPreferAccountType.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType.hdPath,
+          (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
         );
       }
 
