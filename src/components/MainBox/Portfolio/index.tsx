@@ -35,9 +35,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
+  const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true, disableHiddenFilter: false });
 
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
