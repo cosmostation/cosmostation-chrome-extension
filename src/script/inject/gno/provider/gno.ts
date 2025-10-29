@@ -1,4 +1,5 @@
 import { RESPONSE_CODE, RESPONSE_MESSAGE, RESPONSE_STATUS } from '@/constants/gno';
+import type { EventDetail, GnoListenerType } from '@/types/message';
 import type {
   GnoConnectResponse,
   GnoGetAccountResponse,
@@ -140,8 +141,17 @@ const signMessage = async (data: string) => {
   }
 };
 
+export type OnAccountChangeFunc = (address: string) => void;
+export type OnNetworkChangeFunc = (network: string) => void;
+
+type OnEventFunc = OnAccountChangeFunc | OnNetworkChangeFunc;
 export class CosmostationGno implements GnoProvider {
   private static instance: GnoProvider;
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private chainChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private accountsChangedEventHandler: (event: CustomEvent<EventDetail>) => void = () => {};
 
   public static getInstance(): GnoProvider {
     if (!CosmostationGno.instance) {
@@ -156,6 +166,27 @@ export class CosmostationGno implements GnoProvider {
   DoContract = signAndSendTransaction;
   Sign = signTransaction;
   SignTx = signTransaction;
+  On(eventName: GnoListenerType, eventHandler: OnEventFunc) {
+    if (eventName === 'changedNetwork') {
+      this.chainChangedEventHandler = (event: CustomEvent<EventDetail>) => {
+        if (event.detail.chainType === 'gno') {
+          eventHandler(event.detail.data.result as string);
+        }
+      };
+
+      window.addEventListener('changedNetwork', this.chainChangedEventHandler as EventListener);
+    }
+
+    if (eventName === 'changedAccount') {
+      this.accountsChangedEventHandler = (event: CustomEvent<EventDetail>) => {
+        if (event.detail.chainType === 'gno') {
+          eventHandler(event.detail.data.result as string);
+        }
+      };
+
+      window.addEventListener('changedAccount', this.accountsChangedEventHandler as EventListener);
+    }
+  }
 
   // custom
   Connect = connect;

@@ -12,7 +12,7 @@ import type {
 
 import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/types/extension';
-import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, IotaListenerType, SuiListenerType } from '@/types/message';
+import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, GnoListenerType, IotaListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
 import type {
   BitGetAddressResponse,
@@ -149,6 +149,7 @@ declare global {
     SignAndSendTransaction: (data: GnoTransactionParams[0]) => Promise<GnoSignAndSendTransactionResponse>;
     SignTransaction: (data: GnoTransactionParams[0]) => Promise<GnoSignTransactionResponse>;
     SignMessage: (data: string) => Promise<GnoSignMessageResponse>;
+    On: (eventName: GnoListenerType, eventHandler: (data: unknown) => void) => void;
   }
 
   interface IotaProvider {

@@ -3,6 +3,7 @@ import {
   BITCOIN_LISTENER_TYPE,
   COSMOS_LISTENER_TYPE,
   ETHEREUM_LISTENER_TYPE,
+  GNO_LISTENER_TYPE,
   IOTA_LISTENER_TYPE,
   SUI_LISTENER_TYPE,
 } from '@/constants/message';
@@ -51,6 +52,20 @@ chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendRespo
   return true;
 });
 
+const CHAIN_TYPE_TO_LISTENER_TYPES: Record<ChainType, ListenerType[]> = {
+  cosmos: Object.values(COSMOS_LISTENER_TYPE),
+  evm: Object.values(ETHEREUM_LISTENER_TYPE),
+  aptos: Object.values(APTOS_LISTENER_TYPE),
+  sui: Object.values(SUI_LISTENER_TYPE),
+  bitcoin: Object.values(BITCOIN_LISTENER_TYPE),
+  iota: Object.values(IOTA_LISTENER_TYPE),
+  gno: Object.values(GNO_LISTENER_TYPE),
+};
+
+const getListenerTypes = (chainType: ChainType): ListenerType[] => {
+  return CHAIN_TYPE_TO_LISTENER_TYPES[chainType] ?? [];
+};
+
 chrome.runtime.onMessage.addListener(
   (
     data: {
@@ -62,26 +77,18 @@ chrome.runtime.onMessage.addListener(
   ) => {
     if (sender.id !== chrome.runtime.id) return;
 
-    const types = (() => {
-      if (data.chainType === 'cosmos') return Object.values(COSMOS_LISTENER_TYPE);
-      if (data.chainType === 'evm') return Object.values(ETHEREUM_LISTENER_TYPE);
-      if (data.chainType === 'aptos') return Object.values(APTOS_LISTENER_TYPE);
-      if (data.chainType === 'sui') return Object.values(SUI_LISTENER_TYPE);
-      if (data.chainType === 'bitcoin') return Object.values(BITCOIN_LISTENER_TYPE);
-      if (data.chainType === 'iota') return Object.values(IOTA_LISTENER_TYPE);
+    const validListenerTypes = getListenerTypes(data.chainType);
 
-      return [];
-    })() as ListenerType[];
+    if (!validListenerTypes.includes(data.event)) return;
 
-    if (types.includes(data.event)) {
-      const customEvent = new CustomEvent(data.event, {
-        detail: {
-          chainType: data.chainType,
-          data: data.data,
-        },
-      });
-      window.dispatchEvent(customEvent);
-    }
+    const customEvent = new CustomEvent(data.event, {
+      detail: {
+        chainType: data.chainType,
+        data: data.data,
+      },
+    });
+
+    window.dispatchEvent(customEvent);
   },
 );
 
