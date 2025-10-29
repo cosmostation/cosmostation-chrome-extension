@@ -8,7 +8,6 @@ import AddressBottomSheet from '@/components/AddressBottomSheet/index.tsx';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import BaseFooter from '@/components/BaseLayout/components/BaseFooter';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner/index.tsx';
-import ChainSelectBox from '@/components/ChainSelectBox/index.tsx';
 import NumberTypo from '@/components/common/NumberTypo/index.tsx';
 import BalanceButton from '@/components/common/StandardInput/components/BalanceButton/index.tsx';
 import StandardInput from '@/components/common/StandardInput/index.tsx';
@@ -41,6 +40,7 @@ import { getUtf8BytesLength, isDecimal, isEqualsIgnoringCase, safeStringify, sho
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
+import RecipientChainSelectBox from './components/RecipientChainSelectBox/index.tsx';
 import {
   AddressBookButton,
   CoinContainer,
@@ -231,7 +231,18 @@ export default function Cosmos({ coinId }: CosmosProps) {
     return [];
   }, [data?.cosmosAccountAssets, selectedCoinToSend?.address.address, selectedCoinToSend?.asset, selectedCoinToSend?.chain]);
 
-  const availableRecipientChainList = useMemo(() => availableRecipientAsset?.map((item) => item.chain) || [], [availableRecipientAsset]);
+  const availableRecipientChainList = useMemo(
+    () =>
+      availableRecipientAsset
+        ?.map((item) => {
+          return {
+            ...item.chain,
+            info: item.chain.id !== selectedCoinToSend?.chain.id ? ('ibc' as const) : undefined,
+          };
+        })
+        .sort((a) => (a.id === selectedCoinToSend?.chain.id ? -1 : 1)) || [],
+    [availableRecipientAsset, selectedCoinToSend?.chain.id],
+  );
 
   const [recipientAddress, setRecipientAddress] = useState('');
   const [displaySendAmount, setDisplaySendAmount] = useState('');
@@ -759,13 +770,12 @@ export default function Cosmos({ coinId }: CosmosProps) {
           </CoinContainer>
 
           <InputWrapper>
-            <ChainSelectBox
+            <RecipientChainSelectBox
               chainList={availableRecipientChainList}
               currentChainId={currentRecipientChainId}
               onClickChain={(chainId) => {
                 setSelectedRecipientChainId(chainId);
               }}
-              disableSortChain
               label={t('pages.wallet.send.$coinId.Entry.Cosmos.index.recipientNetwork')}
               rightAdornmentComponent={
                 isIBCSend ? <IBCSendText variant="b3_M">{t('pages.wallet.send.$coinId.Entry.Cosmos.index.ibcSend')}</IBCSendText> : undefined
