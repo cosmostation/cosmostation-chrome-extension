@@ -47,13 +47,26 @@ export default function Entry() {
           if (chain) {
             const inAppSelectedPreferAccountType = currentPreferAccountType?.[chain.id];
 
-            const updatedChain = inAppSelectedPreferAccountType
-              ? produce(chain, (draft) => {
-                  draft.accountTypes = draft.accountTypes.filter(
-                    (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
-                  );
-                })
-              : chain;
+            const updatedChain = produce(chain, (draft) => {
+              if (inAppSelectedPreferAccountType) {
+                draft.accountTypes = draft.accountTypes.filter(
+                  (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+                );
+              }
+
+              if (draft.id === 'sei') {
+                draft.accountTypes = draft.accountTypes.map((item) => {
+                  if (item.pubkeyStyle === 'keccak256') {
+                    return {
+                      hdPath: "m/44'/60'/0'/0/${index}",
+                      pubkeyStyle: 'secp256k1',
+                      pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+                    };
+                  }
+                  return item;
+                });
+              }
+            });
 
             void refreshOriginConnectionTime(origin);
 
@@ -109,20 +122,33 @@ export default function Entry() {
 
               const inAppSelectedPreferAccountType = currentPreferAccountType?.[targetChain?.id];
 
-              const updatedChain = inAppSelectedPreferAccountType
-                ? produce(targetChain, (draft) => {
-                    draft.accountTypes = draft.accountTypes.filter(
-                      (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
-                    );
-                  })
-                : targetChain;
+              const updatedChain = produce(targetChain, (draft) => {
+                if (inAppSelectedPreferAccountType) {
+                  draft.accountTypes = draft.accountTypes.filter(
+                    (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+                  );
+                }
+
+                if (draft.id === 'sei') {
+                  draft.accountTypes = draft.accountTypes.map((item) => {
+                    if (item.pubkeyStyle === 'keccak256') {
+                      return {
+                        hdPath: "m/44'/60'/0'/0/${index}",
+                        pubkeyStyle: 'secp256k1',
+                        pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+                      };
+                    }
+                    return item;
+                  });
+                }
+              });
 
               const matchedAddressInfo = currentAccountAddressInfo.find(
                 (info) => info.chainId === updatedChain.id && info.chainType === 'cosmos' && info.accountType.hdPath === updatedChain.accountTypes[0].hdPath,
               );
 
               if (matchedAddressInfo) {
-                const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+                const isEthermint = updatedChain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
                 return {
                   status: 'fulfilled',
                   value: {

@@ -91,15 +91,26 @@ export async function cosmosProcess(message: CosmosRequest) {
 
     const inAppSelectedPreferAccountType = preferAccountType[currentAccount.id]?.[chain.id];
 
-    const response = inAppSelectedPreferAccountType
-      ? produce(chain, (draft) => {
-          draft.accountTypes = draft.accountTypes.filter(
-            (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
-          );
-        })
-      : chain;
+    return produce(chain, (draft) => {
+      if (inAppSelectedPreferAccountType) {
+        draft.accountTypes = draft.accountTypes.filter(
+          (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+        );
+      }
 
-    return response;
+      if (draft.id === 'sei') {
+        draft.accountTypes = draft.accountTypes.map((item) => {
+          if (item.pubkeyStyle === 'keccak256') {
+            return {
+              hdPath: "m/44'/60'/0'/0/${index}",
+              pubkeyStyle: 'secp256k1',
+              pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+            };
+          }
+          return item;
+        });
+      }
+    });
   };
 
   const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
@@ -182,7 +193,8 @@ export async function cosmosProcess(message: CosmosRequest) {
             );
 
             if (matchedAddressInfo) {
-              const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+              const isEthermint = chain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+
               return {
                 status: 'fulfilled',
                 value: {

@@ -32,7 +32,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import type { UniqueChainId } from '@/types/chain.ts';
 import { isTestnetChain } from '@/utils/chain.ts';
 import { isValidCosmosAddress } from '@/utils/cosmos/address.ts';
-import { executeSendTransaction } from '@/utils/cosmos/executeTx.ts';
+import { executeSendTransaction, resolvePubkeyType } from '@/utils/cosmos/executeTx.ts';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee.ts';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto.ts';
 import { ceil, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -465,19 +465,24 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 700);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (selectedCoinToSend?.chain && selectedCoinToSend?.address) {
+      const pubkeyType = resolvePubkeyType(selectedCoinToSend.chain, selectedCoinToSend.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [selectedCoinToSend?.address, selectedCoinToSend?.chain]);
+
   const sendProtoTx = useMemo(() => {
     if (sendAminoTx) {
-      const pTx = protoTx(
-        sendAminoTx,
-        [''],
-        { type: selectedCoinToSend?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
-      );
+      const pTx = protoTx(sendAminoTx, [''], { type: resolvedPubkeyType, value: '' }, COSMOS_SIGN_MODE.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [sendAminoTx, selectedCoinToSend?.address.accountType.pubkeyType]);
+  }, [sendAminoTx, resolvedPubkeyType]);
 
   const simulate = useSimulate({ coinId, txBytes: sendProtoTx?.tx_bytes });
 
