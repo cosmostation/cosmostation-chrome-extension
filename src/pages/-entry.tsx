@@ -253,6 +253,7 @@ export default function Entry() {
           <Container>
             <PortFolio
               selectedChainId={selectedChainFilterId || undefined}
+              accountAllAssetsForValueAggregate={filteredAssetsBySearch}
               onChangeChaindId={(chainId) => {
                 updateExtensionStorageStore('selectedChainFilterId', chainId || null);
               }}
