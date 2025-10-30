@@ -100,6 +100,7 @@ export interface CosAccount extends RequestBase {
 
 export interface CosAccountResponse {
   publicKey: string;
+  publicKeyTypeUrl: string;
   address: string;
   name: string;
   isLedger: boolean;
@@ -109,6 +110,7 @@ export interface CosAccountResponse {
 export interface CosAccountResponseWithChainId {
   chainId: string;
   publicKey: string;
+  publicKeyTypeUrl: string;
   address: string;
   name: string;
   isLedger: boolean;
