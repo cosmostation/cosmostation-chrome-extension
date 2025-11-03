@@ -70,6 +70,7 @@ export function useAccount({ coinId, config }: UseAccountProps) {
         account_number: findValueByKey<string>(parsedData, 'account_number'),
         sequence: findValueByKey<string>(parsedData, 'sequence'),
         address: findValueByKey<string>(parsedData, 'address'),
+        publicKey: findValueByKey<{ '@type': string; value: string } | null>(parsedData, 'public_key'),
       };
 
       return account;

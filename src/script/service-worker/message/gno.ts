@@ -1,12 +1,21 @@
 import { GNO_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
-import { RESPONSE_MESSAGE, RESPONSE_STATUS } from '@/constants/gno';
+import { EAccountStatus, RESPONSE_MESSAGE, RESPONSE_STATUS } from '@/constants/gno';
 import { GNO_METHOD_TYPE, GNO_NO_POPUP_METHOD_TYPE, GNO_POPUP_METHOD_TYPE } from '@/constants/gno/message';
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
 import type { ResponseAppMessage } from '@/types/message/content';
-import type { GnoConnect, GnoConnectResponse, GnoGetAccountResponse, GnoGetNetwork, GnoRequest, GnoSwitchNetwork } from '@/types/message/inject/gno';
+import {
+  type GnoConnect,
+  type GnoConnectResponse,
+  type GnoGetAccountResponse,
+  type GnoGetNetwork,
+  type GnoRequest,
+  type GnoSwitchNetwork,
+} from '@/types/message/inject/gno';
 import { GnoRPCError } from '@/utils/error';
+import { fetchGnoAccount } from '@/utils/gno/fetch/account';
+import { fetchGnoBalance } from '@/utils/gno/fetch/balance';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionSessionStorage } from '@/utils/storage';
@@ -16,10 +25,6 @@ import { gnoSwitchNetworkParamsSchema } from './schema';
 
 export async function gnoProcess(message: GnoRequest) {
   const { method, requestId, tabId, origin } = message;
-
-  const { gnoChains } = await getChains();
-
-  const gnoChain = gnoChains[0];
 
   const gnoMethods = Object.values(GNO_METHOD_TYPE) as string[];
   const gnoPopupMethods = Object.values(GNO_POPUP_METHOD_TYPE) as string[];
@@ -76,19 +81,34 @@ export async function gnoProcess(message: GnoRequest) {
 
       if (method === 'gno_getAccount') {
         try {
-          if (gnoChain && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          if (currentGnoNetwork && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
             void refreshOriginConnectionTime(currentAccount.id, origin);
 
-            const keyPair = getKeypair(gnoChain, currentAccount, currentPassword);
-            const address = getAddress(gnoChain, keyPair?.publicKey);
+            const keyPair = getKeypair(currentGnoNetwork, currentAccount, currentPassword);
+            const address = getAddress(currentGnoNetwork, keyPair?.publicKey);
+
+            const rpcURLs = currentGnoNetwork.rpcUrls.map((item) => item.url) || [];
+
+            const account = await fetchGnoAccount(address, rpcURLs);
+
+            const balance = await fetchGnoBalance(address, rpcURLs);
+
+            if (!account) {
+              throw new GnoRPCError(RPC_ERROR.INTERNAL, 'Fail to fetch account', requestId);
+            }
 
             const result: GnoGetAccountResponse = {
               code: 0,
               status: RESPONSE_STATUS.SUCCESS,
-              message: '',
+              message: 'Get Account Information.',
               data: {
                 address,
-                publicKey: keyPair?.publicKey ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : null,
+                coins: `${balance}${currentGnoNetwork.mainAssetDenom || ''}`,
+                chainId: currentGnoNetwork.id,
+                status: EAccountStatus.ACTIVE,
+                publicKey: account.publicKey || null,
+                accountNumber: account.account_number || '0',
+                sequence: account.sequence || '0',
               },
             };
 

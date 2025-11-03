@@ -1,4 +1,4 @@
-import { RESPONSE_CODE, RESPONSE_MESSAGE, RESPONSE_STATUS } from '@/constants/gno';
+import { EAccountStatus, RESPONSE_CODE, RESPONSE_MESSAGE, RESPONSE_STATUS } from '@/constants/gno';
 import type { EventDetail, GnoListenerType } from '@/types/message';
 import type {
   GnoConnectResponse,
@@ -39,7 +39,12 @@ const getAccount = async () => {
       message: RESPONSE_MESSAGE.CONNECTION_FAILURE,
       data: {
         address: '',
+        coins: '',
+        chainId: '',
+        status: EAccountStatus.INACTIVE,
         publicKey: null,
+        accountNumber: '0',
+        sequence: '0',
       },
     };
     return result;

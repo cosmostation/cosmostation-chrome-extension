@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { produce } from 'immer';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
-import { RESPONSE_MESSAGE as GNO_MESSAGE, RESPONSE_STATUS as GNO_RESPONSE_STATUS } from '@/constants/gno';
+import { EAccountStatus, RESPONSE_MESSAGE as GNO_MESSAGE, RESPONSE_STATUS as GNO_RESPONSE_STATUS } from '@/constants/gno';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -21,7 +21,10 @@ import type { GnoConnect, GnoConnectResponse, GnoGetAccountResponse } from '@/ty
 import type { IotaRequestAccount, IotaRequestAccountResponse, IotaRequestConnect, IotaRequestConnectResponse } from '@/types/message/inject/iota';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
 import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
+import { fetchGnoAccount } from '@/utils/gno/fetch/account';
+import { fetchGnoBalance } from '@/utils/gno/fetch/balance';
 import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage';
+import { getCurrentGnoNetwork } from '@/utils/storage/localStorage';
 import { addHexPrefix } from '@/utils/string';
 
 export default function Entry() {
@@ -511,19 +514,63 @@ export default function Entry() {
         if (currentRequestQueue?.method === 'gno_getAccount' && currentPassword) {
           const { tabId, requestId, origin } = currentRequestQueue;
 
-          const { gnoChains } = await getChains();
-          const gnoChain = gnoChains?.[0];
+          const { currentGnoNetwork } = await getCurrentGnoNetwork();
 
-          const keyPair = getKeypair(gnoChain, currentAccount, currentPassword);
-          const address = getAddress(gnoChain, keyPair.publicKey);
+          const keyPair = getKeypair(currentGnoNetwork, currentAccount, currentPassword);
+          const address = getAddress(currentGnoNetwork, keyPair.publicKey);
+
+          const rpcURLs = currentGnoNetwork.rpcUrls.map((item) => item.url) || [];
+
+          const account = await fetchGnoAccount(address, rpcURLs);
+
+          const balance = await fetchGnoBalance(address, rpcURLs);
+
+          if (!account) {
+            const inActiveAccount = {
+              address,
+              coins: '',
+              chainId: '',
+              status: EAccountStatus.INACTIVE,
+              publicKey: null,
+              accountNumber: '0',
+              sequence: '0',
+            };
+
+            const result: GnoGetAccountResponse = {
+              code: 0,
+              status: GNO_RESPONSE_STATUS.FAILURE,
+              message: '',
+              data: inActiveAccount,
+            };
+
+            await sendMessage<ResponseAppMessage<GnoConnect>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
+              },
+            });
+
+            void deQueue();
+            return;
+          }
 
           const result: GnoGetAccountResponse = {
             code: 0,
             status: GNO_RESPONSE_STATUS.SUCCESS,
-            message: '',
+            message: 'Get Account Information.',
             data: {
               address,
-              publicKey: keyPair?.publicKey ? Buffer.from(keyPair.publicKey, 'hex').toString('base64') : null,
+              coins: `${balance}${currentGnoNetwork.mainAssetDenom || ''}`,
+              chainId: currentGnoNetwork.id,
+              status: EAccountStatus.ACTIVE,
+              publicKey: account.publicKey || null,
+              accountNumber: account.account_number || '0',
+              sequence: account.sequence || '0',
             },
           };
 

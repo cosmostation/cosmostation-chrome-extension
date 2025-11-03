@@ -1,3 +1,4 @@
+import type { EAccountStatus } from '@/constants/gno';
 import type { GNO_METHOD_TYPE, GNO_NO_POPUP_METHOD_TYPE, GNO_POPUP_METHOD_TYPE } from '@/constants/gno/message';
 import type { RequestBase } from '@/types/message/inject';
 
@@ -38,8 +39,13 @@ export interface GnoGetAccount extends RequestBase {
 }
 
 export interface GnoGetAccountData {
+  accountNumber: string;
   address: string;
-  publicKey: string | null;
+  coins: string;
+  chainId: string;
+  sequence: string;
+  status: ValueOf<typeof EAccountStatus>;
+  publicKey: { '@type': string; value: string } | null;
 }
 
 export interface GnoGetAccountResponse extends GnoBaseResponse<GnoGetAccountData> {}
