@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 
@@ -28,7 +28,6 @@ import { addHexPrefix } from '@/utils/string';
 import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-styled';
 
 export default function Entry() {
-  const { t } = useTranslation();
   const { requestQueue, currentRequestQueue, deQueue } = useCurrentRequestQueue();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
@@ -448,6 +447,12 @@ export default function Entry() {
     requestQueue.length,
   ]);
 
+  return <LoadingSpinner />;
+}
+
+const LoadingSpinner = memo(function LoadingSpinner() {
+  const { t } = useTranslation();
+
   return (
     <BaseBody>
       <ContentsContainer>
@@ -458,4 +463,4 @@ export default function Entry() {
       </ContentsContainer>
     </BaseBody>
   );
-}
+});
