@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
-import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -30,7 +29,7 @@ import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-style
 
 export default function Entry() {
   const { t } = useTranslation();
-  const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const { requestQueue, currentRequestQueue, deQueue } = useCurrentRequestQueue();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
 
@@ -426,7 +425,17 @@ export default function Entry() {
       }
     };
 
-    handleRequestAccount();
+    if (!currentRequestQueue) return;
+
+    if (requestQueue.length === 1) {
+      const timer = setTimeout(() => {
+        handleRequestAccount();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else {
+      handleRequestAccount();
+    }
   }, [
     chainList.allCosmosChains,
     chainList.cosmosChains,
@@ -436,6 +445,7 @@ export default function Entry() {
     currentRequestQueue,
     deQueue,
     refreshOriginConnectionTime,
+    requestQueue.length,
   ]);
 
   return (
@@ -444,11 +454,6 @@ export default function Entry() {
         <StyledCircularProgress size={50} />
         <TextWrapper>
           <Base1300Text variant="b1_B">{t('pages.popup.request-account.entry.connecting')}</Base1300Text>
-          <Base1000Text variant="b3_M_Multiline">
-            {t('pages.popup.request-account.entry.connectingWith', {
-              url: origin,
-            })}
-          </Base1000Text>
         </TextWrapper>
       </ContentsContainer>
     </BaseBody>
