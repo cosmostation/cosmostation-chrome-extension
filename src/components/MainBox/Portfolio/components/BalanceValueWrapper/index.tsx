@@ -7,6 +7,7 @@ import ChipButton from '@/components/common/ChipButton';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
 import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import type { PortfolioCoinItem } from '@/pages/-entry';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/chain/$chainId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
@@ -26,7 +27,7 @@ import {
 import BalanceValueButton from '../BalanceValueButton';
 
 interface BalanceValueButtonProps {
-  accountAssets: FlatAccountAssets[];
+  accountAssets: PortfolioCoinItem[];
   selectedChainId?: UniqueChainId;
   selectedChainMainAsset?: FlatAccountAssets;
 }
@@ -68,7 +69,6 @@ export default function BalanceValueWrapper({ accountAssets, selectedChainId, se
         <BalanceValueButton
           accountAssets={accountAssets}
           isUpdatingBalance={isUpdatingBalance}
-          selectedChainId={selectedChainId}
           handleManualBalanceUpdate={handleManualBalanceUpdate}
           isHovering={isBalanceUpdateButtonHovered}
           handleHovering={(value) => {

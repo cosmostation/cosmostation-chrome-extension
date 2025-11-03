@@ -6,10 +6,10 @@ import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import StaleBalanceErrorBanner from '@/components/StaleBalanceErrorBanner';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import type { PortfolioCoinItem } from '@/pages/-entry';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
-import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredChainsByChainId, getMainAssetByChainId } from '@/utils/asset';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -29,7 +29,7 @@ import cosmostationLogoImg from '@/assets/images/logos/greyCosmostationLogo.png'
 
 type PortFolioProps = {
   selectedChainId?: UniqueChainId;
-  accountAllAssetsForValueAggregate: FlatAccountAssets[];
+  accountAllAssetsForValueAggregate: PortfolioCoinItem[];
   onChangeChaindId: (chainId?: UniqueChainId) => void;
 };
 
