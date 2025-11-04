@@ -61,7 +61,7 @@ chrome.runtime.onMessage.addListener(
     },
     sender,
   ) => {
-    if (sender.id !== chrome.runtime.id) return;
+    if (sender.id !== chrome.runtime.id) return false;
 
     const types = (() => {
       if (data.chainType === 'cosmos') return Object.values(COSMOS_LISTENER_TYPE);
@@ -84,6 +84,8 @@ chrome.runtime.onMessage.addListener(
       });
       window.dispatchEvent(customEvent);
     }
+
+    return false;
   },
 );
 

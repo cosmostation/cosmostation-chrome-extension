@@ -44,6 +44,7 @@ export const cosmosWallet: CosmosRegisterWallet = {
           is_ledger: !!account.isLedger,
           public_key: {
             type: account.isEthermint ? 'ethsecp256k1' : 'secp256k1',
+            type_url: account.publicKeyTypeUrl,
             value: Buffer.from(account.publicKey).toString('base64'),
           },
           address: account.address,
@@ -68,6 +69,7 @@ export const cosmosWallet: CosmosRegisterWallet = {
                 is_ledger: !!account.value.isLedger,
                 public_key: {
                   type: account.value.isEthermint ? 'ethsecp256k1' : 'secp256k1',
+                  type_url: account.value.publicKeyTypeUrl,
                   value: Buffer.from(account.value.publicKey).toString('base64'),
                 },
                 address: account.value.address,

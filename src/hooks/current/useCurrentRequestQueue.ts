@@ -40,6 +40,7 @@ export function useCurrentRequestQueue() {
     await updateExtensionStorageStore('requestQueue', [...requestQueue, queue]);
   };
   return {
+    requestQueue,
     currentRequestQueue,
     deQueue,
     enQueue,

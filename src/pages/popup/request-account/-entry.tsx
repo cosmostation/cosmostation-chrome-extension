@@ -1,7 +1,10 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 import type { PublicKey } from '@solana/web3.js';
 
+import BaseBody from '@/components/BaseLayout/components/BaseBody';
+import Base1300Text from '@/components/common/Base1300Text';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useChainList } from '@/hooks/useChainList';
@@ -24,8 +27,10 @@ import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/u
 import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage';
 import { addHexPrefix } from '@/utils/string';
 
+import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-styled';
+
 export default function Entry() {
-  const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const { requestQueue, currentRequestQueue, deQueue } = useCurrentRequestQueue();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
 
@@ -49,13 +54,26 @@ export default function Entry() {
           if (chain) {
             const inAppSelectedPreferAccountType = currentPreferAccountType?.[chain.id];
 
-            const updatedChain = inAppSelectedPreferAccountType
-              ? produce(chain, (draft) => {
-                  draft.accountTypes = draft.accountTypes.filter(
-                    (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
-                  );
-                })
-              : chain;
+            const updatedChain = produce(chain, (draft) => {
+              if (inAppSelectedPreferAccountType) {
+                draft.accountTypes = draft.accountTypes.filter(
+                  (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+                );
+              }
+
+              if (draft.id === 'sei') {
+                draft.accountTypes = draft.accountTypes.map((item) => {
+                  if (item.pubkeyStyle === 'keccak256') {
+                    return {
+                      hdPath: "m/44'/60'/0'/0/${index}",
+                      pubkeyStyle: 'secp256k1',
+                      pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+                    };
+                  }
+                  return item;
+                });
+              }
+            });
 
             void refreshOriginConnectionTime(origin);
 
@@ -63,11 +81,36 @@ export default function Entry() {
             const address = getAddress(updatedChain, keyPair.publicKey);
 
             const publicKey = keyPair.publicKey;
-            const isEthermint = updatedChain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+            if (!updatedChain.accountTypes || updatedChain.accountTypes.length === 0) {
+              sendMessage<ResponseAppMessage<CosRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: 'No valid account type found for chain',
+                  },
+                },
+              });
+
+              void deQueue();
+
+              return;
+            }
+
+            const accountType = updatedChain.accountTypes[0];
+            const isEthermint = accountType.pubkeyStyle === 'keccak256';
+            const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
 
             const result: CosRequestAccountResponse = {
               address,
               publicKey,
+              publicKeyTypeUrl,
               name: currentAccount.name,
               isLedger: false,
               isEthermint,
@@ -111,36 +154,65 @@ export default function Entry() {
 
               const inAppSelectedPreferAccountType = currentPreferAccountType?.[targetChain?.id];
 
-              const updatedChain = inAppSelectedPreferAccountType
-                ? produce(targetChain, (draft) => {
-                    draft.accountTypes = draft.accountTypes.filter(
-                      (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
-                    );
-                  })
-                : targetChain;
+              const updatedChain = produce(targetChain, (draft) => {
+                if (inAppSelectedPreferAccountType) {
+                  draft.accountTypes = draft.accountTypes.filter(
+                    (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+                  );
+                }
+
+                if (draft.id === 'sei') {
+                  draft.accountTypes = draft.accountTypes.map((item) => {
+                    if (item.pubkeyStyle === 'keccak256') {
+                      return {
+                        hdPath: "m/44'/60'/0'/0/${index}",
+                        pubkeyStyle: 'secp256k1',
+                        pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+                      };
+                    }
+                    return item;
+                  });
+                }
+              });
 
               const matchedAddressInfo = currentAccountAddressInfo.find(
                 (info) => info.chainId === updatedChain.id && info.chainType === 'cosmos' && info.accountType.hdPath === updatedChain.accountTypes[0].hdPath,
               );
 
               if (matchedAddressInfo) {
-                const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+                const isEthermint = updatedChain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+                const publicKeyTypeUrl =
+                  updatedChain.id === 'sei'
+                    ? '/cosmos.crypto.secp256k1.PubKey'
+                    : matchedAddressInfo.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
+
                 return {
                   status: 'fulfilled',
                   value: {
                     chainId: inputChainId,
                     address: matchedAddressInfo.address,
                     publicKey: matchedAddressInfo.publicKey,
+                    publicKeyTypeUrl,
                     name: currentAccount.name,
                     isLedger: false,
                     isEthermint,
                   },
                 };
               } else {
+                if (!updatedChain.accountTypes[0]) {
+                  return {
+                    status: 'rejected',
+                    reason: new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain'),
+                  };
+                }
+
                 const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
                 const address = getAddress(updatedChain, keyPair?.publicKey);
                 const publicKey = keyPair?.publicKey || '';
-                const isEthermint = updatedChain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+                const accountType = updatedChain.accountTypes[0];
+                const isEthermint = accountType.pubkeyStyle === 'keccak256';
+                const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
 
                 return {
                   status: 'fulfilled',
@@ -148,6 +220,7 @@ export default function Entry() {
                     chainId: inputChainId,
                     address,
                     publicKey,
+                    publicKeyTypeUrl,
                     name: currentAccount.name,
                     isLedger: false,
                     isEthermint,
@@ -449,7 +522,17 @@ export default function Entry() {
       }
     };
 
-    handleRequestAccount();
+    if (!currentRequestQueue) return;
+
+    if (requestQueue.length === 1) {
+      const timer = setTimeout(() => {
+        handleRequestAccount();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else {
+      handleRequestAccount();
+    }
   }, [
     chainList.allCosmosChains,
     chainList.cosmosChains,
@@ -459,6 +542,23 @@ export default function Entry() {
     currentRequestQueue,
     deQueue,
     refreshOriginConnectionTime,
+    requestQueue.length,
   ]);
-  return null;
+
+  return <LoadingSpinner />;
 }
+
+const LoadingSpinner = memo(function LoadingSpinner() {
+  const { t } = useTranslation();
+
+  return (
+    <BaseBody>
+      <ContentsContainer>
+        <StyledCircularProgress size={50} />
+        <TextWrapper>
+          <Base1300Text variant="b1_B">{t('pages.popup.request-account.entry.connecting')}</Base1300Text>
+        </TextWrapper>
+      </ContentsContainer>
+    </BaseBody>
+  );
+});

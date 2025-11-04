@@ -31,7 +31,7 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import { isTestnetChain } from '@/utils/chain';
-import { executeStakeTransaction } from '@/utils/cosmos/executeTx';
+import { executeStakeTransaction, resolvePubkeyType } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { ceil, divide, fix, gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -252,19 +252,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [stakeAminoTx] = useDebounce(memoizedStakeAminoTx, 700);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (selectedStakingCoin?.chain && selectedStakingCoin?.address) {
+      const pubkeyType = resolvePubkeyType(selectedStakingCoin.chain, selectedStakingCoin.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [selectedStakingCoin?.address, selectedStakingCoin?.chain]);
+
   const stakeProtoTx = useMemo(() => {
     if (stakeAminoTx) {
-      const pTx = protoTx(
-        stakeAminoTx,
-        [''],
-        { type: selectedStakingCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
-      );
+      const pTx = protoTx(stakeAminoTx, [''], { type: resolvedPubkeyType, value: '' }, COSMOS_SIGN_MODE.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [selectedStakingCoin?.address.accountType.pubkeyType, stakeAminoTx]);
+  }, [resolvedPubkeyType, stakeAminoTx]);
 
   const simulate = useSimulate({ coinId, txBytes: stakeProtoTx?.tx_bytes });
 

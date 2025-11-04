@@ -174,7 +174,7 @@ export function useAccountAllAssets({
             item.chain.chainType === 'cosmos' &&
             item.chain.isEvm &&
             item.chain.mainAssetDenom === item.asset.id &&
-            filteredByVisibleList.evmAccountAssets.some((evmAsset) => {
+            data?.evmAccountAssets.some((evmAsset) => {
               const isSameAssetChain = evmAsset.chain.id === item.chain.id;
 
               const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
@@ -358,7 +358,7 @@ export function useAccountAllAssets({
 
       return returnData;
     }
-  }, [accountType, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
+  }, [accountType, data?.evmAccountAssets, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
 
   return { data: returnData, isLoading, isFetching, error, refetch };
 }

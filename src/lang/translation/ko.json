@@ -2617,6 +2617,12 @@
           }
         }
       },
+      "request-account": {
+        "entry": {
+          "connecting": "Connecting to DApp...",
+          "connectingWith": "{{url}}에 연결중입니다. \n 잠시만 기다려주세요."
+        }
+      },
       "solana": {
         "transaction": {
           "entry": {

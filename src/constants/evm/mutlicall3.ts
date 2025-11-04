@@ -1443,6 +1443,11 @@ export const MULTICALL3_DEPLOYMENTS = [
     chainId: 8545,
     url: 'https://explorer.tangle.tools/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
   },
+  {
+    name: 'Zero Gravity Mainnet',
+    chainId: 16661,
+    url: 'https://chainscan.0g.ai/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
+  },
 ];
 
 export const chainToDeploymentMap = new Map<number, boolean>(MULTICALL3_DEPLOYMENTS.map(({ chainId, address }) => [chainId, !address]));

@@ -3169,6 +3169,12 @@
             }
           }
         }
+      },
+      "request-account": {
+        "entry": {
+          "connecting": "Connecting to DApp...",
+          "connectingWith": "{{url}} is connecting. \n Please wait a moment."
+        }
       }
     },
     "coin-overview": {
