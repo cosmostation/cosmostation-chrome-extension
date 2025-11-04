@@ -21,6 +21,7 @@ import { SOLANA_NATIVE_COIN } from '@/constants/solana';
 import { useGetAccountInfo } from '@/hooks/solana/useGetAccountInfo';
 import { useGetLatestBlockHash } from '@/hooks/solana/useGetLatestBlockHash';
 import { useGetRecentPrioritizationFees } from '@/hooks/solana/useGetRecentPrioritizationFees';
+import { useGetRentExemption } from '@/hooks/solana/useGetRentExemption';
 import { useTransactionPreview } from '@/hooks/solana/useTransactionPreview';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -30,7 +31,7 @@ import { getKeypair } from '@/libs/address';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
 import { isTestnetChain } from '@/utils/chain';
-import { gt, minus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
+import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { requestRPC } from '@/utils/solana/rpc';
 import {
@@ -190,6 +191,8 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const { data: toATAInfo, isFetching: isFetchingGetAccountInfo } = useGetAccountInfo({ coinId, account: toATA });
 
+  const { data: rentExemption } = useGetRentExemption({ coinId });
+
   const transaction = useMemo(() => {
     try {
       if (
@@ -265,11 +268,14 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const baseFee = useMemo(() => {
     if (transactionPreview?.estimatedValue) {
+      if (!toATAInfo) {
+        return Number(plus(rentExemption || 0, transactionPreview.estimatedValue));
+      }
       return transactionPreview.estimatedValue;
     }
 
     return undefined;
-  }, [transactionPreview?.estimatedValue]);
+  }, [rentExemption, toATAInfo, transactionPreview?.estimatedValue]);
 
   const totalBaseFee = useMemo(() => {
     if (baseFee && priorityBaseFee) {
