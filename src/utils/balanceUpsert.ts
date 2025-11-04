@@ -257,7 +257,9 @@ export const upsertSplTokenBalance = <T extends AccountAddressBalanceSplToken>(o
     const resolved = i.balances.map((incoming) => {
       if (incoming.status !== 'error') return incoming;
 
-      const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.account.data.parsed.info.mint, incoming.account.data.parsed.info.mint));
+      const existingBalance = e.balances.find((balance) =>
+        isEqualsIgnoringCase(balance.account?.data?.parsed?.info?.mint, incoming.account?.data?.parsed?.info?.mint),
+      );
 
       return existingBalance ? { ...incoming, account: existingBalance.account } : incoming;
     });

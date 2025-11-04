@@ -384,7 +384,7 @@ export class CosmostationSolana implements Wallet {
       const { minContextSlot, preflightCommitment, skipPreflight, maxRetries } = options || {};
 
       if (account.address !== this.#account.address) throw new Error('invalid account');
-      if (!isSolanaChain(chain)) throw new Error('invalid chain');
+      if (chain && !isSolanaChain(chain)) throw new Error('invalid chain');
 
       const params = [{ tx: VersionedTransaction.deserialize(transaction), minContextSlot, preflightCommitment, skipPreflight, maxRetries }];
       const response = (await request({ method: 'signAndSendTransaction', params: params })) as SolanaSignAndSendTransactionResponse;

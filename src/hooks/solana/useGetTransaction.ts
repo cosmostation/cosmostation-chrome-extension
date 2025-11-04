@@ -3,14 +3,14 @@ import { Connection } from '@solana/web3.js';
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
 import { isAxiosError } from '@/utils/axios';
 
+import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
-import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
 type UseGetTransactionProps = {
   coinId: string;
   signature?: string;
-  config?: UseInfiniteFetchConfig;
+  config?: UseFetchConfig;
 };
 
 export function useGetTransaction({ coinId, signature, config }: UseGetTransactionProps) {

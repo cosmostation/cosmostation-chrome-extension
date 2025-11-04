@@ -404,7 +404,7 @@ async function initializeChosenNetworks() {
     await setExtensionLocalStorage('chosenIotaNetworkId', defaultIotaNetworkId);
   }
 
-  if (!storedChosenSolanaNetworkId) {
+  if (!storedChosenSolanaNetworkId && solanaChains.length > 0) {
     const defaultSolanaNetwork = solanaChains.find((item) => item.id === 'solana') || solanaChains[0];
 
     const defaultSolanaNetworkId = getUniqueChainId(defaultSolanaNetwork);

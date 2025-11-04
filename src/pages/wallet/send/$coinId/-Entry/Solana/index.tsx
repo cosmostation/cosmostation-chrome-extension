@@ -319,10 +319,20 @@ export default function Solana({ coinId }: SolanaProps) {
       return sendAmountInputErrorMessage;
     }
 
-    if (!baseFee) {
+    if (!baseFee || !computeUnitLimit || !computeUnitPrice) {
       return t('pages.wallet.send.$coinId.Entry.Solana.index.noFee');
     }
-  }, [addressInputErrorMessage, baseAvailableAmount, baseFee, debouncedInputRecipientAddress, debouncedSendDisplayAmount, sendAmountInputErrorMessage, t]);
+  }, [
+    addressInputErrorMessage,
+    baseAvailableAmount,
+    baseFee,
+    computeUnitLimit,
+    computeUnitPrice,
+    debouncedInputRecipientAddress,
+    debouncedSendDisplayAmount,
+    sendAmountInputErrorMessage,
+    t,
+  ]);
 
   const setTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -373,12 +383,13 @@ export default function Solana({ coinId }: SolanaProps) {
 
       const clonedTx = deserializeTransaction(serializeTransaction(transaction));
 
-      const tx = overwriteComputeBudgetProgram(clonedTx, {
-        units: computeUnitLimit || 1,
-        microLamports: Math.ceil(computeUnitPrice || 1 * 1000000),
-      });
-
-      setDisplayTx(safeStringify(parseInstructionsFromTx(tx)) || '');
+      if (computeUnitLimit && computeUnitPrice) {
+        const tx = overwriteComputeBudgetProgram(clonedTx, {
+          units: computeUnitLimit,
+          microLamports: Math.ceil(computeUnitPrice * 1000000),
+        });
+        setDisplayTx(safeStringify(parseInstructionsFromTx(tx)) || '');
+      }
 
       setIsOpenReviewBottomSheet(true);
     }

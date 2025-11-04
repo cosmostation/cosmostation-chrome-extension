@@ -8,7 +8,7 @@ import { divide, gt, minus } from '../numbers';
 export interface TokenChange {
   mint: string;
   symbol?: string;
-  amount: number;
+  amount: string;
   decimals: number;
   type: 'send' | 'receive';
 }
@@ -51,12 +51,12 @@ const parseTokenAccount = (data: Buffer | null, owner: string) => {
   try {
     const mint = new PublicKey(data.slice(0, 32));
     const owner = new PublicKey(data.slice(32, 64));
-    const amount = data.readBigUInt64LE(64);
+    const amount = data.readBigUInt64LE(64).toString();
 
     return {
       mint: mint.toString(),
       owner: owner.toString(),
-      amount: Number(amount),
+      amount: amount,
     };
   } catch {
     return undefined;
@@ -84,7 +84,7 @@ const analyzeAccountChanges = (
         changes.push({
           mint: 'sol',
           symbol: 'SOL',
-          amount: Number(divide(solDiff, LAMPORTS_PER_SOL)),
+          amount: divide(solDiff, LAMPORTS_PER_SOL),
           decimals: 9,
           type: gt(solDiff, 0) ? 'receive' : 'send',
         });
@@ -100,7 +100,7 @@ const analyzeAccountChanges = (
       if (tokenDiff !== '0') {
         changes.push({
           mint: beforeToken.mint,
-          amount: Number(tokenDiff),
+          amount: tokenDiff,
           decimals: 0,
           type: gt(tokenDiff, '0') ? 'receive' : 'send',
         });
@@ -171,8 +171,8 @@ export const analyzeTokenChanges = async (connection: Connection, transaction: V
 
 export const getMultipleAccounts = async (connection: Connection, addresses: string[]) => {
   try {
-    const reolvedAddresses = addresses.map((item) => new PublicKey(item));
-    const info = await connection.getMultipleAccountsInfo(reolvedAddresses);
+    const resolvedAddresses = addresses.map((item) => new PublicKey(item));
+    const info = await connection.getMultipleAccountsInfo(resolvedAddresses);
 
     return info.map((item, i) => {
       return {

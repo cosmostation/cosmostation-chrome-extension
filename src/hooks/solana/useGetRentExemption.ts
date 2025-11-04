@@ -48,7 +48,7 @@ export function useGetRentExemption({ coinId, config }: UseGetRentExemptionProps
   };
 
   const { data, isLoading, isFetching, error, refetch } = useFetch({
-    queryKey: ['useGetRentExemption'],
+    queryKey: ['useGetRentExemption', coinId],
     fetchFunction: () => fetcher(),
     config: {
       enabled: !!coinId && !!rpcURLs.length,

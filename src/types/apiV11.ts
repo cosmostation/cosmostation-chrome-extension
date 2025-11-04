@@ -74,7 +74,7 @@ export type V11Param = {
       rpc_endpoint?: { provider: string; url: string }[];
       evm_rpc_endpoint?: { provider: string; url: string }[];
       solana_rpc_endpoint?: { provider: string; url: string }[];
-      explorer: { name: string; url: string; account: string; tx: string; proposal: string };
+      explorer?: { name: string; url: string; account: string; tx: string; proposal: string };
       evm_explorer?: { name: string; url: string; account: string; tx: string };
       about?: { website: string; docs: string; github: string; blog: string; medium: string; twitter: string; coingecko: string };
       forum?: { main: string; governance: string };
