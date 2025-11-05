@@ -1,20 +1,12 @@
 import { produce } from 'immer';
 
-import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
-import type {
-  AdPopoverStateMap,
-  ExtensionSessionStorage,
-  ExtensionSessionStorageKeys,
-  ExtensionStorage,
-  ExtensionStorageKeys,
-  PrioritizedProvider,
-} from '@/types/extension';
+import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys, PrioritizedProvider } from '@/types/extension';
 import { initialState } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { extension } from './browser';
@@ -26,8 +18,6 @@ export async function initExtensionLocalStorage() {
 
   await initializeCurrentAccountId();
   await initializeChosenNetworks();
-
-  await setMissingAdPopoverState();
 
   await setMissingAccountNames();
 
@@ -306,17 +296,6 @@ async function initializeStorageDefaults() {
     await setExtensionLocalStorage('isHideSmalValue', false);
   }
 
-  if (!originStorage.adPopoverState) {
-    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
-      acc[cur] = {
-        isVisiable: false,
-      };
-      return acc;
-    }, {});
-
-    await setExtensionLocalStorage('adPopoverState', defaultState);
-  }
-
   if (!originStorage.currentWindowId) {
     await setExtensionLocalStorage('currentWindowId', null);
   }
@@ -455,36 +434,6 @@ async function setMissingAccountNames() {
 
       await setExtensionLocalStorage('accountNamesById', mergedAccountNamesById);
     }
-  }
-}
-
-async function setMissingAdPopoverState() {
-  const adPopoverState = await getExtensionLocalStorage('adPopoverState');
-
-  if (adPopoverState) {
-    AD_POPOVER_IDS.forEach(async (id) => {
-      if (adPopoverState[id]) {
-        const adPopoverStateItem = adPopoverState[id];
-
-        if (adPopoverStateItem.isVisiable) {
-          const newState = produce(adPopoverState, (draft) => {
-            draft[id].isVisiable = false;
-          });
-
-          await setExtensionLocalStorage('adPopoverState', newState);
-        }
-      }
-
-      if (!adPopoverState[id]) {
-        const newState = produce(adPopoverState, (draft) => {
-          draft[id] = {
-            isVisiable: false,
-          };
-        });
-
-        await setExtensionLocalStorage('adPopoverState', newState);
-      }
-    });
   }
 }
 

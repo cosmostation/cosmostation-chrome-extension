@@ -1,12 +1,11 @@
 import { produce } from 'immer';
 import { create } from 'zustand';
 
-import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import type { CurrencyType } from '@/types/currency';
-import type { AdPopoverStateMap, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
+import type { ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
 import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
@@ -37,12 +36,7 @@ export const initialState: ExtensionStorageState = {
   customHiddenAssetIds: [],
   requestQueue: [],
   approvedOrigins: [],
-  adPopoverState: AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
-    acc[cur] = {
-      isVisiable: false,
-    };
-    return acc;
-  }, {}),
+  adPopoverState: {},
   isBalanceVisible: true,
   isHideSmalValue: false,
   approvedSuiPermissions: [],

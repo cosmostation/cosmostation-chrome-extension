@@ -52,7 +52,6 @@ export type AddressInfo = {
 export type ApprovedOrigin = { accountId: Account['id']; origin: string; lastConnectedAt: number; txCount: number };
 
 export type AdPopoverState = {
-  isVisiable: boolean;
   lastClosed?: number;
 };
 export type AdPopoverStateMap = Record<string, AdPopoverState>;
