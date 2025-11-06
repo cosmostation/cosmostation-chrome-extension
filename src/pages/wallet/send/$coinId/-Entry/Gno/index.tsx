@@ -266,11 +266,11 @@ export default function Gno({ coinId }: GnoProps) {
       messages: txMessages,
       fee: { gas_fee: `${currentCeilFeeAmount}${selectedFeeOption.denom}`, gas_wanted: new Long(Number(currentGas)) },
       signatures: [],
-      memo: '',
+      memo: inputMemo,
     };
 
     return tx;
-  }, [currentCeilFeeAmount, currentGas, selectedFeeOption.denom, txMessages]);
+  }, [currentCeilFeeAmount, currentGas, inputMemo, selectedFeeOption.denom, txMessages]);
 
   const [debouncedSendTx] = useDebounce(sendTx, 700);
 
