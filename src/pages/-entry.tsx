@@ -55,7 +55,7 @@ import {
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
-type PortfolioCoinItem = FlatAccountAssets & {
+export type PortfolioCoinItem = FlatAccountAssets & {
   value: string;
   dollarValue: string;
   totalDisplayAmount: string;

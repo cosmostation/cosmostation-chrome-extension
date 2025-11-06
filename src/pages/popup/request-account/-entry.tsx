@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 
+import BaseBody from '@/components/BaseLayout/components/BaseBody';
+import Base1300Text from '@/components/common/Base1300Text';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { EAccountStatus, RESPONSE_MESSAGE as GNO_MESSAGE, RESPONSE_STATUS as GNO_RESPONSE_STATUS } from '@/constants/gno';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -27,8 +30,10 @@ import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage
 import { getCurrentGnoNetwork } from '@/utils/storage/localStorage';
 import { addHexPrefix } from '@/utils/string';
 
+import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-styled';
+
 export default function Entry() {
-  const { currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const { requestQueue, currentRequestQueue, deQueue } = useCurrentRequestQueue();
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
 
@@ -179,7 +184,10 @@ export default function Entry() {
 
               if (matchedAddressInfo) {
                 const isEthermint = updatedChain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
-                const publicKeyTypeUrl = matchedAddressInfo.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
+                const publicKeyTypeUrl =
+                  updatedChain.id === 'sei'
+                    ? '/cosmos.crypto.secp256k1.PubKey'
+                    : matchedAddressInfo.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
 
                 return {
                   status: 'fulfilled',
@@ -594,7 +602,17 @@ export default function Entry() {
       }
     };
 
-    handleRequestAccount();
+    if (!currentRequestQueue) return;
+
+    if (requestQueue.length === 1) {
+      const timer = setTimeout(() => {
+        handleRequestAccount();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else {
+      handleRequestAccount();
+    }
   }, [
     chainList.allCosmosChains,
     chainList.cosmosChains,
@@ -604,6 +622,23 @@ export default function Entry() {
     currentRequestQueue,
     deQueue,
     refreshOriginConnectionTime,
+    requestQueue.length,
   ]);
-  return null;
+
+  return <LoadingSpinner />;
 }
+
+const LoadingSpinner = memo(function LoadingSpinner() {
+  const { t } = useTranslation();
+
+  return (
+    <BaseBody>
+      <ContentsContainer>
+        <StyledCircularProgress size={50} />
+        <TextWrapper>
+          <Base1300Text variant="b1_B">{t('pages.popup.request-account.entry.connecting')}</Base1300Text>
+        </TextWrapper>
+      </ContentsContainer>
+    </BaseBody>
+  );
+});

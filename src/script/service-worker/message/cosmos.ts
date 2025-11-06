@@ -203,7 +203,8 @@ export async function cosmosProcess(message: CosmosRequest) {
             if (matchedAddressInfo) {
               const isEthermint = chain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
 
-              const publicKeyTypeUrl = matchedAddressInfo.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
+              const publicKeyTypeUrl =
+                chain.id === 'sei' ? '/cosmos.crypto.secp256k1.PubKey' : matchedAddressInfo.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
 
               return {
                 status: 'fulfilled',

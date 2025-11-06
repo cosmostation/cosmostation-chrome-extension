@@ -75,11 +75,11 @@ chrome.runtime.onMessage.addListener(
     },
     sender,
   ) => {
-    if (sender.id !== chrome.runtime.id) return;
+    if (sender.id !== chrome.runtime.id) return false;
 
     const validListenerTypes = getListenerTypes(data.chainType);
 
-    if (!validListenerTypes.includes(data.event)) return;
+    if (!validListenerTypes.includes(data.event)) return false;
 
     const customEvent = new CustomEvent(data.event, {
       detail: {
@@ -89,6 +89,8 @@ chrome.runtime.onMessage.addListener(
     });
 
     window.dispatchEvent(customEvent);
+
+    return false;
   },
 );
 
