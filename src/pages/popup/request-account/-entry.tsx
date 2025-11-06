@@ -529,7 +529,7 @@ export default function Entry() {
             const inActiveAccount = {
               address,
               coins: '',
-              chainId: '',
+              chainId: currentGnoNetwork.chainId,
               status: EAccountStatus.INACTIVE,
               publicKey: null,
               accountNumber: '0',
@@ -538,7 +538,7 @@ export default function Entry() {
 
             const result: GnoGetAccountResponse = {
               code: 0,
-              status: GNO_RESPONSE_STATUS.FAILURE,
+              status: GNO_RESPONSE_STATUS.SUCCESS,
               message: '',
               data: inActiveAccount,
             };

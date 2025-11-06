@@ -94,7 +94,34 @@ export async function gnoProcess(message: GnoRequest) {
             const balance = await fetchGnoBalance(address, rpcURLs);
 
             if (!account) {
-              throw new GnoRPCError(RPC_ERROR.INTERNAL, 'Fail to fetch account', requestId);
+              const result: GnoGetAccountResponse = {
+                code: 0,
+                status: RESPONSE_STATUS.SUCCESS,
+                message: 'Get Account Information.',
+                data: {
+                  address,
+                  coins: ``,
+                  chainId: currentGnoNetwork.chainId,
+                  status: EAccountStatus.INACTIVE,
+                  publicKey: null,
+                  accountNumber: '0',
+                  sequence: '0',
+                },
+              };
+
+              await sendMessage<ResponseAppMessage<GnoConnect>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  result,
+                },
+              });
+
+              return;
             }
 
             const result: GnoGetAccountResponse = {
@@ -104,7 +131,7 @@ export async function gnoProcess(message: GnoRequest) {
               data: {
                 address,
                 coins: `${balance}${currentGnoNetwork.mainAssetDenom || ''}`,
-                chainId: currentGnoNetwork.id,
+                chainId: currentGnoNetwork.chainId,
                 status: EAccountStatus.ACTIVE,
                 publicKey: account.publicKey || null,
                 accountNumber: account.account_number || '0',
