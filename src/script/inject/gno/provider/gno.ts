@@ -4,7 +4,6 @@ import type {
   GnoConnectResponse,
   GnoGetAccountResponse,
   GnoGetNetworkResponse,
-  GnoSignAndSendTransactionParams,
   GnoSignAndSendTransactionResponse,
   GnoSignMessageResponse,
   GnoSignTransactionResponse,
@@ -96,9 +95,10 @@ const signTransaction = async (data: GnoTransactionParams) => {
   }
 };
 
-const signAndSendTransaction = async (data: GnoSignAndSendTransactionParams) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const signAndSendTransaction = async (message: GnoTransactionParams, _withNotification: boolean) => {
   try {
-    const result = (await gnoRequestApp({ method: 'gno_signAndSendTransaction', params: data.message })) as GnoSignAndSendTransactionResponse;
+    const result = (await gnoRequestApp({ method: 'gno_signAndSendTransaction', params: message })) as GnoSignAndSendTransactionResponse;
     return result;
   } catch (e) {
     if (typeof e === 'object' && e !== null && 'code' in e && e.code === 4001) {

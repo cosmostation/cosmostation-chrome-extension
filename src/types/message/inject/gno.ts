@@ -71,11 +71,6 @@ export type GnoTransactionParams = {
   arguments?: GnoArgumentInfo[] | null;
 };
 
-export type GnoSignAndSendTransactionParams = {
-  message: GnoTransactionParams;
-  withNotification: boolean;
-};
-
 export interface GnoSignAndSendTransaction extends RequestBase {
   chainType: 'gno';
   method: typeof GNO_POPUP_METHOD_TYPE.GNO__SIGN_AND_SEND_TRANSACTION;

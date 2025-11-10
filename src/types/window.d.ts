@@ -143,11 +143,11 @@ declare global {
     GetNetwork: () => Promise<GnoSwitchNetworkResponse>;
     AddEstablish: () => Promise<GnoConnectResponse>;
     Connect: () => Promise<GnoConnectResponse>;
-    Sign: (data: GnoTransactionParams[0]) => Promise<GnoSignTransactionResponse>;
-    SignTx: (data: GnoTransactionParams[0]) => Promise<GnoSignTransactionResponse>;
-    DoContract: (data: GnoTransactionParams[0]) => Promise<GnoSignAndSendTransactionResponse>;
-    SignAndSendTransaction: (data: GnoTransactionParams[0]) => Promise<GnoSignAndSendTransactionResponse>;
-    SignTransaction: (data: GnoTransactionParams[0]) => Promise<GnoSignTransactionResponse>;
+    Sign: (data: GnoTransactionParams) => Promise<GnoSignTransactionResponse>;
+    SignTx: (data: GnoTransactionParams) => Promise<GnoSignTransactionResponse>;
+    DoContract: (data: GnoTransactionParams, withNotification: boolean) => Promise<GnoSignAndSendTransactionResponse>;
+    SignAndSendTransaction: (data: GnoTransactionParams, withNotification: boolean) => Promise<GnoSignAndSendTransactionResponse>;
+    SignTransaction: (data: GnoTransactionParams) => Promise<GnoSignTransactionResponse>;
     SignMessage: (data: string) => Promise<GnoSignMessageResponse>;
     On: (eventName: GnoListenerType, eventHandler: (data: unknown) => void) => void;
   }
