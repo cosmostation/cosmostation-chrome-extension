@@ -60,7 +60,7 @@ export const setQueues = debounce(
     }
   },
   500,
-  { edges: ['leading'] },
+  { edges: ['leading', 'trailing'] },
 );
 
 export function enqueueRequest(queue: RequestQueue) {
