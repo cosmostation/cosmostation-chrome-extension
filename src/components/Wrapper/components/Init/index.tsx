@@ -7,6 +7,7 @@ import type { LanguageType } from '@/types/language';
 import { extension } from '@/utils/browser';
 import { getExtensionLocalStorage, initExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { loadExtensionSessionStorageStoreFromStorage } from '@/zustand/hooks/useExtensionSessionStorageStore';
+import { loadExtensionStorageStoreFromStorageByKey } from '@/zustand/hooks/useExtensionStorageStore';
 import { loadAllStoreFromStorage } from '@/zustand/utils';
 
 import { Splash } from './styled';
@@ -33,7 +34,7 @@ export default function Init({ children }: InitProps) {
             key === 'approvedIotaPermissions' ||
             key.includes('visible-assetIds')
           ) {
-            await loadAllStoreFromStorage();
+            await loadExtensionStorageStoreFromStorageByKey(key);
           }
         }
       }
