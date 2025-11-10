@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
@@ -26,6 +27,7 @@ import DappInfo from '@/pages/popup/-components/DappInfo';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { BitSignPsbts, BitSignPsbtsResposne } from '@/types/message/inject/bitcoin';
 import { decodedPsbt, ecpairFromPrivateKey, formatPsbtHex, getTweakSigner } from '@/utils/bitcoin/tx';
+import { wait } from '@/utils/fetch/wait';
 import { gte, plus } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
@@ -201,6 +203,8 @@ export default function Entry({ request }: EntryProps) {
         throw new Error('Failed to sign transaction');
       }
 
+      await wait(POPUP_DISMISS_DELAY_MS);
+
       await incrementTxCountForOrigin(request.origin);
 
       sendMessage<ResponseAppMessage<BitSignPsbts>>({
@@ -281,6 +285,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

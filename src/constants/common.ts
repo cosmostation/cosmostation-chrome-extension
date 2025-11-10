@@ -38,3 +38,5 @@ export const DATA_FRESHNESS = {
   WARNING: 'warning',
   STALE: 'stale',
 } as const;
+
+export const POPUP_DISMISS_DELAY_MS = 500;

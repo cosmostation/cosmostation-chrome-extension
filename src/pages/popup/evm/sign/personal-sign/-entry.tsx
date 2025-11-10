@@ -7,6 +7,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -22,6 +23,7 @@ import RequestMethodTitle from '@/pages/popup/-components/RequestMethodTitle';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { PersonalSign } from '@/types/message/inject/evm';
 import { personalSign } from '@/utils/ethereum/sign';
+import { wait } from '@/utils/fetch/wait';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { toHex, toUTF8 } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
@@ -81,6 +83,8 @@ export default function Entry({ request }: EntryProps) {
       })();
 
       const result = signature;
+
+      await wait(POPUP_DISMISS_DELAY_MS);
 
       sendMessage<ResponseAppMessage<PersonalSign>>({
         target: 'CONTENT',
@@ -177,6 +181,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

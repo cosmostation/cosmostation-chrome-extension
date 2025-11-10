@@ -10,6 +10,7 @@ import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import FeeSettingBottomSheet from '@/components/Fee/CosmosFee/components/FeeSettingBottomSheet';
 import InformationPanel from '@/components/InformationPanel';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
@@ -39,6 +40,7 @@ import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signDirect } from '@/utils/cosmos/msg';
 import { decodeProtobufMessage, protoTxBytes } from '@/utils/cosmos/proto';
 import { toUint8Array } from '@/utils/crypto';
+import { wait } from '@/utils/fetch/wait';
 import { ceil, divide, equal, gt, gte, times } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
 import { getUtf8BytesLength } from '@/utils/string';
@@ -437,6 +439,7 @@ export default function Entry({ request, chain }: EntryProps) {
         signed_doc: signedDocArray,
       };
 
+      await wait(POPUP_DISMISS_DELAY_MS);
       await incrementTxCountForOrigin(request.origin);
 
       sendMessage({
@@ -563,6 +566,7 @@ export default function Entry({ request, chain }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',
