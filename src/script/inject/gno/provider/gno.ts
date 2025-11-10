@@ -4,6 +4,7 @@ import type {
   GnoConnectResponse,
   GnoGetAccountResponse,
   GnoGetNetworkResponse,
+  GnoSignAndSendTransactionParams,
   GnoSignAndSendTransactionResponse,
   GnoSignMessageResponse,
   GnoSignTransactionResponse,
@@ -71,10 +72,9 @@ const switchNetwork = async (chainId: string) => {
   return result;
 };
 
-const signTransaction = async (data: GnoTransactionParams[0]) => {
+const signTransaction = async (data: GnoTransactionParams) => {
   try {
-    const params = [data, false];
-    const result = (await gnoRequestApp({ method: 'gno_signTransaction', params })) as GnoSignTransactionResponse;
+    const result = (await gnoRequestApp({ method: 'gno_signTransaction', params: data })) as GnoSignTransactionResponse;
     return result;
   } catch (e) {
     if (typeof e === 'object' && e !== null && 'code' in e && e.code === 4001) {
@@ -96,10 +96,9 @@ const signTransaction = async (data: GnoTransactionParams[0]) => {
   }
 };
 
-const signAndSendTransaction = async (data: GnoTransactionParams[0]) => {
+const signAndSendTransaction = async (data: GnoSignAndSendTransactionParams) => {
   try {
-    const params = [data, false];
-    const result = (await gnoRequestApp({ method: 'gno_signAndSendTransaction', params })) as GnoSignAndSendTransactionResponse;
+    const result = (await gnoRequestApp({ method: 'gno_signAndSendTransaction', params: data.message })) as GnoSignAndSendTransactionResponse;
     return result;
   } catch (e) {
     if (typeof e === 'object' && e !== null && 'code' in e && e.code === 4001) {

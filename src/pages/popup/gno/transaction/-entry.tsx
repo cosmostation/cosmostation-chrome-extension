@@ -99,7 +99,7 @@ export default function Entry({ request }: EntryProps) {
     setTabValue(newTabValue);
   };
 
-  const inputTx = params[0];
+  const inputTx = params;
 
   const keyPair = useMemo(
     () => currentGnoNetwork && getKeypair(currentGnoNetwork, currentAccount, currentPassword),

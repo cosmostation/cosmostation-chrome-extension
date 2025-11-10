@@ -55,13 +55,26 @@ export interface Message {
   value: unknown;
 }
 
-export type GnoTransactionParams = [
-  {
-    messages: Message[];
-    memo?: string;
-  },
-  boolean,
-];
+export interface GnoArgumentInfo {
+  index: number;
+  key: string;
+  value: string;
+}
+
+export type GnoTransactionParams = {
+  messages: Message[];
+  memo?: string;
+  networkInfo?: {
+    chainId: string;
+    rpcUrl: string;
+  };
+  arguments?: GnoArgumentInfo[] | null;
+};
+
+export type GnoSignAndSendTransactionParams = {
+  message: GnoTransactionParams;
+  withNotification: boolean;
+};
 
 export interface GnoSignAndSendTransaction extends RequestBase {
   chainType: 'gno';
