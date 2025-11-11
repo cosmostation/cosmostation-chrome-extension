@@ -1,9 +1,10 @@
 import Long from 'long';
-import type { KeplrMode } from '@keplr-wallet/types';
+import type { KeplrMode, Key, SettledResponses } from '@keplr-wallet/types';
 
 import type { SignAminoDoc } from '@/types/cosmos/amino';
 import type {
   CosRequestAccountResponse,
+  CosRequestAccountsSettledResponse,
   CosSendTransactionResponse,
   CosSignAminoResponse,
   CosSignDirectResponse,
@@ -52,6 +53,43 @@ const keplrGetKey: KeplrInterface['getKey'] = async (chainId) => {
       isKeystone: false,
       ethereumHexAddress: '',
     };
+  } catch (e) {
+    throw new Error((e as { message?: string }).message || 'Unknown Error');
+  }
+};
+
+const keplrGetKeySettled: KeplrInterface['getKeysSettled'] = async (chainIds) => {
+  try {
+    const accounts = (await wrappedCosmosRequestApp({
+      method: 'cos_requestAccountsSettled',
+      params: { chainIds: chainIds },
+    })) as CosRequestAccountsSettledResponse;
+
+    const maps: SettledResponses<Key> = accounts.map((account) => {
+      if (account.status === 'fulfilled') {
+        const resolvedValue = {
+          isNanoLedger: account.value.isLedger,
+          algo: account.value.isEthermint ? 'ethsecp256k1' : 'secp256k1',
+          pubKey: new Uint8Array(Buffer.from(account.value.publicKey, 'hex')),
+          bech32Address: account.value.address,
+          name: account.value.name,
+          address: new Uint8Array(),
+          isKeystone: false,
+          ethereumHexAddress: '',
+        };
+
+        return {
+          status: account.status,
+          value: resolvedValue,
+        };
+      }
+      return {
+        status: account.status,
+        reason: account.reason,
+      };
+    });
+
+    return maps;
   } catch (e) {
     throw new Error((e as { message?: string }).message || 'Unknown Error');
   }
@@ -242,6 +280,7 @@ export class CosmostationKeplr implements KeplrInterface {
   }
   enable = keplrEnable;
   getKey = keplrGetKey;
+  getKeysSettled = keplrGetKeySettled;
   experimentalSuggestChain = keplrExperimentalSuggestChain;
   getOfflineSigner = keplrGetOfflineSigner;
   getOfflineSignerAuto = keplrGetOfflineSignerAuto;

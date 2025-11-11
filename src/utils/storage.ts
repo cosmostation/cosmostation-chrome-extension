@@ -6,7 +6,14 @@ import { PRICE_TREND_TYPE } from '@/constants/price';
 import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
-import type { ExtensionSessionStorage, ExtensionSessionStorageKeys, ExtensionStorage, ExtensionStorageKeys, PrioritizedProvider } from '@/types/extension';
+import type {
+  DefaultExtensionStorage,
+  ExtensionSessionStorage,
+  ExtensionSessionStorageKeys,
+  ExtensionStorage,
+  ExtensionStorageKeys,
+  PrioritizedProvider,
+} from '@/types/extension';
 import { initialState } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { extension } from './browser';
@@ -175,6 +182,43 @@ export async function extensionLocalStorage() {
   };
 }
 
+type DefaultStorageKeysMap = {
+  [K in keyof DefaultExtensionStorage]: K;
+};
+
+const DEFAULT_STORAGE_KEYS: DefaultStorageKeysMap = {
+  paramsV11: 'paramsV11',
+  assetsV11: 'assetsV11',
+  userCurrencyPreference: 'userCurrencyPreference',
+  userPriceTrendPreference: 'userPriceTrendPreference',
+  dappListSortKey: 'dappListSortKey',
+  dashboardCoinSortKey: 'dashboardCoinSortKey',
+  chainListSortKey: 'chainListSortKey',
+  userAccounts: 'userAccounts',
+  accountNamesById: 'accountNamesById',
+  mnemonicNamesByHashedMnemonic: 'mnemonicNamesByHashedMnemonic',
+  notBackedUpAccountIds: 'notBackedUpAccountIds',
+  preferAccountType: 'preferAccountType',
+  customErc20Assets: 'customErc20Assets',
+  customCw20Assets: 'customCw20Assets',
+  addressBookList: 'addressBookList',
+  addedCustomChainList: 'addedCustomChainList',
+  customAssets: 'customAssets',
+  customHiddenAssetIds: 'customHiddenAssetIds',
+  approvedOrigins: 'approvedOrigins',
+  requestQueue: 'requestQueue',
+  approvedSuiPermissions: 'approvedSuiPermissions',
+  approvedIotaPermissions: 'approvedIotaPermissions',
+  initCheckLegacyBalanceAccountIds: 'initCheckLegacyBalanceAccountIds',
+  isBalanceVisible: 'isBalanceVisible',
+  isHideSmalValue: 'isHideSmalValue',
+  adPopoverState: 'adPopoverState',
+  currentWindowId: 'currentWindowId',
+  prioritizedProvider: 'prioritizedProvider',
+  pinnedDappIds: 'pinnedDappIds',
+  autoLockTimeInMinutes: 'autoLockTimeInMinutes',
+};
+
 export async function extensionSessionStorage() {
   const storage = await getAllExtensionSessionStorage();
 
@@ -189,7 +233,9 @@ export async function extensionSessionStorage() {
 }
 
 async function initializeStorageDefaults() {
-  const originStorage = await getAllExtensionLocalStorage();
+  const keysToFetch = Object.keys(DEFAULT_STORAGE_KEYS) as (keyof DefaultExtensionStorage)[];
+
+  const originStorage = await chrome.storage.local.get<DefaultExtensionStorage>(keysToFetch);
 
   if (!originStorage.paramsV11 || !originStorage.assetsV11) {
     await v11();
@@ -258,14 +304,6 @@ async function initializeStorageDefaults() {
 
   if (!originStorage.customHiddenAssetIds) {
     await setExtensionLocalStorage('customHiddenAssetIds', []);
-  }
-
-  if (!originStorage.customErc20Assets) {
-    await setExtensionLocalStorage('customErc20Assets', []);
-  }
-
-  if (!originStorage.customCw20Assets) {
-    await setExtensionLocalStorage('customCw20Assets', []);
   }
 
   if (!originStorage.approvedOrigins) {

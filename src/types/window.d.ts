@@ -51,7 +51,6 @@ declare global {
     | 'getSecret20ViewingKey'
     | 'signEthereum'
     | 'disable'
-    | 'getKeysSettled'
     | 'signICNSAdr36'
     | 'experimentalSignEIP712CosmosTx_v0'
     | 'getChainInfosWithoutEndpoints'
