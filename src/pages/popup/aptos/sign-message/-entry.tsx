@@ -8,6 +8,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentAptosNetwork } from '@/hooks/aptos/useCurrentAptosNetwork';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
@@ -19,6 +20,7 @@ import { sendMessage } from '@/libs/extension';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { AptosSignMessage, AptosSignMessageResponse } from '@/types/message/inject/aptos';
 import { signMessage } from '@/utils/aptos/sign';
+import { wait } from '@/utils/fetch/wait';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
@@ -100,6 +102,8 @@ export default function Entry({ request }: EntryProps) {
       serializer.serialize(response);
       const serializedSignature = Buffer.from(serializer.toUint8Array()).toString('hex');
 
+      await wait(POPUP_DISMISS_DELAY_MS);
+
       const result: AptosSignMessageResponse = {
         address: address || '',
         application: origin,
@@ -180,6 +184,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

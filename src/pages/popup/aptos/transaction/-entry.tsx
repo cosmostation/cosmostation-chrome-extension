@@ -10,6 +10,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentAptosNetwork } from '@/hooks/aptos/useCurrentAptosNetwork';
 import { useEstimateGasPrice } from '@/hooks/aptos/useEstimateGasPrice';
@@ -29,6 +30,7 @@ import type { ResponseAppMessage } from '@/types/message/content';
 import type { AptosSignTransaction } from '@/types/message/inject/aptos';
 import { signTxSequentially } from '@/utils/aptos/sign';
 import { getOriginalTx } from '@/utils/aptos/tx';
+import { wait } from '@/utils/fetch/wait';
 import { ceil, gt, times } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
@@ -206,6 +208,8 @@ export default function Entry({ request }: EntryProps) {
       serializer.serialize(response);
       const serializedAccountAuthenticator = Buffer.from(serializer.toUint8Array()).toString('hex');
 
+      await wait(POPUP_DISMISS_DELAY_MS);
+
       await incrementTxCountForOrigin(request.origin);
 
       sendMessage<ResponseAppMessage<AptosSignTransaction>>({
@@ -289,6 +293,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',
