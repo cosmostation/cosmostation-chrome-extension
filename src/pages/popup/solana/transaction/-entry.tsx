@@ -7,6 +7,7 @@ import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { SOLANA_NATIVE_COIN } from '@/constants/solana';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
@@ -28,6 +29,7 @@ import type {
   SolanaSignTransaction,
 } from '@/types/message/inject/solana';
 import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
+import { wait } from '@/utils/fetch/wait';
 import { plus } from '@/utils/numbers';
 import { getCoinId, getCoinIdWithManual } from '@/utils/queryParamGenerator';
 import { requestRPC } from '@/utils/solana/rpc';
@@ -150,6 +152,7 @@ export default function Entry({ request }: EntryProps) {
           }
         });
 
+        await wait(POPUP_DISMISS_DELAY_MS);
         await incrementTxCountForOrigin(origin);
 
         sendMessage({
@@ -202,6 +205,7 @@ export default function Entry({ request }: EntryProps) {
             signature: responseAll[0],
           };
 
+          await wait(POPUP_DISMISS_DELAY_MS);
           await incrementTxCountForOrigin(origin);
           sendMessage({
             target: 'CONTENT',
@@ -221,6 +225,7 @@ export default function Entry({ request }: EntryProps) {
             publicKey: address,
             signatures: responseAll,
           };
+          await wait(POPUP_DISMISS_DELAY_MS);
           await incrementTxCountForOrigin(origin);
           sendMessage({
             target: 'CONTENT',
@@ -278,6 +283,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

@@ -548,7 +548,7 @@ function BusinessLogic() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
       } catch (error) {
