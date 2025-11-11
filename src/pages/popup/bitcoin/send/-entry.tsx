@@ -86,7 +86,9 @@ export default function Entry({ request }: EntryProps) {
     disableDupeEthermint: true,
   });
 
-  const { to, satAmount } = request.params;
+  const { params, origin } = request;
+
+  const { to, satAmount } = params;
 
   const nativeAccountAsset = useMemo(
     () => currentBitcoinNetwork && accountAllAssets?.bitcoinAccountAssets.find((item) => isSameChain(item.chain, currentBitcoinNetwork)),

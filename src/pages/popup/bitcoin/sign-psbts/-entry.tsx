@@ -79,6 +79,8 @@ export default function Entry({ request }: EntryProps) {
     return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
   }, [balance.data]);
 
+  const { params: psbtHexes, origin } = request;
+
   const { siteIconURL } = useSiteIconURL(origin);
   const siteTitle = getSiteTitle(origin);
 
@@ -95,8 +97,6 @@ export default function Entry({ request }: EntryProps) {
   );
 
   const bitcoinNetwork = useMemo(() => (nativeAccountAsset?.chain.isTestnet ? networks.testnet : networks.bitcoin), [nativeAccountAsset?.chain.isTestnet]);
-
-  const psbtHexes = request.params;
 
   const parsedPsbts = useMemo(
     () =>
