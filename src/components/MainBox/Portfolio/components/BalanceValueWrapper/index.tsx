@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
@@ -33,7 +33,6 @@ interface BalanceValueButtonProps {
 }
 
 export default function BalanceValueWrapper({ accountAssets, selectedChainId, selectedChainMainAsset }: BalanceValueButtonProps) {
-  const [isBalanceUpdateButtonHovered, setIsBalanceUpdateButtonHovered] = useState(false);
   const { updateAllBalance, updateChainBalance, isLoadingAllBalance, isLoadingChainBalance } = useManualBalanceUpdate();
   const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
   const { isLoading: isUpdateChainBalanceLoading } = useAutoBalanceRefresh(selectedChainId && [selectedChainId]);
@@ -66,15 +65,7 @@ export default function BalanceValueWrapper({ accountAssets, selectedChainId, se
   return (
     <BodyContainer>
       <BodyTopContainer>
-        <BalanceValueButton
-          accountAssets={accountAssets}
-          isUpdatingBalance={isUpdatingBalance}
-          handleManualBalanceUpdate={handleManualBalanceUpdate}
-          isHovering={isBalanceUpdateButtonHovered}
-          handleHovering={(value) => {
-            setIsBalanceUpdateButtonHovered(value);
-          }}
-        />
+        <BalanceValueButton accountAssets={accountAssets} isUpdatingBalance={isUpdatingBalance} handleManualBalanceUpdate={handleManualBalanceUpdate} />
       </BodyTopContainer>
       <BodyBottomContainer>
         <BodyBottomChipButtonContainer>
