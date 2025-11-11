@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
@@ -26,6 +27,7 @@ import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { IotaSignAndExecuteTransaction, IotaSignTransaction } from '@/types/message/inject/iota';
+import { wait } from '@/utils/fetch/wait';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/iota/sign';
 import { gt, minus, plus } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
@@ -200,6 +202,7 @@ export default function Entry({ request }: EntryProps) {
         if (!result) {
           throw new Error('Failed to sign transaction');
         }
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -244,6 +247,7 @@ export default function Entry({ request }: EntryProps) {
         if (!result) {
           throw new Error('Failed to sign and execute transaction');
         }
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -327,6 +331,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

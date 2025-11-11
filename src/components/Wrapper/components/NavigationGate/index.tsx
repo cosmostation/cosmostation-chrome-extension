@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { Route as Initial } from '@/pages/account/initial';
+import { Route as Home } from '@/pages/index';
 import { Route as AptosSignMessage } from '@/pages/popup/aptos/sign-message';
 import { Route as AptosTransaction } from '@/pages/popup/aptos/transaction';
 import { Route as BitcoinSend } from '@/pages/popup/bitcoin/send';
@@ -38,6 +39,7 @@ import type { EvmRequest } from '@/types/message/inject/evm';
 import type { IotaRequest } from '@/types/message/inject/iota';
 import type { SolanaRequest } from '@/types/message/inject/solana';
 import type { SuiRequest } from '@/types/message/inject/sui';
+import { isSidePanelView } from '@/utils/view/sidepanel';
 import { getSiteTitle } from '@/utils/website';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -47,14 +49,22 @@ type NavigationGateProps = {
 
 export default function NavigationGate({ children }: NavigationGateProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const userAccounts = useExtensionStorageStore((state) => state.userAccounts);
-  const requestQueue = useExtensionStorageStore((state) => state.requestQueue);
-
-  const { currentRequestQueue } = useCurrentRequestQueue();
+  const { requestQueue, currentRequestQueue } = useCurrentRequestQueue();
 
   useSiteIconURL(currentRequestQueue?.origin);
   getSiteTitle(currentRequestQueue?.origin);
+
+  const isInSidePanel = isSidePanelView();
+
+  const shouldExitPopupState = useMemo(() => {
+    const isEmptyRequestQueue = requestQueue.length === 0;
+    const isInPopupPage = location.pathname.startsWith('/popup');
+
+    return isEmptyRequestQueue && isInPopupPage && isInSidePanel;
+  }, [isInSidePanel, location.pathname, requestQueue.length]);
 
   useEffect(() => {
     void (async () => {
@@ -102,8 +112,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
           });
         }
       }
+      if (shouldExitPopupState) {
+        navigate({ to: Home.to });
+      }
     })();
-  }, [userAccounts.length, navigate, requestQueue]);
+  }, [navigate, requestQueue, shouldExitPopupState, userAccounts.length]);
 
   return <>{children}</>;
 }

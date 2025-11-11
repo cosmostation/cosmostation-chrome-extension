@@ -54,7 +54,6 @@ export type AddressInfo = {
 export type ApprovedOrigin = { accountId: Account['id']; origin: string; lastConnectedAt: number; txCount: number };
 
 export type AdPopoverState = {
-  isVisiable: boolean;
   lastClosed?: number;
 };
 export type AdPopoverStateMap = Record<string, AdPopoverState>;
@@ -92,14 +91,42 @@ export type LastRequestTimestampsKey = `${RateLimitedMethod}:${string}`;
 
 type LastRequestTimestamps = Record<LastRequestTimestampsKey, number>;
 
-export interface ExtensionStorage {
-  userAccounts: Account[];
+export interface DefaultExtensionStorage {
   paramsV11: Record<string, V11Param>;
   assetsV11: V11Asset[];
-  erc20Assets: EvmErc20Asset[];
+  userCurrencyPreference: CurrencyType;
+  userPriceTrendPreference: PriceTrendType;
+  dappListSortKey: DappListSortKeyType;
+  dashboardCoinSortKey: DashboardCoinSortKeyType;
+  chainListSortKey: ChainlistSortKeyType;
+  userAccounts: Account[];
+  accountNamesById: AccountNamesById;
+  mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;
+  notBackedUpAccountIds: Account['id'][];
+  preferAccountType: PreferAccountType;
   customErc20Assets: EvmErc20Asset[];
-  cw20Assets: CosmosCw20Asset[];
   customCw20Assets: CosmosCw20Asset[];
+  addressBookList: AddressInfo[];
+  addedCustomChainList: CustomChain[];
+  customAssets: CustomAsset[];
+  customHiddenAssetIds: AssetId[];
+  approvedOrigins: ApprovedOrigin[];
+  requestQueue: RequestQueue[];
+  approvedSuiPermissions: ApprovedSuiPermission[];
+  approvedIotaPermissions: ApprovedIotaPermission[];
+  initCheckLegacyBalanceAccountIds: Account['id'][];
+  isBalanceVisible: boolean;
+  isHideSmalValue: boolean;
+  adPopoverState: AdPopoverStateMap;
+  currentWindowId: number | null;
+  prioritizedProvider: PrioritizedProvider;
+  pinnedDappIds: number[];
+  autoLockTimeInMinutes: LockupTimeOptions;
+}
+
+export interface ExtensionStorage extends DefaultExtensionStorage {
+  erc20Assets: EvmErc20Asset[];
+  cw20Assets: CosmosCw20Asset[];
   spltokenAssets: SolanaSpltokenAsset[];
   [key: `${string}-address`]: AccountAddress[];
   [key: `${string}-balance-cosmos`]: AccountAddressBalanceCosmos[];
@@ -133,29 +160,9 @@ export interface ExtensionStorage {
   [key: `${string}-nft-sui`]: SuiNFT[];
   [key: `${string}-nft-iota`]: SuiNFT[];
   initAccountIds: Account['id'][];
-  initCheckLegacyBalanceAccountIds: Account['id'][];
-  dashboardCoinSortKey: DashboardCoinSortKeyType;
-  dappListSortKey: DappListSortKeyType;
-  chainListSortKey: ChainlistSortKeyType;
   userLanguagePreference: LanguageType;
   comparisonPasswordHash: string;
-  accountNamesById: AccountNamesById;
-  mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;
   currentAccountId: Account['id'];
-  notBackedUpAccountIds: Account['id'][];
-  userCurrencyPreference: CurrencyType;
-  preferAccountType: PreferAccountType;
-  addressBookList: AddressInfo[];
-  addedCustomChainList: CustomChain[];
-  customAssets: CustomAsset[];
-  customHiddenAssetIds: AssetId[];
-  approvedOrigins: ApprovedOrigin[];
-  adPopoverState: AdPopoverStateMap;
-  isBalanceVisible: boolean;
-  isHideSmalValue: boolean;
-  approvedSuiPermissions: ApprovedSuiPermission[];
-  approvedIotaPermissions: ApprovedIotaPermission[];
-  requestQueue: RequestQueue[];
   chosenEthereumNetworkId: string;
   chosenAptosNetworkId: string;
   chosenSuiNetworkId: string;
@@ -168,7 +175,6 @@ export interface ExtensionStorage {
   autoLockTimeInMinutes: LockupTimeOptions;
   autoLockTimeStampAt: number | null;
   migrationStatus: MigrationStatus | null;
-  userPriceTrendPreference: PriceTrendType;
   selectedChainFilterId: UniqueChainId | null;
   lastRequestTimestamps: LastRequestTimestamps | null;
   bugFix?: Record<string, boolean>;

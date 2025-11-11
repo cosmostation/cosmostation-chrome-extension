@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
@@ -23,7 +24,10 @@ export function useCurrentPassword() {
     );
   };
 
-  const currentPassword = sessionPassword ? aesDecrypt(sessionPassword.encryptedPassword, `${sessionPassword.key}${sessionPassword.timestamp}`) : null;
+  const currentPassword = useMemo(
+    () => (sessionPassword ? aesDecrypt(sessionPassword.encryptedPassword, `${sessionPassword.key}${sessionPassword.timestamp}`) : null),
+    [sessionPassword],
+  );
 
   return { currentPassword, setCurrentPassword };
 }

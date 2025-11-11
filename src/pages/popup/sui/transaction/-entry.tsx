@@ -10,6 +10,7 @@ import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
@@ -26,6 +27,7 @@ import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { SuiSignAndExecuteTransaction, SuiSignAndExecuteTransactionBlock, SuiSignTransaction, SuiSignTransactionBlock } from '@/types/message/inject/sui';
+import { wait } from '@/utils/fetch/wait';
 import { gt, minus, plus } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
@@ -208,6 +210,8 @@ export default function Entry({ request }: EntryProps) {
           throw new Error('Failed to sign transaction');
         }
 
+        await wait(POPUP_DISMISS_DELAY_MS);
+
         await incrementTxCountForOrigin(request.origin);
 
         sendMessage({
@@ -257,6 +261,7 @@ export default function Entry({ request }: EntryProps) {
         if (!result) {
           throw new Error('Failed to sign and execute transaction');
         }
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -340,6 +345,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

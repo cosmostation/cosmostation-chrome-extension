@@ -1,6 +1,5 @@
 import { produce } from 'immer';
 
-import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { PRICE_TREND_TYPE } from '@/constants/price';
@@ -8,7 +7,7 @@ import { getAddedCustomChains, getChains } from '@/libs/chain';
 import { v11 } from '@/script/service-worker/update/v11';
 import type { AccountNamesById, ChainToAccountTypeMap, PreferAccountType } from '@/types/account';
 import type {
-  AdPopoverStateMap,
+  DefaultExtensionStorage,
   ExtensionSessionStorage,
   ExtensionSessionStorageKeys,
   ExtensionStorage,
@@ -26,8 +25,6 @@ export async function initExtensionLocalStorage() {
 
   await initializeCurrentAccountId();
   await initializeChosenNetworks();
-
-  await setMissingAdPopoverState();
 
   await setMissingAccountNames();
 
@@ -195,6 +192,43 @@ export async function extensionLocalStorage() {
   };
 }
 
+type DefaultStorageKeysMap = {
+  [K in keyof DefaultExtensionStorage]: K;
+};
+
+const DEFAULT_STORAGE_KEYS: DefaultStorageKeysMap = {
+  paramsV11: 'paramsV11',
+  assetsV11: 'assetsV11',
+  userCurrencyPreference: 'userCurrencyPreference',
+  userPriceTrendPreference: 'userPriceTrendPreference',
+  dappListSortKey: 'dappListSortKey',
+  dashboardCoinSortKey: 'dashboardCoinSortKey',
+  chainListSortKey: 'chainListSortKey',
+  userAccounts: 'userAccounts',
+  accountNamesById: 'accountNamesById',
+  mnemonicNamesByHashedMnemonic: 'mnemonicNamesByHashedMnemonic',
+  notBackedUpAccountIds: 'notBackedUpAccountIds',
+  preferAccountType: 'preferAccountType',
+  customErc20Assets: 'customErc20Assets',
+  customCw20Assets: 'customCw20Assets',
+  addressBookList: 'addressBookList',
+  addedCustomChainList: 'addedCustomChainList',
+  customAssets: 'customAssets',
+  customHiddenAssetIds: 'customHiddenAssetIds',
+  approvedOrigins: 'approvedOrigins',
+  requestQueue: 'requestQueue',
+  approvedSuiPermissions: 'approvedSuiPermissions',
+  approvedIotaPermissions: 'approvedIotaPermissions',
+  initCheckLegacyBalanceAccountIds: 'initCheckLegacyBalanceAccountIds',
+  isBalanceVisible: 'isBalanceVisible',
+  isHideSmalValue: 'isHideSmalValue',
+  adPopoverState: 'adPopoverState',
+  currentWindowId: 'currentWindowId',
+  prioritizedProvider: 'prioritizedProvider',
+  pinnedDappIds: 'pinnedDappIds',
+  autoLockTimeInMinutes: 'autoLockTimeInMinutes',
+};
+
 export async function extensionSessionStorage() {
   const storage = await getAllExtensionSessionStorage();
 
@@ -209,7 +243,9 @@ export async function extensionSessionStorage() {
 }
 
 async function initializeStorageDefaults() {
-  const originStorage = await getAllExtensionLocalStorage();
+  const keysToFetch = Object.keys(DEFAULT_STORAGE_KEYS) as (keyof DefaultExtensionStorage)[];
+
+  const originStorage = await chrome.storage.local.get<DefaultExtensionStorage>(keysToFetch);
 
   if (!originStorage.paramsV11 || !originStorage.assetsV11) {
     await v11();
@@ -280,14 +316,6 @@ async function initializeStorageDefaults() {
     await setExtensionLocalStorage('customHiddenAssetIds', []);
   }
 
-  if (!originStorage.customErc20Assets) {
-    await setExtensionLocalStorage('customErc20Assets', []);
-  }
-
-  if (!originStorage.customCw20Assets) {
-    await setExtensionLocalStorage('customCw20Assets', []);
-  }
-
   if (!originStorage.approvedOrigins) {
     await setExtensionLocalStorage('approvedOrigins', []);
   }
@@ -314,17 +342,6 @@ async function initializeStorageDefaults() {
 
   if (originStorage.isHideSmalValue === undefined || originStorage.isHideSmalValue === null) {
     await setExtensionLocalStorage('isHideSmalValue', false);
-  }
-
-  if (!originStorage.adPopoverState) {
-    const defaultState = AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
-      acc[cur] = {
-        isVisiable: false,
-      };
-      return acc;
-    }, {});
-
-    await setExtensionLocalStorage('adPopoverState', defaultState);
   }
 
   if (!originStorage.currentWindowId) {
@@ -475,36 +492,6 @@ async function setMissingAccountNames() {
 
       await setExtensionLocalStorage('accountNamesById', mergedAccountNamesById);
     }
-  }
-}
-
-async function setMissingAdPopoverState() {
-  const adPopoverState = await getExtensionLocalStorage('adPopoverState');
-
-  if (adPopoverState) {
-    AD_POPOVER_IDS.forEach(async (id) => {
-      if (adPopoverState[id]) {
-        const adPopoverStateItem = adPopoverState[id];
-
-        if (adPopoverStateItem.isVisiable) {
-          const newState = produce(adPopoverState, (draft) => {
-            draft[id].isVisiable = false;
-          });
-
-          await setExtensionLocalStorage('adPopoverState', newState);
-        }
-      }
-
-      if (!adPopoverState[id]) {
-        const newState = produce(adPopoverState, (draft) => {
-          draft[id] = {
-            isVisiable: false,
-          };
-        });
-
-        await setExtensionLocalStorage('adPopoverState', newState);
-      }
-    });
   }
 }
 

@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { produce } from 'immer';
 import type { PublicKey } from '@solana/web3.js';
@@ -30,7 +30,33 @@ import { addHexPrefix } from '@/utils/string';
 import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-styled';
 
 export default function Entry() {
+  return (
+    <>
+      <LoadingSpinner />
+      <BusinessLogic />
+    </>
+  );
+}
+
+const LoadingSpinner = memo(function LoadingSpinner() {
+  const { t } = useTranslation();
+
+  return (
+    <BaseBody>
+      <ContentsContainer>
+        <StyledCircularProgress size={50} />
+        <TextWrapper>
+          <Base1300Text variant="b1_B">{t('pages.popup.request-account.entry.connecting')}</Base1300Text>
+        </TextWrapper>
+      </ContentsContainer>
+    </BaseBody>
+  );
+});
+
+function BusinessLogic() {
   const { requestQueue, currentRequestQueue, deQueue } = useCurrentRequestQueue();
+  const [processedRequestIds, setProcessedRequestIds] = useState<Set<string>>(new Set());
+
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const { chainList } = useChainList();
 
@@ -39,6 +65,14 @@ export default function Entry() {
 
   useEffect(() => {
     const handleRequestAccount = async () => {
+      if (!currentRequestQueue) return;
+
+      if (processedRequestIds.has(currentRequestQueue.requestId)) {
+        return;
+      }
+
+      setProcessedRequestIds((prev) => new Set(prev).add(currentRequestQueue.requestId));
+
       try {
         if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
           const { tabId, requestId, origin, params } = currentRequestQueue;
@@ -98,7 +132,7 @@ export default function Entry() {
                 },
               });
 
-              void deQueue();
+              await deQueue();
 
               return;
             }
@@ -128,7 +162,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -243,7 +277,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -272,7 +306,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           } else {
             sendMessage<ResponseAppMessage<EthRequestAccounts>>({
               target: 'CONTENT',
@@ -286,7 +320,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -308,7 +342,7 @@ export default function Entry() {
               result,
             },
           });
-          void deQueue();
+          await deQueue();
         }
 
         if (currentRequestQueue?.method === 'sui_getAccount' && currentPassword) {
@@ -341,7 +375,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           } else {
             const { tabId, requestId, origin } = currentRequestQueue;
 
@@ -357,7 +391,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -386,7 +420,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -415,7 +449,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -437,7 +471,7 @@ export default function Entry() {
               result,
             },
           });
-          void deQueue();
+          await deQueue();
         }
 
         if (currentRequestQueue?.method === 'iota_getAccount' && currentPassword) {
@@ -470,7 +504,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           } else {
             const { tabId, requestId, origin } = currentRequestQueue;
 
@@ -486,7 +520,7 @@ export default function Entry() {
               },
             });
 
-            void deQueue();
+            await deQueue();
           }
         }
 
@@ -518,13 +552,34 @@ export default function Entry() {
           }
         }
       } catch (error) {
+        if (currentRequestQueue) {
+          sendMessage({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin: currentRequestQueue.origin,
+            requestId: currentRequestQueue.requestId,
+            tabId: currentRequestQueue.tabId,
+            params: {
+              id: currentRequestQueue.requestId,
+              error: {
+                code: RPC_ERROR.INTERNAL,
+                message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+              },
+            },
+          });
+
+          await deQueue();
+        }
+
         console.error('Error fetching data:', error);
       }
     };
 
     if (!currentRequestQueue) return;
 
-    if (requestQueue.length === 1) {
+    const shouldApplyPopdownDelay = processedRequestIds.size < 5 && requestQueue.length === 1;
+
+    if (shouldApplyPopdownDelay) {
       const timer = setTimeout(() => {
         handleRequestAccount();
       }, 1000);
@@ -541,24 +596,11 @@ export default function Entry() {
     currentPreferAccountType,
     currentRequestQueue,
     deQueue,
+    processedRequestIds,
     refreshOriginConnectionTime,
+    currentRequestQueue?.requestId,
     requestQueue.length,
   ]);
 
-  return <LoadingSpinner />;
+  return null;
 }
-
-const LoadingSpinner = memo(function LoadingSpinner() {
-  const { t } = useTranslation();
-
-  return (
-    <BaseBody>
-      <ContentsContainer>
-        <StyledCircularProgress size={50} />
-        <TextWrapper>
-          <Base1300Text variant="b1_B">{t('pages.popup.request-account.entry.connecting')}</Base1300Text>
-        </TextWrapper>
-      </ContentsContainer>
-    </BaseBody>
-  );
-});
