@@ -50,6 +50,7 @@ export function useGetLatestBlockHash({ coinId, config }: UseGetLatestBlockHashP
     fetchFunction: () => fetcher(),
     config: {
       enabled: !!coinId && !!rpcURLs.length,
+      staleTime: undefined,
       refetchInterval: 1000 * 30,
       ...config,
     },

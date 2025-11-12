@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 import type { VersionedTransaction } from '@solana/web3.js';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressBottomSheet from '@/components/AddressBottomSheet';
@@ -29,11 +29,9 @@ import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { getKeypair } from '@/libs/address';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
-import type { SolanaRpcSendTransactionResponse } from '@/types/solana/api';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
-import { requestRPC } from '@/utils/solana/rpc';
 import {
   createSplTokenTransferTransaction,
   createTransferTransaction,
@@ -78,8 +76,6 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const { chainId, chainType } = parseCoinId(coinId);
 
-  const [isDisabled, setIsDisabled] = useState(false);
-
   const [confirmData, setConfirmData] = useState<ConfirmData>({ transaction: undefined });
   const [displayTx, setDisplayTx] = useState<string>('');
 
@@ -100,7 +96,7 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const recipientAddress = useMemo(() => debouncedInputRecipientAddress, [debouncedInputRecipientAddress]);
 
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
   const nativeCoinId = useMemo(() => getCoinId({ chainId, chainType, id: SOLANA_NATIVE_COIN }), [chainId, chainType]);
 
@@ -190,7 +186,7 @@ export default function Solana({ coinId }: SolanaProps) {
   }, [addressInputErrorMessage, latestBlockHash, recipientAddress, selectedCoinToSend?.asset.id, selectedCoinToSend?.asset?.type, sendAmountInputErrorMessage]);
 
   const { data: toATAInfo, isFetching: isFetchingGetAccountInfo } = useGetAccountInfo({ coinId, account: toATA });
-
+  const { data: recentPrioritizationFees, isFetching: isFetchingGetRecentPrioritizationFees } = useGetRecentPrioritizationFees({ coinId });
   const { data: rentExemption } = useGetRentExemption({ coinId });
 
   const transaction = useMemo(() => {
@@ -240,8 +236,6 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const { data: transactionPreview, isFetching: isFetchingTransactionPreview } = useTransactionPreview({ coinId, transaction });
 
-  const { data: recentPrioritizationFees, isFetching: isFetchingGetRecentPrioritizationFees } = useGetRecentPrioritizationFees({ coinId });
-
   const priorityBaseFee = useMemo(() => {
     if (recentPrioritizationFees && recentPrioritizationFees.length > 0) {
       return recentPrioritizationFees.reduce((acc, cur) => acc + cur.prioritizationFee, 0) / recentPrioritizationFees.length / 1000000 + defaultPriorityBaseFee;
@@ -268,14 +262,14 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const baseFee = useMemo(() => {
     if (transactionPreview?.estimatedValue) {
-      if (!toATAInfo) {
+      if (!toATAInfo && selectedCoinToSend?.asset?.type === 'spl') {
         return Number(plus(rentExemption || 0, transactionPreview.estimatedValue));
       }
       return transactionPreview.estimatedValue;
     }
 
     return undefined;
-  }, [rentExemption, toATAInfo, transactionPreview?.estimatedValue]);
+  }, [rentExemption, selectedCoinToSend?.asset?.type, toATAInfo, transactionPreview?.estimatedValue]);
 
   const totalBaseFee = useMemo(() => {
     if (baseFee && priorityBaseFee) {
@@ -322,6 +316,10 @@ export default function Solana({ coinId }: SolanaProps) {
     if (!baseFee || !computeUnitLimit || !computeUnitPrice) {
       return t('pages.wallet.send.$coinId.Entry.Solana.index.noFee');
     }
+
+    if (!transaction) {
+      return t('pages.wallet.send.$coinId.Entry.Solana.index.noTx');
+    }
   }, [
     addressInputErrorMessage,
     baseAvailableAmount,
@@ -332,23 +330,27 @@ export default function Solana({ coinId }: SolanaProps) {
     debouncedSendDisplayAmount,
     sendAmountInputErrorMessage,
     t,
+    transaction,
   ]);
 
-  const setTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isMinLoadingTime, setIsMinLoadingTime] = useState(false);
+
+  const isFetchingTxData = useMemo(() => {
+    return isFetchingGetAccountInfo || isFetchingGetLatestBlockHash || isFetchingGetRecentPrioritizationFees || isFetchingTransactionPreview;
+  }, [isFetchingGetAccountInfo, isFetchingGetLatestBlockHash, isFetchingGetRecentPrioritizationFees, isFetchingTransactionPreview]);
 
   useEffect(() => {
-    if (!isDisabled) {
-      setIsDisabled(true);
+    if (isFetchingTxData) {
+      setIsMinLoadingTime(true);
+    } else {
+      const timer = setTimeout(() => {
+        setIsMinLoadingTime(false);
+      }, 300);
+      return () => clearTimeout(timer);
     }
+  }, [isFetchingTxData, transaction]);
 
-    if (setTimeoutRef.current) {
-      clearTimeout(setTimeoutRef.current);
-    }
-    setTimeoutRef.current = setTimeout(() => {
-      setIsDisabled(false);
-    }, 1000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transaction, isFetchingGetAccountInfo, isFetchingGetLatestBlockHash, isFetchingGetRecentPrioritizationFees, isFetchingTransactionPreview]);
+  const isCalculatingTx = isFetchingTxData || isMinLoadingTime;
 
   const handleOnClickMax = useCallback(() => {
     const isSendNativeCoin = selectedCoinToSend?.asset.id === selectedCoinToSend?.chain.mainAssetDenom;
@@ -411,10 +413,12 @@ export default function Solana({ coinId }: SolanaProps) {
 
           tx.sign([{ publicKey: new PublicKey(selectedCoinToSend.address.address), secretKey: Buffer.from(keypair.privateKey, 'hex') }]);
 
-          const { result: signature } = await requestRPC<SolanaRpcSendTransactionResponse>('sendTransaction', [
-            Buffer.from(tx.serialize()).toString('base64'),
-            { encoding: 'base64' },
-          ]);
+          const requestURL = currentChain.rpcUrls[0].url;
+
+          const connection = new Connection(requestURL, 'confirmed');
+          const signature = await connection.sendEncodedTransaction(Buffer.from(tx.serialize()).toString('base64'), {
+            preflightCommitment: 'confirmed',
+          });
 
           if (!signature) {
             throw new Error('Failed to send transaction');
@@ -533,8 +537,8 @@ export default function Solana({ coinId }: SolanaProps) {
             displayFeeAmount={displayTotalFee}
             displayFeePrice={totalFeePrice}
             coinSymbol={nativeCoinSymbol}
-            disableConfirm={isDisabled || !!errorMessage}
-            isLoading={isDisabled}
+            disableConfirm={isCalculatingTx || !!errorMessage}
+            isLoading={isCalculatingTx}
             errorMessage={errorMessage}
             onClickConfirm={handleOnClickReview}
           />

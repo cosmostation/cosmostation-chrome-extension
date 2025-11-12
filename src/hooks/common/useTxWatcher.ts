@@ -412,15 +412,12 @@ export function useTxWatcher(config?: UseFetchConfig) {
         }
 
         try {
-          const requestUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
-          const response = await Promise.any(
-            requestUrls.map(async (rpcUrl) => {
-              const connection = new Connection(rpcUrl, 'confirmed');
-              const response = await connection.getTransaction(tx.txHash, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+          const requestUrl = targetChain.rpcUrls.map((item) => item.url).filter(Boolean)[0];
 
-              return response;
-            }),
-          );
+          if (!requestUrl) throw new Error('No requestUrl');
+
+          const connection = new Connection(requestUrl, 'confirmed');
+          const response = await connection.getTransaction(tx.txHash, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
 
           if (!response || (response?.meta && response.meta.err)) {
             throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
