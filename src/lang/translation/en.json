@@ -1592,7 +1592,8 @@
                 "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
                 "txProcessing": "Transaction Processing",
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
-                "noTx": "The transaction has not been created yet"
+                "noTx": "The transaction has not been created yet",
+                "lowerThanRent": "Minimum {{rentAmount}} SOL required for account activation."
               }
             }
           }

@@ -1,7 +1,7 @@
 import type { Transaction, VersionedTransaction } from '@solana/web3.js';
-import { Connection } from '@solana/web3.js';
 
 import { isAxiosError } from '@/utils/axios';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -32,7 +32,7 @@ export function useTransactionPreview({ coinId, transaction, config }: UseTransa
 
       const requestURL = rpcURLs[index];
 
-      const connection = new Connection(requestURL, 'confirmed');
+      const connection = SolanaRpcClient.getInstance({ rpcUrl: requestURL }).getConnection();
 
       if (isVersionedTransaction(transaction)) {
         const { message } = transaction;

@@ -1,7 +1,7 @@
 import type { Transaction, VersionedTransaction } from '@solana/web3.js';
-import { Connection } from '@solana/web3.js';
 
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 import { isVersionedTransaction } from '@/utils/solana/util';
 
 import type { UseFetchConfig } from '../common/useFetch';
@@ -27,7 +27,7 @@ export function useMultipleTransactionPreview({ coinId, transactions, config }: 
     }
 
     return await fetchWithFailover(rpcURLs, async (url) => {
-      const connection = new Connection(url, 'confirmed');
+      const connection = SolanaRpcClient.getInstance({ rpcUrl: url }).getConnection();
 
       const results = await Promise.allSettled(
         transactions.map(async (transaction) => {

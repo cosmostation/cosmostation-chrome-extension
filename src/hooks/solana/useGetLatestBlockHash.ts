@@ -1,6 +1,5 @@
-import { Connection } from '@solana/web3.js';
-
 import { isAxiosError } from '@/utils/axios';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -26,7 +25,7 @@ export function useGetLatestBlockHash({ coinId, config }: UseGetLatestBlockHashP
 
       const requestURL = rpcURLs[index];
 
-      const connection = new Connection(requestURL, 'confirmed');
+      const connection = SolanaRpcClient.getInstance({ rpcUrl: requestURL }).getConnection();
       const response = await connection.getLatestBlockhash();
 
       return response;

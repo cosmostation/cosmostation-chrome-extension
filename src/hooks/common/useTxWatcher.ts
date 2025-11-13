@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
-import { Connection } from '@solana/web3.js';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
 import { TRANSACTION_RESULT as IOTA_TX_RESULT } from '@/constants/iota';
@@ -15,6 +14,7 @@ import { ethersProvider } from '@/utils/ethereum/ethers';
 import { buildRequestUrl } from '@/utils/fetch';
 import { wait } from '@/utils/fetch/wait';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import type { UseFetchConfig } from './useFetch';
@@ -416,7 +416,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
           if (!requestUrl) throw new Error('No requestUrl');
 
-          const connection = new Connection(requestUrl, 'confirmed');
+          const connection = SolanaRpcClient.getInstance({ rpcUrl: requestUrl }).getConnection();
           const response = await connection.getTransaction(tx.txHash, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
 
           if (!response || (response?.meta && response.meta.err)) {

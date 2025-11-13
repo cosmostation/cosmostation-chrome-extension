@@ -1,8 +1,9 @@
 import { throttle } from 'es-toolkit';
 import type { ConfirmedSignatureInfo } from '@solana/web3.js';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 import { isAxiosError } from '@/utils/axios';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 
 import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useInfiniteFetch } from '../common/useInfiniteFetch';
@@ -29,7 +30,7 @@ export function useGetSignaturesForAddress({ coinId, config }: UseGetSignaturesF
         throw new Error('All endpoints failed');
       }
 
-      const connection = new Connection(rpcURLs[index], 'confirmed');
+      const connection = SolanaRpcClient.getInstance({ rpcUrl: rpcURLs[index] }).getConnection();
 
       const pubAddress = new PublicKey(address);
 

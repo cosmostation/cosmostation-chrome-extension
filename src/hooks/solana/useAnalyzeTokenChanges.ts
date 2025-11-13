@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { Connection, type Transaction, type VersionedTransaction } from '@solana/web3.js';
+import { type Transaction, type VersionedTransaction } from '@solana/web3.js';
 
 import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 import { analyzeTokenChanges } from '@/utils/solana/parseTx';
 
 import type { UseFetchConfig } from '../common/useFetch';
@@ -29,7 +30,7 @@ export function useAnalyzeTokenChanges({ transaction, userAddress, config }: Use
 
   const fetcher = async () => {
     return await fetchWithFailover(requestURLs, async (url) => {
-      const connection = new Connection(url, 'confirmed');
+      const connection = SolanaRpcClient.getInstance({ rpcUrl: url }).getConnection();
 
       const result = await analyzeTokenChanges(connection, transaction, userAddress);
 

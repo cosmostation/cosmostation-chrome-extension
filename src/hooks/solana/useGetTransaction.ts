@@ -1,7 +1,6 @@
-import { Connection } from '@solana/web3.js';
-
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
 import { isAxiosError } from '@/utils/axios';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -32,7 +31,8 @@ export function useGetTransaction({ coinId, signature, config }: UseGetTransacti
 
       const requestURL = rpcURLs[index];
 
-      const connection = new Connection(requestURL, 'confirmed');
+      const connection = SolanaRpcClient.getInstance({ rpcUrl: requestURL }).getConnection();
+
       const response = await connection.getTransaction(signature, {
         commitment: 'confirmed',
         maxSupportedTransactionVersion: 0,

@@ -3047,7 +3047,8 @@
                 "tooLowAmount": "0보다 큰 금액을 입력하세요",
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
-                "noTx": "트랜잭션이 생성되지 않았습니다."
+                "noTx": "트랜잭션이 생성되지 않았습니다.",
+                "lowerThanRent": "계정 활성화를 위해 최소 {{rentAmount}} SOL이 필요합니다."
               }
             }
           },
