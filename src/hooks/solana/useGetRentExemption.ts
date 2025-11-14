@@ -1,4 +1,5 @@
 import { isAxiosError } from '@/utils/axios';
+import { parseCoinId } from '@/utils/queryParamGenerator';
 import { SolanaRpcClient } from '@/utils/solana/connection';
 
 import type { UseFetchConfig } from '../common/useFetch';
@@ -6,6 +7,8 @@ import { useFetch } from '../common/useFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
 
 const SPL_TOKEN_ACCOUNT_DATA_SIZE = 165;
+const SOLANA_ACCOUNT_DATA_SIZE = 0;
+const SOLANA_NATIVE_COIN_DENOM = 'sol';
 
 type UseGetRentExemptionProps = {
   coinId: string;
@@ -18,6 +21,7 @@ export function useGetRentExemption({ coinId, config }: UseGetRentExemptionProps
   const solanaAccountAsset = getSolanaAccountAsset();
 
   const rpcURLs = solanaAccountAsset?.chain.rpcUrls.map((item) => item.url) || [];
+  const isSendSPLToken = parseCoinId(coinId).id !== SOLANA_NATIVE_COIN_DENOM;
 
   const fetcher = async (index = 0) => {
     try {
@@ -28,7 +32,9 @@ export function useGetRentExemption({ coinId, config }: UseGetRentExemptionProps
       const requestURL = rpcURLs[index];
 
       const connection = SolanaRpcClient.getInstance({ rpcUrl: requestURL }).getConnection();
-      const response = await connection.getMinimumBalanceForRentExemption(SPL_TOKEN_ACCOUNT_DATA_SIZE);
+
+      const dataSize = isSendSPLToken ? SPL_TOKEN_ACCOUNT_DATA_SIZE : SOLANA_ACCOUNT_DATA_SIZE;
+      const response = await connection.getMinimumBalanceForRentExemption(dataSize);
 
       return response;
     } catch (e) {
