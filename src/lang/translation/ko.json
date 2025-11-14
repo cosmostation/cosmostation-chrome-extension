@@ -1260,7 +1260,8 @@
         "errorSubtitle": "에러가 발생했습니다",
         "errorTitle": "오류!",
         "feedback": "피드백을 공유해주시겠습니까? ",
-        "sendReportEmail": "보고서 이메일 보내기"
+        "sendReportEmail": "보고서 이메일 보내기",
+        "errorDialogTitle": "에러 상세보기"
       }
     },
     "general-setting": {

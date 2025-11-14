@@ -185,3 +185,34 @@ export function safeStringify(value: unknown, space = 4) {
     return undefined;
   }
 }
+
+export function errorStringify(error: unknown, path?: string): string {
+  if (!error) {
+    return 'No error information available';
+  }
+
+  const normalizedError =
+    error instanceof Error
+      ? {
+          ...Object.getOwnPropertyNames(error).reduce(
+            (acc, key) => {
+              try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                acc[key] = (error as any)[key];
+              } catch {
+                acc[key] = '[Getter Error]';
+              }
+              return acc;
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            {} as Record<string, any>,
+          ),
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+          path: path || 'unknown',
+        }
+      : error;
+
+  return safeStringify(normalizedError) ?? String(error);
+}
