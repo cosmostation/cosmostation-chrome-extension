@@ -824,8 +824,6 @@ function BusinessLogic() {
               },
             });
 
-            void refreshOriginConnectionTime(origin);
-
             break;
           }
 
