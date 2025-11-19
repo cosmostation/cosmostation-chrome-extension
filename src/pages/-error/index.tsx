@@ -14,7 +14,7 @@ import Scaffold from '@/components/Wrapper/components/Scaffold';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { sendMessage } from '@/libs/extension';
 import { Route as Home } from '@/pages/index';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 import { ContentsContainer, FooterContainer } from './-styled';
 
@@ -23,17 +23,18 @@ import ErrorIcon from '@/assets/images/icons/Error80.svg';
 export default function Error({ error }: ErrorComponentProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { requestQueue, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
 
   console.error(error);
 
   const handleClear = async () => {
+    const requestQueue = (await getExtensionLocalStorage('requestQueue')) || [];
+
     if (requestQueue.length === 0) {
       navigate({ to: Home.to });
       return;
     }
 
-    await Promise.all(
+    await Promise.allSettled(
       requestQueue.map((item) =>
         sendMessage({
           target: 'CONTENT',
@@ -52,7 +53,7 @@ export default function Error({ error }: ErrorComponentProps) {
       ),
     );
 
-    await updateExtensionStorageStore('requestQueue', []);
+    await setExtensionLocalStorage('requestQueue', []);
 
     navigate({
       to: Home.to,
