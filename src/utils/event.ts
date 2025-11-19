@@ -1,11 +1,13 @@
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
+import type { ExtensionStorage } from '@/types/extension';
 
 import { emitToWeb } from './message';
-import { extensionLocalStorage, extensionSessionStorage } from './storage';
+import { extensionSessionStorage } from './storage';
+import { getBitcoinDefaultStorageData } from './storage/localStorage';
 
 export async function emitChangedAddressEvent(newAccountId: string) {
-  const { userAccounts, approvedOrigins } = await extensionLocalStorage();
+  const { userAccounts, approvedOrigins } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'approvedOrigins']);
   const { currentPassword } = await extensionSessionStorage();
   const chainList = await getChains();
 
@@ -73,7 +75,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
     );
   }
 
-  const { currentBitcoinNetwork } = await extensionLocalStorage();
+  const { currentBitcoinNetwork } = await getBitcoinDefaultStorageData();
 
   const bitcoinKeyPair = getKeypair(currentBitcoinNetwork, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const bitcoinAddress = getAddress(currentBitcoinNetwork, bitcoinKeyPair?.publicKey);
@@ -97,7 +99,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
 }
 
 export async function emitDisconnectDapp() {
-  const { approvedOrigins, currentAccountId } = await extensionLocalStorage();
+  const { approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'currentAccountId']);
 
   const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === currentAccountId).map((item) => item.origin)));
 

@@ -1,12 +1,13 @@
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 
 import { SolanaRPCError } from '../error';
-import { extensionLocalStorage } from '../storage';
+import { getSolanaDefaultStorageData } from '../storage/localStorage';
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentSolanaNetwork } = await extensionLocalStorage();
+  const storageData = await getSolanaDefaultStorageData();
+  const currentSolanaNetwork = storageData?.currentSolanaNetwork;
 
-  const rpcURL = url || currentSolanaNetwork.rpcUrls[0].url;
+  const rpcURL = url || currentSolanaNetwork?.rpcUrls?.[0]?.url;
 
   const rpcId = id ?? new Date().getTime();
 
