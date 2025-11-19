@@ -290,6 +290,12 @@
           "networkFee": "Network Fee",
           "continue": "Continue"
         }
+      },
+      "SolanaFee": {
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -734,6 +740,22 @@
                     "unstaking": "Unstaking"
                   }
                 }
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
+          }
+        },
+        "Solana": {
+          "components": {
+            "SolanaTxItem": {
+              "index": {
+                "transaction": "Transaction"
               }
             }
           },
@@ -1550,6 +1572,28 @@
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
                 "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+              }
+            },
+            "Solana": {
+              "index": {
+                "mint": "Mint Address",
+                "send": "Send",
+                "recipientNetwork": "Recipient Network",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "invalidAddress": "Invalid address",
+                "noRecipientAddress": "Please enter the recipient address",
+                "noAvailableAmount": "No available amount",
+                "noAmount": "Please enter the amount",
+                "insufficientAmount": "Insufficient amount",
+                "noFee": "Insufficient fee amount",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "noTx": "The transaction has not been created yet",
+                "lowerThanRent": "Minimum {{rentAmount}} SOL required for account activation."
               }
             }
           }
@@ -3108,6 +3152,23 @@
             "failedToDryRun": "Failed to dry run",
             "reject": "Reject",
             "sign": "Sign"
+          }
+        }
+      },
+      "solana": {
+        "transaction": {
+          "entry": {
+            "reject": "Reject",
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
+          },
+          "components": {
+            "TxMessage": {
+              "index": {
+                "expectedChanges": "Expected changes",
+                "expectedChangesDescription": "Balance changes are estimated. Amounts and assets are not guaranteed."
+              }
+            }
           }
         }
       },

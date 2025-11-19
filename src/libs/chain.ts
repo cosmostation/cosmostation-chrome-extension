@@ -3,7 +3,8 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type { SupportedV11Param } from '@/types/apiV11';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -40,7 +41,9 @@ export async function getChains() {
     };
   });
 
-  const supportedChains = chainInfos.filter((chainInfo) => chainInfo.params.chainlist_params?.is_support_extension_wallet);
+  const supportedChains = chainInfos.filter(
+    (chainInfo) => !!chainInfo.params?.chainlist_params && chainInfo.params?.chainlist_params.is_support_extension_wallet,
+  ) as SupportedV11Param[];
 
   const cosmosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('cosmos'));
   const evmChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('evm'));
@@ -48,6 +51,7 @@ export async function getChains() {
   const aptosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('aptos'));
   const bitcoinChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('bitcoin'));
   const iotaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('iota'));
+  const solanaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('solana'));
 
   const remappedCosmosChains: CosmosChain[] = cosmosChains.map((chain) => {
     const id = chain.id;
@@ -71,13 +75,7 @@ export async function getChains() {
           acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
           return acc;
         }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
 
     const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
     const validatorAccountPrefix = chain.params.chainlist_params.bech_validator_prefix;
@@ -150,9 +148,7 @@ export async function getChains() {
     const isCosmos = chain.params.chainlist_params?.chain_type?.includes('cosmos') ?? false;
 
     const mainAssetDenom = (isCosmos ? chain.params?.chainlist_params?.staking_asset_denom : chain.params?.chainlist_params?.main_asset_denom) ?? null;
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params, {
-      isEvm: true,
-    });
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params, { isEvm: true });
 
     const feeInfo = {
       isEip1559: chain.params.chainlist_params?.evm_fee_info?.is_eip1559 ?? false,
@@ -192,13 +188,7 @@ export async function getChains() {
           acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
           return acc;
         }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
 
     const isDiableSend = chain.params.chainlist_params?.is_send_enabled === false;
 
@@ -238,13 +228,7 @@ export async function getChains() {
           acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
           return acc;
         }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {
@@ -257,18 +241,7 @@ export async function getChains() {
         };
       }) ?? [];
 
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      explorer,
-      accountTypes,
-    };
+    return { id, chainId, name, image, chainType, mainAssetDenom, chainDefaultCoinDenoms, rpcUrls, explorer, accountTypes };
   });
 
   const remappedAptosChains: AptosChain[] = aptosChains.map((chain) => {
@@ -289,13 +262,7 @@ export async function getChains() {
           acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
           return acc;
         }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {
@@ -308,18 +275,7 @@ export async function getChains() {
         };
       }) ?? [];
 
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      explorer,
-      accountTypes,
-    };
+    return { id, chainId, name, image, chainType, mainAssetDenom, chainDefaultCoinDenoms, rpcUrls, explorer, accountTypes };
   });
 
   const remappedBitcoinChains: BitcoinChain[] = bitcoinChains.map((chain) => {
@@ -345,18 +301,8 @@ export async function getChains() {
     const rpcUrls =
       chain.params.chainlist_params.rpc_endpoint ??
       (isTestnet
-        ? [
-            {
-              provider: 'Cosmostation',
-              url: 'https://rpc-office.cosmostation.io/bitcoin-testnet',
-            },
-          ]
-        : [
-            {
-              provider: 'Cosmostation',
-              url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet',
-            },
-          ]);
+        ? [{ provider: 'Cosmostation', url: 'https://rpc-office.cosmostation.io/bitcoin-testnet' }]
+        : [{ provider: 'Cosmostation', url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet' }]);
 
     const mempoolURL = isTestnet ? 'https://mempool.space/signet/api' : 'https://mempool.space/api';
 
@@ -365,13 +311,7 @@ export async function getChains() {
           acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
           return acc;
         }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {
@@ -384,20 +324,7 @@ export async function getChains() {
         };
       }) ?? [];
 
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      mempoolURL,
-      explorer,
-      accountTypes,
-      isTestnet,
-    };
+    return { id, chainId, name, image, chainType, mainAssetDenom, chainDefaultCoinDenoms, rpcUrls, mempoolURL, explorer, accountTypes, isTestnet };
   });
 
   const remappedIotaChains: IotaChain[] = iotaChains.map((chain) => {
@@ -418,13 +345,7 @@ export async function getChains() {
           acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
           return acc;
         }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
 
     const accountTypes =
       chain.params.chainlist_params?.account_type?.map((accountType) => {
@@ -437,18 +358,42 @@ export async function getChains() {
         };
       }) ?? [];
 
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      explorer,
-      accountTypes,
-    };
+    return { id, chainId, name, image, chainType, mainAssetDenom, chainDefaultCoinDenoms, rpcUrls, explorer, accountTypes };
+  });
+
+  const remappedSolanaChains: SolanaChain[] = solanaChains.map((chain) => {
+    const id = chain.id;
+    const chainType = 'solana';
+    const chainId = chain.params.chainlist_params.chain_id!;
+
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
+    const image = chain.params.chainlist_params?.chain_image ?? null;
+
+    const mainAssetDenom = chain.params.chainlist_params?.main_asset_denom || null;
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
+
+    const rpcUrls = chain.params.chainlist_params.solana_rpc_endpoint ?? [];
+
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
+
+    const accountTypes =
+      chain.params.chainlist_params?.account_type?.map((accountType) => {
+        const hdPath = accountType.hd_path.replace('X', '${index}');
+        return {
+          hdPath,
+          pubkeyStyle: accountType.pubkey_style,
+          isDefault: accountType.is_default ?? null,
+        };
+      }) ?? [];
+
+    const programId = { splToken: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' };
+
+    return { id, chainId, name, image, chainType, mainAssetDenom, chainDefaultCoinDenoms, rpcUrls, explorer, accountTypes, programId };
   });
 
   return {
@@ -458,6 +403,7 @@ export async function getChains() {
     aptosChains: remappedAptosChains,
     bitcoinChains: remappedBitcoinChains,
     iotaChains: remappedIotaChains,
+    solanaChains: remappedSolanaChains,
   };
 }
 

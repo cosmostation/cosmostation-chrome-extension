@@ -31,6 +31,7 @@ import type {
   WalletWatchAsset,
 } from '@/types/message/inject/evm';
 import type { IotaSignPersonalMessageInput } from '@/types/message/inject/iota';
+import type { SolanaSignMessage } from '@/types/message/inject/solana';
 import type { SuiSignMessageInput } from '@/types/message/inject/sui';
 import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import Joi from '@/utils/joi';
@@ -454,4 +455,9 @@ export const aptosSignMessageSchema = () =>
     chainId: Joi.boolean().optional(),
     message: Joi.string().required(),
     nonce: Joi.number().required(),
+  }).required();
+
+export const solanaSignMessageSchema = () =>
+  Joi.object<SolanaSignMessage['params']>({
+    message: Joi.string().hex({ prefix: false }),
   }).required();

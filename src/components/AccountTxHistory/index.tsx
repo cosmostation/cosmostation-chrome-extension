@@ -5,6 +5,7 @@ import BitcoinAccountTxHistory from './components/Bitcoin';
 import CosmosAccountTxHistory from './components/Cosmos';
 import EVMAccountTxHistory from './components/EVM';
 import IotaAccountTxHistory from './components/Iota';
+import SolanaAccountTxHistory from './components/Solana';
 import SuiAccountTxHistory from './components/Sui';
 
 type AccountTxHistoryProps = {
@@ -40,5 +41,9 @@ export default function AccountTxHistory({ coinId }: AccountTxHistoryProps) {
 
   if (currentCoin?.asset.chainType === 'iota') {
     return <IotaAccountTxHistory coinId={coinId} />;
+  }
+
+  if (currentCoin?.asset.chainType === 'solana') {
+    return <SolanaAccountTxHistory coinId={coinId} />;
   }
 }

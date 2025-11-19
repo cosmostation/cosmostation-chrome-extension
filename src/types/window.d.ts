@@ -9,6 +9,7 @@ import type {
   SuiSignTransactionBlockInput,
   SuiSignTransactionInput,
 } from '@mysten/wallet-standard';
+import type { Wallet } from '@wallet-standard/base';
 
 import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/types/extension';
@@ -39,6 +40,16 @@ import type {
   SuiSignTransactionBlockResponse,
   SuiSignTransactionResponse,
 } from '@/types/message/inject/sui';
+
+import type {
+  SolanaConnectResponse,
+  SolanaSignAllTransactionsResponse,
+  SolanaSignAndSendAllTransactionsResponse,
+  SolanaSignAndSendTransactionResponse,
+  SolanaSignMessageResponse,
+  SolanaSignTransactionParam,
+  SolanaSignTransactionResponse,
+} from './message/inject/solana';
 
 declare global {
   type KeplrInterface = Omit<
@@ -145,6 +156,19 @@ declare global {
     off: (eventName: IotaListenerType, eventHandler: (data: unknown) => void) => void;
   }
 
+  interface SolanaProvider {
+    request?: (BaseRequest) => Promise<Unknown>;
+    connect?: () => Promise<SolanaConnectResponse>;
+    disconnect?: () => Promise<void>;
+    signMessage: (message: Uint8Array, display: 'utf8' | 'hex') => Promise<SolanaSignMessageResponse>;
+    signTransaction?: (param: SolanaSignTransactionParam) => Promise<SolanaSignTransactionResponse>;
+    signAllTransactions?: (params: SolanaSignTransactionParam[]) => Promise<SolanaSignAllTransactionsResponse>;
+    signAndSendTransaction?: (param: SolanaSignTransactionParam) => Promise<SolanaSignAndSendTransactionResponse>;
+    signAndSendAllTransaction?: (params: SolanaSignTransactionParam[]) => Promise<SolanaSignAndSendAllTransactionsResponse>;
+    on?: () => Promise<Unknown>;
+    off?: () => Promise<Unknown>;
+  }
+
   interface Window {
     __cosmostationInjected__: boolean;
     customProperty: boolean;
@@ -161,6 +185,7 @@ declare global {
       bitcoin: BitcoinProvider;
       aptos: AptosWallet;
       iota: IotaProvider;
+      solana: Wallet;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;

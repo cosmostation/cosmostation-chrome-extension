@@ -28,6 +28,8 @@ import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
 import { Route as IotaSignMessage } from '@/pages/popup/iota/sign-message';
 import { Route as IotaTransaction } from '@/pages/popup/iota/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
+import { Route as SolanaSignMessage } from '@/pages/popup/solana/sign-message';
+import { Route as SolanaTransaction } from '@/pages/popup/solana/transaction';
 import { Route as SuiSignMessage } from '@/pages/popup/sui/sign-message';
 import { Route as SuiTransaction } from '@/pages/popup/sui/transaction';
 import type { AptosRequest } from '@/types/message/inject/aptos';
@@ -35,6 +37,7 @@ import type { BitcoinRequest } from '@/types/message/inject/bitcoin';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
 import type { IotaRequest } from '@/types/message/inject/iota';
+import type { SolanaRequest } from '@/types/message/inject/solana';
 import type { SuiRequest } from '@/types/message/inject/sui';
 import { isSidePanelView } from '@/utils/view/sidepanel';
 import { getSiteTitle } from '@/utils/website';
@@ -101,6 +104,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
         if (requestQueue[0].chainType === 'iota') {
           navigate({
             to: getNavigationPathForIotaRequest(requestQueue[0]),
+          });
+        }
+        if (requestQueue[0].chainType === 'solana') {
+          navigate({
+            to: getNavigationPathForSolanaRequest(requestQueue[0]),
           });
         }
       }
@@ -239,6 +247,23 @@ const getNavigationPathForIotaRequest = (requestQueue: IotaRequest) => {
       return IotaTransaction.to;
     case 'iota_signPersonalMessage':
       return IotaSignMessage.to;
+
+    default:
+      return '/';
+  }
+};
+
+const getNavigationPathForSolanaRequest = (requestQueue: SolanaRequest) => {
+  switch (requestQueue.method) {
+    case 'solana_connect':
+      return RequestAccount.to;
+    case 'solana_signMessage':
+      return SolanaSignMessage.to;
+    case 'solana_signTransaction':
+    case 'solana_signAllTransactions':
+    case 'solana_signAndSendTransaction':
+    case 'solana_signAndSendAllTransactions':
+      return SolanaTransaction.to;
 
     default:
       return '/';

@@ -3,13 +3,13 @@ import { PromisePool } from '@supercharge/promise-pool';
 
 import { updateHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
-import type { V11Asset, V11Cw20, V11Erc20, V11Param } from '@/types/apiV11';
-import type { CosmosCw20Asset, EvmErc20Asset } from '@/types/asset';
+import type { V11Asset, V11Cw20, V11Erc20, V11Param, V11SpltokenResponse } from '@/types/apiV11';
+import type { CosmosCw20Asset, EvmErc20Asset, SolanaSpltokenAsset } from '@/types/asset';
 import type { ExtensionStorage } from '@/types/extension';
 import { getWithFullResponse } from '@/utils/axios';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
-// params, assets, erc20, cw20
+// params, assets, erc20, cw20, spltoken
 export async function v11() {
   console.time('chainsAndAsset');
   try {
@@ -89,11 +89,35 @@ export async function v11() {
 
     const cw20Assets = cw20AssetsResponse.flat();
 
+    // spltoken
+    const spltokenAssetResponse = await getWithFullResponse<V11SpltokenResponse>(`https://front.api.mintscan.io/v11/assets/spl`);
+    const spltokenAsset = spltokenAssetResponse.data;
+
+    const spltokenAssets: SolanaSpltokenAsset[] = spltokenAsset.assets
+      .map((asset) => {
+        const { name, symbol, description, decimals, image, coinGeckoId } = asset;
+        return {
+          id: asset.address,
+          chainId: asset.chainName,
+          chainType: 'solana' as const,
+          name,
+          symbol,
+          description,
+          decimals,
+          image,
+          coinGeckoId,
+          type: 'spl',
+          wallet_preload: asset.default,
+        };
+      })
+      .filter((asset) => asset.id);
+
     await hideNewContractTokens(erc20Assets, cw20Assets);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets'>>({
+    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'spltokenAssets'>>({
       erc20Assets,
       cw20Assets,
+      spltokenAssets,
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
