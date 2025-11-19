@@ -10,6 +10,7 @@ import type {
   AllCosmosAccountAssets,
   AllEVMAccountAssets,
   AllGnoAccountAssets,
+  AllSolanaAccountAssets,
   FlatAccountAssets,
 } from '@/types/accountAssets';
 import type { AssetId } from '@/types/asset';
@@ -25,6 +26,7 @@ export type UseAccountAssetsResponse = AccountAllAssets & {
   allCosmosAccountAssets: AllCosmosAccountAssets[];
   allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];
+  allSolanaAccountAssets: AllSolanaAccountAssets[];
   allGnoAccountAssets: AllGnoAccountAssets[];
 };
 
@@ -137,6 +139,8 @@ export function useAccountAllAssets({
       customCw20AccountAssets: data.customCw20AccountAssets,
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
       iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
+      solanaAccountAssets: filterAssetList(data.solanaAccountAssets),
+      spltokenAccountAssets: filterAssetList(data.spltokenAccountAssets),
       gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
       grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
     };
@@ -328,6 +332,7 @@ export function useAccountAllAssets({
           ...filteredAccountAssets.erc20AccountAssets,
           ...filteredAccountAssets.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredAccountAssets.solanaAccountAssets, ...filteredAccountAssets.spltokenAccountAssets],
         allGnoAccountAssets: [...filteredAccountAssets.gnoAccountAssets, ...filteredAccountAssets.grc20AccountAssets],
       };
 
@@ -353,6 +358,7 @@ export function useAccountAllAssets({
           ...filteredByVisibleList.erc20AccountAssets,
           ...filteredByVisibleList.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
         allGnoAccountAssets: [...filteredByVisibleList.gnoAccountAssets, ...filteredByVisibleList.grc20AccountAssets],
       };
 

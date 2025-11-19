@@ -80,6 +80,17 @@ export interface IotaAsset extends AssetBase {
   type: string;
 }
 
+export interface SolanaAsset extends AssetBase {
+  chainType: 'solana';
+  type: string;
+}
+
+export interface SolanaSpltokenAsset extends AssetBase {
+  chainType: 'solana';
+  type: string;
+  wallet_preload?: boolean;
+}
+
 export interface GnoAsset extends AssetBase {
   chainType: 'gno';
   type: string;
@@ -92,7 +103,19 @@ export interface GnoGrc20Asset extends AssetBase {
   wallet_preload?: boolean;
 }
 
-export type Asset = CosmosAsset | CosmosCw20Asset | EvmAsset | EvmErc20Asset | SuiAsset | AptosAsset | BitcoinAsset | IotaAsset | GnoAsset | GnoGrc20Asset;
+export type Asset =
+  | CosmosAsset
+  | CosmosCw20Asset
+  | EvmAsset
+  | EvmErc20Asset
+  | SuiAsset
+  | AptosAsset
+  | BitcoinAsset
+  | IotaAsset
+  | GnoAsset
+  | GnoGrc20Asset
+  | SolanaAsset
+  | SolanaSpltokenAsset;
 
 export type AssetSingleGroup = {
   singles: Asset[];

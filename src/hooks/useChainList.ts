@@ -75,6 +75,7 @@ export function useChainList() {
             ...(chainList.suiChains || []),
             ...(chainList.bitcoinChains || []),
             ...(chainList.iotaChains || []),
+            ...(chainList.solanaChains || []),
             ...(chainList.gnoChains || []),
           ].sort((a, b) => a.name.localeCompare(b.name))
         : [],

@@ -7,6 +7,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
@@ -24,6 +25,7 @@ import type { ResponseAppMessage } from '@/types/message/content';
 import type { CosSignMessage } from '@/types/message/inject/cosmos';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { getMsgSignData } from '@/utils/cosmos/msgParse';
+import { wait } from '@/utils/fetch/wait';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
@@ -100,6 +102,8 @@ export default function Entry({ request, chain }: EntryProps) {
         signature: base64Signature,
         pub_key: pubKey,
       };
+
+      await wait(POPUP_DISMISS_DELAY_MS);
 
       sendMessage<ResponseAppMessage<CosSignMessage>>({
         target: 'CONTENT',
@@ -196,6 +200,7 @@ export default function Entry({ request, chain }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

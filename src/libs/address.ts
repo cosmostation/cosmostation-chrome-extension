@@ -13,6 +13,7 @@ import { SHA3 } from 'sha3';
 import ecc from '@bitcoinerlab/secp256k1';
 import { Ed25519PublicKey as IotaEd25519PublicKey } from '@iota/iota-sdk/keypairs/ed25519';
 import { Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
+import { PublicKey } from '@solana/web3.js';
 
 import type { Account } from '@/types/account';
 import type { Chain } from '@/types/chain';
@@ -58,7 +59,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
       return { privateKey, publicKey };
     }
 
-    if (chainType === 'aptos' || chainType === 'sui' || chainType === 'iota') {
+    if (chainType === 'aptos' || chainType === 'sui' || chainType === 'iota' || chainType === 'solana') {
       const path = hdPath.replace('${index}', `${index}`);
 
       const seed = bip39.mnemonicToSeedSync(decryptedMnemonic);
@@ -84,7 +85,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
 
       return { privateKey: decryptedPrivateKey, publicKey: Buffer.from(ecpair.publicKey).toString('hex') };
     }
-    if (chainType === 'aptos' || chainType === 'sui' || chainType === 'iota') {
+    if (chainType === 'aptos' || chainType === 'sui' || chainType === 'iota' || chainType === 'solana') {
       const publicKey = Buffer.from(getPublicKey(Buffer.from(decryptedPrivateKey, 'hex'), false)).toString('hex');
       return { privateKey: decryptedPrivateKey, publicKey };
     }
@@ -176,6 +177,11 @@ export function getAddress(chain: Chain, publicKey: string) {
       });
       return p2wpkhSh.address!;
     }
+  }
+
+  if (chainType === 'solana') {
+    const pubKey = new PublicKey(Buffer.from(publicKey, 'hex'));
+    return pubKey.toBase58();
   }
 
   if (chainType === 'gno') {

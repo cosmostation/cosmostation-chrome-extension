@@ -1,11 +1,13 @@
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
+import type { ExtensionStorage } from '@/types/extension';
 
 import { emitToWeb } from './message';
-import { extensionLocalStorage, extensionSessionStorage } from './storage';
+import { extensionSessionStorage } from './storage';
+import { getBitcoinDefaultStorageData } from './storage/localStorage';
 
 export async function emitChangedAddressEvent(newAccountId: string) {
-  const { userAccounts, approvedOrigins } = await extensionLocalStorage();
+  const { userAccounts, approvedOrigins } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'approvedOrigins']);
   const { currentPassword } = await extensionSessionStorage();
   const chainList = await getChains();
 
@@ -73,12 +75,27 @@ export async function emitChangedAddressEvent(newAccountId: string) {
     );
   }
 
-  const { currentBitcoinNetwork } = await extensionLocalStorage();
+  const { currentBitcoinNetwork } = await getBitcoinDefaultStorageData();
 
   const bitcoinKeyPair = getKeypair(currentBitcoinNetwork, userAccounts.find((item) => item.id === newAccountId)!, currentPassword);
   const bitcoinAddress = getAddress(currentBitcoinNetwork, bitcoinKeyPair?.publicKey);
 
   emitToWeb({ event: 'accountChanged', chainType: 'bitcoin', data: { result: [bitcoinAddress] } }, currentAccountOrigins);
+
+  const solanaChainForAddress = chainList.solanaChains?.[0];
+
+  const solanaKeyPair = solanaChainForAddress
+    ? getKeypair(solanaChainForAddress, userAccounts.find((item) => item.id === newAccountId)!, currentPassword)
+    : undefined;
+  const solanaAddress = solanaKeyPair && solanaChainForAddress ? getAddress(solanaChainForAddress, solanaKeyPair?.publicKey) : undefined;
+
+  if (solanaAddress) {
+    emitToWeb({ event: 'accountChanged', chainType: 'solana', data: { result: solanaAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'accountChanged', chainType: 'solana', data: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+  }
 
   const gnoChainForAddress = chainList.gnoChains?.[0];
 
@@ -92,4 +109,12 @@ export async function emitChangedAddressEvent(newAccountId: string) {
       currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
     );
   }
+}
+
+export async function emitDisconnectDapp() {
+  const { approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'currentAccountId']);
+
+  const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === currentAccountId).map((item) => item.origin)));
+
+  emitToWeb({ event: 'disconnect', chainType: 'solana', data: { result: undefined } }, currentAccountOrigins);
 }

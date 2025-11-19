@@ -1,6 +1,6 @@
 import Image from '@/components/common/Image';
 
-import { CenteredImageContainer, FloatingContentsConainer, RotatingBorder } from './styled';
+import { CenteredImageContainer, FloatingContentsConainer, InnerCircle, RotatingBorder } from './styled';
 
 export type FloatingContentsProps = {
   image?: string;
@@ -14,6 +14,7 @@ export default function FloatingContents({ image, borderColor }: FloatingContent
   return (
     <FloatingContentsConainer>
       <RotatingBorder start-color={borderColor.startColor} end-color={borderColor.endColor} />
+      <InnerCircle />
       <CenteredImageContainer>
         <Image src={image} />
       </CenteredImageContainer>

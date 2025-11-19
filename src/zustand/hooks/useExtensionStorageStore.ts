@@ -1,12 +1,11 @@
 import { produce } from 'immer';
 import { create } from 'zustand';
 
-import { AD_POPOVER_IDS } from '@/constants/adPopover';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import type { CurrencyType } from '@/types/currency';
-import type { AdPopoverStateMap, ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
+import type { ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
 import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
 import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
@@ -19,6 +18,7 @@ export const initialState: ExtensionStorageState = {
   cw20Assets: [],
   grc20Assets: [],
   customCw20Assets: [],
+  spltokenAssets: [],
   initAccountIds: [],
   initCheckLegacyBalanceAccountIds: [],
   dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
@@ -38,12 +38,7 @@ export const initialState: ExtensionStorageState = {
   customHiddenAssetIds: [],
   requestQueue: [],
   approvedOrigins: [],
-  adPopoverState: AD_POPOVER_IDS.reduce((acc: AdPopoverStateMap, cur) => {
-    acc[cur] = {
-      isVisiable: false,
-    };
-    return acc;
-  }, {}),
+  adPopoverState: {},
   isBalanceVisible: true,
   isHideSmalValue: false,
   approvedSuiPermissions: [],
@@ -53,13 +48,10 @@ export const initialState: ExtensionStorageState = {
   chosenAptosNetworkId: '',
   chosenBitcoinNetworkId: '',
   chosenIotaNetworkId: '',
+  chosenSolanaNetworkId: '',
   chosenGnoNetworkId: '',
   currentWindowId: null,
-  prioritizedProvider: {
-    keplr: false,
-    metamask: false,
-    aptos: false,
-  },
+  prioritizedProvider: { keplr: false, metamask: false, aptos: false },
   pinnedDappIds: [],
   autoLockTimeInMinutes: '30',
   autoLockTimeStampAt: null,
@@ -69,7 +61,7 @@ export const initialState: ExtensionStorageState = {
   lastRequestTimestamps: null,
 };
 
-export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'grc20Assets', 'migrationStatus'];
+export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'grc20Assets', 'migrationStatus', 'spltokenAssets'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {
@@ -102,15 +94,11 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
 export const loadExtensionStorageStoreFromStorage = async () => {
   const allStorage = await getAllExtensionLocalStorage();
 
-  useExtensionStorageStore.setState({
-    ...allStorage,
-  });
+  useExtensionStorageStore.setState({ ...allStorage });
 };
 
 export const loadExtensionStorageStoreFromStorageByKey = async <K extends ExtensionStorageKeys>(key: K) => {
   const value = (await getExtensionLocalStorage(key)) as ExtensionStorageStore[K];
 
-  useExtensionStorageStore.setState({
-    [key]: value,
-  } as Pick<ExtensionStorageStore, K>);
+  useExtensionStorageStore.setState({ [key]: value } as Pick<ExtensionStorageStore, K>);
 };

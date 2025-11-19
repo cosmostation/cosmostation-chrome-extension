@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { isHexString } from 'ethers';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
@@ -12,10 +12,11 @@ import type { SuiTxInfoResponse } from '@/types/sui/api';
 import { get, getWithFullResponse, isAxiosError, post } from '@/utils/axios';
 import { gnoURL } from '@/utils/crypto/gno';
 import { devLogger } from '@/utils/devLogger';
-import { ethersProvider } from '@/utils/ethereum/ethers';
+import { waitForTransaction } from '@/utils/ethereum/waitForTx';
 import { buildRequestUrl } from '@/utils/fetch';
 import { wait } from '@/utils/fetch/wait';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import type { UseFetchConfig } from './useFetch';
@@ -131,27 +132,14 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
         const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
 
-        const providers = rpcUrls.map((url) =>
-          ethersProvider(url, undefined, {
-            staticNetwork: true,
-            batchMaxCount: 1,
-          }),
-        );
-
-        const allRpcProvider = new ethers.FallbackProvider(
-          providers.map((provider, index) => ({
-            provider,
-            priority: index + 1,
-            weight: 1,
-          })),
-        );
         try {
-          const confirmationsNeeded = 1;
-          const timeout = 4000;
+          const receipt = await waitForTransaction({
+            rpcURLs: rpcUrls,
+            chainId: targetChain.chainId && isHexString(targetChain.chainId) ? parseInt(targetChain.chainId, 16) : undefined,
+            txHash: tx.txHash,
+          });
 
-          const receipt = await allRpcProvider.waitForTransaction(tx.txHash, confirmationsNeeded, timeout);
-
-          const isTxSuccess = receipt?.status === 1;
+          const isTxSuccess = receipt?.status === 'success';
 
           if (!isTxSuccess) {
             throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
@@ -175,8 +163,6 @@ export function useTxWatcher(config?: UseFetchConfig) {
         } catch (error) {
           devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
           updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
-        } finally {
-          allRpcProvider.destroy();
         }
       }
 
@@ -195,9 +181,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
           const response = await Promise.any(
             requestUrls.map(async (rpcUrl) => {
-              const aptosClientConfig = new AptosConfig({
-                fullnode: rpcUrl,
-              });
+              const aptosClientConfig = new AptosConfig({ fullnode: rpcUrl });
 
               const aptosClient = new Aptos(aptosClientConfig);
 
@@ -258,9 +242,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, {
-                timeout: 5000,
-              });
+              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, { timeout: 5000 });
 
               if (response.error) {
                 throw new Error(response.error.message);
@@ -361,9 +343,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, {
-                timeout: 5000,
-              });
+              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, { timeout: 5000 });
 
               if (response.error) {
                 throw new Error(response.error.message);
@@ -402,6 +382,39 @@ export function useTxWatcher(config?: UseFetchConfig) {
             if (tx.type === 'nft') {
               refetchIotaNFTs();
             }
+          }
+
+          removeTx(tx.txHash);
+        } catch (error) {
+          devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
+          updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
+        }
+      }
+
+      if (chainType === 'solana') {
+        const targetChain = chainList.solanaChains?.find((item) => isMatchingUniqueChainId(item, tx.chainId));
+        if (!targetChain) {
+          removeTx(tx.txHash);
+          continue;
+        }
+
+        try {
+          const requestUrl = targetChain.rpcUrls.map((item) => item.url).filter(Boolean)[0];
+
+          if (!requestUrl) throw new Error('No requestUrl');
+
+          const connection = SolanaRpcClient.getInstance({ rpcUrl: requestUrl }).getConnection();
+          const response = await connection.getTransaction(tx.txHash, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+
+          if (!response || (response?.meta && response.meta.err)) {
+            throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
+          }
+
+          const isTxSuccess = response?.meta && !response.meta.err;
+
+          if (isTxSuccess) {
+            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateChainSpecificBalance', params: [currentAccount.id, tx.chainId] });
+            refreshAssets();
           }
 
           removeTx(tx.txHash);

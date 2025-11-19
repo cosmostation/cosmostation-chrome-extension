@@ -16,6 +16,7 @@ import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import EmptyAsset from '@/components/EmptyAsset';
 import { P2PKH__V_BYTES, P2SH__V_BYTES, P2TR__V_BYTES, P2WPKH__V_BYTES } from '@/constants/bitcoin/tx';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
@@ -45,6 +46,7 @@ import type { ResponseAppMessage } from '@/types/message/content';
 import type { BitSendBitcoin } from '@/types/message/inject/bitcoin';
 import { executeTransactionSequentially } from '@/utils/bitcoin/sign';
 import { ecpairFromPrivateKey, getTweakSigner, initBitcoinEcc } from '@/utils/bitcoin/tx';
+import { wait } from '@/utils/fetch/wait';
 import { gt, minus, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
@@ -84,7 +86,9 @@ export default function Entry({ request }: EntryProps) {
     disableDupeEthermint: true,
   });
 
-  const { to, satAmount } = request.params;
+  const { params, origin } = request;
+
+  const { to, satAmount } = params;
 
   const nativeAccountAsset = useMemo(
     () => currentBitcoinNetwork && accountAllAssets?.bitcoinAccountAssets.find((item) => isSameChain(item.chain, currentBitcoinNetwork)),
@@ -354,6 +358,8 @@ export default function Entry({ request }: EntryProps) {
 
       const { result } = response;
 
+      await wait(POPUP_DISMISS_DELAY_MS);
+
       await incrementTxCountForOrigin(request.origin);
 
       sendMessage<ResponseAppMessage<BitSendBitcoin>>({
@@ -500,6 +506,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

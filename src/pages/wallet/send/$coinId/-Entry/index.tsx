@@ -8,6 +8,7 @@ import Cosmos from './Cosmos';
 import EVM from './EVM';
 import Gno from './Gno';
 import Iota from './Iota';
+import Solana from './Solana';
 import Sui from './Sui';
 
 type EntryProps = {
@@ -42,6 +43,10 @@ export default function Entry({ coinId }: EntryProps) {
 
   if (selectedAccountAsset?.asset.chainType === 'iota') {
     return <Iota coinId={coinId} />;
+  }
+
+  if (selectedAccountAsset?.asset.chainType === 'solana') {
+    return <Solana coinId={coinId} />;
   }
 
   if (selectedAccountAsset?.asset.chainType === 'gno') {

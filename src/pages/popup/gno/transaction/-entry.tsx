@@ -11,6 +11,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import FeeSettingBottomSheet from '@/components/Fee/GnoFee/components/FeeSettingBottomSheet';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { GNO_MEMO_MAX_BYTES } from '@/constants/gno';
 import { DEFAULT_GAS_MULTIPLY, GNO_DEFAULT_GAS } from '@/constants/gno/gas';
@@ -35,6 +36,7 @@ import type {
   GnoSignTransactionData,
   GnoSignTransactionResponse,
 } from '@/types/message/inject/gno';
+import { wait } from '@/utils/fetch/wait';
 import { getGnoFeeStepNames } from '@/utils/gno/fee';
 import { encodeMessageValue } from '@/utils/gno/transaction';
 import { ceil, gt, gte, times } from '@/utils/numbers';
@@ -317,6 +319,8 @@ export default function Entry({ request }: EntryProps) {
           data: returnData,
         };
 
+        await wait(POPUP_DISMISS_DELAY_MS);
+
         await incrementTxCountForOrigin(request.origin);
 
         sendMessage({
@@ -343,6 +347,7 @@ export default function Entry({ request }: EntryProps) {
             hash: response.hash,
           },
         };
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -358,8 +363,6 @@ export default function Entry({ request }: EntryProps) {
           },
         });
       }
-
-      await incrementTxCountForOrigin(request.origin);
     } catch {
       sendMessage({
         target: 'CONTENT',
@@ -439,6 +442,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

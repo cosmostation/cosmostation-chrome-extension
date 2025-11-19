@@ -7,6 +7,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
@@ -21,6 +22,7 @@ import NetworkInfo from '@/pages/popup/-components/NetworkInfo';
 import RequestMethodTitle from '@/pages/popup/-components/RequestMethodTitle';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { GnoSignMessage } from '@/types/message/inject/gno';
+import { wait } from '@/utils/fetch/wait';
 import { signMessage } from '@/utils/gno/sign';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
@@ -39,7 +41,7 @@ export default function Entry({ request }: EntryProps) {
 
   const currentGnoChainId = useMemo(() => currentGnoNetwork && getUniqueChainId(currentGnoNetwork), [currentGnoNetwork]);
 
-  const { currentAccount } = useCurrentAccount();
+  const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -80,6 +82,9 @@ export default function Entry({ request }: EntryProps) {
         publicKey: Buffer.from(keyPair.publicKey, 'hex').toString('base64'),
       };
 
+      await wait(POPUP_DISMISS_DELAY_MS);
+
+      await incrementTxCountForOrigin(request.origin);
       sendMessage<ResponseAppMessage<GnoSignMessage>>({
         target: 'CONTENT',
         method: 'responseApp',
@@ -154,6 +159,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

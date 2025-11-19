@@ -28,6 +28,13 @@ export const BITCOIN_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
 } as const;
 
+export const SOLANA_LISTENER_TYPE = {
+  ACCOUNT_CHANGED: 'accountChanged',
+  CONNECT: 'connect',
+  DISCONNECT: 'disconnect',
+  CHANGE: 'change',
+} as const;
+
 export const GNO_LISTENER_TYPE = {
   CHANGED_ACCOUNT: 'changedAccount',
   CHANGED_NETWORK: 'changedNetwork',

@@ -161,6 +161,32 @@ export class BitcoinRPCError extends Error {
   }
 }
 
+export class SolanaRPCError extends Error {
+  public code: number;
+
+  public id?: string | number;
+
+  public rpcMessage: Record<string, { code: number; message: string }>;
+
+  constructor(code: number, message: string, id?: string | number) {
+    super(message);
+    this.name = 'SolanaRPCError';
+    this.code = code;
+    this.id = id;
+
+    const errorMessage = {
+      error: {
+        code,
+        message,
+      },
+    };
+
+    this.rpcMessage = errorMessage;
+
+    Object.setPrototypeOf(this, SuiRPCError.prototype);
+  }
+}
+
 export class GnoRPCError extends Error {
   public code: number;
 

@@ -5,6 +5,7 @@ import {
   ETHEREUM_LISTENER_TYPE,
   GNO_LISTENER_TYPE,
   IOTA_LISTENER_TYPE,
+  SOLANA_LISTENER_TYPE,
   SUI_LISTENER_TYPE,
 } from '@/constants/message';
 import { sendMessage } from '@/libs/extension';
@@ -59,6 +60,7 @@ const CHAIN_TYPE_TO_LISTENER_TYPES: Record<ChainType, ListenerType[]> = {
   sui: Object.values(SUI_LISTENER_TYPE),
   bitcoin: Object.values(BITCOIN_LISTENER_TYPE),
   iota: Object.values(IOTA_LISTENER_TYPE),
+  solana: Object.values(SOLANA_LISTENER_TYPE),
   gno: Object.values(GNO_LISTENER_TYPE),
 };
 
