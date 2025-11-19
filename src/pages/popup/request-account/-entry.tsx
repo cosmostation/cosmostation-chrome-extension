@@ -14,7 +14,7 @@ import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTyp
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
-import type { CosmosChain } from '@/types/chain';
+import type { RequestQueue } from '@/types/extension';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { AptosAccount } from '@/types/message/inject/aptos';
 import type { BitRequestAccount } from '@/types/message/inject/bitcoin';
@@ -23,8 +23,10 @@ import type { EthRequestAccounts, EthRequestAccountsResponse } from '@/types/mes
 import type { IotaRequestAccount, IotaRequestAccountResponse, IotaRequestConnect, IotaRequestConnectResponse } from '@/types/message/inject/iota';
 import type { SolanaConnect } from '@/types/message/inject/solana';
 import type { SuiRequestAccount, SuiRequestAccountResponse, SuiRequestConnect, SuiRequestConnectResponse } from '@/types/message/inject/sui';
+import { devLogger } from '@/utils/devLogger';
 import { CosmosRPCError, EthereumRPCError, IotaRPCError, SuiRPCError } from '@/utils/error';
-import { extensionLocalStorage, getExtensionLocalStorage } from '@/utils/storage';
+import { getExtensionLocalStorage } from '@/utils/storage';
+import { getAptosDefaultStorageData, getBitcoinDefaultStorageData, getSolanaDefaultStorageData } from '@/utils/storage/localStorage';
 import { addHexPrefix } from '@/utils/string';
 
 import { ContentsContainer, StyledCircularProgress, TextWrapper } from './-styled';
@@ -63,29 +65,65 @@ function BusinessLogic() {
   const { currentPassword } = useCurrentPassword();
   const { currentAccount, refreshOriginConnectionTime } = useCurrentAccount();
 
+  const rejectFunc = async (currentRequestQueue: RequestQueue) => {
+    try {
+      sendMessage({
+        target: 'CONTENT',
+        method: 'responseApp',
+        origin: currentRequestQueue.origin,
+        requestId: currentRequestQueue.requestId,
+        tabId: currentRequestQueue.tabId,
+        params: {
+          id: currentRequestQueue.requestId,
+          error: {
+            code: RPC_ERROR.INTERNAL,
+            message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+          },
+        },
+      });
+    } catch (error) {
+      devLogger.error(`Error in ${currentRequestQueue.requestId}`, error);
+    }
+  };
+
+  const addProcessedRequestIds = (requestId: string) => {
+    setProcessedRequestIds((prev) => new Set(prev).add(requestId));
+  };
+
   useEffect(() => {
     const handleRequestAccount = async () => {
       if (!currentRequestQueue) return;
 
-      if (processedRequestIds.has(currentRequestQueue.requestId)) {
+      const { requestId, method, tabId, origin } = currentRequestQueue;
+
+      if (processedRequestIds.has(requestId)) {
         return;
       }
-
-      setProcessedRequestIds((prev) => new Set(prev).add(currentRequestQueue.requestId));
+      addProcessedRequestIds(requestId);
 
       try {
-        if (currentRequestQueue?.method === 'cos_requestAccount' && currentPassword) {
-          const { tabId, requestId, origin, params } = currentRequestQueue;
+        switch (method) {
+          case 'cos_requestAccount': {
+            if (!currentPassword) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
 
-          const allCosmosChains = chainList?.allCosmosChains || [];
+            const { params } = currentRequestQueue;
 
-          const selectedChain = allCosmosChains.filter((item) => item.chainId === params?.chainName);
+            const allCosmosChains = chainList?.allCosmosChains || [];
 
-          const chainName = selectedChain.length === 1 ? selectedChain[0].name.toLowerCase() : params?.chainName?.toLowerCase();
+            const selectedChain = allCosmosChains.filter((item) => item.chainId === params?.chainName);
 
-          const chain = allCosmosChains.find((item) => item.name.toLowerCase() === chainName) as CosmosChain | undefined;
+            const chainName = selectedChain.length === 1 ? selectedChain[0].name.toLowerCase() : params?.chainName?.toLowerCase();
 
-          if (chain) {
+            const chain = allCosmosChains.find((item) => item.name.toLowerCase() === chainName);
+
+            if (!chain) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
             const inAppSelectedPreferAccountType = currentPreferAccountType?.[chain.id];
 
             const updatedChain = produce(chain, (draft) => {
@@ -109,13 +147,6 @@ function BusinessLogic() {
               }
             });
 
-            void refreshOriginConnectionTime(origin);
-
-            const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
-            const address = getAddress(updatedChain, keyPair.publicKey);
-
-            const publicKey = keyPair.publicKey;
-
             if (!updatedChain.accountTypes || updatedChain.accountTypes.length === 0) {
               sendMessage<ResponseAppMessage<CosRequestAccount>>({
                 target: 'CONTENT',
@@ -131,12 +162,18 @@ function BusinessLogic() {
                   },
                 },
               });
-
-              await deQueue();
-
-              return;
+              break;
             }
 
+            const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
+
+            if (!keyPair?.publicKey) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
+            const address = getAddress(updatedChain, keyPair.publicKey);
+            const publicKey = keyPair.publicKey;
             const accountType = updatedChain.accountTypes[0];
             const isEthermint = accountType.pubkeyStyle === 'keccak256';
             const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
@@ -162,18 +199,28 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
+            void refreshOriginConnectionTime(origin);
+
+            break;
           }
-        }
 
-        if (currentRequestQueue?.method === 'cos_requestAccountsSettled' && currentPassword) {
-          const currentAccountAddressInfo = await getExtensionLocalStorage(`${currentAccount.id}-address`);
+          case 'cos_requestAccountsSettled': {
+            if (!currentPassword) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
 
-          const { tabId, requestId, origin, params } = currentRequestQueue;
+            const currentAccountAddressInfo = await getExtensionLocalStorage(`${currentAccount.id}-address`);
 
-          const inputChainIds = params.chainIds;
+            const { params } = currentRequestQueue;
 
-          if (chainList.cosmosChains && chainList.cosmosChains?.length > 0) {
+            const inputChainIds = params.chainIds;
+
+            if (!chainList.cosmosChains || chainList.cosmosChains.length === 0) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
             const allCosmosChains = chainList.allCosmosChains;
 
             const result: CosRequestAccountsSettledResponse = inputChainIds.map((inputChainId) => {
@@ -232,38 +279,43 @@ function BusinessLogic() {
                     isEthermint,
                   },
                 };
-              } else {
-                if (!updatedChain.accountTypes[0]) {
-                  return {
-                    status: 'rejected',
-                    reason: new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain'),
-                  };
-                }
+              }
 
-                const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
-                const address = getAddress(updatedChain, keyPair?.publicKey);
-                const publicKey = keyPair?.publicKey || '';
-
-                const accountType = updatedChain.accountTypes[0];
-                const isEthermint = accountType.pubkeyStyle === 'keccak256';
-                const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
-
+              if (!updatedChain.accountTypes[0]) {
                 return {
-                  status: 'fulfilled',
-                  value: {
-                    chainId: inputChainId,
-                    address,
-                    publicKey,
-                    publicKeyTypeUrl,
-                    name: currentAccount.name,
-                    isLedger: false,
-                    isEthermint,
-                  },
+                  status: 'rejected',
+                  reason: new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain'),
                 };
               }
-            });
 
-            void refreshOriginConnectionTime(origin);
+              const keyPair = getKeypair(updatedChain, currentAccount, currentPassword);
+
+              if (!keyPair?.publicKey) {
+                return {
+                  status: 'rejected',
+                  reason: new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain'),
+                };
+              }
+              const address = getAddress(updatedChain, keyPair?.publicKey);
+              const publicKey = keyPair.publicKey;
+
+              const accountType = updatedChain.accountTypes[0];
+              const isEthermint = accountType.pubkeyStyle === 'keccak256';
+              const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
+
+              return {
+                status: 'fulfilled',
+                value: {
+                  chainId: inputChainId,
+                  address,
+                  publicKey,
+                  publicKeyTypeUrl,
+                  name: currentAccount.name,
+                  isLedger: false,
+                  isEthermint,
+                },
+              };
+            });
 
             sendMessage<ResponseAppMessage<CosRequestAccountsSettled>>({
               target: 'CONTENT',
@@ -276,20 +328,63 @@ function BusinessLogic() {
                 result,
               },
             });
-
-            await deQueue();
-          }
-        }
-
-        if ((currentRequestQueue?.method === 'eth_requestAccounts' || currentRequestQueue?.method === 'wallet_requestPermissions') && currentPassword) {
-          const { tabId, requestId, origin } = currentRequestQueue;
-          const evmChains = (await getChains()).evmChains;
-          const evmChain = evmChains?.find((item) => item.chainId === '0x1') || evmChains?.[0];
-
-          if (evmChain) {
             void refreshOriginConnectionTime(origin);
 
+            break;
+          }
+
+          case 'eth_requestAccounts':
+          case 'wallet_requestPermissions': {
+            if (!currentPassword) {
+              sendMessage<ResponseAppMessage<EthRequestAccounts>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]),
+                },
+              });
+              break;
+            }
+
+            const evmChains = (await getChains()).evmChains;
+            const evmChain = evmChains?.find((item) => item.chainId === '0x1') || evmChains?.[0];
+
+            if (!evmChain) {
+              sendMessage<ResponseAppMessage<EthRequestAccounts>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]),
+                },
+              });
+              break;
+            }
+
             const keyPair = getKeypair(evmChain, currentAccount, currentPassword);
+
+            if (!keyPair?.publicKey) {
+              sendMessage<ResponseAppMessage<EthRequestAccounts>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]),
+                },
+              });
+              break;
+            }
+
             const address = getAddress(evmChain, keyPair.publicKey);
 
             const result: EthRequestAccountsResponse = [address];
@@ -306,9 +401,15 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
-          } else {
-            sendMessage<ResponseAppMessage<EthRequestAccounts>>({
+            void refreshOriginConnectionTime(origin);
+
+            break;
+          }
+
+          case 'sui_connect': {
+            const result: SuiRequestConnectResponse = null;
+
+            sendMessage<ResponseAppMessage<SuiRequestConnect>>({
               target: 'CONTENT',
               method: 'responseApp',
               origin,
@@ -316,47 +417,69 @@ function BusinessLogic() {
               tabId,
               params: {
                 id: requestId,
-                error: new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]),
+                result,
               },
             });
 
-            await deQueue();
-          }
-        }
-
-        if (currentRequestQueue?.method === 'sui_connect') {
-          const { tabId, requestId, origin } = currentRequestQueue;
-
-          const result: SuiRequestConnectResponse = null;
-
-          void refreshOriginConnectionTime(origin);
-
-          sendMessage<ResponseAppMessage<SuiRequestConnect>>({
-            target: 'CONTENT',
-            method: 'responseApp',
-            origin,
-            requestId,
-            tabId,
-            params: {
-              id: requestId,
-              result,
-            },
-          });
-          await deQueue();
-        }
-
-        if (currentRequestQueue?.method === 'sui_getAccount' && currentPassword) {
-          const { tabId, requestId, origin } = currentRequestQueue;
-          const suiChains = (await getChains()).suiChains;
-          const suiChain = suiChains?.find((item) => item.id === 'sui') || suiChains?.[0];
-
-          if (suiChain) {
             void refreshOriginConnectionTime(origin);
 
+            break;
+          }
+
+          case 'sui_getAccount': {
+            if (!currentPassword) {
+              sendMessage<ResponseAppMessage<SuiRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+                },
+              });
+              break;
+            }
+
+            const suiChains = (await getChains()).suiChains;
+            const suiChain = suiChains?.find((item) => item.id === 'sui') || suiChains?.[0];
+
+            if (!suiChain) {
+              sendMessage<ResponseAppMessage<SuiRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+                },
+              });
+              break;
+            }
+
             const keyPair = getKeypair(suiChain, currentAccount, currentPassword);
+
+            if (!keyPair?.publicKey) {
+              sendMessage<ResponseAppMessage<SuiRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+                },
+              });
+              break;
+            }
+
             const address = getAddress(suiChain, keyPair.publicKey);
 
-            const publicKey = addHexPrefix(keyPair!.publicKey);
+            const publicKey = addHexPrefix(keyPair.publicKey);
 
             const result: SuiRequestAccountResponse = {
               address,
@@ -375,36 +498,31 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
-          } else {
-            const { tabId, requestId, origin } = currentRequestQueue;
-
-            sendMessage<ResponseAppMessage<SuiRequestAccount>>({
-              target: 'CONTENT',
-              method: 'responseApp',
-              origin,
-              requestId,
-              tabId,
-              params: {
-                id: requestId,
-                error: new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
-              },
-            });
-
-            await deQueue();
-          }
-        }
-
-        if (currentRequestQueue?.method === 'bit_requestAccount' && currentPassword) {
-          const { tabId, requestId, origin } = currentRequestQueue;
-
-          const { currentBitcoinNetwork } = await extensionLocalStorage();
-
-          if (currentBitcoinNetwork) {
             void refreshOriginConnectionTime(origin);
 
+            break;
+          }
+
+          case 'bit_requestAccount': {
+            if (!currentPassword) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
+            const { currentBitcoinNetwork } = await getBitcoinDefaultStorageData();
+
+            if (!currentBitcoinNetwork) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
             const keyPair = getKeypair(currentBitcoinNetwork, currentAccount, currentPassword);
-            const address = getAddress(currentBitcoinNetwork, keyPair?.publicKey);
+
+            if (!keyPair?.publicKey) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+            const address = getAddress(currentBitcoinNetwork, keyPair.publicKey);
 
             const result = [address];
 
@@ -420,21 +538,33 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
-          }
-        }
-
-        if ((currentRequestQueue?.method === 'aptos_account' || currentRequestQueue?.method === 'aptos_connect') && currentPassword) {
-          const { tabId, requestId, origin } = currentRequestQueue;
-
-          const { currentAptosNetwork } = await extensionLocalStorage();
-
-          if (currentAptosNetwork) {
             void refreshOriginConnectionTime(origin);
 
-            const keyPair = getKeypair(currentAptosNetwork, currentAccount, currentPassword);
-            const address = getAddress(currentAptosNetwork, keyPair?.publicKey);
+            break;
+          }
 
+          case 'aptos_account':
+          case 'aptos_connect': {
+            if (!currentPassword) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
+            const { currentAptosNetwork } = await getAptosDefaultStorageData();
+
+            if (!currentAptosNetwork) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
+            const keyPair = getKeypair(currentAptosNetwork, currentAccount, currentPassword);
+
+            if (!keyPair?.publicKey) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
+            const address = getAddress(currentAptosNetwork, keyPair?.publicKey);
             const result = { address, publicKey: `0x${keyPair!.publicKey}` };
 
             sendMessage<ResponseAppMessage<AptosAccount>>({
@@ -449,49 +579,89 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
-          }
-        }
-
-        if (currentRequestQueue?.method === 'iota_connect') {
-          const { tabId, requestId, origin } = currentRequestQueue;
-
-          const result: IotaRequestConnectResponse = null;
-
-          void refreshOriginConnectionTime(origin);
-
-          sendMessage<ResponseAppMessage<IotaRequestConnect>>({
-            target: 'CONTENT',
-            method: 'responseApp',
-            origin,
-            requestId,
-            tabId,
-            params: {
-              id: requestId,
-              result,
-            },
-          });
-          await deQueue();
-        }
-
-        if (currentRequestQueue?.method === 'iota_getAccount' && currentPassword) {
-          const { tabId, requestId, origin } = currentRequestQueue;
-          const iotaChains = (await getChains()).iotaChains;
-          const iotaChain = iotaChains?.find((item) => item.id === 'iota') || iotaChains?.[0];
-
-          if (iotaChain) {
             void refreshOriginConnectionTime(origin);
 
-            const keyPair = getKeypair(iotaChain, currentAccount, currentPassword);
-            const address = getAddress(iotaChain, keyPair.publicKey);
+            break;
+          }
 
-            const publicKey = addHexPrefix(keyPair!.publicKey);
+          case 'iota_connect': {
+            const result: IotaRequestConnectResponse = null;
+
+            sendMessage<ResponseAppMessage<IotaRequestConnect>>({
+              target: 'CONTENT',
+              method: 'responseApp',
+              origin,
+              requestId,
+              tabId,
+              params: {
+                id: requestId,
+                result,
+              },
+            });
+
+            void refreshOriginConnectionTime(origin);
+
+            break;
+          }
+
+          case 'iota_getAccount': {
+            if (!currentPassword) {
+              sendMessage<ResponseAppMessage<IotaRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+                },
+              });
+              break;
+            }
+
+            const iotaChains = (await getChains()).iotaChains;
+            const iotaChain = iotaChains?.find((item) => item.id === 'iota') || iotaChains?.[0];
+
+            if (!iotaChain) {
+              sendMessage<ResponseAppMessage<IotaRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+                },
+              });
+              break;
+            }
+
+            const keyPair = getKeypair(iotaChain, currentAccount, currentPassword);
+
+            if (!keyPair?.publicKey) {
+              sendMessage<ResponseAppMessage<IotaRequestAccount>>({
+                target: 'CONTENT',
+                method: 'responseApp',
+                origin,
+                requestId,
+                tabId,
+                params: {
+                  id: requestId,
+                  error: new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
+                },
+              });
+              break;
+            }
+
+            const address = getAddress(iotaChain, keyPair.publicKey);
+            const publicKey = addHexPrefix(keyPair.publicKey);
 
             const result: IotaRequestAccountResponse = {
               address,
               publicKey,
             };
-
             sendMessage<ResponseAppMessage<IotaRequestAccount>>({
               target: 'CONTENT',
               method: 'responseApp',
@@ -504,35 +674,30 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
-          } else {
-            const { tabId, requestId, origin } = currentRequestQueue;
-
-            sendMessage<ResponseAppMessage<IotaRequestAccount>>({
-              target: 'CONTENT',
-              method: 'responseApp',
-              origin,
-              requestId,
-              tabId,
-              params: {
-                id: requestId,
-                error: new IotaRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], requestId),
-              },
-            });
-
-            await deQueue();
-          }
-        }
-
-        if (currentRequestQueue?.method === 'solana_connect' && currentPassword) {
-          const { tabId, requestId, origin } = currentRequestQueue;
-
-          const { currentSolanaNetwork } = await extensionLocalStorage();
-
-          if (currentSolanaNetwork) {
             void refreshOriginConnectionTime(origin);
 
+            break;
+          }
+
+          case 'solana_connect': {
+            if (!currentPassword) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
+            const { currentSolanaNetwork } = await getSolanaDefaultStorageData();
+
+            if (!currentSolanaNetwork) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
+
             const keyPair = getKeypair(currentSolanaNetwork, currentAccount, currentPassword);
+
+            if (!keyPair?.publicKey) {
+              await rejectFunc(currentRequestQueue);
+              break;
+            }
 
             const result = { publicKey: keyPair.publicKey as unknown as PublicKey };
 
@@ -548,30 +713,19 @@ function BusinessLogic() {
               },
             });
 
-            await deQueue();
+            void refreshOriginConnectionTime(origin);
+
+            break;
           }
+
+          default:
+            devLogger.warn(`Unknown method: ${method}`);
         }
       } catch (error) {
-        if (currentRequestQueue) {
-          sendMessage({
-            target: 'CONTENT',
-            method: 'responseApp',
-            origin: currentRequestQueue.origin,
-            requestId: currentRequestQueue.requestId,
-            tabId: currentRequestQueue.tabId,
-            params: {
-              id: currentRequestQueue.requestId,
-              error: {
-                code: RPC_ERROR.INTERNAL,
-                message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
-              },
-            },
-          });
-
-          await deQueue();
-        }
-
-        console.error('Error fetching data:', error);
+        devLogger.error(`Error processing ${requestId}:`, error);
+        await rejectFunc(currentRequestQueue);
+      } finally {
+        await deQueue();
       }
     };
 
@@ -582,7 +736,7 @@ function BusinessLogic() {
     if (shouldApplyPopdownDelay) {
       const timer = setTimeout(() => {
         handleRequestAccount();
-      }, 1000);
+      }, 500);
 
       return () => clearTimeout(timer);
     } else {
@@ -598,7 +752,6 @@ function BusinessLogic() {
     deQueue,
     processedRequestIds,
     refreshOriginConnectionTime,
-    currentRequestQueue?.requestId,
     requestQueue.length,
   ]);
 
