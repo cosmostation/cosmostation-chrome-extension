@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { isHexString } from 'ethers';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
@@ -10,7 +10,7 @@ import type { IotaTxInfoResponse } from '@/types/iota/api';
 import type { SuiTxInfoResponse } from '@/types/sui/api';
 import { getWithFullResponse, post } from '@/utils/axios';
 import { devLogger } from '@/utils/devLogger';
-import { ethersProvider } from '@/utils/ethereum/ethers';
+import { waitForTransaction } from '@/utils/ethereum/waitForTx';
 import { buildRequestUrl } from '@/utils/fetch';
 import { wait } from '@/utils/fetch/wait';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
@@ -129,27 +129,14 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
         const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
 
-        const providers = rpcUrls.map((url) =>
-          ethersProvider(url, undefined, {
-            staticNetwork: true,
-            batchMaxCount: 1,
-          }),
-        );
-
-        const allRpcProvider = new ethers.FallbackProvider(
-          providers.map((provider, index) => ({
-            provider,
-            priority: index + 1,
-            weight: 1,
-          })),
-        );
         try {
-          const confirmationsNeeded = 1;
-          const timeout = 4000;
+          const receipt = await waitForTransaction({
+            rpcURLs: rpcUrls,
+            chainId: targetChain.chainId && isHexString(targetChain.chainId) ? parseInt(targetChain.chainId, 16) : undefined,
+            txHash: tx.txHash,
+          });
 
-          const receipt = await allRpcProvider.waitForTransaction(tx.txHash, confirmationsNeeded, timeout);
-
-          const isTxSuccess = receipt?.status === 1;
+          const isTxSuccess = receipt?.status === 'success';
 
           if (!isTxSuccess) {
             throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
@@ -173,8 +160,6 @@ export function useTxWatcher(config?: UseFetchConfig) {
         } catch (error) {
           devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
           updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
-        } finally {
-          allRpcProvider.destroy();
         }
       }
 

@@ -36,10 +36,7 @@ export default function EVM({ coinId, txHash, address }: EVMProps) {
 
   const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
 
-  const txInfo = useTxInfo({
-    coinId,
-    txHash,
-  });
+  const txInfo = useTxInfo({ coinId, txHash });
 
   const selectedAsset = getEVMAccountAsset();
 
