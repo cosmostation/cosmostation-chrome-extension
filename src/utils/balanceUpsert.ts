@@ -8,6 +8,8 @@ import type {
   AccountAddressBalanceCw20,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceGno,
+  AccountAddressBalanceGrc20,
   AccountAddressBalanceIota,
   AccountAddressBalanceSolana,
   AccountAddressBalanceSplToken,
@@ -262,6 +264,31 @@ export const upsertSplTokenBalance = <T extends AccountAddressBalanceSplToken>(o
       );
 
       return existingBalance ? { ...incoming, account: existingBalance.account } : incoming;
+    });
+
+    e.balances = resolved;
+  });
+};
+
+export const upsertGnoBalance = <T extends AccountAddressBalanceGno>(originalList: T[], incomingList: T[]) => {
+  return upsertBalanceList(originalList, incomingList, (e, i) => {
+    if (i.status !== 'error') {
+      e.balance = i.balance;
+    }
+
+    e.lastUpdatedAtMs = i.lastUpdatedAtMs;
+    e.status = i.status;
+  });
+};
+
+export const upsertGrc20Balance = <T extends AccountAddressBalanceGrc20>(originalList: T[], incomingList: T[]) => {
+  return upsertBalanceList(originalList, incomingList, (e, i) => {
+    const resolved = i.balances.map((incoming) => {
+      if (incoming.status !== 'error') return incoming;
+
+      const existingBalance = e.balances.find((balance) => isEqualsIgnoringCase(balance.contract, incoming.contract));
+
+      return existingBalance ? { ...incoming, balance: existingBalance.balance } : incoming;
     });
 
     e.balances = resolved;

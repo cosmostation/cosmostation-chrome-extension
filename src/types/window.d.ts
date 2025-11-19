@@ -13,7 +13,7 @@ import type { Wallet } from '@wallet-standard/base';
 
 import type { Network } from '@/constants/bitcoin/common';
 import type { ApprovedIotaPermissionType, ApprovedSuiPermissionType } from '@/types/extension';
-import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, IotaListenerType, SuiListenerType } from '@/types/message';
+import type { BitcoinListenerType, CosmosListenerType, EthereumListenerType, GnoListenerType, IotaListenerType, SuiListenerType } from '@/types/message';
 import type { BaseRequest, CommonRequest, Request, Response } from '@/types/message/inject';
 import type {
   BitGetAddressResponse,
@@ -25,6 +25,14 @@ import type {
   BitSignPsbtsResposne,
 } from '@/types/message/inject/bitcoin';
 import type { CommonRequest } from '@/types/message/inject/common';
+import type {
+  GnoConnectResponse,
+  GnoSignAndSendTransactionResponse,
+  GnoSignMessageResponse,
+  GnoSignTransactionResponse,
+  GnoSwitchNetworkResponse,
+  GnoTransactionParams,
+} from '@/types/message/inject/gno';
 import type {
   IotaRequestDisconnectResponse,
   IotaSignAndExecuteTransactionResponse,
@@ -140,6 +148,20 @@ declare global {
     off: (eventName: BitcoinListenerType, callBack: () => void) => void;
   }
 
+  interface GnoProvider {
+    SwitchNetwork: (chainId: string) => Promise<GnoSwitchNetworkResponse>;
+    GetNetwork: () => Promise<GnoSwitchNetworkResponse>;
+    AddEstablish: () => Promise<GnoConnectResponse>;
+    Connect: () => Promise<GnoConnectResponse>;
+    Sign: (data: GnoTransactionParams) => Promise<GnoSignTransactionResponse>;
+    SignTx: (data: GnoTransactionParams) => Promise<GnoSignTransactionResponse>;
+    DoContract: (data: GnoTransactionParams, withNotification: boolean) => Promise<GnoSignAndSendTransactionResponse>;
+    SignAndSendTransaction: (data: GnoTransactionParams, withNotification: boolean) => Promise<GnoSignAndSendTransactionResponse>;
+    SignTransaction: (data: GnoTransactionParams) => Promise<GnoSignTransactionResponse>;
+    SignMessage: (data: string) => Promise<GnoSignMessageResponse>;
+    On: (eventName: GnoListenerType, eventHandler: (data: unknown) => void) => void;
+  }
+
   interface IotaProvider {
     request: <T extends BaseRequest>(message: T) => Promise<Unknown>;
     connect: (permissions: ApprovedIotaPermissionType[]) => Promise<boolean>;
@@ -186,6 +208,7 @@ declare global {
       aptos: AptosWallet;
       iota: IotaProvider;
       solana: Wallet;
+      gno: GnoProvider;
       providers: {
         keplr: KeplrInterface;
         metamask: EthereumProvider;

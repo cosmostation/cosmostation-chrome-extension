@@ -9,6 +9,7 @@ import type {
   AccountAssets as AccountAllAssets,
   AllCosmosAccountAssets,
   AllEVMAccountAssets,
+  AllGnoAccountAssets,
   AllSolanaAccountAssets,
   FlatAccountAssets,
 } from '@/types/accountAssets';
@@ -26,6 +27,7 @@ export type UseAccountAssetsResponse = AccountAllAssets & {
   allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];
   allSolanaAccountAssets: AllSolanaAccountAssets[];
+  allGnoAccountAssets: AllGnoAccountAssets[];
 };
 
 type UseAccountAllAssets =
@@ -139,6 +141,8 @@ export function useAccountAllAssets({
       iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
       solanaAccountAssets: filterAssetList(data.solanaAccountAssets),
       spltokenAccountAssets: filterAssetList(data.spltokenAccountAssets),
+      gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
+      grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
     };
   }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
 
@@ -329,6 +333,7 @@ export function useAccountAllAssets({
           ...filteredAccountAssets.customErc20AccountAssets,
         ],
         allSolanaAccountAssets: [...filteredAccountAssets.solanaAccountAssets, ...filteredAccountAssets.spltokenAccountAssets],
+        allGnoAccountAssets: [...filteredAccountAssets.gnoAccountAssets, ...filteredAccountAssets.grc20AccountAssets],
       };
 
       return returnData;
@@ -354,6 +359,7 @@ export function useAccountAllAssets({
           ...filteredByVisibleList.customErc20AccountAssets,
         ],
         allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
+        allGnoAccountAssets: [...filteredByVisibleList.gnoAccountAssets, ...filteredByVisibleList.grc20AccountAssets],
       };
 
       return returnData;

@@ -29,7 +29,7 @@ export interface CosmosFeeInfo {
   gasCoefficient: number;
 }
 
-export type ChainType = 'cosmos' | 'evm' | 'sui' | 'aptos' | 'bitcoin' | 'iota' | 'solana';
+export type ChainType = 'cosmos' | 'evm' | 'sui' | 'aptos' | 'bitcoin' | 'iota' | 'solana' | 'gno';
 
 export type CommonChainType = 'common';
 
@@ -205,6 +205,29 @@ export interface SolanaChain extends ChainBase {
   isTestnet?: boolean;
 }
 
+export interface GnoChain extends ChainBase {
+  chainType: Extract<ChainType, 'gno'>;
+  chainId: string;
+  accountPrefix: string;
+  mainAssetDenom: string | null;
+  chainDefaultCoinDenoms?: string[] | null;
+  rpcUrls: ChainEndpoint[];
+  accountTypes: ChainAccountType[];
+  explorer: ChainExplorer;
+  feeInfo: GnoFeeInfo;
+  isTestnet?: boolean;
+  isDevnet?: boolean;
+}
+
+export interface GnoFeeInfo {
+  isSimulable: boolean;
+  isFeemarketEnabled: boolean;
+  gasRate: string[];
+  defaultFeeRateKey?: string;
+  defaultGasLimit: string | number;
+  gasCoefficient: number;
+}
+
 export type CustomChain = CustomCosmosChain | CustomEvmChain;
 
-export type Chain = CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain | IotaChain | SolanaChain;
+export type Chain = CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain | IotaChain | SolanaChain | GnoChain;

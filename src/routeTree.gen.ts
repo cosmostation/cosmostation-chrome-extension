@@ -55,6 +55,9 @@ import { Route as PopupSolanaTransactionIndexImport } from './pages/popup/solana
 import { Route as PopupSolanaSignMessageIndexImport } from './pages/popup/solana/sign-message/index'
 import { Route as PopupIotaTransactionIndexImport } from './pages/popup/iota/transaction/index'
 import { Route as PopupIotaSignMessageIndexImport } from './pages/popup/iota/sign-message/index'
+import { Route as PopupGnoTransactionIndexImport } from './pages/popup/gno/transaction/index'
+import { Route as PopupGnoSwitchNetworkIndexImport } from './pages/popup/gno/switch-network/index'
+import { Route as PopupGnoSignMessageIndexImport } from './pages/popup/gno/sign-message/index'
 import { Route as PopupEvmTransactionIndexImport } from './pages/popup/evm/transaction/index'
 import { Route as PopupEvmSwitchNetworkIndexImport } from './pages/popup/evm/switch-network/index'
 import { Route as PopupEvmAddTokenIndexImport } from './pages/popup/evm/add-token/index'
@@ -383,6 +386,26 @@ const PopupIotaTransactionIndexRoute = PopupIotaTransactionIndexImport.update({
 const PopupIotaSignMessageIndexRoute = PopupIotaSignMessageIndexImport.update({
   id: '/popup/iota/sign-message/',
   path: '/popup/iota/sign-message/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupGnoTransactionIndexRoute = PopupGnoTransactionIndexImport.update({
+  id: '/popup/gno/transaction/',
+  path: '/popup/gno/transaction/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PopupGnoSwitchNetworkIndexRoute = PopupGnoSwitchNetworkIndexImport.update(
+  {
+    id: '/popup/gno/switch-network/',
+    path: '/popup/gno/switch-network/',
+    getParentRoute: () => rootRoute,
+  } as any,
+)
+
+const PopupGnoSignMessageIndexRoute = PopupGnoSignMessageIndexImport.update({
+  id: '/popup/gno/sign-message/',
+  path: '/popup/gno/sign-message/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -1129,6 +1152,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PopupEvmTransactionIndexImport
       parentRoute: typeof rootRoute
     }
+    '/popup/gno/sign-message/': {
+      id: '/popup/gno/sign-message/'
+      path: '/popup/gno/sign-message'
+      fullPath: '/popup/gno/sign-message'
+      preLoaderRoute: typeof PopupGnoSignMessageIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/gno/switch-network/': {
+      id: '/popup/gno/switch-network/'
+      path: '/popup/gno/switch-network'
+      fullPath: '/popup/gno/switch-network'
+      preLoaderRoute: typeof PopupGnoSwitchNetworkIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/popup/gno/transaction/': {
+      id: '/popup/gno/transaction/'
+      path: '/popup/gno/transaction'
+      fullPath: '/popup/gno/transaction'
+      preLoaderRoute: typeof PopupGnoTransactionIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/popup/iota/sign-message/': {
       id: '/popup/iota/sign-message/'
       path: '/popup/iota/sign-message'
@@ -1444,6 +1488,9 @@ export interface FileRoutesByFullPath {
   '/popup/evm/add-token': typeof PopupEvmAddTokenIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
+  '/popup/gno/sign-message': typeof PopupGnoSignMessageIndexRoute
+  '/popup/gno/switch-network': typeof PopupGnoSwitchNetworkIndexRoute
+  '/popup/gno/transaction': typeof PopupGnoTransactionIndexRoute
   '/popup/iota/sign-message': typeof PopupIotaSignMessageIndexRoute
   '/popup/iota/transaction': typeof PopupIotaTransactionIndexRoute
   '/popup/solana/sign-message': typeof PopupSolanaSignMessageIndexRoute
@@ -1540,6 +1587,9 @@ export interface FileRoutesByTo {
   '/popup/evm/add-token': typeof PopupEvmAddTokenIndexRoute
   '/popup/evm/switch-network': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction': typeof PopupEvmTransactionIndexRoute
+  '/popup/gno/sign-message': typeof PopupGnoSignMessageIndexRoute
+  '/popup/gno/switch-network': typeof PopupGnoSwitchNetworkIndexRoute
+  '/popup/gno/transaction': typeof PopupGnoTransactionIndexRoute
   '/popup/iota/sign-message': typeof PopupIotaSignMessageIndexRoute
   '/popup/iota/transaction': typeof PopupIotaTransactionIndexRoute
   '/popup/solana/sign-message': typeof PopupSolanaSignMessageIndexRoute
@@ -1637,6 +1687,9 @@ export interface FileRoutesById {
   '/popup/evm/add-token/': typeof PopupEvmAddTokenIndexRoute
   '/popup/evm/switch-network/': typeof PopupEvmSwitchNetworkIndexRoute
   '/popup/evm/transaction/': typeof PopupEvmTransactionIndexRoute
+  '/popup/gno/sign-message/': typeof PopupGnoSignMessageIndexRoute
+  '/popup/gno/switch-network/': typeof PopupGnoSwitchNetworkIndexRoute
+  '/popup/gno/transaction/': typeof PopupGnoTransactionIndexRoute
   '/popup/iota/sign-message/': typeof PopupIotaSignMessageIndexRoute
   '/popup/iota/transaction/': typeof PopupIotaTransactionIndexRoute
   '/popup/solana/sign-message/': typeof PopupSolanaSignMessageIndexRoute
@@ -1735,6 +1788,9 @@ export interface FileRouteTypes {
     | '/popup/evm/add-token'
     | '/popup/evm/switch-network'
     | '/popup/evm/transaction'
+    | '/popup/gno/sign-message'
+    | '/popup/gno/switch-network'
+    | '/popup/gno/transaction'
     | '/popup/iota/sign-message'
     | '/popup/iota/transaction'
     | '/popup/solana/sign-message'
@@ -1830,6 +1886,9 @@ export interface FileRouteTypes {
     | '/popup/evm/add-token'
     | '/popup/evm/switch-network'
     | '/popup/evm/transaction'
+    | '/popup/gno/sign-message'
+    | '/popup/gno/switch-network'
+    | '/popup/gno/transaction'
     | '/popup/iota/sign-message'
     | '/popup/iota/transaction'
     | '/popup/solana/sign-message'
@@ -1925,6 +1984,9 @@ export interface FileRouteTypes {
     | '/popup/evm/add-token/'
     | '/popup/evm/switch-network/'
     | '/popup/evm/transaction/'
+    | '/popup/gno/sign-message/'
+    | '/popup/gno/switch-network/'
+    | '/popup/gno/transaction/'
     | '/popup/iota/sign-message/'
     | '/popup/iota/transaction/'
     | '/popup/solana/sign-message/'
@@ -2022,6 +2084,9 @@ export interface RootRouteChildren {
   PopupEvmAddTokenIndexRoute: typeof PopupEvmAddTokenIndexRoute
   PopupEvmSwitchNetworkIndexRoute: typeof PopupEvmSwitchNetworkIndexRoute
   PopupEvmTransactionIndexRoute: typeof PopupEvmTransactionIndexRoute
+  PopupGnoSignMessageIndexRoute: typeof PopupGnoSignMessageIndexRoute
+  PopupGnoSwitchNetworkIndexRoute: typeof PopupGnoSwitchNetworkIndexRoute
+  PopupGnoTransactionIndexRoute: typeof PopupGnoTransactionIndexRoute
   PopupIotaSignMessageIndexRoute: typeof PopupIotaSignMessageIndexRoute
   PopupIotaTransactionIndexRoute: typeof PopupIotaTransactionIndexRoute
   PopupSolanaSignMessageIndexRoute: typeof PopupSolanaSignMessageIndexRoute
@@ -2129,6 +2194,9 @@ const rootRouteChildren: RootRouteChildren = {
   PopupEvmAddTokenIndexRoute: PopupEvmAddTokenIndexRoute,
   PopupEvmSwitchNetworkIndexRoute: PopupEvmSwitchNetworkIndexRoute,
   PopupEvmTransactionIndexRoute: PopupEvmTransactionIndexRoute,
+  PopupGnoSignMessageIndexRoute: PopupGnoSignMessageIndexRoute,
+  PopupGnoSwitchNetworkIndexRoute: PopupGnoSwitchNetworkIndexRoute,
+  PopupGnoTransactionIndexRoute: PopupGnoTransactionIndexRoute,
   PopupIotaSignMessageIndexRoute: PopupIotaSignMessageIndexRoute,
   PopupIotaTransactionIndexRoute: PopupIotaTransactionIndexRoute,
   PopupSolanaSignMessageIndexRoute: PopupSolanaSignMessageIndexRoute,
@@ -2247,6 +2315,9 @@ export const routeTree = rootRoute
         "/popup/evm/add-token/",
         "/popup/evm/switch-network/",
         "/popup/evm/transaction/",
+        "/popup/gno/sign-message/",
+        "/popup/gno/switch-network/",
+        "/popup/gno/transaction/",
         "/popup/iota/sign-message/",
         "/popup/iota/transaction/",
         "/popup/solana/sign-message/",
@@ -2455,6 +2526,15 @@ export const routeTree = rootRoute
     },
     "/popup/evm/transaction/": {
       "filePath": "popup/evm/transaction/index.tsx"
+    },
+    "/popup/gno/sign-message/": {
+      "filePath": "popup/gno/sign-message/index.tsx"
+    },
+    "/popup/gno/switch-network/": {
+      "filePath": "popup/gno/switch-network/index.tsx"
+    },
+    "/popup/gno/transaction/": {
+      "filePath": "popup/gno/transaction/index.tsx"
     },
     "/popup/iota/sign-message/": {
       "filePath": "popup/iota/sign-message/index.tsx"

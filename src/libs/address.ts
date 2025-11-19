@@ -46,7 +46,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
 
     const decryptedMnemonic = aesDecrypt(encryptedMnemonic, password);
 
-    if (chainType === 'cosmos' || chainType === 'evm' || chainType === 'bitcoin') {
+    if (chainType === 'cosmos' || chainType === 'evm' || chainType === 'bitcoin' || chainType === 'gno') {
       const path = hdPath.replace('${index}', `${index}`);
 
       const seed = bip39.mnemonicToSeedSync(decryptedMnemonic);
@@ -78,7 +78,7 @@ export function getKeypair(chain: Chain, account: Account, password: string | nu
     const { encryptedPrivateKey } = account;
     const decryptedPrivateKey = aesDecrypt(encryptedPrivateKey, password);
 
-    if (chainType === 'cosmos' || chainType === 'evm' || chainType === 'bitcoin') {
+    if (chainType === 'cosmos' || chainType === 'evm' || chainType === 'bitcoin' || chainType === 'gno') {
       const ecpair = ECPair.fromPrivateKey(Buffer.from(decryptedPrivateKey, 'hex'), {
         compressed: true,
       });
@@ -182,6 +182,19 @@ export function getAddress(chain: Chain, publicKey: string) {
   if (chainType === 'solana') {
     const pubKey = new PublicKey(Buffer.from(publicKey, 'hex'));
     return pubKey.toBase58();
+  }
+
+  if (chainType === 'gno') {
+    const { accountPrefix } = chain;
+
+    const encodedBySha256 = sha256(encHex.parse(publicKey)).toString(encHex);
+
+    const encodedByRipemd160 = ripemd160(encHex.parse(encodedBySha256)).toString(encHex);
+
+    const words = bech32.toWords(Buffer.from(encodedByRipemd160, 'hex'));
+    const result = bech32.encode(accountPrefix, words);
+
+    return result;
   }
 
   throw new Error('Invalid chain type');

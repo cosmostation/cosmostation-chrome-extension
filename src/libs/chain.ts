@@ -4,7 +4,7 @@ import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import type { SupportedV11Param } from '@/types/apiV11';
-import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -52,6 +52,7 @@ export async function getChains() {
   const bitcoinChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('bitcoin'));
   const iotaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('iota'));
   const solanaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('solana'));
+  const gnoChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('gno'));
 
   const remappedCosmosChains: CosmosChain[] = cosmosChains.map((chain) => {
     const id = chain.id;
@@ -396,6 +397,67 @@ export async function getChains() {
     return { id, chainId, name, image, chainType, mainAssetDenom, chainDefaultCoinDenoms, rpcUrls, explorer, accountTypes, programId };
   });
 
+  const remappedGnoChains: GnoChain[] = gnoChains.map((chain) => {
+    const id = chain.id;
+    const chainType = 'gno';
+    const chainId = chain.params.chainlist_params.chain_id_cosmos!;
+
+    const name = chain.params.chainlist_params.chain_name.toUpperCase();
+    const image = chain.params.chainlist_params?.chain_image ?? null;
+
+    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? '';
+    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
+
+    const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
+
+    const isTestnet = isTestnetChain(id);
+
+    const rpcUrls = chain.params.chainlist_params.cosmos_rpc_endpoint ?? [];
+
+    const explorer = chain.params.chainlist_params?.explorer
+      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
+          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
+          return acc;
+        }, {} as ChainExplorer)
+      : { name: '', url: '', account: '', tx: '', proposal: '' };
+
+    const accountTypes =
+      chain.params.chainlist_params?.account_type?.map((accountType) => {
+        const hdPath = accountType.hd_path.replace('X', '${index}');
+        return {
+          hdPath,
+          pubkeyStyle: accountType.pubkey_style,
+          pubkeyType: accountType.pubkey_type ?? null,
+          isDefault: accountType.is_default ?? null,
+        };
+      }) ?? [];
+
+    const feeInfo = {
+      isSimulable: chain.params.chainlist_params?.cosmos_fee_info?.is_simulable ?? false,
+      isFeemarketEnabled: chain.params.chainlist_params?.cosmos_fee_info?.is_feemarket ?? false,
+      defaultFeeRateKey: chain.params.chainlist_params?.cosmos_fee_info?.base ?? '0',
+      gasRate: chain.params.chainlist_params?.cosmos_fee_info?.rate ?? [],
+      defaultGasLimit: chain.params.chainlist_params?.cosmos_fee_info?.init_gas_limit ?? 200000,
+      gasCoefficient: chain.params.chainlist_params?.cosmos_fee_info?.simulated_gas_multiply ?? 2,
+    };
+
+    return {
+      id,
+      chainId,
+      name,
+      image,
+      chainType,
+      mainAssetDenom,
+      chainDefaultCoinDenoms,
+      rpcUrls,
+      explorer,
+      accountTypes,
+      accountPrefix,
+      feeInfo,
+      isTestnet,
+    };
+  });
+
   return {
     cosmosChains: remappedCosmosChains,
     evmChains: remappedEvmChains,
@@ -404,6 +466,7 @@ export async function getChains() {
     bitcoinChains: remappedBitcoinChains,
     iotaChains: remappedIotaChains,
     solanaChains: remappedSolanaChains,
+    gnoChains: remappedGnoChains,
   };
 }
 

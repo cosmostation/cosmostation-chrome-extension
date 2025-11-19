@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { produce } from 'immer';
 import { useQuery } from '@tanstack/react-query';
 
 import { getChains } from '@/libs/chain';
+import type { ChainToAccountTypeMap } from '@/types/account';
+import type { Chain, ChainAccountType } from '@/types/chain';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useCurrentAccount } from './useCurrentAccount';
@@ -40,83 +41,11 @@ export function useChainList() {
   }, [addedCustomChainList, data]);
 
   const chainListFilteredByAccountType = useMemo(() => {
-    const filteredCosmosChains = data?.cosmosChains
-      .map((chain) => {
-        const selectedChainAccountType = accountType?.[chain.id];
+    const filteredCosmosChains = filterChainsByAccountType(data?.cosmosChains, accountType);
 
-        if (selectedChainAccountType) {
-          if (
-            chain.accountTypes.some(
-              (accountType) =>
-                accountType.hdPath === selectedChainAccountType.hdPath &&
-                accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle &&
-                accountType.pubkeyType === selectedChainAccountType.pubkeyType,
-            )
-          ) {
-            return produce(chain, (draft) => {
-              draft.accountTypes = draft.accountTypes.filter(
-                (item) =>
-                  item.hdPath === selectedChainAccountType.hdPath &&
-                  item.pubkeyStyle === selectedChainAccountType.pubkeyStyle &&
-                  item.pubkeyType === selectedChainAccountType.pubkeyType,
-              );
-            });
-          }
-          return null;
-        }
-        return chain;
-      })
-      .filter((item) => !!item);
+    const filteredEVMChains = filterChainsByAccountType(data?.evmChains, accountType);
 
-    const filteredEVMChains = data?.evmChains
-      .map((chain) => {
-        const selectedChainAccountType = accountType?.[chain.id];
-
-        if (selectedChainAccountType) {
-          if (
-            chain.accountTypes.some(
-              (accountType) =>
-                accountType.hdPath === selectedChainAccountType.hdPath &&
-                accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle &&
-                accountType.pubkeyType === selectedChainAccountType.pubkeyType,
-            )
-          ) {
-            return produce(chain, (draft) => {
-              draft.accountTypes = draft.accountTypes.filter(
-                (item) =>
-                  item.hdPath === selectedChainAccountType.hdPath &&
-                  item.pubkeyStyle === selectedChainAccountType.pubkeyStyle &&
-                  item.pubkeyType === selectedChainAccountType.pubkeyType,
-              );
-            });
-          }
-          return null;
-        }
-        return chain;
-      })
-      .filter((item) => !!item);
-
-    const filteredBitcoinChains = chainList.bitcoinChains
-      ?.map((chain) => {
-        const selectedChainAccountType = accountType?.[chain.id];
-
-        if (selectedChainAccountType) {
-          if (
-            chain.accountTypes.some(
-              (accountType) => accountType.hdPath === selectedChainAccountType.hdPath && accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle,
-            )
-          ) {
-            return produce(chain, (draft) => {
-              draft.accountTypes = draft.accountTypes.filter(
-                (item) => item.hdPath === selectedChainAccountType.hdPath && item.pubkeyStyle === selectedChainAccountType.pubkeyStyle,
-              );
-            });
-          }
-          return null;
-        }
-        return chain;
-      })
-      .filter((item) => !!item);
+    const filteredBitcoinChains = filterChainsByAccountType(chainList.bitcoinChains, accountType);
 
     const customCosmosChains = addedCustomChainList.filter((chain) => chain.chainType === 'cosmos');
     const customEvmChains = addedCustomChainList.filter((chain) => chain.chainType === 'evm');
@@ -147,10 +76,54 @@ export function useChainList() {
             ...(chainList.bitcoinChains || []),
             ...(chainList.iotaChains || []),
             ...(chainList.solanaChains || []),
+            ...(chainList.gnoChains || []),
           ].sort((a, b) => a.name.localeCompare(b.name))
         : [],
     [chainList],
   );
 
-  return { chainList, chainListFilteredByAccountType, flatChainList, isLoading, error };
+  const flatChainListFilteredByAccountType = useMemo(
+    () => (flatChainList ? filterChainsByAccountType(flatChainList, accountType) : []),
+    [accountType, flatChainList],
+  );
+
+  return { chainList, chainListFilteredByAccountType, flatChainListFilteredByAccountType, flatChainList, isLoading, error };
 }
+
+const isPubkeyTypeMatch = (selectedPubkeyType?: string | null, itemPubkeyType?: string | null): boolean => {
+  if (selectedPubkeyType && itemPubkeyType) {
+    return selectedPubkeyType === itemPubkeyType;
+  }
+  return true;
+};
+
+const matchesAccountType = (accountType: ChainAccountType, selected: ChainAccountType): boolean => {
+  return (
+    accountType.hdPath === selected.hdPath && accountType.pubkeyStyle === selected.pubkeyStyle && isPubkeyTypeMatch(selected.pubkeyType, accountType.pubkeyType)
+  );
+};
+
+const filterChainsByAccountType = <T extends Chain>(chains: T[] | undefined, accountType?: ChainToAccountTypeMap): T[] => {
+  if (!chains) return [];
+
+  return chains
+    .map((chain) => {
+      const selectedAccountType = accountType?.[chain.id];
+
+      if (!selectedAccountType) {
+        return chain;
+      }
+
+      const matchingAccountTypes = chain.accountTypes.filter((accountType) => matchesAccountType(accountType, selectedAccountType));
+
+      if (matchingAccountTypes.length === 0) {
+        return null;
+      }
+
+      return {
+        ...chain,
+        accountTypes: matchingAccountTypes,
+      };
+    })
+    .filter((chain): chain is T => !!chain);
+};

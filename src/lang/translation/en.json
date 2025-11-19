@@ -766,6 +766,13 @@
             "LoadingSubTitle": "Please wait a moment",
             "goToExplorer": "Go to Explorer"
           }
+        },
+        "Gno": {
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "goToExplorer": "Go to Explorer"
+          }
         }
       }
     },
@@ -1594,6 +1601,32 @@
                 "txProcessingSub": "Please wait a moment while the transaction is being processed",
                 "noTx": "The transaction has not been created yet",
                 "lowerThanRent": "Minimum {{rentAmount}} SOL required for account activation."
+              }
+            },
+            "Gno": {
+              "index": {
+                "contract": "Contract",
+                "denom": "Denom",
+                "invalidAddress": "Invalid address",
+                "insufficientAmount": "Insufficient amount",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "memoOverflow": "Memo is too long. Please shorten it.",
+                "noRecipientAddress": "Please enter the recipient address",
+                "noAvailableAmount": "No available amount",
+                "noAmount": "Please enter the amount",
+                "insufficientFee": "Insufficient fee",
+                "invalidAmount": "Invalid amount",
+                "failedToCalculateTransaction": "Failed to build transaction",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "memo": "Memo (Option)",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
               }
             }
           }
@@ -3169,6 +3202,34 @@
                 "expectedChangesDescription": "Balance changes are estimated. Amounts and assets are not guaranteed."
               }
             }
+          }
+        }
+      },
+      "gno": {
+        "switch-network": {
+          "entry": {
+            "switchNetwork": "Switch Network",
+            "infoTitle": "Authorize Network Access",
+            "infoDescription": "Upon authorization, the website will be allowed to access addresses within this network",
+            "reject": "Reject"
+          }
+        },
+        "sign-message": {
+          "entry": {
+            "signatureRequest": "Signature Request",
+            "message": "Message",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "transaction": {
+          "entry": {
+            "insufficientFeeAmount": "Insufficient fee",
+            "reject": "Reject",
+            "sign": "Sign",
+            "notSimulated": "Simulating transaction...",
+            "memoOverflow": "Memo is too long. Please shorten it.",
+            "calculatingFee": "Calculating fee"
           }
         }
       },

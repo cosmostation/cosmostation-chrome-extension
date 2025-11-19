@@ -461,3 +461,14 @@ export const solanaSignMessageSchema = () =>
   Joi.object<SolanaSignMessage['params']>({
     message: Joi.string().hex({ prefix: false }),
   }).required();
+
+export const gnoSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
+    );

@@ -16,6 +16,7 @@ export const initialState: ExtensionStorageState = {
   erc20Assets: [],
   customErc20Assets: [],
   cw20Assets: [],
+  grc20Assets: [],
   customCw20Assets: [],
   spltokenAssets: [],
   initAccountIds: [],
@@ -48,6 +49,7 @@ export const initialState: ExtensionStorageState = {
   chosenBitcoinNetworkId: '',
   chosenIotaNetworkId: '',
   chosenSolanaNetworkId: '',
+  chosenGnoNetworkId: '',
   currentWindowId: null,
   prioritizedProvider: { keplr: false, metamask: false, aptos: false },
   pinnedDappIds: [],
@@ -59,7 +61,7 @@ export const initialState: ExtensionStorageState = {
   lastRequestTimestamps: null,
 };
 
-export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'migrationStatus', 'spltokenAssets'];
+export const notDeleteKeys = ['paramsV11', 'assetsV11', 'erc20Assets', 'cw20Assets', 'grc20Assets', 'migrationStatus', 'spltokenAssets'];
 
 export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) => {
   return {

@@ -12,6 +12,8 @@ import type {
   CustomCosmosAsset,
   EvmAsset,
   EvmErc20Asset,
+  GnoAsset,
+  GnoGrc20Asset,
   IotaAsset,
   SolanaAsset,
   SolanaSpltokenAsset,
@@ -28,6 +30,7 @@ import type {
   CustomCosmosChain,
   CustomEvmChain,
   EvmChain,
+  GnoChain,
   IotaChain,
   SolanaChain,
   SuiChain,
@@ -39,6 +42,7 @@ import type { LcdDelegationResponse } from './cosmos/delegation';
 import type { RewardDetails } from './cosmos/reward';
 import type { UnbondingResponses } from './cosmos/undelegation';
 import type { Erc20Balance } from './evm/balance';
+import type { Grc20Balance } from './gno/balance';
 import type { IotaGetBalance } from './iota/api';
 import type { SplTokenBalance } from './solana/api';
 import type { SuiGetBalance } from './sui/api';
@@ -226,6 +230,16 @@ export interface AccountAddressBalanceBitcoin {
   status?: RequestStatus;
 }
 
+export interface AccountAddressBalanceGno {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  status?: RequestStatus;
+}
+
 export interface AccountAddressBalanceErc20 {
   id: Chain['id'];
   chainId: Chain['chainId'];
@@ -262,6 +276,13 @@ export interface AccountCosmosAssetFetchStatus extends AssetFetchStatus {
   commission?: RequestStatus;
   lockedBalance?: RequestStatus;
 }
+export interface AccountAddressBalanceGrc20 {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balances: Grc20Balance[];
+}
 
 export interface AccountCosmosAsset {
   chain: CosmosChain;
@@ -278,7 +299,6 @@ export interface AccountCosmosAsset {
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AccountCosmosAssetFetchStatus;
 }
-
 export interface AccountCustomCosmosAsset {
   chain: CustomCosmosChain;
   asset: CustomCosmosAsset;
@@ -370,7 +390,23 @@ export interface AccountBitcoinAsset {
 }
 
 export interface AccountIotaAssetFetchStatus extends AccountSuiAssetFetchStatus {}
+export interface AccountGnoAsset {
+  chain: GnoChain;
+  asset: GnoAsset;
+  address: AccountAddress;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
+}
 
+export interface AccountGrc20Asset {
+  chain: GnoChain;
+  asset: GnoGrc20Asset;
+  address: AccountAddress;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
+}
 export interface AccountIotaAsset {
   chain: IotaChain;
   asset: IotaAsset;

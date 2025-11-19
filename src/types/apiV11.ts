@@ -62,6 +62,7 @@ export type V11Param = {
         rate: string[];
         is_simulable: boolean;
         simulated_gas_multiply: number;
+        simulated_gas_adjustment?: number;
         init_gas_limit: number;
         fee_threshold: string;
         is_feemarket?: boolean;
@@ -71,6 +72,7 @@ export type V11Param = {
       solana_program_id?: { spl_token: string };
       grpc_endpoint?: { provider: string; url: string }[];
       lcd_endpoint?: { provider: string; url: string }[];
+      cosmos_rpc_endpoint: { provider: string; url: string }[];
       rpc_endpoint?: { provider: string; url: string }[];
       evm_rpc_endpoint?: { provider: string; url: string }[];
       solana_rpc_endpoint?: { provider: string; url: string }[];
@@ -160,4 +162,17 @@ export type V11Spltoken = {
   image: string;
   default: boolean;
   coinGeckoId: string;
+};
+
+export type V11Grc20 = {
+  chain: string;
+  type: string;
+  contract: string;
+  name: string;
+  symbol: string;
+  description: string;
+  decimals: number;
+  image?: string;
+  coinGeckoId?: string;
+  wallet_preload?: boolean;
 };

@@ -31,6 +31,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
       bitcoin: () => accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       iota: () => accountAllAssets?.iotaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
       solana: () => accountAllAssets?.allSolanaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      gno: () => accountAllAssets?.allGnoAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
     };
   }, [
     accountAllAssets?.allCosmosAccountAssets,
@@ -41,6 +42,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
     accountAllAssets?.bitcoinAccountAssets,
     accountAllAssets?.iotaAccountAssets,
     accountAllAssets?.suiAccountAssets,
+    accountAllAssets?.allGnoAccountAssets,
     coinId,
   ]);
 
@@ -62,6 +64,7 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
     getBitcoinAccountAsset: () => assetFinders.bitcoin(),
     getIotaAccountAsset: () => assetFinders.iota(),
     getSolanaAccountAsset: () => assetFinders.solana(),
+    getGnoAccountAsset: () => assetFinders.gno(),
     error,
   };
 }

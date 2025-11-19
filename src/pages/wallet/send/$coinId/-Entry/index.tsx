@@ -6,6 +6,7 @@ import Aptos from './Aptos';
 import Bitcoin from './Bitcoin';
 import Cosmos from './Cosmos';
 import EVM from './EVM';
+import Gno from './Gno';
 import Iota from './Iota';
 import Solana from './Solana';
 import Sui from './Sui';
@@ -46,6 +47,10 @@ export default function Entry({ coinId }: EntryProps) {
 
   if (selectedAccountAsset?.asset.chainType === 'solana') {
     return <Solana coinId={coinId} />;
+  }
+
+  if (selectedAccountAsset?.asset.chainType === 'gno') {
+    return <Gno coinId={coinId} />;
   }
 
   return null;

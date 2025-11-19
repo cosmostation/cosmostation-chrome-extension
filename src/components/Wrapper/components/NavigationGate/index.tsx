@@ -25,6 +25,9 @@ import { Route as EVMPersonalSign } from '@/pages/popup/evm/sign/personal-sign';
 import { Route as EVMSignTypedData } from '@/pages/popup/evm/sign/sign-typed-data';
 import { Route as EVMSwitchChain } from '@/pages/popup/evm/switch-network';
 import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
+import { Route as GnoSignMessage } from '@/pages/popup/gno/sign-message';
+import { Route as GnoSwitchNetwork } from '@/pages/popup/gno/switch-network';
+import { Route as GnoTransaction } from '@/pages/popup/gno/transaction';
 import { Route as IotaSignMessage } from '@/pages/popup/iota/sign-message';
 import { Route as IotaTransaction } from '@/pages/popup/iota/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
@@ -36,6 +39,7 @@ import type { AptosRequest } from '@/types/message/inject/aptos';
 import type { BitcoinRequest } from '@/types/message/inject/bitcoin';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
+import type { GnoRequest } from '@/types/message/inject/gno';
 import type { IotaRequest } from '@/types/message/inject/iota';
 import type { SolanaRequest } from '@/types/message/inject/solana';
 import type { SuiRequest } from '@/types/message/inject/sui';
@@ -112,6 +116,12 @@ export default function NavigationGate({ children }: NavigationGateProps) {
           });
         }
       }
+      if (requestQueue[0].chainType === 'gno') {
+        navigate({
+          to: getNavigationPathForGnoRequest(requestQueue[0]),
+        });
+      }
+
       if (shouldExitPopupState) {
         navigate({ to: Home.to });
       }
@@ -148,7 +158,6 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
 const getNavigationPathForEvmRequest = (requestQueue: EvmRequest) => {
   switch (requestQueue.method) {
     case 'eth_requestAccounts':
-      return RequestAccount.to;
     case 'wallet_requestPermissions':
       return RequestAccount.to;
     case 'ethc_switchNetwork':
@@ -264,6 +273,26 @@ const getNavigationPathForSolanaRequest = (requestQueue: SolanaRequest) => {
     case 'solana_signAndSendTransaction':
     case 'solana_signAndSendAllTransactions':
       return SolanaTransaction.to;
+
+    default:
+      return '/';
+  }
+};
+
+const getNavigationPathForGnoRequest = (requestQueue: GnoRequest) => {
+  switch (requestQueue.method) {
+    case 'gno_connect':
+      return RequestAccount.to;
+    case 'gno_getAccount':
+      return RequestAccount.to;
+    case 'gno_signAndSendTransaction':
+      return GnoTransaction.to;
+    case 'gno_signTransaction':
+      return GnoTransaction.to;
+    case 'gno_switchNetwork':
+      return GnoSwitchNetwork.to;
+    case 'gno_signMessage':
+      return GnoSignMessage.to;
 
     default:
       return '/';

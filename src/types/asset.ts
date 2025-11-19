@@ -91,6 +91,18 @@ export interface SolanaSpltokenAsset extends AssetBase {
   wallet_preload?: boolean;
 }
 
+export interface GnoAsset extends AssetBase {
+  chainType: 'gno';
+  type: string;
+  wallet_preload?: boolean;
+}
+
+export interface GnoGrc20Asset extends AssetBase {
+  chainType: 'gno';
+  type: 'grc20';
+  wallet_preload?: boolean;
+}
+
 export type Asset =
   | CosmosAsset
   | CosmosCw20Asset
@@ -100,6 +112,8 @@ export type Asset =
   | AptosAsset
   | BitcoinAsset
   | IotaAsset
+  | GnoAsset
+  | GnoGrc20Asset
   | SolanaAsset
   | SolanaSpltokenAsset;
 

@@ -13,6 +13,8 @@ import type {
   AccountAddressBalanceCw20,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceGno,
+  AccountAddressBalanceGrc20,
   AccountAddressBalanceIota,
   AccountAddressBalanceSolana,
   AccountAddressBalanceSplToken,
@@ -29,7 +31,7 @@ import type {
   PreferAccountType,
 } from './account';
 import type { V11Asset, V11Param } from './apiV11';
-import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset, SolanaSpltokenAsset } from './asset';
+import type { AssetId, CosmosCw20Asset, CustomAsset, EvmErc20Asset, GnoGrc20Asset, SolanaSpltokenAsset } from './asset';
 import type { LockupTimeOptions } from './autoLock';
 import type { CustomChain, UniqueChainId } from './chain';
 import type { CurrencyType } from './currency';
@@ -128,6 +130,7 @@ export interface ExtensionStorage extends DefaultExtensionStorage {
   erc20Assets: EvmErc20Asset[];
   cw20Assets: CosmosCw20Asset[];
   spltokenAssets: SolanaSpltokenAsset[];
+  grc20Assets: GnoGrc20Asset[];
   [key: `${string}-address`]: AccountAddress[];
   [key: `${string}-balance-cosmos`]: AccountAddressBalanceCosmos[];
   [key: `${string}-balance-evm`]: AccountAddressBalanceEvm[];
@@ -137,9 +140,11 @@ export interface ExtensionStorage extends DefaultExtensionStorage {
   [key: `${string}-balance-bitcoin`]: AccountAddressBalanceBitcoin[];
   [key: `${string}-balance-iota`]: AccountAddressBalanceIota[];
   [key: `${string}-balance-solana`]: AccountAddressBalanceSolana[];
+  [key: `${string}-balance-gno`]: AccountAddressBalanceGno[];
   [key: `${string}-balance-erc20`]: AccountAddressBalanceErc20[];
   [key: `${string}-balance-cw20`]: AccountAddressBalanceCw20[];
   [key: `${string}-balance-spltoken`]: AccountAddressBalanceSplToken[];
+  [key: `${string}-balance-grc20`]: AccountAddressBalanceGrc20[];
   [key: `${string}-delegation-cosmos`]: AccountAddressDelegationsCosmos[];
   [key: `${string}-undelegation-cosmos`]: AccountAddressUnbondingsCosmos[];
   [key: `${string}-reward-cosmos`]: AccountAddressRewardsCosmos[];
@@ -169,6 +174,7 @@ export interface ExtensionStorage extends DefaultExtensionStorage {
   chosenBitcoinNetworkId: string;
   chosenIotaNetworkId: string;
   chosenSolanaNetworkId: string;
+  chosenGnoNetworkId: string;
   currentWindowId: number | null;
   prioritizedProvider: PrioritizedProvider;
   pinnedDappIds: number[];

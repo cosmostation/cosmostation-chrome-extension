@@ -96,6 +96,19 @@ export async function emitChangedAddressEvent(newAccountId: string) {
       currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
     );
   }
+
+  const gnoChainForAddress = chainList.gnoChains?.[0];
+
+  const gnoKeyPair = gnoChainForAddress ? getKeypair(gnoChainForAddress, userAccounts.find((item) => item.id === newAccountId)!, currentPassword) : undefined;
+  const gnoAddress = gnoKeyPair && gnoChainForAddress ? getAddress(gnoChainForAddress, gnoKeyPair?.publicKey) : undefined;
+
+  if (gnoAddress) {
+    emitToWeb({ event: 'changedAccount', chainType: 'gno', data: { result: gnoAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { event: 'changedAccount', chainType: 'gno', data: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+  }
 }
 
 export async function emitDisconnectDapp() {

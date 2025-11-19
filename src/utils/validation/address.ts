@@ -3,7 +3,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { isValidIotaAddress } from '@iota/iota-sdk/utils';
 import { isValidSuiAddress } from '@mysten/sui/utils';
 
-import type { BitcoinChain, ChainBase, ChainType, CosmosChain } from '@/types/chain';
+import type { BitcoinChain, ChainBase, ChainType, CosmosChain, GnoChain } from '@/types/chain';
 
 import { isValidAptosAddress } from '../aptos/validation';
 import { isValidCosmosAddress } from '../cosmos/address';
@@ -41,6 +41,11 @@ const addressValidators: Record<ChainType, AddressValidator> = {
 
   solana: (address) => {
     return isValidSolanaAddress(address);
+  },
+
+  gno: (address, chain) => {
+    const chainCasted = chain as GnoChain;
+    return isValidCosmosAddress(address, chainCasted.accountPrefix);
   },
 };
 
