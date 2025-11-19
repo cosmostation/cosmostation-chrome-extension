@@ -752,6 +752,7 @@ function BusinessLogic() {
     deQueue,
     processedRequestIds,
     refreshOriginConnectionTime,
+    currentRequestQueue?.requestId,
     requestQueue.length,
   ]);
 
