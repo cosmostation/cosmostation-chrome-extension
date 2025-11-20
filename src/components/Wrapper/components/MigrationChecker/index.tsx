@@ -48,7 +48,7 @@ type MigrationCheckerProps = {
 
 export default function MigrationChecker({ children }: MigrationCheckerProps) {
   const { t } = useTranslation();
-  const { progressValue } = useLoadingProgressBarStore((state) => state);
+  const progressValue = useLoadingProgressBarStore((state) => state.progressValue);
 
   const { setCurrentPassword } = useCurrentPassword();
 
