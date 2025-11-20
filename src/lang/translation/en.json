@@ -290,6 +290,12 @@
           "networkFee": "Network Fee",
           "continue": "Continue"
         }
+      },
+      "SolanaFee": {
+        "index": {
+          "networkFee": "Network Fee",
+          "continue": "Continue"
+        }
       }
     },
     "FinalReviewBottomSheet": {
@@ -742,6 +748,29 @@
             "NoHistorySubTitle": "Your transaction history will be displayed here",
             "LoadingTitle": "Loading",
             "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
+          }
+        },
+        "Solana": {
+          "components": {
+            "SolanaTxItem": {
+              "index": {
+                "transaction": "Transaction"
+              }
+            }
+          },
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
+            "LoadingTitle": "Loading",
+            "LoadingSubTitle": "Please wait a moment",
+            "goToExplorer": "Go to Explorer"
+          }
+        },
+        "Gno": {
+          "index": {
+            "NoHistoryTitle": "No History",
+            "NoHistorySubTitle": "Your transaction history will be displayed here",
             "goToExplorer": "Go to Explorer"
           }
         }
@@ -1550,6 +1579,54 @@
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
                 "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+              }
+            },
+            "Solana": {
+              "index": {
+                "mint": "Mint Address",
+                "send": "Send",
+                "recipientNetwork": "Recipient Network",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "chooseRecipientAddress": "Choose Recipient",
+                "invalidAddress": "Invalid address",
+                "noRecipientAddress": "Please enter the recipient address",
+                "noAvailableAmount": "No available amount",
+                "noAmount": "Please enter the amount",
+                "insufficientAmount": "Insufficient amount",
+                "noFee": "Insufficient fee amount",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed",
+                "noTx": "The transaction has not been created yet",
+                "lowerThanRent": "Minimum {{rentAmount}} SOL required for account activation."
+              }
+            },
+            "Gno": {
+              "index": {
+                "contract": "Contract",
+                "denom": "Denom",
+                "invalidAddress": "Invalid address",
+                "insufficientAmount": "Insufficient amount",
+                "tooLowAmount": "Please enter an amount greater than 0",
+                "memoOverflow": "Memo is too long. Please shorten it.",
+                "noRecipientAddress": "Please enter the recipient address",
+                "noAvailableAmount": "No available amount",
+                "noAmount": "Please enter the amount",
+                "insufficientFee": "Insufficient fee",
+                "invalidAmount": "Invalid amount",
+                "failedToCalculateTransaction": "Failed to build transaction",
+                "send": "Send",
+                "recipientAddress": "Recipient Address",
+                "amount": "Amount",
+                "memo": "Memo (Option)",
+                "chooseRecipientAddress": "Choose Recipient",
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "sendReview": "Confirm Send",
+                "sendReviewSub": "Are you sure you want to proceed with the transfer? \nThis action cannot be undone once completed.",
+                "txProcessing": "Transaction Processing",
+                "txProcessingSub": "Please wait a moment while the transaction is being processed"
               }
             }
           }
@@ -3109,6 +3186,57 @@
             "reject": "Reject",
             "sign": "Sign"
           }
+        }
+      },
+      "solana": {
+        "transaction": {
+          "entry": {
+            "reject": "Reject",
+            "sign": "Sign",
+            "calculatingFee": "Calculating fee"
+          },
+          "components": {
+            "TxMessage": {
+              "index": {
+                "expectedChanges": "Expected changes",
+                "expectedChangesDescription": "Balance changes are estimated. Amounts and assets are not guaranteed."
+              }
+            }
+          }
+        }
+      },
+      "gno": {
+        "switch-network": {
+          "entry": {
+            "switchNetwork": "Switch Network",
+            "infoTitle": "Authorize Network Access",
+            "infoDescription": "Upon authorization, the website will be allowed to access addresses within this network",
+            "reject": "Reject"
+          }
+        },
+        "sign-message": {
+          "entry": {
+            "signatureRequest": "Signature Request",
+            "message": "Message",
+            "reject": "Reject",
+            "sign": "Sign"
+          }
+        },
+        "transaction": {
+          "entry": {
+            "insufficientFeeAmount": "Insufficient fee",
+            "reject": "Reject",
+            "sign": "Sign",
+            "notSimulated": "Simulating transaction...",
+            "memoOverflow": "Memo is too long. Please shorten it.",
+            "calculatingFee": "Calculating fee"
+          }
+        }
+      },
+      "request-account": {
+        "entry": {
+          "connecting": "Connecting to DApp...",
+          "connectingWith": "{{url}} is connecting. \n Please wait a moment."
         }
       }
     },

@@ -23,11 +23,11 @@ export async function address(id: string) {
   devLogger.time(`address-${id}`);
   try {
     const account = await getAccount(id);
-    const { cosmosChains, evmChains, suiChains, aptosChains, bitcoinChains, iotaChains } = await getChains();
+    const { cosmosChains, evmChains, suiChains, aptosChains, bitcoinChains, iotaChains, solanaChains, gnoChains } = await getChains();
 
     const password = await getPassword();
 
-    const chains = [...cosmosChains, ...evmChains, ...suiChains, ...aptosChains, ...bitcoinChains, ...iotaChains];
+    const chains = [...cosmosChains, ...evmChains, ...suiChains, ...aptosChains, ...bitcoinChains, ...iotaChains, ...solanaChains, ...gnoChains];
 
     const storedAccountAddresses = await getAccountAddress(id);
 

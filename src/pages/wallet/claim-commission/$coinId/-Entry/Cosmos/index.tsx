@@ -32,7 +32,7 @@ import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/T
 import type { MsgCommission, SignAminoDoc } from '@/types/cosmos/amino';
 import { isTestnetChain } from '@/utils/chain';
 import { convertToValidatorAddress } from '@/utils/cosmos/address';
-import { executeClaimCommissionTransaction } from '@/utils/cosmos/executeTx';
+import { executeClaimCommissionTransaction, resolvePubkeyType } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -236,19 +236,24 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const [commissionAminoTx] = useDebounce(memoizedCommissionAminoTx, 700);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (selectedCoin?.chain && selectedCoin?.address) {
+      const pubkeyType = resolvePubkeyType(selectedCoin.chain, selectedCoin.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [selectedCoin?.address, selectedCoin?.chain]);
+
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      const pTx = protoTx(
-        commissionAminoTx,
-        [''],
-        { type: selectedCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
-      );
+      const pTx = protoTx(commissionAminoTx, [''], { type: resolvedPubkeyType, value: '' }, COSMOS_SIGN_MODE.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [selectedCoin?.address.accountType.pubkeyType, commissionAminoTx]);
+  }, [commissionAminoTx, resolvedPubkeyType]);
 
   const simulate = useSimulate({ coinId, txBytes: commissionProtoTx?.tx_bytes });
 

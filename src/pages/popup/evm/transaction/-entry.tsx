@@ -9,6 +9,7 @@ import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import type { BasicFeeOption, EIP1559FeeOption } from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
 import FeeSettingBottomSheet from '@/components/Fee/EVMFee/components/FeeSettingBottomSheet';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { DEFAULT_GAS_MULTIPLY, EVM_DEFAULT_GAS } from '@/constants/evm/fee';
@@ -31,6 +32,7 @@ import RawTx from '@/pages/popup/-components/RawTx';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '@/types/message/inject/evm';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/ethereum/sign';
+import { wait } from '@/utils/fetch/wait';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { hexOrDecimalToDecimal, isEqualsIgnoringCase, toHex } from '@/utils/string';
@@ -375,7 +377,7 @@ export default function Entry({ request }: EntryProps) {
           raw: response,
           tx: ethereumTx,
         };
-
+        await wait(POPUP_DISMISS_DELAY_MS);
         await incrementTxCountForOrigin(request.origin);
 
         sendMessage<ResponseAppMessage<EthSignTransaction>>({
@@ -394,6 +396,9 @@ export default function Entry({ request }: EntryProps) {
         const response = await signAndExecuteTxSequentially(privateKey, ethereumTx, rpcURLs);
 
         const result: EthSendTransactionResponse = response.hash;
+
+        await wait(POPUP_DISMISS_DELAY_MS);
+        await incrementTxCountForOrigin(request.origin);
 
         sendMessage<ResponseAppMessage<EthSendTransaction>>({
           target: 'CONTENT',
@@ -498,6 +503,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

@@ -6,7 +6,7 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
 export const updateAdPopover = async (popoverId: string, state: AdPopoverState) => {
-  const storedAdPopoverState = await getExtensionLocalStorage('adPopoverState');
+  const storedAdPopoverState = (await getExtensionLocalStorage('adPopoverState')) || {};
 
   const updatedAdPopoverState = produce(storedAdPopoverState, (draft) => {
     draft[popoverId] = state;
@@ -21,25 +21,12 @@ export const updateAdPopover = async (popoverId: string, state: AdPopoverState) 
   );
 };
 
-export const turnOnAdPopover = async (popoverId: string) => {
-  const storedAdPopoverState = await getExtensionLocalStorage('adPopoverState');
-
-  const selected = storedAdPopoverState[popoverId];
-
-  const newState = produce(selected, (draft) => {
-    draft.isVisiable = true;
-  });
-
-  await updateAdPopover(popoverId, newState);
-};
-
 export const turnOffAdPopover = async (popoverId: string, lastClosed?: number) => {
-  const storedAdPopoverState = await getExtensionLocalStorage('adPopoverState');
+  const storedAdPopoverState = (await getExtensionLocalStorage('adPopoverState')) || {};
 
-  const selected = storedAdPopoverState[popoverId];
+  const selected = storedAdPopoverState[popoverId] || {};
 
   const newState = produce(selected, (draft) => {
-    draft.isVisiable = false;
     if (lastClosed) {
       draft.lastClosed = lastClosed;
     }

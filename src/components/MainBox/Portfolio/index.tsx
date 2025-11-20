@@ -6,6 +6,7 @@ import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import StaleBalanceErrorBanner from '@/components/StaleBalanceErrorBanner';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
+import type { PortfolioCoinItem } from '@/pages/-entry';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
@@ -28,16 +29,15 @@ import cosmostationLogoImg from '@/assets/images/logos/greyCosmostationLogo.png'
 
 type PortFolioProps = {
   selectedChainId?: UniqueChainId;
+  accountAllAssetsForValueAggregate: PortfolioCoinItem[];
   onChangeChaindId: (chainId?: UniqueChainId) => void;
 };
 
-export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFolioProps) {
+export default function PortFolio({ selectedChainId, accountAllAssetsForValueAggregate, onChangeChaindId }: PortFolioProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
+  const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true });
 
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
@@ -96,7 +96,7 @@ export default function PortFolio({ selectedChainId, onChangeChaindId }: PortFol
         }
         body={
           <BalanceValueWrapper
-            accountAssets={accountAllAssets?.flatAccountAssets || []}
+            accountAssets={accountAllAssetsForValueAggregate}
             selectedChainId={selectedChainId}
             selectedChainMainAsset={selectedChainMainAsset}
           />

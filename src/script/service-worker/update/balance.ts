@@ -31,6 +31,7 @@ export async function updateDefaultAssetsBalance(id: string) {
         isMinimal: true,
       }),
       bitcoinBalances(id),
+      solanaBalances(id),
     ]);
 
     await updateHiddenAssetsExcludingDefault(id);
@@ -120,6 +121,12 @@ async function fetchChainBalanceByType(id: string, chainId: UniqueChainId) {
     if (chainType === 'iota') {
       await Promise.all([iotaBalances(id, { chainId })]);
     }
+    if (chainType === 'solana') {
+      await Promise.all([solanaBalances(id, { chainId }), splTokenBalance(id, { chainId })]);
+    }
+    if (chainType === 'gno') {
+      await Promise.all([gnoBalance(id, { chainId }), grc20Balance(id, { chainId })]);
+    }
   }
 }
 
@@ -135,8 +142,12 @@ export async function updateBalance(id: string) {
       suiBalances(id),
       iotaBalances(id),
       bitcoinBalances(id),
+      solanaBalances(id),
+      gnoBalance(id),
       erc20Balance(id),
       cw20Balance(id),
+      splTokenBalance(id),
+      grc20Balance(id),
       customErc20Balance(id),
       customCw20Balance(id),
     ]);
@@ -211,9 +222,9 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -245,9 +256,9 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -281,8 +292,9 @@ export async function initAssests(id: string) {
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);
+    const nonPreloadedGRC20Assets = grc20Assets.filter((asset) => !asset.wallet_preload);
 
-    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets].map((asset) => {
+    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets, ...nonPreloadedGRC20Assets].map((asset) => {
       return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
     });
 

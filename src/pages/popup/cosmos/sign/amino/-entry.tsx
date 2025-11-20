@@ -8,6 +8,7 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import FeeSettingBottomSheet from '@/components/Fee/CosmosFee/components/FeeSettingBottomSheet';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
@@ -34,6 +35,7 @@ import { resolvePubkeyType, resolveSeiChainConfig } from '@/utils/cosmos/execute
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
+import { wait } from '@/utils/fetch/wait';
 import { ceil, divide, gt, gte, times } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
 import { getUtf8BytesLength } from '@/utils/string';
@@ -174,18 +176,28 @@ export default function Entry({ request, chain }: EntryProps) {
     return alternativeFeeAsset?.asset.id === dappFromFeeAsset?.asset.id ? dappFromFeeAsset : alternativeFeeAsset;
   }, [alternativeFeeAsset, dappFromFeeAsset]);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (accountAsset?.address) {
+      const pubkeyType = resolvePubkeyType(chain, accountAsset.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [accountAsset?.address, chain]);
+
   const memoizedProtoTx = useMemo(() => {
     if (isEditFee && assetForSimulation?.asset.id && !isNeedOsmoEip1559) {
       const pTx = protoTx(
         { ...doc, fee: { amount: [{ denom: assetForSimulation.asset.id, amount: '1' }], gas: COSMOS_DEFAULT_GAS } },
         [Buffer.from(new Uint8Array(64)).toString('base64')],
-        { type: accountAsset?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
+        { type: resolvedPubkeyType, value: '' },
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [accountAsset?.address.accountType.pubkeyType, assetForSimulation?.asset.id, doc, isEditFee, isNeedOsmoEip1559]);
+  }, [assetForSimulation?.asset.id, doc, isEditFee, isNeedOsmoEip1559, resolvedPubkeyType]);
 
   const isPossibleSimulating =
     !!accountAssetCoinId &&
@@ -425,6 +437,7 @@ export default function Entry({ request, chain }: EntryProps) {
         signed_doc: tx,
       };
 
+      await wait(POPUP_DISMISS_DELAY_MS);
       await incrementTxCountForOrigin(request.origin);
 
       sendMessage({
@@ -535,6 +548,7 @@ export default function Entry({ request, chain }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

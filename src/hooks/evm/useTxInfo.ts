@@ -1,8 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import type { TransactionReceipt } from 'ethers';
-import { ethers, isError } from 'ethers';
+import { useMemo } from 'react';
+import { isHexString, type TransactionReceipt } from 'ethers';
 
-import { ethersProvider } from '@/utils/ethereum/ethers';
+import { waitForTransaction } from '@/utils/ethereum/waitForTx';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -29,111 +28,14 @@ export function useTxInfo({ coinId, txHash, config }: UseTxInfoProps) {
   const accountAsset = getEVMAccountAsset();
 
   const rpcURLs = useMemo(() => accountAsset?.chain.rpcUrls.map((item) => item.url) || [], [accountAsset?.chain.rpcUrls]);
-
-  const waitForTransaction = useCallback(async (): Promise<EthersTxResult> => {
-    let allRpcProvider;
-    if (rpcURLs.length > 0) {
-      const fallbackConfig = {
-        staticNetwork: true,
-        batchMaxCount: 1,
-      };
-
-      const providers = rpcURLs.map((url) => ethersProvider(url, undefined, fallbackConfig));
-
-      if (providers.length > 1) {
-        const fallbackProvider = new ethers.FallbackProvider(
-          providers.map((provider, index) => ({
-            provider,
-            priority: index + 1,
-            weight: 1,
-          })),
-        );
-        allRpcProvider = fallbackProvider;
-      } else {
-        allRpcProvider = providers[0];
-      }
-    } else {
-      allRpcProvider = null;
-    }
-
-    if (!allRpcProvider) {
-      return {
-        status: 'invalid',
-        error: 'No provider available',
-      };
-    }
-
-    if (!txHash || !ethers.isHexString(txHash, 32)) {
-      return {
-        status: 'invalid',
-        error: 'Invalid transaction hash',
-      };
-    }
-
-    try {
-      const confirmationsNeeded = 1;
-      const timeout = 60000;
-
-      const receipt = await allRpcProvider.waitForTransaction(txHash, confirmationsNeeded, timeout);
-
-      if (!receipt) {
-        return {
-          status: 'timeout',
-          error: 'Transaction timeout',
-        };
-      }
-
-      const status: EthersTxStatus = receipt.status === 1 ? 'success' : 'failed';
-
-      return {
-        status,
-        receipt,
-        blockHash: receipt.blockHash,
-        error: status === 'failed' ? 'Transaction failed' : undefined,
-      };
-    } catch (error) {
-      if (isError(error, 'TIMEOUT')) {
-        return {
-          status: 'timeout',
-          error: 'Transaction timeout',
-        };
-      }
-
-      if (isError(error, 'NETWORK_ERROR')) {
-        return {
-          status: 'timeout',
-          error: 'Network connection failed',
-        };
-      }
-
-      if (isError(error, 'SERVER_ERROR')) {
-        return {
-          status: 'timeout',
-          error: 'RPC server error',
-        };
-      }
-
-      if (isError(error, 'TRANSACTION_REPLACED')) {
-        return {
-          status: 'failed',
-          error: 'Transaction was replaced or cancelled',
-        };
-      }
-
-      return {
-        status: 'not_found',
-        error: 'Transaction not found',
-      };
-    } finally {
-      if (allRpcProvider) {
-        allRpcProvider.destroy();
-      }
-    }
-  }, [rpcURLs, txHash]);
+  const evmChainId = useMemo(
+    () => (accountAsset?.chain.chainId && isHexString(accountAsset.chain.chainId) ? parseInt(accountAsset.chain.chainId, 16) : undefined),
+    [accountAsset?.chain.chainId],
+  );
 
   const fetchResult = useFetch<EthersTxResult>({
     queryKey: ['useTxInfo', coinId, txHash],
-    fetchFunction: waitForTransaction,
+    fetchFunction: () => waitForTransaction({ txHash, rpcURLs, chainId: evmChainId }),
     config: {
       enabled: !!coinId && !!txHash && !!rpcURLs.length,
       ...config,

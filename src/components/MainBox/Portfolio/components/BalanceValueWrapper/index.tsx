@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
@@ -7,6 +7,7 @@ import ChipButton from '@/components/common/ChipButton';
 import { useManualBalanceUpdate } from '@/hooks/common/useManualBalanceUpdate';
 import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import type { PortfolioCoinItem } from '@/pages/-entry';
 import { Route as SelectReceiveCoin } from '@/pages/wallet/receive';
 import { Route as ReceiveWithChainId } from '@/pages/wallet/receive/chain/$chainId';
 import { Route as SelectSendCoin } from '@/pages/wallet/send';
@@ -26,13 +27,12 @@ import {
 import BalanceValueButton from '../BalanceValueButton';
 
 interface BalanceValueButtonProps {
-  accountAssets: FlatAccountAssets[];
+  accountAssets: PortfolioCoinItem[];
   selectedChainId?: UniqueChainId;
   selectedChainMainAsset?: FlatAccountAssets;
 }
 
 export default function BalanceValueWrapper({ accountAssets, selectedChainId, selectedChainMainAsset }: BalanceValueButtonProps) {
-  const [isBalanceUpdateButtonHovered, setIsBalanceUpdateButtonHovered] = useState(false);
   const { updateAllBalance, updateChainBalance, isLoadingAllBalance, isLoadingChainBalance } = useManualBalanceUpdate();
   const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
   const { isLoading: isUpdateChainBalanceLoading } = useAutoBalanceRefresh(selectedChainId && [selectedChainId]);
@@ -65,16 +65,7 @@ export default function BalanceValueWrapper({ accountAssets, selectedChainId, se
   return (
     <BodyContainer>
       <BodyTopContainer>
-        <BalanceValueButton
-          accountAssets={accountAssets}
-          isUpdatingBalance={isUpdatingBalance}
-          selectedChainId={selectedChainId}
-          handleManualBalanceUpdate={handleManualBalanceUpdate}
-          isHovering={isBalanceUpdateButtonHovered}
-          handleHovering={(value) => {
-            setIsBalanceUpdateButtonHovered(value);
-          }}
-        />
+        <BalanceValueButton accountAssets={accountAssets} isUpdatingBalance={isUpdatingBalance} handleManualBalanceUpdate={handleManualBalanceUpdate} />
       </BodyTopContainer>
       <BodyBottomContainer>
         <BodyBottomChipButtonContainer>
