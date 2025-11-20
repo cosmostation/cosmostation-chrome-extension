@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
 
-import { useRefreshAccountAllAssets } from '@/hooks/useRefreshAccountAllAssets';
 import { extension } from '@/utils/browser';
 import { isSidePanelView } from '@/utils/view/sidepanel';
 
-type BackgroundMessageListenerProps = {
-  children: JSX.Element;
-};
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
-export default function BackgroundMessageListener({ children }: BackgroundMessageListenerProps) {
+export function useServiceWorkerMessageReceiver() {
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   useEffect(() => {
@@ -21,21 +18,21 @@ export default function BackgroundMessageListener({ children }: BackgroundMessag
         } catch {
           sendResponse({ type: request.type, message: { enabled: false } });
         }
+        return false;
       }
 
       if (request.type === 'updateAssets') {
         refreshAssets();
         sendResponse({ type: request.type, message: { success: true } });
+        return true;
       }
-
-      return true;
+      return false;
     };
 
     extension.runtime.onMessage.addListener(handler);
+
     return () => {
       extension.runtime.onMessage.removeListener(handler);
     };
   }, [refreshAssets]);
-
-  return <>{children}</>;
 }

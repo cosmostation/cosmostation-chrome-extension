@@ -89,7 +89,7 @@ export default function ValidatorSelectBox({
             shrink: !!currentValidatorAddress,
           },
         }}
-        onClick={handleInputClick}
+        onClick={disabled ? undefined : handleInputClick}
         value={validatorCounts ? `${currentValidator?.validatorName} + ${validatorCounts}` : currentValidator?.validatorName}
         {...remainder}
       />

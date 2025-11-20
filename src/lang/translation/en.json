@@ -3363,7 +3363,8 @@
         "errorSubtitle": "Something went wrong",
         "feedback": "Feedback?",
         "sendReportEmail": "Send Report Email",
-        "backToHome": "Back to Home"
+        "backToHome": "Back to Home",
+        "errorDialogTitle": "Error Detail"
       }
     },
     "notFound": {

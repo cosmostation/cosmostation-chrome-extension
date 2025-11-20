@@ -1,4 +1,5 @@
-import BackgroundMessageListener from './components/BackgroundMessageListener';
+import { useServiceWorkerMessageReceiver } from '@/hooks/common/useServiceWorkerMessageReceiver';
+
 import Init from './components/Init';
 import Lock from './components/Lock';
 import MigrationChecker from './components/MigrationChecker';
@@ -14,25 +15,25 @@ type WrapperProps = {
 };
 
 export default function Wrapper({ children }: WrapperProps) {
+  useServiceWorkerMessageReceiver();
+
   return (
     <Scaffold>
       <MigrationChecker>
-        <BackgroundMessageListener>
-          <Init>
-            <Lock>
-              <PostHydration>
-                <RefetchController>
-                  <NavigationGate>
-                    <>
-                      <ScrollProvider>{children}</ScrollProvider>
-                      <LoadingOverlay />
-                    </>
-                  </NavigationGate>
-                </RefetchController>
-              </PostHydration>
-            </Lock>
-          </Init>
-        </BackgroundMessageListener>
+        <Init>
+          <Lock>
+            <PostHydration>
+              <RefetchController>
+                <NavigationGate>
+                  <>
+                    <ScrollProvider>{children}</ScrollProvider>
+                    <LoadingOverlay />
+                  </>
+                </NavigationGate>
+              </RefetchController>
+            </PostHydration>
+          </Lock>
+        </Init>
       </MigrationChecker>
     </Scaffold>
   );

@@ -41,7 +41,9 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
       width: '100%',
       height: '100%',
       content: '""',
-      background: `url(${props['backgroundImage']}) no-repeat calc(100% + 1rem) calc(50% + 2rem)/ 55% auto`,
+      ...(props['backgroundImage'] && {
+        background: `url(${props['backgroundImage']}) no-repeat calc(100% + 1rem) calc(50% + 2rem)/ 55% auto`,
+      }),
       position: 'absolute',
 
       top: '0',
@@ -56,7 +58,9 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
       width: '100%',
       height: '100%',
       content: '""',
-      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(100% + 2rem)/ auto auto`,
+      ...(props['backgroundImage'] && {
+        background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(100% + 2rem)/ auto auto`,
+      }),
       position: 'absolute',
 
       top: '0',
@@ -71,7 +75,9 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
       width: '100%',
       height: '100%',
       content: '""',
-      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(30%)/ auto 220px`,
+      ...(props['backgroundImage'] && {
+        background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(30%)/ auto 220px`,
+      }),
       position: 'absolute',
 
       top: '0',
@@ -86,7 +92,9 @@ export const CoinBackgroundImage = styled('div')<CoinBackgroundImageProps>(({ ..
       width: '100%',
       height: '100%',
       content: '""',
-      background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(11.5%)/ auto 220px`,
+      ...(props['backgroundImage'] && {
+        background: `url(${props['backgroundImage']}) no-repeat calc(100%) calc(11.5%)/ auto 220px`,
+      }),
       position: 'absolute',
 
       top: '0',
