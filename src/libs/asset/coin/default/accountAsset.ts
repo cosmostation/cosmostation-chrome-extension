@@ -12,14 +12,32 @@ import type {
   AccountErc20Asset,
   AccountEvmAsset,
   AccountEVMAssetFetchStatus,
+  AccountGnoAsset,
+  AccountGrc20Asset,
   AccountIotaAsset,
   AccountIotaAssetFetchStatus,
+  AccountSolanaAsset,
+  AccountSpltokenAsset,
   AccountSuiAsset,
   AccountSuiAssetFetchStatus,
   AssetFetchStatus,
 } from '@/types/account';
-import type { AptosAsset, Asset, BitcoinAsset, CosmosAsset, CosmosCw20Asset, EvmAsset, EvmErc20Asset, IotaAsset, SuiAsset } from '@/types/asset';
-import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type {
+  AptosAsset,
+  Asset,
+  BitcoinAsset,
+  CosmosAsset,
+  CosmosCw20Asset,
+  EvmAsset,
+  EvmErc20Asset,
+  GnoAsset,
+  GnoGrc20Asset,
+  IotaAsset,
+  SolanaAsset,
+  SolanaSpltokenAsset,
+  SuiAsset,
+} from '@/types/asset';
+import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { formattingAccount } from '@/utils/cosmos/account';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
@@ -27,7 +45,7 @@ import { devLogger } from '@/utils/devLogger';
 import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 
-import { getAssetsDetailed } from './getAssets';
+import { getAssetsWithChainAndAddress } from './getAssets';
 
 const vestingChainIds = new Set([KAVA_CHAINLIST_ID]);
 
@@ -46,8 +64,22 @@ type GetAccountAssetsOption = {
 
 export async function getAccountAssets(id: string, option?: GetAccountAssetsOption) {
   devLogger.time('getAccountAssets');
-  const { aptosAssets, cosmosAssets, cw20Assets, customCw20Assets, erc20Assets, customErc20Assets, evmAssets, suiAssets, bitcoinAssets, iotaAssets } =
-    await getAssetsDetailed(id);
+  const {
+    aptosAssets,
+    cosmosAssets,
+    cw20Assets,
+    customCw20Assets,
+    erc20Assets,
+    customErc20Assets,
+    evmAssets,
+    suiAssets,
+    bitcoinAssets,
+    iotaAssets,
+    gnoAssets,
+    grc20Assets,
+    solanaAssets,
+    splTokenAssets,
+  } = await getAssetsWithChainAndAddress(id);
 
   const [
     baseCosmosAccountAssets,
@@ -60,6 +92,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     baseCustomCw20AccountAssets,
     baseBitcoinAccountAssets,
     baseIotaAccountAssets,
+    baseGnoAccountAssets,
+    baseGrc20AccountAssets,
+    baseSolanaAccountAssets,
+    baseSplTokenAccountAssets,
   ] = await Promise.all([
     getCosmosAccountAssets(id, cosmosAssets),
     getEVMAccountAssets(id, evmAssets, cosmosAssets),
@@ -71,6 +107,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     getCustomCW20AccountAssets(id, customCw20Assets),
     getBitcoinAccountAssets(id, bitcoinAssets),
     getIotaAccountAssets(id, iotaAssets),
+    getGnoAccountAssets(id, gnoAssets),
+    getGrc20AccountAssets(id, grc20Assets),
+    getSolanaAccountAssets(id, solanaAssets),
+    getSplTokenAccountAssets(id, splTokenAssets),
   ]);
 
   const isFilterHidden = !option?.disableFilterHidden;
@@ -108,6 +148,10 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     customCw20AccountAssets: filterAssets(baseCustomCw20AccountAssets),
     bitcoinAccountAssets: filterAssets(baseBitcoinAccountAssets),
     iotaAccountAssets: filterAssets(baseIotaAccountAssets),
+    gnoAccountAssets: filterAssets(baseGnoAccountAssets),
+    grc20AccountAssets: filterAssets(baseGrc20AccountAssets),
+    solanaAccountAssets: filterAssets(baseSolanaAccountAssets),
+    spltokenAccountAssets: filterAssets(baseSplTokenAccountAssets),
   };
 }
 
@@ -751,6 +795,154 @@ async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chai
         }
 
         const result: AccountIotaAsset = {
+          chain,
+          asset,
+          address,
+          balance: balance,
+          lastUpdatedAtMs,
+          fetchStatus,
+        };
+
+        return result;
+      });
+    })
+    .flat();
+}
+
+async function getGnoAccountAssets(id: string, assets: { asset: GnoAsset; chain: GnoChain; addresses: AccountAddress[] }[]) {
+  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-gno`]);
+
+  const gnoBalances = storage[`${id}-balance-gno`] || [];
+
+  return assets
+    .map(({ asset, chain, addresses }) => {
+      return addresses.map((address) => {
+        const balanceInfo = gnoBalances?.find(
+          (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+        );
+
+        const balance = balanceInfo?.balance || '0';
+
+        const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
+        const fetchStatus: AssetFetchStatus = {
+          balance: balanceInfo?.status,
+        };
+
+        const result: AccountGnoAsset = {
+          chain,
+          asset,
+          address,
+          balance: balance,
+          lastUpdatedAtMs,
+          fetchStatus,
+        };
+
+        return result;
+      });
+    })
+    .flat();
+}
+
+async function getGrc20AccountAssets(id: string, assets: { asset: GnoGrc20Asset; chain: GnoChain; addresses: AccountAddress[] }[]) {
+  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-grc20`]);
+
+  const grc20BalancesMap = new Map(
+    (storage[`${id}-balance-grc20`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),
+  );
+
+  return assets
+    .map(({ asset, chain, addresses }) => {
+      return addresses.map((address) => {
+        const type = asset.id;
+        const assetKey = getAssetKey(address.chainId, address.chainType, address.address);
+
+        const balanceInfo = grc20BalancesMap.get(assetKey);
+
+        const targetGRC20BalanceInfo = balanceInfo?.balances?.find((balance) => balance.contract === type);
+
+        const balance = targetGRC20BalanceInfo?.balance || '0';
+        const lastUpdatedAtMs = targetGRC20BalanceInfo?.lastUpdatedAtMs;
+
+        const fetchStatus: AssetFetchStatus = {
+          balance: targetGRC20BalanceInfo?.status,
+        };
+
+        const result: AccountGrc20Asset = {
+          chain,
+          asset,
+          address,
+          balance: balance,
+          lastUpdatedAtMs,
+          fetchStatus,
+        };
+
+        return result;
+      });
+    })
+    .flat();
+}
+
+async function getSolanaAccountAssets(id: string, assets: { asset: SolanaAsset; chain: SolanaChain; addresses: AccountAddress[] }[]) {
+  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-solana`]);
+
+  const solanaBalances = storage[`${id}-balance-solana`] || [];
+
+  return assets
+    .map(({ asset, chain, addresses }) => {
+      return addresses.map((address) => {
+        const balanceInfo = solanaBalances?.find(
+          (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
+        );
+
+        const balance = balanceInfo?.balance || '0';
+
+        const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
+
+        const fetchStatus: AssetFetchStatus = {
+          balance: balanceInfo?.status,
+        };
+
+        const result: AccountSolanaAsset = {
+          chain,
+          asset,
+          address,
+          balance: String(balance),
+          lastUpdatedAtMs,
+          fetchStatus,
+        };
+
+        return result;
+      });
+    })
+    .flat();
+}
+
+async function getSplTokenAccountAssets(id: string, assets: { asset: SolanaSpltokenAsset; chain: SolanaChain; addresses: AccountAddress[] }[]) {
+  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-spltoken`]);
+
+  const spltokenBalancesMap = new Map(
+    (storage[`${id}-balance-spltoken`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),
+  );
+
+  return assets
+    .map(({ asset, chain, addresses }) => {
+      return addresses.map((address) => {
+        const type = asset.id;
+        const assetKey = getAssetKey(address.chainId, address.chainType, address.address);
+
+        const balanceInfo = spltokenBalancesMap.get(assetKey);
+
+        const targetGRC20BalanceInfo = balanceInfo?.balances?.find((balance) => balance.account.data.parsed.info.mint === type);
+
+        const balance = targetGRC20BalanceInfo?.account.data.parsed.info.tokenAmount.amount || '0';
+        const lastUpdatedAtMs = targetGRC20BalanceInfo?.lastUpdatedAtMs;
+
+        const fetchStatus: AssetFetchStatus = {
+          balance: targetGRC20BalanceInfo?.status,
+        };
+
+        const result: AccountSpltokenAsset = {
           chain,
           asset,
           address,

@@ -118,6 +118,7 @@ export interface EvmChain extends ChainBase {
   chainType: Extract<ChainType, 'evm'>;
   chainId: string;
   mainAssetDenom: string | null;
+  gasAssetDenom?: string | null;
   chainDefaultCoinDenoms?: string[] | null;
   isCosmos: boolean;
   feeInfo: EvmFeeInfo;

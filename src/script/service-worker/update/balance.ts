@@ -11,11 +11,13 @@ import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamG
 
 import { aptosBalances } from './balance/aptos/balance';
 import { bitcoinBalances } from './balance/bitcoin/balance';
-import { customCw20Balance, customErc20Balance, cw20Balance, erc20Balance } from './balance/contractToken/balance';
+import { customCw20Balance, customErc20Balance, cw20Balance, erc20Balance, grc20Balances, splTokenBalance } from './balance/contractToken/balance';
 import { cosmosBalances, customCosmosBalances } from './balance/cosmos/balance';
 import { getDefaultVisibleAsset } from './balance/defaultVisibleAssets';
 import { customEvmBalances, evmBalances } from './balance/evm/balance';
+import { gnoBalances } from './balance/gno/balance';
 import { iotaBalances } from './balance/iota/balance';
+import { solanaBalances } from './balance/solana/balance';
 import { suiBalances } from './balance/sui/balance';
 
 export async function updateDefaultAssetsBalance(id: string) {
@@ -125,7 +127,7 @@ async function fetchChainBalanceByType(id: string, chainId: UniqueChainId) {
       await Promise.all([solanaBalances(id, { chainId }), splTokenBalance(id, { chainId })]);
     }
     if (chainType === 'gno') {
-      await Promise.all([gnoBalance(id, { chainId }), grc20Balance(id, { chainId })]);
+      await Promise.all([gnoBalances(id, { chainId }), grc20Balances(id, { chainId })]);
     }
   }
 }
@@ -142,12 +144,12 @@ export async function updateBalance(id: string) {
       suiBalances(id),
       iotaBalances(id),
       bitcoinBalances(id),
+      gnoBalances(id),
       solanaBalances(id),
-      gnoBalance(id),
       erc20Balance(id),
       cw20Balance(id),
+      grc20Balances(id),
       splTokenBalance(id),
-      grc20Balance(id),
       customErc20Balance(id),
       customCw20Balance(id),
     ]);
@@ -200,8 +202,12 @@ export async function updatePriorityBalance(id: string, priority: 'high' | 'low'
         iotaBalances(id, optionUpdateAfterAll),
         aptosBalances(id, optionUpdateAfterAll),
         bitcoinBalances(id, optionUpdateAfterAll),
+        solanaBalances(id, optionUpdateAfterAll),
+        gnoBalances(id, optionUpdateAfterAll),
         customCosmosBalances(id, optionUpdateAfterAll),
         customEvmBalances(id, optionUpdateAfterAll),
+        grc20Balances(id, optionUpdateAfterAll),
+        splTokenBalance(id, optionUpdateAfterAll),
       ]).then(() => updateAssets()),
     ]);
   } catch (error) {
@@ -222,9 +228,9 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets, spltokenAccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets, ...spltokenAccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -256,9 +262,9 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets, spltokenAccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets, ...spltokenAccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -288,7 +294,7 @@ export async function initAssests(id: string) {
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
-    const { erc20Assets, cw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets', 'erc20Assets']);
+    const { cw20Assets, erc20Assets, grc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets', 'erc20Assets', 'grc20Assets']);
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);

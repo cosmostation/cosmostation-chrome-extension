@@ -1,5 +1,5 @@
 import { getAllChains } from '@/libs/chain';
-import type { AptosChain, BitcoinChain, Chain, ChainType, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type { AptosChain, BitcoinChain, Chain, ChainType, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
 const CACHE_TTL = 5 * 60 * 1000;
@@ -15,6 +15,8 @@ export type ChainMapByType = {
   aptos: Map<string, AptosChain>;
   sui: Map<string, SuiChain>;
   iota: Map<string, IotaChain>;
+  gno: Map<string, GnoChain>;
+  solana: Map<string, SolanaChain>;
 };
 
 type ChainMapsStore = {
@@ -24,6 +26,8 @@ type ChainMapsStore = {
   aptos: { data: Map<string, Chain>; timestamp: number };
   sui: { data: Map<string, Chain>; timestamp: number };
   iota: { data: Map<string, Chain>; timestamp: number };
+  gno: { data: Map<string, Chain>; timestamp: number };
+  solana: { data: Map<string, Chain>; timestamp: number };
   cosmwasm: { data: Map<string, Chain>; timestamp: number };
   stakingSupport: { data: Map<string, Chain>; timestamp: number };
 };
@@ -35,6 +39,8 @@ const stores: ChainMapsStore = {
   aptos: { data: new Map<string, AptosChain>(), timestamp: 0 },
   sui: { data: new Map<string, SuiChain>(), timestamp: 0 },
   iota: { data: new Map<string, IotaChain>(), timestamp: 0 },
+  gno: { data: new Map<string, GnoChain>(), timestamp: 0 },
+  solana: { data: new Map<string, SolanaChain>(), timestamp: 0 },
   cosmwasm: { data: new Map<string, CosmosChain>(), timestamp: 0 },
   stakingSupport: { data: new Map<string, CosmosChain>(), timestamp: 0 },
 };
@@ -65,7 +71,7 @@ export async function createChainMap<T extends ChainType>(chainType?: T): Promis
     return updateChainMap(chainType, allChains) as ChainMapByType[T];
   }
 
-  const chainTypes: ChainType[] = ['cosmos', 'evm', 'bitcoin', 'aptos', 'sui', 'iota'];
+  const chainTypes: ChainType[] = ['cosmos', 'evm', 'bitcoin', 'aptos', 'sui', 'iota', 'gno', 'solana'];
 
   chainTypes.forEach((type) => {
     updateChainMap(type, allChains);
@@ -78,6 +84,8 @@ export async function createChainMap<T extends ChainType>(chainType?: T): Promis
     aptos: stores.aptos.data as Map<string, AptosChain>,
     sui: stores.sui.data as Map<string, SuiChain>,
     iota: stores.iota.data as Map<string, IotaChain>,
+    gno: stores.gno.data as Map<string, GnoChain>,
+    solana: stores.solana.data as Map<string, SolanaChain>,
   };
 }
 

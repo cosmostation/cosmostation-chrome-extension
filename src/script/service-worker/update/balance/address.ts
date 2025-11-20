@@ -1,6 +1,6 @@
 import { getAccountAddress } from '@/libs/account';
 import type { AccountAddress } from '@/types/account';
-import type { AptosChain, BitcoinChain, ChainType, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type { AptosChain, BitcoinChain, ChainType, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { createChainMap } from '@/utils/cache/chainMap';
 import { gt, minus } from '@/utils/numbers';
@@ -16,6 +16,8 @@ type ChainMapByType = {
   aptos: AptosChain;
   sui: SuiChain;
   iota: IotaChain;
+  gno: GnoChain;
+  solana: SolanaChain;
 };
 
 export async function getFilteredAccountAddresses<T extends ChainType>(
@@ -150,6 +152,38 @@ export async function getChainIdsByBalancePriority(id: string, chainType: ChainT
       iotaBalance
         .filter((data) => {
           const hasBalance = data.balances.length > 0;
+          return priority === 'high' ? hasBalance : !hasBalance;
+        })
+        .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),
+    );
+
+    return filteredChainIds;
+  }
+
+  if (chainType === 'gno') {
+    const gnoBalance = (await getExtensionLocalStorage(`${id}-balance-gno`)) || [];
+
+    const filteredChainIds = new Set(
+      gnoBalance
+        .filter((data) => {
+          const hasBalance = gt(data.balance, '0');
+
+          return priority === 'high' ? hasBalance : !hasBalance;
+        })
+        .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),
+    );
+
+    return filteredChainIds;
+  }
+
+  if (chainType === 'solana') {
+    const solanaBalance = (await getExtensionLocalStorage(`${id}-balance-solana`)) || [];
+
+    const filteredChainIds = new Set(
+      solanaBalance
+        .filter((data) => {
+          const hasBalance = gt(data.balance, '0');
+
           return priority === 'high' ? hasBalance : !hasBalance;
         })
         .map((item) => getUniqueChainIdWithManual(String(item.chainId), item.chainType)),

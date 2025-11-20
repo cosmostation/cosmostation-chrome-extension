@@ -2,8 +2,21 @@ import { isEqual } from 'es-toolkit';
 
 import { getChains } from '@/libs/chain';
 import type { AccountAddress } from '@/types/account';
-import type { AptosAsset, BitcoinAsset, CosmosAsset, CosmosCw20Asset, EvmAsset, EvmErc20Asset, IotaAsset, SuiAsset } from '@/types/asset';
-import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type {
+  AptosAsset,
+  BitcoinAsset,
+  CosmosAsset,
+  CosmosCw20Asset,
+  EvmAsset,
+  EvmErc20Asset,
+  GnoAsset,
+  GnoGrc20Asset,
+  IotaAsset,
+  SolanaAsset,
+  SolanaSpltokenAsset,
+  SuiAsset,
+} from '@/types/asset';
+import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { createAllChainMap, createChainMap } from '@/utils/cache/chainMap';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
@@ -21,6 +34,10 @@ type AssetsStore = {
   customErc20Assets: { asset: EvmErc20Asset; chain: EvmChain; addresses: AccountAddress[] }[];
   cw20Assets: { asset: CosmosCw20Asset; chain: CosmosChain; addresses: AccountAddress[] }[];
   customCw20Assets: { asset: CosmosCw20Asset; chain: CosmosChain; addresses: AccountAddress[] }[];
+  gnoAssets: { asset: GnoAsset; chain: GnoChain; addresses: AccountAddress[] }[];
+  grc20Assets: { asset: GnoGrc20Asset; chain: GnoChain; addresses: AccountAddress[] }[];
+  solanaAssets: { asset: SolanaAsset; chain: SolanaChain; addresses: AccountAddress[] }[];
+  splTokenAssets: { asset: SolanaSpltokenAsset; chain: SolanaChain; addresses: AccountAddress[] }[];
 };
 
 type CacheItem = {
@@ -82,6 +99,56 @@ async function getCw20Assets(assets: CosmosCw20Asset[], addressMap: Map<string, 
   return cw20Assets;
 }
 
+async function getGrc20Assets(assets: GnoGrc20Asset[], addressMap: Map<string, AccountAddress[]>, gnoChainsMap?: Map<string, GnoChain>) {
+  const resolvedChainMaps = gnoChainsMap || (await createChainMap('gno'));
+
+  const grc20Assets = assets.reduce((acc: { asset: GnoGrc20Asset; chain: GnoChain; addresses: AccountAddress[] }[], cur) => {
+    const uniqueChainId = getUniqueChainIdWithManual(cur.chainId, cur.chainType);
+
+    const gnoChain = resolvedChainMaps?.get(uniqueChainId);
+
+    if (gnoChain) {
+      const addressList = addressMap.get(uniqueChainId);
+
+      if (addressList && addressList.length > 0) {
+        acc.push({
+          asset: cur,
+          chain: gnoChain,
+          addresses: addressList,
+        });
+      }
+    }
+    return acc;
+  }, []);
+
+  return grc20Assets;
+}
+
+async function getSplTokenAssets(assets: SolanaSpltokenAsset[], addressMap: Map<string, AccountAddress[]>, solanaChainsMap?: Map<string, SolanaChain>) {
+  const resolvedChainMaps = solanaChainsMap || (await createChainMap('solana'));
+
+  const splTokenAssets = assets.reduce((acc: { asset: SolanaSpltokenAsset; chain: SolanaChain; addresses: AccountAddress[] }[], cur) => {
+    const uniqueChainId = getUniqueChainIdWithManual(cur.chainId, cur.chainType);
+
+    const solanaChain = resolvedChainMaps?.get(uniqueChainId);
+
+    if (solanaChain) {
+      const addressList = addressMap.get(uniqueChainId);
+
+      if (addressList && addressList.length > 0) {
+        acc.push({
+          asset: cur,
+          chain: solanaChain,
+          addresses: addressList,
+        });
+      }
+    }
+    return acc;
+  }, []);
+
+  return splTokenAssets;
+}
+
 function createAddressesMap(allAccountAddress: AccountAddress[]): Map<string, AccountAddress[]> {
   const addressesMap = new Map<string, AccountAddress[]>();
 
@@ -107,17 +174,26 @@ function createAddressesMap(allAccountAddress: AccountAddress[]): Map<string, Ac
 export async function getAssets() {
   const {
     assetsV11: assets,
-    paramsV11: chains,
     erc20Assets,
     cw20Assets,
     customErc20Assets,
     customCw20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'paramsV11', 'cw20Assets', 'erc20Assets', 'customErc20Assets', 'customCw20Assets']);
+    grc20Assets,
+    spltokenAssets,
+  } = await chrome.storage.local.get<ExtensionStorage>([
+    'assetsV11',
+    'cw20Assets',
+    'erc20Assets',
+    'customErc20Assets',
+    'customCw20Assets',
+    'grc20Assets',
+    'spltokenAssets',
+  ]);
   if (!assets) {
     throw new Error('No assets found');
   }
 
-  const { evmChains, suiChains, aptosChains, cosmosChains, bitcoinChains, iotaChains } = await getChains();
+  const { evmChains, suiChains, aptosChains, cosmosChains, bitcoinChains, iotaChains, gnoChains, solanaChains } = await getChains();
 
   const evmChainIds = new Set(evmChains.map((chain) => chain.id));
   const cosmosChainIds = new Set(cosmosChains.map((chain) => chain.id));
@@ -125,6 +201,8 @@ export async function getAssets() {
   const aptosChainIds = new Set(aptosChains.map((chain) => chain.id));
   const bitcoinChainIds = new Set(bitcoinChains.map((chain) => chain.id));
   const iotaChainIds = new Set(iotaChains.map((chain) => chain.id));
+  const gnoChainIds = new Set(gnoChains.map((chain) => chain.id));
+  const solanaChainIds = new Set(solanaChains.map((chain) => chain.id));
 
   const {
     evm: evmAssets,
@@ -133,20 +211,13 @@ export async function getAssets() {
     aptos: aptosAssets,
     bitcoin: bitcoinAssets,
     iota: iotaAssets,
+    gno: gnoAssets,
+    solana: solanaAssets,
   } = assets.reduce(
     (acc, asset) => {
       if (evmChainIds.has(asset.chain)) {
-        const chainParam = chains?.[asset.chain]?.params?.chainlist_params;
-
-        if (!chainParam) {
-          return acc;
-        }
-
-        const isOnlyEVM = !chainParam.chain_type.includes('cosmos') && chainParam.chain_type.includes('evm');
-
-        const gasCoinDenom = isOnlyEVM
-          ? chainParam?.gas_asset_denom || chainParam?.main_asset_denom
-          : chainParam?.gas_asset_denom || chainParam?.staking_asset_denom || chainParam?.main_asset_denom;
+        const evmChain = evmChains.find((item) => item.id === asset.chain);
+        const gasCoinDenom = evmChain?.gasAssetDenom;
 
         if (asset.type === 'native' && gasCoinDenom === asset.denom) {
           acc.evm.push({
@@ -199,6 +270,22 @@ export async function getAssets() {
           chainType: 'iota',
         });
       }
+      if (gnoChainIds.has(asset.chain)) {
+        acc.gno.push({
+          ...asset,
+          id: asset.denom,
+          chainId: asset.chain,
+          chainType: 'gno',
+        });
+      }
+      if (solanaChainIds.has(asset.chain)) {
+        acc.solana.push({
+          ...asset,
+          id: asset.denom,
+          chainId: asset.chain,
+          chainType: 'solana',
+        });
+      }
       return acc;
     },
     {
@@ -208,6 +295,8 @@ export async function getAssets() {
       aptos: [] as AptosAsset[],
       bitcoin: [] as BitcoinAsset[],
       iota: [] as IotaAsset[],
+      gno: [] as GnoAsset[],
+      solana: [] as SolanaAsset[],
     },
   );
 
@@ -222,10 +311,14 @@ export async function getAssets() {
     customErc20Assets,
     cw20Assets,
     customCw20Assets,
+    gnoAssets,
+    grc20Assets,
+    solanaAssets,
+    spltokenAssets,
   };
 }
 
-export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
+export async function getAssetsWithChainAndAddress(id: string): Promise<AssetsStore> {
   const { customErc20Assets: customErc20AssetsData, customCw20Assets: customCw20AssetsData } = await chrome.storage.local.get<ExtensionStorage>([
     'customErc20Assets',
     'customCw20Assets',
@@ -274,11 +367,17 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
   }
 
   const [assetStorage, chainMaps] = await Promise.all([
-    chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'paramsV11', 'cw20Assets', 'erc20Assets']),
+    chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'cw20Assets', 'erc20Assets', 'grc20Assets', 'spltokenAssets']),
     createAllChainMap(),
   ]);
 
-  const { assetsV11: assets, paramsV11: chains, cw20Assets: cw20AssetsData, erc20Assets: erc20AssetsData } = assetStorage;
+  const {
+    assetsV11: assets,
+    cw20Assets: cw20AssetsData,
+    erc20Assets: erc20AssetsData,
+    grc20Assets: grc20AssetsData,
+    spltokenAssets: spltokenAssetsData,
+  } = assetStorage;
 
   if (!assets) {
     throw new Error('No assets found');
@@ -291,6 +390,8 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
     aptos: aptosChainsMap,
     sui: suiChainsMap,
     iota: iotaChainsMap,
+    gno: gnoChainsMap,
+    solana: solanaChainsMap,
   } = chainMaps || {};
 
   if (!addressesMap) {
@@ -304,20 +405,17 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
     aptos: aptosAssets,
     bitcoin: bitcoinAssets,
     iota: iotaAssets,
+    gno: gnoAssets,
+    solana: solanaAssets,
   } = assets.reduce(
     (acc, asset) => {
       const evmChainKey = getUniqueChainIdWithManual(asset.chain, 'evm');
       const evmChain = evmChainsMap?.get(evmChainKey);
       if (evmChain) {
-        const chainParam = chains?.[asset.chain]?.params?.chainlist_params;
         const addressList = addressesMap.get(evmChainKey);
 
-        if (chainParam && addressList && addressList.length > 0) {
-          const isOnlyEVM = !chainParam.chain_type.includes('cosmos') && chainParam.chain_type.includes('evm');
-
-          const gasCoinDenom = isOnlyEVM
-            ? chainParam?.gas_asset_denom || chainParam?.main_asset_denom
-            : chainParam?.gas_asset_denom || chainParam?.staking_asset_denom || chainParam?.main_asset_denom;
+        if (addressList && addressList.length > 0) {
+          const gasCoinDenom = evmChain.gasAssetDenom;
 
           if (asset.type === 'native' && gasCoinDenom === asset.denom) {
             acc.evm.push({
@@ -430,6 +528,45 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
           });
         }
       }
+
+      const gnoChainKey = getUniqueChainIdWithManual(asset.chain, 'gno');
+      const gnoChain = gnoChainsMap?.get(gnoChainKey);
+      if (gnoChain) {
+        const addressList = addressesMap.get(gnoChainKey);
+
+        if (addressList && addressList.length > 0) {
+          acc.gno.push({
+            asset: {
+              ...asset,
+              id: asset.denom,
+              chainId: asset.chain,
+              chainType: 'gno',
+            },
+            chain: gnoChain,
+            addresses: addressList,
+          });
+        }
+      }
+
+      const solanaChainKey = getUniqueChainIdWithManual(asset.chain, 'solana');
+      const solanaChain = solanaChainsMap?.get(solanaChainKey);
+      if (solanaChain) {
+        const addressList = addressesMap.get(solanaChainKey);
+
+        if (addressList && addressList.length > 0) {
+          acc.solana.push({
+            asset: {
+              ...asset,
+              id: asset.denom,
+              chainId: asset.chain,
+              chainType: 'solana',
+            },
+            chain: solanaChain,
+            addresses: addressList,
+          });
+        }
+      }
+
       return acc;
     },
     {
@@ -439,6 +576,8 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
       aptos: [],
       bitcoin: [],
       iota: [],
+      gno: [],
+      solana: [],
     } as {
       evm: { asset: EvmAsset; chain: EvmChain; addresses: AccountAddress[] }[];
       cosmos: { asset: CosmosAsset; chain: CosmosChain; addresses: AccountAddress[] }[];
@@ -446,12 +585,16 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
       aptos: { asset: AptosAsset; chain: AptosChain; addresses: AccountAddress[] }[];
       bitcoin: { asset: BitcoinAsset; chain: BitcoinChain; addresses: AccountAddress[] }[];
       iota: { asset: IotaAsset; chain: IotaChain; addresses: AccountAddress[] }[];
+      gno: { asset: GnoAsset; chain: GnoChain; addresses: AccountAddress[] }[];
+      solana: { asset: SolanaAsset; chain: SolanaChain; addresses: AccountAddress[] }[];
     },
   );
 
-  const [erc20Assets, cw20Assets] = await Promise.all([
+  const [erc20Assets, cw20Assets, grc20Assets, splTokenAssets] = await Promise.all([
     getErc20Assets(erc20AssetsData, addressesMap, evmChainsMap),
     getCw20Assets(cw20AssetsData, addressesMap, cosmosChainsMap),
+    getGrc20Assets(grc20AssetsData, addressesMap, gnoChainsMap),
+    getSplTokenAssets(spltokenAssetsData, addressesMap, solanaChainsMap),
   ]);
 
   const customErc20Assets = currentAccountStore?.assets.customErc20Assets || (await getErc20Assets(customErc20AssetsData, addressesMap, evmChainsMap));
@@ -468,6 +611,10 @@ export async function getAssetsDetailed(id: string): Promise<AssetsStore> {
     customErc20Assets,
     cw20Assets,
     customCw20Assets,
+    gnoAssets,
+    grc20Assets,
+    solanaAssets,
+    splTokenAssets,
   };
 
   setCachedResult(id, result, allAccountAddress.length);

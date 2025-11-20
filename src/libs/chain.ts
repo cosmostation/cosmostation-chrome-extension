@@ -3,7 +3,6 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import type { V11Param } from '@/types/apiV11';
 import type { SupportedV11Param } from '@/types/apiV11';
 import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -24,8 +23,6 @@ function collectDefaultDenoms(
     ),
   ];
 }
-
-type ChainInfo = V11Param & { id: string };
 
 const createExplorer = (explorerData?: { name: string; url: string; account: string; tx: string; proposal: string }): ChainExplorer => {
   if (!explorerData) {
@@ -62,7 +59,7 @@ const createAccountTypes = (
   );
 };
 
-const mapCosmosChain = (chain: ChainInfo): CosmosChain => {
+const mapCosmosChain = (chain: SupportedV11Param): CosmosChain => {
   const { id, params } = chain;
   const chainParams = params.chainlist_params;
   const isTestnet = isTestnetChain(id);
@@ -102,7 +99,7 @@ const mapCosmosChain = (chain: ChainInfo): CosmosChain => {
   };
 };
 
-const mapEvmChain = (chain: ChainInfo): EvmChain => {
+const mapEvmChain = (chain: SupportedV11Param): EvmChain => {
   const { id, params } = chain;
   const chainParams = params.chainlist_params;
   const isCosmos = chainParams?.chain_type?.includes('cosmos') ?? false;
@@ -132,6 +129,10 @@ const mapEvmChain = (chain: ChainInfo): EvmChain => {
     chainId: chainParams.chain_id_evm!,
     name: chainParams.chain_name.toUpperCase(),
     mainAssetDenom: (isCosmos ? chainParams?.staking_asset_denom : chainParams?.main_asset_denom) ?? null,
+    gasAssetDenom:
+      (isCosmos
+        ? chainParams?.gas_asset_denom || chainParams?.staking_asset_denom || chainParams?.main_asset_denom
+        : chainParams?.gas_asset_denom || chainParams?.main_asset_denom) ?? null,
     chainDefaultCoinDenoms: collectDefaultDenoms(chainParams, { isEvm: true }),
     isCosmos,
     image: chainParams?.chain_image ?? null,
@@ -148,7 +149,7 @@ const mapEvmChain = (chain: ChainInfo): EvmChain => {
   };
 };
 
-const mapSuiChain = (chain: ChainInfo): SuiChain => {
+const mapSuiChain = (chain: SupportedV11Param): SuiChain => {
   const { id, params } = chain;
   const chainParams = params.chainlist_params;
 
@@ -166,7 +167,7 @@ const mapSuiChain = (chain: ChainInfo): SuiChain => {
   };
 };
 
-const mapAptosChain = (chain: ChainInfo): AptosChain => {
+const mapAptosChain = (chain: SupportedV11Param): AptosChain => {
   const { id, params } = chain;
   const chainParams = params.chainlist_params;
 
@@ -184,7 +185,7 @@ const mapAptosChain = (chain: ChainInfo): AptosChain => {
   };
 };
 
-const mapBitcoinChain = (chain: ChainInfo): BitcoinChain => {
+const mapBitcoinChain = (chain: SupportedV11Param): BitcoinChain => {
   const { id, params } = chain;
   const chainParams = params.chainlist_params;
 
@@ -213,7 +214,7 @@ const mapBitcoinChain = (chain: ChainInfo): BitcoinChain => {
   };
 };
 
-const mapIotaChain = (chain: ChainInfo): IotaChain => {
+const mapIotaChain = (chain: SupportedV11Param): IotaChain => {
   const { id, params } = chain;
   const chainParams = params.chainlist_params;
 
@@ -231,6 +232,54 @@ const mapIotaChain = (chain: ChainInfo): IotaChain => {
   };
 };
 
+const mapGnoChain = (chain: SupportedV11Param): GnoChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+  const isTestnet = isTestnetChain(id);
+
+  return {
+    id,
+    chainId: chainParams.chain_id_cosmos!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'gno' as const,
+    mainAssetDenom: chainParams?.staking_asset_denom ?? '',
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.cosmos_rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+    accountPrefix: chainParams.bech_account_prefix ?? '',
+    feeInfo: {
+      isSimulable: chainParams?.cosmos_fee_info?.is_simulable ?? false,
+      isFeemarketEnabled: chainParams?.cosmos_fee_info?.is_feemarket ?? false,
+      defaultFeeRateKey: chainParams?.cosmos_fee_info?.base ?? '0',
+      gasRate: chainParams?.cosmos_fee_info?.rate ?? [],
+      defaultGasLimit: chainParams?.cosmos_fee_info?.init_gas_limit ?? 200000,
+      gasCoefficient: chainParams?.cosmos_fee_info?.simulated_gas_multiply ?? 2,
+    },
+    isTestnet,
+  };
+};
+
+const mapSolanaChain = (chain: SupportedV11Param): SolanaChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+
+  return {
+    id,
+    chainId: chainParams.chain_id!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'solana' as const,
+    mainAssetDenom: chainParams.main_asset_denom ?? '',
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.solana_rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+    programId: { splToken: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+  };
+};
+
 interface CacheItem {
   data: {
     cosmosChains: CosmosChain[];
@@ -239,6 +288,8 @@ interface CacheItem {
     aptosChains: AptosChain[];
     bitcoinChains: BitcoinChain[];
     iotaChains: IotaChain[];
+    gnoChains: GnoChain[];
+    solanaChains: SolanaChain[];
   };
   timestamp: number;
 }
@@ -259,7 +310,7 @@ export async function getChains() {
 
   const supportedChains = Object.entries(chains)
     .map(([chainId, chainInfo]) => ({ id: chainId, ...chainInfo }))
-    .filter((chainInfo) => chainInfo.params.chainlist_params?.is_support_extension_wallet);
+    .filter((chainInfo) => chainInfo.params.chainlist_params?.is_support_extension_wallet) as SupportedV11Param[];
 
   const result = supportedChains.reduce(
     (acc, chainInfo) => {
@@ -283,7 +334,12 @@ export async function getChains() {
       if (chainType?.includes('iota')) {
         acc.iotaChains.push(mapIotaChain(chainInfo));
       }
-
+      if (chainType?.includes('gno')) {
+        acc.gnoChains.push(mapGnoChain(chainInfo));
+      }
+      if (chainType?.includes('solana')) {
+        acc.solanaChains.push(mapSolanaChain(chainInfo));
+      }
       return acc;
     },
     {
@@ -293,6 +349,8 @@ export async function getChains() {
       aptosChains: [] as AptosChain[],
       bitcoinChains: [] as BitcoinChain[],
       iotaChains: [] as IotaChain[],
+      gnoChains: [] as GnoChain[],
+      solanaChains: [] as SolanaChain[],
     },
   );
 
