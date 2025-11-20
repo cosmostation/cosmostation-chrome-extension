@@ -25,16 +25,23 @@ import { Route as EVMPersonalSign } from '@/pages/popup/evm/sign/personal-sign';
 import { Route as EVMSignTypedData } from '@/pages/popup/evm/sign/sign-typed-data';
 import { Route as EVMSwitchChain } from '@/pages/popup/evm/switch-network';
 import { Route as EVMTransaction } from '@/pages/popup/evm/transaction';
+import { Route as GnoSignMessage } from '@/pages/popup/gno/sign-message';
+import { Route as GnoSwitchNetwork } from '@/pages/popup/gno/switch-network';
+import { Route as GnoTransaction } from '@/pages/popup/gno/transaction';
 import { Route as IotaSignMessage } from '@/pages/popup/iota/sign-message';
 import { Route as IotaTransaction } from '@/pages/popup/iota/transaction';
 import { Route as RequestAccount } from '@/pages/popup/request-account';
+import { Route as SolanaSignMessage } from '@/pages/popup/solana/sign-message';
+import { Route as SolanaTransaction } from '@/pages/popup/solana/transaction';
 import { Route as SuiSignMessage } from '@/pages/popup/sui/sign-message';
 import { Route as SuiTransaction } from '@/pages/popup/sui/transaction';
 import type { AptosRequest } from '@/types/message/inject/aptos';
 import type { BitcoinRequest } from '@/types/message/inject/bitcoin';
 import type { CosmosRequest } from '@/types/message/inject/cosmos';
 import type { EvmRequest } from '@/types/message/inject/evm';
+import type { GnoRequest } from '@/types/message/inject/gno';
 import type { IotaRequest } from '@/types/message/inject/iota';
+import type { SolanaRequest } from '@/types/message/inject/solana';
 import type { SuiRequest } from '@/types/message/inject/sui';
 import { isSidePanelView } from '@/utils/view/sidepanel';
 import { getSiteTitle } from '@/utils/website';
@@ -103,7 +110,18 @@ export default function NavigationGate({ children }: NavigationGateProps) {
             to: getNavigationPathForIotaRequest(requestQueue[0]),
           });
         }
+        if (requestQueue[0].chainType === 'solana') {
+          navigate({
+            to: getNavigationPathForSolanaRequest(requestQueue[0]),
+          });
+        }
       }
+      if (requestQueue[0].chainType === 'gno') {
+        navigate({
+          to: getNavigationPathForGnoRequest(requestQueue[0]),
+        });
+      }
+
       if (shouldExitPopupState) {
         navigate({ to: Home.to });
       }
@@ -140,7 +158,6 @@ const getNavigationPathForCosmosRequest = (requestQueue: CosmosRequest) => {
 const getNavigationPathForEvmRequest = (requestQueue: EvmRequest) => {
   switch (requestQueue.method) {
     case 'eth_requestAccounts':
-      return RequestAccount.to;
     case 'wallet_requestPermissions':
       return RequestAccount.to;
     case 'ethc_switchNetwork':
@@ -239,6 +256,43 @@ const getNavigationPathForIotaRequest = (requestQueue: IotaRequest) => {
       return IotaTransaction.to;
     case 'iota_signPersonalMessage':
       return IotaSignMessage.to;
+
+    default:
+      return '/';
+  }
+};
+
+const getNavigationPathForSolanaRequest = (requestQueue: SolanaRequest) => {
+  switch (requestQueue.method) {
+    case 'solana_connect':
+      return RequestAccount.to;
+    case 'solana_signMessage':
+      return SolanaSignMessage.to;
+    case 'solana_signTransaction':
+    case 'solana_signAllTransactions':
+    case 'solana_signAndSendTransaction':
+    case 'solana_signAndSendAllTransactions':
+      return SolanaTransaction.to;
+
+    default:
+      return '/';
+  }
+};
+
+const getNavigationPathForGnoRequest = (requestQueue: GnoRequest) => {
+  switch (requestQueue.method) {
+    case 'gno_connect':
+      return RequestAccount.to;
+    case 'gno_getAccount':
+      return RequestAccount.to;
+    case 'gno_signAndSendTransaction':
+      return GnoTransaction.to;
+    case 'gno_signTransaction':
+      return GnoTransaction.to;
+    case 'gno_switchNetwork':
+      return GnoSwitchNetwork.to;
+    case 'gno_signMessage':
+      return GnoSignMessage.to;
 
     default:
       return '/';

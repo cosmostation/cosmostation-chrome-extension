@@ -14,7 +14,10 @@ import type {
   AccountAddressBalanceCosmos,
   AccountAddressBalanceErc20,
   AccountAddressBalanceEvm,
+  AccountAddressBalanceGno,
   AccountAddressBalanceIota,
+  AccountAddressBalanceSolana,
+  AccountAddressBalanceSplToken,
   AccountAddressBalanceSui,
   AccountAddressLockedBalanceCosmos,
 } from '@/types/account';
@@ -24,6 +27,8 @@ import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 import type { Cw20Balance } from '@/types/cosmos/balance';
 import type { Erc20Balance } from '@/types/evm/balance';
 import type { ExtensionStorage } from '@/types/extension';
+import type { Grc20Balance } from '@/types/gno/balance';
+import type { SplTokenBalance } from '@/types/solana/api';
 import { fetchAptosBalances } from '@/utils/aptos/fetch/balance';
 import {
   upsertAptosBalance,
@@ -32,7 +37,11 @@ import {
   upsertCW20Balance,
   upsertERC20Balance,
   upsertEVMBalance,
+  upsertGnoBalance,
+  upsertGrc20Balance,
   upsertIotaBalance,
+  upsertSolanaBalance,
+  upsertSplTokenBalance,
   upsertSuiBalance,
 } from '@/utils/balanceUpsert';
 import {
@@ -42,7 +51,10 @@ import {
   fetchERC20Balances,
   fetchEVMBalances,
   fetchMultiERC20Balances,
+  fetchSolanaBalances,
+  fetchSolanaSplTokenBalances,
 } from '@/utils/cosmos/fetch/balance';
+import { fetchGnoBalance, fetchGrc20Balance } from '@/utils/gno/fetch/balance';
 import { fetchIotaBalances } from '@/utils/iota/fetch/balance';
 import { minus } from '@/utils/numbers';
 import { getUniqueChainIdWithManual, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
@@ -63,8 +75,9 @@ interface EVMBalancesOption extends BalanceFetchOption {
 const defaultCosmosCoinList: AssetId[] = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
 const defaultEvmCoinList: AssetId[] = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
 const defaultBitcoinCoinList: AssetId[] = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
+const defaultSolanaCoinList = [{ id: 'sol', chainId: 'solana', chainType: 'solana' }];
 
-const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList];
+const defaultCoinList = [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList, ...defaultSolanaCoinList];
 
 const CHAIN_MULTICALL_CONFIGS: Record<
   ChainId['id'],
@@ -90,6 +103,7 @@ export async function updateDefaultAssetsBalance(id: string) {
         isMinimal: true,
       }),
       bitcoinBalances(id),
+      solanaBalances(id),
     ]);
 
     await updateHiddenAssetsExcludingDefault(id);
@@ -179,6 +193,12 @@ async function fetchChainBalanceByType(id: string, chainId: UniqueChainId) {
     if (chainType === 'iota') {
       await Promise.all([iotaBalances(id, { chainId })]);
     }
+    if (chainType === 'solana') {
+      await Promise.all([solanaBalances(id, { chainId }), splTokenBalance(id, { chainId })]);
+    }
+    if (chainType === 'gno') {
+      await Promise.all([gnoBalance(id, { chainId }), grc20Balance(id, { chainId })]);
+    }
   }
 }
 
@@ -194,8 +214,12 @@ export async function updateBalance(id: string) {
       suiBalances(id),
       iotaBalances(id),
       bitcoinBalances(id),
+      solanaBalances(id),
+      gnoBalance(id),
       erc20Balance(id),
       cw20Balance(id),
+      splTokenBalance(id),
+      grc20Balance(id),
       customErc20Balance(id),
       customCw20Balance(id),
     ]);
@@ -233,9 +257,9 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -271,9 +295,9 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -307,12 +331,13 @@ export async function initAssests(id: string) {
   const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20Assets, erc20Assets } = await getAssets();
+    const { cw20Assets, erc20Assets, grc20Assets } = await getAssets();
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);
+    const nonPreloadedGRC20Assets = grc20Assets.filter((asset) => !asset.wallet_preload);
 
-    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets].map((asset) => {
+    const hiddenAssetIds = [...nonPreloadedERC20Tokens, ...nonPreloadedCW20Assets, ...nonPreloadedGRC20Assets].map((asset) => {
       return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
     });
 
@@ -772,6 +797,65 @@ async function iotaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
 }
 
+async function solanaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
+  const { solanaChains } = await getChains();
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && solanaChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
+    .map((addr) => {
+      const chain = targetChain || solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls } = chain;
+
+      try {
+        const balance = await fetchSolanaBalances(
+          address,
+          rpcUrls.map((item) => item.url),
+        );
+
+        const result: AccountAddressBalanceSolana = {
+          id,
+          chainId,
+          chainType,
+          address,
+          balance: balance.value,
+          lastUpdatedAtMs: startUpdateTime,
+          status: 'success',
+        };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceSolana = { id, chainId, chainType, address, balance: 0, lastUpdatedAtMs: startUpdateTime, status: 'error' };
+
+        return result;
+      }
+    });
+
+  const stored = (await getExtensionLocalStorage(`${id}-balance-solana`)) || [];
+
+  const updatedSolanaBalances = upsertSolanaBalance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: updatedSolanaBalances });
+}
+
 async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
   const startUpdateTime = Date.now();
 
@@ -1120,4 +1204,174 @@ async function customCw20Balance(id: string, { chainId }: BalanceFetchOption = {
   const updatedCustomCW20Balances = upsertCW20Balance(stored, results);
 
   await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
+}
+
+async function splTokenBalance(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
+  const { solanaChains } = await getChains();
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && solanaChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
+    .map((addr) => {
+      const chain = targetChain || solanaChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(10)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+
+      const { rpcUrls, programId } = chain;
+
+      try {
+        const balance = await fetchSolanaSplTokenBalances(address, programId.splToken, rpcUrls.map((item) => item.url).filter(Boolean));
+
+        const balances: SplTokenBalance[] = balance.value.map((item) => {
+          return { ...item, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+        });
+        const result: AccountAddressBalanceSplToken = { id, chainId, chainType, address, balances: balances };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceSplToken = { id, chainId, chainType, address, balances: [] };
+
+        return result;
+      }
+    });
+
+  const stored = (await getExtensionLocalStorage(`${id}-balance-spltoken`)) || [];
+
+  const updatedSplTokenBalances = upsertSplTokenBalance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${id}-balance-spltoken`]: updatedSplTokenBalances });
+}
+
+async function grc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
+  const hiddenAssets = await getHiddenAssets(id);
+  const { gnoChains } = await getChains();
+  const { grc20Assets } = await getAssets();
+
+  const grc20AssetsWithoutHidden = grc20Assets.filter((asset) => {
+    const isAssetVisible = !hiddenAssets.find(
+      (hiddenAsset) => hiddenAsset.id === asset.id && hiddenAsset.chainId === asset.chainId && hiddenAsset.chainType === asset.chainType,
+    );
+    const isPreload = asset.wallet_preload;
+
+    return isAssetVisible || isPreload;
+  });
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && gnoChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
+    .map((addr) => {
+      const chain = targetChain || gnoChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(5)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const { rpcUrls } = chain;
+      const assets = grc20AssetsWithoutHidden.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId);
+
+      const urls = rpcUrls.map((item) => item.url).filter(Boolean);
+
+      const { results: allBalances } = await PromisePool.withConcurrency(10)
+        .for(assets)
+        .process(async (asset) => {
+          const { id: contractAddress } = asset;
+
+          try {
+            const balance = await fetchGrc20Balance(contractAddress, address, urls);
+
+            const result: Grc20Balance = { contract: contractAddress, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+
+            return result;
+          } catch {
+            const result: Grc20Balance = { contract: contractAddress, balance: '0', lastUpdatedAtMs: startUpdateTime, status: 'error' };
+
+            return result;
+          }
+        });
+
+      const balances = allBalances.filter((balance) => balance.balance !== '0');
+
+      const result = { id, chainId, chainType, address, balances };
+      return result;
+    });
+
+  const stored = (await getExtensionLocalStorage(`${id}-balance-grc20`)) || [];
+
+  const updatedGnoBalances = upsertGrc20Balance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-grc20`>>({ [`${id}-balance-grc20`]: updatedGnoBalances });
+}
+
+async function gnoBalance(id: string, { chainId }: BalanceFetchOption = {}) {
+  const startUpdateTime = Date.now();
+
+  const accountAddress = await getAccountAddress(id);
+  const { gnoChains } = await getChains();
+
+  const isUpdateSpecificAddress = !!chainId;
+
+  const addressList = isUpdateSpecificAddress
+    ? accountAddress.filter((addr) => getUniqueChainIdWithManual(addr.chainId, addr.chainType) === chainId)
+    : accountAddress;
+
+  const targetChain = chainId && gnoChains.find((chain) => isMatchingUniqueChainId(chain, chainId));
+
+  const addressWithChain = addressList
+    .map((addr) => {
+      const chain = targetChain || gnoChains.find((chain) => chain.chainType === addr.chainType && chain.id === addr.chainId)!;
+      return { ...addr, chain };
+    })
+    .filter((addr) => addr.chain);
+
+  const { results } = await PromisePool.withConcurrency(5)
+    .for(addressWithChain)
+    .process(async (addr) => {
+      const { chainId, chainType, address, chain } = addr;
+      const { rpcUrls } = chain;
+
+      try {
+        const balance = await fetchGnoBalance(address, rpcUrls.map((item) => item.url).filter(Boolean));
+
+        const result: AccountAddressBalanceGno = { id, chainId, chainType, address, balance, lastUpdatedAtMs: startUpdateTime, status: 'success' };
+
+        return result;
+      } catch {
+        const result: AccountAddressBalanceGno = { id, chainId, chainType, address, balance: '0', lastUpdatedAtMs: startUpdateTime, status: 'error' };
+
+        return result;
+      }
+    });
+
+  const stored = (await getExtensionLocalStorage(`${id}-balance-gno`)) || [];
+
+  const updatedGnoBalance = upsertGnoBalance(stored, results);
+
+  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: updatedGnoBalance });
 }

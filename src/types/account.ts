@@ -3,7 +3,22 @@ import type { DelegatedStake as IotaDelegatedStake } from '@iota/iota-sdk/client
 import type { DelegatedStake } from '@mysten/sui/client';
 
 import type { AptosResourceResponse } from './aptos/api';
-import type { AptosAsset, AssetId, BitcoinAsset, CosmosAsset, CosmosCw20Asset, CustomCosmosAsset, EvmAsset, EvmErc20Asset, IotaAsset, SuiAsset } from './asset';
+import type {
+  AptosAsset,
+  AssetId,
+  BitcoinAsset,
+  CosmosAsset,
+  CosmosCw20Asset,
+  CustomCosmosAsset,
+  EvmAsset,
+  EvmErc20Asset,
+  GnoAsset,
+  GnoGrc20Asset,
+  IotaAsset,
+  SolanaAsset,
+  SolanaSpltokenAsset,
+  SuiAsset,
+} from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
 import type {
   AptosChain,
@@ -15,7 +30,9 @@ import type {
   CustomCosmosChain,
   CustomEvmChain,
   EvmChain,
+  GnoChain,
   IotaChain,
+  SolanaChain,
   SuiChain,
 } from './chain';
 import type { AuthAccountsPayload } from './cosmos/account';
@@ -25,7 +42,9 @@ import type { LcdDelegationResponse } from './cosmos/delegation';
 import type { RewardDetails } from './cosmos/reward';
 import type { UnbondingResponses } from './cosmos/undelegation';
 import type { Erc20Balance } from './evm/balance';
+import type { Grc20Balance } from './gno/balance';
 import type { IotaGetBalance } from './iota/api';
+import type { SplTokenBalance } from './solana/api';
 import type { SuiGetBalance } from './sui/api';
 
 export type AccountType = 'PRIVATE_KEY' | 'MNEMONIC';
@@ -183,6 +202,16 @@ export interface AccountAddressBalanceIota {
   status?: RequestStatus;
 }
 
+export interface AccountAddressBalanceSolana {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balance: number;
+  lastUpdatedAtMs?: number | null;
+  status?: RequestStatus;
+}
+
 export interface AccountAddressDelegationsIota {
   id: Chain['id'];
   chainId: Chain['chainId'];
@@ -197,6 +226,16 @@ export interface AccountAddressBalanceBitcoin {
   chainType: ChainType;
   address: string;
   balance: BitcoinBalance;
+  lastUpdatedAtMs?: number | null;
+  status?: RequestStatus;
+}
+
+export interface AccountAddressBalanceGno {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balance: string;
   lastUpdatedAtMs?: number | null;
   status?: RequestStatus;
 }
@@ -217,6 +256,14 @@ export interface AccountAddressBalanceCw20 {
   balances: Cw20Balance[];
 }
 
+export interface AccountAddressBalanceSplToken {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balances: SplTokenBalance[];
+}
+
 export interface AssetFetchStatus {
   balance?: RequestStatus;
 }
@@ -228,6 +275,13 @@ export interface AccountCosmosAssetFetchStatus extends AssetFetchStatus {
   reward?: RequestStatus;
   commission?: RequestStatus;
   lockedBalance?: RequestStatus;
+}
+export interface AccountAddressBalanceGrc20 {
+  id: Chain['id'];
+  chainId: Chain['chainId'];
+  chainType: ChainType;
+  address: string;
+  balances: Grc20Balance[];
 }
 
 export interface AccountCosmosAsset {
@@ -245,7 +299,6 @@ export interface AccountCosmosAsset {
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AccountCosmosAssetFetchStatus;
 }
-
 export interface AccountCustomCosmosAsset {
   chain: CustomCosmosChain;
   asset: CustomCosmosAsset;
@@ -337,7 +390,23 @@ export interface AccountBitcoinAsset {
 }
 
 export interface AccountIotaAssetFetchStatus extends AccountSuiAssetFetchStatus {}
+export interface AccountGnoAsset {
+  chain: GnoChain;
+  asset: GnoAsset;
+  address: AccountAddress;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
+}
 
+export interface AccountGrc20Asset {
+  chain: GnoChain;
+  asset: GnoGrc20Asset;
+  address: AccountAddress;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
+}
 export interface AccountIotaAsset {
   chain: IotaChain;
   asset: IotaAsset;
@@ -348,6 +417,24 @@ export interface AccountIotaAsset {
   totalBalance?: string;
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AccountIotaAssetFetchStatus;
+}
+
+export interface AccountSolanaAsset {
+  chain: SolanaChain;
+  asset: SolanaAsset;
+  address: AccountAddress;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
+}
+
+export interface AccountSpltokenAsset {
+  chain: SolanaChain;
+  asset: SolanaSpltokenAsset;
+  address: AccountAddress;
+  balance: string;
+  lastUpdatedAtMs?: number | null;
+  fetchStatus?: AssetFetchStatus;
 }
 
 export type AccountNamesById = Record<AccountBase['id'], string>;
