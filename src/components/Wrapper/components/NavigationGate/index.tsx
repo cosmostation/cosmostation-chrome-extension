@@ -115,11 +115,11 @@ export default function NavigationGate({ children }: NavigationGateProps) {
             to: getNavigationPathForSolanaRequest(requestQueue[0]),
           });
         }
-      }
-      if (requestQueue[0].chainType === 'gno') {
-        navigate({
-          to: getNavigationPathForGnoRequest(requestQueue[0]),
-        });
+        if (requestQueue[0].chainType === 'gno') {
+          navigate({
+            to: getNavigationPathForGnoRequest(requestQueue[0]),
+          });
+        }
       }
 
       if (shouldExitPopupState) {
