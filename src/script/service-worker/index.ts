@@ -1,3 +1,5 @@
+import { throttle } from 'es-toolkit';
+
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
@@ -92,6 +94,8 @@ function sendUpdateAssetsMessage() {
     browser.runtime.sendMessage({ type: 'updateAssets' });
   }
 }
+
+const throttledSendUpdateAssetsMessage = throttle(sendUpdateAssetsMessage, 500, { edges: ['trailing'] });
 
 extension.storage.onChanged.addListener((changes) => {
   for (const [key, { newValue }] of Object.entries(changes)) {
@@ -308,7 +312,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         setInProgress(method, id);
 
         try {
-          await updatePriorityBalance(id, 'high', sendUpdateAssetsMessage);
+          await updatePriorityBalance(id, 'high', throttledSendUpdateAssetsMessage);
           await recordRequestTimestamp(method, id);
         } catch (e) {
           devLogger.error(`${method} error`, e);
@@ -337,7 +341,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         setInProgress(method, id);
 
         try {
-          await updatePriorityBalance(id, 'low', sendUpdateAssetsMessage);
+          await updatePriorityBalance(id, 'low', throttledSendUpdateAssetsMessage);
 
           await recordRequestTimestamp(method, id);
         } catch (e) {
@@ -367,7 +371,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         setInProgress(method, id);
 
         try {
-          await updatePriorityChainStaking(id, 'high', sendUpdateAssetsMessage);
+          await updatePriorityChainStaking(id, 'high', throttledSendUpdateAssetsMessage);
           await recordRequestTimestamp(method, id);
         } catch (e) {
           devLogger.error(`${method} error`, e);
@@ -396,7 +400,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
         setInProgress(method, id);
 
         try {
-          await updatePriorityChainStaking(id, 'low', sendUpdateAssetsMessage);
+          await updatePriorityChainStaking(id, 'low', throttledSendUpdateAssetsMessage);
           await recordRequestTimestamp(method, id);
         } catch (e) {
           devLogger.error(`${method} error`, e);
