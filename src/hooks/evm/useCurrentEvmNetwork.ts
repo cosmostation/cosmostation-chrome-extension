@@ -9,7 +9,10 @@ import { useChainList } from '../useChainList';
 
 export function useCurrentEVMNetwork() {
   const { chainList } = useChainList();
-  const { chosenEthereumNetworkId, addedCustomChainList, approvedOrigins, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const chosenEthereumNetworkId = useExtensionStorageStore((state) => state.chosenEthereumNetworkId);
+  const addedCustomChainList = useExtensionStorageStore((state) => state.addedCustomChainList);
+  const approvedOrigins = useExtensionStorageStore((state) => state.approvedOrigins);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const allEVMChains = useMemo(() => [...(chainList?.allEVMChains || [])], [chainList?.allEVMChains]);
   const additionalEthereumNetworks = useMemo(() => addedCustomChainList.filter((chain) => chain.chainType === 'evm'), [addedCustomChainList]);
