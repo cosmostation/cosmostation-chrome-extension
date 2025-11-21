@@ -18,15 +18,11 @@ export function useServiceWorkerMessageReceiver() {
         } catch {
           sendResponse({ type: request.type, message: { enabled: false } });
         }
-        return false;
       }
 
       if (request.type === 'updateAssets') {
         refreshAssets();
-        sendResponse({ type: request.type, message: { success: true } });
-        return true;
       }
-      return false;
     };
 
     extension.runtime.onMessage.addListener(handler);
