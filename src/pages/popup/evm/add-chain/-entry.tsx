@@ -61,15 +61,15 @@ export default function Entry({ request }: EntryProps) {
 
       const response = await requestRPC<EvmRpc<string>>('eth_chainId', [], '1', paramData.rpcURL);
 
-      const convertChainId = toHex(paramData.chainId, { addPrefix: true, isStringNumber: true });
+      const convertChainId = toHex(paramData.chainId, { addPrefix: true, isStringNumber: true }).toLowerCase();
 
-      if (response.result !== convertChainId) {
+      if (response.result?.toLowerCase() !== convertChainId) {
         throw Error(
           `Chain ID returned by RPC URL ${paramData.rpcURL} does not match ${paramData.chainId} (${convertChainId}) (result: ${response.result || ''})`,
         );
       }
 
-      const invalidChainIds = chainList?.allEVMChains.map((chain) => chain.chainId) || [];
+      const invalidChainIds = chainList?.allEVMChains.map((chain) => chain.chainId.toLowerCase()) || [];
 
       if (invalidChainIds.includes(convertChainId)) {
         throw Error(`Can't add ${paramData.chainId}`);

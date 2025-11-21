@@ -1,4 +1,5 @@
 import type { TransactionRequest } from 'ethers/providers';
+import { isHexString } from 'ethers/utils';
 import type { MessageTypes } from '@metamask/eth-sig-util';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 
@@ -279,7 +280,17 @@ export async function evmProcess(message: EvmRequest) {
 
           const response = await ethereumRequestRPC<EvmRpc<string>>('eth_chainId', [], message.requestId, validatedParams[0].rpcURL);
 
-          if (validatedParams[0].chainId !== response.result) {
+          if (!response.result || !isHexString(response.result)) {
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid hex string returned by RPC', message.requestId, { chainId: response.result });
+          }
+
+          if (!isHexString(validatedParams[0].chainId)) {
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid hex string for chainId parameter', message.requestId, {
+              chainId: validatedParams[0].chainId,
+            });
+          }
+
+          if (validatedParams[0].chainId.toLowerCase() !== response.result?.toLowerCase()) {
             throw new EthereumRPCError(
               RPC_ERROR.INVALID_PARAMS,
               `Chain ID returned by RPC URL ${validatedParams[0].rpcURL} does not match ${validatedParams[0].chainId}`,
@@ -287,9 +298,9 @@ export async function evmProcess(message: EvmRequest) {
               { chainId: response.result },
             );
           }
-          const allEVMChainIds = allEVMChains.map((chain) => chain.chainId);
+          const allEVMChainIds = allEVMChains.map((chain) => chain.chainId.toLowerCase());
 
-          if (allEVMChainIds.includes(validatedParams[0].chainId)) {
+          if (allEVMChainIds.includes(validatedParams[0].chainId.toLowerCase())) {
             throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.requestId, { chainId: response.result });
           }
 
@@ -309,14 +320,14 @@ export async function evmProcess(message: EvmRequest) {
       if (method === 'ethc_switchNetwork') {
         const { params } = message;
 
-        const networkChainIds = allEVMChains.map((chain) => chain.chainId);
+        const networkChainIds = allEVMChains.map((chain) => chain.chainId.toLowerCase());
 
         const schema = ethcSwitchNetworkParamsSchema(networkChainIds);
 
         try {
           const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetwork['params'];
 
-          if (params[0] === currentEthereumNetwork.chainId) {
+          if (params[0].toLowerCase() === currentEthereumNetwork.chainId.toLowerCase()) {
             const result: EthcSwitchNetworkResponse = null;
 
             sendMessage<ResponseAppMessage<EthcSwitchNetwork>>({
@@ -424,7 +435,17 @@ export async function evmProcess(message: EvmRequest) {
 
           const response = await ethereumRequestRPC<EvmRpc<string>>('eth_chainId', [], message.requestId, validatedParams[0].rpcUrls[0]);
 
-          if (validatedParams[0].chainId !== response.result) {
+          if (!response.result || !isHexString(response.result)) {
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid hex string returned by RPC', message.requestId, { chainId: response.result });
+          }
+
+          if (!isHexString(validatedParams[0].chainId)) {
+            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid hex string for chainId parameter', message.requestId, {
+              chainId: validatedParams[0].chainId,
+            });
+          }
+
+          if (validatedParams[0].chainId.toLowerCase() !== response.result?.toLowerCase()) {
             throw new EthereumRPCError(
               RPC_ERROR.UNRECOGNIZED_CHAIN,
               `Chain ID returned by RPC URL ${validatedParams[0].rpcUrls[0]} does not match ${validatedParams[0].chainId}`,
@@ -433,7 +454,7 @@ export async function evmProcess(message: EvmRequest) {
             );
           }
 
-          if (allEVMChains.map((chain) => chain.chainId).includes(validatedParams[0].chainId)) {
+          if (allEVMChains.map((chain) => chain.chainId.toLowerCase()).includes(validatedParams[0].chainId.toLowerCase())) {
             enqueueRequest({
               ...message,
               method: 'ethc_switchNetwork',
@@ -473,14 +494,14 @@ export async function evmProcess(message: EvmRequest) {
       if (method === 'wallet_switchEthereumChain') {
         const { params } = message;
 
-        const networkChainIds = allEVMChains.map((item) => item.chainId);
+        const networkChainIds = allEVMChains.map((item) => item.chainId.toLowerCase());
 
         const schema = walletSwitchEthereumChainParamsSchema(networkChainIds);
 
         try {
           const validatedParams = (await schema.validateAsync(params)) as WalletSwitchEthereumChain['params'];
 
-          if (validatedParams[0].chainId === currentEthereumNetwork.chainId) {
+          if (validatedParams[0].chainId.toLowerCase() === currentEthereumNetwork.chainId.toLowerCase()) {
             const result: WalletSwitchEthereumChainResponse = null;
 
             sendMessage<ResponseAppMessage<WalletSwitchEthereumChain>>({
