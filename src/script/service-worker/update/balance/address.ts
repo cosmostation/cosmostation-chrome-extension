@@ -3,6 +3,7 @@ import type { AccountAddress } from '@/types/account';
 import type { ChainType, ChainTypeMap } from '@/types/chain';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { createChainMap } from '@/utils/cache/chainMap';
+import { devLogger } from '@/utils/devLogger';
 import { gt, minus } from '@/utils/numbers';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
@@ -180,4 +181,6 @@ export async function getChainIdsByBalancePriority(id: string, chainType: ChainT
 
     return filteredChainIds;
   }
+
+  devLogger.error(`[getChainIdsByBalancePriority] Unhandled chain type: ${chainType}`);
 }
