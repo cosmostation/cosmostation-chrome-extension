@@ -228,9 +228,9 @@ export async function initAccount(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets, spltokenAccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets, ...spltokenAccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')
@@ -262,9 +262,9 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets, spltokenAccountAssets } = await getAccountAssets(id);
+    const { cw20AccountAssets, erc20AccountAssets, grc20AccountAssets } = await getAccountAssets(id);
 
-    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets, ...spltokenAccountAssets];
+    const mergedAccountAssets = [...cw20AccountAssets, ...erc20AccountAssets, ...grc20AccountAssets];
 
     const hiddenAssetIds = mergedAccountAssets
       .filter((asset) => asset.balance === '0')

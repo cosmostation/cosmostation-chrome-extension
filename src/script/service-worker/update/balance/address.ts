@@ -1,6 +1,6 @@
 import { getAccountAddress } from '@/libs/account';
 import type { AccountAddress } from '@/types/account';
-import type { AptosChain, BitcoinChain, ChainType, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
+import type { ChainType, ChainTypeMap } from '@/types/chain';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { createChainMap } from '@/utils/cache/chainMap';
 import { gt, minus } from '@/utils/numbers';
@@ -9,22 +9,11 @@ import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getDefaultVisibleAsset } from './defaultVisibleAssets';
 
-type ChainMapByType = {
-  cosmos: CosmosChain;
-  evm: EvmChain;
-  bitcoin: BitcoinChain;
-  aptos: AptosChain;
-  sui: SuiChain;
-  iota: IotaChain;
-  gno: GnoChain;
-  solana: SolanaChain;
-};
-
 export async function getFilteredAccountAddresses<T extends ChainType>(
   accountId: string,
   chainType: T,
   { isMinimal = false, chainId, priority }: BalanceFetchOption = {},
-): Promise<(AccountAddress & { chain: ChainMapByType[T] })[]> {
+): Promise<(AccountAddress & { chain: ChainTypeMap[T] })[]> {
   const [accountAddress, chainMapInstance] = await Promise.all([getAccountAddress(accountId), createChainMap(chainType)]);
 
   if (priority) {
@@ -36,7 +25,7 @@ export async function getFilteredAccountAddresses<T extends ChainType>(
 
         if (filteredChainIds?.has(uniqueId)) {
           const chain = chainMapInstance?.get(uniqueId);
-          return chain ? { ...address, chain: chain as ChainMapByType[T] } : null;
+          return chain ? { ...address, chain: chain as ChainTypeMap[T] } : null;
         }
         return null;
       })
@@ -58,7 +47,7 @@ export async function getFilteredAccountAddresses<T extends ChainType>(
   return addressList
     .map((addr) => {
       const chain = targetChain || chainMapInstance?.get(getUniqueChainIdWithManual(addr.chainId, addr.chainType));
-      return chain ? { ...addr, chain: chain as ChainMapByType[T] } : null;
+      return chain ? { ...addr, chain: chain as ChainTypeMap[T] } : null;
     })
     .filter((item) => !!item);
 }

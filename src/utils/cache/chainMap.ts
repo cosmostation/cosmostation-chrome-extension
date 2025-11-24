@@ -1,5 +1,19 @@
+import { CHAIN_TYPES_KEYS } from '@/constants/chain';
 import { getAllChains } from '@/libs/chain';
-import type { AptosChain, BitcoinChain, Chain, ChainType, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
+import type {
+  AptosChain,
+  BitcoinChain,
+  Chain,
+  ChainType,
+  ChainTypeMap,
+  CosmosChain,
+  EvmChain,
+  GnoChain,
+  IotaChain,
+  SolanaChain,
+  SuiChain,
+  UniqueChainId,
+} from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 
 const CACHE_TTL = 5 * 60 * 1000;
@@ -9,40 +23,20 @@ function isCacheValid(timestamp: number, cachedDataLength: number, newDataLength
 }
 
 export type ChainMapByType = {
-  cosmos: Map<string, CosmosChain>;
-  evm: Map<string, EvmChain>;
-  bitcoin: Map<string, BitcoinChain>;
-  aptos: Map<string, AptosChain>;
-  sui: Map<string, SuiChain>;
-  iota: Map<string, IotaChain>;
-  gno: Map<string, GnoChain>;
-  solana: Map<string, SolanaChain>;
+  [K in keyof ChainTypeMap]: Map<UniqueChainId, ChainTypeMap[K]>;
 };
 
-type ChainMapsStore = {
-  cosmos: { data: Map<string, Chain>; timestamp: number };
-  evm: { data: Map<string, Chain>; timestamp: number };
-  bitcoin: { data: Map<string, Chain>; timestamp: number };
-  aptos: { data: Map<string, Chain>; timestamp: number };
-  sui: { data: Map<string, Chain>; timestamp: number };
-  iota: { data: Map<string, Chain>; timestamp: number };
-  gno: { data: Map<string, Chain>; timestamp: number };
-  solana: { data: Map<string, Chain>; timestamp: number };
-  cosmwasm: { data: Map<string, Chain>; timestamp: number };
-  stakingSupport: { data: Map<string, Chain>; timestamp: number };
-};
+type StoreKey = keyof ChainTypeMap | 'cosmwasm' | 'stakingSupport';
+
+type ChainMapsStore = Record<StoreKey, { data: Map<UniqueChainId, Chain>; timestamp: number }>;
 
 const stores: ChainMapsStore = {
-  cosmos: { data: new Map<string, CosmosChain>(), timestamp: 0 },
-  evm: { data: new Map<string, EvmChain>(), timestamp: 0 },
-  bitcoin: { data: new Map<string, BitcoinChain>(), timestamp: 0 },
-  aptos: { data: new Map<string, AptosChain>(), timestamp: 0 },
-  sui: { data: new Map<string, SuiChain>(), timestamp: 0 },
-  iota: { data: new Map<string, IotaChain>(), timestamp: 0 },
-  gno: { data: new Map<string, GnoChain>(), timestamp: 0 },
-  solana: { data: new Map<string, SolanaChain>(), timestamp: 0 },
-  cosmwasm: { data: new Map<string, CosmosChain>(), timestamp: 0 },
-  stakingSupport: { data: new Map<string, CosmosChain>(), timestamp: 0 },
+  ...CHAIN_TYPES_KEYS.reduce((acc, chainType) => {
+    acc[chainType] = { data: new Map(), timestamp: 0 } as ChainMapsStore[typeof chainType];
+    return acc;
+  }, {} as ChainMapsStore),
+  cosmwasm: { data: new Map<UniqueChainId, CosmosChain>(), timestamp: 0 },
+  stakingSupport: { data: new Map<UniqueChainId, CosmosChain>(), timestamp: 0 },
 };
 
 function updateChainMap(chainType: ChainType, chains: Chain[]) {
@@ -71,21 +65,19 @@ export async function createChainMap<T extends ChainType>(chainType?: T): Promis
     return updateChainMap(chainType, allChains) as ChainMapByType[T];
   }
 
-  const chainTypes: ChainType[] = ['cosmos', 'evm', 'bitcoin', 'aptos', 'sui', 'iota', 'gno', 'solana'];
-
-  chainTypes.forEach((type) => {
+  CHAIN_TYPES_KEYS.forEach((type) => {
     updateChainMap(type, allChains);
   });
 
   return {
-    cosmos: stores.cosmos.data as Map<string, CosmosChain>,
-    evm: stores.evm.data as Map<string, EvmChain>,
-    bitcoin: stores.bitcoin.data as Map<string, BitcoinChain>,
-    aptos: stores.aptos.data as Map<string, AptosChain>,
-    sui: stores.sui.data as Map<string, SuiChain>,
-    iota: stores.iota.data as Map<string, IotaChain>,
-    gno: stores.gno.data as Map<string, GnoChain>,
-    solana: stores.solana.data as Map<string, SolanaChain>,
+    cosmos: stores.cosmos.data as Map<UniqueChainId, CosmosChain>,
+    evm: stores.evm.data as Map<UniqueChainId, EvmChain>,
+    bitcoin: stores.bitcoin.data as Map<UniqueChainId, BitcoinChain>,
+    aptos: stores.aptos.data as Map<UniqueChainId, AptosChain>,
+    sui: stores.sui.data as Map<UniqueChainId, SuiChain>,
+    iota: stores.iota.data as Map<UniqueChainId, IotaChain>,
+    gno: stores.gno.data as Map<UniqueChainId, GnoChain>,
+    solana: stores.solana.data as Map<UniqueChainId, SolanaChain>,
   };
 }
 
@@ -99,10 +91,10 @@ export async function createCosmwasmChainMap() {
   const store = stores.cosmwasm;
 
   if (isCacheValid(store.timestamp, store.data.size, allCosmwasmChains.length)) {
-    return store.data as Map<string, CosmosChain>;
+    return store.data as Map<UniqueChainId, CosmosChain>;
   }
 
-  const cosmosMap = updateChainMap('cosmos', allChains) as Map<string, CosmosChain>;
+  const cosmosMap = updateChainMap('cosmos', allChains) as Map<UniqueChainId, CosmosChain>;
 
   store.data.clear();
   Array.from(cosmosMap)
@@ -116,16 +108,16 @@ export async function createCosmwasmChainMap() {
   return store.data as Map<string, CosmosChain>;
 }
 
-export async function createStakingSupportCosmosChainMap(): Promise<Map<string, CosmosChain>> {
+export async function createStakingSupportCosmosChainMap(): Promise<Map<UniqueChainId, CosmosChain>> {
   const allChains = await getAllChains();
   const allStakingSupportChains = allChains.filter((chain) => chain.chainType === 'cosmos' && chain.isSupportStaking);
   const store = stores.stakingSupport;
 
   if (isCacheValid(store.timestamp, store.data.size, allStakingSupportChains.length)) {
-    return store.data as Map<string, CosmosChain>;
+    return store.data as Map<UniqueChainId, CosmosChain>;
   }
 
-  const cosmosMap = updateChainMap('cosmos', allChains) as Map<string, CosmosChain>;
+  const cosmosMap = updateChainMap('cosmos', allChains) as Map<UniqueChainId, CosmosChain>;
 
   store.data.clear();
   Array.from(cosmosMap)
@@ -136,5 +128,5 @@ export async function createStakingSupportCosmosChainMap(): Promise<Map<string, 
     });
   store.timestamp = Date.now();
 
-  return store.data as Map<string, CosmosChain>;
+  return store.data as Map<UniqueChainId, CosmosChain>;
 }

@@ -31,6 +31,21 @@ export interface CosmosFeeInfo {
 
 export type ChainType = 'cosmos' | 'evm' | 'sui' | 'aptos' | 'bitcoin' | 'iota' | 'solana' | 'gno';
 
+interface ChainDefinitions {
+  cosmos: CosmosChain;
+  evm: EvmChain;
+  bitcoin: BitcoinChain;
+  aptos: AptosChain;
+  sui: SuiChain;
+  iota: IotaChain;
+  gno: GnoChain;
+  solana: SolanaChain;
+}
+
+export type ChainTypeMap = {
+  [K in ChainType]: ChainDefinitions[K];
+};
+
 export type CommonChainType = 'common';
 
 export interface ChainId {
