@@ -19,8 +19,8 @@ import { useCurrentAccountNFT } from '@/hooks/useCurrentAccountNFT';
 import { Route as Home } from '@/pages/index';
 import type { UniqueChainId } from '@/types/chain';
 import type { CosmosNFT } from '@/types/nft';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
-import { getCosmosAddressRegex } from '@/utils/regex';
 import { toastError, toastSuccess } from '@/utils/toast';
 
 import {
@@ -61,8 +61,6 @@ export default function Cosmos({ chainId }: CosmosProps) {
 
   const currentChain = chainListFilteredByAccountType.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, chainId));
   const currentChainId = currentChain && getUniqueChainId(currentChain);
-
-  const addressRegex = useMemo(() => currentChain?.accountPrefix && getCosmosAddressRegex(currentChain.accountPrefix, [39, 59]), [currentChain?.accountPrefix]);
 
   const currentAddress = useMemo(
     () =>
@@ -129,7 +127,7 @@ export default function Cosmos({ chainId }: CosmosProps) {
   const isLoadingData = useMemo(() => ownedNFTs.isFetching || nftMetaData.isFetching, [nftMetaData.isFetching, ownedNFTs.isFetching]);
 
   const errorType = useMemo(() => {
-    if (debouncedContractAddress && addressRegex && !addressRegex.test(debouncedContractAddress)) {
+    if (debouncedContractAddress && currentChain?.accountPrefix && !isValidCosmosAddress(debouncedContractAddress, currentChain.accountPrefix)) {
       return COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS;
     }
     if (!debouncedTokenId) {
@@ -144,7 +142,7 @@ export default function Cosmos({ chainId }: CosmosProps) {
       return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
     }
     return undefined;
-  }, [addressRegex, currentOwnedNFT, debouncedContractAddress, debouncedTokenId, nftMetaData.error, ownedNFTs.error]);
+  }, [currentChain?.accountPrefix, currentOwnedNFT, debouncedContractAddress, debouncedTokenId, nftMetaData.error, ownedNFTs.error]);
 
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId && !isLoadingData) {
@@ -234,8 +232,14 @@ export default function Cosmos({ chainId }: CosmosProps) {
       <InputWrapper>
         <StandardInput
           label={t('pages.manage-assets.import.nft.components.Cosmos.index.contractAddress')}
-          error={debouncedContractAddress && addressRegex ? !addressRegex?.test(debouncedContractAddress) : undefined}
-          helperText={debouncedContractAddress && addressRegex && !addressRegex.test(debouncedContractAddress) ? 'Invalid Contract address' : undefined}
+          error={
+            debouncedContractAddress && currentChain?.accountPrefix ? !isValidCosmosAddress(debouncedContractAddress, currentChain.accountPrefix) : undefined
+          }
+          helperText={
+            debouncedContractAddress && currentChain?.accountPrefix && !isValidCosmosAddress(debouncedContractAddress, currentChain.accountPrefix)
+              ? 'Invalid Contract address'
+              : undefined
+          }
           onChange={(e) => setCurrentContractAddress(e.currentTarget.value)}
           value={currentContractAddress}
         />

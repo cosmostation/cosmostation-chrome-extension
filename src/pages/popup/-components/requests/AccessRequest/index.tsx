@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Typography from '@mui/material/Typography';
 
@@ -55,28 +56,41 @@ export default function AccessRequest({ children }: AccessRequestProps) {
   const { siteIconURL } = useSiteIconURL(currentRequestQueue?.origin);
   const siteTitle = getSiteTitle(currentRequestQueue?.origin);
 
-  const currentAccountSuiPermissionTypes = currentAccountApprovedSuiPermissions
-    .filter((permission) => permission.origin === currentRequestQueue?.origin)
-    .map((permission) => permission.permission);
+  const currentAccountSuiPermissionTypes = useMemo(
+    () =>
+      currentAccountApprovedSuiPermissions.filter((permission) => permission.origin === currentRequestQueue?.origin).map((permission) => permission.permission),
+    [currentAccountApprovedSuiPermissions, currentRequestQueue?.origin],
+  );
 
-  const isSuiApporved =
-    currentRequestQueue &&
-    currentRequestQueue.method === 'sui_connect' &&
-    !currentRequestQueue.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission));
+  const needSuiApproval = useMemo(
+    () =>
+      currentRequestQueue &&
+      currentRequestQueue.method === 'sui_connect' &&
+      !currentRequestQueue.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission)),
+    [currentAccountSuiPermissionTypes, currentRequestQueue],
+  );
 
-  const currentAccountIotaPermissionTypes = currentAccountApprovedIotaPermissions
-    .filter((permission) => permission.origin === currentRequestQueue?.origin)
-    .map((permission) => permission.permission);
+  const currentAccountIotaPermissionTypes = useMemo(
+    () =>
+      currentAccountApprovedIotaPermissions
+        .filter((permission) => permission.origin === currentRequestQueue?.origin)
+        .map((permission) => permission.permission),
+    [currentAccountApprovedIotaPermissions, currentRequestQueue?.origin],
+  );
 
-  const isIotaApporved =
-    currentRequestQueue &&
-    currentRequestQueue.method === 'iota_connect' &&
-    !currentRequestQueue.params.every((permission) => currentAccountIotaPermissionTypes.includes(permission));
+  const needIotaApporved = useMemo(
+    () =>
+      currentRequestQueue &&
+      currentRequestQueue.method === 'iota_connect' &&
+      !currentRequestQueue.params.every((permission) => currentAccountIotaPermissionTypes.includes(permission)),
+    [currentAccountIotaPermissionTypes, currentRequestQueue],
+  );
 
   if (
-    (currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) ||
-    isSuiApporved ||
-    isIotaApporved
+    currentRequestQueue &&
+    ((currentRequestQueue?.origin && !currentAccountApporvedOrigins.map((item) => item.origin).includes(currentRequestQueue.origin)) ||
+      needSuiApproval ||
+      needIotaApporved)
   ) {
     return (
       <Layout>

@@ -58,8 +58,8 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
     getNextPageParam: (lastPage) => lastPage?.[lastPage.length - 1]?.search_after,
     config: {
       enabled: !!address && !!chainId && isSupportHistory,
-      staleTime: 1000 * 29,
-      refetchInterval: 1000 * 30,
+      staleTime: 1000 * 9,
+      refetchInterval: 1000 * 10,
       ...config,
     },
   });

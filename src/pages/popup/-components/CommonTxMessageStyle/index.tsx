@@ -65,6 +65,11 @@ export const LabelContainer = styled('div')({
   alignItems: 'flex-start',
 });
 
+export const LabelTitleContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 export const AmountContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'baseline',
@@ -83,3 +88,19 @@ export const MemoContainer = styled('div')({
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-all',
 });
+
+export const IconContainer = styled('div')(({ theme }) => ({
+  '& > svg': {
+    width: '100%',
+    height: '100%',
+
+    fill: theme.palette.color.base1000,
+
+    '& > path': {
+      fill: theme.palette.color.base1000,
+    },
+  },
+  '&: hover': {
+    opacity: '0.8',
+  },
+}));

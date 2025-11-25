@@ -18,6 +18,7 @@ import { MsgTransfer as KeplrMsgTransfer } from '@keplr-wallet/proto-types/ibc/a
 
 import { COSMOS_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { COSMOS_EUREKA_CONTRCT_LIST } from '@/constants/cosmos/eureka';
+import { COSMOS_DUMMY_SIGNATURE } from '@/constants/cosmos/sign';
 // import { cosmos, google } from '@/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '@/types/chain';
 import type {
@@ -275,10 +276,12 @@ enum BroadcastMode {
 }
 
 export function protoTxBytes({ signatures, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
+  const resolvedSignatures = signatures.map((item) => (!item ? COSMOS_DUMMY_SIGNATURE : item));
+
   const txRaw = TxRaw.fromPartial({
     bodyBytes: new Uint8Array(txBodyBytes),
     authInfoBytes: new Uint8Array(authInfoBytes),
-    signatures: signatures.map((signature) => Buffer.from(signature, 'base64')),
+    signatures: resolvedSignatures.map((signature) => Buffer.from(signature, 'base64')),
   });
   const txRawBytes = TxRaw.encode(txRaw).finish();
 

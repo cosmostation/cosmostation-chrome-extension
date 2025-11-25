@@ -1,3 +1,4 @@
+import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
@@ -109,6 +110,12 @@ export const EstimatedFeeTextContainer = styled('div')<EstimatedFeeTextContainer
   alignItems: 'baseline',
 
   borderBottom: props['data-is-disabled'] ? 'none' : `0.1rem solid ${theme.palette.color.base1300}`,
+}));
+
+export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
+  '&.MuiCircularProgress-root': {
+    color: theme.palette.accentColor.purple400,
+  },
 }));
 
 export const AdditionalEstimatedFeeTextContainer = styled(EstimatedFeeTextContainer)<EstimatedFeeTextContainerProps>(({ theme, ...props }) => ({

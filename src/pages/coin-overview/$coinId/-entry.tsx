@@ -11,14 +11,14 @@ import IntersectionObserver from '@/components/common/IntersectionObserver';
 import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
 import Search from '@/components/Search';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
-import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
 import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -34,7 +34,6 @@ export default function Entry({ coinId }: EntryProps) {
 
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
   const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
-  const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -99,6 +98,10 @@ export default function Entry({ coinId }: EntryProps) {
 
   const chainList = useMemo(() => getFilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
+  const chainIdList = useMemo(() => chainList.map((item) => getUniqueChainId(item)), [chainList]);
+
+  useAutoBalanceRefresh(chainIdList);
+
   const currentSelectedChain = useMemo(
     () => chainList?.find((chain) => isMatchingUniqueChainId(chain, currentSelectedChainId)),
     [chainList, currentSelectedChainId],
@@ -162,7 +165,7 @@ export default function Entry({ coinId }: EntryProps) {
                     imageURL: item.asset.image,
                     badgeImageURL: item.chain.image || '',
                   }}
-                  lastUpdatedAtMs={isUpdateBalnaceLoading ? null : item.lastUpdatedAtMs}
+                  fetchStatus={item.fetchStatus?.balance}
                   displayAssetId={isShowAssetId}
                   onClick={() => {
                     navigate({

@@ -24,16 +24,6 @@ export const ViewTotalValueText = styled(Base1300Text)({
   marginRight: '0.2rem',
 });
 
-export const ViewIconContainer = styled('div')({
-  width: '1.4rem',
-  height: '1.4rem',
-
-  '& > svg': {
-    width: '100%',
-    height: '100%',
-  },
-});
-
 export const TopRightContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',

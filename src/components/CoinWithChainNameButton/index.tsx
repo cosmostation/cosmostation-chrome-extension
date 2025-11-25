@@ -40,7 +40,7 @@ export default function CoinWithChainNameButton({
           <ContentsContainer>
             <SymbolContainer>
               <SymbolTypography variant="b2_M">{resolvedSymbol}</SymbolTypography>
-              <BalanceSyncStatusIcon lastUpdatedAtMs={remainder.lastUpdatedAtMs} />
+              <BalanceSyncStatusIcon fetchStatus={remainder.fetchStatus} />
             </SymbolContainer>
             {apr ? (
               <APRTextContainer>

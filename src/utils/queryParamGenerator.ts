@@ -39,6 +39,14 @@ export function getUniqueChainIdWithManual(id: string, chainType: ChainType): Un
   return `${id}__${chainType}`;
 }
 
+export function getUniqueChainIdFromCoinId(coinId: string): UniqueChainId {
+  const { chainId, chainType } = parseCoinId(coinId);
+  return getUniqueChainId({
+    id: chainId,
+    chainType,
+  });
+}
+
 export function parseUniqueChainId(chainId: UniqueChainId) {
   const [id, chainType] = chainId.split('__');
   return { id, chainType } as ChainId;

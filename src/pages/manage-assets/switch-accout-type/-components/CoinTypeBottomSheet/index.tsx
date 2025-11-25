@@ -40,7 +40,7 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
     if (multipleAccountTypeWithAddress && flatChainList) {
       const multipleAccountTypes = Object.values(multipleAccountTypeWithAddress);
       const mappedAccountTypes = multipleAccountTypes.map((item) => {
-        const chain = flatChainList.find((chain) => chain.id === item[0].chainId && chain.chainType === item[0].chainType)!;
+        const chain = flatChainList.find((chain) => chain.id === item[0].chainId && chain.chainType === item[0].chainType);
 
         return {
           chain,
@@ -81,7 +81,7 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
               };
             }
 
-            if (chain.chainType === 'bitcoin') {
+            if (chain?.chainType === 'bitcoin') {
               const filteredBitcoinAssets = accountAllAssets?.bitcoinAccountAssets.filter((asset) => asset.address.address === address);
 
               const totalAssetValue =
@@ -120,7 +120,10 @@ export default function CoinTypeBottomSheet({ chain, onClose, onClickChainType, 
     multipleAccountTypeWithAddress,
   ]);
 
-  const matchedAccountType = useMemo(() => mappedMultipleAccountTypes.find((item) => item.chain.id === chain?.id), [chain?.id, mappedMultipleAccountTypes]);
+  const matchedAccountType = useMemo(() => {
+    if (!chain?.id) return undefined;
+    return mappedMultipleAccountTypes.find((item) => item.chain?.id === chain.id);
+  }, [chain?.id, mappedMultipleAccountTypes]);
 
   return (
     <StyledBottomSheet

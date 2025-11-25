@@ -5,7 +5,14 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
 import type { AccountAddress } from '@/types/account';
-import type { AccountAssets as AccountAllAssets, AllCosmosAccountAssets, AllEVMAccountAssets, FlatAccountAssets } from '@/types/accountAssets';
+import type {
+  AccountAssets as AccountAllAssets,
+  AllCosmosAccountAssets,
+  AllEVMAccountAssets,
+  AllGnoAccountAssets,
+  AllSolanaAccountAssets,
+  FlatAccountAssets,
+} from '@/types/accountAssets';
 import type { AssetId } from '@/types/asset';
 import { gt } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
@@ -19,6 +26,8 @@ export type UseAccountAssetsResponse = AccountAllAssets & {
   allCosmosAccountAssets: AllCosmosAccountAssets[];
   allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];
+  allSolanaAccountAssets: AllSolanaAccountAssets[];
+  allGnoAccountAssets: AllGnoAccountAssets[];
 };
 
 type UseAccountAllAssets =
@@ -130,6 +139,10 @@ export function useAccountAllAssets({
       customCw20AccountAssets: data.customCw20AccountAssets,
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
       iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
+      solanaAccountAssets: filterAssetList(data.solanaAccountAssets),
+      spltokenAccountAssets: filterAssetList(data.spltokenAccountAssets),
+      gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
+      grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
     };
   }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
 
@@ -165,7 +178,7 @@ export function useAccountAllAssets({
             item.chain.chainType === 'cosmos' &&
             item.chain.isEvm &&
             item.chain.mainAssetDenom === item.asset.id &&
-            filteredByVisibleList.evmAccountAssets.some((evmAsset) => {
+            data?.evmAccountAssets.some((evmAsset) => {
               const isSameAssetChain = evmAsset.chain.id === item.chain.id;
 
               const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
@@ -319,6 +332,8 @@ export function useAccountAllAssets({
           ...filteredAccountAssets.erc20AccountAssets,
           ...filteredAccountAssets.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredAccountAssets.solanaAccountAssets, ...filteredAccountAssets.spltokenAccountAssets],
+        allGnoAccountAssets: [...filteredAccountAssets.gnoAccountAssets, ...filteredAccountAssets.grc20AccountAssets],
       };
 
       return returnData;
@@ -343,11 +358,13 @@ export function useAccountAllAssets({
           ...filteredByVisibleList.erc20AccountAssets,
           ...filteredByVisibleList.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
+        allGnoAccountAssets: [...filteredByVisibleList.gnoAccountAssets, ...filteredByVisibleList.grc20AccountAssets],
       };
 
       return returnData;
     }
-  }, [accountType, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
+  }, [accountType, data?.evmAccountAssets, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
 
   return { data: returnData, isLoading, isFetching, error, refetch };
 }

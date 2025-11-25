@@ -47,7 +47,7 @@ export default function BalanceDisplay({
   isDisableLeadingCurreny = false,
   isDisableHidden = false,
 }: BalanceDisplayProps) {
-  const { isBalanceVisible } = useExtensionStorageStore((state) => state);
+  const isBalanceVisible = useExtensionStorageStore((state) => state.isBalanceVisible);
 
   if (!children) return null;
 

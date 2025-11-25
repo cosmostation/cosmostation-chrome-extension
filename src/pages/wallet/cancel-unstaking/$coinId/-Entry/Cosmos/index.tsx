@@ -29,7 +29,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import type { MsgCancelUnbondingDelegation, SignAminoDoc } from '@/types/cosmos/amino';
 import { isTestnetChain } from '@/utils/chain';
-import { executeCancelUnstakeTransaction } from '@/utils/cosmos/executeTx';
+import { executeCancelUnstakeTransaction, resolvePubkeyType } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { ceil, gt, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -209,19 +209,24 @@ export default function Cosmos({ coinId, validatorAddress, creationHeight, amoun
 
   const [cancelUnstakeAminoTx] = useDebounce(memoizedCancelUnstakeAminoTx, 700);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (selectedCancelUnstakeCoin?.chain && selectedCancelUnstakeCoin?.address) {
+      const pubkeyType = resolvePubkeyType(selectedCancelUnstakeCoin.chain, selectedCancelUnstakeCoin.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [selectedCancelUnstakeCoin?.address, selectedCancelUnstakeCoin?.chain]);
+
   const cancelUnstakeProtoTx = useMemo(() => {
     if (cancelUnstakeAminoTx) {
-      const pTx = protoTx(
-        cancelUnstakeAminoTx,
-        [''],
-        { type: selectedCancelUnstakeCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        SignMode.SIGN_MODE_DIRECT,
-      );
+      const pTx = protoTx(cancelUnstakeAminoTx, [''], { type: resolvedPubkeyType, value: '' }, SignMode.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [selectedCancelUnstakeCoin?.address.accountType.pubkeyType, cancelUnstakeAminoTx]);
+  }, [cancelUnstakeAminoTx, resolvedPubkeyType]);
 
   const simulate = useSimulate({ coinId, txBytes: cancelUnstakeProtoTx?.tx_bytes });
 

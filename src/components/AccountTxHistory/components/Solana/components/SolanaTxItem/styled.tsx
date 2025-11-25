@@ -1,0 +1,16 @@
+import { Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+export const AmountContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  color: theme.palette.color.base1300,
+}));
+
+type SymbolTextProps = {
+  'data-symbol-color'?: string;
+};
+
+export const SymbolText = styled(Typography)<SymbolTextProps>(({ theme, ...props }) => ({
+  color: props['data-symbol-color'] ? props['data-symbol-color'] : theme.palette.color.base1300,
+}));

@@ -116,6 +116,10 @@ export const StyledIconContainer = styled('div')<StyledIconContainerProps>(({ ..
 
 export const ValueButton = styled(IconTextButton)(({ theme }) => ({
   color: theme.palette.color.base1300,
+
+  '&:disabled': {
+    cursor: 'not-allowed',
+  },
 }));
 
 export const TopContainer = styled('div')({
@@ -143,6 +147,8 @@ export const TotalValueButton = styled('button')<TotalValueButtonProps>(({ theme
 
   '&:disabled': {
     backgroundColor: 'transparent',
+    opacity: 1,
+
     cursor: 'not-allowed',
   },
 }));

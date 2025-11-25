@@ -1,13 +1,14 @@
 import { styled } from '@mui/material/styles';
 
+import type { RequestStatus } from '@/types/account';
+
 type IconContainerProps = {
-  'data-sync-status'?: 'warning' | 'stale' | 'fresh';
+  'data-sync-status'?: RequestStatus;
 };
 
 export const IconContainer = styled('div')<IconContainerProps>(({ theme, ...props }) => {
-  const getColor = (val?: string) => {
-    if (val === 'warning') return theme.palette.accentColor.yellow400;
-    if (val === 'stale') return theme.palette.accentColor.red400;
+  const getColor = (val?: RequestStatus) => {
+    if (val === 'error') return theme.palette.accentColor.red400;
 
     return theme.palette.color.base1300;
   };

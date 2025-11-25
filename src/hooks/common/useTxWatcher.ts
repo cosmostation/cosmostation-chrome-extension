@@ -1,19 +1,22 @@
+import { isHexString } from 'ethers';
 import { Aptos, AptosConfig } from '@aptos-labs/ts-sdk';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '@/constants/error';
-import { TRANSACTION_RESULT as EVM_TX_RESULT } from '@/constants/evm/tx';
 import { TRANSACTION_RESULT as IOTA_TX_RESULT } from '@/constants/iota';
 import { TRANSACTION_RESULT as SUI_TX_RESULT } from '@/constants/sui';
 import { sendMessage } from '@/libs/extension';
 import type { TxInfoResponse } from '@/types/cosmos/txInfo';
-import type { EvmTxInfoResponse } from '@/types/evm/api';
+import type { GnoTxResponse } from '@/types/gno/rpc';
 import type { IotaTxInfoResponse } from '@/types/iota/api';
 import type { SuiTxInfoResponse } from '@/types/sui/api';
-import { getWithFullResponse, post } from '@/utils/axios';
+import { get, getWithFullResponse, isAxiosError, post } from '@/utils/axios';
+import { gnoURL } from '@/utils/crypto/gno';
 import { devLogger } from '@/utils/devLogger';
+import { waitForTransaction } from '@/utils/ethereum/waitForTx';
 import { buildRequestUrl } from '@/utils/fetch';
 import { wait } from '@/utils/fetch/wait';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { SolanaRpcClient } from '@/utils/solana/connection';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
 import type { UseFetchConfig } from './useFetch';
@@ -93,17 +96,17 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const isTxSuccess = response.data.tx_response.code === 0;
 
           if (isTxSuccess) {
-            await sendMessage({
-              target: 'SERVICE_WORKER',
-              method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
-            });
-
             if (tx.type === 'staking') {
               await sendMessage({
                 target: 'SERVICE_WORKER',
                 method: 'updateChainSpecificStakingBalance',
-                params: [currentAccount.id, tx.chainId, tx.address],
+                params: [currentAccount.id, tx.chainId],
+              });
+            } else {
+              await sendMessage({
+                target: 'SERVICE_WORKER',
+                method: 'updateChainSpecificBalance',
+                params: [currentAccount.id, tx.chainId],
               });
             }
 
@@ -127,35 +130,26 @@ export function useTxWatcher(config?: UseFetchConfig) {
           continue;
         }
 
+        const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
+
         try {
-          const rpcUrls = targetChain.rpcUrls.map((item) => item.url).filter(Boolean);
+          const receipt = await waitForTransaction({
+            rpcURLs: rpcUrls,
+            chainId: targetChain.chainId && isHexString(targetChain.chainId) ? parseInt(targetChain.chainId, 16) : undefined,
+            txHash: tx.txHash,
+          });
 
-          const status = await Promise.any(
-            rpcUrls.map((rpcUrl) =>
-              post<EvmTxInfoResponse>(
-                rpcUrl,
-                {
-                  method: 'eth_getTransactionReceipt',
-                  params: [tx.txHash],
-                  id: 1,
-                  jsonrpc: '2.0',
-                },
-                { timeout: 5000 },
-              ),
-            ),
-          );
+          const isTxSuccess = receipt?.status === 'success';
 
-          if (status.error || status.result === null || !status.result?.status) {
+          if (!isTxSuccess) {
             throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
           }
-
-          const isTxSuccess = BigInt(status.result.status).toString(10) === EVM_TX_RESULT.SUCCESS;
 
           if (isTxSuccess) {
             await sendMessage({
               target: 'SERVICE_WORKER',
               method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
+              params: [currentAccount.id, tx.chainId],
             });
 
             refreshAssets();
@@ -187,9 +181,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
 
           const response = await Promise.any(
             requestUrls.map(async (rpcUrl) => {
-              const aptosClientConfig = new AptosConfig({
-                fullnode: rpcUrl,
-              });
+              const aptosClientConfig = new AptosConfig({ fullnode: rpcUrl });
 
               const aptosClient = new Aptos(aptosClientConfig);
 
@@ -209,7 +201,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
             await sendMessage({
               target: 'SERVICE_WORKER',
               method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
+              params: [currentAccount.id, tx.chainId],
             });
 
             refreshAssets();
@@ -250,9 +242,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, {
-                timeout: 5000,
-              });
+              const response = await post<SuiTxInfoResponse>(rpcUrl, requestBody, { timeout: 5000 });
 
               if (response.error) {
                 throw new Error(response.error.message);
@@ -273,17 +263,17 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const isTxSuccess = response.result.effects.status.status === SUI_TX_RESULT.SUCCESS;
 
           if (isTxSuccess) {
-            await sendMessage({
-              target: 'SERVICE_WORKER',
-              method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
-            });
-
             if (tx.type === 'staking') {
               await sendMessage({
                 target: 'SERVICE_WORKER',
                 method: 'updateChainSpecificStakingBalance',
-                params: [currentAccount.id, tx.chainId, tx.address],
+                params: [currentAccount.id, tx.chainId],
+              });
+            } else {
+              await sendMessage({
+                target: 'SERVICE_WORKER',
+                method: 'updateChainSpecificBalance',
+                params: [currentAccount.id, tx.chainId],
               });
             }
 
@@ -314,7 +304,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
           await sendMessage({
             target: 'SERVICE_WORKER',
             method: 'updateChainSpecificBalance',
-            params: [currentAccount.id, tx.chainId, tx.address],
+            params: [currentAccount.id, tx.chainId],
           });
           refreshAssets();
 
@@ -353,9 +343,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
                 id: tx.txHash,
               };
 
-              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, {
-                timeout: 5000,
-              });
+              const response = await post<IotaTxInfoResponse>(rpcUrl, requestBody, { timeout: 5000 });
 
               if (response.error) {
                 throw new Error(response.error.message);
@@ -376,26 +364,118 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const isTxSuccess = response.result.effects.status.status === IOTA_TX_RESULT.SUCCESS;
 
           if (isTxSuccess) {
-            await sendMessage({
-              target: 'SERVICE_WORKER',
-              method: 'updateChainSpecificBalance',
-              params: [currentAccount.id, tx.chainId, tx.address],
-            });
-
             if (tx.type === 'staking') {
               await sendMessage({
                 target: 'SERVICE_WORKER',
                 method: 'updateChainSpecificStakingBalance',
-                params: [currentAccount.id, tx.chainId, tx.address],
+                params: [currentAccount.id, tx.chainId],
+              });
+            } else {
+              await sendMessage({
+                target: 'SERVICE_WORKER',
+                method: 'updateChainSpecificBalance',
+                params: [currentAccount.id, tx.chainId],
               });
             }
-
             refreshAssets();
 
             if (tx.type === 'nft') {
               refetchIotaNFTs();
             }
           }
+
+          removeTx(tx.txHash);
+        } catch (error) {
+          devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
+          updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
+        }
+      }
+
+      if (chainType === 'solana') {
+        const targetChain = chainList.solanaChains?.find((item) => isMatchingUniqueChainId(item, tx.chainId));
+        if (!targetChain) {
+          removeTx(tx.txHash);
+          continue;
+        }
+
+        try {
+          const requestUrl = targetChain.rpcUrls.map((item) => item.url).filter(Boolean)[0];
+
+          if (!requestUrl) throw new Error('No requestUrl');
+
+          const connection = SolanaRpcClient.getInstance({ rpcUrl: requestUrl }).getConnection();
+          const response = await connection.getTransaction(tx.txHash, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+
+          if (!response || (response?.meta && response.meta.err)) {
+            throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
+          }
+
+          const isTxSuccess = response?.meta && !response.meta.err;
+
+          if (isTxSuccess) {
+            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateChainSpecificBalance', params: [currentAccount.id, tx.chainId] });
+            refreshAssets();
+          }
+
+          removeTx(tx.txHash);
+        } catch (error) {
+          devLogger.error(`[TxWatcher] Retrying tx: ${tx.txHash}`, error);
+          updateTx(tx.txHash, { retryCount: tx.retryCount + 1 });
+        }
+      }
+
+      if (chainType === 'gno') {
+        const targetChain = chainList.gnoChains?.find((item) => isMatchingUniqueChainId(item, tx.chainId));
+
+        if (!targetChain) {
+          removeTx(tx.txHash);
+          continue;
+        }
+
+        try {
+          const requestUrls = targetChain.rpcUrls
+            .map((item) => item.url)
+            .filter(Boolean)
+            .map((chainEndpoint) => gnoURL(chainEndpoint).getTxInfo(tx.txHash));
+
+          const response = await Promise.any(
+            requestUrls.map(async (rpcUrl) => {
+              const response = await get<GnoTxResponse>(rpcUrl, {
+                timeout: 5000,
+              });
+
+              return response;
+            }),
+          );
+
+          if (
+            (isAxiosError(response.error) &&
+              response.error?.response?.status &&
+              response.error.response.status >= 400 &&
+              response.error.response.status < 500) ||
+            response.error?.message
+          ) {
+            throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
+          }
+
+          const isTxSuccess = (() => {
+            if (response?.result?.tx_result?.ResponseBase?.Error !== undefined) {
+              if (response.result.tx_result.ResponseBase.Error !== null) {
+                return false;
+              }
+
+              return true;
+            }
+          })();
+
+          if (isTxSuccess) {
+            await sendMessage({
+              target: 'SERVICE_WORKER',
+              method: 'updateChainSpecificBalance',
+              params: [currentAccount.id, tx.chainId],
+            });
+          }
+          refreshAssets();
 
           removeTx(tx.txHash);
         } catch (error) {

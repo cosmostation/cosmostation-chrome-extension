@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Typography from '@mui/material/Typography';
 
@@ -10,12 +10,14 @@ import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import InformationPanel from '@/components/InformationPanel';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentEVMNetwork } from '@/hooks/evm/useCurrentEvmNetwork';
 import { sendMessage } from '@/libs/extension';
 import type { EthcSwitchNetwork, EthcSwitchNetworkResponse } from '@/types/message/inject/evm';
+import { wait } from '@/utils/fetch/wait';
 import { getSiteTitle } from '@/utils/website';
 
 import {
@@ -49,7 +51,8 @@ export default function Entry({ request }: EntryProps) {
   const { siteIconURL } = useSiteIconURL(request.origin);
   const siteTitle = getSiteTitle(request.origin);
 
-  const requestNetwork = ethereumNetworks.find((item) => item.chainId === request.params[0]);
+  const initialNetwork = useRef(currentEVMNetwork);
+  const requestNetwork = ethereumNetworks.find((item) => item.chainId.toLowerCase() === request.params[0]?.toLowerCase());
 
   const handleOnClickSwitch = async () => {
     try {
@@ -58,6 +61,8 @@ export default function Entry({ request }: EntryProps) {
       if (requestNetwork) {
         await setCurrentEVMNetwork(requestNetwork);
       }
+
+      await wait(POPUP_DISMISS_DELAY_MS);
 
       const result: EthcSwitchNetworkResponse = null;
 
@@ -105,10 +110,10 @@ export default function Entry({ request }: EntryProps) {
         <Divider />
         <ContentsContainer>
           <SwitchNetworkContainer>
-            {currentEVMNetwork && requestNetwork && (
+            {initialNetwork.current && requestNetwork && (
               <NetworkContainer>
                 <NetworkImage
-                  src={currentEVMNetwork?.image}
+                  src={initialNetwork.current.image}
                   sx={{
                     marginBottom: '0.6rem',
                   }}
@@ -119,18 +124,18 @@ export default function Entry({ request }: EntryProps) {
                     marginBottom: '0.2rem',
                   }}
                 >
-                  {currentEVMNetwork?.name}
+                  {initialNetwork.current?.name}
                 </Base1300Text>
-                <Base1000Text variant="b3_R">{currentEVMNetwork?.chainId}</Base1000Text>
+                <Base1000Text variant="b3_R">{initialNetwork.current?.chainId}</Base1000Text>
               </NetworkContainer>
             )}
 
-            {currentEVMNetwork && requestNetwork && (
+            {initialNetwork.current && requestNetwork && (
               <RightArrowIconContainer>
                 <RightArrow />
               </RightArrowIconContainer>
             )}
-            {currentEVMNetwork && requestNetwork && (
+            {initialNetwork.current && requestNetwork && (
               <NetworkContainer>
                 <NetworkImage
                   src={requestNetwork?.image}
@@ -163,6 +168,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

@@ -10,12 +10,14 @@ import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentIotaNetwork } from '@/hooks/iota/useCurrentIotaNetwork';
 import { useDryRunTransaction } from '@/hooks/iota/useDryRunTransaction';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -25,9 +27,10 @@ import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { IotaSignAndExecuteTransaction, IotaSignTransaction } from '@/types/message/inject/iota';
+import { wait } from '@/utils/fetch/wait';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/iota/sign';
 import { gt, minus, plus } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -52,6 +55,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentIotaNetwork } = useCurrentIotaNetwork();
+  useAutoBalanceRefresh(currentIotaNetwork ? [getUniqueChainId(currentIotaNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -115,7 +119,11 @@ export default function Entry({ request }: EntryProps) {
     return undefined;
   }, [params, request.method]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransaction({
+  const {
+    data: dryRunTransaction,
+    error: dryRunTransactionError,
+    isFetching: isDryRunTxFetching,
+  } = useDryRunTransaction({
     coinId: nativeAccountAssetCoinId,
     transaction: parsedTx,
   });
@@ -194,6 +202,7 @@ export default function Entry({ request }: EntryProps) {
         if (!result) {
           throw new Error('Failed to sign transaction');
         }
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -238,6 +247,7 @@ export default function Entry({ request }: EntryProps) {
         if (!result) {
           throw new Error('Failed to sign and execute transaction');
         }
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -293,7 +303,7 @@ export default function Entry({ request }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={origin} />
           <Divider />
           <TxBaseInfoContainer>
-            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={expectedBaseFee} disableFee />
+            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={expectedBaseFee} isLoadingFee={isDryRunTxFetching} disableFee />
           </TxBaseInfoContainer>
           <DividerContainer>
             <Divider />
@@ -321,6 +331,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

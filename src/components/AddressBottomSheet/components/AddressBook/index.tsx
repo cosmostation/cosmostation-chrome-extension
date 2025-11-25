@@ -8,6 +8,7 @@ import EmptyAsset from '@/components/EmptyAsset';
 import { UNIVERSAL_EVM_NETWORK_ID } from '@/pages/general-setting/address-book/add-address/-entry';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import Badge from './components/Badge';
@@ -121,7 +122,7 @@ export default function AddressBookItem({ chainId, searchText, onClickAddress }:
                   )}
                 </LabelContainer>
                 <AddressContainer>
-                  <Typography variant="b4_M">{address}</Typography>
+                  <Typography variant="b4_M">{shorterAddress(address, 25)}</Typography>
                 </AddressContainer>
 
                 {memo && (

@@ -31,6 +31,7 @@ export const DEFAULT_MAJOR_CHAINS: MajorChain[] = [
   { id: 'cosmos', chainType: 'cosmos' },
   { id: 'bitcoin', chainType: 'bitcoin' },
   { id: 'ethereum', chainType: 'evm' },
+  { id: 'solana', chainType: 'solana' },
 ];
 
 export const DATA_FRESHNESS = {
@@ -38,3 +39,5 @@ export const DATA_FRESHNESS = {
   WARNING: 'warning',
   STALE: 'stale',
 } as const;
+
+export const POPUP_DISMISS_DELAY_MS = 500;

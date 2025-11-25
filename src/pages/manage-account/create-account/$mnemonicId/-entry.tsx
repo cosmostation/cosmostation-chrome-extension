@@ -11,6 +11,7 @@ import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
 import Button from '@/components/common/Button';
 import StandardInput from '@/components/common/StandardInput';
+import { DEFAULT_MAJOR_CHAINS } from '@/constants/common';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as Dashboard } from '@/pages/index';
@@ -76,10 +77,9 @@ export default function Entry({ mnemonicId }: EntryProps) {
   const { accountName, hdPathIndex } = watch();
   const isButtonEnabled = !!accountName?.trim() && !!hdPathIndex;
 
-  const majorNetworkIds = ['cosmos', 'bitcoin', 'ethereum'];
-  const majorNetwork = majorNetworkIds
-    .map((id) => flatChainList.find((chain) => chain.id === id))
-    .filter((chain): chain is CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain => chain !== undefined);
+  const majorNetwork = DEFAULT_MAJOR_CHAINS.map(({ id }) => flatChainList.find((chain) => chain.id === id)).filter(
+    (chain): chain is CosmosChain | EvmChain | SuiChain | AptosChain | BitcoinChain => chain !== undefined,
+  );
 
   const submit = async (data: NewAccountForm) => {
     try {

@@ -7,7 +7,7 @@ import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTyp
 import type { Account, AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase } from '@/utils/string';
+import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -248,7 +248,7 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
                             </Badge>
                           )}
                         </TitleContainer>
-                        <AddressText variant="b4_M">{addressDetail.address}</AddressText>
+                        <AddressText variant="b4_M">{shorterAddress(addressDetail.address, 25)}</AddressText>
                       </AccountInfoContainer>
                     </AccountLeftContainer>
                   </AccountButton>

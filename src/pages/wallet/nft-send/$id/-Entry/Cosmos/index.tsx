@@ -30,12 +30,12 @@ import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import { executeNFTSendTransaction } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { ceil, gt, times } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator.ts';
-import { getCosmosAddressRegex } from '@/utils/regex';
 import { getUtf8BytesLength, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -88,7 +88,6 @@ export default function Cosmos({ id }: CosmosProps) {
 
     return originChain;
   }, [chainList.cosmosChains, currentPreferAccountType, selectedNFT?.chainId, selectedNFT?.chainType]);
-  const addressRegex = useMemo(() => getCosmosAddressRegex(chain?.accountPrefix || '', [39]), [chain?.accountPrefix]);
 
   const nftImage = selectedNFT?.image;
   const nftName = selectedNFT?.name || shorterAddress(selectedNFT?.contractAddress, 12);
@@ -286,13 +285,13 @@ export default function Cosmos({ id }: CosmosProps) {
         return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.invalidAddress');
       }
 
-      if (!addressRegex.test(recipientAddress)) {
+      if (!isValidCosmosAddress(recipientAddress, chain?.accountPrefix || '')) {
         return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.invalidAddress');
       }
     }
 
     return '';
-  }, [addressRegex, recipientAddress, selectedNFT?.ownerAddress, t]);
+  }, [chain?.accountPrefix, recipientAddress, selectedNFT?.ownerAddress, t]);
 
   const inputMemoErrorMessage = useMemo(() => {
     if (inputMemo) {
@@ -312,7 +311,7 @@ export default function Cosmos({ id }: CosmosProps) {
       return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.notOwnedNFT');
     }
 
-    if (!addressRegex.test(recipientAddress)) {
+    if (!isValidCosmosAddress(recipientAddress, chain?.accountPrefix || '')) {
       return t('pages.wallet.nft-send.$id.Entry.Cosmos.index.invalidAddress');
     }
 
@@ -333,7 +332,7 @@ export default function Cosmos({ id }: CosmosProps) {
     }
 
     return '';
-  }, [addressRegex, currentBaseFee, inputMemoErrorMessage, recipientAddress, selectedFeeOption.balance, selectedNFT, t]);
+  }, [chain?.accountPrefix, currentBaseFee, inputMemoErrorMessage, recipientAddress, selectedFeeOption.balance, selectedNFT, t]);
 
   useAutoFeeCurrencySelectionOnInit({
     feeAssets: feeAssets,

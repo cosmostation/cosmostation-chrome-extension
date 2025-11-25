@@ -10,34 +10,39 @@ type StyledTooltipProps = {
 
 export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
-))<StyledTooltipProps>(({ theme, ...props }) => ({
-  [`& .${tooltipClasses.arrow}`]: {
-    color:
-      props['data-varient'] === 'error'
-        ? theme.palette.accentColor.red100
-        : props['data-varient'] === 'warning'
-          ? theme.palette.accentColor.yellow100
-          : theme.palette.color.base100,
-  },
-  [`& .${tooltipClasses.tooltip}`]: {
-    marginTop: '1rem !important',
+))<StyledTooltipProps>(({ theme, ...props }) => {
+  const mainColor =
+    props['data-varient'] === 'error'
+      ? theme.palette.accentColor.red100
+      : props['data-varient'] === 'warning'
+        ? theme.palette.accentColor.yellow100
+        : theme.palette.color.base1300;
 
-    backgroundColor:
-      props['data-varient'] === 'error'
-        ? theme.palette.accentColor.red100
-        : props['data-varient'] === 'warning'
-          ? theme.palette.accentColor.yellow100
-          : theme.palette.color.base100,
-    color: theme.palette.color.base1300,
-    padding: '0.8rem',
+  return {
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.color.base100,
 
-    textAlign: 'center',
+      '&::before': {
+        border: `0.1rem solid ${mainColor}`,
+      },
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      marginTop: '1rem !important',
 
-    maxWidth: '13rem',
-    fontFamily: theme.typography.b4_M.fontFamily,
-    fontStyle: theme.typography.b4_M.fontStyle,
-    fontSize: theme.typography.b4_M.fontSize,
-    lineHeight: theme.typography.b4_M.lineHeight,
-    letterSpacing: theme.typography.b4_M.letterSpacing,
-  },
-}));
+      backgroundColor: theme.palette.color.base100,
+      color: mainColor,
+      padding: '0.8rem',
+
+      textAlign: 'center',
+
+      maxWidth: '12rem',
+      fontFamily: theme.typography.b4_M.fontFamily,
+      fontStyle: theme.typography.b4_M.fontStyle,
+      fontSize: theme.typography.b4_M.fontSize,
+      lineHeight: theme.typography.b4_M.lineHeight,
+      letterSpacing: theme.typography.b4_M.letterSpacing,
+
+      border: `0.1rem solid ${mainColor}`,
+    },
+  };
+});

@@ -337,7 +337,7 @@ export default function ChainListBottomSheet({
                               <CoinTypeButtonContainer>
                                 <ChainNameContainer>
                                   <Base1300Text variant="b2_M">{item.name}</Base1300Text>
-                                  {item.mainAsset?.lastUpdatedAtMs && <BalanceSyncStatusIcon lastUpdatedAtMs={item.mainAsset.lastUpdatedAtMs} />}
+                                  <BalanceSyncStatusIcon fetchStatus={item?.mainAsset?.fetchStatus?.balance} />
                                 </ChainNameContainer>
                                 {multiPath && coinTypeText ? (
                                   <IconTextButton

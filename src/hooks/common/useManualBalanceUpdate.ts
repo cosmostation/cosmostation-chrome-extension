@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { throttle } from 'es-toolkit';
+import pThrottle from 'p-throttle';
 
 import { sendMessage } from '@/libs/extension';
 import type { UniqueChainId } from '@/types/chain';
@@ -10,40 +10,37 @@ import { useUpdateStaking } from '../update/useUpdateStaking';
 import { useCurrentAccount } from '../useCurrentAccount';
 import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 
-const throttledUpdateAllBalanceFn = throttle(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async (accountId: string, callbackFunc: () => Promise<any>) => {
-    await Promise.all([
-      sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] }),
-      sendMessage({ target: 'SERVICE_WORKER', method: 'updateStaking', params: [accountId] }),
-    ]);
-
-    await callbackFunc();
+const throttle = pThrottle({
+  limit: 1,
+  interval: 10000,
+  onDelay: () => {
+    devLogger.warn('[useManualBalanceUpdate] Request throttled');
   },
-  10000,
-  { edges: ['leading'] },
-);
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const throttledUpdateAllBalanceFn = throttle(async (accountId: string, callbackFunc: () => Promise<any>) => {
+  await Promise.all([
+    sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [accountId] }),
+    sendMessage({ target: 'SERVICE_WORKER', method: 'updateStaking', params: [accountId] }),
+  ]);
+
+  await callbackFunc();
+});
 
 const throttledUpdateChainBalanceFn = throttle(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async (accountId, chainId: UniqueChainId, address: string, callbackFunc: () => Promise<any>) => {
+  async (accountId, chainId: UniqueChainId, callbackFunc: () => Promise<any>) => {
     await Promise.all([
       sendMessage({
         target: 'SERVICE_WORKER',
-        method: 'updateChainSpecificBalance',
-        params: [accountId, chainId, address],
-      }),
-      sendMessage({
-        target: 'SERVICE_WORKER',
         method: 'updateChainSpecificStakingBalance',
-        params: [accountId, chainId, address],
+        params: [accountId, chainId],
       }),
     ]);
 
     await callbackFunc();
   },
-  10000,
-  { edges: ['leading'] },
 );
 
 export function useManualBalanceUpdate() {
@@ -53,8 +50,8 @@ export function useManualBalanceUpdate() {
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { isLoading: isAutoBalanceLoading } = useUpdateBalance();
-  const { isLoading: isAutoStakingLoading } = useUpdateStaking();
+  const { isFetching: isAutoBalanceFetching } = useUpdateBalance();
+  const { isFetching: isAutoStakingFetching } = useUpdateStaking();
 
   const { currentAccount } = useCurrentAccount();
   const { refreshAssets } = useRefreshAccountAllAssets();
@@ -69,7 +66,7 @@ export function useManualBalanceUpdate() {
 
   const updateAllBalance = async () => {
     defaultTimeout();
-    if (isLoadingAllBalance || isAutoBalanceLoading || isAutoStakingLoading) return;
+    if (isLoadingAllBalance || isAutoBalanceFetching || isAutoStakingFetching) return;
 
     setIsLoadingAllBalance(true);
 
@@ -82,14 +79,14 @@ export function useManualBalanceUpdate() {
     }
   };
 
-  const updateChainBalance = async (chainId: UniqueChainId, address: string) => {
+  const updateChainBalance = async (chainId: UniqueChainId) => {
     defaultTimeout();
     if (isLoadingChainBalance) return;
 
     setIsLoadingChainBalance(true);
 
     try {
-      await throttledUpdateChainBalanceFn(currentAccount.id, chainId, address, refreshAssets);
+      await throttledUpdateChainBalanceFn(currentAccount.id, chainId, refreshAssets);
     } catch (e) {
       devLogger.error(`[useManualBalanceUpdate]  updateChainBalance`, e);
     } finally {

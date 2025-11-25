@@ -10,12 +10,14 @@ import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { SUI_COIN_TYPE } from '@/constants/sui';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
 import { useCurrentSuiNetwork } from '@/hooks/sui/useCurrentSuiNetwork';
 import { useDryRunTransaction } from '@/hooks/sui/useDryRunTransaction';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -25,8 +27,9 @@ import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import RawTx from '@/pages/popup/-components/RawTx';
 import type { SuiSignAndExecuteTransaction, SuiSignAndExecuteTransactionBlock, SuiSignTransaction, SuiSignTransactionBlock } from '@/types/message/inject/sui';
+import { wait } from '@/utils/fetch/wait';
 import { gt, minus, plus } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { signAndExecuteTxSequentially, signTxSequentially } from '@/utils/sui/sign';
 import { getSiteTitle } from '@/utils/website';
@@ -52,6 +55,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
+  useAutoBalanceRefresh(currentSuiNetwork ? [getUniqueChainId(currentSuiNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -115,7 +119,11 @@ export default function Entry({ request }: EntryProps) {
     return undefined;
   }, [params, request.method]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransaction({
+  const {
+    data: dryRunTransaction,
+    error: dryRunTransactionError,
+    isFetching: isDryRunTxFetching,
+  } = useDryRunTransaction({
     coinId: nativeAccountAssetCoinId,
     transaction: parsedTx,
   });
@@ -202,6 +210,8 @@ export default function Entry({ request }: EntryProps) {
           throw new Error('Failed to sign transaction');
         }
 
+        await wait(POPUP_DISMISS_DELAY_MS);
+
         await incrementTxCountForOrigin(request.origin);
 
         sendMessage({
@@ -251,6 +261,7 @@ export default function Entry({ request }: EntryProps) {
         if (!result) {
           throw new Error('Failed to sign and execute transaction');
         }
+        await wait(POPUP_DISMISS_DELAY_MS);
 
         await incrementTxCountForOrigin(request.origin);
 
@@ -306,7 +317,7 @@ export default function Entry({ request }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={origin} />
           <Divider />
           <TxBaseInfoContainer>
-            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={expectedBaseFee} disableFee />
+            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={expectedBaseFee} isLoadingFee={isDryRunTxFetching} disableFee />
           </TxBaseInfoContainer>
           <DividerContainer>
             <Divider />
@@ -334,6 +345,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

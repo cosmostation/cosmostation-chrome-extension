@@ -262,3 +262,69 @@ export async function getIotaDefaultStorageData() {
     ...iotaNetworkInfo,
   };
 }
+
+export async function getCurrentSolanaNetwork() {
+  const chosenSolanaNetworkId = await getExtensionLocalStorage('chosenSolanaNetworkId');
+
+  const { solanaChains } = await getChains();
+
+  return {
+    solanaChains,
+    currentSolanaNetwork: solanaChains.find((network) => isMatchingUniqueChainId(network, chosenSolanaNetworkId)) ?? solanaChains[0],
+  };
+}
+
+export async function getSolanaDefaultStorageData() {
+  const { userAccounts, approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+    'userAccounts',
+    'approvedOrigins',
+    'currentAccountId',
+  ]);
+
+  const currentAccount = userAccounts?.find((account) => account.id === currentAccountId);
+
+  const currentAccountAllowedOrigins =
+    approvedOrigins?.filter((allowedOrigin) => allowedOrigin.accountId === currentAccountId).map((allowedOrigin) => allowedOrigin.origin) || [];
+
+  const solanaNetworkInfo = await getCurrentSolanaNetwork();
+
+  return {
+    currentAccount,
+    currentAccountAllowedOrigins,
+    approvedOrigins: approvedOrigins || [],
+    ...solanaNetworkInfo,
+  };
+}
+
+export async function getCurrentGnoNetwork() {
+  const chosenGnoNetworkId = await getExtensionLocalStorage('chosenGnoNetworkId');
+
+  const { gnoChains } = await getChains();
+
+  return {
+    gnoChains,
+    currentGnoNetwork: gnoChains.find((network) => isMatchingUniqueChainId(network, chosenGnoNetworkId)) ?? gnoChains[0],
+  };
+}
+
+export async function getGnoDefaultStorageData() {
+  const { userAccounts, approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+    'userAccounts',
+    'approvedOrigins',
+    'currentAccountId',
+  ]);
+
+  const currentAccount = userAccounts?.find((account) => account.id === currentAccountId);
+
+  const currentAccountAllowedOrigins =
+    approvedOrigins?.filter((allowedOrigin) => allowedOrigin.accountId === currentAccountId).map((allowedOrigin) => allowedOrigin.origin) || [];
+
+  const { currentGnoNetwork } = await getCurrentGnoNetwork();
+
+  return {
+    currentAccount,
+    currentAccountAllowedOrigins,
+    approvedOrigins: approvedOrigins || [],
+    currentGnoNetwork,
+  };
+}

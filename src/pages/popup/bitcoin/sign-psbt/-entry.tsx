@@ -10,11 +10,13 @@ import Button from '@/components/common/Button';
 import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useBalance } from '@/hooks/bitcoin/useBalance';
 import { useCurrentBitcoinNetwork } from '@/hooks/bitcoin/useCurrentBitcoinNetwork';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -25,8 +27,9 @@ import DappInfo from '@/pages/popup/-components/DappInfo';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { BitSignPsbt } from '@/types/message/inject/bitcoin';
 import { decodedPsbt, ecpairFromPrivateKey, formatPsbtHex, getTweakSigner } from '@/utils/bitcoin/tx';
+import { wait } from '@/utils/fetch/wait';
 import { gte, plus } from '@/utils/numbers';
-import { getCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
 import { getSiteTitle } from '@/utils/website';
 
 import {
@@ -51,6 +54,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
+  useAutoBalanceRefresh(currentBitcoinNetwork ? [getUniqueChainId(currentBitcoinNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -75,6 +79,8 @@ export default function Entry({ request }: EntryProps) {
     return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
   }, [balance.data]);
 
+  const { params: psbtHex, origin } = request;
+
   const { siteIconURL } = useSiteIconURL(origin);
   const siteTitle = getSiteTitle(origin);
 
@@ -89,8 +95,6 @@ export default function Entry({ request }: EntryProps) {
   );
 
   const bitcoinNetwork = useMemo(() => (nativeAccountAsset?.chain.isTestnet ? networks.testnet : networks.bitcoin), [nativeAccountAsset?.chain.isTestnet]);
-
-  const psbtHex = request.params;
 
   const parsedPsbt = useMemo(() => {
     const formattedPsbtHex = formatPsbtHex(psbtHex);
@@ -116,20 +120,10 @@ export default function Entry({ request }: EntryProps) {
     [decodedPsbtData.inputInfos],
   );
 
-  const totalOutputAmount = useMemo(
-    () => decodedPsbtData.outputInfos.reduce((totalVal, cur) => plus(totalVal, cur?.value || '0'), '0'),
-    [decodedPsbtData.outputInfos],
-  );
-
   const fee = useMemo(() => decodedPsbtData.fee, [decodedPsbtData.fee]);
 
-  const canSendTx = useMemo(
-    () => gte(nativeCoinAvailableAmount, plus(totalOutputAmount, decodedPsbtData.fee)),
-    [nativeCoinAvailableAmount, totalOutputAmount, decodedPsbtData.fee],
-  );
-
   const errorMessage = useMemo(() => {
-    if (gte('0', nativeCoinAvailableAmount) || !canSendTx) {
+    if (gte('0', nativeCoinAvailableAmount)) {
       return t('pages.popup.bitcoin.sign-psbt.entry.noAvailableAmount');
     }
 
@@ -142,7 +136,7 @@ export default function Entry({ request }: EntryProps) {
     }
 
     return '';
-  }, [canSendTx, nativeCoinAvailableAmount, psbtHex, t, totalInputAmount]);
+  }, [nativeCoinAvailableAmount, psbtHex, t, totalInputAmount]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -180,6 +174,8 @@ export default function Entry({ request }: EntryProps) {
       if (!result) {
         throw new Error('Failed to sign transaction');
       }
+
+      await wait(POPUP_DISMISS_DELAY_MS);
 
       await incrementTxCountForOrigin(request.origin);
 
@@ -253,6 +249,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

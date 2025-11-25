@@ -8,15 +8,18 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import FeeSettingBottomSheet from '@/components/Fee/CosmosFee/components/FeeSettingBottomSheet';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { PUBLIC_KEY_TYPE } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
 import { COSMOS_MEMO_MAX_BYTES } from '@/constants/cosmos/tx';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
+import { useOsmoFee } from '@/hooks/cosmos/osmoEip/useOsmoFee';
 import { useAdditionalFee } from '@/hooks/cosmos/useAdditionalFee';
 import { useFees } from '@/hooks/cosmos/useFees';
 import { useSimulate } from '@/hooks/cosmos/useSimulate';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -32,8 +35,9 @@ import { resolvePubkeyType, resolveSeiChainConfig } from '@/utils/cosmos/execute
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { getPublicKeyType, signAmino } from '@/utils/cosmos/msg';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
+import { wait } from '@/utils/fetch/wait';
 import { ceil, divide, gt, gte, times } from '@/utils/numbers';
-import { getCoinId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, isMatchingCoinId, isSameChain } from '@/utils/queryParamGenerator';
 import { getUtf8BytesLength } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -54,9 +58,12 @@ type EntryProps = {
   chain: CosmosChain;
 };
 
+const OSMO_CHAIN_ID = 'osmosis';
+
 export default function Entry({ request, chain }: EntryProps) {
   const { t } = useTranslation();
   const { deQueue } = useCurrentRequestQueue();
+  useAutoBalanceRefresh([getUniqueChainId(chain)]);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -93,13 +100,31 @@ export default function Entry({ request, chain }: EntryProps) {
   };
 
   const { doc, isEditFee = true, isEditMemo = true, isCheckBalance = true } = params;
+  const isNeedOsmoEip1559 = useMemo(() => chain.id === OSMO_CHAIN_ID && !doc.fee.amount.length, [chain.id, doc.fee.amount.length]);
 
   const keyPair = useMemo(() => getKeypair(resolveSeiChainConfig(chain), currentAccount, currentPassword), [chain, currentAccount, currentPassword]);
 
   const [inputMemo, setInputMemo] = useState(doc.memo);
   const signingMemo = useMemo(() => (isEditMemo ? inputMemo : doc.memo), [doc.memo, inputMemo, isEditMemo]);
 
-  const { feeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: accountAssetCoinId });
+  const [customFeeCoinId, setCustomFeeCoinId] = useState('');
+
+  const osmoEipFees = useOsmoFee(isNeedOsmoEip1559 ? { selectedFeeCoinId: customFeeCoinId } : { config: { enabled: false } });
+
+  const { feeAssets: basicFeeAssets, defaultGasRateKey, isFeemarketActive } = useFees({ coinId: accountAssetCoinId });
+
+  const feeAssets = useMemo(() => {
+    if (isNeedOsmoEip1559) {
+      return osmoEipFees.availableFeeCoin.map((item) => {
+        return {
+          ...item,
+          gasRate: osmoEipFees.currentFeeCoinGasRateStep,
+        };
+      });
+    }
+
+    return basicFeeAssets;
+  }, [isNeedOsmoEip1559, basicFeeAssets, osmoEipFees.availableFeeCoin, osmoEipFees.currentFeeCoinGasRateStep]);
 
   const inputFee = useMemo(
     () =>
@@ -116,12 +141,11 @@ export default function Entry({ request, chain }: EntryProps) {
   const currentFeeStepKey = useMemo(() => {
     if (customFeeStepKey !== undefined) return customFeeStepKey;
 
+    if (isNeedOsmoEip1559) return 1;
     return isEditFee ? defaultGasRateKey + 1 : 0;
-  }, [customFeeStepKey, defaultGasRateKey, isEditFee]);
+  }, [customFeeStepKey, defaultGasRateKey, isEditFee, isNeedOsmoEip1559]);
 
   const dappFromFeeAsset = useMemo(() => feeAssets.find((item) => item.asset.id === inputFee.denom), [feeAssets, inputFee.denom]);
-
-  const [customFeeCoinId, setCustomFeeCoinId] = useState('');
 
   const alternativeFeeAsset = useMemo(() => {
     if (customFeeCoinId) {
@@ -152,24 +176,35 @@ export default function Entry({ request, chain }: EntryProps) {
     return alternativeFeeAsset?.asset.id === dappFromFeeAsset?.asset.id ? dappFromFeeAsset : alternativeFeeAsset;
   }, [alternativeFeeAsset, dappFromFeeAsset]);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (accountAsset?.address) {
+      const pubkeyType = resolvePubkeyType(chain, accountAsset.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [accountAsset?.address, chain]);
+
   const memoizedProtoTx = useMemo(() => {
-    if (isEditFee && assetForSimulation?.asset.id) {
+    if (isEditFee && assetForSimulation?.asset.id && !isNeedOsmoEip1559) {
       const pTx = protoTx(
         { ...doc, fee: { amount: [{ denom: assetForSimulation.asset.id, amount: '1' }], gas: COSMOS_DEFAULT_GAS } },
         [Buffer.from(new Uint8Array(64)).toString('base64')],
-        { type: accountAsset?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
+        { type: resolvedPubkeyType, value: '' },
       );
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [accountAsset?.address.accountType.pubkeyType, assetForSimulation?.asset.id, doc, isEditFee]);
+  }, [assetForSimulation?.asset.id, doc, isEditFee, isNeedOsmoEip1559, resolvedPubkeyType]);
 
   const isPossibleSimulating =
     !!accountAssetCoinId &&
     !!memoizedProtoTx?.tx_bytes &&
     !!accountAsset?.chain.lcdUrls.map((item) => item.url).length &&
-    accountAsset?.chain.feeInfo.isSimulable;
+    accountAsset?.chain.feeInfo.isSimulable &&
+    !isNeedOsmoEip1559;
 
   const simulate = useSimulate({ coinId: accountAssetCoinId, txBytes: memoizedProtoTx?.tx_bytes });
 
@@ -190,7 +225,7 @@ export default function Entry({ request, chain }: EntryProps) {
 
   const alternativeGasRate = useMemo(() => alternativeFeeAsset?.gasRate, [alternativeFeeAsset?.gasRate]);
 
-  const feeOptions = useMemo(() => {
+  const basicFeeOptions = useMemo(() => {
     const dappFromOption = {
       gas: dappFromGas,
       gasRate: dappFromGasRate,
@@ -245,6 +280,53 @@ export default function Entry({ request, chain }: EntryProps) {
     isFeemarketActive,
   ]);
 
+  const feeOptions = useMemo(() => {
+    if (isNeedOsmoEip1559) {
+      const customOption = {
+        gas: customGasAmount,
+        gasRate: customGasRate,
+        coinId: alternativeFeeCoinId,
+        decimals: alternativeFeeAsset?.asset.decimals || 0,
+        denom: alternativeFeeAsset?.asset.id,
+        coinGeckoId: alternativeFeeAsset?.asset.coinGeckoId,
+        symbol: alternativeFeeAsset?.asset.symbol || '',
+        title: 'Custom',
+      };
+
+      const currnetFeeCoin = osmoEipFees.currentFeeCoin;
+
+      const feeStepNames = getCosmosFeeStepNames(false, osmoEipFees.currentFeeCoinGasRateStep);
+
+      return [
+        ...(osmoEipFees.currentFeeCoinGasRateStep?.map((item, i) => ({
+          gas: dappFromGas || COSMOS_DEFAULT_GAS,
+          gasRate: item,
+          coinId: currnetFeeCoin?.asset ? getCoinId(currnetFeeCoin.asset) : '',
+          decimals: currnetFeeCoin?.asset.decimals || 0,
+          denom: currnetFeeCoin?.asset.id,
+          coinGeckoId: currnetFeeCoin?.asset.coinGeckoId,
+          symbol: currnetFeeCoin?.asset.symbol || '',
+          title: feeStepNames[i],
+        })) || []),
+        customOption,
+      ];
+    }
+    return basicFeeOptions;
+  }, [
+    alternativeFeeAsset?.asset.coinGeckoId,
+    alternativeFeeAsset?.asset.decimals,
+    alternativeFeeAsset?.asset.id,
+    alternativeFeeAsset?.asset.symbol,
+    alternativeFeeCoinId,
+    customGasAmount,
+    customGasRate,
+    dappFromGas,
+    isNeedOsmoEip1559,
+    basicFeeOptions,
+    osmoEipFees.currentFeeCoin,
+    osmoEipFees.currentFeeCoinGasRateStep,
+  ]);
+
   const selectedFeeOption = useMemo(() => {
     return feeOptions[currentFeeStepKey];
   }, [currentFeeStepKey, feeOptions]);
@@ -252,6 +334,8 @@ export default function Entry({ request, chain }: EntryProps) {
   const isFeeCustomed = useMemo(() => currentFeeStepKey !== 0, [currentFeeStepKey]);
 
   const isFeeUpdateAllowed = useMemo(() => isEditFee || isFeeCustomed, [isFeeCustomed, isEditFee]);
+
+  const isCalculatingFee = useMemo(() => simulate.isFetching || osmoEipFees.isLoading, [osmoEipFees.isLoading, simulate.isFetching]);
 
   const baseFee = useMemo(() => times(selectedFeeOption.gas || '0', selectedFeeOption.gasRate || '0'), [selectedFeeOption.gas, selectedFeeOption.gasRate]);
 
@@ -283,6 +367,10 @@ export default function Entry({ request, chain }: EntryProps) {
       return t('pages.popup.cosmos.sign.amino.entry.insufficientFeeAmount');
     }
 
+    if (isCalculatingFee) {
+      return t('pages.popup.cosmos.sign.amino.entry.calculatingFee');
+    }
+
     if (isEditFee && isPossibleSimulating && !simulate.isFetched) {
       return t('pages.popup.cosmos.sign.amino.entry.notSimulated');
     }
@@ -298,6 +386,7 @@ export default function Entry({ request, chain }: EntryProps) {
     isCheckBalance,
     doc.fee.granter,
     doc.fee.payer,
+    isCalculatingFee,
     isEditFee,
     isPossibleSimulating,
     simulate.isFetched,
@@ -348,6 +437,7 @@ export default function Entry({ request, chain }: EntryProps) {
         signed_doc: tx,
       };
 
+      await wait(POPUP_DISMISS_DELAY_MS);
       await incrementTxCountForOrigin(request.origin);
 
       sendMessage({
@@ -411,6 +501,7 @@ export default function Entry({ request, chain }: EntryProps) {
               feeBaseAmount={currentFee}
               disableFee={!isEditFee}
               additionalFees={additionalFee}
+              isLoadingFee={isCalculatingFee}
               onClickFee={() => {
                 setIsOpenFeeCustomBottomSheet(true);
               }}
@@ -457,6 +548,7 @@ export default function Entry({ request, chain }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import validate, { Network } from 'bitcoin-address-validation';
-import { isValidAddress } from 'ethereumjs-util';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { isValidIotaAddress } from '@iota/iota-sdk/utils';
 import Typography from '@mui/material/Typography';
-import { isValidSuiAddress } from '@mysten/sui/utils';
 import { useRouter } from '@tanstack/react-router';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -18,13 +14,12 @@ import EthermintFilterChainSelectBox from '@/components/EthermintFilterChainSele
 import InformationPanel from '@/components/InformationPanel';
 import { useAddressBook } from '@/hooks/useAddressBook';
 import { useChainList } from '@/hooks/useChainList.ts';
-import type { ChainType, CosmosChain, UniqueChainId } from '@/types/chain.ts';
+import type { ChainType, UniqueChainId } from '@/types/chain.ts';
 import type { AddressInfo } from '@/types/extension';
-import { isBitcoinChain } from '@/utils/chain';
 import { getAddressPrefix } from '@/utils/cosmos/address';
 import { getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator.ts';
-import { aptosAddressRegex, getCosmosAddressRegex } from '@/utils/regex';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { isChainAddressValid } from '@/utils/validation/address';
 
 import { Container, FormContainer, InformationPanelContainer, InputWrapper, UniversalContainer } from './-styled';
 import type { AddressBookForm } from './-useSchema';
@@ -82,30 +77,8 @@ export default function Entry({ chainId, address: inputAddress, memo }: EntryPro
   const isUniversalChain = currentChainId === `${UNIVERSAL_EVM_NETWORK_ID}__evm`;
 
   const checkIsValidAddress = (address: string) => {
-    if (currentChain?.chainType === 'cosmos') {
-      const chainCasted = currentChain as CosmosChain;
-      return getCosmosAddressRegex(chainCasted.accountPrefix, [39]).test(address);
-    }
-
-    if (currentChain?.chainType === 'evm') {
-      return isValidAddress(address);
-    }
-
-    if (currentChain?.chainType === 'aptos') {
-      return aptosAddressRegex.test(address);
-    }
-
-    if (currentChain?.chainType === 'sui') {
-      return isValidSuiAddress(address);
-    }
-
-    if (currentChain?.chainType === 'iota') {
-      return isValidIotaAddress(address);
-    }
-
-    if (isBitcoinChain(currentChain)) {
-      const network = currentChain.isTestnet ? Network.testnet : Network.mainnet;
-      return validate(address, network);
+    if (currentChain) {
+      return isChainAddressValid(address, currentChain);
     }
     return false;
   };

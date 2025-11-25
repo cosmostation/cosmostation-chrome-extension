@@ -6,8 +6,8 @@ import { useFetch } from '@/hooks/common/useFetch';
 import { useChainList } from '@/hooks/useChainList';
 import type { UniqueChainId } from '@/types/chain';
 import { get, isAxiosError } from '@/utils/axios';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import { isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
-import { getCosmosAddressRegex } from '@/utils/regex';
 
 type UseCachedNFTImagesParam = {
   contractAddress: string;
@@ -50,9 +50,7 @@ export function useCachedNFTImages({ params, config }: UseCachedNFTImagesProps) 
 
           const chain = chainList.cosmosChains?.find((chain) => isMatchingUniqueChainId(chain, chainId));
 
-          const regex = getCosmosAddressRegex(chain?.accountPrefix || '', [39, 59]);
-
-          if (!regex.test(contractAddress)) {
+          if (!isValidCosmosAddress(contractAddress, chain?.accountPrefix || '')) {
             return null;
           }
 

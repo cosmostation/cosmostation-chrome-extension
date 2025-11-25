@@ -19,6 +19,7 @@ import SortBottomSheet from '@/components/SortBottomSheet';
 import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useUpdateBalance } from '@/hooks/update/useUpdateBalance';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
@@ -29,6 +30,7 @@ import { Route as CoinOverview } from '@/pages/coin-overview/$coinId';
 import { Route as ManageAssets } from '@/pages/manage-assets/visibility/assets';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import { removeDuplicates } from '@/utils/array';
 import { getDefaultAssets, getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { gt, gte, minus, times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -53,7 +55,7 @@ import {
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
-type PortfolioCoinItem = FlatAccountAssets & {
+export type PortfolioCoinItem = FlatAccountAssets & {
   value: string;
   dollarValue: string;
   totalDisplayAmount: string;
@@ -65,7 +67,7 @@ export default function Entry() {
   const navigate = useNavigate();
 
   const { scrollToTop } = useScroll();
-  const { isLoading: isUpdateBalnaceLoading } = useUpdateBalance();
+  const { isLoading: isUpdateBalanceLoading } = useUpdateBalance();
 
   const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true });
   const { data: coinGeckoPrice, isLoading: isCoinGeckoPriceLoading } = useCoinGeckoPrice();
@@ -77,6 +79,7 @@ export default function Entry() {
   const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
   const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
+  useAutoBalanceRefresh(selectedChainFilterId && [selectedChainFilterId]);
   useCurrentAccountAddedNFTsWithMetaData();
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
@@ -92,7 +95,7 @@ export default function Entry() {
 
   const { groupAccountAssets, isLoading: isGroupAssetsLoading } = useGroupAccountAssets();
 
-  const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalnaceLoading;
+  const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalanceLoading;
   const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
   const chainDefaultCoins = useMemo<PortfolioCoinItem[] | undefined>(() => {
@@ -203,26 +206,32 @@ export default function Entry() {
   );
 
   const filteredAssetsBySearch = useMemo(() => {
-    const filterdByChain = getFilteredAssetsByChainId(sortedAssets, selectedChainFilterId || undefined);
-    if (!!search && debouncedSearch.length > 1) {
-      return (
-        filterdByChain.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
+    const filteredByChain = getFilteredAssetsByChainId(sortedAssets, selectedChainFilterId || undefined);
 
-          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-        }) || []
-      );
+    const mergeWithChainDefaultCoins = (assets: PortfolioCoinItem[]): PortfolioCoinItem[] => {
+      if (!selectedChainFilterId) return assets;
+
+      return removeDuplicates([...(chainDefaultCoins || []), ...assets], (a, b) => a.asset.id === b.asset.id);
+    };
+
+    const filterBySearchTerm = (assets: PortfolioCoinItem[]): PortfolioCoinItem[] => {
+      return assets.filter((asset) => {
+        const searchTargets = [asset.asset.symbol, asset.asset.id];
+        const lowerSearch = debouncedSearch.toLowerCase();
+
+        return searchTargets.some((target) => target.toLowerCase().includes(lowerSearch));
+      });
+    };
+
+    const hasValidSearch = !!search && debouncedSearch.length > 1;
+
+    if (hasValidSearch) {
+      const baseAssets = mergeWithChainDefaultCoins(filteredByChain);
+
+      return filterBySearchTerm(baseAssets);
     }
-    if (selectedChainFilterId) {
-      return [...(chainDefaultCoins || []), ...filterdByChain].reduce((acc: PortfolioCoinItem[], item) => {
-        if (!acc.some((existing) => existing.asset.id === item.asset.id)) {
-          acc.push(item as PortfolioCoinItem);
-        }
-        return acc;
-      }, []);
-    } else {
-      return filterdByChain;
-    }
+
+    return mergeWithChainDefaultCoins(filteredByChain);
   }, [chainDefaultCoins, debouncedSearch, search, selectedChainFilterId, sortedAssets]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
@@ -246,6 +255,7 @@ export default function Entry() {
           <Container>
             <PortFolio
               selectedChainId={selectedChainFilterId || undefined}
+              accountAllAssetsForValueAggregate={filteredAssetsBySearch}
               onChangeChaindId={(chainId) => {
                 updateExtensionStorageStore('selectedChainFilterId', chainId || null);
               }}
@@ -323,7 +333,7 @@ export default function Entry() {
                               },
                             });
                           }}
-                          lastUpdatedAtMs={isUpdateBalnaceLoading ? null : coin.lastUpdatedAtMs}
+                          fetchStatus={coin.fetchStatus?.balance}
                           displayAmount={coin.totalDisplayAmount || '0'}
                           symbol={resolvedSymbol}
                           coinGeckoId={coin.asset.coinGeckoId}
