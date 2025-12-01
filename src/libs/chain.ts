@@ -45,6 +45,8 @@ export async function getChains() {
     (chainInfo) => !!chainInfo.params?.chainlist_params && chainInfo.params?.chainlist_params.is_support_extension_wallet,
   ) as SupportedV11Param[];
 
+  console.log('🚀 ~ getChains ~ supportedChains:', supportedChains);
+
   const cosmosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('cosmos'));
   const evmChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('evm'));
   const suiChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('sui'));

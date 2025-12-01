@@ -30,6 +30,13 @@ With Cosmostation, users can create personal crypto wallets, safely sign on-chai
 - [User](https://docs.cosmostation.io/extension/guide/account/intro)
 - [Developer](https://docs.cosmostation.io/extension/integration/cosmos/typescript)
 
+## Development
+
+- `npm run dev` — start WXT dev mode targeting Chromium.
+- `npm run dev:firefox` — start WXT dev mode targeting Firefox.
+- `npm run build` — produce production bundles in `.output/<browser>-mv3`.
+- `npm run zip` — build and create signed-ready zip files (use `:firefox` variants for Firefox).
+
 ## Cosmostation's Services and Community
 
 - [Official Website](https://www.cosmostation.io)

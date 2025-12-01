@@ -335,6 +335,9 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
   const visibleAssetIdSet = await getVisibleAssetsSet(id);
 
   const { aptosChains, cosmosChains, evmChains, suiChains, bitcoinChains, iotaChains, solanaChains, gnoChains } = await getChains();
+
+  console.log('🚀 ~ getAccountAssets ~ cosmosChains:', cosmosChains);
+
   const addedCustomChains = await getAddedCustomChains();
 
   const allEVMChains = [...evmChains, ...addedCustomChains.filter((chain) => chain.chainType === 'evm')];
@@ -356,6 +359,8 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
     gnoAssets,
     grc20Assets,
   } = await getAssets();
+
+  console.log('🚀 ~ getAccountAssets ~ cosmosAssets:', cosmosAssets);
 
   const filterHiddenAssets = <T extends Asset>(assets: T[]): T[] => {
     if (option?.disableFilterHidden) {

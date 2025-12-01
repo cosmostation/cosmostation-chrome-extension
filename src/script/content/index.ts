@@ -131,7 +131,7 @@ function injectScript() {
   try {
     const container = document.head || document.documentElement;
     const scriptTag = document.createElement('script');
-    scriptTag.setAttribute('src', chrome.runtime.getURL('js/inject.js'));
+    scriptTag.setAttribute('src', chrome.runtime.getURL('inject.js'));
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

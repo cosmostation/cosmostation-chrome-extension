@@ -26,18 +26,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Reload the popup when rebuilding in development
-if (__APP_MODE__ === 'development') {
-  const socket = new WebSocket(`ws://localhost:${__APP_DEV_WEBSOCKET_PORT__}`);
-
-  socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.type === 'reload-popup') {
-      location.reload();
-    }
-  };
-}
-
 // Render the app
 const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {

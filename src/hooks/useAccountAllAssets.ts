@@ -86,6 +86,8 @@ export function useAccountAllAssets({
     ...config,
   });
 
+  console.log('🚀 ~ useAccountAllAssets ~ data:', data);
+
   const filteredByVisibleList = useMemo(() => {
     if (!data) return null;
 
