@@ -6,7 +6,7 @@ import EmptyAsset from '@/components/EmptyAsset';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import type { Account, AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
-import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
+import { getUniqueChainIdWithManual, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -53,22 +53,28 @@ interface AccountAddressInfo {
 export default function MnemonicAccount({ chainId, filterAddress, searchText, onClickAddress }: MnemonicAccountProps) {
   const { t } = useTranslation();
 
-  const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
+  const userAccounts = useExtensionStorageStore((state) => state.userAccounts);
+  const accountNamesById = useExtensionStorageStore((state) => state.accountNamesById);
+  const mnemonicNamesByHashedMnemonic = useExtensionStorageStore((state) => state.mnemonicNamesByHashedMnemonic);
+  const addedCustomChainList = useExtensionStorageStore((state) => state.addedCustomChainList);
+
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const accountIds = useMemo(() => userAccounts.map((account) => account.id), [userAccounts]);
 
-  const addressesMap = useMemo(
-    () =>
-      accountIds.reduce(
-        (acc, id) => {
-          const accountAddresses = useExtensionStorageStore.getState()[`${id}-address`];
+  const isCustomChain = useMemo(() => addedCustomChainList.some((chain) => isMatchingUniqueChainId(chain, chainId)), [addedCustomChainList, chainId]);
 
-          return { ...acc, [id]: accountAddresses };
-        },
-        {} as Record<string, AccountAddress[]>,
-      ),
-    [accountIds],
-  );
+  const addressesMap = useMemo(() => {
+    return accountIds.reduce(
+      (acc, id) => {
+        const accountAddresses = isCustomChain
+          ? useExtensionStorageStore.getState()[`${id}-custom-address`]
+          : useExtensionStorageStore.getState()[`${id}-address`];
+
+        return { ...acc, [id]: accountAddresses };
+      },
+      {} as Record<string, AccountAddress[]>,
+    );
+  }, [accountIds, isCustomChain]);
 
   const uniqueMnemonicRestoreString = useMemo(
     () =>

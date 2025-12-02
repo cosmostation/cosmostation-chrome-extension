@@ -1,15 +1,20 @@
+import { sendMessage } from '@/libs/extension';
 import { customChainAddress } from '@/script/service-worker/update/address';
 import type { CustomChain, UniqueChainId } from '@/types/chain';
-import { getCoinChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { getCoinChainId, getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { loadExtensionStorageStoreFromStorageByKey, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useRefreshAccountAllAssets } from './useRefreshAccountAllAssets';
 
 export function useCustomChain() {
-  const { userAccounts, addedCustomChainList, customAssets, customErc20Assets, customCw20Assets, updateExtensionStorageStore } = useExtensionStorageStore(
-    (state) => state,
-  );
+  const userAccounts = useExtensionStorageStore((state) => state.userAccounts);
+  const addedCustomChainList = useExtensionStorageStore((state) => state.addedCustomChainList);
+  const customAssets = useExtensionStorageStore((state) => state.customAssets);
+  const customErc20Assets = useExtensionStorageStore((state) => state.customErc20Assets);
+  const customCw20Assets = useExtensionStorageStore((state) => state.customCw20Assets);
+  const currentAccountId = useExtensionStorageStore((state) => state.currentAccountId);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const { refreshAssets } = useRefreshAccountAllAssets();
 
@@ -37,8 +42,15 @@ export function useCustomChain() {
     await Promise.all(
       accountIds.map(async (id) => {
         await customChainAddress(id);
+        await loadExtensionStorageStoreFromStorageByKey(`${id}-custom-address`);
       }),
     );
+
+    await sendMessage({
+      target: 'SERVICE_WORKER',
+      method: 'updateChainSpecificBalance',
+      params: [currentAccountId, getUniqueChainId(newChain)],
+    });
 
     await refreshAssets();
   };
