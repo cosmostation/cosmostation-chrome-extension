@@ -14,11 +14,13 @@ import type { SplTokenBalance } from '@/types/solana/api';
 import { chunkArray } from '@/utils/array';
 import { upsertCW20Balance, upsertERC20Balance, upsertSplTokenBalance } from '@/utils/balanceUpsert';
 import { createChainMap, createCosmwasmChainMap } from '@/utils/cache/chainMap';
-import { fetchCW20Balances, fetchERC20Balances, fetchMultiERC20Balances, fetchSolanaSplTokenBalances } from '@/utils/cosmos/fetch/balance';
+import { fetchCW20Balances } from '@/utils/cosmos/fetch/balance';
 import { devLogger } from '@/utils/devLogger';
+import { fetchERC20Balances, fetchMultiERC20Balances } from '@/utils/ethereum/fetch/balance';
 import { fetchGrc20Balance } from '@/utils/gno/fetch/balance';
 import { gt } from '@/utils/numbers';
 import { getCoinId, getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
+import { fetchSolanaSplTokenBalances } from '@/utils/solana/fetch/balance';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 const CHAIN_MULTICALL_CONFIGS: Record<ChainId['id'], { maxMulticallDataLength: number }> = {

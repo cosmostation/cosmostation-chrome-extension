@@ -8,8 +8,8 @@ import type { BalanceFetchOption } from '@/types/message/service-worker/updateRe
 import { chunkArray } from '@/utils/array';
 import { upsertEVMBalance } from '@/utils/balanceUpsert';
 import { createChainMap } from '@/utils/cache/chainMap';
-import { fetchEVMBalances } from '@/utils/cosmos/fetch/balance';
 import { devLogger } from '@/utils/devLogger';
+import { fetchEVMBalances } from '@/utils/ethereum/fetch/balance';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 

@@ -6,8 +6,8 @@ import type { ExtensionStorage } from '@/types/extension';
 import type { BalanceFetchOption } from '@/types/message/service-worker/updateRequest';
 import { chunkArray } from '@/utils/array';
 import { upsertSolanaBalance } from '@/utils/balanceUpsert';
-import { fetchSolanaBalances } from '@/utils/cosmos/fetch/balance';
 import { devLogger } from '@/utils/devLogger';
+import { fetchSolanaBalances } from '@/utils/solana/fetch/balance';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
