@@ -1,6 +1,7 @@
 import { sendMessage } from '@/libs/extension';
 import { customChainAddress } from '@/script/service-worker/update/address';
 import type { CustomChain, UniqueChainId } from '@/types/chain';
+import { devLogger } from '@/utils/devLogger';
 import { getCoinChainId, getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { loadExtensionStorageStoreFromStorageByKey, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -39,12 +40,17 @@ export function useCustomChain() {
 
     const accountIds = userAccounts.map((account) => account.id);
 
-    await Promise.all(
+    const results = await Promise.allSettled(
       accountIds.map(async (id) => {
         await customChainAddress(id);
         await loadExtensionStorageStoreFromStorageByKey(`${id}-custom-address`);
       }),
     );
+
+    const failures = results.filter((r) => r.status === 'rejected');
+    if (failures.length > 0) {
+      devLogger.error('Failed to initialize addresses for some accounts:', failures);
+    }
 
     await sendMessage({
       target: 'SERVICE_WORKER',
