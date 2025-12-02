@@ -18,10 +18,6 @@ import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBala
 import { updateSpecificChainStaking, updateStakingRelatedBalance } from './update/staking';
 import { v11 } from './update/v11';
 
-initExtensionView();
-
-startAutoLockTimer();
-
 const inProgressMap: Record<string, Set<string>> = {};
 const inProgressTimestamps: Record<string, Record<string, number>> = {};
 
@@ -75,287 +71,293 @@ function forceCleanupAllProgress(): void {
   Object.keys(inProgressTimestamps).forEach((key) => delete inProgressTimestamps[key]);
 }
 
-forceCleanupAllProgress();
+export function startServiceWorker() {
+  initExtensionView();
 
-setInterval(cleanupStaleProgress, CLEANUP_INTERVAL);
+  startAutoLockTimer();
 
-extension.storage.onChanged.addListener((changes) => {
-  for (const [key, { newValue }] of Object.entries(changes)) {
-    if (key === 'requestQueue') {
-      const newQueues = newValue as RequestQueue[] | undefined;
-      const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
-      void extension.action.setBadgeText({ text });
+  forceCleanupAllProgress();
+
+  setInterval(cleanupStaleProgress, CLEANUP_INTERVAL);
+
+  extension.storage.onChanged.addListener((changes) => {
+    for (const [key, { newValue }] of Object.entries(changes)) {
+      if (key === 'requestQueue') {
+        const newQueues = newValue as RequestQueue[] | undefined;
+        const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
+        void extension.action.setBadgeText({ text });
+      }
     }
-  }
-});
+  });
 
-chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
-  (async () => {
-    devLogger.log('service worker message', message);
-    devLogger.log('service worker sender', sender);
+  chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
+    (async () => {
+      devLogger.log('service worker message', message);
+      devLogger.log('service worker sender', sender);
 
-    if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
-      const { method, params } = message;
+      if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
+        const { method, params } = message;
 
-      if (method === 'updateBalance') {
-        const [id] = params;
+        if (method === 'updateBalance') {
+          const [id] = params;
 
-        if (isInProgress(method, id)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        if (await isRequestThrottled(method, id)) {
-          devLogger.log(`[${method}] Throttled for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        setInProgress(method, id);
-
-        try {
-          await updateActiveAssetsBalance(id);
-          await updateCustomBalance(id);
-          await recordRequestTimestamp(method, id);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, id);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'updateStaking') {
-        const [id] = params;
-
-        if (isInProgress(method, id)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        if (await isRequestThrottled(method, id)) {
-          devLogger.log(`[${method}] Throttled for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        setInProgress(method, id);
-
-        try {
-          await updateStakingRelatedBalance(id);
-          await recordRequestTimestamp(method, id);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, id);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'updateAccountInfo') {
-        const [id] = params;
-
-        if (isInProgress(method, id)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        if (await isRequestThrottled(method, id)) {
-          devLogger.log(`[${method}] Throttled for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-        setInProgress(method, id);
-
-        try {
-          await updateAccountInfo(id);
-          await recordRequestTimestamp(method, id);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, id);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'updateDefaultBalance') {
-        const [id] = params;
-
-        if (isInProgress(method, id)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        setInProgress(method, id);
-
-        try {
-          await updateDefaultAssetsBalance(id);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, id);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'updateAddress') {
-        const [id] = params;
-
-        if (isInProgress(method, id)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
-          sendResponse(null);
-          return;
-        }
-
-        setInProgress(method, id);
-
-        try {
-          await address(id);
-          await customChainAddress(id);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, id);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'updateChainSpecificBalance') {
-        const [id, chainId] = params;
-
-        const key = `${id}:${chainId}`;
-        if (isInProgress(method, key)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
-          sendResponse(null);
-          return;
-        }
-
-        setInProgress(method, key);
-
-        try {
-          await updateSpecificChainBalance(id, chainId);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, key);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'updateChainSpecificStakingBalance') {
-        const [id, chainId] = params;
-
-        const key = `${id}:${chainId}`;
-
-        if (isInProgress(method, key)) {
-          devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
-          sendResponse(null);
-          return;
-        }
-
-        setInProgress(method, key);
-        try {
-          await updateSpecificChainBalance(id, chainId);
-          await updateSpecificChainStaking(id, chainId);
-        } catch (e) {
-          devLogger.error(`${method} error`, e);
-        } finally {
-          clearInProgress(method, key);
-        }
-
-        sendResponse(null);
-      }
-
-      if (method === 'requestApp') {
-        await process({ ...params, tabId: sender.tab?.id });
-        sendResponse(null);
-      }
-
-      if (method === 'openSidePanel') {
-        if (sender.tab?.id && typeof chrome !== 'undefined' && typeof chrome.sidePanel !== 'undefined') {
-          if (__APP_BROWSER__ === 'chrome') {
-            if (!chrome.sidePanel) return;
-
-            await chrome.sidePanel.open({ tabId: sender.tab.id });
-            await chrome.sidePanel.setOptions({
-              tabId: sender.tab.id,
-              path: 'sidepanel.html',
-              enabled: true,
-            });
-          } else {
-            browser.sidebarAction.setPanel({ panel: 'sidepanel.html' });
-            browser.sidebarAction.open();
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
           }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updateActiveAssetsBalance(id);
+            await updateCustomBalance(id);
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
         }
 
-        sendResponse(null);
+        if (method === 'updateStaking') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updateStakingRelatedBalance(id);
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateAccountInfo') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+          setInProgress(method, id);
+
+          try {
+            await updateAccountInfo(id);
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateDefaultBalance') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updateDefaultAssetsBalance(id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateAddress') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await address(id);
+            await customChainAddress(id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateChainSpecificBalance') {
+          const [id, chainId] = params;
+
+          const key = `${id}:${chainId}`;
+          if (isInProgress(method, key)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, key);
+
+          try {
+            await updateSpecificChainBalance(id, chainId);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, key);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateChainSpecificStakingBalance') {
+          const [id, chainId] = params;
+
+          const key = `${id}:${chainId}`;
+
+          if (isInProgress(method, key)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${key}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, key);
+          try {
+            await updateSpecificChainBalance(id, chainId);
+            await updateSpecificChainStaking(id, chainId);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, key);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'requestApp') {
+          await process({ ...params, tabId: sender.tab?.id });
+          sendResponse(null);
+        }
+
+        if (method === 'openSidePanel') {
+          if (sender.tab?.id && typeof chrome !== 'undefined' && typeof chrome.sidePanel !== 'undefined') {
+            if (__APP_BROWSER__ === 'chrome') {
+              if (!chrome.sidePanel) return;
+
+              await chrome.sidePanel.open({ tabId: sender.tab.id });
+              await chrome.sidePanel.setOptions({
+                tabId: sender.tab.id,
+                path: 'sidepanel.html',
+                enabled: true,
+              });
+            } else {
+              browser.sidebarAction.setPanel({ panel: 'sidepanel.html' });
+              browser.sidebarAction.open();
+            }
+          }
+
+          sendResponse(null);
+        }
       }
-    }
-  })();
+    })();
 
-  return true;
-});
+    return true;
+  });
 
-chrome.runtime.onInstalled.addListener((details) => {
-  void (async () => {
-    await v11();
+  chrome.runtime.onInstalled.addListener((details) => {
+    void (async () => {
+      await v11();
 
-    if (details.reason === 'install') {
-      await openTab();
-    }
-  })();
-});
+      if (details.reason === 'install') {
+        await openTab();
+      }
+    })();
+  });
 
-void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
-void extension.action.setBadgeText({ text: '' });
+  void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
+  void extension.action.setBadgeText({ text: '' });
 
-extension.windows.onRemoved.addListener((windowId) => {
-  void (async () => {
-    const queues = await getExtensionLocalStorage('requestQueue');
+  extension.windows.onRemoved.addListener((windowId) => {
+    void (async () => {
+      const queues = await getExtensionLocalStorage('requestQueue');
 
-    const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
+      const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
 
-    const currentWindowId = await getExtensionLocalStorage('currentWindowId');
+      const currentWindowId = await getExtensionLocalStorage('currentWindowId');
 
-    if (typeof currentWindowId === 'number') {
-      currentWindowIds.push(currentWindowId);
-    }
+      if (typeof currentWindowId === 'number') {
+        currentWindowIds.push(currentWindowId);
+      }
 
-    const windowIds = Array.from(new Set(currentWindowIds));
+      const windowIds = Array.from(new Set(currentWindowIds));
 
-    await setExtensionLocalStorage('currentWindowId', null);
+      await setExtensionLocalStorage('currentWindowId', null);
 
-    if (windowIds.includes(windowId)) {
-      queues.forEach((queue) => {
-        sendMessage({
-          target: 'CONTENT',
-          method: 'responseApp',
-          origin: queue.origin,
-          requestId: queue.requestId,
-          tabId: queue.tabId,
-          params: {
-            id: queue.requestId,
-            error: {
-              code: RPC_ERROR.INVALID_INPUT,
-              message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]}`,
+      if (windowIds.includes(windowId)) {
+        queues.forEach((queue) => {
+          sendMessage({
+            target: 'CONTENT',
+            method: 'responseApp',
+            origin: queue.origin,
+            requestId: queue.requestId,
+            tabId: queue.tabId,
+            params: {
+              id: queue.requestId,
+              error: {
+                code: RPC_ERROR.INVALID_INPUT,
+                message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]}`,
+              },
             },
-          },
+          });
+
+          void closeWindow(queue.windowId);
         });
 
-        void closeWindow(queue.windowId);
-      });
-
-      await setExtensionLocalStorage('requestQueue', []);
-    }
-  })();
-});
+        await setExtensionLocalStorage('requestQueue', []);
+      }
+    })();
+  });
+}
