@@ -93,8 +93,6 @@ export default function Entry() {
 
   const { groupAccountAssets, isLoading: isGroupAssetsLoading } = useGroupAccountAssets();
 
-  console.log('🚀 ~ Entry ~ groupAccountAssets:', groupAccountAssets);
-
   const isFirstBalanceLoading = !groupAccountAssets?.singleAccountAssets.length && !groupAccountAssets?.groupAccountAssets.length && isUpdateBalanceLoading;
   const isLoading = isFirstBalanceLoading || isGroupAssetsLoading || isCoinGeckoPriceLoading || isCoinGeckoPriceUSDLoading;
 
