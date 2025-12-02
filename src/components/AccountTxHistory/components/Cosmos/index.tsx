@@ -84,7 +84,7 @@ export default function CosmosAccountTxHistory({ coinId }: CosmosAccountTxHistor
                 </ContentsContainer>
               );
             }}
-            overscan={10}
+            overscan={3}
             fetchNextPage={fetchNextPage}
             hasNextPage={!isFetchingNextPage && hasNextPage && !error}
             isFetchingNextPage={isFetchingNextPage}
