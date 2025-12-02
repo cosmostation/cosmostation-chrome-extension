@@ -974,8 +974,7 @@ export const MULTICALL3_DEPLOYMENTS = [
   {
     name: 'zkSync Era',
     chainId: 324,
-    url: 'https://explorer.zksync.io/address/0xF9cda624FBC7e059355ce98a31693d299FACd963#contract',
-    address: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
+    url: 'https://explorer.zksync.io/address/0xcA11bde05977b3631167028862bE2a173976CA11#contract',
   },
   {
     name: 'zkSync Era Goerli Testnet',
