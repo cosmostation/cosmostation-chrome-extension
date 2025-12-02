@@ -11,7 +11,7 @@ export const fetchCosmosAccountInfo = async (address: string, lcdUrls: string[])
     const requestUrl = buildRequestUrl(lcdUrl, urlPath);
 
     const response = await get<AuthAccountsPayload>(requestUrl, {
-      timeout: DEFAULT_FETCH_TIME_OUT_MS * 15,
+      timeout: DEFAULT_FETCH_TIME_OUT_MS * 10,
     });
 
     return response;
