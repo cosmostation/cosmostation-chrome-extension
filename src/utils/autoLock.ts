@@ -15,4 +15,6 @@ export async function refreshAutoLockTimer() {
   const autoLockAt = currentTime + autoLockTimeInMs;
 
   await setExtensionLocalStorage('autoLockTimeStampAt', autoLockAt);
+
+  return true;
 }

@@ -5,6 +5,7 @@ import { v11 } from '@/script/service-worker/update/v11';
 export function useUpdateBaseData() {
   const fetcher = async () => {
     await v11();
+    return true;
   };
 
   const { data, isLoading, error } = useQuery({

@@ -9,6 +9,7 @@ export function useUpdateAddress() {
 
   const fetcher = async () => {
     await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [currentAccount.id] });
+    return true;
   };
 
   const { data, isLoading, error } = useQuery({
