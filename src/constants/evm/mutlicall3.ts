@@ -1399,6 +1399,11 @@ export const MULTICALL3_DEPLOYMENTS = [
     url: 'https://testnet.monadexplorer.com/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=Contract',
   },
   {
+    name: 'Monad Mainnet',
+    chainId: 143,
+    url: 'https://monadvision.com/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=Contract',
+  },
+  {
     name: 'Powerloom Mainnet',
     chainId: 7869,
     url: 'https://explorer-v2.powerloom.network/address/0xcA11bde05977b3631167028862bE2a173976CA11?tab=contract',
