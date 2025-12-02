@@ -84,7 +84,7 @@ export default function EVMAccountTxHistory({ coinId }: EVMAccountTxHistory) {
                 </ContentsContainer>
               );
             }}
-            overscan={10}
+            overscan={3}
             fetchNextPage={fetchNextPage}
             hasNextPage={!isFetchingNextPage && hasNextPage && !error}
             isFetchingNextPage={isFetchingNextPage}

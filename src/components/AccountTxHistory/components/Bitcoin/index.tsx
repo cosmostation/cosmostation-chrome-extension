@@ -88,7 +88,7 @@ export default function BitcoinAccountTxHistory({ coinId }: BitcoinAccountTxHist
     count: hasNextPage ? txsGroupedByDate.length + 1 + addtionalLength : txsGroupedByDate.length + addtionalLength,
     getScrollElement: () => scaffoldRef.current,
     estimateSize: () => 60,
-    overscan: 10,
+    overscan: 3,
     scrollMargin: scaffoldRef.current?.offsetTop ?? 0,
   });
 
@@ -127,28 +127,35 @@ export default function BitcoinAccountTxHistory({ coinId }: BitcoinAccountTxHist
               }}
             >
               {virtualItems.map((virtualItem) => {
-                const isAdditonalRow = virtualItem.index < addtionalLength;
-                const isLoaderRow = hasNextPage && virtualItem.index === txsGroupedByDate.length + addtionalLength;
+                const index = virtualItem.index;
 
-                const renderItem = isAdditonalRow ? null : txsGroupedByDate[virtualItem.index - 1];
+                const isMempoolRow = addtionalLength > 0 && index === 0;
 
+                const isLoaderRow = hasNextPage && index === txsGroupedByDate.length + addtionalLength - 1;
+
+                const groupIndex = index - addtionalLength;
+                const isTxGroupRow = groupIndex >= 0 && groupIndex < txsGroupedByDate.length;
+
+                const renderItem = isTxGroupRow ? txsGroupedByDate[groupIndex] : null;
                 const date = renderItem ? Object.keys(renderItem)[0] : null;
                 const txsByDate = renderItem && date ? renderItem[date] : null;
 
                 return (
-                  <div key={virtualItem.key} data-index={virtualItem.index} ref={virtualizer.measureElement}>
+                  <div key={virtualItem.key} data-index={index} ref={virtualizer.measureElement}>
                     {isLoaderRow ? (
                       <StyledCircularProgressContainer>
                         <StyledCircularProgress size={20} />
                       </StyledCircularProgressContainer>
-                    ) : isAdditonalRow ? (
+                    ) : isMempoolRow ? (
                       <ContentsContainer>
                         <DateLineContainer>
                           <DateLine date={'Mempool'} hideCalendarIcon />
                         </DateLineContainer>
-                        <TxDetailContainer>{mempoolTxs.map((tx) => tx && <BitcoinMempoolTxItem key={tx.txid} coinId={coinId} tx={tx} />)}</TxDetailContainer>
+                        <TxDetailContainer>
+                          <TxDetailContainer>{mempoolTxs.map((tx) => tx && <BitcoinMempoolTxItem key={tx.txid} coinId={coinId} tx={tx} />)}</TxDetailContainer>
+                        </TxDetailContainer>
                       </ContentsContainer>
-                    ) : date && txsByDate ? (
+                    ) : isTxGroupRow && date && txsByDate ? (
                       <ContentsContainer key={date}>
                         <DateLineContainer>
                           <DateLine date={date} />
