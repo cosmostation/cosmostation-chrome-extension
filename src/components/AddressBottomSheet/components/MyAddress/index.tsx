@@ -63,18 +63,20 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
 
   const isCustomChain = useMemo(() => addedCustomChainList.some((chain) => isMatchingUniqueChainId(chain, chainId)), [addedCustomChainList, chainId]);
 
-  const addressesMap = useMemo(() => {
-    return accountIds.reduce(
-      (acc, id) => {
-        const accountAddresses = isCustomChain
-          ? useExtensionStorageStore.getState()[`${id}-custom-address`]
-          : useExtensionStorageStore.getState()[`${id}-address`];
+  const addressesMap = useMemo(
+    () =>
+      accountIds.reduce(
+        (acc, id) => {
+          const accountAddresses = isCustomChain
+            ? useExtensionStorageStore.getState()[`${id}-custom-address`]
+            : useExtensionStorageStore.getState()[`${id}-address`];
 
-        return { ...acc, [id]: accountAddresses };
-      },
-      {} as Record<string, AccountAddress[]>,
-    );
-  }, [accountIds, isCustomChain]);
+          return { ...acc, [id]: accountAddresses };
+        },
+        {} as Record<string, AccountAddress[]>,
+      ),
+    [accountIds, isCustomChain],
+  );
 
   const uniqueMnemonicRestoreString = useMemo(
     () =>
