@@ -1,9 +1,7 @@
-import { dirname, resolve as pathResolve } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve as pathResolve } from 'path';
 import esToolkitPlugin from 'vite-plugin-es-toolkit';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import svgr from 'vite-plugin-svgr';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import type { WxtViteConfig } from 'wxt';
 import { defineConfig } from 'wxt';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
@@ -32,24 +30,23 @@ const OPTIONAL_PERMISSIONS: Record<string, string[]> = {
   firefox: ['clipboardWrite', 'activeTab', 'webRequest'],
 };
 
-const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
-const TSCONFIG_PATH = pathResolve(ROOT_DIR, 'tsconfig.json');
-
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   targetBrowsers: ['chrome', 'firefox'],
-  manifestVersion: 3,
-  alias: {
-    '@': './src',
-    '@components': './src/components',
-    assets: './src/assets',
-    components: './src/components',
+  webExt: {
+    disabled: true,
   },
+  manifestVersion: 3,
   hooks: {
     'config:resolved': (wxt) => {
       wxt.config.alias['@'] = pathResolve(wxt.config.root, 'src');
       wxt.config.alias.assets = pathResolve(wxt.config.root, 'src/assets');
       wxt.config.alias.components = pathResolve(wxt.config.root, 'src/components');
+    },
+    'build:manifestGenerated': (wxt, manifest) => {
+      if (wxt.config.mode === 'development') {
+        manifest.name += ' (DEV)';
+      }
     },
   },
   manifest: ({ browser }) => {
@@ -87,14 +84,6 @@ export default defineConfig({
   },
   vite: ({ mode, browser }) => {
     return {
-      resolve: {
-        alias: {
-          '@': pathResolve(ROOT_DIR, 'src'),
-          '@components': pathResolve(ROOT_DIR, 'src/components'),
-          assets: pathResolve(ROOT_DIR, 'src/assets'),
-          components: pathResolve(ROOT_DIR, 'src/components'),
-        },
-      },
       define: {
         __APP_BROWSER__: JSON.stringify(browser),
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
@@ -102,7 +91,6 @@ export default defineConfig({
       },
       plugins: [
         TanStackRouterVite({ routesDirectory: 'src/pages' }),
-        tsconfigPaths({ projects: [TSCONFIG_PATH] }),
         nodePolyfills(),
         svgr({
           svgrOptions: { exportType: 'default', ref: true, svgo: false, titleProp: true },

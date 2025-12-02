@@ -120,7 +120,6 @@
     "vite-plugin-es-toolkit": "^1.0.1",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-svgr": "^4.2.0",
-    "vite-tsconfig-paths": "^5.0.1",
     "wxt": "^0.20.11"
   },
   "engines": {
