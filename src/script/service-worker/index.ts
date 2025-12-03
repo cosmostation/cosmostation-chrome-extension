@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { sendMessage } from '@/libs/extension';
 import type { RequestQueue } from '@/types/extension';
@@ -90,12 +92,12 @@ export function startServiceWorker() {
     }
   });
 
-  chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
     (async () => {
       devLogger.log('service worker message', message);
       devLogger.log('service worker sender', sender);
 
-      if (sender?.id === chrome.runtime.id && message?.target === 'SERVICE_WORKER') {
+      if (sender?.id === browser.runtime.id && message?.target === 'SERVICE_WORKER') {
         const { method, params } = message;
 
         if (method === 'updateBalance') {
@@ -281,33 +283,13 @@ export function startServiceWorker() {
           await process({ ...params, tabId: sender.tab?.id });
           sendResponse(null);
         }
-
-        if (method === 'openSidePanel') {
-          if (sender.tab?.id && typeof chrome !== 'undefined' && typeof chrome.sidePanel !== 'undefined') {
-            if (__APP_BROWSER__ === 'chrome') {
-              if (!chrome.sidePanel) return;
-
-              await chrome.sidePanel.open({ tabId: sender.tab.id });
-              await chrome.sidePanel.setOptions({
-                tabId: sender.tab.id,
-                path: 'sidepanel.html',
-                enabled: true,
-              });
-            } else {
-              browser.sidebarAction.setPanel({ panel: 'sidepanel.html' });
-              browser.sidebarAction.open();
-            }
-          }
-
-          sendResponse(null);
-        }
       }
     })();
 
     return true;
   });
 
-  chrome.runtime.onInstalled.addListener((details) => {
+  browser.runtime.onInstalled.addListener((details) => {
     void (async () => {
       await v11();
 
