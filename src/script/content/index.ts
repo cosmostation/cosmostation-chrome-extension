@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import {
   APTOS_LISTENER_TYPE,
   BITCOIN_LISTENER_TYPE,
@@ -22,15 +24,17 @@ window.addEventListener('cosmostation_request', (event) => {
   })();
 });
 
-chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
   (async () => {
     devLogger.log('content message', message);
     devLogger.log('content sender', sender);
 
-    if (sender?.id === chrome.runtime.id && message?.target === 'CONTENT') {
+    if (sender?.id === browser.runtime.id && message?.target === 'CONTENT') {
       if (message.method === 'responseApp') {
+        const clonedParams = typeof cloneInto !== 'undefined' ? cloneInto(message.params, window) : message.params;
+
         const event = new CustomEvent('cosmostation_response', {
-          detail: message.params,
+          detail: clonedParams,
         });
 
         window.dispatchEvent(event);
@@ -68,7 +72,7 @@ const getListenerTypes = (chainType: ChainType): ListenerType[] => {
   return CHAIN_TYPE_TO_LISTENER_TYPES[chainType] ?? [];
 };
 
-chrome.runtime.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   (
     data: {
       event: ListenerType;
@@ -77,7 +81,7 @@ chrome.runtime.onMessage.addListener(
     },
     sender,
   ) => {
-    if (sender.id !== chrome.runtime.id) return false;
+    if (sender.id !== browser.runtime.id) return false;
 
     const validListenerTypes = getListenerTypes(data.chainType);
 
@@ -131,7 +135,7 @@ function injectScript() {
   try {
     const container = document.head || document.documentElement;
     const scriptTag = document.createElement('script');
-    scriptTag.setAttribute('src', chrome.runtime.getURL('inject.js'));
+    scriptTag.setAttribute('src', browser.runtime.getURL('/inject.js'));
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

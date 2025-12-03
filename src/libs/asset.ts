@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import type { DynamicFieldInfo as IotaDynamicFieldInfo, IotaObjectDataOptions, IotaObjectResponse, IotaObjectResponseQuery } from '@iota/iota-sdk/client';
 import { IotaClient, Network as IotaNetwork } from '@iota/iota-sdk/client';
 import { KioskClient as IotaKioskClient } from '@iota/kiosk';
@@ -49,7 +50,7 @@ import { getAccountAddress, getAllAccountAddress } from './account';
 import { getAddedCustomChains, getChains } from './chain';
 
 export async function getHiddenAssets(id: string) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-hidden-assetIds`);
+  const storage = await browser.storage.local.get<ExtensionStorage>(`${id}-hidden-assetIds`);
 
   const hiddenAssetIds = storage[`${id}-hidden-assetIds`];
 
@@ -73,11 +74,11 @@ export async function updateHiddenAssets(id: string, hiddenAssetIds: AssetId[]) 
 
   const updatedHiddenAssetIds = [...filteredStoredHiddenAssetIds, ...hiddenAssetIds];
 
-  await chrome.storage.local.set({ [`${id}-hidden-assetIds`]: updatedHiddenAssetIds });
+  await browser.storage.local.set({ [`${id}-hidden-assetIds`]: updatedHiddenAssetIds });
 }
 
 export async function getHiddenCustomAssets() {
-  const storage = await chrome.storage.local.get<ExtensionStorage>('customHiddenAssetIds');
+  const storage = await browser.storage.local.get<ExtensionStorage>('customHiddenAssetIds');
 
   const hiddenCustomAssetIds = storage['customHiddenAssetIds'];
 
@@ -93,7 +94,7 @@ export async function getHiddenCustomAssetsSet(): Promise<Set<string>> {
 }
 
 export async function getVisibleAssets(id: string) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-visible-assetIds`);
+  const storage = await browser.storage.local.get<ExtensionStorage>(`${id}-visible-assetIds`);
 
   const visibleAssetIds = storage[`${id}-visible-assetIds`];
 
@@ -118,7 +119,7 @@ export async function getAssets() {
     grc20Assets,
     customErc20Assets,
     customCw20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>([
+  } = await browser.storage.local.get<ExtensionStorage>([
     'assetsV11',
     'paramsV11',
     'cw20Assets',
@@ -305,7 +306,7 @@ const vestingChainIds = new Set([KAVA_CHAINLIST_ID]);
 export async function getAccountAssets(id: string, option?: GetAccountAssetsOption) {
   console.time('getAccountAssets');
   const concurrency = 10;
-  const storage = await chrome.storage.local.get<ExtensionStorage>([
+  const storage = await browser.storage.local.get<ExtensionStorage>([
     `${id}-address`,
     `${id}-balance-cosmos`,
     `${id}-delegation-cosmos`,
@@ -1295,14 +1296,14 @@ type GetAccountCustomAssetsOption = {
 export async function getAccountCustomAssets(id: string, option?: GetAccountCustomAssetsOption) {
   console.time('getAccountCustomAssets');
   const concurrency = 10;
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-custom-address`, `${id}-custom-balance-cosmos`, `${id}-custom-balance-evm`]);
 
   const customChains = await getAddedCustomChains();
 
   const cosmosChains = customChains.filter((chain) => chain.chainType === 'cosmos');
   const evmChains = customChains.filter((chain) => chain.chainType === 'evm');
 
-  const { customAssets } = await chrome.storage.local.get<ExtensionStorage>(['customAssets']);
+  const { customAssets } = await browser.storage.local.get<ExtensionStorage>(['customAssets']);
 
   const visibleAssetIdSet = await getVisibleAssetsSet(id);
   const hiddenAssetIdSet = await getHiddenCustomAssetsSet();

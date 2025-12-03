@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
 import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
@@ -25,7 +27,7 @@ function collectDefaultDenoms(
 }
 
 export async function getChains() {
-  const { paramsV11: chains } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
+  const { paramsV11: chains } = await browser.storage.local.get<ExtensionStorage>('paramsV11');
 
   if (!chains) {
     throw new Error('No chains found');
@@ -471,7 +473,7 @@ export async function getChains() {
 }
 
 export async function getAddedCustomChains() {
-  const storage = await chrome.storage.local.get<ExtensionStorage>('addedCustomChainList');
+  const storage = await browser.storage.local.get<ExtensionStorage>('addedCustomChainList');
 
   const addedCustomChainList = storage['addedCustomChainList'] || [];
 

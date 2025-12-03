@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { getAccount, getAccountAddress, getCustomAccountAddress, getPassword } from '@/libs/account';
@@ -88,7 +89,7 @@ export async function address(id: string) {
       });
 
     const addresses = addressResponse.flat();
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-address`>>({ [`${account.id}-address`]: addresses });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-address`>>({ [`${account.id}-address`]: addresses });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(`address-${id}`, `${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
@@ -144,7 +145,7 @@ export async function customChainAddress(id: string) {
       });
 
     const addresses = addressResponse.flat();
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-address`>>({ [`${account.id}-custom-address`]: addresses });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-address`>>({ [`${account.id}-custom-address`]: addresses });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(`custom-address-${id}`, `${error.request?.method} ${error.request?.url} ${error.cause?.message}`);

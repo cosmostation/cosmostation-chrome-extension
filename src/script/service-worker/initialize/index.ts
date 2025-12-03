@@ -1,12 +1,12 @@
-import { extension } from '@/utils/browser';
+import { browser as crossBrowser } from 'wxt/browser';
 
 export function initExtensionView() {
-  extension.runtime.onInstalled.addListener((detail) => {
+  crossBrowser.runtime.onInstalled.addListener((detail) => {
     if (detail.reason === 'install') {
-      if (__APP_BROWSER__ === 'chrome') {
-        chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-      } else {
+      if (import.meta.env.FIREFOX) {
         browser.sidebarAction.open();
+      } else {
+        crossBrowser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
       }
     }
   });

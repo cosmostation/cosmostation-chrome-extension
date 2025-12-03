@@ -1,8 +1,8 @@
+import { browser } from 'wxt/browser';
+
 export const getBrowserSidePanelBehavior = async () => {
-  if (__APP_BROWSER__ === 'chrome') {
-    const sidePanelBehavior = await chrome.sidePanel.getPanelBehavior();
-    return sidePanelBehavior.openPanelOnActionClick;
-  }
+  const sidePanelBehavior = await browser.sidePanel.getPanelBehavior();
+  return sidePanelBehavior.openPanelOnActionClick;
 };
 
 export function isSidePanelView() {

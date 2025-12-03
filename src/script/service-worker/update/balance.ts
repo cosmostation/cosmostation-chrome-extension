@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
@@ -252,7 +253,7 @@ export async function updateCustomBalance(id: string) {
 
 export async function initAccount(id: string) {
   await getAccount(id);
-  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+  const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
@@ -278,19 +279,19 @@ export async function initAccount(id: string) {
     }));
 
     if (initAccountIds?.length > 0) {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
     } else {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
     }
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
 }
 
 export async function updateHiddenAssetsExcludingDefault(id: string) {
   await getAccount(id);
-  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+  const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
@@ -316,19 +317,19 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
     }));
 
     if (initAccountIds?.length > 0) {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
     } else {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
     }
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
 }
 
 export async function initAssests(id: string) {
   await getAccount(id);
-  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+  const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
     const { cw20Assets, erc20Assets, grc20Assets } = await getAssets();
@@ -341,7 +342,7 @@ export async function initAssests(id: string) {
       return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
     });
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
   }
 }
 
@@ -399,7 +400,7 @@ async function cosmosBalances(id: string, { isMinimal = false, chainId }: Cosmos
               lockedBalances: [lockedAssetInfo],
             };
 
-            await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [lockedResult] });
+            await browser.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [lockedResult] });
 
             const result: AccountAddressBalanceCosmos = {
               id,
@@ -413,7 +414,7 @@ async function cosmosBalances(id: string, { isMinimal = false, chainId }: Cosmos
 
             return result;
           } catch {
-            await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [] });
+            await browser.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${id}-locked-cosmos`]: [] });
 
             const result: AccountAddressBalanceCosmos = { id, chainId, chainType, address, balances, lastUpdatedAtMs: startUpdateTime, status: 'error' };
             return result;
@@ -434,7 +435,7 @@ async function cosmosBalances(id: string, { isMinimal = false, chainId }: Cosmos
 
   const updatedCosmosBalance = upsertCosmosBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: updatedCosmosBalance });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${id}-balance-cosmos`]: updatedCosmosBalance });
 }
 
 async function customCosmosBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -483,7 +484,7 @@ async function customCosmosBalances(id: string, { chainId }: BalanceFetchOption 
 
   const updatedCustomCosmosBalance = upsertCosmosBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${id}-custom-balance-cosmos`]: updatedCustomCosmosBalance });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${id}-custom-balance-cosmos`]: updatedCustomCosmosBalance });
 }
 
 async function evmBalances(id: string, { isMinimal = false, chainId }: EVMBalancesOption = {}) {
@@ -533,7 +534,7 @@ async function evmBalances(id: string, { isMinimal = false, chainId }: EVMBalanc
 
   const updatedEVMBalance = upsertEVMBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${id}-balance-evm`]: updatedEVMBalance });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${id}-balance-evm`]: updatedEVMBalance });
 }
 
 async function customEvmBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -584,7 +585,7 @@ async function customEvmBalances(id: string, { chainId }: BalanceFetchOption = {
 
   const updatedCustomEVMBalance = upsertEVMBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${id}-custom-balance-evm`]: updatedCustomEVMBalance });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${id}-custom-balance-evm`]: updatedCustomEVMBalance });
 }
 
 async function bitcoinBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -652,7 +653,7 @@ async function bitcoinBalances(id: string, { chainId }: BalanceFetchOption = {})
 
   const updatedBitcoinBalances = upsertBitcoinBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${id}-balance-bitcoin`]: updatedBitcoinBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${id}-balance-bitcoin`]: updatedBitcoinBalances });
 }
 
 async function aptosBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -698,7 +699,7 @@ async function aptosBalances(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedAptosBalances = upsertAptosBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${id}-balance-aptos-v2`]: updatedAptosBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${id}-balance-aptos-v2`]: updatedAptosBalances });
 }
 
 async function suiBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -746,7 +747,7 @@ async function suiBalances(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedSuiBalances = upsertSuiBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: updatedSuiBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: updatedSuiBalances });
 }
 
 async function iotaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -794,7 +795,7 @@ async function iotaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedIotaBalances = upsertIotaBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${id}-balance-iota`]: updatedIotaBalances });
 }
 
 async function solanaBalances(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -853,7 +854,7 @@ async function solanaBalances(id: string, { chainId }: BalanceFetchOption = {}) 
 
   const updatedSolanaBalances = upsertSolanaBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: updatedSolanaBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: updatedSolanaBalances });
 }
 
 async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -961,7 +962,7 @@ async function erc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedERC20Balances = upsertERC20Balance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${id}-balance-erc20`]: updatedERC20Balances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${id}-balance-erc20`]: updatedERC20Balances });
 }
 
 async function customErc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1063,7 +1064,7 @@ async function customErc20Balance(id: string, { chainId }: BalanceFetchOption = 
 
   const updatedCustomERC20Balances = upsertERC20Balance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: updatedCustomERC20Balances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: updatedCustomERC20Balances });
 }
 
 async function cw20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1136,7 +1137,7 @@ async function cw20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedCW20Balances = upsertCW20Balance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: updatedCW20Balances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: updatedCW20Balances });
 }
 
 async function customCw20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1203,7 +1204,7 @@ async function customCw20Balance(id: string, { chainId }: BalanceFetchOption = {
 
   const updatedCustomCW20Balances = upsertCW20Balance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: updatedCustomCW20Balances });
 }
 
 async function splTokenBalance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1254,7 +1255,7 @@ async function splTokenBalance(id: string, { chainId }: BalanceFetchOption = {})
 
   const updatedSplTokenBalances = upsertSplTokenBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${id}-balance-spltoken`]: updatedSplTokenBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${id}-balance-spltoken`]: updatedSplTokenBalances });
 }
 
 async function grc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1326,7 +1327,7 @@ async function grc20Balance(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedGnoBalances = upsertGrc20Balance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-grc20`>>({ [`${id}-balance-grc20`]: updatedGnoBalances });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-grc20`>>({ [`${id}-balance-grc20`]: updatedGnoBalances });
 }
 
 async function gnoBalance(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -1373,5 +1374,5 @@ async function gnoBalance(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedGnoBalance = upsertGnoBalance(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: updatedGnoBalance });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${id}-balance-gno`]: updatedGnoBalance });
 }

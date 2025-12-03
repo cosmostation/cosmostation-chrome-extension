@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 
 import { KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { getAccount, getAccountAddress } from '@/libs/account';
@@ -57,5 +58,5 @@ async function cosmosAccountInfo(id: string) {
 
   const fillteredResults = results.filter((item) => !!item);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-account-info-cosmos`>>({ [`${id}-account-info-cosmos`]: fillteredResults });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-account-info-cosmos`>>({ [`${id}-account-info-cosmos`]: fillteredResults });
 }

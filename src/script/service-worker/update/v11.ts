@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { updateHiddenAssets } from '@/libs/asset';
@@ -30,7 +31,7 @@ export async function v11() {
       throw new Error('No assets found');
     }
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, 'paramsV11' | 'assetsV11'>>({
+    await browser.storage.local.set<Pick<ExtensionStorage, 'paramsV11' | 'assetsV11'>>({
       paramsV11: params,
       assetsV11: assets,
     });
@@ -140,7 +141,7 @@ export async function v11() {
 
     await hideNewContractTokens(erc20Assets, cw20Assets, grc20Assets);
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'spltokenAssets' | 'grc20Assets'>>({
+    await browser.storage.local.set<Pick<ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'spltokenAssets' | 'grc20Assets'>>({
       erc20Assets,
       cw20Assets,
       spltokenAssets,
@@ -163,7 +164,7 @@ async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: C
     erc20Assets: storedERC20AssetsV11,
     cw20Assets: storedCW20Assets,
     grc20Assets: storedGRC20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'grc20Assets']);
+  } = await browser.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'grc20Assets']);
 
   const storedAccountsList = storedAccounts || [];
   const storedAccountsIds = storedAccountsList.map((account) => account.id);

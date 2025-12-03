@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Network } from 'bitcoinjs-lib';
+import { browser } from 'wxt/browser';
 
 import { PUBKEY_STYLE, PUBKEY_TYPE_MAP } from '@/constants/cosmos';
 import { COSMOS_DEFAULT_GAS, DEFAULT_GAS_MULTIPLY } from '@/constants/cosmos/gas';
@@ -324,7 +325,7 @@ export type LegacyExtensionStorage = {
 };
 
 export async function isMigrationRequired_V1_0_0() {
-  const legacyStorage = await chrome.storage.local.get<LegacyExtensionStorage>();
+  const legacyStorage = await browser.storage.local.get<LegacyExtensionStorage>();
   const { accounts } = legacyStorage;
 
   const isLegacyDataExist = !!accounts && accounts.length > 0;
@@ -365,7 +366,7 @@ export async function migrateData() {
     }
     setLoadingProgressBarStore(25);
 
-    const legacyStorage = await chrome.storage.local.get<LegacyExtensionStorage>();
+    const legacyStorage = await browser.storage.local.get<LegacyExtensionStorage>();
 
     if (legacyStorage) {
       await migrateEncryptedPassword(legacyStorage);

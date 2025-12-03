@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 import { PromisePool } from '@supercharge/promise-pool';
 
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
@@ -152,7 +153,7 @@ async function cosmosDelegations(id: string, { chainId }: BalanceFetchOption = {
 
   const updatedCosmosDelegations = upsertCosmosDelegation(storage, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${id}-delegation-cosmos`]: updatedCosmosDelegations });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${id}-delegation-cosmos`]: updatedCosmosDelegations });
 }
 
 async function cosmosUnbondings(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -218,7 +219,7 @@ async function cosmosUnbondings(id: string, { chainId }: BalanceFetchOption = {}
 
   const updatedCosmosUndelegations = upsertCosmosUndelegation(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${id}-undelegation-cosmos`]: updatedCosmosUndelegations });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${id}-undelegation-cosmos`]: updatedCosmosUndelegations });
 }
 
 async function cosmosRewards(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -299,7 +300,7 @@ async function cosmosRewards(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedCosmosRewards = upsertCosmosReward(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: updatedCosmosRewards });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${id}-reward-cosmos`]: updatedCosmosRewards });
 }
 
 const validatorAddressCache = new Map<string, boolean>();
@@ -391,7 +392,7 @@ async function cosmosCommissions(id: string, { chainId }: BalanceFetchOption = {
 
   const updatedCosmosCommission = upsertCosmosCommission(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${id}-commission-cosmos`]: updatedCosmosCommission });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${id}-commission-cosmos`]: updatedCosmosCommission });
 }
 
 async function suiStaking(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -439,7 +440,7 @@ async function suiStaking(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedSuiDelegations = upsertSuiDelegation(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: updatedSuiDelegations });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${id}-delegation-sui`]: updatedSuiDelegations });
 }
 
 async function iotaStaking(id: string, { chainId }: BalanceFetchOption = {}) {
@@ -487,5 +488,5 @@ async function iotaStaking(id: string, { chainId }: BalanceFetchOption = {}) {
 
   const updatedIotaDelegations = upsertIotaDelegation(stored, results);
 
-  await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: updatedIotaDelegations });
+  await browser.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${id}-delegation-iota`]: updatedIotaDelegations });
 }

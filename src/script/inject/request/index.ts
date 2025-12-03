@@ -9,20 +9,29 @@ export const requestApp = <T extends Request>(message: BaseRequest) =>
   new Promise((res, rej) => {
     const requestId = uuid();
 
+    const eventDetail = { ...message, requestId, origin: window.location.origin };
+
+    const clonedDetail = typeof cloneInto !== 'undefined' ? cloneInto(eventDetail, window) : eventDetail;
+
     const event = new CustomEvent(REQUEST_TYPE, {
-      detail: { ...message, requestId, origin: window.location.origin },
+      detail: clonedDetail,
     });
 
     const handler = (event: CustomEvent<Response<T>>) => {
-      const { detail } = event;
-      if (detail.id === requestId) {
-        window.removeEventListener(RESPONSE_TYPE, handler, false);
+      try {
+        const { id, error, result } = event.detail || {};
 
-        if (detail?.error) {
-          rej(detail.error);
-        } else {
-          res(detail.result);
+        if (id === requestId) {
+          window.removeEventListener(RESPONSE_TYPE, handler, false);
+
+          if (error) {
+            rej(error);
+          } else {
+            res(result);
+          }
         }
+      } catch (err) {
+        console.error('Event handler error:', err);
       }
     };
 

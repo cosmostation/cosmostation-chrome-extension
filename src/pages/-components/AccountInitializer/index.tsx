@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { browser } from 'wxt/browser';
 
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useRefreshAccountAllAssets } from '@/hooks/useRefreshAccountAllAssets';
@@ -27,7 +28,7 @@ export default function AccountInitializer({ children }: AccountInitializerProps
       const currentAccountId = currentAccount?.id;
       if (!currentAccountId) return;
 
-      const storage = await chrome.storage.local.get<ExtensionStorage>([
+      const storage = await browser.storage.local.get<ExtensionStorage>([
         `${currentAccountId}-address`,
         `${currentAccountId}-balance-cosmos`,
         `${currentAccountId}-balance-evm`,
