@@ -49,6 +49,9 @@ export default defineConfig({
       }
     },
   },
+  zip: {
+    zipSources: false,
+  },
   manifest: ({ browser }) => {
     const isFirefox = browser === 'firefox';
     const permissions = PERMISSIONS[browser] ?? PERMISSIONS.chrome;
