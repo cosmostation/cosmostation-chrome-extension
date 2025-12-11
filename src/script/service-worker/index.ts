@@ -1,3 +1,4 @@
+import { throttle } from 'es-toolkit';
 import { browser } from 'wxt/browser';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
@@ -16,8 +17,14 @@ import { process } from './message';
 import { startAutoLockTimer } from './passwordManage';
 import { updateAccountInfo } from './update/account';
 import { address, customChainAddress } from './update/address';
-import { updateActiveAssetsBalance, updateCustomBalance, updateDefaultAssetsBalance, updateSpecificChainBalance } from './update/balance';
-import { updateSpecificChainStaking, updateStakingRelatedBalance } from './update/staking';
+import {
+  updateActiveAssetsBalance,
+  updateCustomBalance,
+  updateDefaultAssetsBalance,
+  updatePriorityBalance,
+  updateSpecificChainBalance,
+} from './update/balance';
+import { updatePriorityChainStaking, updateSpecificChainStaking, updateStakingRelatedBalance } from './update/staking';
 import { v11 } from './update/v11';
 
 const inProgressMap: Record<string, Set<string>> = {};
@@ -81,6 +88,12 @@ export function startServiceWorker() {
   forceCleanupAllProgress();
 
   setInterval(cleanupStaleProgress, CLEANUP_INTERVAL);
+
+  function sendUpdateAssetsMessage() {
+    browser.runtime.sendMessage({ type: 'updateAssets' });
+  }
+
+  const throttledSendUpdateAssetsMessage = throttle(sendUpdateAssetsMessage, 500, { edges: ['trailing'] });
 
   extension.storage.onChanged.addListener((changes) => {
     for (const [key, { newValue }] of Object.entries(changes)) {
@@ -274,6 +287,123 @@ export function startServiceWorker() {
             devLogger.error(`${method} error`, e);
           } finally {
             clearInProgress(method, key);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateHighPriorityBalance') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updatePriorityBalance(id, 'high', throttledSendUpdateAssetsMessage);
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateLowPriorityBalance') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updatePriorityBalance(id, 'low', throttledSendUpdateAssetsMessage);
+
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateHighPriorityStaking') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updatePriorityChainStaking(id, 'high', throttledSendUpdateAssetsMessage);
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
+          }
+
+          sendResponse(null);
+        }
+
+        if (method === 'updateLowPriorityStaking') {
+          const [id] = params;
+
+          if (isInProgress(method, id)) {
+            devLogger.log(`[${method}] Skipped (already in progress) for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          if (await isRequestThrottled(method, id)) {
+            devLogger.log(`[${method}] Throttled for id=${id}`);
+            sendResponse(null);
+            return;
+          }
+
+          setInProgress(method, id);
+
+          try {
+            await updatePriorityChainStaking(id, 'low', throttledSendUpdateAssetsMessage);
+            await recordRequestTimestamp(method, id);
+          } catch (e) {
+            devLogger.error(`${method} error`, e);
+          } finally {
+            clearInProgress(method, id);
           }
 
           sendResponse(null);

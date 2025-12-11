@@ -52,6 +52,7 @@ import {
   EstimatedValueTextContainer,
   InformationPanelBody,
   InputWrapper,
+  SingleCoinImage,
 } from './styled';
 
 type CosmosProps = {
@@ -405,7 +406,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const validatorAddress = availableValidators[0]?.validatorAddress;
 
-  const totalValidatorCounts = availableValidators.length - 1;
+  const totalValidatorCounts = availableValidators.length === 0 ? 0 : availableValidators.length - 1;
 
   const displayTx = useMemo(() => {
     if (!memoizedRewardAminoTx) return undefined;
@@ -519,7 +520,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
         <>
           <CoinContainer>
             <CoinImageContainer>
-              <CoinImage imageURLs={rewardCoinImages} />
+              <CoinImageContainer>{rewardCoinImages?.length !== 0 ? <CoinImage imageURLs={rewardCoinImages} /> : <SingleCoinImage />}</CoinImageContainer>
             </CoinImageContainer>
             <CoinSymbolText variant="h2_B">
               {isMultipleRewardCoins

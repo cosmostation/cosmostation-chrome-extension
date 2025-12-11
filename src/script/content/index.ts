@@ -25,36 +25,31 @@ window.addEventListener('cosmostation_request', (event) => {
 });
 
 browser.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
-  (async () => {
-    devLogger.log('content message', message);
-    devLogger.log('content sender', sender);
+  devLogger.log('content message', message);
+  devLogger.log('content sender', sender);
 
-    if (sender?.id === browser.runtime.id && message?.target === 'CONTENT') {
-      if (message.method === 'responseApp') {
-        const clonedParams = typeof cloneInto !== 'undefined' ? cloneInto(message.params, window) : message.params;
+  if (sender?.id === browser.runtime.id && message?.target === 'CONTENT') {
+    if (message.method === 'responseApp') {
+      const event = new CustomEvent('cosmostation_response', {
+        detail: message.params,
+      });
 
-        const event = new CustomEvent('cosmostation_response', {
-          detail: clonedParams,
-        });
-
-        window.dispatchEvent(event);
-        sendResponse(null);
-      }
-
-      if (message.method === 'openSidePanel') {
-        sendMessage({
-          target: 'SERVICE_WORKER',
-          method: 'openSidePanel',
-          params: undefined,
-          origin: message.origin,
-          requestId: message.requestId,
-          tabId: message.tabId,
-        });
-        sendResponse(null);
-      }
+      window.dispatchEvent(event);
+      sendResponse(null);
     }
-  })();
-  return true;
+
+    if (message.method === 'openSidePanel') {
+      sendMessage({
+        target: 'SERVICE_WORKER',
+        method: 'openSidePanel',
+        params: undefined,
+        origin: message.origin,
+        requestId: message.requestId,
+        tabId: message.tabId,
+      });
+      sendResponse(null);
+    }
+  }
 });
 
 const CHAIN_TYPE_TO_LISTENER_TYPES: Record<ChainType, ListenerType[]> = {

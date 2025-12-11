@@ -52,12 +52,12 @@ export default function AccountInitializer({ children }: AccountInitializerProps
             t('pages.components.AccountInitializer.index.loadingOverlayMessage'),
           );
 
-          if (isNeedFetchBalance) {
-            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [currentAccountId] });
-          }
-
           if (isNeedFetchAddres) {
             await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [currentAccountId] });
+          }
+
+          if (isNeedFetchBalance) {
+            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [currentAccountId] });
           }
 
           if (isNeedAddNewMnemonicName) {

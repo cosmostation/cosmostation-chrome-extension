@@ -49,6 +49,7 @@ import {
   EstimatedValueTextContainer,
   InformationPanelBody,
   InputWrapper,
+  SingleCoinImage,
 } from './styled';
 
 type CosmosProps = {
@@ -445,9 +446,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       <BaseBody>
         <>
           <CoinContainer>
-            <CoinImageContainer>
-              <CoinImage imageURLs={rewardCoinImages} />
-            </CoinImageContainer>
+            <CoinImageContainer>{rewardCoinImages?.length !== 0 ? <CoinImage imageURLs={rewardCoinImages} /> : <SingleCoinImage />}</CoinImageContainer>
             <CoinSymbolText variant="h2_B">
               {isMultipleRewardCoins
                 ? t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewards')

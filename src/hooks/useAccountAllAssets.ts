@@ -3,8 +3,8 @@ import { produce } from 'immer';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
-import type { AccountAddress } from '@/types/account';
+import { getAccountCustomAssets } from '@/libs/asset/coin/custom/accountAsset';
+import { getAccountAssets } from '@/libs/asset/coin/default/accountAsset';
 import type {
   AccountAssets as AccountAllAssets,
   AllCosmosAccountAssets,
@@ -16,7 +16,6 @@ import type {
 import type { AssetId } from '@/types/asset';
 import { gt } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useCurrentAccount } from './useCurrentAccount';
@@ -58,12 +57,10 @@ export function useAccountAllAssets({
   const storedHiddenAssetIds = useExtensionStorageStore((state) => state[`${param}-hidden-assetIds`]);
   const storedHiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
   const storedVisibleAssetIds = useExtensionStorageStore((state) => state[`${param}-visible-assetIds`]);
-  const storedBitcoinBalanceInfo = useExtensionStorageStore((state) => state[`${param}-balance-bitcoin`]);
 
   const hiddenAssetIds = useMemo(() => storedHiddenAssetIds || [], [storedHiddenAssetIds]);
   const hiddenCustomAssetIds = useMemo(() => storedHiddenCustomAssetIds || [], [storedHiddenCustomAssetIds]);
   const visibleAssetIds = useMemo(() => storedVisibleAssetIds || [], [storedVisibleAssetIds]);
-  const bitcoinBalanceInfo = useMemo(() => storedBitcoinBalanceInfo || [], [storedBitcoinBalanceInfo]);
 
   const fetcher = async () => {
     try {
@@ -86,45 +83,38 @@ export function useAccountAllAssets({
     ...config,
   });
 
+  const assetIdSets = useMemo(
+    () => ({
+      visible: new Set(visibleAssetIds.map(getCoinId)),
+      hidden: new Set(hiddenAssetIds.map(getCoinId)),
+      hiddenCustom: new Set(hiddenCustomAssetIds.map(getCoinId)),
+    }),
+    [visibleAssetIds, hiddenAssetIds, hiddenCustomAssetIds],
+  );
+
   const filteredByVisibleList = useMemo(() => {
     if (!data) return null;
 
-    const visibleAssetIdSet = new Set(visibleAssetIds.map((item) => getCoinId(item)));
-    const hiddenAssetIdSet = new Set(hiddenAssetIds.map((item) => getCoinId(item)));
-    const hiddenCustomAssetIdSet = new Set(hiddenCustomAssetIds.map((item) => getCoinId(item)));
+    const { visible, hidden, hiddenCustom } = assetIdSets;
 
-    const shouldShowAsset = (asset: AssetId, balance: string, address: AccountAddress) => {
-      const isVisible = visibleAssetIdSet.has(getCoinId(asset));
+    const shouldShowAsset = (asset: AssetId, balance: string) => {
+      const assetCoinId = getCoinId(asset);
+
+      const isVisible = visible.has(assetCoinId);
 
       if (isVisible) return true;
 
-      const isHidden = disableHiddenFilter ? false : hiddenAssetIdSet.has(getCoinId(asset)) || hiddenCustomAssetIdSet.has(getCoinId(asset));
+      const isHidden = disableHiddenFilter ? false : hidden.has(assetCoinId) || hiddenCustom.has(assetCoinId);
 
       if (isHidden) return false;
 
-      const isBalanceGreaterThanZero = (() => {
-        if (asset.chainType === 'bitcoin') {
-          const balanceInfo = bitcoinBalanceInfo?.find(
-            (balance) =>
-              isEqualsIgnoringCase(balance.address, address.address) && balance.chainId === address.chainId && balance.chainType === address.chainType,
-          );
-
-          const pendingFundedAmount = balanceInfo?.balance.mempoolStats?.funded_txo_sum || '0';
-          const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
-
-          const isBalanceGreaterThanZero = gt(balance, '0');
-
-          return isBalanceGreaterThanZero || isPendingReceiveBalanceGreaterThanZero;
-        } else {
-          return gt(balance, '0');
-        }
-      })();
+      const isBalanceGreaterThanZero = gt(balance, '0');
 
       return disableBalanceFilter ? true : isBalanceGreaterThanZero;
     };
 
-    const filterAssetList = <T extends { asset: AssetId; balance: string; address: AccountAddress }>(list: T[]): T[] =>
-      list.filter(({ asset, balance, address }) => shouldShowAsset(asset, balance, address));
+    const filterAssetList = <T extends { asset: AssetId; balance: string }>(list: T[]): T[] =>
+      list.filter(({ asset, balance }) => shouldShowAsset(asset, balance));
 
     return {
       cosmosAccountAssets: filterAssetList(data.cosmosAccountAssets),
@@ -144,7 +134,7 @@ export function useAccountAllAssets({
       gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
       grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
     };
-  }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
+  }, [assetIdSets, data, disableBalanceFilter, disableHiddenFilter]);
 
   const returnData = useMemo(() => {
     if (!filteredByVisibleList) return null;

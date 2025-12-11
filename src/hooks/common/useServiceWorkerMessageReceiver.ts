@@ -1,30 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
 import { browser } from 'wxt/browser';
 import { type Browser } from 'wxt/browser';
 
 import { isSidePanelView } from '@/utils/view/sidepanel';
 
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
+
 export function useServiceWorkerMessageReceiver() {
+  const { refreshAssets } = useRefreshAccountAllAssets();
+
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleMessage = (request: any, _: Browser.runtime.MessageSender, sendResponse: (response?: any) => void) => {
-      if (!request?.type) return false;
-
+    const handler = (request: any, _: Browser.runtime.MessageSender, sendResponse: (response?: any) => void) => {
       if (request.type === 'sidePanelState') {
-        const isEnabled = isSidePanelView();
-
-        sendResponse({ type: request.type, message: { enabled: isEnabled } });
-
-        return false;
+        try {
+          const enabled = isSidePanelView();
+          sendResponse({ type: request.type, message: { enabled } });
+        } catch {
+          sendResponse({ type: request.type, message: { enabled: false } });
+        }
       }
 
-      return false;
+      if (request.type === 'updateAssets') {
+        refreshAssets();
+      }
     };
 
-    browser.runtime.onMessage.addListener(handleMessage);
+    browser.runtime.onMessage.addListener(handler);
 
     return () => {
-      browser.runtime.onMessage.removeListener(handleMessage);
+      browser.runtime.onMessage.removeListener(handler);
     };
-  }, []);
+  }, [refreshAssets]);
 }

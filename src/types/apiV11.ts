@@ -122,31 +122,41 @@ export type V11Asset = {
 };
 
 export type V11Erc20 = {
-  chain: string;
-  type: string;
-  contract: string;
+  id: number;
+  chainId: string;
   name: string;
+  chainName: string;
+  address: string;
   symbol: string;
   description?: string;
   decimals: number;
+  display: number;
   image?: string;
+  totalSupply?: string;
+  coinGeckoId?: string;
+  default?: boolean;
+  wallet_preload?: boolean;
+};
+
+export type V11Erc20Response = { assets: V11Erc20[] };
+
+export type V11Cw20 = {
+  id: number;
+  chainName: string;
+  name: string;
+  address: string;
+  symbol: string;
+  decimals: number;
+  description?: string;
+  display: number;
+  image?: string;
+  default?: boolean;
+  totalSupply?: string;
   coinGeckoId?: string;
   wallet_preload?: boolean;
 };
 
-export type V11Cw20 = {
-  chain: string;
-  type: string;
-  contract: string;
-  name: string;
-  symbol: string;
-  description?: string;
-  decimals: number;
-  image?: string;
-  coinGeckoId?: string;
-  color?: string;
-  wallet_preload?: boolean;
-};
+export type V11CW20Response = { assets: V11Cw20[] };
 
 export type V11SpltokenResponse = { assets: V11Spltoken[] };
 
@@ -175,4 +185,11 @@ export type V11Grc20 = {
   image?: string;
   coinGeckoId?: string;
   wallet_preload?: boolean;
+  id: number;
+  chainName: string;
+  address: string;
+  display: boolean;
+  default?: boolean;
 };
+
+export type V11Grc20Response = { assets: V11Grc20[] };

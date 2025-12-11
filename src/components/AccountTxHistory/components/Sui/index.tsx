@@ -81,7 +81,7 @@ export default function SuiAccountTxHistory({ coinId }: SuiAccountTxHistory) {
                 </ContentsContainer>
               );
             }}
-            overscan={10}
+            overscan={3}
             fetchNextPage={fetchNextPage}
             hasNextPage={!isFetchingNextPage && hasNextPage && !error}
             isFetchingNextPage={isFetchingNextPage}
