@@ -6,6 +6,7 @@ import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import type { AccountAddress } from '@/types/account';
 import type { ExtensionStorage } from '@/types/extension';
+import { devLogger } from '@/utils/devLogger';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 const SEI_CHAIN_CONFIG = {
@@ -19,7 +20,7 @@ function shouldUseSeiConfig(chainId: string, chainType: string, pubkeyStyle: str
 }
 
 export async function address(id: string) {
-  console.time(`address-${id}`);
+  devLogger.time(`address-${id}`);
   try {
     const account = await getAccount(id);
     const { cosmosChains, evmChains, suiChains, aptosChains, bitcoinChains, iotaChains, solanaChains, gnoChains } = await getChains();
@@ -91,17 +92,17 @@ export async function address(id: string) {
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-address`>>({ [`${account.id}-address`]: addresses });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`address-${id}`, `${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`address-${id}`, `${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(`address-${id}`, error);
     }
   } finally {
-    console.timeEnd(`address-${id}`);
+    devLogger.timeEnd(`address-${id}`);
   }
 }
 
 export async function customChainAddress(id: string) {
-  console.time(`custom-address-${id}`);
+  devLogger.time(`custom-address-${id}`);
   try {
     const account = await getAccount(id);
     const addedCustomChains = await getExtensionLocalStorage('addedCustomChainList');
@@ -147,11 +148,11 @@ export async function customChainAddress(id: string) {
     await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-address`>>({ [`${account.id}-custom-address`]: addresses });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`custom-address-${id}`, `${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`custom-address-${id}`, `${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(`custom-address-${id}`, error);
     }
   } finally {
-    console.timeEnd(`custom-address-${id}`);
+    devLogger.timeEnd(`custom-address-${id}`);
   }
 }

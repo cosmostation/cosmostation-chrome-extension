@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { sendMessage } from '@/libs/extension';
+import type { ExtensionStorage } from '@/types/extension';
 
 import { useCurrentAccount } from '../useCurrentAccount';
 import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
@@ -9,36 +9,21 @@ import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
 export function useUpdateBalance() {
   const { currentAccount } = useCurrentAccount();
   const { refreshAssets } = useRefreshAccountAllAssets();
-  const [isBackground, setIsBackground] = useState<boolean>(document.hidden);
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const handleVisibilityChange = (): void => {
-      if (document.hidden) {
-        clearTimeout(timeoutId);
-        setIsBackground(true);
-      } else {
-        timeoutId = setTimeout(() => {
-          setIsBackground(false);
-        }, 5000);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      clearTimeout(timeoutId);
-    };
-  }, []);
 
   const fetcher = async () => {
-    const response = await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
+    const { initAccountIds = [] } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
 
-    await refreshAssets();
+    if (!initAccountIds?.includes(currentAccount.id)) {
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateBalance', params: [currentAccount.id] });
 
-    return response;
+      await refreshAssets();
+      return true;
+    } else {
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateHighPriorityBalance', params: [currentAccount.id] });
+      await sendMessage({ target: 'SERVICE_WORKER', method: 'updateLowPriorityBalance', params: [currentAccount.id] });
+
+      return true;
+    }
   };
 
   const { data, isLoading, isFetching, error, fetchStatus } = useQuery({
@@ -49,15 +34,11 @@ export function useUpdateBalance() {
     refetchInterval: 1000 * 60 * 5,
   });
 
-  const isAutoRefetchPaused = isBackground;
-
   return {
     data,
     isLoading,
     isFetching,
     error,
     fetchStatus,
-    isAutoRefetchPaused,
-    isBackground,
   };
 }

@@ -1,29 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
 
 import { extension } from '@/utils/browser';
 import { isSidePanelView } from '@/utils/view/sidepanel';
 
+import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
+
 export function useServiceWorkerMessageReceiver() {
+  const { refreshAssets } = useRefreshAccountAllAssets();
+
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleMessage = (request: any, _: chrome.runtime.MessageSender | browser.runtime.MessageSender, sendResponse: (response?: any) => void) => {
-      if (!request?.type) return false;
-
+    const handler = (request: any, _: any, sendResponse: (response?: any) => void) => {
       if (request.type === 'sidePanelState') {
-        const isEnabled = isSidePanelView();
-
-        sendResponse({ type: request.type, message: { enabled: isEnabled } });
-
-        return false;
+        try {
+          const enabled = isSidePanelView();
+          sendResponse({ type: request.type, message: { enabled } });
+        } catch {
+          sendResponse({ type: request.type, message: { enabled: false } });
+        }
       }
 
-      return false;
+      if (request.type === 'updateAssets') {
+        refreshAssets();
+      }
     };
 
-    extension.runtime.onMessage.addListener(handleMessage);
+    extension.runtime.onMessage.addListener(handler);
 
     return () => {
-      extension.runtime.onMessage.removeListener(handleMessage);
+      extension.runtime.onMessage.removeListener(handler);
     };
-  }, []);
+  }, [refreshAssets]);
 }

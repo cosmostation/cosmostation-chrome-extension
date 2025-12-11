@@ -1,17 +1,19 @@
 import axios from 'axios';
-import { PromisePool } from '@supercharge/promise-pool';
 
 import { updateHiddenAssets } from '@/libs/asset';
 import { getChains } from '@/libs/chain';
-import type { V11Asset, V11Cw20, V11Erc20, V11Grc20, V11Param, V11SpltokenResponse } from '@/types/apiV11';
+import type { V11Asset, V11CW20Response, V11Erc20Response, V11Grc20Response, V11Param, V11SpltokenResponse } from '@/types/apiV11';
 import type { CosmosCw20Asset, EvmErc20Asset, GnoGrc20Asset, SolanaSpltokenAsset } from '@/types/asset';
+import type { CosmosChain, EvmChain, GnoChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { getWithFullResponse } from '@/utils/axios';
+import { devLogger } from '@/utils/devLogger';
 import { getCoinId } from '@/utils/queryParamGenerator';
+import { getExtensionLocalStorage } from '@/utils/storage';
 
 // params, assets, erc20, cw20, spltoken
 export async function v11() {
-  console.time('chainsAndAsset');
+  devLogger.time('chainsAndAsset');
   try {
     const paramsUrl = 'https://front.api.mintscan.io/v11/utils/params';
     const paramResponse = await getWithFullResponse<Record<string, V11Param>>(paramsUrl);
@@ -35,108 +37,7 @@ export async function v11() {
       assetsV11: assets,
     });
 
-    const { cosmosChains, evmChains, gnoChains } = await getChains();
-
-    // ERC20
-    const { results: erc20AssetsResponse } = await PromisePool.withConcurrency(5)
-      .for(evmChains)
-      .handleError((error) => {
-        throw error;
-      })
-      .process(async (evmChain) => {
-        const { id } = evmChain;
-        const erc20AssetResponse = await getWithFullResponse<V11Erc20[]>(`https://front.api.mintscan.io/v11/assets/${id}/erc20/info`);
-        const erc20Asset = erc20AssetResponse.data;
-
-        const erc20Assets: EvmErc20Asset[] = erc20Asset.map((asset) => {
-          return {
-            ...asset,
-            id: asset.contract?.toLowerCase(),
-            chainId: id,
-            type: 'erc20',
-            chainType: 'evm',
-          };
-        });
-        return erc20Assets;
-      });
-
-    const erc20Assets = erc20AssetsResponse.flat().filter((asset) => asset.id);
-
-    // cw20
-    const cosmosChainsWithCosmwasm = cosmosChains.filter((chain) => chain.isCosmwasm);
-
-    const { results: cw20AssetsResponse } = await PromisePool.withConcurrency(5)
-      .for(cosmosChainsWithCosmwasm)
-      .handleError((error) => {
-        throw error;
-      })
-      .process(async (cosmosChain) => {
-        const { id } = cosmosChain;
-        const cw20AssetResponse = await getWithFullResponse<V11Cw20[]>(`https://front.api.mintscan.io/v11/assets/${id}/cw20/info`);
-        const cw20Asset = cw20AssetResponse.data;
-
-        const cw20Assets: CosmosCw20Asset[] = cw20Asset.map((asset) => {
-          return {
-            ...asset,
-            id: asset.contract,
-            chainId: id,
-            chainType: 'cosmos',
-            type: 'cw20',
-          };
-        });
-        return cw20Assets;
-      });
-
-    const cw20Assets = cw20AssetsResponse.flat();
-
-    // spltoken
-    const spltokenAssetResponse = await getWithFullResponse<V11SpltokenResponse>(`https://front.api.mintscan.io/v11/assets/spl`);
-    const spltokenAsset = spltokenAssetResponse.data;
-
-    const spltokenAssets: SolanaSpltokenAsset[] = spltokenAsset.assets
-      .map((asset) => {
-        const { name, symbol, description, decimals, image, coinGeckoId } = asset;
-        return {
-          id: asset.address,
-          chainId: asset.chainName,
-          chainType: 'solana' as const,
-          name,
-          symbol,
-          description,
-          decimals,
-          image,
-          coinGeckoId,
-          type: 'spl',
-          wallet_preload: asset.default,
-        };
-      })
-      .filter((asset) => asset.id);
-
-    // grc20
-    const { results: grc20AssetsResponse } = await PromisePool.withConcurrency(5)
-      .for(gnoChains)
-      .handleError((error) => {
-        throw error;
-      })
-      .process(async (gnoChain) => {
-        const { id } = gnoChain;
-        const grc20AssetResponse = await axios.get<V11Grc20[]>(`https://front.api.mintscan.io/v11/assets/${id}/grc20/info`);
-        const grc20Asset = grc20AssetResponse.data;
-
-        const grc20Assets: GnoGrc20Asset[] = grc20Asset.map((asset) => {
-          return {
-            ...asset,
-            id: asset.contract,
-            chainId: id,
-            chainType: 'gno',
-            type: 'grc20',
-          };
-        });
-
-        return grc20Assets;
-      });
-
-    const grc20Assets = grc20AssetsResponse.flat();
+    const { erc20Assets, cw20Assets, grc20Assets, spltokenAssets } = await getContractAssets();
 
     await hideNewContractTokens(erc20Assets, cw20Assets, grc20Assets);
 
@@ -148,15 +49,14 @@ export async function v11() {
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`${error.request?.method} ${error.request?.url} ${error.cause?.message}`);
+      console.error(`${error.request?.method} ${error.request?.url} ${error?.message}`);
     } else {
       console.error(error);
     }
   } finally {
-    console.timeEnd('chainsAndAsset');
+    devLogger.timeEnd('chainsAndAsset');
   }
 }
-
 async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: CosmosCw20Asset[], grc20Assets: GnoGrc20Asset[]) {
   const {
     userAccounts: storedAccounts,
@@ -198,4 +98,158 @@ async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: C
 
     await Promise.all(updatedHiddenAssetsPromises);
   }
+}
+
+async function getContractAssets() {
+  const { cosmosChains, evmChains, gnoChains } = await getChains();
+
+  const [erc20Result, cw20Result, grc20Result, splResult] = await Promise.allSettled([
+    getERC20Assets(evmChains),
+    getCW20Assets(cosmosChains),
+    getGRC20Assets(gnoChains),
+    getSPLAssets(),
+  ]);
+
+  const [erc20Assets, cw20Assets, grc20Assets, spltokenAssets] = await Promise.all([
+    processAssetsResult(erc20Result, 'erc20Assets'),
+    processAssetsResult(cw20Result, 'cw20Assets'),
+    processAssetsResult(grc20Result, 'grc20Assets'),
+    processAssetsResult(splResult, 'spltokenAssets'),
+  ]);
+
+  return { erc20Assets, cw20Assets, grc20Assets, spltokenAssets };
+}
+
+async function getERC20Assets(evmChains: EvmChain[]): Promise<EvmErc20Asset[]> {
+  try {
+    const supportEvmChains = new Set(evmChains.map((item) => item.id));
+    const erc20AssetResponse = await getWithFullResponse<V11Erc20Response>(`https://front.api.mintscan.io/v11/assets/erc20`);
+
+    return erc20AssetResponse.data.assets
+      .map((asset) => {
+        const { name, symbol, description, decimals, image, coinGeckoId, address, chainName, wallet_preload } = asset;
+        return {
+          id: address.toLowerCase(),
+          chainId: chainName,
+          chainType: 'evm' as const,
+          name,
+          symbol,
+          description,
+          decimals,
+          image,
+          coinGeckoId,
+          type: 'erc20' as const,
+          wallet_preload: wallet_preload || false,
+        };
+      })
+      .filter((asset) => asset.id && supportEvmChains.has(asset.chainId));
+  } catch (error) {
+    devLogger.error('Error in getERC20Assets', error);
+    return [];
+  }
+}
+
+async function getCW20Assets(cosmosChains: CosmosChain[]): Promise<CosmosCw20Asset[]> {
+  try {
+    const cosmwasmChains = cosmosChains.filter((chain) => chain.isCosmwasm);
+    const supportCosmChains = new Set(cosmwasmChains.map((item) => item.id));
+
+    const cw20AssetResponse = await getWithFullResponse<V11CW20Response>(`https://front.api.mintscan.io/v11/assets/cw20`);
+
+    return cw20AssetResponse.data.assets
+      .map((asset) => {
+        const { name, symbol, description, decimals, image, coinGeckoId, address, chainName, wallet_preload } = asset;
+        return {
+          id: address,
+          chainId: chainName,
+          chainType: 'cosmos' as const,
+          name,
+          symbol,
+          description,
+          decimals,
+          image,
+          coinGeckoId,
+          type: 'cw20' as const,
+          wallet_preload: wallet_preload || false,
+        };
+      })
+      .filter((item) => item.id && supportCosmChains.has(item.chainId));
+  } catch (error) {
+    devLogger.error('Error in getCW20Assets', error);
+    return [];
+  }
+}
+
+async function getSPLAssets(): Promise<SolanaSpltokenAsset[]> {
+  try {
+    const spltokenAssetResponse = await getWithFullResponse<V11SpltokenResponse>(`https://front.api.mintscan.io/v11/assets/spl`);
+    const spltokenAsset = spltokenAssetResponse.data;
+
+    return spltokenAsset.assets
+      .map((asset) => {
+        const { name, symbol, description, decimals, image, coinGeckoId, address, chainName } = asset;
+        return {
+          id: address,
+          chainId: chainName,
+          chainType: 'solana' as const,
+          name,
+          symbol,
+          description,
+          decimals,
+          image,
+          coinGeckoId,
+          type: 'spl',
+          wallet_preload: asset.default,
+        };
+      })
+      .filter((asset) => asset.id);
+  } catch (error) {
+    devLogger.error('Error in getSPLAssets', error);
+    return [];
+  }
+}
+
+async function getGRC20Assets(gnoChains: GnoChain[]): Promise<GnoGrc20Asset[]> {
+  try {
+    const supportGnoChains = new Set(gnoChains.map((item) => item.id));
+    const grc20AssetsResponse = await getWithFullResponse<V11Grc20Response>(`https://front.api.mintscan.io/v11/assets/grc20`);
+
+    return grc20AssetsResponse.data.assets
+      .map((asset) => {
+        const { name, symbol, description, decimals, image, coinGeckoId, address, chainName, wallet_preload } = asset;
+        return {
+          id: address,
+          chainId: chainName,
+          chainType: 'gno' as const,
+          name,
+          symbol,
+          description,
+          decimals,
+          image,
+          coinGeckoId,
+          type: 'grc20' as const,
+          wallet_preload: wallet_preload || false,
+        };
+      })
+      .filter((asset) => asset.id && supportGnoChains.has(asset.chainId));
+  } catch (error) {
+    devLogger.error('Error in getGRC20Assets', error);
+    return [];
+  }
+}
+
+type ContractAssetStorageKey = Extract<keyof ExtensionStorage, 'erc20Assets' | 'cw20Assets' | 'grc20Assets' | 'spltokenAssets'>;
+
+async function processAssetsResult<T>(result: PromiseSettledResult<T[]>, storageKey: ContractAssetStorageKey): Promise<T[]> {
+  if (result.status === 'fulfilled') {
+    const assets: T[] = result.value;
+
+    if (assets.length > 0) {
+      return assets;
+    }
+
+    return (await getExtensionLocalStorage(storageKey)) as T[];
+  }
+
+  return (await getExtensionLocalStorage(storageKey)) as T[];
 }
