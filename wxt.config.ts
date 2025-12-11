@@ -6,6 +6,8 @@ import type { WxtViteConfig } from 'wxt';
 import { defineConfig } from 'wxt';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 
+import { tanstackRouterHmr } from './vite.plugin/hmr';
+
 const EXTENSION_DESCRIPTION = 'Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.';
 
 const ICONS: Record<string, string> = {
@@ -86,6 +88,17 @@ export default defineConfig({
     };
   },
   vite: ({ mode, browser }) => {
+    const isProduction = mode === 'production';
+
+    const modePlugins = isProduction
+      ? []
+      : [
+          tanstackRouterHmr({
+            routerEntries: ['src/main.tsx'],
+            routesGlob: /\/src\/pages\//,
+            routeTreePattern: /routeTree\.gen(\.(t|j)sx?)?$/,
+          }),
+        ];
     return {
       define: {
         __APP_BROWSER__: JSON.stringify(browser),
@@ -99,6 +112,7 @@ export default defineConfig({
           svgrOptions: { exportType: 'default', ref: true, svgo: false, titleProp: true },
           include: '**/*.svg',
         }),
+        ...modePlugins,
         esToolkitPlugin(),
       ],
     } as WxtViteConfig;
