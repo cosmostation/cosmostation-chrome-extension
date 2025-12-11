@@ -32,6 +32,19 @@ const OPTIONAL_PERMISSIONS: Record<string, string[]> = {
   firefox: ['clipboardWrite', 'activeTab', 'webRequest'],
 };
 
+function kstStamp() {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const now = new Date();
+  const kst = new Date(now.getTime() + (9 * 60 + now.getTimezoneOffset()) * 60_000);
+  const y = kst.getFullYear();
+  const m = pad(kst.getMonth() + 1);
+  const d = pad(kst.getDate());
+  const H = pad(kst.getHours());
+  const M = pad(kst.getMinutes());
+  const S = pad(kst.getSeconds());
+  return `${y}${m}${d}T${H}${M}${S}`;
+}
+
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   targetBrowsers: ['chrome', 'firefox'],
@@ -52,6 +65,7 @@ export default defineConfig({
     },
   },
   zip: {
+    artifactTemplate: `{{name}}-{{version}}-{{browser}}-${kstStamp()}.zip`,
     zipSources: false,
   },
   manifest: ({ browser }) => {
