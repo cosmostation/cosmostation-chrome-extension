@@ -9,12 +9,8 @@ export const requestApp = <T extends Request>(message: BaseRequest) =>
   new Promise((res, rej) => {
     const requestId = uuid();
 
-    const eventDetail = { ...message, requestId, origin: window.location.origin };
-
-    const clonedDetail = typeof cloneInto !== 'undefined' ? cloneInto(eventDetail, window) : eventDetail;
-
     const event = new CustomEvent(REQUEST_TYPE, {
-      detail: clonedDetail,
+      detail: { ...message, requestId, origin: window.location.origin },
     });
 
     const handler = (event: CustomEvent<Response<T>>) => {

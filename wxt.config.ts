@@ -48,19 +48,25 @@ function kstStamp() {
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   targetBrowsers: ['chrome', 'firefox'],
-  webExt: {
-    disabled: true,
-  },
-  manifestVersion: 3,
+  webExt: { disabled: true },
   hooks: {
     'config:resolved': (wxt) => {
       wxt.config.alias['@'] = pathResolve(wxt.config.root, 'src');
       wxt.config.alias.assets = pathResolve(wxt.config.root, 'src/assets');
       wxt.config.alias.components = pathResolve(wxt.config.root, 'src/components');
+      const browser = wxt.config.browser ?? 'chrome';
+      wxt.config.manifestVersion = browser === 'firefox' ? 2 : 3;
     },
     'build:manifestGenerated': (wxt, manifest) => {
       if (wxt.config.mode === 'development') {
         manifest.name += ' (DEV)';
+      }
+
+      if (manifest.manifest_version === 2) {
+        manifest.background = {
+          scripts: ['background.js'],
+          persistent: false,
+        };
       }
     },
   },
@@ -70,8 +76,36 @@ export default defineConfig({
   },
   manifest: ({ browser }) => {
     const isFirefox = browser === 'firefox';
-    const permissions = PERMISSIONS[browser] ?? PERMISSIONS.chrome;
-    const optionalPermissions = OPTIONAL_PERMISSIONS[browser];
+
+    if (isFirefox) {
+      const permissions = [...PERMISSIONS.firefox, '<all_urls>'];
+      const optionalPermissions = OPTIONAL_PERMISSIONS.firefox;
+
+      return {
+        name: 'Cosmostation Wallet',
+        description: EXTENSION_DESCRIPTION,
+        icons: ICONS,
+        browser_action: {
+          default_title: 'Cosmostation Wallet',
+          default_icon: ICONS,
+        },
+        background: {
+          scripts: ['background.js'],
+          persistent: false,
+        },
+        permissions,
+        optional_permissions: optionalPermissions,
+        web_accessible_resources: ['inject.js'],
+        author: 'Cosmostation',
+        browser_specific_settings: {
+          gecko: {
+            id: 'support@cosmostation.io',
+          },
+        },
+      };
+    }
+
+    const permissions = PERMISSIONS.chrome ?? [];
     return {
       name: 'Cosmostation Wallet',
       description: EXTENSION_DESCRIPTION,
@@ -81,7 +115,6 @@ export default defineConfig({
         default_icon: ICONS,
       },
       permissions,
-      optional_permissions: optionalPermissions,
       host_permissions: ['<all_urls>'],
       web_accessible_resources: [
         {
@@ -89,16 +122,6 @@ export default defineConfig({
           matches: ['<all_urls>'],
         },
       ],
-      ...(isFirefox
-        ? {
-            author: 'Cosmostation',
-            browser_specific_settings: {
-              gecko: {
-                id: 'support@cosmostation.io',
-              },
-            },
-          }
-        : {}),
     };
   },
   vite: ({ mode, browser }) => {

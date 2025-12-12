@@ -101,7 +101,7 @@ export async function openPopupWindow(): Promise<Browser.windows.Window | undefi
     )
   ).filter((item) => item !== undefined);
 
-  const width = 375;
+  const width = 360;
   const height = 640;
 
   let left = 0;

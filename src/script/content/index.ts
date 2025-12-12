@@ -15,6 +15,7 @@ import type { ChainType } from '@/types/chain';
 import type { ListenerType } from '@/types/message';
 import type { ContentMessage } from '@/types/message/content';
 import { devLogger } from '@/utils/devLogger';
+import { normalizeEventDetail } from '@/utils/firefox/event';
 
 window.addEventListener('cosmostation_request', (event) => {
   (async () => {
@@ -30,12 +31,13 @@ browser.runtime.onMessage.addListener((message: ContentMessage, sender, sendResp
 
   if (sender?.id === browser.runtime.id && message?.target === 'CONTENT') {
     if (message.method === 'responseApp') {
-      const event = new CustomEvent('cosmostation_response', {
-        detail: message.params,
-      });
+      const detail = normalizeEventDetail(message.params);
+
+      const event = new CustomEvent('cosmostation_response', { detail });
 
       window.dispatchEvent(event);
       sendResponse(null);
+      return;
     }
 
     if (message.method === 'openSidePanel') {
@@ -82,12 +84,13 @@ browser.runtime.onMessage.addListener(
 
     if (!validListenerTypes.includes(data.event)) return false;
 
-    const customEvent = new CustomEvent(data.event, {
-      detail: {
-        chainType: data.chainType,
-        data: data.data,
-      },
-    });
+    const detailParam = {
+      chainType: data.chainType,
+      data: data.data,
+    };
+    const detail = normalizeEventDetail(detailParam);
+
+    const customEvent = new CustomEvent(data.event, { detail });
 
     window.dispatchEvent(customEvent);
 
