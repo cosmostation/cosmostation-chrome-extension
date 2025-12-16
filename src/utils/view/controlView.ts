@@ -1,12 +1,14 @@
 import type { Browser } from 'wxt/browser';
 import { browser as crossBrowser } from 'wxt/browser';
 
+import { VIEW_PREFERENCE_TYPE } from '@/constants/userPreference/view';
+
 import { isSidePanelView } from './sidepanel';
 import { getCurrentExtensionTabInfo } from './tab';
 import { getCurrentWindowInfo, getWindow } from './window';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
-export function setSidePanelWithDefaultView(path?: string) {
+export async function setSidePanelWithDefaultView(path?: string) {
   if (__APP_BROWSER__ === 'firefox') {
     browser.sidebarAction.open();
     window.close();
@@ -19,9 +21,11 @@ export function setSidePanelWithDefaultView(path?: string) {
 
     window.close();
   }
+
+  await setExtensionLocalStorage('userViewPreference', VIEW_PREFERENCE_TYPE.SIDE_PANEL);
 }
 
-export function setPopupAsDefaultView() {
+export async function setPopupAsDefaultView() {
   if (__APP_BROWSER__ === 'firefox') {
     browser.sidebarAction.close();
   } else {
@@ -33,6 +37,7 @@ export function setPopupAsDefaultView() {
       closeSidePanel();
     }
   }
+  await setExtensionLocalStorage('userViewPreference', VIEW_PREFERENCE_TYPE.POPUP);
 }
 
 export async function openSidePanel(path?: string) {

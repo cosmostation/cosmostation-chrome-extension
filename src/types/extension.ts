@@ -41,6 +41,7 @@ import type { CosmosNFT, EvmNFT, SuiNFT } from './nft';
 import type { Password } from './password';
 import type { PriceTrendType } from './price';
 import type { ChainlistSortKeyType, DappListSortKeyType, DashboardCoinSortKeyType } from './sortKey';
+import type { ViewPreferenceType } from './userPreference/view';
 
 export type ApprovedSuiPermissionType = ValueOf<typeof PERMISSION>;
 export type ApprovedIotaPermissionType = ValueOf<typeof IOTA_PERMISSION>;
@@ -166,6 +167,7 @@ export interface ExtensionStorage extends DefaultExtensionStorage {
   [key: `${string}-nft-iota`]: SuiNFT[];
   initAccountIds: Account['id'][];
   userLanguagePreference: LanguageType;
+  userViewPreference?: ViewPreferenceType;
   comparisonPasswordHash: string;
   currentAccountId: Account['id'];
   chosenEthereumNetworkId: string;

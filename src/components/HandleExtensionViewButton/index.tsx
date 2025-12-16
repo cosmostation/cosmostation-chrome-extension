@@ -1,6 +1,7 @@
 import type { IconButtonProps } from '@mui/material';
 import { useLocation } from '@tanstack/react-router';
 
+import { devLogger } from '@/utils/devLogger';
 import { setPopupAsDefaultView, setSidePanelWithDefaultView } from '@/utils/view/controlView';
 import { isSidePanelView } from '@/utils/view/sidepanel';
 import { isInTabView } from '@/utils/view/tab';
@@ -23,11 +24,15 @@ export default function HandleExtensionViewButton(props: HandleExtensionViewButt
 
   const icon = isSidePanelView() ? <PopupViewIcon /> : <SidePanelView />;
 
-  const handleViewChange = () => {
-    if (isSidePanelView()) {
-      setPopupAsDefaultView();
-    } else {
-      setSidePanelWithDefaultView(pathname);
+  const handleViewChange = async () => {
+    try {
+      if (isSidePanelView()) {
+        await setPopupAsDefaultView();
+      } else {
+        await setSidePanelWithDefaultView(pathname);
+      }
+    } catch (error) {
+      devLogger.error('Failed to change view:', error);
     }
   };
 

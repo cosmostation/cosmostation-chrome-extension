@@ -12,7 +12,6 @@ import { isRequestThrottled, recordRequestTimestamp } from '@/utils/updateReques
 import { openTab } from '@/utils/view/controlView';
 import { closeWindow } from '@/utils/view/window';
 
-import { initExtensionView } from './initialize';
 import { process } from './message';
 import { startAutoLockTimer } from './passwordManage';
 import { updateAccountInfo } from './update/account';
@@ -81,8 +80,6 @@ function forceCleanupAllProgress(): void {
 }
 
 export function startServiceWorker() {
-  initExtensionView();
-
   startAutoLockTimer();
 
   forceCleanupAllProgress();
