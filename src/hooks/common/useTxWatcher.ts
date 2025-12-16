@@ -484,6 +484,8 @@ export function useTxWatcher(config?: UseFetchConfig) {
         }
       }
     }
+
+    return true;
   };
 
   const { data, isLoading, error, refetch } = useFetch({

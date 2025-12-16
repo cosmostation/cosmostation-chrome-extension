@@ -74,8 +74,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 });
 
 type ContentContainerProps = {
-  'data-is-leadingIcon'?: boolean;
-  'data-is-trailingIcon'?: boolean;
+  'data-is-leading-icon'?: boolean;
+  'data-is-trailing-icon'?: boolean;
 };
 
 export const ContentContainer = styled('div')<ContentContainerProps>((props) => ({
@@ -83,12 +83,12 @@ export const ContentContainer = styled('div')<ContentContainerProps>((props) => 
   justifyContent: 'center',
   alignItems: 'center',
 
-  marginLeft: props['data-is-leadingIcon'] ? '-0.6rem' : '0',
-  marginRight: props['data-is-trailingIcon'] ? '-0.6rem' : '0',
+  marginLeft: props['data-is-leading-icon'] ? '-0.6rem' : '0',
+  marginRight: props['data-is-trailing-icon'] ? '-0.6rem' : '0',
 
   '& :first-of-type': {
-    marginRight: props['data-is-leadingIcon'] ? '0.4rem' : '0',
-    marginLeft: props['data-is-trailingIcon'] ? '0.4rem' : '0',
+    marginRight: props['data-is-leading-icon'] ? '0.4rem' : '0',
+    marginLeft: props['data-is-trailing-icon'] ? '0.4rem' : '0',
   },
 }));
 

@@ -23,9 +23,9 @@ import Base1000Text from '../common/Base1000Text';
 import LineChart from '../common/LineChart';
 import NumberTypo from '../common/NumberTypo';
 
-import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
+import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron10.svg';
 import RightArrowIcon from '@/assets/images/icons/RightArrow14.svg';
-import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
+import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron10.svg';
 
 type FooterCoinPriceProps = {
   coinId: string;

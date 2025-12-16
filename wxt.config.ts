@@ -63,10 +63,11 @@ export default defineConfig({
       }
 
       if (manifest.manifest_version === 2) {
-        manifest.background = {
-          scripts: ['background.js'],
-          persistent: false,
-        };
+        if (manifest.manifest_version === 2) {
+          manifest.background = { scripts: ['background.js'], persistent: false };
+          manifest.sidebar_action = manifest.sidebar_action ?? {};
+          manifest.sidebar_action.default_icon = ICONS;
+        }
       }
     },
   },
