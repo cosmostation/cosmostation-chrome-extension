@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Browser } from 'wxt/browser';
 
 import { LANGUAGE_TYPE } from '@/constants/language';
 import type { ExtensionStorageKeys } from '@/types/extension';
@@ -21,7 +22,7 @@ export default function Init({ children }: InitProps) {
 
   const { i18n } = useTranslation();
 
-  const handleOnStorageChange = (changes: browser.storage.StorageChange, areaName: string) => {
+  const handleOnStorageChange = (changes: Browser.storage.StorageChange, areaName: string) => {
     void (async () => {
       if (areaName === 'local') {
         const keys = Object.keys(changes) as ExtensionStorageKeys[];

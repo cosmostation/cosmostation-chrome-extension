@@ -46,6 +46,7 @@ function kstStamp() {
 }
 
 export default defineConfig({
+  imports: false,
   modules: ['@wxt-dev/module-react'],
   targetBrowsers: ['chrome', 'firefox'],
   webExt: { disabled: true },
