@@ -95,15 +95,17 @@ export function startServiceWorker() {
 
   const throttledSendUpdateAssetsMessage = throttle(sendUpdateAssetsMessage, 500, { edges: ['trailing'] });
 
-  extension.storage.onChanged.addListener((changes) => {
-    for (const [key, { newValue }] of Object.entries(changes)) {
-      if (key === 'requestQueue') {
-        const newQueues = newValue as RequestQueue[] | undefined;
-        const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
-        void extension.action.setBadgeText({ text });
+  if (__APP_BROWSER__ === 'chrome') {
+    extension.storage.onChanged.addListener((changes) => {
+      for (const [key, { newValue }] of Object.entries(changes)) {
+        if (key === 'requestQueue') {
+          const newQueues = newValue as RequestQueue[] | undefined;
+          const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
+          void extension.action.setBadgeText({ text });
+        }
       }
-    }
-  });
+    });
+  }
 
   browser.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
     (async () => {
@@ -429,8 +431,10 @@ export function startServiceWorker() {
     })();
   });
 
-  void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
-  void extension.action.setBadgeText({ text: '' });
+  if (__APP_BROWSER__ === 'chrome') {
+    void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
+    void extension.action.setBadgeText({ text: '' });
+  }
 
   extension.windows.onRemoved.addListener((windowId) => {
     void (async () => {

@@ -1,5 +1,5 @@
 import type { Browser } from 'wxt/browser';
-import { browser } from 'wxt/browser';
+import { browser as crossBrowser } from 'wxt/browser';
 
 import { isSidePanelView } from './sidepanel';
 import { getCurrentExtensionTabInfo } from './tab';
@@ -7,22 +7,31 @@ import { getCurrentWindowInfo, getWindow } from './window';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
 export function setSidePanelWithDefaultView(path?: string) {
-  openSidePanel(path);
+  if (__APP_BROWSER__ === 'firefox') {
+    browser.sidebarAction.open();
+    window.close();
+  } else {
+    openSidePanel(path);
 
-  browser.sidePanel.setPanelBehavior({
-    openPanelOnActionClick: true,
-  });
+    crossBrowser.sidePanel.setPanelBehavior({
+      openPanelOnActionClick: true,
+    });
 
-  window.close();
+    window.close();
+  }
 }
 
 export function setPopupAsDefaultView() {
-  browser.sidePanel.setPanelBehavior({
-    openPanelOnActionClick: false,
-  });
+  if (__APP_BROWSER__ === 'firefox') {
+    browser.sidebarAction.close();
+  } else {
+    crossBrowser.sidePanel.setPanelBehavior({
+      openPanelOnActionClick: false,
+    });
 
-  if (isSidePanelView()) {
-    closeSidePanel();
+    if (isSidePanelView()) {
+      closeSidePanel();
+    }
   }
 }
 
@@ -37,16 +46,16 @@ export async function openSidePanel(path?: string) {
 
   const currentPath = `sidepanel.html${path ? `#${path}` : ''}`;
 
-  if (!browser.sidePanel) {
+  if (!crossBrowser.sidePanel) {
     return;
   }
 
-  browser.sidePanel.setOptions({
+  crossBrowser.sidePanel.setOptions({
     path: currentPath,
     enabled: true,
   });
 
-  browser.sidePanel.open({ windowId });
+  crossBrowser.sidePanel.open({ windowId });
 }
 
 export function closeSidePanel() {
@@ -61,9 +70,9 @@ export async function openTab(path?: string) {
   if (currentTab && currentWindow?.type !== 'popup') {
     return;
   } else {
-    const url = browser.runtime.getURL(`/popup.html${path ? `#${path}` : ''}`);
+    const url = crossBrowser.runtime.getURL(`/popup.html${path ? `#${path}` : ''}`);
 
-    browser.tabs.create({ active: true, url });
+    crossBrowser.tabs.create({ active: true, url });
   }
 }
 
@@ -74,11 +83,11 @@ export async function closeTab(id?: number): Promise<void> {
     return;
   }
 
-  browser.tabs.remove(currentTabId);
+  crossBrowser.tabs.remove(currentTabId);
 }
 
 export async function openPopupWindow(): Promise<Browser.windows.Window | undefined> {
-  const url = browser.runtime.getURL('/popup.html');
+  const url = crossBrowser.runtime.getURL('/popup.html');
 
   const queues = await getExtensionLocalStorage('requestQueue');
 
@@ -108,7 +117,7 @@ export async function openPopupWindow(): Promise<Browser.windows.Window | undefi
   let top = 0;
 
   try {
-    const res = await browser.windows.getLastFocused();
+    const res = await crossBrowser.windows.getLastFocused();
 
     if (res.width && res.left !== undefined) {
       left = Math.round(res.width - width + res.left);
@@ -124,15 +133,15 @@ export async function openPopupWindow(): Promise<Browser.windows.Window | undefi
     if (currentWindows.length > 0) {
       res(currentWindows[0]);
       if (currentWindows[0]?.id) {
-        void browser.windows.update(currentWindows[0].id, { focused: true });
+        void crossBrowser.windows.update(currentWindows[0].id, { focused: true });
       }
       return;
     }
 
-    browser.windows.create({ width, height, top, left, url, type: 'popup' }, (window) => {
+    crossBrowser.windows.create({ width, height, top, left, url, type: 'popup' }, (window) => {
       void (async () => {
-        if (browser.runtime.lastError) {
-          rej(browser.runtime.lastError);
+        if (crossBrowser.runtime.lastError) {
+          rej(crossBrowser.runtime.lastError);
         }
         await setExtensionLocalStorage('currentWindowId', window?.id ?? null);
         res(window);
@@ -148,5 +157,5 @@ export async function closePopupWindow() {
     return;
   }
 
-  browser.windows.remove(currentWindow.id);
+  crossBrowser.windows.remove(currentWindow.id);
 }
