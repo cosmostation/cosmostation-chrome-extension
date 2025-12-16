@@ -43,6 +43,10 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     width: '100%',
     height: '4.8rem',
 
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+
     borderRadius: '0.8rem',
 
     backgroundColor: backgroundColor,
