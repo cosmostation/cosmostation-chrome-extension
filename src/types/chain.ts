@@ -129,6 +129,11 @@ export interface EvmFeeInfo {
   gasCoefficient: number;
 }
 
+export interface Multicall3Info {
+  isSupportMulticall: boolean;
+  multicallAddress: string;
+}
+
 export interface EvmChain extends ChainBase {
   chainType: Extract<ChainType, 'evm'>;
   chainId: string;
@@ -137,6 +142,7 @@ export interface EvmChain extends ChainBase {
   chainDefaultCoinDenoms?: string[] | null;
   isCosmos: boolean;
   feeInfo: EvmFeeInfo;
+  multicall3Info?: Multicall3Info;
   rpcUrls: ChainEndpoint[];
   accountTypes: ChainAccountType[];
   isDiableSend?: boolean;

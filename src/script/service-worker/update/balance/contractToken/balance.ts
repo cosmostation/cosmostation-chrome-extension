@@ -1,7 +1,7 @@
 import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
-import { chainToDeploymentMap } from '@/constants/evm/mutlicall3';
+import { MULICALL_CONTRACT_ADDRESS } from '@/constants/evm/mutlicall3';
 import { getAccountAddress, getAllAccountAddress } from '@/libs/account';
 import { getHiddenAssetsSet } from '@/libs/asset';
 import type { AccountAddressBalanceCw20, AccountAddressBalanceErc20, AccountAddressBalanceGrc20, AccountAddressBalanceSplToken } from '@/types/account';
@@ -23,6 +23,7 @@ import { gt } from '@/utils/numbers';
 import { getCoinId, getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { fetchSolanaSplTokenBalances } from '@/utils/solana/fetch/balance';
 import { getExtensionLocalStorage } from '@/utils/storage';
+import { isEqualsIgnoringCase } from '@/utils/string';
 
 const CHAIN_MULTICALL_CONFIGS: Record<ChainId['id'], { maxMulticallDataLength: number }> = {
   evmos: {
@@ -123,12 +124,12 @@ export async function erc20Balance(accountId: string, { chainId, priority, updat
         .for(chunk)
         .process(async (addr) => {
           const { chainId, chainType, address, chain } = addr;
-          const { rpcUrls, chainId: networkId, name: networkName, id } = chain;
+          const { rpcUrls, chainId: networkId, name: networkName, id, multicall3Info } = chain;
 
           const assets = erc20AssetsToDisplay.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-          const chainIdDecimal = parseInt(networkId, 16);
-          const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
+          const isMulticallEnabled = multicall3Info?.isSupportMulticall && isEqualsIgnoringCase(multicall3Info.multicallAddress, MULICALL_CONTRACT_ADDRESS);
+
           if (isMulticallEnabled) {
             try {
               const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[id];
@@ -258,13 +259,12 @@ export async function customErc20Balance(id: string, { chainId, updateAssets, ch
         .for(chunk)
         .process(async (addr) => {
           const { chainId, chainType, address, chain } = addr;
-          const { rpcUrls, chainId: networkId, name: networkName } = chain;
+          const { rpcUrls, chainId: networkId, name: networkName, multicall3Info } = chain;
 
           const assets = customErc20Assets.filter((asset) => asset.chainType === addr.chainType && asset.chainId === addr.chainId && asset.type === 'erc20');
 
-          const chainIdDecimal = parseInt(networkId, 16);
+          const isMulticallEnabled = multicall3Info?.isSupportMulticall && isEqualsIgnoringCase(multicall3Info.multicallAddress, MULICALL_CONTRACT_ADDRESS);
 
-          const isMulticallEnabled = chainToDeploymentMap.get(chainIdDecimal);
           if (isMulticallEnabled) {
             try {
               const multicallWrapperOption = CHAIN_MULTICALL_CONFIGS[chainId];

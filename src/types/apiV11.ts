@@ -68,6 +68,7 @@ export type V11Param = {
         is_feemarket?: boolean;
       };
       evm_fee_info?: { is_eip1559: boolean; simulated_gas_multiply: number };
+      evm_multicall_info?: { is_support_multicall: boolean; multicall_address: string };
       solana_fee_info?: { simulated_gas_multiply: number };
       solana_program_id?: { spl_token: string };
       grpc_endpoint?: { provider: string; url: string }[];

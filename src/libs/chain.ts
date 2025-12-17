@@ -143,6 +143,10 @@ const mapEvmChain = (chain: SupportedV11Param): EvmChain => {
       isEip1559: chainParams?.evm_fee_info?.is_eip1559 ?? false,
       gasCoefficient: chainParams?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
     },
+    multicall3Info: {
+      isSupportMulticall: chainParams.evm_multicall_info?.is_support_multicall ?? false,
+      multicallAddress: chainParams.evm_multicall_info?.multicall_address ?? '',
+    },
     rpcUrls: chainParams.evm_rpc_endpoint ?? [],
     accountTypes,
     isDiableSend: chainParams?.is_send_enabled === false,
