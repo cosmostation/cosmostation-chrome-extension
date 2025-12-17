@@ -1,7 +1,7 @@
 import { browser } from 'wxt/browser';
 
 export const getBrowserSidePanelBehavior = async () => {
-  const sidePanelBehavior = await browser.sidePanel.getPanelBehavior();
+  const sidePanelBehavior = await browser?.sidePanel?.getPanelBehavior();
   return sidePanelBehavior.openPanelOnActionClick;
 };
 
