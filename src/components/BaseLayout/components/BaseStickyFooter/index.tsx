@@ -1,4 +1,4 @@
-import { Container, LeftContentContainer, RightContentContainer, StyledButton } from './styled';
+import { Container, LeftContentContainer, RightContentContainer } from './styled';
 
 type StickyFooterProps = {
   leftContent?: JSX.Element;
@@ -7,12 +7,10 @@ type StickyFooterProps = {
 };
 
 export default function StickyFooter({ leftContent, rightContent, onClick }: StickyFooterProps) {
-  const Wrapper = onClick ? StyledButton : Container;
-
   return (
-    <Wrapper {...(onClick ? { onClick } : {})}>
+    <Container onClick={onClick}>
       <LeftContentContainer>{leftContent}</LeftContentContainer>
       <RightContentContainer>{rightContent}</RightContentContainer>
-    </Wrapper>
+    </Container>
   );
 }
