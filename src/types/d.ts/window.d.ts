@@ -22,9 +22,7 @@ import type {
   BitSendBitcoinResponse,
   BitSignPsbtResposne,
   BitSignPsbtsResposne,
-  BitSignPsbtsResposne,
 } from '@/types/message/inject/bitcoin';
-import type { CommonRequest } from '@/types/message/inject/common';
 import type {
   GnoConnectResponse,
   GnoSignAndSendTransactionResponse,
@@ -57,7 +55,7 @@ import type {
   SolanaSignMessageResponse,
   SolanaSignTransactionParam,
   SolanaSignTransactionResponse,
-} from './message/inject/solana';
+} from '../message/inject/solana';
 
 declare global {
   type KeplrInterface = Omit<
@@ -179,7 +177,7 @@ declare global {
   }
 
   interface SolanaProvider {
-    request?: (BaseRequest) => Promise<Unknown>;
+    request?: (message: BaseRequest) => Promise<unknown>;
     connect?: () => Promise<SolanaConnectResponse>;
     disconnect?: () => Promise<void>;
     signMessage: (message: Uint8Array, display: 'utf8' | 'hex') => Promise<SolanaSignMessageResponse>;
