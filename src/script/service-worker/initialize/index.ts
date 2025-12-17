@@ -3,7 +3,7 @@ import { browser as crossBrowser } from 'wxt/browser';
 export function initExtensionView() {
   crossBrowser.runtime.onInstalled.addListener((detail) => {
     if (detail.reason === 'install') {
-      if (import.meta.env.FIREFOX) {
+      if (__APP_BROWSER__ === 'firefox') {
         browser.sidebarAction.open();
       } else {
         crossBrowser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
