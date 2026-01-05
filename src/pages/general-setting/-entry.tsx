@@ -227,7 +227,7 @@ export default function Entry() {
               <OptionButtonContainer>
                 <BaseOptionButton
                   onClick={() => {
-                    window.open('https://docs.cosmostation.io/extension', '_blank');
+                    window.open('https://docs.cosmostation.io/extension/guide/getting-started', '_blank');
                   }}
                   leftContent={
                     <OptionButtonIconContainer>
