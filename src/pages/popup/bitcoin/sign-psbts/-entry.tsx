@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { networks, Psbt } from 'bitcoinjs-lib';
-import { isTaprootInput } from 'bitcoinjs-lib/src/psbt/bip371';
 import { Typography } from '@mui/material';
 
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
@@ -26,7 +25,7 @@ import BaseTxInfo from '@/pages/popup/-components/BaseTxInfo';
 import DappInfo from '@/pages/popup/-components/DappInfo';
 import type { ResponseAppMessage } from '@/types/message/content';
 import type { BitSignPsbts, BitSignPsbtsResposne } from '@/types/message/inject/bitcoin';
-import { decodedPsbt, ecpairFromPrivateKey, formatPsbtHex, getTweakSigner } from '@/utils/bitcoin/tx';
+import { decodedPsbt, ecpairFromPrivateKey, formatPsbtHex, getInputsToSign, getTweakSigner, signAndFinalizePsbt } from '@/utils/bitcoin/tx';
 import { wait } from '@/utils/fetch/wait';
 import { gte, plus } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, isSameChain } from '@/utils/queryParamGenerator';
@@ -79,7 +78,8 @@ export default function Entry({ request }: EntryProps) {
     return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
   }, [balance.data]);
 
-  const { params: psbtHexes, origin } = request;
+  const { params, origin } = request;
+  const { psbtHexes, options } = params;
 
   const { siteIconURL } = useSiteIconURL(origin);
   const siteTitle = getSiteTitle(origin);
@@ -178,19 +178,21 @@ export default function Entry({ request }: EntryProps) {
       });
 
       const result: BitSignPsbtsResposne = parsedPsbts.map((parsedPsbt) => {
-        parsedPsbt.data.inputs.forEach((input, index) => {
-          if (isTaprootInput(input)) {
-            if (input.tapLeafScript && input.tapLeafScript?.length > 0 && !input.tapMerkleRoot) {
-              parsedPsbt.signInput(index, signer);
-            } else {
-              parsedPsbt.signInput(index, tweakSigner!);
-            }
-          } else {
-            parsedPsbt.signInput(index, signer);
-          }
+        const inputsToSign = getInputsToSign({
+          psbt: parsedPsbt,
+          options,
+          keyPairPublicKey: keyPair?.publicKey,
+          accountAddress: nativeAccountAsset?.address.address,
+          bitcoinNetwork,
         });
 
-        const txHex = parsedPsbt.finalizeAllInputs().toHex();
+        const txHex = signAndFinalizePsbt({
+          psbt: parsedPsbt,
+          inputsToSign,
+          signer,
+          tweakSigner,
+          autoFinalized: options?.autoFinalized !== false,
+        });
 
         if (!txHex) {
           throw new Error('Failed to sign transaction');

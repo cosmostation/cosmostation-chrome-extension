@@ -22,9 +22,8 @@ import type {
   BitSendBitcoinResponse,
   BitSignPsbtResposne,
   BitSignPsbtsResposne,
-  BitSignPsbtsResposne,
+  SignPsbtOptions,
 } from '@/types/message/inject/bitcoin';
-import type { CommonRequest } from '@/types/message/inject/common';
 import type {
   GnoConnectResponse,
   GnoSignAndSendTransactionResponse,
@@ -136,8 +135,8 @@ declare global {
     getBalance: () => Promise<BitGetBalanceResponse>;
     getPublicKey: () => Promise<string>;
     getPublicKeyHex: () => Promise<string>;
-    signPsbt: (psbtHex: string) => Promise<BitSignPsbtResposne>;
-    signPsbts: (psbtHexs: string[]) => Promise<BitSignPsbtsResposne>;
+    signPsbt: (psbtHex: string, options?: SignPsbtOptions) => Promise<BitSignPsbtResposne>;
+    signPsbts: (psbtHexes: string[], options?: SignPsbtOptions) => Promise<BitSignPsbtsResposne>;
     getNetwork: () => Promise<Network>;
     signMessage: (message: string, type?: 'ecdsa' | 'bip322-simple') => Promise<string>;
     signMessageBIP322: (message: string) => Promise<string>;
@@ -179,7 +178,7 @@ declare global {
   }
 
   interface SolanaProvider {
-    request?: (BaseRequest) => Promise<Unknown>;
+    request?: (message: BaseRequest) => Promise<unknown>;
     connect?: () => Promise<SolanaConnectResponse>;
     disconnect?: () => Promise<void>;
     signMessage: (message: Uint8Array, display: 'utf8' | 'hex') => Promise<SolanaSignMessageResponse>;
