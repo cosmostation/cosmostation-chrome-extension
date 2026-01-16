@@ -1,7 +1,6 @@
 import { getAccountAddress } from '@/libs/account';
 import { getChains } from '@/libs/chain';
 import { sendMessage } from '@/libs/extension';
-import { loadExtensionStorageStoreFromStorageByKey } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { devLogger } from '../devLogger';
 import { getUniqueChainIdWithManual } from '../queryParamGenerator';
@@ -21,7 +20,6 @@ export async function checkMissingAddresses() {
 
       if (flatChainIds.some((newChainId) => !storedChainIdSet.has(newChainId))) {
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
-        await loadExtensionStorageStoreFromStorageByKey(`${accountId}-address`);
       }
     } catch (error) {
       devLogger.error(`[checkMissingAddresses]`, error);
@@ -44,7 +42,6 @@ export async function fixSeiAddress() {
     for (const { id: accountId } of userAccounts) {
       try {
         await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [accountId] });
-        await loadExtensionStorageStoreFromStorageByKey(`${accountId}-address`);
       } catch (error) {
         devLogger.error(`[fixSeiAddress]`, error);
         allSuccess = false;

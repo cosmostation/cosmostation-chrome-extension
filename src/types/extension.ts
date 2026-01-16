@@ -126,7 +126,90 @@ export interface DefaultExtensionStorage {
   autoLockTimeInMinutes: LockupTimeOptions;
 }
 
-export interface ExtensionStorage extends DefaultExtensionStorage {
+export interface StoragePreferences {
+  userCurrencyPreference: CurrencyType;
+  userPriceTrendPreference: PriceTrendType;
+  userLanguagePreference: LanguageType;
+  dappListSortKey: DappListSortKeyType;
+  dashboardCoinSortKey: DashboardCoinSortKeyType;
+  chainListSortKey: ChainlistSortKeyType;
+  isBalanceVisible: boolean;
+  isHideSmalValue: boolean;
+  autoLockTimeInMinutes: LockupTimeOptions;
+}
+
+export interface StorageAccounts {
+  userAccounts: Account[];
+  accountNamesById: AccountNamesById;
+  mnemonicNamesByHashedMnemonic: MnemonicNamesByHashedMnemonic;
+  notBackedUpAccountIds: Account['id'][];
+  preferAccountType: PreferAccountType;
+}
+
+export interface StorageNetworks {
+  chosenEthereumNetworkId: string;
+  chosenAptosNetworkId: string;
+  chosenSuiNetworkId: string;
+  chosenBitcoinNetworkId: string;
+  chosenIotaNetworkId: string;
+  chosenSolanaNetworkId: string;
+  chosenGnoNetworkId: string;
+  selectedChainFilterId: UniqueChainId | null;
+  addedCustomChainList: CustomChain[];
+}
+
+export interface StorageAssets {
+  customErc20Assets: EvmErc20Asset[];
+  customCw20Assets: CosmosCw20Asset[];
+  customAssets: CustomAsset[];
+  customHiddenAssetIds: AssetId[];
+}
+
+export interface StorageDApps {
+  approvedOrigins: ApprovedOrigin[];
+  approvedSuiPermissions: ApprovedSuiPermission[];
+  approvedIotaPermissions: ApprovedIotaPermission[];
+  pinnedDappIds: number[];
+  prioritizedProvider: PrioritizedProvider;
+}
+
+export interface StorageContacts {
+  addressBookList: AddressInfo[];
+}
+
+export interface StorageSecurity {
+  comparisonPasswordHash: string;
+}
+
+export interface StorageState {
+  currentAccountId: Account['id'];
+  initAccountIds: Account['id'][];
+  initCheckLegacyBalanceAccountIds: Account['id'][];
+  requestQueue: RequestQueue[];
+  adPopoverState: AdPopoverStateMap;
+  currentWindowId: number | null;
+  autoLockTimeStampAt: number | null;
+  migrationStatus: MigrationStatus | null;
+  lastRequestTimestamps: LastRequestTimestamps | null;
+  bugFix?: Record<string, boolean>;
+}
+
+export interface StoreSyncedStorage
+  extends StoragePreferences,
+    StorageAccounts,
+    StorageNetworks,
+    StorageAssets,
+    StorageDApps,
+    StorageContacts,
+    StorageSecurity,
+    StorageState {}
+
+export type StoreSyncedStorageKeys = keyof StoreSyncedStorage;
+
+// note https://atonex.io/photon 이건 아톰원 쪽에서 토스트나 배너띄워놓으면 좋을듯
+export interface ExtensionStorage extends StoreSyncedStorage {
+  paramsV11: Record<string, V11Param>;
+  assetsV11: V11Asset[];
   erc20Assets: EvmErc20Asset[];
   cw20Assets: CosmosCw20Asset[];
   spltokenAssets: SolanaSpltokenAsset[];
@@ -164,26 +247,6 @@ export interface ExtensionStorage extends DefaultExtensionStorage {
   [key: `${string}-nft-cosmos`]: CosmosNFT[];
   [key: `${string}-nft-sui`]: SuiNFT[];
   [key: `${string}-nft-iota`]: SuiNFT[];
-  initAccountIds: Account['id'][];
-  userLanguagePreference: LanguageType;
-  comparisonPasswordHash: string;
-  currentAccountId: Account['id'];
-  chosenEthereumNetworkId: string;
-  chosenAptosNetworkId: string;
-  chosenSuiNetworkId: string;
-  chosenBitcoinNetworkId: string;
-  chosenIotaNetworkId: string;
-  chosenSolanaNetworkId: string;
-  chosenGnoNetworkId: string;
-  currentWindowId: number | null;
-  prioritizedProvider: PrioritizedProvider;
-  pinnedDappIds: number[];
-  autoLockTimeInMinutes: LockupTimeOptions;
-  autoLockTimeStampAt: number | null;
-  migrationStatus: MigrationStatus | null;
-  selectedChainFilterId: UniqueChainId | null;
-  lastRequestTimestamps: LastRequestTimestamps | null;
-  bugFix?: Record<string, boolean>;
 }
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

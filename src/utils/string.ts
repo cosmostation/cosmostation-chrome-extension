@@ -1,4 +1,5 @@
 import { fix, times } from './numbers';
+import { uuidPrefixStorageKeyRegex } from './regex';
 
 export function shorterAddress(address?: string, maxLength = 25) {
   const length = Math.floor(maxLength / 2);
@@ -234,6 +235,7 @@ export function errorStringify(error: unknown, path?: string): string {
 }
 
 export function extractAccountIdFromKey(key: string): string | null {
-  const match = key.match(/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})-/);
+  const match = key.match(uuidPrefixStorageKeyRegex);
+
   return match ? match[1] : null;
 }
