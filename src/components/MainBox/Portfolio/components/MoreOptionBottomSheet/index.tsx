@@ -17,7 +17,6 @@ import { Body, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, 
 import BabylonIcon from 'assets/images/icons/Babylon28.svg';
 import BuyIcon from 'assets/images/icons/Buy28.svg';
 import Close24Icon from 'assets/images/icons/Close24.svg';
-import DropMoneyIcon from 'assets/images/icons/DropMoneny28.svg';
 import VoteIcon from 'assets/images/icons/Vote28.svg';
 
 type MoreOptionBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'>;
@@ -82,16 +81,6 @@ export default function MoreOptionBottomSheet({ onClose, ...remainder }: MoreOpt
             leftSecondHeader={<Base1300Text variant="b2_M">{t('components.MainBox.Portfolio.components.MoreOptionBottomSheet.index.vote')}</Base1300Text>}
             leftSecondBody={
               <Base1000Text variant="b4_R">{t('components.MainBox.Portfolio.components.MoreOptionBottomSheet.index.voteDescription')}</Base1000Text>
-            }
-          />
-          <BaseOptionButton
-            onClick={() => {
-              window.open('https://app.drop.money/dashboard?referral_code=dropmaga', '_blank');
-            }}
-            leftContent={<DropMoneyIcon />}
-            leftSecondHeader={<Base1300Text variant="b2_M">{t('components.MainBox.Portfolio.components.MoreOptionBottomSheet.index.dropMoney')}</Base1300Text>}
-            leftSecondBody={
-              <Base1000Text variant="b4_R">{t('components.MainBox.Portfolio.components.MoreOptionBottomSheet.index.dropMoneyDescription')}</Base1000Text>
             }
           />
           <BaseOptionButton
