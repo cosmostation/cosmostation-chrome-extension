@@ -206,7 +206,6 @@ export interface StoreSyncedStorage
 
 export type StoreSyncedStorageKeys = keyof StoreSyncedStorage;
 
-// note https://atonex.io/photon 이건 아톰원 쪽에서 토스트나 배너띄워놓으면 좋을듯
 export interface ExtensionStorage extends StoreSyncedStorage {
   paramsV11: Record<string, V11Param>;
   assetsV11: V11Asset[];
