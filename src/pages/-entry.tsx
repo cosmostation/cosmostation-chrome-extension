@@ -4,6 +4,7 @@ import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import AdBannerCarousel from '@/components/AdBannerCarousel';
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import CheckLegacyAddressBalanceBottomSheet from '@/components/CheckLegacyAddressBalanceBottomSheet';
@@ -41,6 +42,7 @@ import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageSto
 import NFTList from './-components/NFTList';
 import SkeletonCoinList from './-components/SkeletonCoinList';
 import {
+  AdCarouselContainer,
   CoinButtonWrapper,
   Container,
   EmptyAssetContainer,
@@ -285,6 +287,10 @@ export default function Entry() {
                     }}
                   />
                 </FilterContaienr>
+
+                <AdCarouselContainer>
+                  <AdBannerCarousel />
+                </AdCarouselContainer>
                 <ManageCryptoContainer>
                   <CheckBoxTextButton
                     isChecked={isHideSmalValue}
