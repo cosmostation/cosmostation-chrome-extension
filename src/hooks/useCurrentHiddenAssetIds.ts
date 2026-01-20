@@ -15,11 +15,11 @@ export function useCurrentHiddenAssetIds() {
   const currentHiddenAssetIds = useMemo(() => assetIds?.hiddenAssetIds || [], [assetIds?.hiddenAssetIds]);
 
   const hideAsset = async (assetId: AssetId) => {
-    mutations.hideAsset({ assetId });
+    await mutations.hideAsset({ assetId });
   };
 
   const showAsset = async (assetId: AssetId) => {
-    mutations.showAsset({ assetId });
+    await mutations.showAsset({ assetId });
   };
 
   return { currentHiddenAssetIds, hideAsset, showAsset };

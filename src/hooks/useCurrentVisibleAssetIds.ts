@@ -15,11 +15,11 @@ export function useCurrentVisibleAssetIds() {
   const currentVisibleAssetIds = useMemo(() => assetIds?.visibleAssetIds || [], [assetIds?.visibleAssetIds]);
 
   const addVisibleAsset = async (assetId: AssetId) => {
-    mutations.addVisibleAsset({ assetId });
+    await mutations.addVisibleAsset({ assetId });
   };
 
   const removeVisibleAsset = async (assetId: AssetId) => {
-    mutations.removeVisibleAsset({ assetId });
+    await mutations.removeVisibleAsset({ assetId });
   };
 
   return { currentVisibleAssetIds, addVisibleAsset, removeVisibleAsset };

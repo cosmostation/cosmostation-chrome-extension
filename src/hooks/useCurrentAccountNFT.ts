@@ -44,35 +44,35 @@ export function useCurrentAccountNFT({ accountId }: UseCurrentAccountNFTProps = 
   }, [nftData]);
 
   const addSuiNFT = async (newNFT: Omit<SuiNFT, 'id'>) => {
-    mutations.addSuiNFT({ newNFT });
+    await mutations.addSuiNFT({ newNFT });
   };
 
   const removeSuiNFT = async (id: string) => {
-    mutations.removeSuiNFT({ id });
+    await mutations.removeSuiNFT({ id });
   };
 
   const addIotaNFT = async (newNFT: Omit<IotaNFT, 'id'>) => {
-    mutations.addIotaNFT({ newNFT });
+    await mutations.addIotaNFT({ newNFT });
   };
 
   const removeIotaNFT = async (id: string) => {
-    mutations.removeIotaNFT({ id });
+    await mutations.removeIotaNFT({ id });
   };
 
   const addEVMNFT = async (newNFT: Omit<EvmNFT, 'id'>) => {
-    mutations.addEVMNFT({ newNFT });
+    await mutations.addEVMNFT({ newNFT });
   };
 
   const removeEVMNFT = async (id: string) => {
-    mutations.removeEVMNFT({ id });
+    await mutations.removeEVMNFT({ id });
   };
 
   const addCosmosNFT = async (newNFT: Omit<CosmosNFT, 'id'>) => {
-    mutations.addCosmosNFT({ newNFT });
+    await mutations.addCosmosNFT({ newNFT });
   };
 
   const removeCosmosNFT = async (id: string) => {
-    mutations.removeCosmosNFT({ id });
+    await mutations.removeCosmosNFT({ id });
   };
 
   const addNFT = async (newNFT: Omit<FlatAccountNFT, 'id'>) => {
