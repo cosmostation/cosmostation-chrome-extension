@@ -4,7 +4,7 @@ import type { CustomChain, UniqueChainId } from '@/types/chain';
 import { devLogger } from '@/utils/devLogger';
 import { getCoinChainId, getUniqueChainId, isMatchingUniqueChainId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
-import { loadExtensionStorageStoreFromStorageByKey, useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { useRefreshAccountAllAssets } from './useRefreshAccountAllAssets';
 
@@ -43,7 +43,6 @@ export function useCustomChain() {
     const results = await Promise.allSettled(
       accountIds.map(async (id) => {
         await customChainAddress(id);
-        await loadExtensionStorageStoreFromStorageByKey(`${id}-custom-address`);
       }),
     );
 

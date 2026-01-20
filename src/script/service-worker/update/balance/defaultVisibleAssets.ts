@@ -5,7 +5,7 @@ import type { ChainType } from '@/types/chain';
 const defaultCosmosCoinList: AssetId[] = [{ id: 'uatom', chainId: 'cosmos', chainType: 'cosmos' }];
 const defaultEvmCoinList: AssetId[] = [{ id: NATIVE_EVM_COIN_ADDRESS, chainId: 'ethereum', chainType: 'evm' }];
 const defaultBitcoinCoinList: AssetId[] = [{ id: 'btc', chainId: 'bitcoin', chainType: 'bitcoin' }];
-const defaultSolanaCoinList: AssetId[] = [{ id: 'solana', chainId: 'solana', chainType: 'solana' }];
+const defaultSolanaCoinList: AssetId[] = [{ id: 'sol', chainId: 'solana', chainType: 'solana' }];
 
 export function getDefaultVisibleAsset(type?: ChainType) {
   if (!type) return [...defaultCosmosCoinList, ...defaultEvmCoinList, ...defaultBitcoinCoinList, ...defaultSolanaCoinList];

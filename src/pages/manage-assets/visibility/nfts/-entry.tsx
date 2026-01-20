@@ -22,7 +22,7 @@ import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccountAddibleNFTs } from '@/hooks/useCurrentAccountAddibleNFTs';
 import { useCurrentAccountNFT } from '@/hooks/useCurrentAccountNFT';
 import { Route as ImportNFT } from '@/pages/manage-assets/import/nft';
-import type { UniqueChainId } from '@/types/chain';
+import type { ChainType, UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
 
@@ -239,8 +239,8 @@ export default function Entry() {
     addNFT(nftItem);
   };
 
-  const handleRemoveNFT = (id: string) => {
-    removeNFT(id);
+  const handleRemoveNFT = (id: string, chainType: ChainType) => {
+    removeNFT(id, chainType);
   };
 
   useEffect(() => {
@@ -358,7 +358,7 @@ export default function Entry() {
                                   if (isCustomEVMNFT || isCustomCosmosNFT || isCustomSuiNFT || isCustomIotaNFT) {
                                     setSupposedDeleteItem(nftItem);
                                   } else {
-                                    handleRemoveNFT(nftItem.id);
+                                    handleRemoveNFT(nftItem.id, nftItem.chainType);
                                   }
                                 } else {
                                   handleAddNFT(nftItem);
@@ -403,7 +403,7 @@ export default function Entry() {
         descriptionText={t('pages.manage-assets.visibility.nfts.entry.deleteCustomNFTDescription')}
         onClickConfirm={() => {
           if (suppoesdDeleteNFTItem?.id) {
-            handleRemoveNFT(suppoesdDeleteNFTItem.id);
+            handleRemoveNFT(suppoesdDeleteNFTItem.id, suppoesdDeleteNFTItem.chainType);
             setSupposedDeleteItem(undefined);
           }
         }}
