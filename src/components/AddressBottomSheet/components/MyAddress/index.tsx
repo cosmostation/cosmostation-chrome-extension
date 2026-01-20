@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import EmptyAsset from '@/components/EmptyAsset';
+import { useMultipleAccountAddressesQuery } from '@/hooks/queries/useAccountAddressQuery';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import type { Account, AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
@@ -63,20 +64,9 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
 
   const isCustomChain = useMemo(() => addedCustomChainList.some((chain) => isMatchingUniqueChainId(chain, chainId)), [addedCustomChainList, chainId]);
 
-  const addressesMap = useMemo(
-    () =>
-      accountIds.reduce(
-        (acc, id) => {
-          const accountAddresses = isCustomChain
-            ? useExtensionStorageStore.getState()[`${id}-custom-address`]
-            : useExtensionStorageStore.getState()[`${id}-address`];
+  const { data: addressesMapData } = useMultipleAccountAddressesQuery(accountIds, isCustomChain);
 
-          return { ...acc, [id]: accountAddresses };
-        },
-        {} as Record<string, AccountAddress[]>,
-      ),
-    [accountIds, isCustomChain],
-  );
+  const addressesMap = useMemo(() => addressesMapData || {}, [addressesMapData]);
 
   const uniqueMnemonicRestoreString = useMemo(
     () =>

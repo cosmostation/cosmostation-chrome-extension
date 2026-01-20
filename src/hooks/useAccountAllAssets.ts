@@ -18,6 +18,7 @@ import { gt } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useAccountAssetIdsQuery } from './queries/useAccountAssetIdsQuery';
 import { useCurrentAccount } from './useCurrentAccount';
 
 export type UseAccountAssetsResponse = AccountAllAssets & {
@@ -54,13 +55,12 @@ export function useAccountAllAssets({
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
   const accountType = useMemo(() => preferAccountType[param], [param, preferAccountType]);
 
-  const storedHiddenAssetIds = useExtensionStorageStore((state) => state[`${param}-hidden-assetIds`]);
+  const { data: assetIds } = useAccountAssetIdsQuery(param);
   const storedHiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
-  const storedVisibleAssetIds = useExtensionStorageStore((state) => state[`${param}-visible-assetIds`]);
 
-  const hiddenAssetIds = useMemo(() => storedHiddenAssetIds || [], [storedHiddenAssetIds]);
+  const hiddenAssetIds = useMemo(() => assetIds?.hiddenAssetIds || [], [assetIds?.hiddenAssetIds]);
   const hiddenCustomAssetIds = useMemo(() => storedHiddenCustomAssetIds || [], [storedHiddenCustomAssetIds]);
-  const visibleAssetIds = useMemo(() => storedVisibleAssetIds || [], [storedVisibleAssetIds]);
+  const visibleAssetIds = useMemo(() => assetIds?.visibleAssetIds || [], [assetIds?.visibleAssetIds]);
 
   const fetcher = async () => {
     try {

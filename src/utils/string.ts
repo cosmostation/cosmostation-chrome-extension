@@ -1,6 +1,5 @@
-import { stripHexPrefix } from 'ethereumjs-util';
-
 import { fix, times } from './numbers';
+import { uuidPrefixStorageKeyRegex } from './regex';
 
 export function shorterAddress(address?: string, maxLength = 25) {
   const length = Math.floor(maxLength / 2);
@@ -132,6 +131,20 @@ export function addHexPrefix(str: string) {
   return str.startsWith('0x') ? str : `0x${str}`;
 }
 
+export function isHexPrefixed(str: string): boolean {
+  if (typeof str !== 'string') {
+    throw new Error(`[isHexPrefixed] input must be type 'string', received type ${typeof str}`);
+  }
+
+  return str[0] === '0' && str[1] === 'x';
+}
+
+export const stripHexPrefix = (str: string): string => {
+  if (typeof str !== 'string') throw new Error(`[stripHexPrefix] input must be type 'string', received ${typeof str}`);
+
+  return isHexPrefixed(str) ? str.slice(2) : str;
+};
+
 export function toUTF8(hex: string) {
   return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
 }
@@ -219,4 +232,10 @@ export function errorStringify(error: unknown, path?: string): string {
   } catch {
     return 'No error information available';
   }
+}
+
+export function extractAccountIdFromKey(key: string): string | null {
+  const match = key.match(uuidPrefixStorageKeyRegex);
+
+  return match ? match[1] : null;
 }
