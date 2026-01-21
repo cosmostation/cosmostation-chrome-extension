@@ -12,6 +12,7 @@ import type { FeeType } from '@/types/evm/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainIdWithManual, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
+import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { Body, Container, FeeCustomContainer, Header, HeaderTitle, StyledBottomSheet } from './styled';
@@ -240,6 +241,8 @@ export default function FeeSettingBottomSheet({
               onChangePriorityFee?.(priorityFeeAmount);
               onSelectOption?.(customFeeStepKey);
 
+              toastSuccess(t('components.FeeSettingBottomSheet.index.changesApplied'));
+
               onHandelClose();
             }}
           />
@@ -257,6 +260,8 @@ export default function FeeSettingBottomSheet({
               onChangeGas?.(gasAmount);
               onChangeGasPrice?.(gasPrice);
               onSelectOption?.(customFeeStepKey);
+
+              toastSuccess(t('components.FeeSettingBottomSheet.index.changesApplied'));
 
               onHandelClose();
             }}

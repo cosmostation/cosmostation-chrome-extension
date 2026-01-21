@@ -1,0 +1,142 @@
+POST https://solana-rpc.publicnode.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getBalance",
+    "params": [
+        "J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv"
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getAccountInfo",
+    "params": [
+        "8PgCV8AXGiV8WTpRvEd39e4Jg2RmySeN51MaZkqVJ1Ho"
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountBalance",
+    "params": [
+        "8PgCV8AXGiV8WTpRvEd39e4Jg2RmySeN51MaZkqVJ1Ho"
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountsByOwner",
+    "params": [
+        "7i5MmHTJNZ5wdLu7zcj9RvYfD1rg37sYFWrWXqBjySUd",
+        {
+            "mint": "So11111111111111111111111111111111111111112"
+        },
+        {
+            "encoding": "jsonParsed"
+        }
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTokenAccountsByOwner",
+    "params": [
+        "J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
+        {
+            "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+            "encoding": "jsonParsed"
+        }
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getRecentPrioritizationFees",
+    "params": [["11111111111111111111111111111111", "68qgeyUHDxagPSqpG3KNZYw22MfwTqF7py3Uw888UtMq"]]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getTransaction",
+    "params": ["5W2y8juhAySNaRkGCe44RfDPfAkNzjX7bPGFMeBFaJtPdDPDo3owt7tcSA5zBAvd71qfiTj4xYGCBYC3EFvXojNo",
+        {
+            "encoding": "json",
+            "maxSupportedTransactionVersion": 0,
+            "commitment": "confirmed"
+        }
+    ]
+}
+
+###
+
+POST https://solana-rpc.publicnode.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getSignaturesForAddress",
+    "params": ["J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
+        { 
+            "limit": 25
+        }
+    ]
+}
+
+###
+
+POST https://api.mainnet-beta.solana.com
+Content-Type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getSignaturesForAddress",
+    "params": ["J5ApbK6ufxhWo1nBae4RYazSyYXCsXdeBmzDU2t92Mgv",
+        { 
+            "limit": 10,
+            "before": "5fKzZjYVT32pahZWu78wpGCqJJgnUaN3vi79bjxcvdnYNTuVNFf6sRSEJPLk7YHpq58nzULaXRRmKyJUj6V3bgZc"
+        }
+    ]
+}

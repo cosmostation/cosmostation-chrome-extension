@@ -3,7 +3,9 @@ import {
   BITCOIN_LISTENER_TYPE,
   COSMOS_LISTENER_TYPE,
   ETHEREUM_LISTENER_TYPE,
+  GNO_LISTENER_TYPE,
   IOTA_LISTENER_TYPE,
+  SOLANA_LISTENER_TYPE,
   SUI_LISTENER_TYPE,
 } from '@/constants/message';
 import { sendMessage } from '@/libs/extension';
@@ -21,35 +23,47 @@ window.addEventListener('cosmostation_request', (event) => {
 });
 
 chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
-  (async () => {
-    devLogger.log('content message', message);
-    devLogger.log('content sender', sender);
+  devLogger.log('content message', message);
+  devLogger.log('content sender', sender);
 
-    if (sender?.id === chrome.runtime.id && message?.target === 'CONTENT') {
-      if (message.method === 'responseApp') {
-        const event = new CustomEvent('cosmostation_response', {
-          detail: message.params,
-        });
+  if (sender?.id === chrome.runtime.id && message?.target === 'CONTENT') {
+    if (message.method === 'responseApp') {
+      const event = new CustomEvent('cosmostation_response', {
+        detail: message.params,
+      });
 
-        window.dispatchEvent(event);
-        sendResponse(null);
-      }
-
-      if (message.method === 'openSidePanel') {
-        sendMessage({
-          target: 'SERVICE_WORKER',
-          method: 'openSidePanel',
-          params: undefined,
-          origin: message.origin,
-          requestId: message.requestId,
-          tabId: message.tabId,
-        });
-        sendResponse(null);
-      }
+      window.dispatchEvent(event);
+      sendResponse(null);
     }
-  })();
-  return true;
+
+    if (message.method === 'openSidePanel') {
+      sendMessage({
+        target: 'SERVICE_WORKER',
+        method: 'openSidePanel',
+        params: undefined,
+        origin: message.origin,
+        requestId: message.requestId,
+        tabId: message.tabId,
+      });
+      sendResponse(null);
+    }
+  }
 });
+
+const CHAIN_TYPE_TO_LISTENER_TYPES: Record<ChainType, ListenerType[]> = {
+  cosmos: Object.values(COSMOS_LISTENER_TYPE),
+  evm: Object.values(ETHEREUM_LISTENER_TYPE),
+  aptos: Object.values(APTOS_LISTENER_TYPE),
+  sui: Object.values(SUI_LISTENER_TYPE),
+  bitcoin: Object.values(BITCOIN_LISTENER_TYPE),
+  iota: Object.values(IOTA_LISTENER_TYPE),
+  solana: Object.values(SOLANA_LISTENER_TYPE),
+  gno: Object.values(GNO_LISTENER_TYPE),
+};
+
+const getListenerTypes = (chainType: ChainType): ListenerType[] => {
+  return CHAIN_TYPE_TO_LISTENER_TYPES[chainType] ?? [];
+};
 
 chrome.runtime.onMessage.addListener(
   (
@@ -60,28 +74,22 @@ chrome.runtime.onMessage.addListener(
     },
     sender,
   ) => {
-    if (sender.id !== chrome.runtime.id) return;
+    if (sender.id !== chrome.runtime.id) return false;
 
-    const types = (() => {
-      if (data.chainType === 'cosmos') return Object.values(COSMOS_LISTENER_TYPE);
-      if (data.chainType === 'evm') return Object.values(ETHEREUM_LISTENER_TYPE);
-      if (data.chainType === 'aptos') return Object.values(APTOS_LISTENER_TYPE);
-      if (data.chainType === 'sui') return Object.values(SUI_LISTENER_TYPE);
-      if (data.chainType === 'bitcoin') return Object.values(BITCOIN_LISTENER_TYPE);
-      if (data.chainType === 'iota') return Object.values(IOTA_LISTENER_TYPE);
+    const validListenerTypes = getListenerTypes(data.chainType);
 
-      return [];
-    })() as ListenerType[];
+    if (!validListenerTypes.includes(data.event)) return false;
 
-    if (types.includes(data.event)) {
-      const customEvent = new CustomEvent(data.event, {
-        detail: {
-          chainType: data.chainType,
-          data: data.data,
-        },
-      });
-      window.dispatchEvent(customEvent);
-    }
+    const customEvent = new CustomEvent(data.event, {
+      detail: {
+        chainType: data.chainType,
+        data: data.data,
+      },
+    });
+
+    window.dispatchEvent(customEvent);
+
+    return false;
   },
 );
 

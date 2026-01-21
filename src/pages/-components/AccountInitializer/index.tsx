@@ -17,9 +17,11 @@ export default function AccountInitializer({ children }: AccountInitializerProps
   const { t } = useTranslation();
 
   const { currentAccount } = useCurrentAccount();
-  const { mnemonicNamesByHashedMnemonic: storedMnemonicNames, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const storedMnemonicNames = useExtensionStorageStore((state) => state.mnemonicNamesByHashedMnemonic);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
-  const { startLoadingOverlay, stopLoadingOverlay } = useLoadingOverlayStore((state) => state);
+  const startLoadingOverlay = useLoadingOverlayStore((state) => state.startLoadingOverlay);
+  const stopLoadingOverlay = useLoadingOverlayStore((state) => state.stopLoadingOverlay);
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   useEffect(() => {
@@ -51,12 +53,12 @@ export default function AccountInitializer({ children }: AccountInitializerProps
             t('pages.components.AccountInitializer.index.loadingOverlayMessage'),
           );
 
-          if (isNeedFetchBalance) {
-            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [currentAccountId] });
-          }
-
           if (isNeedFetchAddres) {
             await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAddress', params: [currentAccountId] });
+          }
+
+          if (isNeedFetchBalance) {
+            await sendMessage({ target: 'SERVICE_WORKER', method: 'updateDefaultBalance', params: [currentAccountId] });
           }
 
           if (isNeedAddNewMnemonicName) {

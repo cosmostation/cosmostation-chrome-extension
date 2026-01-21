@@ -1,10 +1,8 @@
-import type { ExtensionStorage, ExtensionStorageKeys } from '../extension';
-
-export interface ExtensionStorageState extends ExtensionStorage {}
+import type { StoreSyncedStorage, StoreSyncedStorageKeys } from '../extension';
 
 export type ExtensionStorageActions = {
-  updateExtensionStorageStore<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]): void;
+  updateExtensionStorageStore<T extends StoreSyncedStorageKeys>(key: T, value: StoreSyncedStorage[T]): void;
   resetExtensionStorageStore(): void;
 };
 
-export type ExtensionStorageStore = ExtensionStorageState & ExtensionStorageActions;
+export type ExtensionStorageStore = StoreSyncedStorage & ExtensionStorageActions;

@@ -28,6 +28,18 @@ export const BITCOIN_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
 } as const;
 
+export const SOLANA_LISTENER_TYPE = {
+  ACCOUNT_CHANGED: 'accountChanged',
+  CONNECT: 'connect',
+  DISCONNECT: 'disconnect',
+  CHANGE: 'change',
+} as const;
+
+export const GNO_LISTENER_TYPE = {
+  CHANGED_ACCOUNT: 'changedAccount',
+  CHANGED_NETWORK: 'changedNetwork',
+} as const;
+
 export const COMMON_NO_POPUP_METHOD_TYPE = {
   COM__PROVIDERS: 'com_providers',
 } as const;

@@ -30,7 +30,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import TxProcessingOverlay from '@/pages/wallet/send/$coinId/-Entry/components/TxProcessingOverlay';
 import type { MsgReward, SignAminoDoc } from '@/types/cosmos/amino';
 import { isTestnetChain } from '@/utils/chain';
-import { executeClaimRewardTransaction } from '@/utils/cosmos/executeTx';
+import { executeClaimRewardTransaction, resolvePubkeyType } from '@/utils/cosmos/executeTx';
 import { getCosmosFeeStepNames } from '@/utils/cosmos/fee';
 import { protoTx, protoTxBytes } from '@/utils/cosmos/proto';
 import { ceil, gt, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
@@ -49,6 +49,7 @@ import {
   EstimatedValueTextContainer,
   InformationPanelBody,
   InputWrapper,
+  SingleCoinImage,
 } from './styled';
 
 type CosmosProps = {
@@ -252,19 +253,24 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
 
   const [rewardAminoTx] = useDebounce(memoizedRewardAminoTx, 700);
 
+  const resolvedPubkeyType = useMemo(() => {
+    if (selectedRewardCoin?.chain && selectedRewardCoin?.address) {
+      const pubkeyType = resolvePubkeyType(selectedRewardCoin.chain, selectedRewardCoin.address);
+
+      return pubkeyType;
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  }, [selectedRewardCoin?.address, selectedRewardCoin?.chain]);
+
   const unstakeProtoTx = useMemo(() => {
     if (rewardAminoTx) {
-      const pTx = protoTx(
-        rewardAminoTx,
-        [''],
-        { type: selectedRewardCoin?.address.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey', value: '' },
-        COSMOS_SIGN_MODE.SIGN_MODE_DIRECT,
-      );
+      const pTx = protoTx(rewardAminoTx, [''], { type: resolvedPubkeyType, value: '' }, COSMOS_SIGN_MODE.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [selectedRewardCoin?.address.accountType.pubkeyType, rewardAminoTx]);
+  }, [rewardAminoTx, resolvedPubkeyType]);
 
   const simulate = useSimulate({ coinId, txBytes: unstakeProtoTx?.tx_bytes });
 
@@ -440,9 +446,7 @@ export default function Cosmos({ coinId, validatorAddress }: CosmosProps) {
       <BaseBody>
         <>
           <CoinContainer>
-            <CoinImageContainer>
-              <CoinImage imageURLs={rewardCoinImages} />
-            </CoinImageContainer>
+            <CoinImageContainer>{rewardCoinImages?.length !== 0 ? <CoinImage imageURLs={rewardCoinImages} /> : <SingleCoinImage />}</CoinImageContainer>
             <CoinSymbolText variant="h2_B">
               {isMultipleRewardCoins
                 ? t('pages.wallet.claim-rewards.$coinId.$validatorAddress.Entry.Cosmos.index.claimRewards')

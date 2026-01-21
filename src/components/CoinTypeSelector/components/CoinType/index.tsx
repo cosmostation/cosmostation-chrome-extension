@@ -6,6 +6,7 @@ import Base1300Text from '@/components/common/Base1300Text';
 import { PUBKEY_STYLE_MAP } from '@/constants/bitcoin/common';
 import type { ChainAccountType, ChainBase } from '@/types/chain';
 import { equal } from '@/utils/numbers';
+import { shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -93,6 +94,9 @@ export default function CoinTypeSelector({
             return `${mainCoinTypeText} TYPE`;
           })();
 
+          const shortAddress = shorterAddress(item.address, 25);
+          const shortEVMAddress = item.evmAddress && shorterAddress(item.evmAddress, 25);
+
           return (
             <OutlinedButton key={item.address} isSelected={isSelected} onClick={() => chain && onClickChainType(chain.id, item.accountType)}>
               <ButtonBodyContainer>
@@ -110,8 +114,8 @@ export default function CoinTypeSelector({
                   )}
                 </CoinTypeNameContainer>
                 <AddressTextContainer>
-                  <AddressText variant="b4_R">{item.address}</AddressText>
-                  {item.evmAddress && <AddressText variant="b4_R">{item.evmAddress}</AddressText>}
+                  <AddressText variant="b4_R">{shortAddress}</AddressText>
+                  {shortEVMAddress && <AddressText variant="b4_R">{shortEVMAddress}</AddressText>}
                 </AddressTextContainer>
               </ButtonBodyContainer>
               <ButtonBottomContainer>

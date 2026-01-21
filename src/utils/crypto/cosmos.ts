@@ -1,4 +1,4 @@
-import { GRAVITY_BRDIGE_CHAINLIST_ID, KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { KAVA_CHAINLIST_ID } from '@/constants/cosmos/chain';
 
 import { buildRequestUrl } from '../fetch';
 import { toBase64 } from '../string';
@@ -34,10 +34,7 @@ export function cosmosURL(lcdURL: string, chainId: string) {
       buildRequestUrl(lcdURL, `/ibc/core/channel/v1/channels/${channelId}/ports/${port || 'transfer'}/client_state`),
     simulate: () => buildRequestUrl(lcdURL, `/cosmos/tx/v1beta1/simulate`),
     getTxInfo: (txHash: string) => buildRequestUrl(lcdURL, `/cosmos/tx/v1beta1/txs/${txHash}`),
-    getBlockLatest: () =>
-      chainId === GRAVITY_BRDIGE_CHAINLIST_ID
-        ? buildRequestUrl(lcdURL, `/blocks/latest`)
-        : buildRequestUrl(lcdURL, `/cosmos/base/tendermint/v1beta1/blocks/latest`),
+    getBlockLatest: () => buildRequestUrl(lcdURL, `/cosmos/base/tendermint/v1beta1/blocks/latest`),
     getCommission: (validatorAddress: string) => buildRequestUrl(lcdURL, `/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`),
     getFeemarket: (denom?: string) => buildRequestUrl(lcdURL, `/feemarket/v1/gas_prices${denom ? `/${denom}` : ''}`),
     getValidators: () => buildRequestUrl(lcdURL, `/cosmos/staking/v1beta1/validators?pagination.limit=10000`),

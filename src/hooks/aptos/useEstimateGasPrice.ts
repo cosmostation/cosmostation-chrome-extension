@@ -50,7 +50,7 @@ export function useEstimateGasPrice({ coinId, config }: UseEstimateGasPriceProps
     }
   };
 
-  const { data, isLoading, error, refetch } = useFetch({
+  const { data, isLoading, isFetching, error, refetch } = useFetch({
     queryKey: ['useEstimateGasPrice', coinId],
     fetchFunction: () => fetcher(),
     config: {
@@ -59,5 +59,5 @@ export function useEstimateGasPrice({ coinId, config }: UseEstimateGasPriceProps
     },
   });
 
-  return { data, error, refetch, isLoading };
+  return { data, error, refetch, isLoading, isFetching };
 }

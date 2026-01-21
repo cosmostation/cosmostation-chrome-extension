@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import Base1300Text from '@/components/common/Base1300Text';
+import BaseCoinImage from '@/components/common/BaseCoinImage';
 import MultipleCoinImage from '@/components/common/MultipleCoinImage';
 
 export const CoinContainer = styled('div')({
@@ -25,6 +26,11 @@ export const CoinImage = styled(MultipleCoinImage)({
     width: '3.6rem',
     height: '3.6rem',
   },
+});
+
+export const SingleCoinImage = styled(BaseCoinImage)({
+  width: '3.6rem',
+  height: '3.6rem',
 });
 
 export const CoinSymbolText = styled(Base1300Text)({

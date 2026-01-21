@@ -3,7 +3,8 @@ import { UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
-import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, IotaChain, SuiChain } from '@/types/chain';
+import type { SupportedV11Param } from '@/types/apiV11';
+import type { AptosChain, BitcoinChain, ChainExplorer, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
 import { isTestnetChain } from '@/utils/chain';
 import { parsingHdPath, removeTrailingSlash } from '@/utils/string';
@@ -23,441 +24,349 @@ function collectDefaultDenoms(
   ];
 }
 
+const createExplorer = (explorerData?: { name: string; url: string; account: string; tx: string; proposal: string }): ChainExplorer => {
+  if (!explorerData) {
+    return {
+      name: '',
+      url: '',
+      account: '',
+      tx: '',
+      proposal: '',
+    };
+  }
+
+  return Object.entries(explorerData).reduce((acc, [key, value]) => {
+    acc[key as keyof ChainExplorer] = key === 'name' ? value : removeTrailingSlash(value as string);
+    return acc;
+  }, {} as ChainExplorer);
+};
+
+const createAccountTypes = (
+  accountTypeData?: {
+    hd_path: string;
+    pubkey_style: string;
+    pubkey_type?: string;
+    is_default?: boolean;
+  }[],
+) => {
+  return (
+    accountTypeData?.map((accountType) => ({
+      hdPath: accountType.hd_path.replace('X', '${index}'),
+      pubkeyStyle: accountType.pubkey_style,
+      pubkeyType: accountType.pubkey_type ?? null,
+      isDefault: accountType.is_default ?? null,
+    })) ?? []
+  );
+};
+
+const mapCosmosChain = (chain: SupportedV11Param): CosmosChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+  const isTestnet = isTestnetChain(id);
+
+  return {
+    id,
+    chainId: chainParams.chain_id_cosmos!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'cosmos' as const,
+    mainAssetDenom: chainParams?.staking_asset_denom || '',
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    isCosmwasm: chainParams?.is_support_cw20 ?? false,
+    accountPrefix: chainParams.bech_account_prefix ?? '',
+    validatorAccountPrefix: chainParams.bech_validator_prefix,
+    isEvm: chainParams?.chain_type?.includes('evm') ?? false,
+    lcdUrls: chainParams.lcd_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    feeInfo: {
+      isSimulable: chainParams?.cosmos_fee_info?.is_simulable ?? false,
+      isFeemarketEnabled: chainParams?.cosmos_fee_info?.is_feemarket ?? false,
+      defaultFeeRateKey: chainParams?.cosmos_fee_info?.base ?? '0',
+      gasRate: chainParams?.cosmos_fee_info?.rate ?? [],
+      defaultGasLimit: chainParams?.cosmos_fee_info?.init_gas_limit ?? 200000,
+      gasCoefficient: chainParams?.cosmos_fee_info?.simulated_gas_multiply ?? 1.2,
+    },
+    accountTypes: createAccountTypes(chainParams?.account_type),
+    isSupportCW721: chainParams?.is_support_cw721 ?? false,
+    isSupportStaking: chainParams?.is_stake_enabled !== false && !UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID.includes(id),
+    isSupportHistory: !!chainParams?.is_support_mintscan,
+    isDiableSend: chainParams?.is_send_enabled === false,
+    isTestnet,
+    apr: params.apr,
+    stakingParams: params?.staking_params?.params,
+    reportedValidators: chainParams.reported_validators,
+    maxApproveValidator: params.interchain_provider_params?.max_provider_consensus_validators,
+  };
+};
+
+const mapEvmChain = (chain: SupportedV11Param): EvmChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+  const isCosmos = chainParams?.chain_type?.includes('cosmos') ?? false;
+
+  const filteredAccountTypes = chainParams?.account_type
+    ?.filter((item) => item.hd_path.includes(`m/44'/60'/0'/0/`) && item.pubkey_style === 'keccak256')
+    .map((item) => ({
+      hdPath: "m/44'/60'/0'/0/${index}",
+      pubkeyStyle: item.pubkey_style,
+      pubkeyType: item.pubkey_type ?? null,
+      isDefault: item.is_default ?? null,
+    }));
+
+  const accountTypes =
+    filteredAccountTypes && filteredAccountTypes.length > 0
+      ? filteredAccountTypes
+      : [
+          {
+            hdPath: "m/44'/60'/0'/0/${index}",
+            pubkeyStyle: 'keccak256',
+            isDefault: null,
+          },
+        ];
+
+  return {
+    id,
+    chainId: chainParams.chain_id_evm!,
+    name: chainParams.chain_name.toUpperCase(),
+    mainAssetDenom: (isCosmos ? chainParams?.staking_asset_denom : chainParams?.main_asset_denom) ?? null,
+    gasAssetDenom:
+      (isCosmos
+        ? chainParams?.gas_asset_denom || chainParams?.staking_asset_denom || chainParams?.main_asset_denom
+        : chainParams?.gas_asset_denom || chainParams?.main_asset_denom) ?? null,
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams, { isEvm: true }),
+    isCosmos,
+    image: chainParams?.chain_image ?? null,
+    chainType: 'evm' as const,
+    feeInfo: {
+      isEip1559: chainParams?.evm_fee_info?.is_eip1559 ?? false,
+      gasCoefficient: chainParams?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
+    },
+    rpcUrls: chainParams.evm_rpc_endpoint ?? [],
+    accountTypes,
+    isDiableSend: chainParams?.is_send_enabled === false,
+    isTestnet: isTestnetChain(id),
+    explorer: createExplorer(chainParams?.explorer),
+  };
+};
+
+const mapSuiChain = (chain: SupportedV11Param): SuiChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+
+  return {
+    id,
+    chainId: chainParams.chain_id!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'sui' as const,
+    mainAssetDenom: chainParams?.staking_asset_denom ?? SUI_COIN_TYPE,
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+  };
+};
+
+const mapAptosChain = (chain: SupportedV11Param): AptosChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+
+  return {
+    id,
+    chainId: chainParams.chain_id!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'aptos' as const,
+    mainAssetDenom: chainParams?.staking_asset_denom ?? APTOS_COIN_TYPE,
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+  };
+};
+
+const mapBitcoinChain = (chain: SupportedV11Param): BitcoinChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+
+  const { coinTypeLevel } = parsingHdPath(chainParams?.account_type?.[0].hd_path || '');
+  const isTestnet = coinTypeLevel.replace(/[^0-9]/g, '') === `1`;
+
+  const mainAssetDenom = chainParams?.main_asset_denom || (isTestnet ? 'sbtc' : 'btc');
+
+  const defaultRpcUrls = isTestnet
+    ? [{ provider: 'Cosmostation', url: 'https://rpc-office.cosmostation.io/bitcoin-testnet' }]
+    : [{ provider: 'Cosmostation', url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet' }];
+
+  return {
+    id,
+    chainId: chainParams.chain_id || id,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'bitcoin' as const,
+    mainAssetDenom,
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.rpc_endpoint ?? defaultRpcUrls,
+    mempoolURL: isTestnet ? 'https://mempool.space/signet/api' : 'https://mempool.space/api',
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+    isTestnet,
+  };
+};
+
+const mapIotaChain = (chain: SupportedV11Param): IotaChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+
+  return {
+    id,
+    chainId: chainParams.chain_id!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'iota' as const,
+    mainAssetDenom: chainParams?.staking_asset_denom ?? IOTA_COIN_TYPE,
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+  };
+};
+
+const mapGnoChain = (chain: SupportedV11Param): GnoChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+  const isTestnet = isTestnetChain(id);
+
+  return {
+    id,
+    chainId: chainParams.chain_id_cosmos!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'gno' as const,
+    mainAssetDenom: chainParams?.staking_asset_denom ?? '',
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.cosmos_rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+    accountPrefix: chainParams.bech_account_prefix ?? '',
+    feeInfo: {
+      isSimulable: chainParams?.cosmos_fee_info?.is_simulable ?? false,
+      isFeemarketEnabled: chainParams?.cosmos_fee_info?.is_feemarket ?? false,
+      defaultFeeRateKey: chainParams?.cosmos_fee_info?.base ?? '0',
+      gasRate: chainParams?.cosmos_fee_info?.rate ?? [],
+      defaultGasLimit: chainParams?.cosmos_fee_info?.init_gas_limit ?? 200000,
+      gasCoefficient: chainParams?.cosmos_fee_info?.simulated_gas_multiply ?? 2,
+    },
+    isTestnet,
+  };
+};
+
+const mapSolanaChain = (chain: SupportedV11Param): SolanaChain => {
+  const { id, params } = chain;
+  const chainParams = params.chainlist_params;
+
+  return {
+    id,
+    chainId: chainParams.chain_id!,
+    name: chainParams.chain_name.toUpperCase(),
+    image: chainParams?.chain_image ?? null,
+    chainType: 'solana' as const,
+    mainAssetDenom: chainParams.main_asset_denom ?? '',
+    chainDefaultCoinDenoms: collectDefaultDenoms(chainParams),
+    rpcUrls: chainParams.solana_rpc_endpoint ?? [],
+    explorer: createExplorer(chainParams?.explorer),
+    accountTypes: createAccountTypes(chainParams?.account_type),
+    programId: { splToken: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+  };
+};
+
+interface CacheItem {
+  data: {
+    cosmosChains: CosmosChain[];
+    evmChains: EvmChain[];
+    suiChains: SuiChain[];
+    aptosChains: AptosChain[];
+    bitcoinChains: BitcoinChain[];
+    iotaChains: IotaChain[];
+    gnoChains: GnoChain[];
+    solanaChains: SolanaChain[];
+  };
+  timestamp: number;
+}
+
+let cachedChainResult: CacheItem | null = null;
+const CACHE_TTL = 5 * 60 * 1000;
+
 export async function getChains() {
+  if (cachedChainResult && isCacheValid(cachedChainResult.timestamp)) {
+    return cachedChainResult.data;
+  }
+
   const { paramsV11: chains } = await chrome.storage.local.get<ExtensionStorage>('paramsV11');
 
   if (!chains) {
     throw new Error('No chains found');
   }
 
-  const chainIds = Object.keys(chains);
-  const chainInfos = chainIds.map((chainId) => {
-    const chainInfo = chains[chainId];
+  const supportedChains = Object.entries(chains)
+    .map(([chainId, chainInfo]) => ({ id: chainId, ...chainInfo }))
+    .filter((chainInfo) => chainInfo.params.chainlist_params?.is_support_extension_wallet) as SupportedV11Param[];
 
-    return {
-      id: chainId,
-      ...chainInfo,
-    };
-  });
+  const result = supportedChains.reduce(
+    (acc, chainInfo) => {
+      const chainType = chainInfo.params.chainlist_params?.chain_type;
 
-  const supportedChains = chainInfos.filter((chainInfo) => chainInfo.params.chainlist_params?.is_support_extension_wallet);
+      if (chainType?.includes('cosmos')) {
+        acc.cosmosChains.push(mapCosmosChain(chainInfo));
+      }
+      if (chainType?.includes('evm')) {
+        acc.evmChains.push(mapEvmChain(chainInfo));
+      }
+      if (chainType?.includes('sui')) {
+        acc.suiChains.push(mapSuiChain(chainInfo));
+      }
+      if (chainType?.includes('aptos')) {
+        acc.aptosChains.push(mapAptosChain(chainInfo));
+      }
+      if (chainType?.includes('bitcoin')) {
+        acc.bitcoinChains.push(mapBitcoinChain(chainInfo));
+      }
+      if (chainType?.includes('iota')) {
+        acc.iotaChains.push(mapIotaChain(chainInfo));
+      }
+      if (chainType?.includes('gno')) {
+        acc.gnoChains.push(mapGnoChain(chainInfo));
+      }
+      if (chainType?.includes('solana')) {
+        acc.solanaChains.push(mapSolanaChain(chainInfo));
+      }
+      return acc;
+    },
+    {
+      cosmosChains: [] as CosmosChain[],
+      evmChains: [] as EvmChain[],
+      suiChains: [] as SuiChain[],
+      aptosChains: [] as AptosChain[],
+      bitcoinChains: [] as BitcoinChain[],
+      iotaChains: [] as IotaChain[],
+      gnoChains: [] as GnoChain[],
+      solanaChains: [] as SolanaChain[],
+    },
+  );
 
-  const cosmosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('cosmos'));
-  const evmChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('evm'));
-  const suiChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('sui'));
-  const aptosChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('aptos'));
-  const bitcoinChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('bitcoin'));
-  const iotaChains = supportedChains.filter((chainInfo) => chainInfo.params.chainlist_params?.chain_type?.includes('iota'));
+  setCachedResult(result);
 
-  const remappedCosmosChains: CosmosChain[] = cosmosChains.map((chain) => {
-    const id = chain.id;
-    const chainType = 'cosmos';
-    const chainId = chain.params.chainlist_params.chain_id_cosmos!;
+  return result;
+}
 
-    const name = chain.params.chainlist_params.chain_name.toUpperCase();
-    const image = chain.params.chainlist_params?.chain_image ?? null;
+function isCacheValid(cachedTimestamp: number): boolean {
+  return Date.now() - cachedTimestamp < CACHE_TTL;
+}
 
-    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom || '';
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
-    const isCosmwasm = chain.params.chainlist_params?.is_support_cw20 ?? false;
-    const isSupportCW721 = chain.params.chainlist_params?.is_support_cw721 ?? false;
-    const isTestnet = isTestnetChain(id);
-    const isEvm = chain.params.chainlist_params?.chain_type?.includes('evm') ?? false;
-
-    const lcdUrls = chain.params.chainlist_params.lcd_endpoint ?? [];
-
-    const explorer = chain.params.chainlist_params?.explorer
-      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
-          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
-          return acc;
-        }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
-
-    const accountPrefix = chain.params.chainlist_params.bech_account_prefix ?? '';
-    const validatorAccountPrefix = chain.params.chainlist_params.bech_validator_prefix;
-
-    const feeInfo = {
-      isSimulable: chain.params.chainlist_params?.cosmos_fee_info?.is_simulable ?? false,
-      isFeemarketEnabled: chain.params.chainlist_params?.cosmos_fee_info?.is_feemarket ?? false,
-      defaultFeeRateKey: chain.params.chainlist_params?.cosmos_fee_info?.base ?? '0',
-      gasRate: chain.params.chainlist_params?.cosmos_fee_info?.rate ?? [],
-      defaultGasLimit: chain.params.chainlist_params?.cosmos_fee_info?.init_gas_limit ?? 200000,
-      gasCoefficient: chain.params.chainlist_params?.cosmos_fee_info?.simulated_gas_multiply ?? 1.2,
-    };
-
-    const accountTypes =
-      chain.params.chainlist_params?.account_type?.map((accountType) => {
-        const hdPath = accountType.hd_path.replace('X', '${index}');
-        return {
-          hdPath,
-          pubkeyStyle: accountType.pubkey_style,
-          pubkeyType: accountType.pubkey_type ?? null,
-          isDefault: accountType.is_default ?? null,
-        };
-      }) ?? [];
-
-    const isSupportStaking = chain.params.chainlist_params?.is_stake_enabled !== false && !UNSUPPORT_STAKE_CHAIN_CHAINLIST_ID.includes(chain.id);
-    const isSupportHistory = !!chain.params.chainlist_params?.is_support_mintscan;
-    const isDiableSend = chain.params.chainlist_params?.is_send_enabled === false;
-
-    const apr = chain.params.apr;
-
-    const stakingParams = chain.params?.staking_params ? chain.params.staking_params.params : undefined;
-
-    const reportedValidators = chain.params.chainlist_params.reported_validators;
-    const maxApproveValidator = chain.params.interchain_provider_params?.max_provider_consensus_validators;
-
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      isCosmwasm,
-      accountPrefix,
-      validatorAccountPrefix,
-      isEvm,
-      lcdUrls,
-      explorer,
-      feeInfo,
-      accountTypes,
-      isSupportCW721,
-      isSupportStaking,
-      isSupportHistory,
-      isDiableSend,
-      isTestnet,
-      apr,
-      stakingParams,
-      reportedValidators,
-      maxApproveValidator,
-    };
-  });
-
-  const remappedEvmChains: EvmChain[] = evmChains.map((chain) => {
-    const id = chain.id;
-    const chainType = 'evm';
-    const chainId = chain.params.chainlist_params.chain_id_evm!;
-    const name = chain.params.chainlist_params.chain_name.toUpperCase();
-    const image = chain.params.chainlist_params?.chain_image ?? null;
-    const isCosmos = chain.params.chainlist_params?.chain_type?.includes('cosmos') ?? false;
-
-    const mainAssetDenom = (isCosmos ? chain.params?.chainlist_params?.staking_asset_denom : chain.params?.chainlist_params?.main_asset_denom) ?? null;
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params, {
-      isEvm: true,
-    });
-
-    const feeInfo = {
-      isEip1559: chain.params.chainlist_params?.evm_fee_info?.is_eip1559 ?? false,
-      gasCoefficient: chain.params.chainlist_params?.evm_fee_info?.simulated_gas_multiply ?? 1.1,
-    };
-
-    const isTestnet = isTestnetChain(id);
-
-    const rpcUrls = chain.params.chainlist_params.evm_rpc_endpoint ?? [];
-
-    const filteredAccountTypes = chain.params.chainlist_params?.account_type
-      ?.filter((item) => {
-        return item.hd_path.includes(`m/44'/60'/0'/0/`) && item.pubkey_style === 'keccak256';
-      })
-      .map((item) => {
-        return {
-          hdPath: "m/44'/60'/0'/0/${index}",
-          pubkeyStyle: item.pubkey_style,
-          pubkeyType: item.pubkey_type ?? null,
-          isDefault: item.is_default ?? null,
-        };
-      });
-
-    const accountTypes =
-      filteredAccountTypes && filteredAccountTypes.length > 0
-        ? filteredAccountTypes
-        : [
-            {
-              hdPath: "m/44'/60'/0'/0/${index}",
-              pubkeyStyle: 'keccak256',
-              isDefault: null,
-            },
-          ];
-
-    const explorer = chain.params.chainlist_params?.explorer
-      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
-          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
-          return acc;
-        }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
-
-    const isDiableSend = chain.params.chainlist_params?.is_send_enabled === false;
-
-    return {
-      id,
-      chainId,
-      name,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      isCosmos,
-      image,
-      chainType,
-      feeInfo,
-      rpcUrls,
-      accountTypes,
-      isDiableSend,
-      isTestnet,
-      explorer,
-    };
-  });
-
-  const remappedSuiChains: SuiChain[] = suiChains.map((chain) => {
-    const id = chain.id;
-    const chainType = 'sui';
-    const chainId = chain.params.chainlist_params.chain_id!;
-
-    const name = chain.params.chainlist_params.chain_name.toUpperCase();
-    const image = chain.params.chainlist_params?.chain_image ?? null;
-
-    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? SUI_COIN_TYPE;
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
-
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
-
-    const explorer = chain.params.chainlist_params?.explorer
-      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
-          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
-          return acc;
-        }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
-
-    const accountTypes =
-      chain.params.chainlist_params?.account_type?.map((accountType) => {
-        const hdPath = accountType.hd_path.replace('X', '${index}');
-        return {
-          hdPath,
-          pubkeyStyle: accountType.pubkey_style,
-          pubkeyType: accountType.pubkey_type ?? null,
-          isDefault: accountType.is_default ?? null,
-        };
-      }) ?? [];
-
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      explorer,
-      accountTypes,
-    };
-  });
-
-  const remappedAptosChains: AptosChain[] = aptosChains.map((chain) => {
-    const id = chain.id;
-    const chainType = 'aptos';
-    const chainId = chain.params.chainlist_params.chain_id!;
-
-    const name = chain.params.chainlist_params.chain_name.toUpperCase();
-    const image = chain.params.chainlist_params?.chain_image ?? null;
-
-    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? APTOS_COIN_TYPE;
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
-
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
-
-    const explorer = chain.params.chainlist_params?.explorer
-      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
-          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
-          return acc;
-        }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
-
-    const accountTypes =
-      chain.params.chainlist_params?.account_type?.map((accountType) => {
-        const hdPath = accountType.hd_path.replace('X', '${index}');
-        return {
-          hdPath,
-          pubkeyStyle: accountType.pubkey_style,
-          pubkeyType: accountType.pubkey_type ?? null,
-          isDefault: accountType.is_default ?? null,
-        };
-      }) ?? [];
-
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      explorer,
-      accountTypes,
-    };
-  });
-
-  const remappedBitcoinChains: BitcoinChain[] = bitcoinChains.map((chain) => {
-    const id = chain.id;
-    const chainType = 'bitcoin';
-    const chainId = chain.params.chainlist_params.chain_id || chain.id;
-
-    const name = chain.params.chainlist_params.chain_name.toUpperCase();
-    const image = chain.params.chainlist_params?.chain_image ?? null;
-
-    const { coinTypeLevel } = parsingHdPath(chain.params?.chainlist_params?.account_type?.[0].hd_path || '');
-
-    const isTestnet = coinTypeLevel.replace(/[^0-9]/g, '') === `1`;
-
-    const mainAssetDenom = (() => {
-      if (chain.params.chainlist_params?.main_asset_denom) return chain.params.chainlist_params.main_asset_denom;
-
-      return isTestnet ? 'sbtc' : 'btc';
-    })();
-
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
-
-    const rpcUrls =
-      chain.params.chainlist_params.rpc_endpoint ??
-      (isTestnet
-        ? [
-            {
-              provider: 'Cosmostation',
-              url: 'https://rpc-office.cosmostation.io/bitcoin-testnet',
-            },
-          ]
-        : [
-            {
-              provider: 'Cosmostation',
-              url: 'https://rpc-office.cosmostation.io/bitcoin-mainnet',
-            },
-          ]);
-
-    const mempoolURL = isTestnet ? 'https://mempool.space/signet/api' : 'https://mempool.space/api';
-
-    const explorer = chain.params.chainlist_params?.explorer
-      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
-          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
-          return acc;
-        }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
-
-    const accountTypes =
-      chain.params.chainlist_params?.account_type?.map((accountType) => {
-        const hdPath = accountType.hd_path.replace('X', '${index}');
-        return {
-          hdPath,
-          pubkeyStyle: accountType.pubkey_style,
-          pubkeyType: accountType.pubkey_type ?? null,
-          isDefault: accountType.is_default ?? null,
-        };
-      }) ?? [];
-
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      mempoolURL,
-      explorer,
-      accountTypes,
-      isTestnet,
-    };
-  });
-
-  const remappedIotaChains: IotaChain[] = iotaChains.map((chain) => {
-    const id = chain.id;
-    const chainType = 'iota';
-    const chainId = chain.params.chainlist_params.chain_id!;
-
-    const name = chain.params.chainlist_params.chain_name.toUpperCase();
-    const image = chain.params.chainlist_params?.chain_image ?? null;
-
-    const mainAssetDenom = chain.params.chainlist_params?.staking_asset_denom ?? IOTA_COIN_TYPE;
-    const chainDefaultCoinDenoms = collectDefaultDenoms(chain.params.chainlist_params);
-
-    const rpcUrls = chain.params.chainlist_params.rpc_endpoint ?? [];
-
-    const explorer = chain.params.chainlist_params?.explorer
-      ? Object.entries(chain.params.chainlist_params.explorer).reduce((acc, [key, value]) => {
-          acc[key as keyof ChainExplorer] = removeTrailingSlash(value);
-          return acc;
-        }, {} as ChainExplorer)
-      : {
-          name: '',
-          url: '',
-          account: '',
-          tx: '',
-          proposal: '',
-        };
-
-    const accountTypes =
-      chain.params.chainlist_params?.account_type?.map((accountType) => {
-        const hdPath = accountType.hd_path.replace('X', '${index}');
-        return {
-          hdPath,
-          pubkeyStyle: accountType.pubkey_style,
-          pubkeyType: accountType.pubkey_type ?? null,
-          isDefault: accountType.is_default ?? null,
-        };
-      }) ?? [];
-
-    return {
-      id,
-      chainId,
-      name,
-      image,
-      chainType,
-      mainAssetDenom,
-      chainDefaultCoinDenoms,
-      rpcUrls,
-      explorer,
-      accountTypes,
-    };
-  });
-
-  return {
-    cosmosChains: remappedCosmosChains,
-    evmChains: remappedEvmChains,
-    suiChains: remappedSuiChains,
-    aptosChains: remappedAptosChains,
-    bitcoinChains: remappedBitcoinChains,
-    iotaChains: remappedIotaChains,
+function setCachedResult(result: CacheItem['data']): void {
+  cachedChainResult = {
+    data: result,
+    timestamp: Date.now(),
   };
 }
 

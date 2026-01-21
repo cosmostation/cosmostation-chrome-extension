@@ -1,5 +1,11 @@
 import type { TransactionReceipt } from 'ethers';
 
+export interface EthersProviderParam {
+  networkName: string;
+  chainId: string;
+  rpcUrl: string;
+}
+
 export interface EvmRpc<T> {
   jsonrpc: '2.0';
   id: number;

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { getKeypair } from '@/libs/address';
+import { removeDuplicates } from '@/utils/array';
 
 import { useFetch } from '../common/useFetch';
 import { useChainList } from '../useChainList';
@@ -11,30 +12,11 @@ export function useCurrentMultiChainPK() {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const { chainListFilteredByAccountType, isLoading: isChainListLoading } = useChainList();
+  const { flatChainListFilteredByAccountType, isLoading: isChainListLoading } = useChainList();
 
   const chainList = useMemo(
-    () =>
-      [
-        ...chainListFilteredByAccountType.allCosmosChains,
-        ...chainListFilteredByAccountType.allEVMChains,
-        ...(chainListFilteredByAccountType.aptosChains || []),
-        ...(chainListFilteredByAccountType.suiChains || []),
-        ...(chainListFilteredByAccountType.bitcoinChains || []),
-        ...(chainListFilteredByAccountType.iotaChains || []),
-      ]
-        .filter((item, index, self) => {
-          return index === self.findIndex((t) => t.id === item.id);
-        })
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [
-      chainListFilteredByAccountType.allCosmosChains,
-      chainListFilteredByAccountType.allEVMChains,
-      chainListFilteredByAccountType.aptosChains,
-      chainListFilteredByAccountType.bitcoinChains,
-      chainListFilteredByAccountType.iotaChains,
-      chainListFilteredByAccountType.suiChains,
-    ],
+    () => removeDuplicates(flatChainListFilteredByAccountType, (a, b) => a.id === b.id).sort((a, b) => a.name.localeCompare(b.name)),
+    [flatChainListFilteredByAccountType],
   );
 
   const fetcher = async () => {

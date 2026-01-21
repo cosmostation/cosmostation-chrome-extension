@@ -1,5 +1,6 @@
 import { COSMOS_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { COSMOS_EUREKA_CONTRCT_LIST } from '@/constants/cosmos/eureka';
+import { COSMOS_DUMMY_SIGNATURE } from '@/constants/cosmos/sign';
 import { cosmos, google } from '@/proto/cosmos-sdk-v0.47.4.js';
 import { cosmwasm } from '@/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '@/proto/ibc-v7.1.0.js';
@@ -271,10 +272,12 @@ export function protoTx(signed: SignAminoDoc, signatures: string[], pubKey: PubK
 }
 
 export function protoTxBytes({ signatures, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
+  const resolvedSignatures = signatures.map((item) => (!item ? COSMOS_DUMMY_SIGNATURE : item));
+
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: new Uint8Array(txBodyBytes),
     auth_info_bytes: new Uint8Array(authInfoBytes),
-    signatures: signatures.map((signature) => Buffer.from(signature, 'base64')),
+    signatures: resolvedSignatures.map((signature) => Buffer.from(signature, 'base64')),
   });
   const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
 

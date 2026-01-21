@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import EmptyAsset from '@/components/EmptyAsset';
+import { useMultipleAccountAddressesQuery } from '@/hooks/queries/useAccountAddressQuery';
 import { useCurrentPreferAccountTypes } from '@/hooks/useCurrentPreferAccountTypes';
 import type { Account, AccountAddress, ChainToAccountTypeMap } from '@/types/account';
 import type { UniqueChainId } from '@/types/chain';
-import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase } from '@/utils/string';
+import { getUniqueChainIdWithManual, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { isEqualsIgnoringCase, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import {
@@ -53,22 +54,19 @@ interface AccountAddressInfo {
 export default function MnemonicAccount({ chainId, filterAddress, searchText, onClickAddress }: MnemonicAccountProps) {
   const { t } = useTranslation();
 
-  const { userAccounts, accountNamesById, mnemonicNamesByHashedMnemonic } = useExtensionStorageStore((state) => state);
+  const userAccounts = useExtensionStorageStore((state) => state.userAccounts);
+  const accountNamesById = useExtensionStorageStore((state) => state.accountNamesById);
+  const mnemonicNamesByHashedMnemonic = useExtensionStorageStore((state) => state.mnemonicNamesByHashedMnemonic);
+  const addedCustomChainList = useExtensionStorageStore((state) => state.addedCustomChainList);
+
   const { currentPreferAccountType } = useCurrentPreferAccountTypes();
   const accountIds = useMemo(() => userAccounts.map((account) => account.id), [userAccounts]);
 
-  const addressesMap = useMemo(
-    () =>
-      accountIds.reduce(
-        (acc, id) => {
-          const accountAddresses = useExtensionStorageStore.getState()[`${id}-address`];
+  const isCustomChain = useMemo(() => addedCustomChainList.some((chain) => isMatchingUniqueChainId(chain, chainId)), [addedCustomChainList, chainId]);
 
-          return { ...acc, [id]: accountAddresses };
-        },
-        {} as Record<string, AccountAddress[]>,
-      ),
-    [accountIds],
-  );
+  const { data: addressesMapData } = useMultipleAccountAddressesQuery(accountIds, isCustomChain);
+
+  const addressesMap = useMemo(() => addressesMapData || {}, [addressesMapData]);
 
   const uniqueMnemonicRestoreString = useMemo(
     () =>
@@ -248,7 +246,7 @@ export default function MnemonicAccount({ chainId, filterAddress, searchText, on
                             </Badge>
                           )}
                         </TitleContainer>
-                        <AddressText variant="b4_M">{addressDetail.address}</AddressText>
+                        <AddressText variant="b4_M">{shorterAddress(addressDetail.address, 25)}</AddressText>
                       </AccountInfoContainer>
                     </AccountLeftContainer>
                   </AccountButton>

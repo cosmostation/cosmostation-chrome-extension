@@ -10,12 +10,14 @@ import { FilledTab, FilledTabs } from '@/components/common/FilledTab';
 import SplitButtonsLayout from '@/components/common/SplitButtonsLayout';
 import Tooltip from '@/components/common/Tooltip';
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin';
+import { POPUP_DISMISS_DELAY_MS } from '@/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { useCurrentAptosNetwork } from '@/hooks/aptos/useCurrentAptosNetwork';
 import { useEstimateGasPrice } from '@/hooks/aptos/useEstimateGasPrice';
 import { useSimulateTx } from '@/hooks/aptos/useSimulateTx';
 import { useSiteIconURL } from '@/hooks/common/useSiteIconURL';
 import { useCurrentRequestQueue } from '@/hooks/current/useCurrentRequestQueue';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword';
@@ -28,8 +30,9 @@ import type { ResponseAppMessage } from '@/types/message/content';
 import type { AptosSignTransaction } from '@/types/message/inject/aptos';
 import { signTxSequentially } from '@/utils/aptos/sign';
 import { getOriginalTx } from '@/utils/aptos/tx';
+import { wait } from '@/utils/fetch/wait';
 import { ceil, gt, times } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { getSiteTitle } from '@/utils/website';
 
@@ -55,6 +58,7 @@ export default function Entry({ request }: EntryProps) {
   const { deQueue } = useCurrentRequestQueue();
 
   const { currentAptosNetwork } = useCurrentAptosNetwork();
+  useAutoBalanceRefresh(currentAptosNetwork ? [getUniqueChainId(currentAptosNetwork)] : undefined);
 
   const { currentAccount, incrementTxCountForOrigin } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -127,6 +131,11 @@ export default function Entry({ request }: EntryProps) {
   const simulateTransaction = useSimulateTx({ coinId: nativeAccountAssetCoinId, payload: simulationPayload });
   const estimateGasPrice = useEstimateGasPrice({ coinId: nativeAccountAssetCoinId });
 
+  const isCalculatingFee = useMemo(
+    () => simulateTransaction.isFetching || estimateGasPrice.isFetching,
+    [estimateGasPrice.isFetching, simulateTransaction.isFetching],
+  );
+
   const currentGasPrice = useMemo(() => {
     if (!estimateGasPrice.data) {
       return null;
@@ -156,11 +165,14 @@ export default function Entry({ request }: EntryProps) {
     if (gt(estimatedFeeAmount, nativeAccountAsset?.balance || '0')) {
       return t('pages.popup.aptos.transaction.entry.insufficientBalance');
     }
+    if (isCalculatingFee) {
+      return t('pages.popup.aptos.transaction.entry.calculatingFee');
+    }
     if (!simulateTransaction.data?.[0]?.success) {
       return t('pages.popup.aptos.transaction.entry.failedToSimulate');
     }
     return '';
-  }, [estimatedFeeAmount, nativeAccountAsset?.balance, simulateTransaction.data, t]);
+  }, [estimatedFeeAmount, isCalculatingFee, nativeAccountAsset?.balance, simulateTransaction.data, t]);
 
   const handleOnSign = useCallback(async () => {
     try {
@@ -195,6 +207,8 @@ export default function Entry({ request }: EntryProps) {
       const serializer = new Serializer();
       serializer.serialize(response);
       const serializedAccountAuthenticator = Buffer.from(serializer.toUint8Array()).toString('hex');
+
+      await wait(POPUP_DISMISS_DELAY_MS);
 
       await incrementTxCountForOrigin(request.origin);
 
@@ -249,7 +263,7 @@ export default function Entry({ request }: EntryProps) {
           <DappInfo image={siteIconURL} name={siteTitle} url={origin} />
           <Divider />
           <TxBaseInfoContainer>
-            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={estimatedFeeAmount} disableFee />
+            <BaseTxInfo feeCoinId={nativeAccountAssetCoinId} feeBaseAmount={estimatedFeeAmount} isLoadingFee={isCalculatingFee} disableFee />
           </TxBaseInfoContainer>
           <DividerContainer>
             <Divider />
@@ -279,6 +293,7 @@ export default function Entry({ request }: EntryProps) {
         <SplitButtonsLayout
           cancelButton={
             <Button
+              disabled={isProcessing}
               onClick={async () => {
                 sendMessage({
                   target: 'CONTENT',

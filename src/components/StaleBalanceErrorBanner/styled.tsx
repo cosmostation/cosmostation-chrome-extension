@@ -1,22 +1,22 @@
 import { keyframes, styled } from '@mui/material/styles';
 
-import type { DataFreshnessType } from '@/types/dataFreshness';
+import type { RequestStatus } from '@/types/account';
 
 type ContainerProps = {
-  'data-variant'?: DataFreshnessType;
+  'data-variant'?: RequestStatus | 'updating';
 };
 
 export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => {
   const startColor = (() => {
-    if (props['data-variant'] === 'warning') return '#FAB348';
-    if (props['data-variant'] === 'stale') return '#D4465D';
-    if (props['data-variant'] === 'fresh') return theme.palette.color.base400;
+    if (props['data-variant'] === 'updating') return '#FAB348';
+    if (props['data-variant'] === 'error') return '#D4465D';
+    return theme.palette.color.base400;
   })();
 
   const endColor = (() => {
-    if (props['data-variant'] === 'warning') return '#F59219';
-    if (props['data-variant'] === 'stale') return '#A62032';
-    if (props['data-variant'] === 'fresh') return theme.palette.color.base400;
+    if (props['data-variant'] === 'updating') return '#F59219';
+    if (props['data-variant'] === 'error') return '#A62032';
+    return theme.palette.color.base400;
   })();
 
   return {

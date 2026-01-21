@@ -5,7 +5,9 @@ import type { EvmRequest, EvmResponse } from '@/types/message/inject/evm';
 import type { AptosRequest, AptosResponse } from './aptos';
 import type { BitcoinRequest, BitcoinResponse } from './bitcoin';
 import type { CommonRequest, CommonResponse } from './common';
+import type { GnoRequest, GnoResponse } from './gno';
 import type { IotaRequest, IotaResponse } from './iota';
+import type { SolanaRequest, SolanaResponse } from './solana';
 import type { SuiRequest, SuiResponse } from './sui';
 
 export type RequestChainType = ChainType | CommonChainType;
@@ -19,7 +21,7 @@ export interface RequestBase {
   params?: unknown;
 }
 
-export type Request = CosmosRequest | EvmRequest | SuiRequest | BitcoinRequest | AptosRequest | IotaRequest | CommonRequest;
+export type Request = CosmosRequest | EvmRequest | SuiRequest | BitcoinRequest | AptosRequest | IotaRequest | SolanaRequest | GnoRequest | CommonRequest;
 
 export type BaseRequest = Omit<Request, 'chainType' | 'origin' | 'requestId'>;
 
@@ -36,9 +38,13 @@ export type ResponseMap = {
             ? AptosResponse
             : K extends 'iota'
               ? IotaResponse
-              : K extends 'common'
-                ? CommonResponse
-                : never;
+              : K extends 'solana'
+                ? SolanaResponse
+                : K extends 'gno'
+                  ? GnoResponse
+                  : K extends 'common'
+                    ? CommonResponse
+                    : never;
 };
 
 export interface Response<R extends Request = Request, T extends RawResponse<R> = RawResponse<R>> {

@@ -23,3 +23,7 @@ export const ethereumTxHashRegex = /^0x([A-Fa-f0-9]{64})$/;
 export const suiTxHashRegex = /^[A-Za-z0-9]{44}/;
 
 export const aptosTxHashRegex = /^0x([A-Fa-f0-9]{64})$/;
+
+export const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+export const uuidPrefixStorageKeyRegex = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})-/;

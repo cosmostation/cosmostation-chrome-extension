@@ -1,3 +1,5 @@
+import type { CustomHelpers } from 'joi';
+
 import { COSMOS_TYPE } from '@/constants/cosmos';
 import { TOKEN_TYPE } from '@/constants/evm/token';
 import { PERMISSION as IOTA_PERMISSION } from '@/constants/iota';
@@ -29,9 +31,11 @@ import type {
   WalletWatchAsset,
 } from '@/types/message/inject/evm';
 import type { IotaSignPersonalMessageInput } from '@/types/message/inject/iota';
+import type { SolanaSignMessage } from '@/types/message/inject/solana';
 import type { SuiSignMessageInput } from '@/types/message/inject/sui';
+import { isValidCosmosAddress } from '@/utils/cosmos/address';
 import Joi from '@/utils/joi';
-import { ethereumAddressRegex, getCosmosAddressRegex, suiAddressRegex } from '@/utils/regex';
+import { ethereumAddressRegex, suiAddressRegex } from '@/utils/regex';
 
 const cosmosType = Object.values(COSMOS_TYPE);
 const suiPermissionType = Object.values(PERMISSION);
@@ -188,37 +192,44 @@ export const cosSendTransactionParamsSchema = (chainNames: string[]) =>
     .label('params')
     .required();
 
+const createCosmosAddressValidator = (accountPrefix: string) => (value: string, helpers: CustomHelpers) => {
+  if (!isValidCosmosAddress(value, accountPrefix)) {
+    return helpers.error('any.invalid');
+  }
+  return value;
+};
+
 export const cosGetBalanceCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
-  const regex = getCosmosAddressRegex(chain.accountPrefix, [39, 59]);
+  const cosmosAddressValidator = createCosmosAddressValidator(chain.accountPrefix);
 
   return Joi.object<CosGetBalanceCW20['params']>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
       .required(),
-    contractAddress: Joi.string().pattern(regex).required(),
-    address: Joi.string().pattern(regex).required(),
+    contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
+    address: Joi.string().custom(cosmosAddressValidator, 'cosmos address validation').required(),
   })
     .label('params')
     .required();
 };
 
 export const cosGetTokenInfoCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
-  const contractAddressRegex = getCosmosAddressRegex(chain.accountPrefix, [39, 59]);
+  const cosmosAddressValidator = createCosmosAddressValidator(chain.accountPrefix);
 
   return Joi.object<CosGetTokenInfoCW20['params']>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
       .required(),
-    contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+    contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
   })
     .label('params')
     .required();
 };
 
 export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
-  const contractAddressRegex = getCosmosAddressRegex(chain.accountPrefix, [39, 59]);
+  const cosmosAddressValidator = createCosmosAddressValidator(chain.accountPrefix);
 
   return Joi.object<CosAddTokensCW20['params']>({
     chainName: Joi.string()
@@ -228,7 +239,7 @@ export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: Cosmos
     tokens: Joi.array()
       .items(
         Joi.object<CosAddTokensCW20['params']['tokens'][0]>({
-          contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+          contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
           coinGeckoId: Joi.string().empty('').optional(),
           imageURL: Joi.string().empty('').optional(),
         }),
@@ -240,7 +251,7 @@ export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: Cosmos
 };
 
 export const cosAddNFTsCW721ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
-  const contractAddressRegex = getCosmosAddressRegex(chain.accountPrefix, [39, 59]);
+  const cosmosAddressValidator = createCosmosAddressValidator(chain.accountPrefix);
 
   return Joi.object<CosAddNFTsCW721['params']>({
     chainName: Joi.string()
@@ -250,7 +261,7 @@ export const cosAddNFTsCW721ParamsSchema = (chainNames: string[], chain: CosmosC
     nfts: Joi.array()
       .items(
         Joi.object<CosAddNFTsCW721['params']['nfts'][0]>({
-          contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+          contractAddress: Joi.string().custom(cosmosAddressValidator, 'cosmos contract address validation').required(),
           tokenId: Joi.string().optional(),
         }),
       )
@@ -445,3 +456,19 @@ export const aptosSignMessageSchema = () =>
     message: Joi.string().required(),
     nonce: Joi.number().required(),
   }).required();
+
+export const solanaSignMessageSchema = () =>
+  Joi.object<SolanaSignMessage['params']>({
+    message: Joi.string().hex({ prefix: false }),
+  }).required();
+
+export const gnoSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
+    );

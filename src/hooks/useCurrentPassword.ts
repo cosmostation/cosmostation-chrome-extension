@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { aesDecrypt, aesEncrypt } from '@/utils/crypto';
 import { useExtensionSessionStorageStore } from '@/zustand/hooks/useExtensionSessionStorageStore';
 
 export function useCurrentPassword() {
-  const { sessionPassword, updateExtensionSessionStorageStore } = useExtensionSessionStorageStore((state) => state);
+  const sessionPassword = useExtensionSessionStorageStore((state) => state.sessionPassword);
+  const updateExtensionSessionStorageStore = useExtensionSessionStorageStore((state) => state.updateExtensionSessionStorageStore);
 
   const setCurrentPassword = async (password: string | null) => {
     const timestamp = new Date().getTime();
@@ -22,7 +24,10 @@ export function useCurrentPassword() {
     );
   };
 
-  const currentPassword = sessionPassword ? aesDecrypt(sessionPassword.encryptedPassword, `${sessionPassword.key}${sessionPassword.timestamp}`) : null;
+  const currentPassword = useMemo(
+    () => (sessionPassword ? aesDecrypt(sessionPassword.encryptedPassword, `${sessionPassword.key}${sessionPassword.timestamp}`) : null),
+    [sessionPassword],
+  );
 
   return { currentPassword, setCurrentPassword };
 }

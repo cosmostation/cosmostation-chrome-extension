@@ -27,6 +27,7 @@ import { useGetAccountAsset } from '@/hooks/useGetAccountAsset.ts';
 import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
+import { isFungibleAssetMetadataId } from '@/utils/aptos/fungibleAsset.ts';
 import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
@@ -132,10 +133,26 @@ export default function Aptos({ coinId }: AptosProps) {
           typeArguments: [],
         },
         options: {
-          gasUnitPrice: currentGasPrice ? currentGasPrice : undefined,
+          gasUnitPrice: currentGasPrice ?? undefined,
         },
       };
     }
+
+    if (isFungibleAssetMetadataId(selectedCoinToSend.asset.id)) {
+      return {
+        sender: selectedCoinToSend?.address.address,
+
+        data: {
+          function: '0x1::primary_fungible_store::transfer',
+          typeArguments: ['0x1::fungible_asset::Metadata'],
+          functionArguments: [selectedCoinToSend.asset.id, recipientAddress, sendBaseAmount],
+        },
+        options: {
+          gasUnitPrice: currentGasPrice ?? undefined,
+        },
+      };
+    }
+
     return {
       sender: selectedCoinToSend?.address.address,
       data: {
@@ -144,7 +161,7 @@ export default function Aptos({ coinId }: AptosProps) {
         typeArguments: [selectedCoinToSend?.asset.id],
       },
       options: {
-        gasUnitPrice: currentGasPrice ? currentGasPrice : undefined,
+        gasUnitPrice: currentGasPrice ?? undefined,
       },
     };
   }, [currentGasPrice, recipientAddress, selectedCoinToSend?.address.address, selectedCoinToSend?.asset.id, sendBaseAmount]);

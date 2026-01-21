@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 
 import Base1000Text from '@/components/common/Base1000Text';
 import Base1300Text from '@/components/common/Base1300Text';
+import { shorterAddress } from '@/utils/string';
 
 import Badge from './components/Badge';
 import { AddressContainer, ChainContainer, ChainImage, Container, LabelContainer, MemoContainer, MemoContentsContainer, StyledOptionButton } from './styled';
@@ -44,6 +45,8 @@ export default function AddressItemButton({ id, address, label, memo, chainName,
     return null;
   })();
 
+  const shortAddress = shorterAddress(address, 25);
+
   return (
     <StyledOptionButton
       leftContent={
@@ -62,7 +65,7 @@ export default function AddressItemButton({ id, address, label, memo, chainName,
             )}
           </LabelContainer>
           <AddressContainer>
-            <Typography variant="b4_M">{address}</Typography>
+            <Typography variant="b4_M">{shortAddress}</Typography>
           </AddressContainer>
 
           {memo && (

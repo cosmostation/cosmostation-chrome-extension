@@ -3,8 +3,8 @@ import { useNavigate } from '@tanstack/react-router';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { COREUM_CHAINLIST_ID, KAVA_CHAINLIST_ID, NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
-import { useAmount } from '@/hooks/cosmos/useAmount';
 import { useCommission } from '@/hooks/cosmos/useCommission';
+import { useIncentive } from '@/hooks/cosmos/useIncentive';
 import { useReward } from '@/hooks/cosmos/useReward';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 import { Route as ClaimCommission } from '@/pages/wallet/claim-commission/$coinId';
@@ -29,7 +29,12 @@ export default function Cosmos({ coinId }: CosmosProps) {
 
   const isNTRN = [NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID].some((item) => item === parseCoinId(coinId).chainId);
 
-  const { incentiveAmount } = useAmount(coinId);
+  const incentive = useIncentive({
+    coinId,
+  });
+
+  const { id: denom } = parseCoinId(coinId);
+  const incentiveAmount = incentive?.data?.[denom] || '0';
 
   const reward = useReward({
     coinId,

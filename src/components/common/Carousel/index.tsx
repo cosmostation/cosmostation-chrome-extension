@@ -1,43 +1,67 @@
-import type React from 'react';
-import { Children } from 'react';
+import { Children, type ReactNode, useEffect, useRef, useState } from 'react';
+import Collapse from '@mui/material/Collapse';
+import Fade from '@mui/material/Fade';
 
-import { CarouselContainer, CarouselItem, CarouselItemContainer, Indicator, IndicatorContainer } from './styled';
+import { CarouselContainer, CarouselItem, Indicator, IndicatorContainer } from './styled';
 
 type CarouselProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   currentIndex: number;
-  hideIndicator?: boolean;
-  onClickNext?: () => void;
-  onClickPrev?: () => void;
+  onIndexChange: (index: number) => void;
+  showIndicator?: boolean;
 };
 
-export default function Carousel({ children, currentIndex, hideIndicator, onClickNext, onClickPrev }: CarouselProps) {
-  const handleIndicatorClick = (index: number) => {
-    if (index > currentIndex) {
-      onClickNext?.();
-    } else if (index < currentIndex) {
-      onClickPrev?.();
-    }
+export default function Carousel({ children, currentIndex, onIndexChange, showIndicator = true }: CarouselProps) {
+  const childArray = Children.toArray(children);
+  const childCount = childArray.length;
+  const isIndicatorVisible = showIndicator && childCount > 1;
+
+  const prevIndexRef = useRef(currentIndex);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleExited = () => {
+    prevIndexRef.current = currentIndex;
+    setIsTransitioning(false);
   };
+
+  useEffect(() => {
+    if (prevIndexRef.current !== currentIndex) {
+      setIsTransitioning(true);
+    }
+  }, [currentIndex]);
 
   return (
     <>
       <CarouselContainer>
-        <CarouselItemContainer currentIndex={currentIndex}>
-          {Children.map(children, (child, index) => (
-            <CarouselItem key={index}>{child}</CarouselItem>
-          ))}
-        </CarouselItemContainer>
+        {childArray.map((child, index) => {
+          const isActive = index === currentIndex;
+          const isPrev = index === prevIndexRef.current && isTransitioning;
+          const shouldRender = isActive || isPrev;
+
+          if (!shouldRender) return null;
+
+          return (
+            <Fade key={index} in={isActive} timeout={400} onExited={isActive ? undefined : handleExited}>
+              <CarouselItem isActive={isActive}>{child}</CarouselItem>
+            </Fade>
+          );
+        })}
       </CarouselContainer>
-      {hideIndicator
-        ? null
-        : Children.count(children) > 1 && (
-            <IndicatorContainer>
-              {Children.map(children, (_, index) => (
-                <Indicator key={index} isActive={currentIndex === index} onClick={() => handleIndicatorClick(index)} />
-              ))}
-            </IndicatorContainer>
-          )}
+
+      <Collapse in={isIndicatorVisible} timeout={300}>
+        <IndicatorContainer>
+          {Array.from({ length: childCount }, (_, index) => (
+            <Indicator
+              key={index}
+              isActive={currentIndex === index}
+              onClick={(e) => {
+                e.stopPropagation();
+                onIndexChange(index);
+              }}
+            />
+          ))}
+        </IndicatorContainer>
+      </Collapse>
     </>
   );
 }

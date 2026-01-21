@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+import { wrapInjectScriptPlugin } from './vite.plugin/wrapInjectScript';
+
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
@@ -25,6 +27,7 @@ export default defineConfig(({ mode }) => {
       nodePolyfills({
         include: ['stream', 'assert', 'os', 'url', 'http', 'https', 'crypto'],
       }),
+      wrapInjectScriptPlugin(),
     ],
     build: {
       outDir,

@@ -91,15 +91,26 @@ export async function cosmosProcess(message: CosmosRequest) {
 
     const inAppSelectedPreferAccountType = preferAccountType[currentAccount.id]?.[chain.id];
 
-    const response = inAppSelectedPreferAccountType
-      ? produce(chain, (draft) => {
-          draft.accountTypes = draft.accountTypes.filter(
-            (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
-          );
-        })
-      : chain;
+    return produce(chain, (draft) => {
+      if (inAppSelectedPreferAccountType) {
+        draft.accountTypes = draft.accountTypes.filter(
+          (item) => item.pubkeyStyle === inAppSelectedPreferAccountType?.pubkeyStyle && item.hdPath === inAppSelectedPreferAccountType?.hdPath,
+        );
+      }
 
-    return response;
+      if (draft.id === 'sei') {
+        draft.accountTypes = draft.accountTypes.map((item) => {
+          if (item.pubkeyStyle === 'keccak256') {
+            return {
+              hdPath: "m/44'/60'/0'/0/${index}",
+              pubkeyStyle: 'secp256k1',
+              pubkeyType: '/cosmos.crypto.secp256k1.PubKey',
+            };
+          }
+          return item;
+        });
+      }
+    });
   };
 
   const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
@@ -134,11 +145,19 @@ export async function cosmosProcess(message: CosmosRequest) {
           const address = getAddress(chain, keyPair?.publicKey);
 
           const publicKey = keyPair?.publicKey || '';
-          const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+          if (!chain.accountTypes[0]) {
+            throw new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain');
+          }
+
+          const accountType = chain.accountTypes[0];
+          const isEthermint = accountType.pubkeyStyle === 'keccak256';
+          const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
 
           const result: CosRequestAccountResponse = {
             address,
             publicKey,
+            publicKeyTypeUrl,
             name: currentAccountName,
             isLedger: false,
             isEthermint,
@@ -182,13 +201,18 @@ export async function cosmosProcess(message: CosmosRequest) {
             );
 
             if (matchedAddressInfo) {
-              const isEthermint = matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+              const isEthermint = chain.id === 'sei' ? false : matchedAddressInfo.accountType.pubkeyStyle === 'keccak256';
+
+              const publicKeyTypeUrl =
+                chain.id === 'sei' ? '/cosmos.crypto.secp256k1.PubKey' : matchedAddressInfo.accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
+
               return {
                 status: 'fulfilled',
                 value: {
                   chainId: inputChainId,
                   address: matchedAddressInfo.address,
                   publicKey: matchedAddressInfo.publicKey,
+                  publicKeyTypeUrl,
                   name: currentAccountName,
                   isLedger: false,
                   isEthermint,
@@ -199,14 +223,21 @@ export async function cosmosProcess(message: CosmosRequest) {
             const keyPair = getKeypair(chain, currentAccount, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
             const publicKey = keyPair?.publicKey || '';
-            const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
 
+            if (!chain.accountTypes[0]) {
+              throw new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain');
+            }
+
+            const accountType = chain.accountTypes[0];
+            const isEthermint = accountType.pubkeyStyle === 'keccak256';
+            const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
             return {
               status: 'fulfilled',
               value: {
                 chainId: inputChainId,
                 address,
                 publicKey,
+                publicKeyTypeUrl,
                 name: currentAccountName,
                 isLedger: false,
                 isEthermint,
@@ -550,11 +581,19 @@ export async function cosmosProcess(message: CosmosRequest) {
           const address = getAddress(chain, keyPair?.publicKey);
 
           const publicKey = keyPair?.publicKey || '';
-          const isEthermint = chain.accountTypes[0].pubkeyStyle === 'keccak256';
+
+          if (!chain.accountTypes[0]) {
+            throw new CosmosRPCError(RPC_ERROR.INTERNAL, 'No valid account type found for chain');
+          }
+
+          const accountType = chain.accountTypes[0];
+          const isEthermint = accountType.pubkeyStyle === 'keccak256';
+          const publicKeyTypeUrl = accountType.pubkeyType || '/cosmos.crypto.secp256k1.PubKey';
 
           const result: CosAccountResponse = {
             address,
             publicKey,
+            publicKeyTypeUrl,
             name: currentAccountName,
             isLedger: false,
             isEthermint: isEthermint,

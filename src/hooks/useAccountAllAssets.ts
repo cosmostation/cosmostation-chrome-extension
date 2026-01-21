@@ -3,15 +3,22 @@ import { produce } from 'immer';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { getAccountAssets, getAccountCustomAssets } from '@/libs/asset';
-import type { AccountAddress } from '@/types/account';
-import type { AccountAssets as AccountAllAssets, AllCosmosAccountAssets, AllEVMAccountAssets, FlatAccountAssets } from '@/types/accountAssets';
+import { getAccountCustomAssets } from '@/libs/asset/coin/custom/accountAsset';
+import { getAccountAssets } from '@/libs/asset/coin/default/accountAsset';
+import type {
+  AccountAssets as AccountAllAssets,
+  AllCosmosAccountAssets,
+  AllEVMAccountAssets,
+  AllGnoAccountAssets,
+  AllSolanaAccountAssets,
+  FlatAccountAssets,
+} from '@/types/accountAssets';
 import type { AssetId } from '@/types/asset';
 import { gt } from '@/utils/numbers';
 import { getCoinId } from '@/utils/queryParamGenerator';
-import { isEqualsIgnoringCase } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
+import { useAccountAssetIdsQuery } from './queries/useAccountAssetIdsQuery';
 import { useCurrentAccount } from './useCurrentAccount';
 
 export type UseAccountAssetsResponse = AccountAllAssets & {
@@ -19,6 +26,8 @@ export type UseAccountAssetsResponse = AccountAllAssets & {
   allCosmosAccountAssets: AllCosmosAccountAssets[];
   allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[];
   allEVMAccountAssets: AllEVMAccountAssets[];
+  allSolanaAccountAssets: AllSolanaAccountAssets[];
+  allGnoAccountAssets: AllGnoAccountAssets[];
 };
 
 type UseAccountAllAssets =
@@ -46,15 +55,12 @@ export function useAccountAllAssets({
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
   const accountType = useMemo(() => preferAccountType[param], [param, preferAccountType]);
 
-  const storedHiddenAssetIds = useExtensionStorageStore((state) => state[`${param}-hidden-assetIds`]);
+  const { data: assetIds } = useAccountAssetIdsQuery(param);
   const storedHiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
-  const storedVisibleAssetIds = useExtensionStorageStore((state) => state[`${param}-visible-assetIds`]);
-  const storedBitcoinBalanceInfo = useExtensionStorageStore((state) => state[`${param}-balance-bitcoin`]);
 
-  const hiddenAssetIds = useMemo(() => storedHiddenAssetIds || [], [storedHiddenAssetIds]);
+  const hiddenAssetIds = useMemo(() => assetIds?.hiddenAssetIds || [], [assetIds?.hiddenAssetIds]);
   const hiddenCustomAssetIds = useMemo(() => storedHiddenCustomAssetIds || [], [storedHiddenCustomAssetIds]);
-  const visibleAssetIds = useMemo(() => storedVisibleAssetIds || [], [storedVisibleAssetIds]);
-  const bitcoinBalanceInfo = useMemo(() => storedBitcoinBalanceInfo || [], [storedBitcoinBalanceInfo]);
+  const visibleAssetIds = useMemo(() => assetIds?.visibleAssetIds || [], [assetIds?.visibleAssetIds]);
 
   const fetcher = async () => {
     try {
@@ -77,45 +83,38 @@ export function useAccountAllAssets({
     ...config,
   });
 
+  const assetIdSets = useMemo(
+    () => ({
+      visible: new Set(visibleAssetIds.map(getCoinId)),
+      hidden: new Set(hiddenAssetIds.map(getCoinId)),
+      hiddenCustom: new Set(hiddenCustomAssetIds.map(getCoinId)),
+    }),
+    [visibleAssetIds, hiddenAssetIds, hiddenCustomAssetIds],
+  );
+
   const filteredByVisibleList = useMemo(() => {
     if (!data) return null;
 
-    const visibleAssetIdSet = new Set(visibleAssetIds.map((item) => getCoinId(item)));
-    const hiddenAssetIdSet = new Set(hiddenAssetIds.map((item) => getCoinId(item)));
-    const hiddenCustomAssetIdSet = new Set(hiddenCustomAssetIds.map((item) => getCoinId(item)));
+    const { visible, hidden, hiddenCustom } = assetIdSets;
 
-    const shouldShowAsset = (asset: AssetId, balance: string, address: AccountAddress) => {
-      const isVisible = visibleAssetIdSet.has(getCoinId(asset));
+    const shouldShowAsset = (asset: AssetId, balance: string) => {
+      const assetCoinId = getCoinId(asset);
+
+      const isVisible = visible.has(assetCoinId);
 
       if (isVisible) return true;
 
-      const isHidden = disableHiddenFilter ? false : hiddenAssetIdSet.has(getCoinId(asset)) || hiddenCustomAssetIdSet.has(getCoinId(asset));
+      const isHidden = disableHiddenFilter ? false : hidden.has(assetCoinId) || hiddenCustom.has(assetCoinId);
 
       if (isHidden) return false;
 
-      const isBalanceGreaterThanZero = (() => {
-        if (asset.chainType === 'bitcoin') {
-          const balanceInfo = bitcoinBalanceInfo?.find(
-            (balance) =>
-              isEqualsIgnoringCase(balance.address, address.address) && balance.chainId === address.chainId && balance.chainType === address.chainType,
-          );
-
-          const pendingFundedAmount = balanceInfo?.balance.mempoolStats?.funded_txo_sum || '0';
-          const isPendingReceiveBalanceGreaterThanZero = gt(pendingFundedAmount, '0');
-
-          const isBalanceGreaterThanZero = gt(balance, '0');
-
-          return isBalanceGreaterThanZero || isPendingReceiveBalanceGreaterThanZero;
-        } else {
-          return gt(balance, '0');
-        }
-      })();
+      const isBalanceGreaterThanZero = gt(balance, '0');
 
       return disableBalanceFilter ? true : isBalanceGreaterThanZero;
     };
 
-    const filterAssetList = <T extends { asset: AssetId; balance: string; address: AccountAddress }>(list: T[]): T[] =>
-      list.filter(({ asset, balance, address }) => shouldShowAsset(asset, balance, address));
+    const filterAssetList = <T extends { asset: AssetId; balance: string }>(list: T[]): T[] =>
+      list.filter(({ asset, balance }) => shouldShowAsset(asset, balance));
 
     return {
       cosmosAccountAssets: filterAssetList(data.cosmosAccountAssets),
@@ -130,8 +129,12 @@ export function useAccountAllAssets({
       customCw20AccountAssets: data.customCw20AccountAssets,
       bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
       iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
+      solanaAccountAssets: filterAssetList(data.solanaAccountAssets),
+      spltokenAccountAssets: filterAssetList(data.spltokenAccountAssets),
+      gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
+      grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
     };
-  }, [bitcoinBalanceInfo, data, disableBalanceFilter, disableHiddenFilter, hiddenAssetIds, hiddenCustomAssetIds, visibleAssetIds]);
+  }, [assetIdSets, data, disableBalanceFilter, disableHiddenFilter]);
 
   const returnData = useMemo(() => {
     if (!filteredByVisibleList) return null;
@@ -165,7 +168,7 @@ export function useAccountAllAssets({
             item.chain.chainType === 'cosmos' &&
             item.chain.isEvm &&
             item.chain.mainAssetDenom === item.asset.id &&
-            filteredByVisibleList.evmAccountAssets.some((evmAsset) => {
+            data?.evmAccountAssets.some((evmAsset) => {
               const isSameAssetChain = evmAsset.chain.id === item.chain.id;
 
               const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
@@ -319,6 +322,8 @@ export function useAccountAllAssets({
           ...filteredAccountAssets.erc20AccountAssets,
           ...filteredAccountAssets.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredAccountAssets.solanaAccountAssets, ...filteredAccountAssets.spltokenAccountAssets],
+        allGnoAccountAssets: [...filteredAccountAssets.gnoAccountAssets, ...filteredAccountAssets.grc20AccountAssets],
       };
 
       return returnData;
@@ -343,11 +348,13 @@ export function useAccountAllAssets({
           ...filteredByVisibleList.erc20AccountAssets,
           ...filteredByVisibleList.customErc20AccountAssets,
         ],
+        allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
+        allGnoAccountAssets: [...filteredByVisibleList.gnoAccountAssets, ...filteredByVisibleList.grc20AccountAssets],
       };
 
       return returnData;
     }
-  }, [accountType, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
+  }, [accountType, data?.evmAccountAssets, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
 
   return { data: returnData, isLoading, isFetching, error, refetch };
 }

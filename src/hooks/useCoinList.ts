@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getAssets } from '@/libs/asset';
+import { getAssets } from '@/libs/asset/coin/default/getAssets';
 
 export function useCoinList() {
   const fetcher = async () => {

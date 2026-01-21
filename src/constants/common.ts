@@ -18,8 +18,8 @@ export const MOONPAY_API_URL = 'https://buy.moonpay.com';
 
 export const MOONPAY_API_KEY = 'pk_live_zbG1BOGMVTcfKibboIE2K3vduJBTuuCn';
 
-export const BALANCE_FETCH_TIME_OUT_MS = 1000 * 15;
-export const STAKING_FETCH_TIME_OUT_MS = 1000 * 15;
+export const BALANCE_FETCH_TIME_OUT_MS = 1000 * 10;
+export const STAKING_FETCH_TIME_OUT_MS = 1000 * 10;
 export const DEFAULT_FETCH_TIME_OUT_MS = 1000 * 1;
 
 interface MajorChain {
@@ -31,6 +31,7 @@ export const DEFAULT_MAJOR_CHAINS: MajorChain[] = [
   { id: 'cosmos', chainType: 'cosmos' },
   { id: 'bitcoin', chainType: 'bitcoin' },
   { id: 'ethereum', chainType: 'evm' },
+  { id: 'solana', chainType: 'solana' },
 ];
 
 export const DATA_FRESHNESS = {
@@ -38,3 +39,5 @@ export const DATA_FRESHNESS = {
   WARNING: 'warning',
   STALE: 'stale',
 } as const;
+
+export const POPUP_DISMISS_DELAY_MS = 500;
