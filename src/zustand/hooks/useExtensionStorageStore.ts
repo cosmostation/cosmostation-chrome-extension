@@ -5,59 +5,60 @@ import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import type { CurrencyType } from '@/types/currency';
-import type { ExtensionStorage, ExtensionStorageKeys } from '@/types/extension';
-import type { ExtensionStorageState, ExtensionStorageStore } from '@/types/store/extensionStorage';
-import { deleteKeysContainingString, getAllExtensionLocalStorage, getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
+import type { ExtensionStorage, StoreSyncedStorage, StoreSyncedStorageKeys } from '@/types/extension';
+import type { ExtensionStorageStore } from '@/types/store/extensionStorage';
+import { deleteKeysContainingString, getExtensionLocalStorage, getMultipleFromExtensionStorage, setExtensionLocalStorage } from '@/utils/storage';
 
-export const initialState: ExtensionStorageState = {
-  userAccounts: [],
-  paramsV11: {},
-  assetsV11: [],
-  erc20Assets: [],
-  customErc20Assets: [],
-  cw20Assets: [],
-  grc20Assets: [],
-  customCw20Assets: [],
-  spltokenAssets: [],
-  initAccountIds: [],
-  initCheckLegacyBalanceAccountIds: [],
-  dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
-  dappListSortKey: DefaultSortKey.dappListSortKey,
-  chainListSortKey: DefaultSortKey.chainListSortKey,
-  userLanguagePreference: 'en',
-  comparisonPasswordHash: '',
-  accountNamesById: {},
-  mnemonicNamesByHashedMnemonic: {},
-  currentAccountId: '',
-  notBackedUpAccountIds: [],
+export const initialState: StoreSyncedStorage = {
   userCurrencyPreference: CURRENCY_TYPE.USD as CurrencyType,
-  preferAccountType: {},
-  addressBookList: [],
-  addedCustomChainList: [],
-  customAssets: [],
-  customHiddenAssetIds: [],
-  requestQueue: [],
-  approvedOrigins: [],
-  adPopoverState: {},
+  userPriceTrendPreference: PRICE_TREND_TYPE.GREEN_UP,
+  userLanguagePreference: 'en',
+  dappListSortKey: DefaultSortKey.dappListSortKey,
+  dashboardCoinSortKey: DefaultSortKey.dashboardCoinSortKey,
+  chainListSortKey: DefaultSortKey.chainListSortKey,
   isBalanceVisible: true,
   isHideSmalValue: false,
-  approvedSuiPermissions: [],
-  approvedIotaPermissions: [],
+  autoLockTimeInMinutes: '30',
+
+  userAccounts: [],
+  accountNamesById: {},
+  mnemonicNamesByHashedMnemonic: {},
+  notBackedUpAccountIds: [],
+  preferAccountType: {},
+
   chosenEthereumNetworkId: '',
-  chosenSuiNetworkId: '',
   chosenAptosNetworkId: '',
+  chosenSuiNetworkId: '',
   chosenBitcoinNetworkId: '',
   chosenIotaNetworkId: '',
   chosenSolanaNetworkId: '',
   chosenGnoNetworkId: '',
-  currentWindowId: null,
-  prioritizedProvider: { keplr: false, metamask: false, aptos: false },
+  selectedChainFilterId: null,
+  addedCustomChainList: [],
+
+  customErc20Assets: [],
+  customCw20Assets: [],
+  customAssets: [],
+  customHiddenAssetIds: [],
+
+  approvedOrigins: [],
+  approvedSuiPermissions: [],
+  approvedIotaPermissions: [],
   pinnedDappIds: [],
-  autoLockTimeInMinutes: '30',
+  prioritizedProvider: { keplr: false, metamask: false, aptos: false },
+
+  addressBookList: [],
+
+  comparisonPasswordHash: '',
+
+  currentAccountId: '',
+  initAccountIds: [],
+  initCheckLegacyBalanceAccountIds: [],
+  requestQueue: [],
+  adPopoverState: {},
+  currentWindowId: null,
   autoLockTimeStampAt: null,
   migrationStatus: null,
-  userPriceTrendPreference: PRICE_TREND_TYPE.GREEN_UP,
-  selectedChainFilterId: null,
   lastRequestTimestamps: null,
 };
 
@@ -67,10 +68,10 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
   return {
     ...initialState,
     updateExtensionStorageStore: async (key, value) => {
-      await setExtensionLocalStorage(key, value);
+      await setExtensionLocalStorage(key, value as ExtensionStorage[typeof key]);
 
       set((state) =>
-        produce(state, (draft: ExtensionStorage) => {
+        produce(state, (draft: StoreSyncedStorage) => {
           draft[key] = value;
         }),
       );
@@ -80,7 +81,7 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
       const extensionStorageKeys = Object.keys(initialState);
       const shouldDeleteKeys = extensionStorageKeys.filter((key) => !notDeleteKeys.includes(key));
 
-      const resetPromises = shouldDeleteKeys.map((key) => setExtensionLocalStorage(key as ExtensionStorageKeys, initialState[key as ExtensionStorageKeys]));
+      const resetPromises = shouldDeleteKeys.map((key) => setExtensionLocalStorage(key as StoreSyncedStorageKeys, initialState[key as StoreSyncedStorageKeys]));
       await Promise.all(resetPromises);
 
       const removePromises = accounts.map(({ id }) => deleteKeysContainingString(id));
@@ -92,13 +93,14 @@ export const useExtensionStorageStore = create<ExtensionStorageStore>()((set) =>
 });
 
 export const loadExtensionStorageStoreFromStorage = async () => {
-  const allStorage = await getAllExtensionLocalStorage();
+  const allKeys = Object.keys(initialState) as StoreSyncedStorageKeys[];
+  const storage = await getMultipleFromExtensionStorage(allKeys);
 
-  useExtensionStorageStore.setState({ ...allStorage });
+  useExtensionStorageStore.setState({ ...initialState, ...storage });
 };
 
-export const loadExtensionStorageStoreFromStorageByKey = async <K extends ExtensionStorageKeys>(key: K) => {
-  const value = (await getExtensionLocalStorage(key)) as ExtensionStorageStore[K];
+export const loadExtensionStorageStoreFromStorageByKey = async <K extends StoreSyncedStorageKeys>(key: K) => {
+  const value = (await getExtensionLocalStorage(key)) as StoreSyncedStorage[K];
 
   useExtensionStorageStore.setState({ [key]: value } as Pick<ExtensionStorageStore, K>);
 };

@@ -12,7 +12,7 @@ import type { Account as NewAccount, AccountNamesById, MnemonicAccount as NewMne
 import type { CustomCosmosAsset, CustomEvmAsset } from '@/types/asset';
 import type { CustomCosmosChain, CustomEvmChain } from '@/types/chain';
 import type { CurrencyType as NewCurrencyType } from '@/types/currency';
-import type { ExtensionStorageKeys, PrioritizedProvider } from '@/types/extension';
+import type { PrioritizedProvider, StoreSyncedStorageKeys } from '@/types/extension';
 import { getUniqueChainId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 import { initialState, notDeleteKeys } from '@/zustand/hooks/useExtensionStorageStore';
@@ -342,7 +342,7 @@ export async function skipMigration() {
   const extensionStorageKeys = Object.keys(initialState);
   const shouldDeleteKeys = extensionStorageKeys.filter((key) => !notDeleteKeys.includes(key));
 
-  const resetPromises = shouldDeleteKeys.map((key) => setExtensionLocalStorage(key as ExtensionStorageKeys, initialState[key as ExtensionStorageKeys]));
+  const resetPromises = shouldDeleteKeys.map((key) => setExtensionLocalStorage(key as StoreSyncedStorageKeys, initialState[key as StoreSyncedStorageKeys]));
   await Promise.all(resetPromises);
 
   await setExtensionLocalStorage('migrationStatus', {
