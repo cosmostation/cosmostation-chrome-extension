@@ -66,7 +66,7 @@ export default function Cosmos({ coinId }: CosmosProps) {
   const navigate = useNavigate();
   const { addTx } = useTxTrackerStore();
 
-  const { userCurrencyPreference } = useExtensionStorageStore((state) => state);
+  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const { data: coinGeckoPrice } = useCoinGeckoPrice();
 
   const { currentAccount } = useCurrentAccount();
