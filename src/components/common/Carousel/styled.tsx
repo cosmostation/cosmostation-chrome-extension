@@ -2,27 +2,20 @@ import { styled } from '@mui/material/styles';
 
 export const CarouselContainer = styled('div')({
   width: '100%',
-  display: 'flex',
   position: 'relative',
 });
 
-type CarouselItemContainerProps = {
-  currentIndex: number;
+type CarouselItemProps = {
+  isActive?: boolean;
 };
 
-export const CarouselItemContainer = styled('div')<CarouselItemContainerProps>((props) => ({
-  display: 'flex',
+export const CarouselItem = styled('div')<CarouselItemProps>(({ isActive }) => ({
   width: '100%',
-  transform: `translateX(-${props['currentIndex'] * 100}%)`,
-  transition: 'transform 0.5s ease-in-out',
-}));
-
-export const CarouselItem = styled('div')({
-  width: '100%',
-  minWidth: '100%',
   height: '100%',
-  transition: 'transform 0.5s ease-in-out',
-});
+  position: isActive ? 'relative' : 'absolute',
+  top: 0,
+  left: 0,
+}));
 
 export const IndicatorContainer = styled('div')({
   display: 'flex',
@@ -35,18 +28,21 @@ type IndicatorProps = {
 };
 
 export const Indicator = styled('button')<IndicatorProps>(({ theme, ...props }) => ({
-  width: '1rem',
-  height: '1rem',
+  width: props['isActive'] ? '1.3rem' : '0.6rem',
+  height: '0.6rem',
 
-  borderRadius: '50%',
+  borderRadius: props['isActive'] ? '10rem' : '50%',
   padding: 0,
 
   cursor: 'pointer',
 
-  background: props['isActive'] ? theme.palette.color.base1200 : theme.palette.color.base100,
-  margin: '0 0.25rem',
+  background: theme.palette.color.base1200,
+  opacity: props['isActive'] ? '1' : '0.2',
+
+  margin: '0 0.2rem',
   border: 'none',
+  transition: 'width 0.3s ease-out, border-radius 0.3s ease-out, opacity 0.3s ease-out',
   '&:hover': {
-    background: theme.palette.color.base1200,
+    opacity: '1',
   },
 }));

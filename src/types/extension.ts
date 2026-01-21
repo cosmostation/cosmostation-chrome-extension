@@ -192,6 +192,7 @@ export interface StorageState {
   migrationStatus: MigrationStatus | null;
   lastRequestTimestamps: LastRequestTimestamps | null;
   bugFix?: Record<string, boolean>;
+  dismissedAdIds?: string[];
 }
 
 export interface StoreSyncedStorage

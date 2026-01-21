@@ -9,7 +9,7 @@ import FloatingContents from '@/components/FloatingButton/components/FloatingCon
 import FooterCoinPrice from '@/components/FooterCoinPrice';
 import Header from '@/components/Header';
 import NavigationPanel from '@/components/Header/components/NavigationPanel';
-import { BABYLON_POPOVER_ID, DROP_POPOVER_ID, STAKE_ETH_POPOVER_ID } from '@/constants/adPopover';
+import { BABYLON_POPOVER_ID, STAKE_ETH_POPOVER_ID } from '@/constants/adPopover';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
 import { Route as CoinAbout } from '@/pages/coin-detail/$coinId/about';
@@ -23,8 +23,6 @@ import { FloatingButtonContainer, FooterContainer } from './-styled';
 
 import BabylonFloatingImage from '@/assets/images/ad/babylonFloating.png';
 import BabylonDialogImage from '@/assets/images/ad/babylonPopup.png';
-import DropFloatingImage from '@/assets/images/ad/dropFloating.png';
-import DropDialogImage from '@/assets/images/ad/dropPopup.png';
 import EthereumFloatingImage from '@/assets/images/ad/ethereumFloating.png';
 import EthereumDialogImage from '@/assets/images/ad/ethereumPopup.png';
 
@@ -34,24 +32,6 @@ type LayoutProps = {
 };
 
 export const FLOATING_CONTENTS_CONFIG = [
-  {
-    condition: (id: string, chainId: string) => id === 'uatom' && chainId === 'cosmos',
-    content: {
-      popOverId: DROP_POPOVER_ID,
-      image: DropFloatingImage,
-      bgImage: DropDialogImage,
-      launchButtonText: 'Liquid Stake',
-      borderColor: {
-        startColor: '#E7D5FC',
-        endColor: '#302659',
-      },
-      launchButtonStyle: {
-        bgColor: '#6F4AFF',
-        hoverColor: '#6443E5',
-      },
-      launchFunc: () => window.open('https://app.drop.money/dashboard?referral_code=dropmaga', '_blank'),
-    },
-  },
   {
     condition: (id: string, chainId: string, chainType: ChainType) =>
       (id === 'ubbn' && (chainId === 'babylon' || chainId === 'babylon-testnet')) || chainType === 'bitcoin',
