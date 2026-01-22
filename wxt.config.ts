@@ -7,6 +7,7 @@ import { defineConfig } from 'wxt';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 
 import { tanstackRouterHmr } from './vite.plugin/hmr';
+import { wrapInjectScriptPlugin } from './vite.plugin/wrapInjectScript';
 
 const EXTENSION_DESCRIPTION = 'Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.';
 
@@ -153,6 +154,7 @@ export default defineConfig({
         }),
         ...modePlugins,
         esToolkitPlugin(),
+        wrapInjectScriptPlugin(),
       ],
     } as WxtViteConfig;
   },

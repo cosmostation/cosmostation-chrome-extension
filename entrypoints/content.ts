@@ -7,5 +7,3 @@ export default defineContentScript({
     return import('@/script/content');
   },
 });
-
-

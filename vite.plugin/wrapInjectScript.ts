@@ -5,7 +5,7 @@ export function wrapInjectScriptPlugin(): PluginOption {
     name: 'wrap-inject-script',
     enforce: 'post',
     generateBundle(_, bundle) {
-      const injectFile = bundle['js/inject.js'];
+      const injectFile = bundle['inject.js'];
 
       if (injectFile && injectFile.type === 'chunk') {
         const originalCode = injectFile.code;
