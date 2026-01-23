@@ -36,6 +36,7 @@ export const ThumbnailImageContainer = styled(SkeletonImage)({
   aspectRatio: '4 / 3',
   maxWidth: '100%',
   height: 'auto',
+  objectFit: 'cover',
 });
 
 export const BodyContainer = styled('div')({

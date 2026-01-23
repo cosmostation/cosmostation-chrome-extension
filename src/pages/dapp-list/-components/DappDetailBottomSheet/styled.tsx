@@ -157,6 +157,7 @@ export const ThumbnailImageContainer = styled(Image)({
   aspectRatio: '4 / 3',
   maxWidth: '70%',
   height: 'auto',
+  objectFit: 'cover',
 });
 
 export const PinButton = styled('button')({
