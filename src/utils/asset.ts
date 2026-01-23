@@ -143,6 +143,21 @@ export function getDefaultAssets<T extends FlatAccountAssets>(
   });
 }
 
+export function getDefaultAssetsByChainId<T extends FlatAccountAssets>(accountAssets?: T[], uniqueChainId?: UniqueChainId | null): T[] | undefined {
+  if (!uniqueChainId || !accountAssets || accountAssets.length === 0) return undefined;
+
+  const defaultCoins = getDefaultAssets(getFilteredAssetsByChainId(accountAssets, uniqueChainId));
+
+  if (!defaultCoins?.length) return undefined;
+
+  return defaultCoins.toSorted((a, b) => {
+    const denoms = a.chain.chainDefaultCoinDenoms ?? [];
+    const idxA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
+    const idxB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
+    return (idxA < 0 ? Number.MAX_SAFE_INTEGER : idxA) - (idxB < 0 ? Number.MAX_SAFE_INTEGER : idxB);
+  });
+}
+
 export function isAccountCosmosStakableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset {
   return asset.chain.chainType === 'cosmos' && asset.asset.type === 'native' && 'delegation' in asset;
 }

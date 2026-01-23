@@ -63,7 +63,8 @@ type DappDetailBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomS
 
 export default function DappDetailBottomSheet({ dappInfo, onClose, ...remainder }: DappDetailBottomSheetProps) {
   const { t } = useTranslation();
-  const { pinnedDappIds, updateExtensionStorageStore } = useExtensionStorageStore((state) => state);
+  const pinnedDappIds = useExtensionStorageStore((state) => state.pinnedDappIds);
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const { flatChainList } = useChainList();
 

@@ -2,9 +2,8 @@ import Typography from '@mui/material/Typography';
 
 import BalanceDisplay from '@/components/BalanceDisplay';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
-import type { PortfolioCoinItem } from '@/pages/-entry';
-import { plus } from '@/utils/numbers';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
+import { usePortfolioValueStore } from '@/zustand/hooks/usePortfolioValueStore';
 
 import { Container, StyledIconButton, ValueButton } from './styled';
 import { StyledIconContainer, TotalBalanceContainer } from '../../styled';
@@ -12,22 +11,18 @@ import { StyledIconContainer, TotalBalanceContainer } from '../../styled';
 import RefreshIcon from '@/assets/images/icons/Refresh18.svg';
 
 interface BalanceValueButtonProps {
-  accountAssets: PortfolioCoinItem[];
   isUpdatingBalance: boolean;
   handleManualBalanceUpdate: () => void;
 }
 
-export default function BalanceValueButton({ accountAssets, isUpdatingBalance, handleManualBalanceUpdate }: BalanceValueButtonProps) {
+export default function BalanceValueButton({ isUpdatingBalance, handleManualBalanceUpdate }: BalanceValueButtonProps) {
   const { isLoading } = useCoinGeckoPrice();
   const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const isBalanceVisible = useExtensionStorageStore((state) => state.isBalanceVisible);
   const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
-  const aggregateValue = accountAssets.reduce((acc, cur) => {
-    const sum = plus(acc, cur.value);
-
-    return sum;
-  }, '0');
+  const totalValue = usePortfolioValueStore((state) => state.totalValue);
+  const hasAssets = usePortfolioValueStore((state) => state.hasAssets);
 
   return (
     <Container>
@@ -37,11 +32,11 @@ export default function BalanceValueButton({ accountAssets, isUpdatingBalance, h
         }}
       >
         <TotalBalanceContainer>
-          {!accountAssets || accountAssets.length === 0 || isLoading ? (
+          {!hasAssets || isLoading ? (
             <Typography variant="h1n_B">{'--'}</Typography>
           ) : (
             <BalanceDisplay typoOfIntegers="h1n_B" typoOfDecimals="h2n_M" currency={userCurrencyPreference} isDisableLeadingCurreny>
-              {aggregateValue}
+              {totalValue}
             </BalanceDisplay>
           )}
           &nbsp;

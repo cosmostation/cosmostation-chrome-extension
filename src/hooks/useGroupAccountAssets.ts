@@ -2,9 +2,7 @@ import { useMemo } from 'react';
 
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { FlatAccountAssets, SingleOrGroupAccountAssets } from '@/types/accountAssets';
-import { isStakeableAsset } from '@/utils/asset';
 import { lt, plus, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 
 import { useAccountAllAssets } from './useAccountAllAssets';
 import { useCurrentAccount } from './useCurrentAccount';
@@ -26,9 +24,13 @@ type UseGroupAccountAssetsProps =
     }
   | undefined;
 
+function getAssetDisplayAmount(asset: FlatAccountAssets): string {
+  const totalBalance = 'totalBalance' in asset ? asset.totalBalance || asset.balance || '0' : asset.balance;
+  return toDisplayDenomAmount(totalBalance, asset.asset.decimals);
+}
+
 export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps = {}) {
   const { currentAccount } = useCurrentAccount();
-
   const param = accountId || currentAccount.id;
 
   const {
@@ -43,101 +45,103 @@ export function useGroupAccountAssets({ accountId }: UseGroupAccountAssetsProps 
   });
 
   const groupAccountAssets = useMemo(() => {
-    const assetToSingleOrGroup = currentAccountAssets?.flatAccountAssets.reduce<SingleAndGroupedAssets>(
-      (acc, asset) => {
-        if (!asset.asset.coinGeckoId) {
-          acc.singles.push(asset);
-          return acc;
+    const flatAssets = currentAccountAssets?.flatAccountAssets;
+    if (!flatAssets?.length) return null;
+
+    const singles: SingleOrGroupAccountAssets[] = [];
+    const groupMap: Record<string, FlatAccountAssets[]> = {};
+
+    const groupInfo: Record<
+      string,
+      {
+        representative: FlatAccountAssets;
+        totalAmount: string;
+        count: number;
+        oldestUpdateTime?: number;
+      }
+    > = {};
+
+    for (const asset of flatAssets) {
+      const displayAmount = getAssetDisplayAmount(asset);
+      const coinGeckoId = asset.asset.coinGeckoId;
+
+      if (!coinGeckoId) {
+        singles.push({
+          ...asset,
+          totalDisplayAmount: displayAmount,
+          counts: '1',
+        });
+        continue;
+      }
+
+      if (!groupInfo[coinGeckoId]) {
+        groupInfo[coinGeckoId] = {
+          representative: asset,
+          totalAmount: displayAmount,
+          count: 1,
+          oldestUpdateTime: asset.lastUpdatedAtMs || undefined,
+        };
+        groupMap[coinGeckoId] = [asset];
+      } else {
+        const info = groupInfo[coinGeckoId];
+
+        info.totalAmount = plus(info.totalAmount, displayAmount);
+        info.count += 1;
+        groupMap[coinGeckoId].push(asset);
+
+        if (asset.lastUpdatedAtMs && (!info.oldestUpdateTime || lt(asset.lastUpdatedAtMs, info.oldestUpdateTime))) {
+          info.oldestUpdateTime = asset.lastUpdatedAtMs;
         }
 
-        if (!acc.groups[asset.asset.coinGeckoId]) {
-          acc.groups[asset.asset.coinGeckoId] = [asset];
-        } else {
-          acc.groups[asset.asset.coinGeckoId].push(asset);
+        if (shouldReplaceRepresentative(info.representative, asset)) {
+          info.representative = asset;
         }
-        return acc;
-      },
-      { singles: [], groups: {} },
-    );
+      }
+    }
 
-    if (!assetToSingleOrGroup) return null;
+    const groupedAssets: SingleOrGroupAccountAssets[] = [];
+    const finalGroupMap: Record<string, FlatAccountAssets[]> = {};
 
-    const singles = assetToSingleOrGroup.singles;
-    const groups = assetToSingleOrGroup.groups;
-
-    const validGroups = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(groups).filter(([_, value]) => {
-        return value.length > 1;
-      }),
-    );
-
-    const invalidGroups = Object.values(
-      Object.fromEntries(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        Object.entries(groups).filter(([_, value]) => {
-          return value.length === 1;
-        }),
-      ),
-    );
-
-    const singleAccountAssets = [...singles, ...invalidGroups.flat()].map((item) => {
-      const totalBalance = isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
-
-      return {
-        ...item,
-        totalDisplayAmount: toDisplayDenomAmount(totalBalance, item.asset.decimals),
-        counts: '1',
-      };
-    });
-
-    const coinGeckoIdToTotalDisplayAmount = Object.entries(validGroups).reduce((acc: Record<string, string>, [coinGeckoId, value]) => {
-      const filteredAccountAssets =
-        currentAccountAssets?.flatAccountAssets.filter((item) => value.some((v) => getCoinId(v.asset) === getCoinId(item.asset))) || [];
-
-      const totalAmount = filteredAccountAssets.reduce((totalAmount, cur) => {
-        const totalBalance = isStakeableAsset(cur) ? cur.totalBalance || cur.balance || '0' : cur.balance;
-
-        const displayAmount = toDisplayDenomAmount(totalBalance, cur.asset.decimals);
-
-        return plus(totalAmount, displayAmount);
-      }, '0');
-
-      return { ...acc, [coinGeckoId]: totalAmount };
-    }, {});
-
-    const groupAccountAssets = Object.values(validGroups).map((item) => {
-      const sortList = item.sort((a) => {
-        if (a.asset.type === 'native') {
-          return -1;
-        }
-        return 1;
-      });
-
-      const firstItem = sortList[0].asset.id === NATIVE_EVM_COIN_ADDRESS ? sortList.find((v) => v.chain.id === 'ethereum') || sortList[0] : sortList[0];
-
-      const oldestItem = sortList.reduce<FlatAccountAssets | null>((min, curr) => {
-        if (!curr.lastUpdatedAtMs) return min;
-
-        if (!min?.lastUpdatedAtMs || lt(curr.lastUpdatedAtMs, min.lastUpdatedAtMs)) return curr;
-
-        return min;
-      }, null);
-
-      return {
-        ...firstItem,
-        totalDisplayAmount: coinGeckoIdToTotalDisplayAmount[firstItem.asset.coinGeckoId || ''] || '0',
-        counts: item.length.toString(),
-        lastUpdatedAtMs: oldestItem?.lastUpdatedAtMs,
-      };
-    });
+    for (const [coinGeckoId, info] of Object.entries(groupInfo)) {
+      if (info.count === 1) {
+        singles.push({
+          ...info.representative,
+          totalDisplayAmount: info.totalAmount,
+          counts: '1',
+        });
+      } else {
+        finalGroupMap[coinGeckoId] = groupMap[coinGeckoId];
+        groupedAssets.push({
+          ...info.representative,
+          totalDisplayAmount: info.totalAmount,
+          counts: info.count.toString(),
+          lastUpdatedAtMs: info.oldestUpdateTime,
+        });
+      }
+    }
 
     return {
-      singleAccountAssets,
-      groupAccountAssets,
-      groupMap: validGroups,
+      singleAccountAssets: singles,
+      groupAccountAssets: groupedAssets,
+      groupMap: finalGroupMap,
     };
   }, [currentAccountAssets?.flatAccountAssets]);
 
   return { groupAccountAssets, isLoading, isFetching };
+}
+
+function shouldReplaceRepresentative(existingBest: FlatAccountAssets, newAsset: FlatAccountAssets): boolean {
+  const isNewNative = newAsset.asset.type === 'native';
+  const isExistingNative = existingBest.asset.type === 'native';
+
+  if (!isExistingNative && isNewNative) {
+    return true;
+  }
+
+  if (isExistingNative && isNewNative) {
+    const isEthereumMainnet = newAsset.asset.id === NATIVE_EVM_COIN_ADDRESS && newAsset.chain.id === 'ethereum';
+    return isEthereumMainnet;
+  }
+
+  return false;
 }
