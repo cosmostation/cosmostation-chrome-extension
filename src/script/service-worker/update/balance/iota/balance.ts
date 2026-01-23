@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressBalanceIota } from '@/types/account';
@@ -27,7 +28,7 @@ export async function iotaBalances(accountId: string, { chainId, priority, updat
 
       stored = upsertIotaBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${accountId}-balance-iota`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-iota`>>({ [`${accountId}-balance-iota`]: stored });
 
       updateAssets?.();
     }

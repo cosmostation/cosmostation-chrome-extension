@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
+import { browser } from 'wxt/browser';
+import { type Browser } from 'wxt/browser';
 
-import { extension } from '@/utils/browser';
 import { isSidePanelView } from '@/utils/view/sidepanel';
 
 import { useRefreshAccountAllAssets } from '../useRefreshAccountAllAssets';
@@ -10,7 +11,7 @@ export function useServiceWorkerMessageReceiver() {
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   useEffect(() => {
-    const handler = (request: any, _: any, sendResponse: (response?: any) => void) => {
+    const handler = (request: any, _: Browser.runtime.MessageSender, sendResponse: (response?: any) => void) => {
       if (request.type === 'sidePanelState') {
         try {
           const enabled = isSidePanelView();
@@ -25,10 +26,10 @@ export function useServiceWorkerMessageReceiver() {
       }
     };
 
-    extension.runtime.onMessage.addListener(handler);
+    browser.runtime.onMessage.addListener(handler);
 
     return () => {
-      extension.runtime.onMessage.removeListener(handler);
+      browser.runtime.onMessage.removeListener(handler);
     };
   }, [refreshAssets]);
 }

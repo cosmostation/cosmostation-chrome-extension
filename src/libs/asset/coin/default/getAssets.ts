@@ -1,4 +1,5 @@
 import { isEqual } from 'es-toolkit';
+import { browser } from 'wxt/browser';
 
 import { getChains } from '@/libs/chain';
 import type { AccountAddress } from '@/types/account';
@@ -180,7 +181,7 @@ export async function getAssets() {
     customCw20Assets,
     grc20Assets,
     spltokenAssets,
-  } = await chrome.storage.local.get<ExtensionStorage>([
+  } = await browser.storage.local.get<ExtensionStorage>([
     'assetsV11',
     'cw20Assets',
     'erc20Assets',
@@ -319,7 +320,7 @@ export async function getAssets() {
 }
 
 export async function getAssetsWithChainAndAddress(id: string): Promise<AssetsStore> {
-  const { customErc20Assets: customErc20AssetsData, customCw20Assets: customCw20AssetsData } = await chrome.storage.local.get<ExtensionStorage>([
+  const { customErc20Assets: customErc20AssetsData, customCw20Assets: customCw20AssetsData } = await browser.storage.local.get<ExtensionStorage>([
     'customErc20Assets',
     'customCw20Assets',
   ]);
@@ -367,7 +368,7 @@ export async function getAssetsWithChainAndAddress(id: string): Promise<AssetsSt
   }
 
   const [assetStorage, chainMaps] = await Promise.all([
-    chrome.storage.local.get<ExtensionStorage>(['assetsV11', 'cw20Assets', 'erc20Assets', 'grc20Assets', 'spltokenAssets']),
+    browser.storage.local.get<ExtensionStorage>(['assetsV11', 'cw20Assets', 'erc20Assets', 'grc20Assets', 'spltokenAssets']),
     createAllChainMap(),
   ]);
 

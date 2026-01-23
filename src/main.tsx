@@ -2,6 +2,7 @@ import '@/lang/i18n';
 
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createHashHistory, createRouter, RouterProvider } from '@tanstack/react-router';
@@ -11,6 +12,7 @@ import { theme } from '@/styles/theme';
 import ToastContainer from './components/common/ToastContainer';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
+import { detectIsPopup } from './utils/firefox/view';
 
 import '@/styles/normalize.css';
 
@@ -26,17 +28,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Reload the popup when rebuilding in development
-if (__APP_MODE__ === 'development') {
-  const socket = new WebSocket(`ws://localhost:${__APP_DEV_WEBSOCKET_PORT__}`);
-
-  socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.type === 'reload-popup') {
-      location.reload();
-    }
-  };
-}
+const shouldForceFixedPopupWidth = __APP_BROWSER__ === 'firefox' && detectIsPopup();
 
 // Render the app
 const rootElement = document.getElementById('root')!;
@@ -45,6 +37,15 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeProvider theme={theme} defaultMode="dark">
+        {shouldForceFixedPopupWidth && (
+          <GlobalStyles
+            styles={{
+              body: {
+                width: '36rem',
+              },
+            }}
+          />
+        )}
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
           <ToastContainer />

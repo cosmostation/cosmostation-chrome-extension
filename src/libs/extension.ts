@@ -1,12 +1,14 @@
+import { browser } from 'wxt/browser';
+
 import type { Message, MessageResponse } from '@/types/message';
 
 // to service worker
 export async function sendMessage<T extends Message>(message: T): Promise<MessageResponse<T>> {
   if (message.target === 'SERVICE_WORKER') {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(chrome.runtime.id, message, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message));
+      browser.runtime.sendMessage(browser.runtime.id, message, (response) => {
+        if (browser.runtime.lastError) {
+          reject(new Error(browser.runtime.lastError.message));
         } else {
           resolve(response);
         }
@@ -19,9 +21,9 @@ export async function sendMessage<T extends Message>(message: T): Promise<Messag
 
     if (tabId) {
       return new Promise((resolve, reject) =>
-        chrome.tabs.sendMessage(tabId, message, (response) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
+        browser.tabs.sendMessage(tabId, message, (response) => {
+          if (browser.runtime.lastError) {
+            reject(new Error(browser.runtime.lastError.message));
           } else {
             resolve(response);
           }
@@ -29,9 +31,9 @@ export async function sendMessage<T extends Message>(message: T): Promise<Messag
       );
     } else {
       return new Promise((resolve, reject) => {
-        chrome.tabs.query({ url: `${origin}/*` }, (tabs) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
+        browser.tabs.query({ url: `${origin}/*` }, (tabs) => {
+          if (browser.runtime.lastError) {
+            reject(new Error(browser.runtime.lastError.message));
           }
 
           if (tabs.length === 0) {
@@ -40,9 +42,9 @@ export async function sendMessage<T extends Message>(message: T): Promise<Messag
 
           tabs.forEach((tab) => {
             if (tab.id) {
-              chrome.tabs.sendMessage(tab.id, message, (response) => {
-                if (chrome.runtime.lastError) {
-                  reject(new Error(chrome.runtime.lastError.message));
+              browser.tabs.sendMessage(tab.id, message, (response) => {
+                if (browser.runtime.lastError) {
+                  reject(new Error(browser.runtime.lastError.message));
                 } else {
                   resolve(response);
                 }

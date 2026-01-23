@@ -1,49 +1,31 @@
+import { browser } from 'wxt/browser';
+import { type Browser } from 'wxt/browser';
+
 import { extension } from '../browser';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
-export function getWindow(windowId: number): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
+export function getWindow(windowId: number): Promise<Browser.windows.Window | undefined> {
   return new Promise((res, rej) => {
-    if (__APP_BROWSER__ === 'chrome') {
-      void chrome.windows.getAll((windows) => {
-        if (extension.runtime.lastError) {
-          rej(extension.runtime.lastError);
-        }
+    void browser.windows.getAll((windows) => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
+      }
 
-        const specificWindow = windows.find((window) => window.id === windowId);
-        res(specificWindow);
-      });
-    } else {
-      void browser.windows.getAll().then((windows) => {
-        if (extension.runtime.lastError) {
-          rej(extension.runtime.lastError);
-        }
-
-        const specificWindow = windows.find((window) => window.id === windowId);
-        res(specificWindow);
-      });
-    }
+      const specificWindow = windows.find((window) => window.id === windowId);
+      res(specificWindow);
+    });
   });
 }
 
-export function getCurrentWindowInfo(): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
+export function getCurrentWindowInfo(): Promise<Browser.windows.Window | undefined> {
   return new Promise((res, rej) => {
-    if (__APP_BROWSER__ === 'chrome') {
-      void chrome.windows.getCurrent((windows) => {
-        if (chrome.runtime.lastError) {
-          rej(chrome.runtime.lastError);
-        }
+    void browser.windows.getCurrent((windows) => {
+      if (browser.runtime.lastError) {
+        rej(browser.runtime.lastError);
+      }
 
-        res(windows);
-      });
-    } else {
-      void browser.windows.getCurrent().then((windows) => {
-        if (browser.runtime.lastError) {
-          rej(browser.runtime.lastError);
-        }
-
-        res(windows);
-      });
-    }
+      res(windows);
+    });
   });
 }
 

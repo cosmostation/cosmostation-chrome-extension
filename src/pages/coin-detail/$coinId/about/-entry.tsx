@@ -36,9 +36,9 @@ import {
   ValueContainer,
 } from './-styled';
 
-import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron14.svg';
+import BottomFilledChevronIcon from '@/assets/images/icons/BottomFilledChevron10.svg';
 import CoinGeckoIcon from '@/assets/images/icons/CoinGecko20.svg';
-import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron8.svg';
+import TopFilledChevronIcon from '@/assets/images/icons/TopFilledChevron10.svg';
 
 type EntryProps = {
   coinId: string;

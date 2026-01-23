@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
@@ -40,7 +41,7 @@ export async function cosmosDelegations(accountId: string, { chainId, priority, 
 
       stored = upsertCosmosDelegation(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${accountId}-delegation-cosmos`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-cosmos`>>({ [`${accountId}-delegation-cosmos`]: stored });
 
       updateAssets?.();
     }
@@ -63,7 +64,7 @@ export async function cosmosUnbondings(accountId: string, { chainId, priority, u
       const results = await getCosmosUnbondingsForAddresses(accountId, startUpdateTime, chunk);
       stored = upsertCosmosUndelegation(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${accountId}-undelegation-cosmos`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-undelegation-cosmos`>>({ [`${accountId}-undelegation-cosmos`]: stored });
 
       updateAssets?.();
     }
@@ -87,7 +88,7 @@ export async function cosmosRewards(accountId: string, { chainId, priority, upda
 
       stored = upsertCosmosReward(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${accountId}-reward-cosmos`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-reward-cosmos`>>({ [`${accountId}-reward-cosmos`]: stored });
 
       updateAssets?.();
     }
@@ -146,7 +147,7 @@ export async function cosmosCommissions(accountId: string, { chainId, priority, 
 
       stored = upsertCosmosCommission(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${accountId}-commission-cosmos`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-commission-cosmos`>>({ [`${accountId}-commission-cosmos`]: stored });
 
       updateAssets?.();
     }

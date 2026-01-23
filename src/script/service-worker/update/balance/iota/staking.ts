@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressDelegationsIota } from '@/types/account';
@@ -27,7 +28,7 @@ export async function iotaStaking(accountId: string, { chainId, priority, update
 
       stored = upsertIotaDelegation(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${accountId}-delegation-iota`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-iota`>>({ [`${accountId}-delegation-iota`]: stored });
 
       updateAssets?.();
     }

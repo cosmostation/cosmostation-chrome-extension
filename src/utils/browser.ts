@@ -1,6 +1,8 @@
+import { browser } from 'wxt/browser';
+
 import { BROWSER_NAME, BROWSER_TYPE } from '@/constants/browser';
 
-export const extension = __APP_BROWSER__ === 'chrome' ? chrome : browser;
+export const extension = browser;
 
 export function getUserAgentName() {
   return window.navigator.userAgent.toLocaleLowerCase();
@@ -20,7 +22,7 @@ export function getBrowserKeyName() {
   if (agentName.indexOf('opr') > -1 && !!window.opr) {
     return BROWSER_TYPE.OPERA;
   }
-  if (agentName.indexOf('chrome') > -1 && !!window.chrome) {
+  if (agentName.indexOf('chrome') > -1) {
     return BROWSER_TYPE.CHROME;
   }
   if (agentName.indexOf('trident') > -1) {

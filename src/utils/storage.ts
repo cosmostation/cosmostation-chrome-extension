@@ -1,4 +1,5 @@
 import { produce } from 'immer';
+import { browser } from 'wxt/browser';
 
 import { CURRENCY_TYPE } from '@/constants/currency';
 import { DefaultSortKey } from '@/constants/initialStorage';
@@ -24,18 +25,18 @@ export async function getExtensionLocalStorage<T extends ExtensionStorageKeys>(k
 }
 
 export const deleteKeysContainingString = async (searchString: string): Promise<void> => {
-  chrome.storage.local.get(null, (items) => {
-    if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError);
+  browser.storage.local.get(null, (items) => {
+    if (browser.runtime.lastError) {
+      console.error(browser.runtime.lastError);
       return;
     }
 
     const keysToDelete = Object.keys(items).filter((key) => key.includes(searchString));
 
     if (keysToDelete.length > 0) {
-      chrome.storage.local.remove(keysToDelete, () => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
+      browser.storage.local.remove(keysToDelete, () => {
+        if (browser.runtime.lastError) {
+          console.error(browser.runtime.lastError);
         }
       });
     } else {

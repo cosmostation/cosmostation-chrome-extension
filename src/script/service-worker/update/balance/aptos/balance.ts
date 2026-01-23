@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressBalanceAptosV2 } from '@/types/account';
@@ -27,7 +28,7 @@ export async function aptosBalances(accountId: string, { chainId, priority, upda
 
       stored = upsertAptosBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${accountId}-balance-aptos-v2`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-aptos-v2`>>({ [`${accountId}-balance-aptos-v2`]: stored });
 
       updateAssets?.();
     }

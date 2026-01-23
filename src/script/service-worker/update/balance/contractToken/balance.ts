@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import { chainToDeploymentMap } from '@/constants/evm/mutlicall3';
@@ -35,7 +36,7 @@ export async function cw20Balance(id: string, { chainId, priority, updateAssets,
 
     const hiddenAssetIdSet = await getHiddenAssetsSet(id);
 
-    const { cw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets']);
+    const { cw20Assets } = await browser.storage.local.get<ExtensionStorage>(['cw20Assets']);
 
     const cw20AssetsWithoutHidden = cw20Assets.filter((asset) => {
       const isAssetVisible = !hiddenAssetIdSet?.has(getCoinId(asset));
@@ -86,7 +87,7 @@ export async function cw20Balance(id: string, { chainId, priority, updateAssets,
 
         stored = upsertCW20Balance(stored, [result]);
 
-        await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: stored });
+        await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cw20`>>({ [`${id}-balance-cw20`]: stored });
 
         updateAssets?.();
       }
@@ -102,7 +103,7 @@ export async function erc20Balance(accountId: string, { chainId, priority, updat
 
     const hiddenAssetIdSet = await getHiddenAssetsSet(accountId);
 
-    const { erc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['erc20Assets']);
+    const { erc20Assets } = await browser.storage.local.get<ExtensionStorage>(['erc20Assets']);
 
     const erc20AssetsToDisplay = erc20Assets.filter((asset) => {
       const isAssetVisible = !hiddenAssetIdSet?.has(getCoinId(asset));
@@ -214,7 +215,7 @@ export async function erc20Balance(accountId: string, { chainId, priority, updat
 
       stored = upsertERC20Balance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${accountId}-balance-erc20`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-erc20`>>({ [`${accountId}-balance-erc20`]: stored });
 
       updateAssets?.();
     }
@@ -231,7 +232,7 @@ export async function customErc20Balance(id: string, { chainId, updateAssets, ch
 
     const chainMapInstance = await createChainMap('evm');
 
-    const { customErc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['customErc20Assets']);
+    const { customErc20Assets } = await browser.storage.local.get<ExtensionStorage>(['customErc20Assets']);
 
     const isUpdateSpecificAddress = !!chainId;
 
@@ -349,7 +350,7 @@ export async function customErc20Balance(id: string, { chainId, updateAssets, ch
 
       stored = upsertERC20Balance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-erc20`>>({ [`${id}-custom-balance-erc20`]: stored });
 
       updateAssets?.();
     }
@@ -366,7 +367,7 @@ export async function customCw20Balance(id: string, { chainId, updateAssets, chu
 
     const cosmwasmChainMapInstance = await createCosmwasmChainMap();
 
-    const { customCw20Assets } = await chrome.storage.local.get<ExtensionStorage>(['customCw20Assets']);
+    const { customCw20Assets } = await browser.storage.local.get<ExtensionStorage>(['customCw20Assets']);
 
     const isUpdateSpecificAddress = !!chainId;
 
@@ -418,7 +419,7 @@ export async function customCw20Balance(id: string, { chainId, updateAssets, chu
 
         stored = upsertCW20Balance(stored, [result]);
 
-        await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: stored });
+        await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cw20`>>({ [`${id}-custom-balance-cw20`]: stored });
 
         updateAssets?.();
       }
@@ -525,7 +526,7 @@ export async function grc20Balances(accountId: string, { chainId, priority, upda
 
     const hiddenAssetIdSet = await getHiddenAssetsSet(accountId);
 
-    const { grc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['grc20Assets']);
+    const { grc20Assets } = await browser.storage.local.get<ExtensionStorage>(['grc20Assets']);
 
     const grc20AssetsToDisplay = grc20Assets.filter((asset) => {
       const isAssetVisible = !hiddenAssetIdSet?.has(getCoinId(asset));
@@ -575,7 +576,7 @@ export async function grc20Balances(accountId: string, { chainId, priority, upda
 
       stored = upsertERC20Balance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-grc20`>>({ [`${accountId}-balance-grc20`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-grc20`>>({ [`${accountId}-balance-grc20`]: stored });
 
       updateAssets?.();
     }
@@ -666,7 +667,7 @@ export async function splTokenBalance(accountId: string, { chainId, priority, up
 
       stored = upsertSplTokenBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${accountId}-balance-spltoken`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-spltoken`>>({ [`${accountId}-balance-spltoken`]: stored });
 
       updateAssets?.();
     }

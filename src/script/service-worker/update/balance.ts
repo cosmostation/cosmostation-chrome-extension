@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 
 import { getAccount } from '@/libs/account';
 import { getHiddenAssets } from '@/libs/asset';
@@ -223,7 +224,7 @@ export async function updatePriorityBalance(id: string, priority: 'high' | 'low'
 
 export async function initAccount(id: string) {
   await getAccount(id);
-  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+  const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
@@ -245,19 +246,19 @@ export async function initAccount(id: string) {
     const defaultVisibleAssetIds = getDefaultVisibleAsset();
 
     if (initAccountIds?.length > 0) {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
     } else {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
     }
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
 }
 
 export async function updateHiddenAssetsExcludingDefault(id: string) {
   await getAccount(id);
-  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+  const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
@@ -279,22 +280,22 @@ export async function updateHiddenAssetsExcludingDefault(id: string) {
     const defaultVisibleAssetIds = getDefaultVisibleAsset();
 
     if (initAccountIds?.length > 0) {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [...initAccountIds, id] });
     } else {
-      await chrome.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
+      await browser.storage.local.set<Pick<ExtensionStorage, 'initAccountIds'>>({ initAccountIds: [id] });
     }
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: uniqueHiddenAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-visible-assetIds`>>({ [`${id}-visible-assetIds`]: defaultVisibleAssetIds });
   }
 }
 
 export async function initAssests(id: string) {
   await getAccount(id);
-  const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+  const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
   if (!initAccountIds?.includes(id)) {
-    const { cw20Assets, erc20Assets, grc20Assets } = await chrome.storage.local.get<ExtensionStorage>(['cw20Assets', 'erc20Assets', 'grc20Assets']);
+    const { cw20Assets, erc20Assets, grc20Assets } = await browser.storage.local.get<ExtensionStorage>(['cw20Assets', 'erc20Assets', 'grc20Assets']);
 
     const nonPreloadedERC20Tokens = erc20Assets.filter((asset) => !asset.wallet_preload);
     const nonPreloadedCW20Assets = cw20Assets.filter((asset) => !asset.wallet_preload);
@@ -304,6 +305,6 @@ export async function initAssests(id: string) {
       return { id: asset.id, chainId: asset.chainId, chainType: asset.chainType };
     });
 
-    await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
+    await browser.storage.local.set<Pick<ExtensionStorage, `${string}-hidden-assetIds`>>({ [`${id}-hidden-assetIds`]: hiddenAssetIds });
   }
 }

@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressBalanceGno } from '@/types/account';
@@ -27,7 +28,7 @@ export async function gnoBalances(accountId: string, { chainId, priority, update
 
       stored = upsertGnoBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${accountId}-balance-gno`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-gno`>>({ [`${accountId}-balance-gno`]: stored });
 
       updateAssets?.();
     }

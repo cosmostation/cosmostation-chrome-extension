@@ -1,4 +1,5 @@
 import ChromeIcon from '@/assets/images/icons/Chrome16.svg';
+import FireFoxIcon from '@/assets/images/icons/FireFox24.svg';
 
 export const BROWSER_TYPE = {
   EDGE: 'edge',
@@ -28,7 +29,7 @@ export const BROWSER_ICON = {
   [BROWSER_TYPE.OPERA]: ChromeIcon,
   [BROWSER_TYPE.CHROME]: ChromeIcon,
   [BROWSER_TYPE.IE]: ChromeIcon,
-  [BROWSER_TYPE.FIREFOX]: ChromeIcon,
+  [BROWSER_TYPE.FIREFOX]: FireFoxIcon,
   [BROWSER_TYPE.SAFARI]: ChromeIcon,
   [BROWSER_TYPE.ETC]: ChromeIcon,
 } as const;

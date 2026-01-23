@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import { getHiddenCustomAssetsSet, getVisibleAssetsSet } from '@/libs/asset';
 import type { AccountCustomCosmosAsset, AccountCustomEvmAsset } from '@/types/account';
 import type { AssetBase } from '@/types/asset';
@@ -14,7 +16,7 @@ type GetAccountCustomAssetsOption = {
 
 export async function getAccountCustomAssets(id: string, option?: GetAccountCustomAssetsOption) {
   devLogger.time('getAccountCustomAssets');
-  const storage = await chrome.storage.local.get<ExtensionStorage>([
+  const storage = await browser.storage.local.get<ExtensionStorage>([
     `${id}-custom-address`,
     `${id}-custom-balance-cosmos`,
     `${id}-custom-balance-evm`,

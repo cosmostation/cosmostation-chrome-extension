@@ -1,31 +1,43 @@
+import type { Browser } from 'wxt/browser';
+import { browser as crossBrowser } from 'wxt/browser';
+
+import { VIEW_PREFERENCE_TYPE } from '@/constants/userPreference/view';
+
 import { isSidePanelView } from './sidepanel';
 import { getCurrentExtensionTabInfo } from './tab';
 import { getCurrentWindowInfo, getWindow } from './window';
-import { extension } from '../browser';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '../storage';
 
-export function setSidePanelWithDefaultView(path?: string) {
-  openSidePanel(path);
+export async function setSidePanelWithDefaultView(path?: string) {
+  if (__APP_BROWSER__ === 'firefox') {
+    browser.sidebarAction.open();
+    window.close();
+  } else {
+    openSidePanel(path);
 
-  if (__APP_BROWSER__ === 'chrome') {
-    chrome.sidePanel.setPanelBehavior({
+    crossBrowser.sidePanel.setPanelBehavior({
       openPanelOnActionClick: true,
     });
+
+    window.close();
   }
 
-  window.close();
+  await setExtensionLocalStorage('userViewPreference', VIEW_PREFERENCE_TYPE.SIDE_PANEL);
 }
 
-export function setPopupAsDefaultView() {
-  if (__APP_BROWSER__ === 'chrome') {
-    chrome.sidePanel.setPanelBehavior({
+export async function setPopupAsDefaultView() {
+  if (__APP_BROWSER__ === 'firefox') {
+    browser.sidebarAction.close();
+  } else {
+    crossBrowser.sidePanel.setPanelBehavior({
       openPanelOnActionClick: false,
     });
-  }
 
-  if (isSidePanelView()) {
-    closeSidePanel();
+    if (isSidePanelView()) {
+      closeSidePanel();
+    }
   }
+  await setExtensionLocalStorage('userViewPreference', VIEW_PREFERENCE_TYPE.POPUP);
 }
 
 export async function openSidePanel(path?: string) {
@@ -39,32 +51,20 @@ export async function openSidePanel(path?: string) {
 
   const currentPath = `sidepanel.html${path ? `#${path}` : ''}`;
 
-  if (__APP_BROWSER__ === 'chrome') {
-    if (!chrome.sidePanel) {
-      return;
-    }
-
-    chrome.sidePanel.setOptions({
-      path: currentPath,
-      enabled: true,
-    });
-
-    chrome.sidePanel.open({ windowId });
-  } else {
-    browser.sidebarAction.setPanel({
-      panel: currentPath,
-    });
-
-    browser.sidebarAction.open();
+  if (!crossBrowser.sidePanel) {
+    return;
   }
+
+  crossBrowser.sidePanel.setOptions({
+    path: currentPath,
+    enabled: true,
+  });
+
+  crossBrowser.sidePanel.open({ windowId });
 }
 
 export function closeSidePanel() {
-  if (__APP_BROWSER__ === 'chrome') {
-    window.close();
-  } else {
-    browser.sidebarAction.close();
-  }
+  window.close();
 }
 
 export async function openTab(path?: string) {
@@ -75,9 +75,9 @@ export async function openTab(path?: string) {
   if (currentTab && currentWindow?.type !== 'popup') {
     return;
   } else {
-    const url = extension.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
+    const url = crossBrowser.runtime.getURL(`/popup.html${path ? `#${path}` : ''}`);
 
-    extension.tabs.create({ active: true, url });
+    crossBrowser.tabs.create({ active: true, url });
   }
 }
 
@@ -88,11 +88,11 @@ export async function closeTab(id?: number): Promise<void> {
     return;
   }
 
-  extension.tabs.remove(currentTabId);
+  crossBrowser.tabs.remove(currentTabId);
 }
 
-export async function openPopupWindow(): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
-  const url = extension.runtime.getURL('popup.html');
+export async function openPopupWindow(): Promise<Browser.windows.Window | undefined> {
+  const url = crossBrowser.runtime.getURL('/popup.html');
 
   const queues = await getExtensionLocalStorage('requestQueue');
 
@@ -115,14 +115,14 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
     )
   ).filter((item) => item !== undefined);
 
-  const width = 375;
+  const width = 360;
   const height = 640;
 
   let left = 0;
   let top = 0;
 
   try {
-    const res = await extension.windows.getLastFocused();
+    const res = await crossBrowser.windows.getLastFocused();
 
     if (res.width && res.left !== undefined) {
       left = Math.round(res.width - width + res.left);
@@ -138,32 +138,20 @@ export async function openPopupWindow(): Promise<chrome.windows.Window | browser
     if (currentWindows.length > 0) {
       res(currentWindows[0]);
       if (currentWindows[0]?.id) {
-        void extension.windows.update(currentWindows[0].id, { focused: true });
+        void crossBrowser.windows.update(currentWindows[0].id, { focused: true });
       }
       return;
     }
 
-    if (__APP_BROWSER__ === 'chrome') {
-      chrome.windows.create({ width, height, top, left, url, type: 'popup' }, (window) => {
-        void (async () => {
-          if (extension.runtime.lastError) {
-            rej(extension.runtime.lastError);
-          }
-          await setExtensionLocalStorage('currentWindowId', window?.id ?? null);
-          res(window);
-        })();
-      });
-    } else {
-      void browser.windows.create({ width, height, top, left, url, type: 'popup' }).then((window) => {
-        void (async () => {
-          if (extension.runtime.lastError) {
-            rej(extension.runtime.lastError);
-          }
-          await setExtensionLocalStorage('currentWindowId', window?.id ?? null);
-          res(window);
-        })();
-      });
-    }
+    crossBrowser.windows.create({ width, height, top, left, url, type: 'popup' }, (window) => {
+      void (async () => {
+        if (crossBrowser.runtime.lastError) {
+          rej(crossBrowser.runtime.lastError);
+        }
+        await setExtensionLocalStorage('currentWindowId', window?.id ?? null);
+        res(window);
+      })();
+    });
   });
 }
 
@@ -174,9 +162,5 @@ export async function closePopupWindow() {
     return;
   }
 
-  if (__APP_BROWSER__ === 'chrome') {
-    chrome.windows.remove(currentWindow.id);
-  } else {
-    browser.windows.remove(currentWindow.id);
-  }
+  crossBrowser.windows.remove(currentWindow.id);
 }

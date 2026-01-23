@@ -9,6 +9,7 @@ export function useUpdateAccountInfo() {
 
   const fetcher = async () => {
     await sendMessage({ target: 'SERVICE_WORKER', method: 'updateAccountInfo', params: [currentAccount.id] });
+    return true;
   };
 
   const { data, isLoading, error } = useQuery({

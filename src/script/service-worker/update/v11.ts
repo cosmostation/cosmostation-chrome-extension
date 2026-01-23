@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 
 import { MINTSCAN_FRONT_API_V11_URL } from '@/constants/common';
 import { updateHiddenAssets } from '@/libs/asset';
@@ -210,7 +211,7 @@ async function hideNewContractTokens(erc20Assets: EvmErc20Asset[], cw20Assets: C
     erc20Assets: storedERC20AssetsV11,
     cw20Assets: storedCW20Assets,
     grc20Assets: storedGRC20Assets,
-  } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'grc20Assets']);
+  } = await browser.storage.local.get<ExtensionStorage>(['userAccounts', 'erc20Assets', 'cw20Assets', 'grc20Assets']);
 
   const storedAccountsIds = storedAccounts?.map((account) => account.id) ?? [];
 

@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import { COREUM_CHAINLIST_ID } from '@/constants/cosmos/chain';
@@ -32,7 +33,7 @@ export async function cosmosBalances(accountId: string, { isMinimal = false, cha
 
       stored = upsertCosmosBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${accountId}-balance-cosmos`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-cosmos`>>({ [`${accountId}-balance-cosmos`]: stored });
 
       updateAssets?.();
     }
@@ -74,7 +75,7 @@ async function getCosmosBalancesForAddresses(accountId: string, startUpdateTime:
               lockedBalances: [lockedAssetInfo],
             };
 
-            await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${accountId}-locked-cosmos`]: [lockedResult] });
+            await browser.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${accountId}-locked-cosmos`]: [lockedResult] });
 
             const result: AccountAddressBalanceCosmos = {
               id: accountId,
@@ -88,7 +89,7 @@ async function getCosmosBalancesForAddresses(accountId: string, startUpdateTime:
 
             return result;
           } catch {
-            await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${accountId}-locked-cosmos`]: [] });
+            await browser.storage.local.set<Pick<ExtensionStorage, `${string}-locked-cosmos`>>({ [`${accountId}-locked-cosmos`]: [] });
 
             const result: AccountAddressBalanceCosmos = {
               id: accountId,
@@ -163,7 +164,7 @@ export async function customCosmosBalances(accountId: string, { chainId, updateA
 
       stored = upsertCosmosBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${accountId}-custom-balance-cosmos`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-cosmos`>>({ [`${accountId}-custom-balance-cosmos`]: stored });
 
       updateAssets?.();
     }

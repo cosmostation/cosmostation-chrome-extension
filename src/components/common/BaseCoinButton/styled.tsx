@@ -52,9 +52,9 @@ export const RightContainer = styled('div')({
 });
 
 export const RightTextContainer = styled('div')({
-  display: 'grid',
-
-  gridTemplateColumns: '1fr',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
 
   rowGap: '0.2rem',
 });

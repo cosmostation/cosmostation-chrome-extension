@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import { KAVA_CHAINLIST_ID, PERSISTENCE_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { IOTA_COIN_TYPE } from '@/constants/iota';
 import { SUI_COIN_TYPE } from '@/constants/sui';
@@ -156,7 +158,7 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 }
 
 async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; chain: CosmosChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([
+  const storage = await browser.storage.local.get<ExtensionStorage>([
     `${id}-balance-cosmos`,
     `${id}-account-info-cosmos`,
     `${id}-locked-cosmos`,
@@ -293,7 +295,7 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
 }
 
 async function getCW20AccountAssets(id: string, assets: { asset: CosmosCw20Asset; chain: CosmosChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-cw20`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-cw20`]);
 
   const cw20BalancesMap = new Map((storage[`${id}-balance-cw20`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]));
 
@@ -333,7 +335,7 @@ async function getEVMAccountAssets(
   assets: { asset: EvmAsset; chain: EvmChain; addresses: AccountAddress[] }[],
   cosmosAssets: { asset: CosmosAsset; chain: CosmosChain; addresses: AccountAddress[] }[],
 ) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([
+  const storage = await browser.storage.local.get<ExtensionStorage>([
     `${id}-balance-evm`,
     `${id}-delegation-cosmos`,
     `${id}-undelegation-cosmos`,
@@ -462,7 +464,7 @@ async function getEVMAccountAssets(
 }
 
 async function getERC20AccountAssets(id: string, assets: { asset: EvmErc20Asset; chain: EvmChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-erc20`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-erc20`]);
 
   const erc20BalancesMap = new Map(
     (storage[`${id}-balance-erc20`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),
@@ -501,7 +503,7 @@ async function getERC20AccountAssets(id: string, assets: { asset: EvmErc20Asset;
 }
 
 async function getCustomERC20AccountAssets(id: string, assets: { asset: EvmErc20Asset; chain: EvmChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-balance-erc20`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-custom-balance-erc20`]);
 
   const customErc20BalancesMap = new Map(
     (storage[`${id}-custom-balance-erc20`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),
@@ -540,7 +542,7 @@ async function getCustomERC20AccountAssets(id: string, assets: { asset: EvmErc20
 }
 
 async function getCustomCW20AccountAssets(id: string, assets: { asset: CosmosCw20Asset; chain: CosmosChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-custom-balance-cw20`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-custom-balance-cw20`]);
 
   const customCw20BalancesMap = new Map(
     (storage[`${id}-custom-balance-cw20`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),
@@ -578,7 +580,7 @@ async function getCustomCW20AccountAssets(id: string, assets: { asset: CosmosCw2
 }
 
 async function getAptosAccountAssets(id: string, assets: { asset: AptosAsset; chain: AptosChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-aptos-v2`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-aptos-v2`]);
 
   const aptosBalances = storage[`${id}-balance-aptos-v2`] || [];
 
@@ -611,7 +613,7 @@ async function getAptosAccountAssets(id: string, assets: { asset: AptosAsset; ch
     .flat();
 }
 async function getSuiAccountAssets(id: string, assets: { asset: SuiAsset; chain: SuiChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-sui`, `${id}-delegation-sui`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-sui`, `${id}-delegation-sui`]);
 
   const suiBalances = storage[`${id}-balance-sui`] || [];
   const suiDelegations = storage[`${id}-delegation-sui`] || [];
@@ -688,7 +690,7 @@ async function getSuiAccountAssets(id: string, assets: { asset: SuiAsset; chain:
     .flat();
 }
 async function getBitcoinAccountAssets(id: string, assets: { asset: BitcoinAsset; chain: BitcoinChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-bitcoin`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-bitcoin`]);
 
   const bitcoinBalances = storage[`${id}-balance-bitcoin`] || [];
 
@@ -732,7 +734,7 @@ async function getBitcoinAccountAssets(id: string, assets: { asset: BitcoinAsset
     .flat();
 }
 async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chain: IotaChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-iota`, `${id}-delegation-iota`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-iota`, `${id}-delegation-iota`]);
 
   const iotaBalances = storage[`${id}-balance-iota`] || [];
   const iotaDelegations = storage[`${id}-delegation-iota`] || [];
@@ -810,7 +812,7 @@ async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chai
 }
 
 async function getGnoAccountAssets(id: string, assets: { asset: GnoAsset; chain: GnoChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-gno`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-gno`]);
 
   const gnoBalances = storage[`${id}-balance-gno`] || [];
 
@@ -845,7 +847,7 @@ async function getGnoAccountAssets(id: string, assets: { asset: GnoAsset; chain:
 }
 
 async function getGrc20AccountAssets(id: string, assets: { asset: GnoGrc20Asset; chain: GnoChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-grc20`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-grc20`]);
 
   const grc20BalancesMap = new Map(
     (storage[`${id}-balance-grc20`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),
@@ -884,7 +886,7 @@ async function getGrc20AccountAssets(id: string, assets: { asset: GnoGrc20Asset;
 }
 
 async function getSolanaAccountAssets(id: string, assets: { asset: SolanaAsset; chain: SolanaChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-solana`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-solana`]);
 
   const solanaBalances = storage[`${id}-balance-solana`] || [];
 
@@ -919,7 +921,7 @@ async function getSolanaAccountAssets(id: string, assets: { asset: SolanaAsset; 
 }
 
 async function getSplTokenAccountAssets(id: string, assets: { asset: SolanaSpltokenAsset; chain: SolanaChain; addresses: AccountAddress[] }[]) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>([`${id}-balance-spltoken`]);
+  const storage = await browser.storage.local.get<ExtensionStorage>([`${id}-balance-spltoken`]);
 
   const spltokenBalancesMap = new Map(
     (storage[`${id}-balance-spltoken`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]),

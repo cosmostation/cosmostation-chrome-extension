@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressBalanceSolana } from '@/types/account';
@@ -27,7 +28,7 @@ export async function solanaBalances(id: string, { chainId, priority, updateAsse
 
       stored = upsertSolanaBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-solana`>>({ [`${id}-balance-solana`]: stored });
 
       updateAssets?.();
     }

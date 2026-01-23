@@ -1,4 +1,5 @@
 import { debounce } from 'es-toolkit';
+import { browser } from 'wxt/browser';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '@/constants/error';
 import { sendMessage } from '@/libs/extension';
@@ -20,11 +21,7 @@ export const setQueues = debounce(
 
       let sidePanelStatusResponse;
       try {
-        if (__APP_BROWSER__ === 'chrome') {
-          sidePanelStatusResponse = await chrome.runtime.sendMessage({ type: 'sidePanelState' });
-        } else {
-          sidePanelStatusResponse = await browser.runtime.sendMessage({ type: 'sidePanelState' });
-        }
+        sidePanelStatusResponse = await browser.runtime.sendMessage({ type: 'sidePanelState' });
       } catch (e) {
         console.error(e);
       }

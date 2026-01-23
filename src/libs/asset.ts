@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import type { DynamicFieldInfo as IotaDynamicFieldInfo, IotaObjectDataOptions, IotaObjectResponse, IotaObjectResponseQuery } from '@iota/iota-sdk/client';
 import { IotaClient, Network as IotaNetwork } from '@iota/iota-sdk/client';
 import { KioskClient as IotaKioskClient } from '@iota/kiosk';
@@ -20,7 +21,7 @@ import { getAccountAddress } from './account';
 import { getChains } from './chain';
 
 export async function getHiddenAssets(id: string) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-hidden-assetIds`);
+  const storage = await browser.storage.local.get<ExtensionStorage>(`${id}-hidden-assetIds`);
 
   const hiddenAssetIds = storage[`${id}-hidden-assetIds`];
 
@@ -44,11 +45,11 @@ export async function updateHiddenAssets(id: string, hiddenAssetIds: AssetId[]) 
 
   const updatedHiddenAssetIds = [...filteredStoredHiddenAssetIds, ...hiddenAssetIds];
 
-  await chrome.storage.local.set({ [`${id}-hidden-assetIds`]: updatedHiddenAssetIds });
+  await browser.storage.local.set({ [`${id}-hidden-assetIds`]: updatedHiddenAssetIds });
 }
 
 export async function getHiddenCustomAssets() {
-  const storage = await chrome.storage.local.get<ExtensionStorage>('customHiddenAssetIds');
+  const storage = await browser.storage.local.get<ExtensionStorage>('customHiddenAssetIds');
 
   const hiddenCustomAssetIds = storage['customHiddenAssetIds'];
 
@@ -64,7 +65,7 @@ export async function getHiddenCustomAssetsSet(): Promise<Set<string>> {
 }
 
 export async function getVisibleAssets(id: string) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-visible-assetIds`);
+  const storage = await browser.storage.local.get<ExtensionStorage>(`${id}-visible-assetIds`);
 
   const visibleAssetIds = storage[`${id}-visible-assetIds`];
 

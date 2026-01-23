@@ -14,15 +14,20 @@ export const requestApp = <T extends Request>(message: BaseRequest) =>
     });
 
     const handler = (event: CustomEvent<Response<T>>) => {
-      const { detail } = event;
-      if (detail.id === requestId) {
-        window.removeEventListener(RESPONSE_TYPE, handler, false);
+      try {
+        const { id, error, result } = event.detail || {};
 
-        if (detail?.error) {
-          rej(detail.error);
-        } else {
-          res(detail.result);
+        if (id === requestId) {
+          window.removeEventListener(RESPONSE_TYPE, handler, false);
+
+          if (error) {
+            rej(error);
+          } else {
+            res(result);
+          }
         }
+      } catch (err) {
+        console.error('Event handler error:', err);
       }
     };
 

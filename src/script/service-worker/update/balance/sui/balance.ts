@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressBalanceSui } from '@/types/account';
@@ -27,7 +28,7 @@ export async function suiBalances(id: string, { chainId, priority, updateAssets,
 
       stored = upsertSuiBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-sui`>>({ [`${id}-balance-sui`]: stored });
 
       updateAssets?.();
     }

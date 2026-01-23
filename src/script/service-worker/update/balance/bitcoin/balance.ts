@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import { BALANCE_FETCH_TIME_OUT_MS } from '@/constants/common';
@@ -29,7 +30,7 @@ export async function bitcoinBalances(accountId: string, { chainId, priority, up
 
       stored = upsertBitcoinBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${accountId}-balance-bitcoin`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-bitcoin`>>({ [`${accountId}-balance-bitcoin`]: stored });
 
       updateAssets?.();
     }

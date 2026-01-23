@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import {
   APTOS_LISTENER_TYPE,
   BITCOIN_LISTENER_TYPE,
@@ -13,6 +15,7 @@ import type { ChainType } from '@/types/chain';
 import type { ListenerType } from '@/types/message';
 import type { ContentMessage } from '@/types/message/content';
 import { devLogger } from '@/utils/devLogger';
+import { normalizeEventDetail } from '@/utils/firefox/event';
 
 window.addEventListener('cosmostation_request', (event) => {
   (async () => {
@@ -22,18 +25,19 @@ window.addEventListener('cosmostation_request', (event) => {
   })();
 });
 
-chrome.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message: ContentMessage, sender, sendResponse) => {
   devLogger.log('content message', message);
   devLogger.log('content sender', sender);
 
-  if (sender?.id === chrome.runtime.id && message?.target === 'CONTENT') {
+  if (sender?.id === browser.runtime.id && message?.target === 'CONTENT') {
     if (message.method === 'responseApp') {
-      const event = new CustomEvent('cosmostation_response', {
-        detail: message.params,
-      });
+      const detail = normalizeEventDetail(message.params);
+
+      const event = new CustomEvent('cosmostation_response', { detail });
 
       window.dispatchEvent(event);
       sendResponse(null);
+      return;
     }
 
     if (message.method === 'openSidePanel') {
@@ -65,7 +69,7 @@ const getListenerTypes = (chainType: ChainType): ListenerType[] => {
   return CHAIN_TYPE_TO_LISTENER_TYPES[chainType] ?? [];
 };
 
-chrome.runtime.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   (
     data: {
       event: ListenerType;
@@ -74,18 +78,19 @@ chrome.runtime.onMessage.addListener(
     },
     sender,
   ) => {
-    if (sender.id !== chrome.runtime.id) return false;
+    if (sender.id !== browser.runtime.id) return false;
 
     const validListenerTypes = getListenerTypes(data.chainType);
 
     if (!validListenerTypes.includes(data.event)) return false;
 
-    const customEvent = new CustomEvent(data.event, {
-      detail: {
-        chainType: data.chainType,
-        data: data.data,
-      },
-    });
+    const detailParam = {
+      chainType: data.chainType,
+      data: data.data,
+    };
+    const detail = normalizeEventDetail(detailParam);
+
+    const customEvent = new CustomEvent(data.event, { detail });
 
     window.dispatchEvent(customEvent);
 
@@ -128,7 +133,7 @@ function injectScript() {
   try {
     const container = document.head || document.documentElement;
     const scriptTag = document.createElement('script');
-    scriptTag.setAttribute('src', chrome.runtime.getURL('js/inject.js'));
+    scriptTag.setAttribute('src', browser.runtime.getURL('/inject.js'));
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,10 +1,12 @@
+import { browser } from 'wxt/browser';
+
 import type { Account } from '@/types/account';
 import type { ExtensionStorage } from '@/types/extension';
 import { aesDecrypt } from '@/utils/crypto';
 import { getExtensionLocalStorage, getExtensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 export async function getAccount(id: string) {
-  const { userAccounts: accounts } = await chrome.storage.local.get<ExtensionStorage>('userAccounts');
+  const { userAccounts: accounts } = await browser.storage.local.get<ExtensionStorage>('userAccounts');
 
   const account = accounts?.find((account) => account.id === id);
 
@@ -38,7 +40,7 @@ export async function addAccount(account: Account) {
 }
 
 export async function getAccountAddress(id: string) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-address`);
+  const storage = await browser.storage.local.get<ExtensionStorage>(`${id}-address`);
 
   const address = storage[`${id}-address`] || [];
 
@@ -46,7 +48,7 @@ export async function getAccountAddress(id: string) {
 }
 
 export async function getCustomAccountAddress(id: string) {
-  const storage = await chrome.storage.local.get<ExtensionStorage>(`${id}-custom-address`);
+  const storage = await browser.storage.local.get<ExtensionStorage>(`${id}-custom-address`);
 
   const address = storage[`${id}-custom-address`] || [];
 

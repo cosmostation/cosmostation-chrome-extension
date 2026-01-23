@@ -1,4 +1,5 @@
 import { produce } from 'immer';
+import { browser } from 'wxt/browser';
 
 import { getAddedCustomChains, getChains } from '@/libs/chain';
 import type { AccountAddress } from '@/types/account';
@@ -14,7 +15,7 @@ async function getExtensionLocalStorage<T extends ExtensionStorageKeys>(key: T) 
 }
 
 export async function getCosmosDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId, accountNamesById, preferAccountType } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId, accountNamesById, preferAccountType } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',
@@ -30,7 +31,7 @@ export async function getCosmosDefaultStorageData() {
 
   const currentAccountName = accountNamesById[currentAccountId];
 
-  const currentAccountAddressInfo: AccountAddress[] = (await chrome.storage.local.get(`${currentAccountId}-address`))[`${currentAccountId}-address`] || [];
+  const currentAccountAddressInfo: AccountAddress[] = (await browser.storage.local.get(`${currentAccountId}-address`))[`${currentAccountId}-address`] || [];
 
   return {
     currentAccount,
@@ -43,7 +44,7 @@ export async function getCosmosDefaultStorageData() {
 }
 
 async function getCurrentAccount() {
-  const { userAccounts, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'currentAccountId']);
+  const { userAccounts, currentAccountId } = await browser.storage.local.get<ExtensionStorage>(['userAccounts', 'currentAccountId']);
 
   const currentAccount = userAccounts?.find((account) => account.id === currentAccountId);
 
@@ -126,7 +127,7 @@ export async function getCurrentAptosNetwork() {
 }
 
 export async function getAptosDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',
@@ -160,7 +161,7 @@ export async function getCurrentSuiNetwork() {
 }
 
 export async function getSuiDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId, approvedSuiPermissions } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId, approvedSuiPermissions } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',
@@ -184,7 +185,7 @@ export async function getSuiDefaultStorageData() {
 }
 
 export async function getCurrentBitcoinNetwork() {
-  const { chosenBitcoinNetworkId, preferAccountType, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+  const { chosenBitcoinNetworkId, preferAccountType, currentAccountId } = await browser.storage.local.get<ExtensionStorage>([
     'chosenBitcoinNetworkId',
     'preferAccountType',
     'currentAccountId',
@@ -207,7 +208,7 @@ export async function getCurrentBitcoinNetwork() {
 }
 
 export async function getBitcoinDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',
@@ -240,7 +241,7 @@ export async function getCurrentIotaNetwork() {
 }
 
 export async function getIotaDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId, approvedIotaPermissions } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId, approvedIotaPermissions } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',
@@ -275,7 +276,7 @@ export async function getCurrentSolanaNetwork() {
 }
 
 export async function getSolanaDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',
@@ -308,7 +309,7 @@ export async function getCurrentGnoNetwork() {
 }
 
 export async function getGnoDefaultStorageData() {
-  const { userAccounts, approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>([
+  const { userAccounts, approvedOrigins, currentAccountId } = await browser.storage.local.get<ExtensionStorage>([
     'userAccounts',
     'approvedOrigins',
     'currentAccountId',

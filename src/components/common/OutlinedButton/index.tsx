@@ -31,7 +31,7 @@ export default function OutlinedButton({
       {isProgress ? (
         <StyledCircularProgress size={14} />
       ) : (
-        <ContentContainer data-is-leadingIcon={!!leadingIcon} data-is-trailingIcon={!!trailingIcon}>
+        <ContentContainer data-is-leading-icon={!!leadingIcon} data-is-trailing-icon={!!trailingIcon}>
           {leadingIcon}
           <Typography variant={typoVarient}>{children}</Typography>
           {trailingIcon}

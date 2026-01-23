@@ -8,8 +8,8 @@ import tseslint from 'typescript-eslint';
 import eslint from '@eslint/js';
 
 export default [
-  { ignores: ['**/dist/', '**/dist-dev/', '**/src/proto/'] },
-  { files: ['**/src/*.{js,mjs,cjs,ts,jsx,tsx}'] },
+  { ignores: ['**/dist/', '**/dist-dev/', '**/.output/', '**/.wxt/', '**/src/proto/'] },
+  { files: ['src/**/*.{js,mjs,cjs,ts,jsx,tsx}', 'entrypoints/**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   { languageOptions: { globals: globals.browser } },
   ...tseslint.config(eslint.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.stylistic),
   {

@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import { extension } from '@/utils/browser';
 
 import type { LegacyExtensionStorage } from './migration';
@@ -42,7 +44,7 @@ const legacyStorageKeys: LegacyExtensionStorageKeys[] = [
 ];
 
 export async function backupData() {
-  const oldData = await chrome.storage.local.get(legacyStorageKeys);
+  const oldData = await browser.storage.local.get(legacyStorageKeys);
   const dataString = JSON.stringify(oldData);
 
   await extension.storage.local.set({ backupLocalData: dataString });

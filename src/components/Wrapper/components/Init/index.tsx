@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Browser } from 'wxt/browser';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { LANGUAGE_TYPE } from '@/constants/language';
@@ -53,7 +54,7 @@ export default function Init({ children }: InitProps) {
   }, [i18n]);
 
   const handleLocalStorageChange = useCallback(
-    async (changes: Record<string, browser.storage.StorageChange>) => {
+    async (changes: Record<string, Browser.storage.StorageChange>) => {
       const keys = Object.keys(changes);
 
       for (const key of keys) {

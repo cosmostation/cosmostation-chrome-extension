@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser';
+
 import { getAddress, getKeypair } from '@/libs/address';
 import { getChains } from '@/libs/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -7,7 +9,7 @@ import { extensionSessionStorage } from './storage';
 import { getBitcoinDefaultStorageData } from './storage/localStorage';
 
 export async function emitChangedAddressEvent(newAccountId: string) {
-  const { userAccounts, approvedOrigins } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'approvedOrigins']);
+  const { userAccounts, approvedOrigins } = await browser.storage.local.get<ExtensionStorage>(['userAccounts', 'approvedOrigins']);
   const { currentPassword } = await extensionSessionStorage();
   const chainList = await getChains();
 
@@ -112,7 +114,7 @@ export async function emitChangedAddressEvent(newAccountId: string) {
 }
 
 export async function emitDisconnectDapp() {
-  const { approvedOrigins, currentAccountId } = await chrome.storage.local.get<ExtensionStorage>(['userAccounts', 'currentAccountId']);
+  const { approvedOrigins, currentAccountId } = await browser.storage.local.get<ExtensionStorage>(['userAccounts', 'currentAccountId']);
 
   const currentAccountOrigins = Array.from(new Set(approvedOrigins.filter((item) => item.accountId === currentAccountId).map((item) => item.origin)));
 

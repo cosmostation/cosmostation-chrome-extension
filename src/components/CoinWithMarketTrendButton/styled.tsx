@@ -95,12 +95,7 @@ const greenUpfillColors = {
 export const ChevronIconContainer = styled('div')<ChevronIconProps>(({ ...props }) => {
   const selectedFillColor = props['data-price-trend-color'] === PRICE_TREND_TYPE.GREEN_UP ? greenUpfillColors : redUpfillColors;
   return {
-    width: '0.8rem',
-    height: '0.8rem',
-
     '& > svg': {
-      width: '100%',
-      height: '100%',
       fill: selectedFillColor[props['trend']],
 
       '& > path': {

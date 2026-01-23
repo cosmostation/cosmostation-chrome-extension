@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { browser } from 'wxt/browser';
 import { useQuery } from '@tanstack/react-query';
 
 import { getActiveTabInfo } from '@/utils/view/tab';
@@ -19,12 +20,12 @@ export function useActiveTabInfo() {
       refetch();
     };
 
-    chrome.tabs.onActivated.addListener(handleTabChange);
-    chrome.tabs.onUpdated.addListener(handleTabChange);
+    browser.tabs.onActivated.addListener(handleTabChange);
+    browser.tabs.onUpdated.addListener(handleTabChange);
 
     return () => {
-      chrome.tabs.onActivated.removeListener(handleTabChange);
-      chrome.tabs.onUpdated.removeListener(handleTabChange);
+      browser.tabs.onActivated.removeListener(handleTabChange);
+      browser.tabs.onUpdated.removeListener(handleTabChange);
     };
   }, [refetch]);
 

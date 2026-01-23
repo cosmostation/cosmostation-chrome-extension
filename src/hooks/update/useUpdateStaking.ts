@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import { useQuery } from '@tanstack/react-query';
 
 import { sendMessage } from '@/libs/extension';
@@ -11,7 +12,7 @@ export function useUpdateStaking() {
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   const fetcher = async () => {
-    const { initAccountIds } = await chrome.storage.local.get<ExtensionStorage>('initAccountIds');
+    const { initAccountIds } = await browser.storage.local.get<ExtensionStorage>('initAccountIds');
 
     if (!initAccountIds?.includes(currentAccount.id)) {
       await sendMessage({ target: 'SERVICE_WORKER', method: 'updateStaking', params: [currentAccount.id] });

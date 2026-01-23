@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import { getCustomAccountAddress } from '@/libs/account';
@@ -30,7 +31,7 @@ export async function evmBalances(accountId: string, { isMinimal = false, chainI
 
       stored = upsertEVMBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${accountId}-balance-evm`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-balance-evm`>>({ [`${accountId}-balance-evm`]: stored });
 
       updateAssets?.();
     }
@@ -70,7 +71,7 @@ export async function customEvmBalances(accountId: string, { chainId, updateAsse
 
       stored = upsertEVMBalance(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${accountId}-custom-balance-evm`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-custom-balance-evm`>>({ [`${accountId}-custom-balance-evm`]: stored });
 
       updateAssets?.();
     }

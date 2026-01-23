@@ -73,7 +73,14 @@ export default function AddressActionButtons({ coinId, ...remainder }: AddressAc
         <RightContainer>
           <IconDivider />
           <ChangeAddressIconButtonContainer>
-            <IconButton disabled={!explorerUrl} onClick={() => explorerUrl && window.open(explorerUrl, '_blank')}>
+            <IconButton
+              sx={{
+                width: '1.6rem',
+                height: '1.6rem',
+              }}
+              disabled={!explorerUrl}
+              onClick={() => explorerUrl && window.open(explorerUrl, '_blank')}
+            >
               <BrowserIcon />
             </IconButton>
           </ChangeAddressIconButtonContainer>

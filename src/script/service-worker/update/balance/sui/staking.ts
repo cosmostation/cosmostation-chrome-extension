@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import PromisePool from '@supercharge/promise-pool';
 
 import type { AccountAddress, AccountAddressDelegationsSui } from '@/types/account';
@@ -27,7 +28,7 @@ export async function suiStaking(accountId: string, { chainId, priority, updateA
 
       stored = upsertSuiDelegation(stored, results);
 
-      await chrome.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${accountId}-delegation-sui`]: stored });
+      await browser.storage.local.set<Pick<ExtensionStorage, `${string}-delegation-sui`>>({ [`${accountId}-delegation-sui`]: stored });
 
       updateAssets?.();
     }
