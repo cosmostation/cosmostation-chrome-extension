@@ -12,10 +12,12 @@ export function useDappInfos(config?: UseFetchConfig) {
   const { data, isLoading, error, refetch } = useFetch({
     queryKey: ['useDappInfos'],
     fetchFunction: fetcher,
-    staleTime: Infinity,
-    retry: 3,
-    retryDelay: 1000 * 5,
-    ...config,
+    config: {
+      staleTime: Infinity,
+      retry: 3,
+      retryDelay: 1000 * 5,
+      ...config,
+    },
   });
 
   return { data, error, refetch, isLoading };
