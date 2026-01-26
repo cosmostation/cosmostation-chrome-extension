@@ -56,10 +56,12 @@ export function useAdInfos(config?: UseFetchConfig) {
   const { data, isLoading, error, refetch } = useFetch({
     queryKey: ['useAdInfos'],
     fetchFunction: fetcher,
-    staleTime: Infinity,
-    retry: 2,
-    retryDelay: 1000 * 2,
-    ...config,
+    config: {
+      staleTime: Infinity,
+      retry: 2,
+      retryDelay: 1000 * 2,
+      ...config,
+    },
   });
 
   const dismissAd = async (adId: string) => {
