@@ -137,7 +137,7 @@ export default function EVM({ coinId }: EVMProps) {
   const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
 
-  const ens = useENS({ coinId, domain: debouncedInputRecipientAddress });
+  const ens = useENS({ domain: debouncedInputRecipientAddress });
 
   const nameResolvedAddress = ens.data;
   const recipientAddress = useMemo(() => {

@@ -116,7 +116,7 @@ export default function EVM({ id }: EVMProps) {
   const availableFeeCoinBalance = nativeAccountAsset?.balance || '0';
 
   const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
-  const ens = useENS({ coinId: nativeAccountAssetCoinId, domain: debouncedInputRecipientAddress });
+  const ens = useENS({ domain: debouncedInputRecipientAddress });
 
   const nameResolvedAddress = ens.data;
 
