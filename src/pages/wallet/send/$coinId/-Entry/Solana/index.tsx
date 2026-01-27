@@ -22,6 +22,7 @@ import { useGetAccountInfo } from '@/hooks/solana/useGetAccountInfo';
 import { useGetLatestBlockHash } from '@/hooks/solana/useGetLatestBlockHash';
 import { useGetRecentPrioritizationFees } from '@/hooks/solana/useGetRecentPrioritizationFees';
 import { useGetRentExemption } from '@/hooks/solana/useGetRentExemption';
+import { useSolanaResolveDomain } from '@/hooks/solana/useSolanaNS';
 import { useTransactionPreview } from '@/hooks/solana/useTransactionPreview';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -33,6 +34,7 @@ import { isTestnetChain } from '@/utils/chain';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { SolanaRpcClient } from '@/utils/solana/connection';
+import { isSolanaNSDomain } from '@/utils/solana/nameService';
 import {
   createSplTokenTransferTransaction,
   createTransferTransaction,
@@ -96,7 +98,14 @@ export default function Solana({ coinId }: SolanaProps) {
   const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
   const [debouncedSendDisplayAmount] = useDebounce(sendDisplayAmount, 500);
 
-  const recipientAddress = useMemo(() => debouncedInputRecipientAddress, [debouncedInputRecipientAddress]);
+  const solanaNs = useSolanaResolveDomain({ coinId, domain: debouncedInputRecipientAddress });
+
+  const recipientAddress = useMemo(() => {
+    if (solanaNs.isLoading || solanaNs.isFetching) {
+      return isSolanaNSDomain(debouncedInputRecipientAddress) ? '' : debouncedInputRecipientAddress;
+    }
+    return solanaNs.data || debouncedInputRecipientAddress;
+  }, [debouncedInputRecipientAddress, solanaNs.data, solanaNs.isLoading, solanaNs.isFetching]);
 
   const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
 
@@ -148,6 +157,13 @@ export default function Solana({ coinId }: SolanaProps) {
 
   const addressInputErrorMessage = useMemo(() => {
     if (debouncedInputRecipientAddress) {
+      if (isSolanaNSDomain(debouncedInputRecipientAddress)) {
+        if (!solanaNs.data && !solanaNs.isLoading && !solanaNs.isFetching) {
+          return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidSolanaNSAddress');
+        }
+        return '';
+      }
+
       try {
         new PublicKey(debouncedInputRecipientAddress);
       } catch {
@@ -156,7 +172,7 @@ export default function Solana({ coinId }: SolanaProps) {
     }
 
     return '';
-  }, [debouncedInputRecipientAddress, t]);
+  }, [debouncedInputRecipientAddress, solanaNs.data, solanaNs.isLoading, solanaNs.isFetching, t]);
 
   const { data: latestBlockHash, isFetching: isFetchingGetLatestBlockHash } = useGetLatestBlockHash({ coinId });
 
@@ -505,7 +521,8 @@ export default function Solana({ coinId }: SolanaProps) {
             <StandardInput
               label={t('pages.wallet.send.$coinId.Entry.Solana.index.recipientAddress')}
               error={!!addressInputErrorMessage}
-              helperText={addressInputErrorMessage}
+              helperText={addressInputErrorMessage || shorterAddress(solanaNs.data || undefined, 16) || ''}
+              isLoadingHelperText={solanaNs.isLoading}
               value={inputRecipientAddress}
               onChange={(e) => setInputRecipientAddress(e.target.value)}
               inputVarient="address"

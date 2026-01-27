@@ -28,6 +28,7 @@
     "@aptos-labs/ts-sdk": "^1.33.2",
     "@aptos-labs/wallet-standard": "^0.3.0",
     "@bitcoinerlab/secp256k1": "^1.1.1",
+    "@bonfida/spl-name-service": "^3.0.16",
     "@bufbuild/protobuf": "^2.6.0",
     "@cosmostation/wallets": "^2.0.10",
     "@emotion/react": "^11.13.3",
