@@ -1,5 +1,6 @@
 import type { IotaGetDynamicFieldsResponse } from '@/types/iota/api';
-import { isAxiosError, post } from '@/utils/axios';
+import { post } from '@/utils/axios';
+import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 import { useFetch, type UseFetchConfig } from '../common/useFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
@@ -12,72 +13,45 @@ type UseGetDynamicFieldsProps = {
 
 export function useGetDynamicFields({ coinId, parentObjectId, config }: UseGetDynamicFieldsProps) {
   const { getIotaAccountAsset } = useGetAccountAsset({ coinId });
-
   const accountAsset = getIotaAccountAsset();
 
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 
-  const fetcher = async (index = 0) => {
-    try {
-      if (index >= rpcURLs.length) {
-        throw new Error('All endpoints failed');
-      }
+  const fetcher = async () => {
+    if (!parentObjectId) return null;
 
-      if (!parentObjectId) {
-        return null;
-      }
-
-      const requestURL = rpcURLs[index];
-
+    const fetchAllPages = async (url: string) => {
       const returnData: IotaGetDynamicFieldsResponse[] = [];
+      let hasNextPage = true;
+      let cursor: string | null = null;
 
-      const respose = await post<IotaGetDynamicFieldsResponse>(requestURL, {
-        jsonrpc: '2.0',
-        method: 'iotax_getDynamicFields',
-        params: [parentObjectId, null, null],
-        id: parentObjectId,
-      });
+      while (hasNextPage) {
+        const params: (string | null)[] = cursor ? [parentObjectId, cursor, null] : [parentObjectId, null, null];
 
-      returnData.push(respose);
-
-      const nextCursor = returnData?.[returnData.length - 1]?.result?.hasNextPage;
-
-      while (nextCursor) {
-        const nextPageResponse = await post<IotaGetDynamicFieldsResponse>(requestURL, {
+        const response = await post<IotaGetDynamicFieldsResponse>(url, {
           jsonrpc: '2.0',
           method: 'iotax_getDynamicFields',
-          params: [parentObjectId, nextCursor, null],
+          params,
           id: parentObjectId,
         });
 
-        returnData.push(nextPageResponse);
-      }
-
-      return returnData;
-    } catch (e) {
-      if (index >= rpcURLs.length) {
-        throw new Error('All endpoints failed');
-      }
-
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
+        if (response.error || !response.result) {
+          throw new Error(response.error?.message || 'Invalid response from RPC endpoint');
         }
-      }
 
-      return fetcher(index + 1);
-    }
+        returnData.push(response);
+        hasNextPage = !!response.result?.hasNextPage;
+        cursor = response.result?.nextCursor ?? null;
+      }
+      return returnData;
+    };
+
+    return await fetchWithFailover(rpcURLs, fetchAllPages);
   };
 
-  const { data, isLoading, error, refetch } = useFetch({
+  return useFetch({
     queryKey: ['useIotaGetDynamicFields', coinId, parentObjectId],
-    fetchFunction: () => fetcher(),
-    config: {
-      enabled: (!!coinId && !!rpcURLs.length) || !!parentObjectId,
-      retry: 3,
-      ...config,
-    },
+    fetchFunction: fetcher,
+    config: { enabled: !!coinId && !!parentObjectId && rpcURLs.length > 0, retry: false, ...config },
   });
-
-  return { data, error, isLoading, refetch };
 }

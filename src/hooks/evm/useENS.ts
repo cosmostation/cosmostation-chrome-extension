@@ -51,7 +51,7 @@ export function useENS({ coinId, domain, config }: UseENSProps) {
     }
   };
 
-  const { data, isLoading, error, refetch } = useFetch({
+  const { data, isLoading, isFetching, error, refetch } = useFetch({
     queryKey: ['useENS', coinId, domain],
     fetchFunction: () => fetcher(),
     config: {
@@ -60,5 +60,5 @@ export function useENS({ coinId, domain, config }: UseENSProps) {
     },
   });
 
-  return { data, isLoading, error, refetch };
+  return { data, isLoading, isFetching, error, refetch };
 }

@@ -1,7 +1,6 @@
-import { useState } from 'react';
-
 import type { SuiGetCoinsResponse } from '@/types/sui/api';
-import { isAxiosError, post } from '@/utils/axios';
+import { post } from '@/utils/axios';
+import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 import { useFetch, type UseFetchConfig } from '../common/useFetch';
 import { useGetAccountAsset } from '../useGetAccountAsset';
@@ -14,79 +13,48 @@ type UseGetCoinsProps = {
 
 export function useGetCoins({ coinId, coinType, config }: UseGetCoinsProps) {
   const { getSuiAccountAsset } = useGetAccountAsset({ coinId });
-
-  const [isAllRequestsFailed, setIsAllRequestsFailed] = useState(false);
-
   const accountAsset = getSuiAccountAsset();
 
   const address = accountAsset?.address.address || '';
-
   const rpcURLs = accountAsset?.chain.rpcUrls.map((item) => item.url) || [];
 
-  const fetcher = async (index = 0) => {
-    try {
-      if (index >= rpcURLs.length) {
-        setIsAllRequestsFailed(true);
-
-        throw new Error('All endpoints failed');
-      }
-
-      const requestURL = rpcURLs[index];
-
+  const fetcher = async () => {
+    const fetchAllPages = async (url: string) => {
       const returnData: SuiGetCoinsResponse[] = [];
+      let hasNextPage = true;
+      let cursor: string | null = null;
 
-      const respose = await post<SuiGetCoinsResponse>(requestURL, {
-        jsonrpc: '2.0',
-        method: 'suix_getCoins',
-        params: [address, coinType],
-        id: address,
-      });
+      while (hasNextPage) {
+        const params: string[] = cursor ? [address, coinType, cursor] : [address, coinType];
 
-      returnData.push(respose);
-
-      const nextCursor = returnData?.[returnData.length - 1]?.result?.hasNextPage;
-
-      while (nextCursor) {
-        const nextPageResponse = await post<SuiGetCoinsResponse>(requestURL, {
+        const response = await post<SuiGetCoinsResponse>(url, {
           jsonrpc: '2.0',
           method: 'suix_getCoins',
-          params: [address, coinType, nextCursor],
+          params,
           id: address,
         });
 
-        returnData.push(nextPageResponse);
-      }
-
-      setIsAllRequestsFailed(false);
-
-      return returnData;
-    } catch (e) {
-      if (index >= rpcURLs.length) {
-        setIsAllRequestsFailed(true);
-
-        return null;
-      }
-
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
+        if (response.error || !response.result) {
+          throw new Error(response.error?.message || 'Invalid response from RPC');
         }
-      }
 
-      return fetcher(index + 1);
-    }
+        returnData.push(response);
+        hasNextPage = !!response.result?.hasNextPage;
+        cursor = response.result?.nextCursor ?? null;
+      }
+      return returnData;
+    };
+
+    return await fetchWithFailover(rpcURLs, fetchAllPages);
   };
 
-  const { data, isLoading, error, refetch } = useFetch({
+  return useFetch({
     queryKey: ['useGetCoins', address, coinType],
-    fetchFunction: () => fetcher(),
+    fetchFunction: fetcher,
     config: {
-      refetchInterval: isAllRequestsFailed ? false : 1000 * 15,
-      retry: false,
-      enabled: !!coinId && !!coinType && !!address && !!rpcURLs.length && !isAllRequestsFailed,
+      refetchInterval: 1000 * 15,
+      enabled: !!address && !!coinId && !!coinType && rpcURLs.length > 0,
       ...config,
     },
   });
-
-  return { data, error, refetch, isLoading };
 }
