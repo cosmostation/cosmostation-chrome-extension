@@ -312,7 +312,7 @@ export default function Aptos({ coinId }: AptosProps) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
     }
 
-    if (!simulateTransaction.data?.[0]?.success && !generateTransaction.data) {
+    if (!simulateTransaction.data?.[0]?.success) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
     }
 
