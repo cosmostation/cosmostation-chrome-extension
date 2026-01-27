@@ -2911,6 +2911,7 @@
                 "insufficientAmount": "잔액이 부족합니다",
                 "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
+                "invalidAptosNSAddress": "Aptos NS 도메인을 찾을 수 없습니다",
                 "invalidAmount": "잘못된 금액",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",

@@ -44,7 +44,7 @@ import {
   serializeTransaction,
 } from '@/utils/solana/transaction';
 import { isValidSolanaAddress } from '@/utils/solana/validation';
-import { isDecimal, safeStringify, shorterAddress } from '@/utils/string';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -161,18 +161,27 @@ export default function Solana({ coinId }: SolanaProps) {
         if (!solanaNs.data && !solanaNs.isLoading && !solanaNs.isFetching) {
           return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidSolanaNSAddress');
         }
+
+        if (solanaNs.data && isEqualsIgnoringCase(solanaNs.data, selectedCoinToSend?.address.address)) {
+          return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidAddress');
+        }
+
         return '';
       }
 
       try {
         new PublicKey(debouncedInputRecipientAddress);
+
+        if (isEqualsIgnoringCase(debouncedInputRecipientAddress, selectedCoinToSend?.address.address)) {
+          return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidAddress');
+        }
       } catch {
         return t('pages.wallet.send.$coinId.Entry.Solana.index.invalidAddress');
       }
     }
 
     return '';
-  }, [debouncedInputRecipientAddress, solanaNs.data, solanaNs.isLoading, solanaNs.isFetching, t]);
+  }, [debouncedInputRecipientAddress, selectedCoinToSend?.address.address, solanaNs.data, solanaNs.isLoading, solanaNs.isFetching, t]);
 
   const { data: latestBlockHash, isFetching: isFetchingGetLatestBlockHash } = useGetLatestBlockHash({ coinId });
 
