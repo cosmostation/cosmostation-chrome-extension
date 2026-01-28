@@ -86,7 +86,7 @@ export default function SetNameBottomSheet({
                 },
               }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                   e.preventDefault();
                   handleSubmit(submit)();
                 }
