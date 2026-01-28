@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdBannerCarousel from '@/components/AdBannerCarousel';
@@ -18,19 +18,14 @@ type CryptoFilterSectionProps = {
 function CryptoFilterSection({ search, onSearchChange, onClearSearch, isDebouncing, onClickFilter }: CryptoFilterSectionProps) {
   const { t } = useTranslation();
 
-  const handleSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      onSearchChange(event.currentTarget.value);
-    },
-    [onSearchChange],
-  );
-
   return (
     <StickyTabPanelContentsContainer>
       <FilterContainer>
         <Search
           value={search}
-          onChange={handleSearchChange}
+          onChange={(event) => {
+            onSearchChange(event.currentTarget.value);
+          }}
           placeholder={t('pages.index.searchPlaceholder')}
           isPending={isDebouncing}
           onClickFilter={onClickFilter}

@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
@@ -37,38 +37,21 @@ function CryptoTab() {
     }
   }, [scrollToTop, search.length]);
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearch(value);
-  }, []);
-
-  const handleClearSearch = useCallback(() => {
-    setSearch('');
-    cancel();
-  }, [cancel]);
-
-  const handleOpenSortBottomSheet = useCallback(() => {
-    setIsOpenSortBottomSheet(true);
-  }, []);
-
-  const handleCloseSortBottomSheet = useCallback(() => {
-    setIsOpenSortBottomSheet(false);
-  }, []);
-
-  const handleSelectSortOption = useCallback(
-    (val: string) => {
-      updateExtensionStorageStore('dashboardCoinSortKey', val as DashboardCoinSortKeyType);
-    },
-    [updateExtensionStorageStore],
-  );
-
   return (
     <>
       <CryptoFilterSection
         search={search}
-        onSearchChange={handleSearchChange}
-        onClearSearch={handleClearSearch}
+        onSearchChange={(value) => {
+          setSearch(value);
+        }}
+        onClearSearch={() => {
+          setSearch('');
+          cancel();
+        }}
         isDebouncing={isDebouncing}
-        onClickFilter={handleOpenSortBottomSheet}
+        onClickFilter={() => {
+          setIsOpenSortBottomSheet(true);
+        }}
       />
       <CryptoListSection assets={filteredAssetsBySearch} isLoading={isLoading} />
       <SortBottomSheet
@@ -84,8 +67,12 @@ function CryptoTab() {
         ]}
         currentSortOption={dashboardCoinSortKey}
         open={isOpenSortBottomSheet}
-        onClose={handleCloseSortBottomSheet}
-        onSelectSortOption={handleSelectSortOption}
+        onClose={() => {
+          setIsOpenSortBottomSheet(false);
+        }}
+        onSelectSortOption={(val) => {
+          updateExtensionStorageStore('dashboardCoinSortKey', val as DashboardCoinSortKeyType);
+        }}
       />
     </>
   );
