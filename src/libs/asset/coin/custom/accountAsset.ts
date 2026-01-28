@@ -5,7 +5,7 @@ import type { ExtensionStorage } from '@/types/extension';
 import { createAllChainMap } from '@/utils/cache/chainMap';
 import { devLogger } from '@/utils/devLogger';
 import { gt } from '@/utils/numbers';
-import { getCoinId, getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, getUniqueCoinId } from '@/utils/queryParamGenerator';
 
 type GetAccountCustomAssetsOption = {
   disableFilterHidden?: boolean;
@@ -56,6 +56,8 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
       const balance = balanceInfo?.balances?.find((balance) => balance.denom === type)?.amount || '0';
 
       const result: AccountCustomCosmosAsset = {
+        uniqueCoinId: getUniqueCoinId(asset),
+        uniqueChainId: getUniqueChainId(chain),
         chain,
         asset,
         address,
@@ -82,6 +84,8 @@ export async function getAccountCustomAssets(id: string, option?: GetAccountCust
       const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
 
       const result: AccountCustomEvmAsset = {
+        uniqueCoinId: getUniqueCoinId(asset),
+        uniqueChainId: getUniqueChainId(chain),
         chain,
         asset,
         address,

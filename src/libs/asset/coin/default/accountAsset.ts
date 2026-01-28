@@ -36,6 +36,7 @@ import type {
   SolanaAsset,
   SolanaSpltokenAsset,
   SuiAsset,
+  UniqueCoinId,
 } from '@/types/asset';
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -43,7 +44,7 @@ import { formattingAccount } from '@/utils/cosmos/account';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
 import { devLogger } from '@/utils/devLogger';
 import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getUniqueChainId, getUniqueCoinId } from '@/utils/queryParamGenerator';
 
 import { getAssetsWithChainAndAddress } from './getAssets';
 
@@ -118,9 +119,13 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
   const hiddenAssetIdSet = isFilterHidden ? await getHiddenAssetsSet(id) : null;
 
-  const filterAssets = <T extends { asset: Asset; balance?: string; totalBalance?: string }>(assets: T[]): T[] => {
+  const filterAssets = <T extends { uniqueCoinId: UniqueCoinId; asset: Asset; balance?: string; totalBalance?: string }>(assets: T[]): T[] => {
+    if (!isFilterHidden && !isFilterByBalance) {
+      return assets;
+    }
+
     return assets.filter((asset) => {
-      if (hiddenAssetIdSet && hiddenAssetIdSet.has(getCoinId(asset.asset))) {
+      if (hiddenAssetIdSet && hiddenAssetIdSet.has(asset.uniqueCoinId)) {
         return false;
       }
 
@@ -273,6 +278,8 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
       };
 
       const result: AccountCosmosAsset = {
+        uniqueCoinId: getUniqueCoinId(asset),
+        uniqueChainId: getUniqueChainId(chain),
         chain,
         asset,
         address,
@@ -314,6 +321,8 @@ async function getCW20AccountAssets(id: string, assets: { asset: CosmosCw20Asset
         };
 
         const result: AccountCw20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -430,6 +439,8 @@ async function getEVMAccountAssets(
           };
 
           const result: AccountEvmAsset = {
+            uniqueCoinId: getUniqueCoinId(asset),
+            uniqueChainId: getUniqueChainId(chain),
             chain,
             asset,
             address,
@@ -447,6 +458,8 @@ async function getEVMAccountAssets(
         }
 
         const result: AccountEvmAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -486,6 +499,8 @@ async function getERC20AccountAssets(id: string, assets: { asset: EvmErc20Asset;
         };
 
         const result: AccountErc20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -525,6 +540,8 @@ async function getCustomERC20AccountAssets(id: string, assets: { asset: EvmErc20
         };
 
         const result: AccountErc20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -563,6 +580,8 @@ async function getCustomCW20AccountAssets(id: string, assets: { asset: CosmosCw2
           balance: targetCW20BalanceInfo?.status,
         };
         const result: AccountCw20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -597,6 +616,8 @@ async function getAptosAccountAssets(id: string, assets: { asset: AptosAsset; ch
         };
 
         const result: AccountAptosAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -659,6 +680,8 @@ async function getSuiAccountAssets(id: string, assets: { asset: SuiAsset; chain:
           const totalBalance = sum([balance, delegation, reward]);
 
           const result: AccountSuiAsset = {
+            uniqueCoinId: getUniqueCoinId(asset),
+            uniqueChainId: getUniqueChainId(chain),
             chain,
             asset,
             address,
@@ -674,6 +697,8 @@ async function getSuiAccountAssets(id: string, assets: { asset: SuiAsset; chain:
         }
 
         const result: AccountSuiAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -718,6 +743,8 @@ async function getBitcoinAccountAssets(id: string, assets: { asset: BitcoinAsset
             : '0';
 
         const result: AccountBitcoinAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain: specificAccountTypeChain,
           asset,
           address,
@@ -780,6 +807,8 @@ async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chai
           const totalBalance = sum([balance, delegation, reward]);
 
           const result: AccountIotaAsset = {
+            uniqueCoinId: getUniqueCoinId(asset),
+            uniqueChainId: getUniqueChainId(chain),
             chain,
             asset,
             address,
@@ -795,6 +824,8 @@ async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chai
         }
 
         const result: AccountIotaAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -830,6 +861,8 @@ async function getGnoAccountAssets(id: string, assets: { asset: GnoAsset; chain:
         };
 
         const result: AccountGnoAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -869,6 +902,8 @@ async function getGrc20AccountAssets(id: string, assets: { asset: GnoGrc20Asset;
         };
 
         const result: AccountGrc20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -904,6 +939,8 @@ async function getSolanaAccountAssets(id: string, assets: { asset: SolanaAsset; 
         };
 
         const result: AccountSolanaAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -943,6 +980,8 @@ async function getSplTokenAccountAssets(id: string, assets: { asset: SolanaSplto
         };
 
         const result: AccountSpltokenAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,

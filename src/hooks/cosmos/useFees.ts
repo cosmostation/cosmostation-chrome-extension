@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 
+import type { AccountCosmosAsset, AccountCw20Asset } from '@/types/account';
 import { minus } from '@/utils/numbers';
-import { getCoinId, isMatchingCoinId, isSameChain, parseCoinId } from '@/utils/queryParamGenerator';
+import { getUniqueChainId, getUniqueCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 
 import { useBalance } from './useBalance';
 import { useGasRate } from './useGasRate';
@@ -20,7 +21,8 @@ export function useFees({ coinId, config }: UseFeesProps) {
 
   const baseCoinList = useMemo(() => [...(accountAssets?.allCosmosAccountAssets || [])], [accountAssets?.allCosmosAccountAssets]);
 
-  const chain = baseCoinList.find((asset) => isMatchingCoinId(asset.asset, coinId))?.chain;
+  const chain = baseCoinList.find((asset) => asset.uniqueCoinId === coinId)?.chain;
+  const currentUniqueChainId = chain && getUniqueChainId(chain);
 
   const assetGasRate = useGasRate({
     coinId,
@@ -32,13 +34,13 @@ export function useFees({ coinId, config }: UseFeesProps) {
   const defaultFeeCoin = useMemo(() => {
     const parsedCoinId = parseCoinId(coinId);
 
-    const mainAssetCoinId = getCoinId({
+    const mainAssetCoinId = getUniqueCoinId({
       id: chain?.mainAssetDenom || '',
       chainId: parsedCoinId.chainId,
       chainType: parsedCoinId.chainType,
     });
 
-    const sourceChainAsset = baseCoinList.find((item) => isMatchingCoinId(item.asset, mainAssetCoinId));
+    const sourceChainAsset = baseCoinList.find((item) => item.uniqueCoinId === mainAssetCoinId);
 
     return (
       sourceChainAsset && {
@@ -52,7 +54,7 @@ export function useFees({ coinId, config }: UseFeesProps) {
     const feeCoinIds = [...Object.keys(assetGasRate.data.gasRate)];
 
     const filteredFeeCoins = baseCoinList
-      .filter((item) => chain && isSameChain(chain, item.chain) && feeCoinIds.includes(item.asset.id))
+      .filter((item) => currentUniqueChainId && currentUniqueChainId === item.uniqueChainId && feeCoinIds.includes(item.asset.id))
       .map((item) => ({
         ...item,
         gasRate: assetGasRate.data.gasRate[item.asset.id],
@@ -68,9 +70,14 @@ export function useFees({ coinId, config }: UseFeesProps) {
     );
 
     return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : defaultFeeCoin ? [defaultFeeCoin] : [];
-  }, [assetGasRate.data.gasRate, baseCoinList, chain, defaultFeeCoin]);
+  }, [assetGasRate.data.gasRate, baseCoinList, currentUniqueChainId, defaultFeeCoin]);
 
-  const wrappedFeeAssets = useMemo(
+  const wrappedFeeAssets = useMemo<
+    ((AccountCosmosAsset | AccountCw20Asset) & {
+      balance: string;
+      gasRate: string[];
+    })[]
+  >(
     () =>
       feeAssets.map((item) => ({
         ...item,

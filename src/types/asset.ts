@@ -6,6 +6,8 @@ export interface AssetId {
   chainType: ChainType;
 }
 
+export type UniqueCoinId = `${AssetId['id']}__${AssetId['chainId']}__${AssetId['chainType']}`;
+
 export interface AssetBase extends AssetId {
   name: string;
   symbol: string;
