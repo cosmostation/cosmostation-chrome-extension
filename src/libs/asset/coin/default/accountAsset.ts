@@ -195,14 +195,14 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
   );
 
   return assets.flatMap(({ asset, chain, addresses }) => {
+    const isVestingChain = vestingChainIds.has(chain.id);
+
     return addresses.map((address) => {
       const type = asset.id;
       const assetKey = getAssetKey(address.chainId, address.chainType, address.address);
       const assetKeyWithId = getAssetKeyWithId(type, address.chainId, address.chainType, address.address);
 
-      const isVestingChainMainAsset = vestingChainIds.has(chain.id) && chain.mainAssetDenom === asset.id;
-
-      const accountInfo = isVestingChainMainAsset ? formattingAccount(cosmosAccountInfoMap.get(assetKey)?.accountInfo) : undefined;
+      const isVestingChainMainAsset = isVestingChain && chain.mainAssetDenom === asset.id;
 
       const balanceInfo = cosmosBalancesMap.get(assetKey);
 
@@ -249,24 +249,28 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
       const locked = lockedInfo?.lockedBalances?.find((balance) => balance.denom === type)?.amount || '0';
 
       const resolvedBalance = (() => {
-        if (isVestingChainMainAsset && accountInfo) {
-          const vestingRemained = getVestingRemained(accountInfo, type);
-          const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountInfo, type) : delegation;
+        if (isVestingChainMainAsset) {
+          const accountInfo = formattingAccount(cosmosAccountInfoMap.get(assetKey)?.accountInfo);
 
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [vestingRelatedAvailable, _] = (() => {
-            if (gt(vestingRemained, '0')) {
-              if (chain.id === PERSISTENCE_CHAINLIST_ID) {
-                return getPersistenceVestingRelatedBalances(balance, vestingRemained);
+          if (accountInfo) {
+            const vestingRemained = getVestingRemained(accountInfo, type);
+            const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountInfo, type) : delegation;
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const [vestingRelatedAvailable, _] = (() => {
+              if (gt(vestingRemained, '0')) {
+                if (chain.id === PERSISTENCE_CHAINLIST_ID) {
+                  return getPersistenceVestingRelatedBalances(balance, vestingRemained);
+                }
+
+                return getVestingRelatedBalances(balance, vestingRemained, delegatedVestingTotal, undelegation);
               }
 
-              return getVestingRelatedBalances(balance, vestingRemained, delegatedVestingTotal, undelegation);
-            }
+              return [balance, '0'];
+            })();
 
-            return [balance, '0'];
-          })();
-
-          return vestingRelatedAvailable;
+            return vestingRelatedAvailable;
+          }
         }
         return balance;
       })();
@@ -350,19 +354,26 @@ async function getEVMAccountAssets(
     `${id}-commission-cosmos`,
   ]);
 
-  const evmBalances = storage[`${id}-balance-evm`] || [];
+  const evmBalancesMap = new Map((storage[`${id}-balance-evm`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]));
 
-  const cosmosDelegations = storage[`${id}-delegation-cosmos`] || [];
-  const cosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
-  const cosmosRewards = storage[`${id}-reward-cosmos`] || [];
-  const cosmosCommissions = storage[`${id}-commission-cosmos`] || [];
+  const cosmosDelegationsMap = new Map(
+    (storage[`${id}-delegation-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
+  const cosmosUndelegationsMap = new Map(
+    (storage[`${id}-undelegation-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
+  const cosmosRewardsMap = new Map(
+    (storage[`${id}-reward-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
+  const cosmosCommissionsMap = new Map(
+    (storage[`${id}-commission-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
 
   return assets
     .map(({ asset, chain, addresses }) => {
       return addresses.map((address) => {
-        const balanceInfo = evmBalances?.find(
-          (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-        );
+        const assetKey = getAssetKey(address.chainId, address.chainType, address.address);
+        const balanceInfo = evmBalancesMap.get(assetKey);
 
         const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
         const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
@@ -377,13 +388,13 @@ async function getEVMAccountAssets(
             (cosmosCoin) => cosmosCoin.asset.id === mainAssetDenom && cosmosCoin.asset.chainId === chain.id && cosmosCoin.asset.chainType === 'cosmos',
           );
 
-          const { asset: cosmosStyleCoin, addresses } = cosmosStyleCoinAsset || {};
+          const { asset: cosmosStyleCoin, addresses, chain: cosmosStyleChain } = cosmosStyleCoinAsset || {};
 
           const cosmosStyleAddress = addresses?.find((accountAddressItem) => accountAddressItem.accountType.hdPath === address.accountType.hdPath);
 
-          const delegationInfo = cosmosDelegations?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const cosmosAssetKey = getAssetKeyWithId(mainAssetDenom || '', address.chainId, cosmosStyleChain?.chainType || '', cosmosStyleAddress?.address || '');
+
+          const delegationInfo = cosmosDelegationsMap.get(cosmosAssetKey);
 
           const delegation =
             delegationInfo?.delegations
@@ -394,9 +405,7 @@ async function getEVMAccountAssets(
           const decimalsAdjustment = cosmosStyleCoin?.decimals ? asset.decimals - cosmosStyleCoin.decimals : 0;
           const resolvedDelegation = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(delegation, decimalsAdjustment) : delegation;
 
-          const undelegationInfo = cosmosUndelegations?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const undelegationInfo = cosmosUndelegationsMap.get(cosmosAssetKey);
 
           const undelegation =
             undelegationInfo?.unbondings
@@ -408,9 +417,7 @@ async function getEVMAccountAssets(
 
           const resolvedUndelegation = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(undelegation, decimalsAdjustment) : undelegation;
 
-          const rewardInfo = cosmosRewards?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const rewardInfo = cosmosRewardsMap.get(cosmosAssetKey);
 
           const reward =
             rewardInfo?.rewards.total
@@ -420,9 +427,7 @@ async function getEVMAccountAssets(
 
           const resolvedReward = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(reward, decimalsAdjustment) : reward;
 
-          const commissioInfo = cosmosCommissions?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const commissioInfo = cosmosCommissionsMap.get(cosmosAssetKey);
 
           const commission =
             commissioInfo?.commissions?.commission.commission
@@ -433,10 +438,6 @@ async function getEVMAccountAssets(
           const resolvedCommission = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(commission, decimalsAdjustment) : commission;
 
           const totalBalance = sum([balance, resolvedDelegation, resolvedUndelegation, resolvedReward, resolvedCommission]);
-
-          const fetchStatus: AccountEVMAssetFetchStatus = {
-            balance: balanceInfo?.status,
-          };
 
           const result: AccountEvmAsset = {
             uniqueCoinId: getUniqueCoinId(asset),

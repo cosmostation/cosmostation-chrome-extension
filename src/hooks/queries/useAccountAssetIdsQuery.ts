@@ -1,22 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
 
-import type { AssetId } from '@/types/asset';
+import type { UniqueCoinId } from '@/types/asset';
+import { getUniqueCoinId } from '@/utils/queryParamGenerator';
 import { getMultipleFromExtensionStorage } from '@/utils/storage';
 
 export type AccountAssetIdsData = {
-  hiddenAssetIds: AssetId[];
-  visibleAssetIds: AssetId[];
+  hiddenAssetSet: Set<UniqueCoinId>;
+  visibleAssetSet: Set<UniqueCoinId>;
 };
 
-export function useAccountAssetIdsQuery(accountId: string) {
+export function useAccountAssetIdsSet(accountId: string) {
   return useQuery({
     queryKey: ['account-asset-ids', accountId],
     queryFn: async (): Promise<AccountAssetIdsData> => {
       const assetIdsStorage = await getMultipleFromExtensionStorage([`${accountId}-hidden-assetIds`, `${accountId}-visible-assetIds`]);
 
       return {
-        hiddenAssetIds: assetIdsStorage[`${accountId}-hidden-assetIds`] || [],
-        visibleAssetIds: assetIdsStorage[`${accountId}-visible-assetIds`] || [],
+        hiddenAssetSet: new Set((assetIdsStorage[`${accountId}-hidden-assetIds`] || []).map(getUniqueCoinId)),
+        visibleAssetSet: new Set((assetIdsStorage[`${accountId}-visible-assetIds`] || []).map(getUniqueCoinId)),
       };
     },
     staleTime: 1000 * 60,

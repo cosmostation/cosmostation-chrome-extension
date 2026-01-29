@@ -38,9 +38,9 @@ export async function getHiddenAssetsSet(id: string): Promise<Set<string>> {
 export async function updateHiddenAssets(id: string, hiddenAssetIds: AssetId[]) {
   const storedHiddenAssetIds = await getHiddenAssets(id);
 
-  const filteredStoredHiddenAssetIds = storedHiddenAssetIds.filter(
-    (storedHiddenAssetId) => !hiddenAssetIds.find((hiddenAssetId) => getCoinIdWithManual(storedHiddenAssetId) === getCoinIdWithManual(hiddenAssetId)),
-  );
+  const newHiddenCoinIds = new Set(hiddenAssetIds.map((assetId) => getCoinIdWithManual(assetId)));
+
+  const filteredStoredHiddenAssetIds = storedHiddenAssetIds.filter((storedHiddenAssetId) => !newHiddenCoinIds.has(getCoinIdWithManual(storedHiddenAssetId)));
 
   const updatedHiddenAssetIds = [...filteredStoredHiddenAssetIds, ...hiddenAssetIds];
 

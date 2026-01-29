@@ -13,13 +13,13 @@ import type {
   AllSolanaAccountAssets,
   FlatAccountAssets,
 } from '@/types/accountAssets';
-import type { AssetId } from '@/types/asset';
+import type { UniqueCoinId } from '@/types/asset';
 import { gt } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
-import { useAccountAssetIdsQuery } from './queries/useAccountAssetIdsQuery';
+import { useAccountAssetIdsSet } from './queries/useAccountAssetIdsQuery';
 import { useCurrentAccount } from './useCurrentAccount';
+import { useCustomAssets } from './useCustomAssets';
 
 export type UseAccountAssetsResponse = AccountAllAssets & {
   flatAccountAssets: FlatAccountAssets[];
@@ -50,17 +50,13 @@ export function useAccountAllAssets({
   config,
 }: UseAccountAllAssets = {}) {
   const { currentAccount } = useCurrentAccount();
+  const { currentCustomHiddenAssetIdsSet: hiddenCustom } = useCustomAssets();
   const param = useMemo(() => accountId || currentAccount.id, [accountId, currentAccount.id]);
 
   const preferAccountType = useExtensionStorageStore((state) => state.preferAccountType);
   const accountType = useMemo(() => preferAccountType[param], [param, preferAccountType]);
 
-  const { data: assetIds } = useAccountAssetIdsQuery(param);
-  const storedHiddenCustomAssetIds = useExtensionStorageStore((state) => state.customHiddenAssetIds);
-
-  const hiddenAssetIds = useMemo(() => assetIds?.hiddenAssetIds || [], [assetIds?.hiddenAssetIds]);
-  const hiddenCustomAssetIds = useMemo(() => storedHiddenCustomAssetIds || [], [storedHiddenCustomAssetIds]);
-  const visibleAssetIds = useMemo(() => assetIds?.visibleAssetIds || [], [assetIds?.visibleAssetIds]);
+  const { data: assetIds } = useAccountAssetIdsSet(param);
 
   const fetcher = async () => {
     try {
@@ -83,28 +79,17 @@ export function useAccountAllAssets({
     ...config,
   });
 
-  const assetIdSets = useMemo(
-    () => ({
-      visible: new Set(visibleAssetIds.map(getCoinId)),
-      hidden: new Set(hiddenAssetIds.map(getCoinId)),
-      hiddenCustom: new Set(hiddenCustomAssetIds.map(getCoinId)),
-    }),
-    [visibleAssetIds, hiddenAssetIds, hiddenCustomAssetIds],
-  );
-
   const filteredByVisibleList = useMemo(() => {
     if (!data) return null;
 
-    const { visible, hidden, hiddenCustom } = assetIdSets;
+    const { hiddenAssetSet: hidden, visibleAssetSet: visible } = assetIds || {};
 
-    const shouldShowAsset = (asset: AssetId, balance: string) => {
-      const assetCoinId = getCoinId(asset);
-
-      const isVisible = visible.has(assetCoinId);
+    const shouldShowAsset = (uniqueCoinId: UniqueCoinId, balance: string) => {
+      const isVisible = visible?.has(uniqueCoinId);
 
       if (isVisible) return true;
 
-      const isHidden = disableHiddenFilter ? false : hidden.has(assetCoinId) || hiddenCustom.has(assetCoinId);
+      const isHidden = disableHiddenFilter ? false : hidden?.has(uniqueCoinId) || hiddenCustom.has(uniqueCoinId);
 
       if (isHidden) return false;
 
@@ -113,8 +98,8 @@ export function useAccountAllAssets({
       return disableBalanceFilter ? true : isBalanceGreaterThanZero;
     };
 
-    const filterAssetList = <T extends { asset: AssetId; balance: string }>(list: T[]): T[] =>
-      list.filter(({ asset, balance }) => shouldShowAsset(asset, balance));
+    const filterAssetList = <T extends { uniqueCoinId: UniqueCoinId; balance: string }>(list: T[]): T[] =>
+      list.filter(({ uniqueCoinId, balance }) => shouldShowAsset(uniqueCoinId, balance));
 
     return {
       cosmosAccountAssets: filterAssetList(data.cosmosAccountAssets),
@@ -134,7 +119,7 @@ export function useAccountAllAssets({
       gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
       grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
     };
-  }, [assetIdSets, data, disableBalanceFilter, disableHiddenFilter]);
+  }, [assetIds, data, disableBalanceFilter, disableHiddenFilter, hiddenCustom]);
 
   const returnData = useMemo(() => {
     if (!filteredByVisibleList) return null;
