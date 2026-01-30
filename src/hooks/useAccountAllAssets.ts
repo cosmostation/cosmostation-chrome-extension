@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getAccountCustomAssets } from '@/libs/asset/coin/custom/accountAsset';
 import { getAccountAssets } from '@/libs/asset/coin/default/accountAsset';
+import type { ChainToAccountTypeMap } from '@/types/account';
 import type {
   AccountAssets as AccountAllAssets,
   AllCosmosAccountAssets,
@@ -41,6 +42,49 @@ type UseAccountAllAssets =
     }
   | undefined;
 
+function filterByChainAccountType<T extends FlatAccountAssets>(items: T[], accountTypeMap: ChainToAccountTypeMap | undefined): T[] {
+  if (!accountTypeMap) return items;
+
+  return items.filter((item) => {
+    const selected = accountTypeMap[item.chain.id];
+    if (!selected) return true;
+
+    const isSamePubkeyType = selected.pubkeyType && item.address.accountType.pubkeyType ? selected.pubkeyType === item.address.accountType.pubkeyType : true;
+
+    return selected.hdPath === item.address.accountType.hdPath && selected.pubkeyStyle === item.address.accountType.pubkeyStyle && isSamePubkeyType;
+  });
+}
+
+function narrowChainAccountTypes<T extends FlatAccountAssets>(items: T[], accountTypeMap: ChainToAccountTypeMap | undefined): T[] {
+  if (!accountTypeMap) return items;
+
+  return items.map((item) => {
+    const selected = accountTypeMap[item.chain.id];
+    if (!selected) return item;
+
+    return produce(item, (draft) => {
+      draft.chain.accountTypes = draft.chain.accountTypes.filter((origin) => origin.pubkeyStyle === selected.pubkeyStyle && origin.hdPath === selected.hdPath);
+    });
+  });
+}
+
+function filterDuplicatedEthermintAssets<T extends FlatAccountAssets>(cosmosItems: T[], evmItems: FlatAccountAssets[] | undefined): T[] {
+  if (!evmItems?.length) return cosmosItems;
+
+  return cosmosItems.filter((item) => {
+    if (item.chain.chainType !== 'cosmos' || !item.chain.isEvm || item.chain.mainAssetDenom !== item.asset.id) return true;
+
+    return !evmItems.some((evmAsset) => {
+      if (evmAsset.chain.id !== item.chain.id) return false;
+
+      const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
+      const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubkeyType: comparePubkeyType } = item.address.accountType;
+
+      return hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubkeyType === comparePubkeyType;
+    });
+  });
+}
+
 export function useAccountAllAssets({
   accountId,
   filterByPreferAccountType = false,
@@ -60,12 +104,9 @@ export function useAccountAllAssets({
 
   const fetcher = async () => {
     try {
-      const accountAssets = await getAccountAssets(param, { disableFilterHidden: true, disableBalanceFilter: true });
-      const accountCustomAssets = await getAccountCustomAssets(param, { disableFilterHidden: true, disableBalanceFilter: true });
-      return {
-        ...accountAssets,
-        ...accountCustomAssets,
-      };
+      const opts = { disableFilterHidden: true, disableBalanceFilter: true } as const;
+      const [accountAssets, accountCustomAssets] = await Promise.all([getAccountAssets(param, opts), getAccountCustomAssets(param, opts)]);
+      return { ...accountAssets, ...accountCustomAssets };
     } catch {
       return null;
     }
@@ -85,261 +126,91 @@ export function useAccountAllAssets({
     const { hiddenAssetSet: hidden, visibleAssetSet: visible } = assetIds || {};
 
     const shouldShowAsset = (uniqueCoinId: UniqueCoinId, balance: string) => {
-      const isVisible = visible?.has(uniqueCoinId);
+      if (visible?.has(uniqueCoinId)) return true;
 
-      if (isVisible) return true;
+      if (!disableHiddenFilter && (hidden?.has(uniqueCoinId) || hiddenCustom.has(uniqueCoinId))) return false;
 
-      const isHidden = disableHiddenFilter ? false : hidden?.has(uniqueCoinId) || hiddenCustom.has(uniqueCoinId);
-
-      if (isHidden) return false;
-
-      const isBalanceGreaterThanZero = gt(balance, '0');
-
-      return disableBalanceFilter ? true : isBalanceGreaterThanZero;
+      return disableBalanceFilter || gt(balance, '0');
     };
 
-    const filterAssetList = <T extends { uniqueCoinId: UniqueCoinId; balance: string }>(list: T[]): T[] =>
+    const filterVisible = <T extends { uniqueCoinId: UniqueCoinId; balance: string }>(list: T[]): T[] =>
       list.filter(({ uniqueCoinId, balance }) => shouldShowAsset(uniqueCoinId, balance));
 
     return {
-      cosmosAccountAssets: filterAssetList(data.cosmosAccountAssets),
-      cosmosAccountCustomAssets: filterAssetList(data.cosmosAccountCustomAssets),
-      evmAccountAssets: filterAssetList(data.evmAccountAssets),
-      evmAccountCustomAssets: filterAssetList(data.evmAccountCustomAssets),
-      aptosAccountAssets: filterAssetList(data.aptosAccountAssets),
-      suiAccountAssets: filterAssetList(data.suiAccountAssets),
-      cw20AccountAssets: filterAssetList(data.cw20AccountAssets),
-      erc20AccountAssets: filterAssetList(data.erc20AccountAssets),
+      cosmosAccountAssets: filterVisible(data.cosmosAccountAssets),
+      cosmosAccountCustomAssets: filterVisible(data.cosmosAccountCustomAssets),
+      evmAccountAssets: filterVisible(data.evmAccountAssets),
+      evmAccountCustomAssets: filterVisible(data.evmAccountCustomAssets),
+      aptosAccountAssets: filterVisible(data.aptosAccountAssets),
+      suiAccountAssets: filterVisible(data.suiAccountAssets),
+      cw20AccountAssets: filterVisible(data.cw20AccountAssets),
+      erc20AccountAssets: filterVisible(data.erc20AccountAssets),
       customErc20AccountAssets: data.customErc20AccountAssets,
       customCw20AccountAssets: data.customCw20AccountAssets,
-      bitcoinAccountAssets: filterAssetList(data.bitcoinAccountAssets),
-      iotaAccountAssets: filterAssetList(data.iotaAccountAssets),
-      solanaAccountAssets: filterAssetList(data.solanaAccountAssets),
-      spltokenAccountAssets: filterAssetList(data.spltokenAccountAssets),
-      gnoAccountAssets: filterAssetList(data.gnoAccountAssets),
-      grc20AccountAssets: filterAssetList(data.grc20AccountAssets),
+      bitcoinAccountAssets: filterVisible(data.bitcoinAccountAssets),
+      iotaAccountAssets: filterVisible(data.iotaAccountAssets),
+      solanaAccountAssets: filterVisible(data.solanaAccountAssets),
+      spltokenAccountAssets: filterVisible(data.spltokenAccountAssets),
+      gnoAccountAssets: filterVisible(data.gnoAccountAssets),
+      grc20AccountAssets: filterVisible(data.grc20AccountAssets),
     };
   }, [assetIds, data, disableBalanceFilter, disableHiddenFilter, hiddenCustom]);
 
   const returnData = useMemo(() => {
     if (!filteredByVisibleList) return null;
 
-    if (filterByPreferAccountType) {
-      const filteredCosmos = filteredByVisibleList.cosmosAccountAssets
-        .filter((item) => {
-          const selectedChainAccountType = accountType?.[item.chain.id];
+    const isAccountTypeFilterActive = filterByPreferAccountType && !!accountType;
 
-          if (selectedChainAccountType) {
-            const isSamePubkeyType = (() => {
-              if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
-                return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
-              }
-              return true;
-            })();
-            return (
-              selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-              selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-              isSamePubkeyType
-            );
-          }
-          return true;
-        })
-        .filter((item) => {
-          if (disableDupeEthermint) {
-            return true;
-          }
+    const cosmosAccountAssets = isAccountTypeFilterActive
+      ? filterDuplicatedEthermintAssets(
+          filterByChainAccountType(filteredByVisibleList.cosmosAccountAssets, accountType),
+          disableDupeEthermint ? undefined : data?.evmAccountAssets,
+        )
+      : filteredByVisibleList.cosmosAccountAssets;
 
-          const isDuplicatedEVMAsset =
-            item.chain.chainType === 'cosmos' &&
-            item.chain.isEvm &&
-            item.chain.mainAssetDenom === item.asset.id &&
-            data?.evmAccountAssets.some((evmAsset) => {
-              const isSameAssetChain = evmAsset.chain.id === item.chain.id;
+    const cw20AccountAssets = isAccountTypeFilterActive
+      ? filterByChainAccountType(filteredByVisibleList.cw20AccountAssets, accountType)
+      : filteredByVisibleList.cw20AccountAssets;
 
-              const { hdPath, pubkeyStyle, pubkeyType } = evmAsset.address.accountType;
-              const { hdPath: compareHdPath, pubkeyStyle: comparePubkeyStyle, pubkeyType: comparePubkeyType } = item.address.accountType;
-              const isSameAccountType = hdPath === compareHdPath && pubkeyStyle === comparePubkeyStyle && pubkeyType === comparePubkeyType;
+    const evmAccountAssets = isAccountTypeFilterActive
+      ? filterByChainAccountType(filteredByVisibleList.evmAccountAssets, accountType)
+      : filteredByVisibleList.evmAccountAssets;
 
-              return isSameAssetChain && isSameAccountType;
-            });
-          if (isDuplicatedEVMAsset) {
-            return false;
-          }
+    const erc20AccountAssets = isAccountTypeFilterActive
+      ? filterByChainAccountType(filteredByVisibleList.erc20AccountAssets, accountType)
+      : filteredByVisibleList.erc20AccountAssets;
 
-          return true;
-        });
+    const bitcoinAccountAssets = isAccountTypeFilterActive
+      ? filterByChainAccountType(filteredByVisibleList.bitcoinAccountAssets, accountType)
+      : filteredByVisibleList.bitcoinAccountAssets;
 
-      const cosmosAssetsWithPreferredAccountType = filteredCosmos.map((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
+    const { cosmosAccountCustomAssets, customCw20AccountAssets, evmAccountCustomAssets, customErc20AccountAssets } = filteredByVisibleList;
 
-        if (selectedChainAccountType) {
-          return produce(item, (draft) => {
-            draft.chain.accountTypes = draft.chain.accountTypes.filter(
-              (accountType) => accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle && accountType.hdPath === selectedChainAccountType.hdPath,
-            );
-          });
-        }
+    const allCosmosAccountAssets: AllCosmosAccountAssets[] = [...cosmosAccountAssets, ...cosmosAccountCustomAssets, ...cw20AccountAssets, ...customCw20AccountAssets];
 
-        return item;
-      });
+    const allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[] = isAccountTypeFilterActive
+      ? [...narrowChainAccountTypes(cosmosAccountAssets, accountType), ...cosmosAccountCustomAssets, ...narrowChainAccountTypes(cw20AccountAssets, accountType), ...customCw20AccountAssets]
+      : allCosmosAccountAssets;
 
-      const filteredCW20 = filteredByVisibleList.cw20AccountAssets.filter((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
+    const assets = {
+      ...filteredByVisibleList,
+      cosmosAccountAssets,
+      cw20AccountAssets,
+      evmAccountAssets,
+      erc20AccountAssets,
+      bitcoinAccountAssets,
+    };
 
-        if (selectedChainAccountType) {
-          const isSamePubkeyType = (() => {
-            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
-              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
-            }
-            return true;
-          })();
-
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            isSamePubkeyType
-          );
-        }
-        return true;
-      });
-
-      const cw20AssetsWithPreferredAccountType = filteredCW20.map((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
-
-        if (selectedChainAccountType) {
-          return produce(item, (draft) => {
-            draft.chain.accountTypes = draft.chain.accountTypes.filter(
-              (accountType) => accountType.pubkeyStyle === selectedChainAccountType.pubkeyStyle && accountType.hdPath === selectedChainAccountType.hdPath,
-            );
-          });
-        }
-
-        return item;
-      });
-
-      const filteredEVM = filteredByVisibleList.evmAccountAssets.filter((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
-
-        if (selectedChainAccountType) {
-          const isSamePubkeyType = (() => {
-            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
-              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
-            }
-            return true;
-          })();
-
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            isSamePubkeyType
-          );
-        }
-        return true;
-      });
-
-      const filteredERC20Assets = filteredByVisibleList.erc20AccountAssets.filter((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
-
-        if (selectedChainAccountType) {
-          const isSamePubkeyType = (() => {
-            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
-              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
-            }
-            return true;
-          })();
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            isSamePubkeyType
-          );
-        }
-        return true;
-      });
-
-      const filteredBitcoin = filteredByVisibleList.bitcoinAccountAssets.filter((item) => {
-        const selectedChainAccountType = accountType?.[item.chain.id];
-
-        if (selectedChainAccountType) {
-          const isSamePubkeyType = (() => {
-            if (selectedChainAccountType.pubkeyType && item.address.accountType.pubkeyType) {
-              return selectedChainAccountType.pubkeyType === item.address.accountType.pubkeyType;
-            }
-            return true;
-          })();
-
-          return (
-            selectedChainAccountType.hdPath === item.address.accountType.hdPath &&
-            selectedChainAccountType.pubkeyStyle === item.address.accountType.pubkeyStyle &&
-            isSamePubkeyType
-          );
-        }
-        return true;
-      });
-
-      const filteredAccountAssets = produce(filteredByVisibleList, (draft) => {
-        draft.cosmosAccountAssets = filteredCosmos;
-        draft.cw20AccountAssets = filteredCW20;
-        draft.evmAccountAssets = filteredEVM;
-        draft.erc20AccountAssets = filteredERC20Assets;
-        draft.bitcoinAccountAssets = filteredBitcoin;
-      });
-
-      const flatAccountAssets = Object.values(filteredAccountAssets).flat() as FlatAccountAssets[];
-
-      const returnData: UseAccountAssetsResponse = {
-        ...filteredAccountAssets,
-        flatAccountAssets: flatAccountAssets,
-        allCosmosAccountAssets: [
-          ...filteredAccountAssets.cosmosAccountAssets,
-          ...filteredAccountAssets.cosmosAccountCustomAssets,
-          ...filteredAccountAssets.cw20AccountAssets,
-          ...filteredAccountAssets.customCw20AccountAssets,
-        ],
-        allCosmosAccountAssetsFiltered: [
-          ...cosmosAssetsWithPreferredAccountType,
-          ...filteredAccountAssets.cosmosAccountCustomAssets,
-          ...cw20AssetsWithPreferredAccountType,
-          ...filteredAccountAssets.customCw20AccountAssets,
-        ],
-        allEVMAccountAssets: [
-          ...filteredAccountAssets.evmAccountAssets,
-          ...filteredAccountAssets.evmAccountCustomAssets,
-          ...filteredAccountAssets.erc20AccountAssets,
-          ...filteredAccountAssets.customErc20AccountAssets,
-        ],
-        allSolanaAccountAssets: [...filteredAccountAssets.solanaAccountAssets, ...filteredAccountAssets.spltokenAccountAssets],
-        allGnoAccountAssets: [...filteredAccountAssets.gnoAccountAssets, ...filteredAccountAssets.grc20AccountAssets],
-      };
-
-      return returnData;
-    } else {
-      const flatAccountAssets = Object.values(filteredByVisibleList).flat();
-
-      const cosmosAccountAssets = [
-        ...filteredByVisibleList.cosmosAccountAssets,
-        ...filteredByVisibleList.cosmosAccountCustomAssets,
-        ...filteredByVisibleList.cw20AccountAssets,
-        ...filteredByVisibleList.customCw20AccountAssets,
-      ];
-
-      const returnData: UseAccountAssetsResponse = {
-        ...filteredByVisibleList,
-        flatAccountAssets: flatAccountAssets,
-        allCosmosAccountAssets: cosmosAccountAssets,
-        allCosmosAccountAssetsFiltered: cosmosAccountAssets,
-        allEVMAccountAssets: [
-          ...filteredByVisibleList.evmAccountAssets,
-          ...filteredByVisibleList.evmAccountCustomAssets,
-          ...filteredByVisibleList.erc20AccountAssets,
-          ...filteredByVisibleList.customErc20AccountAssets,
-        ],
-        allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
-        allGnoAccountAssets: [...filteredByVisibleList.gnoAccountAssets, ...filteredByVisibleList.grc20AccountAssets],
-      };
-
-      return returnData;
-    }
-  }, [accountType, data?.evmAccountAssets, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
+    return {
+      ...assets,
+      flatAccountAssets: Object.values(assets).flat() as FlatAccountAssets[],
+      allCosmosAccountAssets,
+      allCosmosAccountAssetsFiltered,
+      allEVMAccountAssets: [...evmAccountAssets, ...evmAccountCustomAssets, ...erc20AccountAssets, ...customErc20AccountAssets],
+      allSolanaAccountAssets: [...filteredByVisibleList.solanaAccountAssets, ...filteredByVisibleList.spltokenAccountAssets],
+      allGnoAccountAssets: [...filteredByVisibleList.gnoAccountAssets, ...filteredByVisibleList.grc20AccountAssets],
+    } satisfies UseAccountAssetsResponse;
+  }, [accountType, data, disableDupeEthermint, filterByPreferAccountType, filteredByVisibleList]);
 
   return { data: returnData, isLoading, isFetching, error, refetch };
 }
