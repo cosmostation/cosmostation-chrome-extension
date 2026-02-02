@@ -17,6 +17,7 @@ import AptosFee from '@/components/Fee/AptosFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { APTOS_COIN_TYPE } from '@/constants/aptos/coin.ts';
 import { DEFAULT_GAS_BUDGET_MULTIPLY } from '@/constants/sui/gas.ts';
+import { useAptosResolveDomain } from '@/hooks/aptos/useAptosNS.ts';
 import { useEstimateGasPrice } from '@/hooks/aptos/useEstimateGasPrice.ts';
 import { useGenerateTx } from '@/hooks/aptos/useGenerateTx.ts';
 import { useSimulateTx } from '@/hooks/aptos/useSimulateTx.ts';
@@ -28,11 +29,13 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import type { AptosSignPayload, AptosSimulationPayload } from '@/types/aptos/tx.ts';
 import { isFungibleAssetMetadataId } from '@/utils/aptos/fungibleAsset.ts';
+import { isAptosNSDomain } from '@/utils/aptos/nameService.ts';
 import { signAndExecuteTxSequentially } from '@/utils/aptos/sign.ts';
+import { isValidAptosAddress } from '@/utils/aptos/validation.ts';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
 import { aptosAddressRegex } from '@/utils/regex.ts';
-import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
 
@@ -89,8 +92,19 @@ export default function Aptos({ coinId }: AptosProps) {
   const baseAvailableAmount = selectedCoinToSend?.balance || '0';
   const displayAvailableAmount = toDisplayDenomAmount(baseAvailableAmount, coinDecimals);
 
-  const [recipientAddress, setRecipientAddress] = useState('');
+  const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
+
+  const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
+
+  const aptosNs = useAptosResolveDomain({ domain: debouncedInputRecipientAddress });
+
+  const recipientAddress = useMemo(() => {
+    if (aptosNs.isLoading || aptosNs.isFetching) {
+      return isAptosNSDomain(debouncedInputRecipientAddress) ? '' : debouncedInputRecipientAddress;
+    }
+    return aptosNs.data?.registered_address || debouncedInputRecipientAddress;
+  }, [debouncedInputRecipientAddress, aptosNs.data, aptosNs.isLoading, aptosNs.isFetching]);
 
   const displaySendAmountPrice = times(sendDisplayAmount || '0', coinPrice);
 
@@ -229,18 +243,28 @@ export default function Aptos({ coinId }: AptosProps) {
   };
 
   const addressInputErrorMessage = useMemo(() => {
-    if (recipientAddress) {
-      if (isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)) {
+    if (debouncedInputRecipientAddress) {
+      if (isAptosNSDomain(debouncedInputRecipientAddress)) {
+        if (!aptosNs.data?.registered_address && !aptosNs.isLoading && !aptosNs.isFetching) {
+          return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAptosNSAddress');
+        }
+        if (aptosNs.data?.registered_address && isEqualsIgnoringCase(aptosNs.data.registered_address, selectedCoinToSend?.address.address)) {
+          return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAddress');
+        }
+        return '';
+      }
+
+      if (isEqualsIgnoringCase(debouncedInputRecipientAddress, selectedCoinToSend?.address.address)) {
         return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAddress');
       }
 
-      if (!aptosAddressRegex.test(recipientAddress)) {
+      if (!isValidAptosAddress(debouncedInputRecipientAddress)) {
         return t('pages.wallet.send.$coinId.Entry.Aptos.index.invalidAddress');
       }
     }
 
     return '';
-  }, [recipientAddress, selectedCoinToSend?.address.address, t]);
+  }, [debouncedInputRecipientAddress, selectedCoinToSend?.address.address, aptosNs.data, aptosNs.isLoading, aptosNs.isFetching, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
     if (sendDisplayAmount) {
@@ -288,7 +312,7 @@ export default function Aptos({ coinId }: AptosProps) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
     }
 
-    if (!simulateTransaction.data?.[0]?.success && !generateTransaction.data) {
+    if (!simulateTransaction.data?.[0]?.success) {
       return t('pages.wallet.send.$coinId.Entry.Aptos.index.failedGenerateTransaction');
     }
 
@@ -415,9 +439,10 @@ export default function Aptos({ coinId }: AptosProps) {
             <StandardInput
               label={t('pages.wallet.send.$coinId.Entry.Aptos.index.recipientAddress')}
               error={!!addressInputErrorMessage}
-              helperText={addressInputErrorMessage}
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
+              helperText={addressInputErrorMessage || shorterAddress(aptosNs.data?.registered_address || undefined, 16) || ''}
+              isLoadingHelperText={aptosNs.isLoading}
+              value={inputRecipientAddress}
+              onChange={(e) => setInputRecipientAddress(e.target.value)}
               inputVarient="address"
               slotProps={{
                 input: {
@@ -488,7 +513,7 @@ export default function Aptos({ coinId }: AptosProps) {
           chainId={getUniqueChainId(selectedCoinToSend.chain)}
           headerTitle={t('pages.wallet.send.$coinId.Entry.Aptos.index.chooseRecipientAddress')}
           onClickAddress={(address) => {
-            setRecipientAddress(address);
+            setInputRecipientAddress(address);
           }}
         />
       )}

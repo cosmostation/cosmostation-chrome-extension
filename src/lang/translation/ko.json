@@ -2911,6 +2911,7 @@
                 "insufficientAmount": "잔액이 부족합니다",
                 "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
+                "invalidAptosNSAddress": "Aptos NS 도메인을 찾을 수 없습니다",
                 "invalidAmount": "잘못된 금액",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
@@ -2993,13 +2994,13 @@
                 "insufficientFee": "수수료를 지불할 잔액이 부족합니다.",
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
                 "invalidAmount": "잘못된 금액",
-                "invalidENSAddress": "ENS 주소를 변환하지 못했습니다",
+                "invalidENSAddress": "ENS 도메인을 찾을 수 없습니다",
                 "invalidENSFormat": "잘못된 ENS 형식입니다",
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
                 "noTransaction": "트랜잭션 생성에 실패했습니다",
-                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientAddress": "수신 지갑 주소 / 도메인 네임 입력",
                 "send": "전송",
                 "sendReview": "코인 전송 최종 확인",
                 "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
@@ -3022,7 +3023,7 @@
                 "invalidAmount": "잘못된 금액",
                 "noAmount": "금액을 입력하세요",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
-                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientAddress": "수신 지갑 주소 / 도메인 네임 입력",
                 "send": "전송",
                 "sendReview": "코인 전송 최종 확인",
                 "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
@@ -3030,7 +3031,9 @@
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "recipientNetwork": "수신 체인",
-                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})",
+                "invalidSuiNSFormat": "잘못된 Sui NS 형식입니다",
+                "invalidSuiNSAddress": "Sui NS 도메인을 찾을 수 없습니다"
               }
             },
             "components": {
@@ -3051,7 +3054,7 @@
                 "noAmount": "금액을 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
-                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientAddress": "수신 지갑 주소 / 도메인 네임 입력",
                 "send": "전송",
                 "sendReview": "코인 전송 최종 확인",
                 "sendReviewSub": "전송할 정보를 확인하시고, 계속 진행하시겠습니까? \n이 작업은 완료 후 취소할 수 없습니다.",
@@ -3061,7 +3064,9 @@
                 "recipientNetwork": "수신 체인",
                 "failedToBuildTransaction": "트랜잭션을 생성하지 못했습니다",
                 "failedToDryRun": "트랜잭션 시뮬레이션이 실패했습니다",
-                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})",
+                "invalidIotaNSAddress": "Iota NS 도메인을 찾을 수 없습니다",
+                "invalidIotaNSFormat": "잘못된 Iota NS 형식입니다"
               }
             },
             "Gno": {
@@ -3095,10 +3100,11 @@
                 "mint": "민트 주소",
                 "send": "전송",
                 "recipientNetwork": "수신 체인",
-                "recipientAddress": "수신 지갑 주소 입력",
+                "recipientAddress": "수신 지갑 주소 / 도메인 이름 입력",
                 "amount": "전송할 금액 입력",
                 "chooseRecipientAddress": "수신 주소 선택",
                 "invalidAddress": "주소 형식이 올바르지 않습니다. 확인 후 다시 시도해 주세요",
+                "invalidSolanaNSAddress": "Solana NS 도메인을 찾을 수 없습니다",
                 "noRecipientAddress": "수신자 주소를 입력하세요",
                 "noAvailableAmount": "사용 가능한 잔액이 없습니다",
                 "noAmount": "금액을 입력하세요",

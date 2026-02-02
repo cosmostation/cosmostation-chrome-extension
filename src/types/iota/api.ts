@@ -30,6 +30,13 @@ export interface IotaGetBalance {
   totalBalance: string;
 }
 
+export interface IotaNameRecord {
+  nftId: string;
+  expirationTimestampMs: number;
+  totalBalance: string;
+  targetAddress?: string;
+}
+
 export type TokenBalanceObject = {
   coinType: string;
   balance: string;
@@ -64,3 +71,7 @@ export interface IotaTxInfoResponse extends IotaRpc<IotaTransactionBlockResponse
 export interface IotaGetAPYResponse extends IotaRpc<ValidatorsApy> {}
 
 export interface IotaGetDynamicFieldsResponse extends IotaRpc<DynamicFieldPage> {}
+
+export interface IotaNameLookupResponse extends IotaRpc<IotaNameRecord> {}
+
+export interface IotaNameReverseLookupResponse extends IotaRpc<string> {}

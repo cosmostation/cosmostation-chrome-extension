@@ -22,6 +22,7 @@ import { EVM_DEFAULT_GAS } from '@/constants/evm/fee';
 import { useCurrentAddedEVMNFTsWithMetaData } from '@/hooks/evm/nft/useCurrentAddedEVMNFTsWithMetaData';
 import { useGetNFTBalance } from '@/hooks/evm/nft/useGetNFTBalance';
 import { useGetNFTURI } from '@/hooks/evm/nft/useGetNFTURI';
+import { useENS } from '@/hooks/evm/useENS';
 import { useEstimateGas } from '@/hooks/evm/useEstimateGas';
 import { useFee } from '@/hooks/evm/useFee';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
@@ -47,7 +48,7 @@ import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 type EVMProps = { id: string };
 
 export default function EVM({ id }: EVMProps) {
-  const [recipientAddress, setRecipientAddress] = useState('');
+  const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [sendQuantity, setSendQuantity] = useState('');
 
   const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
@@ -113,6 +114,18 @@ export default function EVM({ id }: EVMProps) {
 
   const nativeAccountAssetCoinId = useMemo(() => (nativeAccountAsset ? getCoinId(nativeAccountAsset.asset) : ''), [nativeAccountAsset]);
   const availableFeeCoinBalance = nativeAccountAsset?.balance || '0';
+
+  const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
+  const ens = useENS({ domain: debouncedInputRecipientAddress });
+
+  const nameResolvedAddress = ens.data;
+
+  const recipientAddress = useMemo(() => {
+    if (ens.isLoading || ens.isFetching) {
+      return debouncedInputRecipientAddress.endsWith('.eth') ? '' : debouncedInputRecipientAddress;
+    }
+    return nameResolvedAddress || debouncedInputRecipientAddress;
+  }, [debouncedInputRecipientAddress, ens.isFetching, ens.isLoading, nameResolvedAddress]);
 
   const sendTx = useMemo(() => {
     if (!selectedNFT || !chain) {
@@ -325,12 +338,22 @@ export default function EVM({ id }: EVMProps) {
     return '';
   }, [currentNFTBalance, sendQuantity, t]);
 
-  const addressInputErrorMessage = (() => {
-    if (recipientAddress && (!isValidAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, selectedNFT?.ownerAddress))) {
-      return t('pages.wallet.nft-send.$id.Entry.Sui.index.invalidAddress');
+  const addressInputErrorMessage = useMemo(() => {
+    if (recipientAddress) {
+      if ((recipientAddress.startsWith('0x') && !isValidAddress(recipientAddress)) || isEqualsIgnoringCase(recipientAddress, selectedNFT?.ownerAddress)) {
+        return t('pages.wallet.nft-send.$id.Entry.EVM.index.invalidAddress');
+      }
+
+      if (debouncedInputRecipientAddress.endsWith('.eth') && !nameResolvedAddress && !ens.isLoading && !ens.isFetching) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidENSAddress');
+      }
+
+      if (!debouncedInputRecipientAddress.endsWith('.eth') && !debouncedInputRecipientAddress.startsWith('0x')) {
+        return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidENSFormat');
+      }
     }
     return '';
-  })();
+  }, [debouncedInputRecipientAddress, ens.isFetching, ens.isLoading, nameResolvedAddress, recipientAddress, selectedNFT?.ownerAddress, t]);
 
   const errorMessage = useMemo(() => {
     if (!selectedNFT) {
@@ -480,9 +503,10 @@ export default function EVM({ id }: EVMProps) {
             <StandardInput
               label={t('pages.wallet.nft-send.$id.Entry.EVM.index.recipientAddress')}
               error={!!addressInputErrorMessage}
-              helperText={addressInputErrorMessage}
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
+              helperText={addressInputErrorMessage || shorterAddress(nameResolvedAddress || undefined, 16) || ''}
+              isLoadingHelperText={ens.isLoading}
+              value={inputRecipientAddress}
+              onChange={(e) => setInputRecipientAddress(e.target.value)}
               inputVarient="address"
               slotProps={{
                 input: {
@@ -555,7 +579,7 @@ export default function EVM({ id }: EVMProps) {
           chainId={getUniqueChainId(chain)}
           headerTitle={t('pages.wallet.nft-send.$id.Entry.EVM.index.chooseRecipientAddress')}
           onClickAddress={(address) => {
-            setRecipientAddress(address);
+            setInputRecipientAddress(address);
           }}
         />
       )}

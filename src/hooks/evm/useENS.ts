@@ -1,33 +1,28 @@
-import { isValidName, JsonRpcProvider } from 'ethers';
+import { isValidName } from 'ethers';
 
-import { isAxiosError } from '@/utils/axios';
+import { ethersProvider } from '@/utils/ethereum/ethers';
+import { fetchWithFailover } from '@/utils/fetch/fetchWithFailover';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
-import { useGetAccountAsset } from '../useGetAccountAsset';
+import { useChainList } from '../useChainList';
 
 type UseENSProps = {
-  coinId: string;
   domain?: string;
   config?: UseFetchConfig;
 };
 
-export function useENS({ coinId, domain, config }: UseENSProps) {
-  const { getEVMAccountAsset } = useGetAccountAsset({ coinId });
+export function useENS({ domain, config }: UseENSProps) {
+  const { chainList } = useChainList();
 
-  const evmAccountAsset = getEVMAccountAsset();
+  const rpcURLs = chainList.evmChains?.find((chain) => chain.id === 'ethereum')?.rpcUrls?.map((item) => item.url) || [];
 
-  const rpcURLs = evmAccountAsset?.chain.rpcUrls.map((item) => item.url) || [];
-
-  const fetcher = async (index = 0) => {
-    try {
-      if (index >= rpcURLs.length) {
-        throw new Error('All endpoints failed');
-      }
-
-      const requestURL = rpcURLs[index];
-
-      const provider = new JsonRpcProvider(requestURL);
+  const fetcher = async () => {
+    const fetchFromUrl = async (url: string) => {
+      const provider = ethersProvider(url, 1, {
+        staticNetwork: true,
+        batchMaxCount: 1,
+      });
 
       if (domain && domain.endsWith('.eth')) {
         const result = await provider.resolveName(domain);
@@ -36,29 +31,18 @@ export function useENS({ coinId, domain, config }: UseENSProps) {
       }
 
       return null;
-    } catch (e) {
-      if (index >= rpcURLs.length) {
-        return null;
-      }
-
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
-        }
-      }
-
-      return fetcher(index + 1);
-    }
+    };
+    return await fetchWithFailover(rpcURLs, fetchFromUrl);
   };
 
-  const { data, isLoading, error, refetch } = useFetch({
-    queryKey: ['useENS', coinId, domain],
+  const { data, isLoading, isFetching, error, refetch } = useFetch({
+    queryKey: ['useENS', domain],
     fetchFunction: () => fetcher(),
     config: {
-      enabled: !!coinId && !!rpcURLs.length && !!domain && isValidName(domain) && domain.endsWith('.eth'),
+      enabled: !!rpcURLs.length && !!domain && isValidName(domain) && domain.endsWith('.eth'),
       ...config,
     },
   });
 
-  return { data, isLoading, error, refetch };
+  return { data, isLoading, isFetching, error, refetch };
 }

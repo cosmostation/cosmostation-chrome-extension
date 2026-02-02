@@ -21,6 +21,7 @@ import { DEFAULT_GAS_BUDGET, DEFAULT_GAS_BUDGET_MULTIPLY } from '@/constants/sui
 import { SUI_COIN_TYPE } from '@/constants/sui/index.ts';
 import { useDryRunTransaction } from '@/hooks/sui/useDryRunTransaction.ts';
 import { useGetCoins } from '@/hooks/sui/useGetCoins.ts';
+import { useSuiResolveNameServiceAddress } from '@/hooks/sui/useSuiNS.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
 import { useCurrentPassword } from '@/hooks/useCurrentPassword.ts';
@@ -29,8 +30,9 @@ import { getKeypair } from '@/libs/address.ts';
 import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getUniqueChainId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator.ts';
-import { isDecimal, isEqualsIgnoringCase, safeStringify } from '@/utils/string.ts';
+import { isDecimal, isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
 import { getCoinType } from '@/utils/sui/coin.ts';
+import { isSuiNSDomain } from '@/utils/sui/nameService.ts';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign.ts';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore.ts';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore.ts';
@@ -93,8 +95,18 @@ export default function Sui({ coinId }: SuiProps) {
 
   const coinDescription = selectedCoinToSend?.asset.description;
 
-  const [recipientAddress, setRecipientAddress] = useState('');
+  const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
+
+  const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
+  const suiNs = useSuiResolveNameServiceAddress({ coinId, domain: debouncedInputRecipientAddress });
+
+  const recipientAddress = useMemo(() => {
+    if (suiNs.isLoading || suiNs.isFetching) {
+      return isSuiNSDomain(debouncedInputRecipientAddress) ? undefined : debouncedInputRecipientAddress;
+    }
+    return suiNs.data?.result || debouncedInputRecipientAddress;
+  }, [debouncedInputRecipientAddress, suiNs.data?.result, suiNs.isLoading, suiNs.isFetching]);
 
   const sendBaseAmount = sendDisplayAmount ? toBaseDenomAmount(sendDisplayAmount, coinDecimal) : '0';
 
@@ -173,8 +185,21 @@ export default function Sui({ coinId }: SuiProps) {
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const addressInputErrorMessage = (() => {
-    if (recipientAddress && (!isValidSuiAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address))) {
-      return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAddress');
+    if (recipientAddress) {
+      if (
+        (recipientAddress.startsWith('0x') && !isValidSuiAddress(recipientAddress)) ||
+        isEqualsIgnoringCase(recipientAddress, selectedCoinToSend?.address.address)
+      ) {
+        return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidAddress');
+      }
+
+      if (isSuiNSDomain(debouncedInputRecipientAddress) && !suiNs.data?.result && !suiNs.isLoading && !suiNs.isFetching) {
+        return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidSuiNSAddress');
+      }
+
+      if (!isSuiNSDomain(debouncedInputRecipientAddress) && !debouncedInputRecipientAddress.startsWith('0x')) {
+        return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidSuiNSFormat');
+      }
     }
     return '';
   })();
@@ -350,9 +375,10 @@ export default function Sui({ coinId }: SuiProps) {
             <StandardInput
               label={t('pages.wallet.send.$coinId.Entry.Sui.index.recipientAddress')}
               error={!!addressInputErrorMessage}
-              helperText={addressInputErrorMessage}
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
+              helperText={addressInputErrorMessage || shorterAddress(suiNs.data?.result || undefined, 16) || ''}
+              isLoadingHelperText={suiNs.isLoading}
+              value={inputRecipientAddress}
+              onChange={(e) => setInputRecipientAddress(e.target.value)}
               inputVarient="address"
               slotProps={{
                 input: {
@@ -422,7 +448,7 @@ export default function Sui({ coinId }: SuiProps) {
           chainId={getUniqueChainId(selectedCoinToSend.chain)}
           headerTitle={t('pages.wallet.send.$coinId.Entry.Sui.index.chooseRecipientAddress')}
           onClickAddress={(address) => {
-            setRecipientAddress(address);
+            setInputRecipientAddress(address);
           }}
         />
       )}

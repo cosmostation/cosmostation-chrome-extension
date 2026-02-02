@@ -137,10 +137,15 @@ export default function EVM({ coinId }: EVMProps) {
   const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
 
-  const ens = useENS({ coinId, domain: debouncedInputRecipientAddress });
+  const ens = useENS({ domain: debouncedInputRecipientAddress });
 
   const nameResolvedAddress = ens.data;
-  const recipientAddress = useMemo(() => nameResolvedAddress || debouncedInputRecipientAddress, [debouncedInputRecipientAddress, nameResolvedAddress]);
+  const recipientAddress = useMemo(() => {
+    if (ens.isLoading || ens.isFetching) {
+      return debouncedInputRecipientAddress.endsWith('.eth') ? '' : debouncedInputRecipientAddress;
+    }
+    return nameResolvedAddress || debouncedInputRecipientAddress;
+  }, [debouncedInputRecipientAddress, ens.isFetching, ens.isLoading, nameResolvedAddress]);
 
   const [sendDisplayAmount, setSendDisplayAmount] = useState('');
 
@@ -334,17 +339,17 @@ export default function EVM({ coinId }: EVMProps) {
         return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidAddress');
       }
 
-      if (recipientAddress.endsWith('.eth') && !nameResolvedAddress && !ens.isLoading) {
+      if (debouncedInputRecipientAddress.endsWith('.eth') && !nameResolvedAddress && !ens.isLoading && !ens.isFetching) {
         return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidENSAddress');
       }
 
-      if (!recipientAddress.endsWith('.eth') && !recipientAddress.startsWith('0x')) {
+      if (!debouncedInputRecipientAddress.endsWith('.eth') && !debouncedInputRecipientAddress.startsWith('0x')) {
         return t('pages.wallet.send.$coinId.Entry.EVM.index.invalidENSFormat');
       }
     }
 
     return '';
-  }, [ens.isLoading, nameResolvedAddress, recipientAddress, selectedCoinToSend?.address.address, t]);
+  }, [debouncedInputRecipientAddress, ens.isFetching, ens.isLoading, nameResolvedAddress, recipientAddress, selectedCoinToSend?.address.address, t]);
 
   const sendAmountInputErrorMessage = useMemo(() => {
     if (sendDisplayAmount) {
@@ -523,7 +528,7 @@ export default function EVM({ coinId }: EVMProps) {
             <StandardInput
               label={t('pages.wallet.send.$coinId.Entry.EVM.index.recipientAddress')}
               error={!!addressInputErrorMessage}
-              helperText={addressInputErrorMessage || nameResolvedAddress || ''}
+              helperText={addressInputErrorMessage || shorterAddress(nameResolvedAddress || undefined, 16) || ''}
               isLoadingHelperText={ens.isLoading}
               value={inputRecipientAddress}
               onChange={(e) => setInputRecipientAddress(e.target.value)}
