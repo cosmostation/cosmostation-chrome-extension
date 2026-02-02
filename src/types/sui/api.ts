@@ -6,6 +6,7 @@ import type {
   PaginatedCoins,
   PaginatedObjectsResponse,
   PaginatedTransactionResponse,
+  ResolvedNameServiceNames,
   SuiObjectResponse,
   SuiSystemStateSummary,
   SuiTransactionBlockResponse,
@@ -64,3 +65,7 @@ export interface SuiTxInfoResponse extends SuiRpc<SuiTransactionBlockResponse> {
 export interface SuiGetAPYResponse extends SuiRpc<ValidatorsApy> {}
 
 export interface SuiGetDynamicFieldsResponse extends SuiRpc<DynamicFieldPage> {}
+
+export interface SuiResolveNameServiceNamesResponse extends SuiRpc<ResolvedNameServiceNames> {}
+
+export interface SuiResolveNameServiceAddressResponse extends SuiRpc<string | null> {}

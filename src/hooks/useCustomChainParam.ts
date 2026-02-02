@@ -1,13 +1,13 @@
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { CHAINLIST_RESOURCE_URL } from '@/constants/common';
+import { CHAINLIST_WALLET_RESOURCE_URL } from '@/constants/common';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import type { CustomChainAsset, CustomChainParamResponse, CustomCosmosChainAsset, CustomEvmChainAsset } from '@/types/customChain';
 import { get } from '@/utils/axios';
 
 export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>) {
-  const requestURL = `${CHAINLIST_RESOURCE_URL}/custom_chain.json`;
+  const requestURL = `${CHAINLIST_WALLET_RESOURCE_URL}/custom_chain.json`;
 
   const fetcher = async () => {
     const response = await get<CustomChainParamResponse>(requestURL);
@@ -149,8 +149,9 @@ export function useCustomChainParam(config?: UseQueryOptions<CustomChainAsset[]>
     queryKey: ['customChainParam', requestURL],
     queryFn: fetcher,
     refetchOnWindowFocus: false,
-    retry: 3,
+    retry: 1,
     staleTime: Infinity,
+    enabled: false,
     ...config,
   });
 

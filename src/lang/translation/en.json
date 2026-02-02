@@ -1429,7 +1429,7 @@
                 "insufficientAmount": "Insufficient amount",
                 "failedToDryRun": "Transaction simulation failed",
                 "send": "Send",
-                "recipientAddress": "Recipient Address",
+                "recipientAddress": "Recipient Address / Domain Name",
                 "amount": "Amount",
                 "chooseRecipientAddress": "Choose Recipient",
                 "sendReview": "Confirm Send",
@@ -1442,7 +1442,9 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "invalidSuiNSFormat": "Invalid Sui NS format",
+                "invalidSuiNSAddress": "Failed to resolve Sui NS address"
               }
             },
             "components": {
@@ -1462,7 +1464,7 @@
                 "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
                 "insufficientFee": "Insufficient fee",
                 "send": "Send",
-                "recipientAddress": "Recipient Address",
+                "recipientAddress": "Recipient Address / Domain Name",
                 "amount": "Amount",
                 "chooseRecipientAddress": "Choose Recipient",
                 "sendReview": "Confirm Send",
@@ -1504,6 +1506,7 @@
             "Aptos": {
               "index": {
                 "invalidAddress": "Invalid address",
+                "invalidAptosNSAddress": "Failed to resolve ANS domain",
                 "noAvailableAmount": "No available amount",
                 "insufficientAmount": "Insufficient amount",
                 "insufficientFee": "Insufficient fee",
@@ -1565,7 +1568,7 @@
                 "insufficientAmount": "Insufficient amount",
                 "failedToDryRun": "Transaction simulation failed",
                 "send": "Send",
-                "recipientAddress": "Recipient Address",
+                "recipientAddress": "Recipient Address / Domain Name",
                 "amount": "Amount",
                 "chooseRecipientAddress": "Choose Recipient",
                 "sendReview": "Confirm Send",
@@ -1578,7 +1581,9 @@
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAmount": "Please enter the amount",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "invalidIotaNSAddress": "Failed to resolve Iota NS address",
+                "invalidIotaNSFormat": "Invalid Iota NS format"
               }
             },
             "Solana": {
@@ -1586,10 +1591,11 @@
                 "mint": "Mint Address",
                 "send": "Send",
                 "recipientNetwork": "Recipient Network",
-                "recipientAddress": "Recipient Address",
+                "recipientAddress": "Recipient Address / Domain Name",
                 "amount": "Amount",
                 "chooseRecipientAddress": "Choose Recipient",
                 "invalidAddress": "Invalid address",
+                "invalidSolanaNSAddress": "Failed to resolve SNS domain",
                 "noRecipientAddress": "Please enter the recipient address",
                 "noAvailableAmount": "No available amount",
                 "noAmount": "Please enter the amount",

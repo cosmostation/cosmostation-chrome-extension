@@ -19,6 +19,7 @@ import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
 import { DEFAULT_GAS_BUDGET, DEFAULT_GAS_BUDGET_MULTIPLY } from '@/constants/sui/gas';
 import { useCurrentAddedSuiNFTsWithMetaData } from '@/hooks/sui/useCurrentAddedSuiNFTsWithMetaData';
 import { useDryRunTransaction } from '@/hooks/sui/useDryRunTransaction';
+import { useSuiResolveNameServiceAddress } from '@/hooks/sui/useSuiNS';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useChainList } from '@/hooks/useChainList';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount';
@@ -29,6 +30,7 @@ import { Route as TxResult } from '@/pages/wallet/tx-result';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '@/utils/numbers.ts';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isSameChain } from '@/utils/queryParamGenerator.ts';
 import { isEqualsIgnoringCase, safeStringify, shorterAddress } from '@/utils/string.ts';
+import { isSuiNSDomain } from '@/utils/sui/nameService';
 import { signAndExecuteTxSequentially } from '@/utils/sui/sign';
 import { useTxTrackerStore } from '@/zustand/hooks/useTxTrackerStore';
 
@@ -39,7 +41,7 @@ import AddressBookIcon from '@/assets/images/icons/AddressBook20.svg';
 type SuiProps = { id: string };
 
 export default function Sui({ id }: SuiProps) {
-  const [recipientAddress, setRecipientAddress] = useState('');
+  const [inputRecipientAddress, setInputRecipientAddress] = useState('');
   const [isOpenAddressBottomSheet, setIsOpenAddressBottomSheet] = useState(false);
   const [isOpenReviewBottomSheet, setIsOpenReviewBottomSheet] = useState(false);
   const [isOpenTxProcessingOverlay, setIsOpenTxProcessingOverlay] = useState(false);
@@ -81,10 +83,21 @@ export default function Sui({ id }: SuiProps) {
 
   const accountAssetCoinId = useMemo(() => (accountAsset ? getCoinId(accountAsset.asset) : ''), [accountAsset]);
 
+  const [debouncedInputRecipientAddress] = useDebounce(inputRecipientAddress, 500);
+  const suiNs = useSuiResolveNameServiceAddress({ coinId: accountAssetCoinId, domain: debouncedInputRecipientAddress });
+
+  const recipientAddress = useMemo(() => {
+    if (suiNs.isLoading || suiNs.isFetching) {
+      return isSuiNSDomain(debouncedInputRecipientAddress) ? undefined : debouncedInputRecipientAddress;
+    }
+    return suiNs.data?.result || debouncedInputRecipientAddress;
+  }, [debouncedInputRecipientAddress, suiNs.data?.result, suiNs.isLoading, suiNs.isFetching]);
+
   const sendTx = useMemo<TransactionType | undefined>(() => {
     if (
       !selectedNFT?.objectId ||
       !recipientAddress ||
+      !isValidSuiAddress(recipientAddress) ||
       !accountAsset?.address.address ||
       !(selectedNFT.originObject?.data?.content?.dataType === 'moveObject' && selectedNFT.originObject?.data.content.hasPublicTransfer)
     ) {
@@ -127,8 +140,21 @@ export default function Sui({ id }: SuiProps) {
   const displayTx = useMemo(() => safeStringify(debouncedTx?.getData()), [debouncedTx]);
 
   const addressInputErrorMessage = (() => {
-    if (recipientAddress && (!isValidSuiAddress(recipientAddress) || isEqualsIgnoringCase(recipientAddress, accountAsset?.address.address))) {
-      return t('pages.wallet.nft-send.$id.Entry.Sui.index.invalidAddress');
+    if (recipientAddress) {
+      if (
+        (recipientAddress.startsWith('0x') && !isValidSuiAddress(recipientAddress)) ||
+        isEqualsIgnoringCase(recipientAddress, accountAsset?.address.address)
+      ) {
+        return t('pages.wallet.nft-send.$id.Entry.Sui.index.invalidAddress');
+      }
+
+      if (isSuiNSDomain(debouncedInputRecipientAddress) && !suiNs.data?.result && !suiNs.isLoading && !suiNs.isFetching) {
+        return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidSuiNSAddress');
+      }
+
+      if (!isSuiNSDomain(debouncedInputRecipientAddress) && !debouncedInputRecipientAddress.startsWith('0x')) {
+        return t('pages.wallet.send.$coinId.Entry.Sui.index.invalidSuiNSFormat');
+      }
     }
     return '';
   })();
@@ -269,9 +295,10 @@ export default function Sui({ id }: SuiProps) {
             <StandardInput
               label={t('pages.wallet.nft-send.$id.Entry.Sui.index.recipientAddress')}
               error={!!addressInputErrorMessage}
-              helperText={addressInputErrorMessage}
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
+              helperText={addressInputErrorMessage || shorterAddress(suiNs.data?.result || undefined, 16) || ''}
+              isLoadingHelperText={suiNs.isLoading}
+              value={inputRecipientAddress}
+              onChange={(e) => setInputRecipientAddress(e.target.value)}
               inputVarient="address"
               slotProps={{
                 input: {
@@ -312,7 +339,7 @@ export default function Sui({ id }: SuiProps) {
           chainId={getUniqueChainId(chain)}
           headerTitle={t('pages.wallet.nft-send.$id.Entry.Sui.index.chooseRecipientAddress')}
           onClickAddress={(address) => {
-            setRecipientAddress(address);
+            setInputRecipientAddress(address);
           }}
         />
       )}
