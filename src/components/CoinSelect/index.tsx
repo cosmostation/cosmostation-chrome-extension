@@ -122,7 +122,7 @@ export default function CoinSelect({
   const finalSelectedChainFilterId =
     selectedChainFilterId && variant === 'stake' && currentSelectedChain ? getUniqueChainId(currentSelectedChain) : currentSelectedChainId;
 
-  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || (!!debouncedSearch && !isSearchEmpty), [currentSelectedChain, debouncedSearch, isSearchEmpty]);
 
   const pricedAssets = useAssetPricing(baseCoinList, {
     getBalance: getStakeableBalance,

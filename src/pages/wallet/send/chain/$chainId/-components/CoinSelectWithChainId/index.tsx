@@ -57,7 +57,7 @@ export default function CoinSelectWithChainId({
   const currentSelectedChain = useMemo(() => flatChainList?.find((chain) => isMatchingUniqueChainId(chain, chainId)), [chainId, flatChainList]);
   const baseChainList = currentSelectedChain && [currentSelectedChain];
 
-  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || (!!debouncedSearch && !isSearchEmpty), [currentSelectedChain, debouncedSearch, isSearchEmpty]);
 
   const filteredCoinList = useMemo(() => filterAssetsBySearch(coinList, debouncedSearch, isSearchEmpty), [coinList, debouncedSearch, isSearchEmpty]);
 
