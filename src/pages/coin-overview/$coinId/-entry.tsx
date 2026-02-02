@@ -11,16 +11,16 @@ import IntersectionObserver from '@/components/common/IntersectionObserver';
 import CoinOverViewBox from '@/components/MainBox/CoinOverviewBox';
 import Search from '@/components/Search';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
-import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useAssetPricing } from '@/hooks/useAssetPricing';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import { Route as CoinDetail } from '@/pages/coin-detail/$coinId';
 import type { UniqueChainId } from '@/types/chain';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
-import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
+import { filterAssetsBySearch, getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset, sortAssetsByKey } from '@/utils/asset';
+import { toDisplayDenomAmount } from '@/utils/numbers';
+import { getUniqueChainId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { shorterAddress } from '@/utils/string';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import { CoinButtonWrapper, Container, FilterContaienr, StickyContentsContainer } from './-styled';
 
@@ -32,12 +32,10 @@ export default function Entry({ coinId }: EntryProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
-
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
+  const isSearchEmpty = useMemo(() => search.length === 0, [search]);
   const isDebouncing = !!search && isPending();
 
   const [viewLimit, setViewLimit] = useState(30);
@@ -47,7 +45,7 @@ export default function Entry({ coinId }: EntryProps) {
   const { groupAccountAssets } = useGroupAccountAssets();
 
   const baseCoinList = useMemo(() => {
-    const selectedCoin = groupAccountAssets?.groupAccountAssets.find((item) => getCoinId(item.asset) === coinId);
+    const selectedCoin = groupAccountAssets?.groupAccountAssets.find(({ uniqueCoinId }) => uniqueCoinId === coinId);
 
     const selectedGroupMap = groupAccountAssets?.groupMap[selectedCoin?.asset.coinGeckoId || ''];
 
@@ -62,39 +60,16 @@ export default function Entry({ coinId }: EntryProps) {
     return resolvedGroupMap;
   }, [coinId, groupAccountAssets?.groupAccountAssets, groupAccountAssets?.groupMap]);
 
+  const chainFilteredList = useMemo(() => getFilteredAssetsByChainId(baseCoinList, currentSelectedChainId), [baseCoinList, currentSelectedChainId]);
+
+  const pricedAssets = useAssetPricing(chainFilteredList);
+
+  const sortedAssets = useMemo(() => sortAssetsByKey(pricedAssets, DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER), [pricedAssets]);
+
   const filteredAssetsBySearch = useMemo(() => {
-    const filteredByChain = getFilteredAssetsByChainId(baseCoinList, currentSelectedChainId);
-
-    const computedAssetValues = filteredByChain?.map((item) => {
-      const displayAmount = toDisplayDenomAmount(item.balance || '0', item.asset.decimals);
-
-      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
-
-      const value = times(displayAmount, coinPrice);
-
-      return {
-        ...item,
-        value,
-      };
-    });
-
-    const sortedAssets = computedAssetValues?.sort((a, b) => {
-      return Number(minus(b.value, a.value));
-    });
-
-    if (!!search && debouncedSearch.length > 1) {
-      return (
-        sortedAssets
-          ?.filter((asset) => {
-            const condition = [asset.asset.symbol, asset.asset.id];
-
-            return condition.some((item) => item.toLowerCase().indexOf(search.toLowerCase()) > -1);
-          })
-          .slice(0, viewLimit) || []
-      );
-    }
-    return sortedAssets?.slice(0, viewLimit) || [];
-  }, [baseCoinList, coinGeckoPrice, userCurrencyPreference, currentSelectedChainId, debouncedSearch.length, search, viewLimit]);
+    const filtered = filterAssetsBySearch(sortedAssets, debouncedSearch, isSearchEmpty);
+    return filtered.slice(0, viewLimit);
+  }, [sortedAssets, debouncedSearch, isSearchEmpty, viewLimit]);
 
   const chainList = useMemo(() => getFilteredChainsByChainId(baseCoinList), [baseCoinList]);
 
@@ -107,7 +82,7 @@ export default function Entry({ coinId }: EntryProps) {
     [chainList, currentSelectedChainId],
   );
 
-  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || (!!debouncedSearch && !isSearchEmpty), [currentSelectedChain, debouncedSearch, isSearchEmpty]);
 
   return (
     <BaseBody>
@@ -155,7 +130,7 @@ export default function Entry({ coinId }: EntryProps) {
 
               return (
                 <CoinWithChainNameButton
-                  key={getCoinId(item.asset)}
+                  key={item.uniqueCoinId}
                   displayAmount={displayAmount || '0'}
                   symbol={item.asset.symbol}
                   chainName={item.chain.name}
@@ -171,7 +146,7 @@ export default function Entry({ coinId }: EntryProps) {
                     navigate({
                       to: CoinDetail.to,
                       params: {
-                        coinId: getCoinId(item.asset),
+                        coinId: item.uniqueCoinId,
                       },
                     });
                   }}
