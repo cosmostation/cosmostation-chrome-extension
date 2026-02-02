@@ -32,7 +32,7 @@ export function isMatchingCoinId(baseCoin: AssetId, targetCoinId: string) {
   return getCoinId(baseCoin) === targetCoinId;
 }
 
-export function getMatchinCoinFromCoinId<T extends FlatAccountAssets>(assets?: T[], targetCoinId?: UniqueCoinId | string): T | undefined {
+export function getMatchingCoinFromCoinId<T extends FlatAccountAssets>(assets?: T[], targetCoinId?: UniqueCoinId | string): T | undefined {
   return assets?.find(({ uniqueCoinId }) => uniqueCoinId === targetCoinId);
 }
 
