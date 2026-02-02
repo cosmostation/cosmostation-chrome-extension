@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import EmptyAsset from '@/components/EmptyAsset';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import { Container, EmptyAssetContainer, IconContainer } from './styled';
 
@@ -16,11 +15,9 @@ type SolanaAccountTxHistory = {
 
 export default function SolanaAccountTxHistory({ coinId }: SolanaAccountTxHistory) {
   const { t } = useTranslation();
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
 
-  const selectedAsset = accountAllAssets?.allSolanaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+  const { getSolanaAccountAsset } = useGetAccountAsset({ coinId });
+  const selectedAsset = getSolanaAccountAsset();
 
   const accountExplorerUrl = selectedAsset?.chain.explorer.account
     ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
