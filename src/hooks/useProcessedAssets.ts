@@ -22,7 +22,6 @@ export type ProcessedAsset = FlatAccountAssets & {
   displayAmount: string;
   resolvedAssetId: string;
   isBalanceZero: boolean;
-  isCustomToken: boolean;
   innerTokenType: 'custom-cw20' | 'custom-erc20' | 'supported-asset' | 'custom-asset';
 };
 
@@ -31,7 +30,7 @@ type UseProcessedAssetsParams = {
   sortOption: CommonSortKeyType;
   currentSelectedChainId: UniqueChainId | undefined;
   search: string;
-  debouncedSearch: string;
+  isSearchEmpty: boolean;
 };
 
 function getHiddenState(
@@ -51,22 +50,47 @@ function getHiddenState(
   return false;
 }
 
+function resolveAssetId(coin: FlatAccountAssets): string {
+  const { asset, chain } = coin;
+  if (chain.mainAssetDenom === asset.id || asset.id === NATIVE_EVM_COIN_ADDRESS) return asset.description || '-';
+  if (asset.id.length > 15) return shorterAddress(asset.id, 16) || '-';
+  return asset.id || '-';
+}
+
+function resolveTokenType(
+  coinId: UniqueCoinId,
+  erc20Set: Set<UniqueCoinId>,
+  cw20Set: Set<UniqueCoinId>,
+  customAssetSet: Set<UniqueCoinId>,
+): ProcessedAsset['innerTokenType'] {
+  if (erc20Set.has(coinId)) return 'custom-erc20';
+  if (cw20Set.has(coinId)) return 'custom-cw20';
+  if (customAssetSet.has(coinId)) return 'custom-asset';
+  return 'supported-asset';
+}
+
 function useSortedAndFilteredList(
   baseCoinList: FlatAccountAssets[],
   sortOption: CommonSortKeyType,
   currentSelectedChainId: UniqueChainId | undefined,
   search: string,
-  debouncedSearch: string,
+  isSearchEmpty: boolean,
 ): AssetWithValue<FlatAccountAssets>[] {
   const pricedAssets = useAssetPricing(baseCoinList);
 
-  const sorted = useMemo(() => sortAssetsByKey(pricedAssets, sortOption), [pricedAssets, sortOption]);
+  const sortedAssets = useMemo(() => sortAssetsByKey(pricedAssets, sortOption), [pricedAssets, sortOption]);
 
   return useMemo(() => {
-    const filteredByChain = getFilteredAssetsByChainId(sorted, currentSelectedChainId);
-    return filterAssetsBySearch(filteredByChain, search, debouncedSearch);
-  }, [sorted, currentSelectedChainId, search, debouncedSearch]);
+    const chainFilteredAssets = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
+    return filterAssetsBySearch(chainFilteredAssets, search, isSearchEmpty);
+  }, [currentSelectedChainId, isSearchEmpty, search, sortedAssets]);
 }
+
+type HiddenStateSnapshot = {
+  hiddenAssetIds: Set<UniqueCoinId>;
+  visibleAssetIds: Set<UniqueCoinId>;
+  hiddenCustomAssetIds: Set<UniqueCoinId>;
+};
 
 function useFinalProcessedList(
   filteredCoinList: AssetWithValue<FlatAccountAssets>[],
@@ -78,107 +102,70 @@ function useFinalProcessedList(
   const { currentCustomERC20TokenIdsSet } = useCurrentCustomERC20Tokens();
   const { currentCustomCW20TokenIdsSet } = useCurrentCustomCW20Tokens();
 
-  const initialStateSnapshotRef = useRef<{
-    hiddenAssetIds: Set<UniqueCoinId>;
-    visibleAssetIds: Set<UniqueCoinId>;
-    hiddenCustomAssetIds: Set<UniqueCoinId>;
-  } | null>(null);
+  const snapshotRef = useRef<HiddenStateSnapshot | null>(null);
 
-  if (initialStateSnapshotRef.current === null && (currentHiddenAssetIdsSet?.size || currentVisibleAssetIdsSet?.size || customHiddenAssetSet?.size)) {
-    initialStateSnapshotRef.current = {
-      hiddenAssetIds: new Set(currentHiddenAssetIdsSet ?? []),
-      visibleAssetIds: new Set(currentVisibleAssetIdsSet ?? []),
-      hiddenCustomAssetIds: new Set(customHiddenAssetSet ?? []),
-    };
+  if (snapshotRef.current === null) {
+    const hasData = !!(currentHiddenAssetIdsSet?.size || currentVisibleAssetIdsSet?.size || customHiddenAssetSet?.size);
+    if (hasData) {
+      snapshotRef.current = {
+        hiddenAssetIds: new Set(currentHiddenAssetIdsSet ?? []),
+        visibleAssetIds: new Set(currentVisibleAssetIdsSet ?? []),
+        hiddenCustomAssetIds: new Set(customHiddenAssetSet ?? []),
+      };
+    }
   }
 
   return useMemo(() => {
-    const initialSnapshot = initialStateSnapshotRef.current;
-    const sortingHiddenAssetIds = initialSnapshot?.hiddenAssetIds ?? currentHiddenAssetIdsSet;
-    const sortingVisibleAssetIds = initialSnapshot?.visibleAssetIds ?? currentVisibleAssetIdsSet;
-    const sortingHiddenCustomAssetIds = initialSnapshot?.hiddenCustomAssetIds ?? customHiddenAssetSet;
+    const snapshot = snapshotRef.current;
+    const snapshotHiddenAssetIds = snapshot?.hiddenAssetIds ?? currentHiddenAssetIdsSet;
+    const snapshotVisibleAssetIds = snapshot?.visibleAssetIds ?? currentVisibleAssetIdsSet;
+    const snapshotCustomHiddenAssetIds = snapshot?.hiddenCustomAssetIds ?? customHiddenAssetSet;
 
-    const { visible, hidden, visibleCount } = filteredCoinList.reduce<{ visible: ProcessedAsset[]; hidden: ProcessedAsset[]; visibleCount: number }>(
-      (acc, coin) => {
-        const currentCoinId = coin.uniqueCoinId;
+    const visible: ProcessedAsset[] = [];
+    const hidden: ProcessedAsset[] = [];
+    let visibleCount = 0;
 
-        const isCustomERC20 = currentCustomERC20TokenIdsSet.has(currentCoinId);
-        const isCustomCW20 = currentCustomCW20TokenIdsSet.has(currentCoinId);
-        const isCustomToken = isCustomERC20 || isCustomCW20;
+    for (const coin of filteredCoinList) {
+      const coinId = coin.uniqueCoinId;
+      const isBalanceZero = coin.balance === '0';
+      const innerTokenType = resolveTokenType(coinId, currentCustomERC20TokenIdsSet, currentCustomCW20TokenIdsSet, customAssetSet);
+      const isCustomToken = innerTokenType === 'custom-erc20' || innerTokenType === 'custom-cw20';
 
-        const isCustomAsset = customAssetSet.has(currentCoinId);
+      const isHiddenState = getHiddenState(coinId, isCustomToken, isBalanceZero, currentHiddenAssetIdsSet, customHiddenAssetSet, currentVisibleAssetIdsSet);
+      const isSortingHidden = getHiddenState(
+        coinId,
+        isCustomToken,
+        isBalanceZero,
+        snapshotHiddenAssetIds,
+        snapshotCustomHiddenAssetIds,
+        snapshotVisibleAssetIds,
+      );
 
-        const isBalanceZero = coin.balance === '0';
+      const processedItem: ProcessedAsset = {
+        ...coin,
+        isHiddenState,
+        resolvedAssetId: resolveAssetId(coin),
+        isBalanceZero,
+        innerTokenType,
+      };
 
-        const isHiddenState = getHiddenState(
-          currentCoinId,
-          isCustomToken,
-          isBalanceZero,
-          currentHiddenAssetIdsSet,
-          customHiddenAssetSet,
-          currentVisibleAssetIdsSet,
-        );
+      if (isSortingHidden) {
+        hidden.push(processedItem);
+      } else {
+        visible.push(processedItem);
+      }
 
-        const resolvedAssetId =
-          coin.chain.mainAssetDenom === coin.asset.id || coin.asset.id === NATIVE_EVM_COIN_ADDRESS
-            ? coin.asset.description
-            : coin.asset.id.length > 15
-              ? shorterAddress(coin.asset.id, 16)
-              : coin.asset.id;
-
-        const innerTokenType = (() => {
-          if (isCustomERC20) {
-            return 'custom-erc20';
-          } else if (isCustomCW20) {
-            return 'custom-cw20';
-          } else if (isCustomAsset) {
-            return 'custom-asset';
-          } else {
-            return 'supported-asset';
-          }
-        })();
-
-        // NOTE 초기 정렬용 스냅샷뜬 히든스테이트
-        const isSortingHidden = getHiddenState(
-          currentCoinId,
-          isCustomToken,
-          isBalanceZero,
-          sortingHiddenAssetIds,
-          sortingHiddenCustomAssetIds,
-          sortingVisibleAssetIds,
-        );
-
-        const processedItem: ProcessedAsset = {
-          ...coin,
-          isHiddenState,
-          resolvedAssetId: resolvedAssetId || '-',
-          isBalanceZero,
-          isCustomToken,
-          innerTokenType,
-        };
-
-        if (isSortingHidden) {
-          acc.hidden.push(processedItem);
-        } else {
-          acc.visible.push(processedItem);
-        }
-
-        if (!isHiddenState) acc.visibleCount++;
-
-        return acc;
-      },
-      { visible: [] as ProcessedAsset[], hidden: [] as ProcessedAsset[], visibleCount: 0 },
-    );
-
-    let result = [...visible, ...hidden];
-
-    if (currentSelectedChainId && result.length > 0) {
-      const denoms = result[0]?.chain.chainDefaultCoinDenoms ?? [];
-
-      result = sortByReference(result, denoms, (item, denom) => isEqualsIgnoringCase(item.asset.id, denom));
+      if (!isHiddenState) visibleCount++;
     }
 
-    return { list: result, visibleCount };
+    const mergedAssets = [...visible, ...hidden];
+
+    const sortedByDefaultDenom =
+      currentSelectedChainId && mergedAssets.length > 0
+        ? sortByReference(mergedAssets, mergedAssets[0]?.chain.chainDefaultCoinDenoms ?? [], (item, denom) => isEqualsIgnoringCase(item.asset.id, denom))
+        : mergedAssets;
+
+    return { list: sortedByDefaultDenom, visibleCount };
   }, [
     currentCustomCW20TokenIdsSet,
     currentCustomERC20TokenIdsSet,
@@ -191,8 +178,8 @@ function useFinalProcessedList(
   ]);
 }
 
-export function useProcessedAssets({ baseCoinList, sortOption, currentSelectedChainId, search, debouncedSearch }: UseProcessedAssetsParams) {
-  const filteredCoinList = useSortedAndFilteredList(baseCoinList, sortOption, currentSelectedChainId, search, debouncedSearch);
+export function useProcessedAssets({ baseCoinList, sortOption, currentSelectedChainId, search, isSearchEmpty }: UseProcessedAssetsParams) {
+  const filteredCoinList = useSortedAndFilteredList(baseCoinList, sortOption, currentSelectedChainId, search, isSearchEmpty);
 
   return useFinalProcessedList(filteredCoinList, currentSelectedChainId);
 }

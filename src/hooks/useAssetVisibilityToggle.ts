@@ -12,10 +12,10 @@ import { useCustomAssets } from './useCustomAssets';
 import type { ProcessedAsset } from './useProcessedAssets';
 
 type UseAssetVisibilityToggleParams = {
-  visibleCount: number;
+  isLastVisible: boolean;
 };
 
-export function useAssetVisibilityToggle({ visibleCount }: UseAssetVisibilityToggleParams) {
+export function useAssetVisibilityToggle({ isLastVisible }: UseAssetVisibilityToggleParams) {
   const { t } = useTranslation();
 
   const { hideAsset, showAsset } = useCurrentHiddenAssetIds();
@@ -25,8 +25,6 @@ export function useAssetVisibilityToggle({ visibleCount }: UseAssetVisibilityTog
   const { removeCustomCW20Token } = useCurrentCustomCW20Tokens();
   const [tokenToDelete, setTokenToDelete] = useState<ProcessedAsset | undefined>();
 
-  const isLastStanding = visibleCount === 1;
-
   const handleAssetVisibility = useCallback(
     async (asset: ProcessedAsset) => {
       if (asset.isHiddenState) {
@@ -35,16 +33,16 @@ export function useAssetVisibilityToggle({ visibleCount }: UseAssetVisibilityTog
         return;
       }
 
-      if (isLastStanding) return toastError(t('pages.manage-assets.visibility.assets.entry.lastStandingError'));
-      if (!asset.isHiddenState) await removeVisibleAsset(asset.uniqueCoinId);
+      if (isLastVisible) return toastError(t('pages.manage-assets.visibility.assets.entry.lastStandingError'));
+      await removeVisibleAsset(asset.uniqueCoinId);
       if (!asset.isBalanceZero) await (asset.innerTokenType === 'custom-asset' ? hideCustomAsset : hideAsset)(asset.uniqueCoinId);
     },
-    [addVisibleAsset, hideAsset, hideCustomAsset, isLastStanding, removeVisibleAsset, showAsset, showCustomAsset, t],
+    [addVisibleAsset, hideAsset, hideCustomAsset, isLastVisible, removeVisibleAsset, showAsset, showCustomAsset, t],
   );
 
   const handleToggleVisibility = useCallback(
     async (coin: ProcessedAsset) => {
-      if (coin.isCustomToken) {
+      if (coin.innerTokenType === 'custom-cw20' || coin.innerTokenType === 'custom-erc20') {
         setTokenToDelete(coin);
       } else {
         await handleAssetVisibility(coin);
@@ -53,13 +51,15 @@ export function useAssetVisibilityToggle({ visibleCount }: UseAssetVisibilityTog
     [handleAssetVisibility],
   );
 
-  const confirmDeleteAndHide = useCallback(() => {
-    if (tokenToDelete?.asset) {
-      const uniqueCoinId = tokenToDelete?.uniqueCoinId || getUniqueCoinId(tokenToDelete.asset);
+  const confirmDeleteAndHide = useCallback(async () => {
+    try {
+      if (tokenToDelete?.asset) {
+        const uniqueCoinId = tokenToDelete.uniqueCoinId || getUniqueCoinId(tokenToDelete.asset);
 
-      if (tokenToDelete.asset.type === 'cw20') return removeCustomCW20Token(uniqueCoinId);
-      if (tokenToDelete.asset.type === 'erc20') return removeCustomERC20Token(uniqueCoinId);
-
+        if (tokenToDelete.asset.type === 'cw20') await removeCustomCW20Token(uniqueCoinId);
+        else if (tokenToDelete.asset.type === 'erc20') await removeCustomERC20Token(uniqueCoinId);
+      }
+    } finally {
       setTokenToDelete(undefined);
     }
   }, [removeCustomCW20Token, removeCustomERC20Token, tokenToDelete?.asset, tokenToDelete?.uniqueCoinId]);
