@@ -49,6 +49,7 @@ export default function CoinSelectWithChainId({
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
+  const isSearchEmpty = useMemo(() => search.length === 0, [search.length]);
   const isDebouncing = !!search && isPending();
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
@@ -58,7 +59,7 @@ export default function CoinSelectWithChainId({
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
-  const filteredCoinList = useMemo(() => filterAssetsBySearch(coinList, search, debouncedSearch), [coinList, debouncedSearch, search]);
+  const filteredCoinList = useMemo(() => filterAssetsBySearch(coinList, debouncedSearch, isSearchEmpty), [coinList, debouncedSearch, isSearchEmpty]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0) {

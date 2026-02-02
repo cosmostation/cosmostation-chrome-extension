@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
@@ -21,14 +21,15 @@ function CryptoTab() {
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
 
+  const isSearchEmpty = useMemo(() => search.length === 0, [search.length]);
   const isDebouncing = !!search && isPending();
 
   const dashboardCoinSortKey = useExtensionStorageStore((state) => state.dashboardCoinSortKey);
   const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const { filteredAssetsBySearch, isLoading } = useCryptoAssets({
-    search,
-    debouncedSearch,
+    search: debouncedSearch,
+    isSearchEmpty,
   });
 
   useEffect(() => {

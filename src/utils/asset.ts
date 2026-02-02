@@ -193,9 +193,9 @@ export function sortAssetsByKey<T extends { value: string; asset: { symbol: stri
   });
 }
 
-export function filterAssetsBySearch<T extends { asset: { symbol: string; id: string } }>(assets: T[], search: string, debouncedSearch: string): T[] {
-  if (!search || debouncedSearch.length <= 1) return assets;
+export function filterAssetsBySearch<T extends { asset: { symbol: string; id: string } }>(assets: T[], search: string, isSearchEmpty: boolean): T[] {
+  if (isSearchEmpty || search.length <= 1) return assets;
 
-  const lowerSearch = debouncedSearch.toLowerCase();
+  const lowerSearch = search.toLowerCase();
   return assets.filter((asset) => [asset.asset.symbol, asset.asset.id].some((target) => target.toLowerCase().includes(lowerSearch)));
 }
