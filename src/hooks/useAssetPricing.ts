@@ -30,5 +30,6 @@ export function useAssetPricing<T extends FlatAccountAssets>(assets: T[] | undef
 
       return { ...item, value, displayAmount };
     });
-  }, [assets, options, coinGeckoPrice, userCurrencyPreference]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assets, coinGeckoPrice, options?.getBalance, userCurrencyPreference]);
 }

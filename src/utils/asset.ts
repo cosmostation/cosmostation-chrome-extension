@@ -177,6 +177,10 @@ export function isStakeableAsset(asset: FlatAccountAssets): asset is AccountCosm
   return isAccountCosmosStakableAsset(asset) || isAccountEVMStakableAsset(asset) || isAccountSuiStakableAsset(asset) || isAccountIotaStakableAsset(asset);
 }
 
+export function getStakeableBalance(item: FlatAccountAssets) {
+  return isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
+}
+
 export function sortAssetsByKey<T extends { value: string; asset: { symbol: string } }>(assets: T[], sortKey: CommonSortKeyType): T[] {
   return [...assets].sort((a, b) => {
     if (sortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {

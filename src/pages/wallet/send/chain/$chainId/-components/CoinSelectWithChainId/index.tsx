@@ -15,7 +15,7 @@ import { useChainList } from '@/hooks/useChainList';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { isStakeableAsset } from '@/utils/asset';
+import { filterAssetsBySearch, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
@@ -58,18 +58,7 @@ export default function CoinSelectWithChainId({
 
   const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
 
-  const filteredCoinList = useMemo(() => {
-    if (!!search && debouncedSearch.length > 1) {
-      return (
-        coinList.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
-
-          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-        }) || []
-      );
-    }
-    return coinList;
-  }, [coinList, debouncedSearch, search]);
+  const filteredCoinList = useMemo(() => filterAssetsBySearch(coinList, search, debouncedSearch), [coinList, debouncedSearch, search]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0) {
