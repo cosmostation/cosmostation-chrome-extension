@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import type { UniqueCoinId } from '@/types/asset';
 
 import { useAccountAssetIdsMutations } from './queries/useAccountAssetIdsMutations';
@@ -10,7 +12,7 @@ export function useCurrentVisibleAssetIds() {
   const { data: assetIds } = useAccountAssetIdsSet(currentAccount.id);
   const mutations = useAccountAssetIdsMutations(currentAccount.id);
 
-  const currentVisibleAssetIds = assetIds?.visibleAssetSet ?? new Set<UniqueCoinId>();
+  const currentVisibleAssetIdsSet = useMemo(() => assetIds?.visibleAssetSet ?? new Set<UniqueCoinId>(), [assetIds?.visibleAssetSet]);
 
   const addVisibleAsset = async (assetId: UniqueCoinId) => {
     await mutations.addVisibleAsset({ assetId });
@@ -20,5 +22,5 @@ export function useCurrentVisibleAssetIds() {
     await mutations.removeVisibleAsset({ assetId });
   };
 
-  return { currentVisibleAssetIds, addVisibleAsset, removeVisibleAsset };
+  return { currentVisibleAssetIdsSet, addVisibleAsset, removeVisibleAsset };
 }

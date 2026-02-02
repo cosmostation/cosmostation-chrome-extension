@@ -15,6 +15,7 @@ export function useCustomAssets() {
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   const currentCustomHiddenAssetIdsSet = useMemo(() => new Set(customHiddenAssetIds.map(getUniqueCoinId)), [customHiddenAssetIds]);
+  const currentCustomAssetIdsSet = useMemo(() => new Set(customAssets.map(getUniqueCoinId)), [customAssets]);
 
   const addCustomAsset = async (newAsset: CustomAsset) => {
     const storedCustomAssets = await getExtensionLocalStorage('customAssets');
@@ -84,6 +85,7 @@ export function useCustomAssets() {
 
   return {
     customAssets,
+    currentCustomAssetIdsSet,
     customHiddenAssetIds,
     currentCustomHiddenAssetIdsSet,
     addCustomAsset,

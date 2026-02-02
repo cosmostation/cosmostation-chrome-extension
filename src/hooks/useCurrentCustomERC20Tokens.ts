@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
+
 import type { EvmErc20Asset } from '@/types/asset';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueCoinId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -11,6 +13,7 @@ export function useCurrentCustomERC20Tokens() {
   const { refreshAssets } = useRefreshAccountAllAssets();
 
   const currentCustomERC20Tokens = customErc20Assets;
+  const currentCustomERC20TokenIdsSet = useMemo(() => new Set(customErc20Assets.map(getUniqueCoinId)), [customErc20Assets]);
 
   const addCustomERC20Token = async (asset: EvmErc20Asset) => {
     const storedERC20Assets = await getExtensionLocalStorage('erc20Assets');
@@ -63,5 +66,5 @@ export function useCurrentCustomERC20Tokens() {
     await refreshAssets();
   };
 
-  return { currentCustomERC20Tokens, addCustomERC20Token, addCustomERC20Tokens, removeCustomERC20Token };
+  return { currentCustomERC20Tokens, currentCustomERC20TokenIdsSet, addCustomERC20Token, addCustomERC20Tokens, removeCustomERC20Token };
 }
