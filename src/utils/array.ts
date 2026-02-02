@@ -11,3 +11,15 @@ export function removeDuplicates<T>(list: T[], isDuplicate: (a: T, b: T) => bool
     return acc;
   }, []);
 }
+
+export function sortByReference<T, K>(target: T[], reference: K[], isEqual: (a: T, b: K) => boolean): T[] {
+  return [...target].sort((a, b) => {
+    const idxA = reference.findIndex((ref) => isEqual(a, ref));
+    const idxB = reference.findIndex((ref) => isEqual(b, ref));
+
+    const weightA = idxA < 0 ? Number.MAX_SAFE_INTEGER : idxA;
+    const weightB = idxB < 0 ? Number.MAX_SAFE_INTEGER : idxB;
+
+    return weightA - weightB;
+  });
+}
