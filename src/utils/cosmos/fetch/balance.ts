@@ -18,7 +18,7 @@ export const fetchCosmosBalances = async (
     const urlPath = option?.path || `/cosmos/bank/v1beta1/balances/${address}`;
 
     const requestUrl = buildRequestUrl(lcdUrl, urlPath, {
-      'pagination.limit': '10000',
+      'pagination.limit': '2000',
     });
 
     const response = await getWithFullResponse<CosmosBalanceResponse>(requestUrl, {
@@ -32,7 +32,7 @@ export const fetchCosmosBalances = async (
 
     while (nextKey) {
       try {
-        const paginatedRequestUrl = `${requestUrl}&pagination.key=${nextKey}`;
+        const paginatedRequestUrl = `${requestUrl}&pagination.key=${encodeURIComponent(nextKey)}`;
 
         const paginatedResponse = await getWithFullResponse<CosmosBalanceResponse>(paginatedRequestUrl, {
           timeout: BALANCE_FETCH_TIME_OUT_MS,

@@ -6,7 +6,7 @@ import { toBase64 } from '../string';
 export function cosmosURL(lcdURL: string, chainId: string) {
   return {
     getNodeInfo: () => buildRequestUrl(lcdURL, `/cosmos/base/tendermint/v1beta1/node_info`),
-    getBalance: (address: string) => buildRequestUrl(lcdURL, `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=10000`),
+    getBalance: (address: string) => buildRequestUrl(lcdURL, `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=2000`),
     getDelegations: (address: string) => buildRequestUrl(lcdURL, `/cosmos/staking/v1beta1/delegations/${address}`),
     getRewards: (address: string) => buildRequestUrl(lcdURL, `/cosmos/distribution/v1beta1/delegators/${address}/rewards`),
     getUndelegations: (address: string) => buildRequestUrl(lcdURL, `/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`),
@@ -37,7 +37,7 @@ export function cosmosURL(lcdURL: string, chainId: string) {
     getBlockLatest: () => buildRequestUrl(lcdURL, `/cosmos/base/tendermint/v1beta1/blocks/latest`),
     getCommission: (validatorAddress: string) => buildRequestUrl(lcdURL, `/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`),
     getFeemarket: (denom?: string) => buildRequestUrl(lcdURL, `/feemarket/v1/gas_prices${denom ? `/${denom}` : ''}`),
-    getValidators: () => buildRequestUrl(lcdURL, `/cosmos/staking/v1beta1/validators?pagination.limit=10000`),
+    getValidators: () => buildRequestUrl(lcdURL, `/cosmos/staking/v1beta1/validators?pagination.limit=2000`),
     getNTRNRewards: (contractAddress: string, address: string) =>
       buildRequestUrl(lcdURL, `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${encodeURIComponent(toBase64(`{"rewards":{"user":"${address}"}}`))}`),
   };

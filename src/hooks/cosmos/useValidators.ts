@@ -56,7 +56,7 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
       let nextCursor = response?.pagination.next_key;
 
       while (nextCursor) {
-        const nextCursorRequestURL = `${requestURLs[index]}?pagination.key=${nextCursor}`;
+        const nextCursorRequestURL = `${requestURLs[index]}&pagination.key=${encodeURIComponent(nextCursor)}`;
 
         const nextResponse = await get<GetValidatorsResponse>(nextCursorRequestURL, {
           timeout: DEFAULT_FETCH_TIME_OUT_MS * 5,
@@ -125,7 +125,7 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
   };
 
   const { data, isLoading, error, refetch } = useFetch({
-    queryKey: ['cosmosValidaotrsInfo', coinId],
+    queryKey: ['cosmosValidatorsInfo', coinId],
     fetchFunction: () => fetcher(),
     config: {
       retry: false,
