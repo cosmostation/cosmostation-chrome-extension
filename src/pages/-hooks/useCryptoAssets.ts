@@ -5,7 +5,8 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import { useGroupAccountAssets } from '@/hooks/useGroupAccountAssets';
 import type { PortfolioCoinItem } from '@/pages/-entry';
-import type { DashboardCoinSortKeyType } from '@/types/sortKey';
+import type { SimplePrice } from '@/types/coinGecko';
+import type { CurrencyType } from '@/types/currency';
 import { removeDuplicates, sortByReference } from '@/utils/array';
 import { filterAssetsBySearch, getDefaultAssetsByChainId, getFilteredAssetsByChainId, sortAssetsByKey } from '@/utils/asset';
 import { gte, plus, times, toDisplayDenomAmount } from '@/utils/numbers';
@@ -17,13 +18,11 @@ type UseCryptoAssetsParams = {
   isSearchEmpty: boolean;
 };
 
-type PriceData = Record<string, Record<string, number>>;
-
 function applyPriceToAsset(
   asset: { totalDisplayAmount?: string; asset: { coinGeckoId?: string }; counts?: string },
-  coinGeckoPrice: PriceData | undefined,
-  usdCoinGeckoPrice: PriceData | undefined,
-  userCurrencyPreference: string,
+  userCurrencyPreference: CurrencyType,
+  coinGeckoPrice?: SimplePrice,
+  usdCoinGeckoPrice?: SimplePrice,
 ): { value: string; dollarValue: string } {
   const displayAmount = asset.totalDisplayAmount || '0';
   const coinGeckoId = asset.asset.coinGeckoId;
@@ -87,8 +86,8 @@ export function useCryptoAssets({ search, isSearchEmpty }: UseCryptoAssetsParams
   const assetsWithPrice = useMemo<PortfolioCoinItem[]>(
     () =>
       baseAssets.map((item) => {
-        const priceInfo = applyPriceToAsset(item, coinGeckoPrice, usdCoinGeckoPrice, userCurrencyPreference);
-        return { ...item, ...priceInfo } as PortfolioCoinItem;
+        const priceInfo = applyPriceToAsset(item, userCurrencyPreference, coinGeckoPrice, usdCoinGeckoPrice);
+        return { ...item, ...priceInfo };
       }),
     [baseAssets, coinGeckoPrice, usdCoinGeckoPrice, userCurrencyPreference],
   );
@@ -97,8 +96,8 @@ export function useCryptoAssets({ search, isSearchEmpty }: UseCryptoAssetsParams
     () =>
       chainDefaultCoinsBase?.map((item) => {
         const totalDisplayAmount = extractDisplayAmount(item);
-        const priceInfo = applyPriceToAsset({ ...item, totalDisplayAmount }, coinGeckoPrice, usdCoinGeckoPrice, userCurrencyPreference);
-        return { ...item, counts: '1', totalDisplayAmount, ...priceInfo } as PortfolioCoinItem;
+        const priceInfo = applyPriceToAsset({ ...item, totalDisplayAmount }, userCurrencyPreference, coinGeckoPrice, usdCoinGeckoPrice);
+        return { ...item, counts: '1', totalDisplayAmount, ...priceInfo };
       }),
     [chainDefaultCoinsBase, coinGeckoPrice, usdCoinGeckoPrice, userCurrencyPreference],
   );
@@ -115,7 +114,7 @@ export function useCryptoAssets({ search, isSearchEmpty }: UseCryptoAssetsParams
 
     const assetsMatchingSearch = filterAssetsBySearch(assetsWithDefaults, search, isSearchEmpty);
 
-    const assetsSortedByKey = sortAssetsByKey(assetsMatchingSearch, dashboardCoinSortKey as DashboardCoinSortKeyType);
+    const assetsSortedByKey = sortAssetsByKey(assetsMatchingSearch, dashboardCoinSortKey);
 
     return chainDefaultCoinsWithPrice && chainDefaultCoinsWithPrice?.length > 0
       ? sortByReference(assetsSortedByKey, chainDefaultCoinsWithPrice, (a, b) => a.uniqueCoinId === b.uniqueCoinId)
