@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import type { AccountCosmosAsset, AccountCw20Asset } from '@/types/account';
 import { minus } from '@/utils/numbers';
 import { getUniqueChainId, getUniqueCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 
@@ -72,12 +71,7 @@ export function useFees({ coinId, config }: UseFeesProps) {
     return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : defaultFeeCoin ? [defaultFeeCoin] : [];
   }, [assetGasRate.data.gasRate, baseCoinList, currentUniqueChainId, defaultFeeCoin]);
 
-  const wrappedFeeAssets = useMemo<
-    ((AccountCosmosAsset | AccountCw20Asset) & {
-      balance: string;
-      gasRate: string[];
-    })[]
-  >(
+  const wrappedFeeAssets = useMemo(
     () =>
       feeAssets.map((item) => ({
         ...item,
