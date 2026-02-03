@@ -1,18 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
 import AddressActionButtons from '@/components/AddressActionButtons';
 import AllNetworkButton from '@/components/AllNetworkButton';
 import StaleBalanceErrorBanner from '@/components/StaleBalanceErrorBanner';
+import { useAutoBalanceRefresh } from '@/hooks/update/useAutoBalanceRefresh';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import type { PortfolioCoinItem } from '@/pages/-entry';
 import { Route as DappList } from '@/pages/dapp-list';
 import CurrencyBottomSheet from '@/pages/general-setting/-components/CurrencyBottomSheet';
 import { Route as SelectStakeCoin } from '@/pages/wallet/stake';
 import type { UniqueChainId } from '@/types/chain';
 import { getFilteredChainsByChainId, getMainAssetByChainId } from '@/utils/asset';
 import { getCoinId } from '@/utils/queryParamGenerator';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import BalanceValueWrapper from './components/BalanceValueWrapper';
 import BalanceVisibleControlButton from './components/BalanceVisibleControlButton';
@@ -27,17 +28,16 @@ import SwapIcon from '@/assets/images/icons/Swap22.svg';
 
 import cosmostationLogoImg from '@/assets/images/logos/greyCosmostationLogo.png';
 
-type PortFolioProps = {
-  selectedChainId?: UniqueChainId;
-  accountAllAssetsForValueAggregate: PortfolioCoinItem[];
-  onChangeChaindId: (chainId?: UniqueChainId) => void;
-};
-
-export default function PortFolio({ selectedChainId, accountAllAssetsForValueAggregate, onChangeChaindId }: PortFolioProps) {
+export default function PortFolio() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const selectedChainId = useExtensionStorageStore((state) => state.selectedChainFilterId) || undefined;
+  const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
+
   const { data: accountAllAssets } = useAccountAllAssets({ filterByPreferAccountType: true });
+
+  useAutoBalanceRefresh(selectedChainId && [selectedChainId]);
 
   const [isOpenCurrencyBottomSheet, setIsOpenCurrencyBottomSheet] = useState(false);
   const [isOpenMoreOptionBottomSheet, setIsOpenMoreOptionBottomSheet] = useState(false);
@@ -65,6 +65,13 @@ export default function PortFolio({ selectedChainId, accountAllAssetsForValueAgg
     return undefined;
   }, [selectedChainId, selectedChainMainAsset?.chain]);
 
+  const handleChainIdChange = useCallback(
+    (chainId?: UniqueChainId) => {
+      updateExtensionStorageStore('selectedChainFilterId', chainId || null);
+    },
+    [updateExtensionStorageStore],
+  );
+
   return (
     <>
       <StaleBalanceErrorBanner chainId={selectedChainId} fetchStatus={selectedChainMainAsset?.fetchStatus?.balance} />
@@ -87,20 +94,12 @@ export default function PortFolio({ selectedChainId, accountAllAssetsForValueAgg
                 isManageAssets
                 isWithValue
                 sizeVariant="small"
-                selectChainOption={(id) => {
-                  onChangeChaindId(id);
-                }}
+                selectChainOption={handleChainIdChange}
               />
             </TopRightContainer>
           </TopContainer>
         }
-        body={
-          <BalanceValueWrapper
-            accountAssets={accountAllAssetsForValueAggregate}
-            selectedChainId={selectedChainId}
-            selectedChainMainAsset={selectedChainMainAsset}
-          />
-        }
+        body={<BalanceValueWrapper selectedChainId={selectedChainId} selectedChainMainAsset={selectedChainMainAsset} />}
         bottom={
           <BottomButtonContainer>
             <StyledIconTextButton

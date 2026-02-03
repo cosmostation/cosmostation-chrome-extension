@@ -11,8 +11,8 @@ import { useScroll } from '@/components/Wrapper/components/ScrollProvider';
 import { useCurrentAccountAddedNFTsWithMetaData } from '@/hooks/useCurrentAccountAddedNFTsWithMetaData';
 import { Route as ManageNFTs } from '@/pages/manage-assets/visibility/nfts';
 import { Route as NFTDetail } from '@/pages/nft-detail/$id';
-import type { UniqueChainId } from '@/types/chain';
 import { getUniqueChainIdWithManual } from '@/utils/queryParamGenerator';
+import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import NFTItem, { NFTSkeletonItem } from './components/NFTItem';
 import {
@@ -29,11 +29,9 @@ import {
 import NoListIcon from '@/assets/images/icons/NoList70.svg';
 import PlusIcon from '@/assets/images/icons/Plus12.svg';
 
-export type NFTListProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
-  selectedChainId?: UniqueChainId;
-};
+export type NFTListProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
-export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps) {
+export default function NFTList({ ...remainder }: NFTListProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -43,6 +41,7 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
 
   const { scrollToTop } = useScroll();
   const { currentAccountAddNFTsWithMeta, isLoading } = useCurrentAccountAddedNFTsWithMetaData();
+  const selectedChainId = useExtensionStorageStore((state) => state.selectedChainFilterId) || undefined;
 
   const isNFTSearchingDebouncing = !!search && isPending();
 
@@ -75,7 +74,7 @@ export default function NFTList({ selectedChainId, ...reamainder }: NFTListProps
   }, [scrollToTop, search.length]);
 
   return (
-    <Contaienr {...reamainder}>
+    <Contaienr {...remainder}>
       <StickyTabPanelContentsContainer>
         <FilterContaienr>
           <Search

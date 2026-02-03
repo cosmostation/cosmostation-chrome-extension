@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
+import { getMatchingCoinFromCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 
 import { useAccountAllAssets } from './useAccountAllAssets';
 
@@ -23,15 +23,15 @@ export function useGetAccountAsset({ coinId, options }: UseGetAccountAsset) {
 
   const assetFinders = useMemo(() => {
     return {
-      cosmos: () => accountAllAssets?.allCosmosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      filteredCosmosAssetByAccountType: () => accountAllAssets?.allCosmosAccountAssetsFiltered.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      evm: () => accountAllAssets?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      aptos: () => accountAllAssets?.aptosAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      sui: () => accountAllAssets?.suiAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      bitcoin: () => accountAllAssets?.bitcoinAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      iota: () => accountAllAssets?.iotaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      solana: () => accountAllAssets?.allSolanaAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
-      gno: () => accountAllAssets?.allGnoAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId)),
+      cosmos: () => getMatchingCoinFromCoinId(accountAllAssets?.allCosmosAccountAssets, coinId),
+      filteredCosmosAssetByAccountType: () => getMatchingCoinFromCoinId(accountAllAssets?.allCosmosAccountAssetsFiltered, coinId),
+      evm: () => getMatchingCoinFromCoinId(accountAllAssets?.allEVMAccountAssets, coinId),
+      aptos: () => getMatchingCoinFromCoinId(accountAllAssets?.aptosAccountAssets, coinId),
+      sui: () => getMatchingCoinFromCoinId(accountAllAssets?.suiAccountAssets, coinId),
+      bitcoin: () => getMatchingCoinFromCoinId(accountAllAssets?.bitcoinAccountAssets, coinId),
+      iota: () => getMatchingCoinFromCoinId(accountAllAssets?.iotaAccountAssets, coinId),
+      solana: () => getMatchingCoinFromCoinId(accountAllAssets?.allSolanaAccountAssets, coinId),
+      gno: () => getMatchingCoinFromCoinId(accountAllAssets?.allGnoAccountAssets, coinId),
     };
   }, [
     accountAllAssets?.allCosmosAccountAssets,

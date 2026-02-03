@@ -10,7 +10,7 @@ import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
 import type { FeeType } from '@/types/evm/fee';
 import { times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getUniqueChainIdWithManual, isMatchingUniqueChainId, parseCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueChainIdWithManual, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
 import { toastSuccess } from '@/utils/toast';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
@@ -94,7 +94,7 @@ export default function FeeSettingBottomSheet({
     const chainId = parsedCoinId ? getUniqueChainIdWithManual(parsedCoinId.chainId, parsedCoinId.chainType) : undefined;
 
     return [...(accountAllAssets?.evmAccountAssets || []), ...(accountAllAssets?.evmAccountCustomAssets || [])].find(
-      (item) => isMatchingUniqueChainId(item.chain, chainId) && isEqualsIgnoringCase(item.asset.id, NATIVE_EVM_COIN_ADDRESS),
+      (item) => item.uniqueChainId === chainId && isEqualsIgnoringCase(item.asset.id, NATIVE_EVM_COIN_ADDRESS),
     );
   }, [accountAllAssets?.evmAccountAssets, accountAllAssets?.evmAccountCustomAssets, curretFeeOption?.coinId]);
   const feeCoinId = nativeAccountAsset?.asset ? getCoinId(nativeAccountAsset?.asset) : '';

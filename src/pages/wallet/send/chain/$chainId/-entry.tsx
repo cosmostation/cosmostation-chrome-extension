@@ -7,22 +7,16 @@ import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
 import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useAssetPricing } from '@/hooks/useAssetPricing';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
-import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { getDefaultAssets, getFilteredAssetsByChainId, isStakeableAsset } from '@/utils/asset';
-import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
+import { removeDuplicates, sortByReference } from '@/utils/array';
+import { getDefaultAssetsByChainId, getFilteredAssetsByChainId, getStakeableBalance, sortAssetsByKey } from '@/utils/asset';
 import { getCoinId, isMatchingCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase } from '@/utils/string';
-import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
 import CoinSelectWithChainId from './-components/CoinSelectWithChainId';
-
-type CoinSelectItem = FlatAccountAssets & {
-  value: string;
-};
 
 type EntryProps = {
   chainId: UniqueChainId;
@@ -44,8 +38,6 @@ export default function Entry({ chainId }: EntryProps) {
     disableDupeEthermint: true,
   });
 
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
 
   const [selectedEVMCoinId, setSelectedEVMCoinId] = useState('');
@@ -54,85 +46,38 @@ export default function Entry({ chainId }: EntryProps) {
   const [selectedCoinAccountPrefix, setSelectedCoinAccountPrefix] = useState('');
   const [sortOption, setSortOption] = useState<CommonSortKeyType>(DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER);
 
-  const chainFilteredAllCoins = getFilteredAssetsByChainId(filteredAccountAssets?.flatAccountAssets, chainId);
+  const chainFilteredAllCoins = useMemo(
+    () => getFilteredAssetsByChainId(filteredAccountAssets?.flatAccountAssets, chainId),
+    [chainId, filteredAccountAssets?.flatAccountAssets],
+  );
+  const chainDefaultCoins = useMemo(
+    () => getDefaultAssetsByChainId(filterOnlyDupeEthermintAccountAssets?.flatAccountAssets, chainId),
+    [chainId, filterOnlyDupeEthermintAccountAssets?.flatAccountAssets],
+  );
 
-  const chainDefaultCoins = useMemo<CoinSelectItem[] | undefined>(() => {
-    const chainFilteredCoins = getFilteredAssetsByChainId(filterOnlyDupeEthermintAccountAssets?.flatAccountAssets, chainId);
+  const pricedChainAssets = useAssetPricing(chainFilteredAllCoins, {
+    getBalance: getStakeableBalance,
+  });
 
-    const chainDefaultCoins = getDefaultAssets(chainFilteredCoins)
-      ?.slice()
-      .sort((a, b) => {
-        const denoms = a.chain.chainDefaultCoinDenoms ?? [];
-        const idxA = denoms.findIndex((d) => isEqualsIgnoringCase(d, a.asset.id));
-        const idxB = denoms.findIndex((d) => isEqualsIgnoringCase(d, b.asset.id));
+  const sortedAssets = useMemo(() => sortAssetsByKey(pricedChainAssets, sortOption), [pricedChainAssets, sortOption]);
 
-        return (idxA < 0 ? Number.MAX_SAFE_INTEGER : idxA) - (idxB < 0 ? Number.MAX_SAFE_INTEGER : idxB);
-      });
+  const pricedDefaultCoins = useAssetPricing(chainDefaultCoins, {
+    getBalance: getStakeableBalance,
+  });
 
-    if (!chainDefaultCoins || chainDefaultCoins?.length === 0) return undefined;
-
-    return chainDefaultCoins.map((item) => {
-      const balance = isStakeableAsset(item) ? item.totalBalance || '0' : item.balance;
-      const totalDisplayAmount = toDisplayDenomAmount(balance, item.asset.decimals) || '0';
-
-      const coinPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
-
-      const value = times(totalDisplayAmount, coinPrice);
-      return {
-        ...item,
-        totalDisplayAmount,
-        value,
-      };
-    });
-  }, [filterOnlyDupeEthermintAccountAssets?.flatAccountAssets, chainId, coinGeckoPrice, userCurrencyPreference]);
-
-  const computedAssetValues = useMemo<CoinSelectItem[]>(() => {
-    return (
-      chainFilteredAllCoins?.map((item) => {
-        const balance = isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
-
-        const displayAmount = toDisplayDenomAmount(balance, item.asset.decimals);
-
-        const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
-
-        const value = times(displayAmount, chainPrice);
-
-        return {
-          ...item,
-          value,
-        };
-      }) || []
-    );
-  }, [chainFilteredAllCoins, coinGeckoPrice, userCurrencyPreference]);
-
-  const sortedAssets = useMemo(() => {
-    const sortedValues = [...computedAssetValues].sort((a, b) => {
-      if (sortOption === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
-        return Number(minus(b.value, a.value));
-      }
-
-      if (sortOption === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
-        return a.asset.symbol.localeCompare(b.asset.symbol);
-      }
-
-      return 0;
-    });
-
-    return sortedValues;
-  }, [computedAssetValues, sortOption]);
-
-  const filteredAssetsBySearch = useMemo(() => {
-    return [...(chainDefaultCoins || []), ...sortedAssets].reduce((acc: CoinSelectItem[], item) => {
-      if (!acc.some((existing) => isEqualsIgnoringCase(existing.asset.id, item.asset.id))) {
-        acc.push(item as CoinSelectItem);
-      }
-      return acc;
-    }, []);
-  }, [chainDefaultCoins, sortedAssets]);
+  const mergedCoinList = useMemo(
+    () =>
+      sortByReference(
+        removeDuplicates([...pricedDefaultCoins, ...sortedAssets], (a, b) => isEqualsIgnoringCase(a.asset.id, b.asset.id)),
+        pricedDefaultCoins,
+        (a, b) => isEqualsIgnoringCase(a.asset.id, b.asset.id),
+      ),
+    [pricedDefaultCoins, sortedAssets],
+  );
 
   const handleOnClickCoin = useCallback(
     (coinId: string) => {
-      const currentCoin = filteredAssetsBySearch.find(({ asset }) => isMatchingCoinId(asset, coinId));
+      const currentCoin = mergedCoinList.find(({ asset }) => isMatchingCoinId(asset, coinId));
 
       const cosmosStyleEthermintCoin = (() => {
         const isEthermint = currentCoin?.chain.chainType === 'evm' && currentCoin.chain.isCosmos;
@@ -168,7 +113,7 @@ export default function Entry({ chainId }: EntryProps) {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [notFilteredAccountAssets?.cosmosAccountAssets, filteredAssetsBySearch],
+    [notFilteredAccountAssets?.cosmosAccountAssets, mergedCoinList],
   );
 
   const hanldeOnEthermintSend = useCallback(
@@ -195,7 +140,7 @@ export default function Entry({ chainId }: EntryProps) {
       <EdgeAligner>
         <CoinSelectWithChainId
           chainId={chainId}
-          coinList={filteredAssetsBySearch}
+          coinList={mergedCoinList}
           sortOption={sortOption}
           onSelectCoin={handleOnClickCoin}
           onSelectSortOption={(newSortOption) => {

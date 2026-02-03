@@ -1,5 +1,7 @@
-import type { AssetId, CustomAsset } from '@/types/asset';
-import { isMatchingCoinId, isSameCoin } from '@/utils/queryParamGenerator';
+import { useMemo } from 'react';
+
+import type { CustomAsset, UniqueCoinId } from '@/types/asset';
+import { getUniqueCoinId, isMatchingCoinId, isSameCoin, parseCoinId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -11,6 +13,9 @@ export function useCustomAssets() {
   const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const { refreshAssets } = useRefreshAccountAllAssets();
+
+  const currentCustomHiddenAssetIdsSet = useMemo(() => new Set(customHiddenAssetIds.map(getUniqueCoinId)), [customHiddenAssetIds]);
+  const currentCustomAssetIdsSet = useMemo(() => new Set(customAssets.map(getUniqueCoinId)), [customAssets]);
 
   const addCustomAsset = async (newAsset: CustomAsset) => {
     const storedCustomAssets = await getExtensionLocalStorage('customAssets');
@@ -50,26 +55,28 @@ export function useCustomAssets() {
     await refreshAssets();
   };
 
-  const hideCustomAsset = async (targetAsset: AssetId) => {
+  const hideCustomAsset = async (assetId: UniqueCoinId) => {
     const storedCustomHiddenAssetIds = await getExtensionLocalStorage('customHiddenAssetIds');
 
-    const isAlreadyAdded = storedCustomHiddenAssetIds.some((item) => isSameCoin(item, targetAsset));
+    const isAlreadyAdded = storedCustomHiddenAssetIds.some((item) => isMatchingCoinId(item, assetId));
 
     if (isAlreadyAdded) {
       return;
     }
 
-    const updatedCustomHiddenAssetIds = [...storedCustomHiddenAssetIds, targetAsset];
+    const newHiddenAssetId = parseCoinId(assetId);
+
+    const updatedCustomHiddenAssetIds = [...storedCustomHiddenAssetIds, newHiddenAssetId];
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
     await refreshAssets();
   };
 
-  const showCustomAsset = async (assetId: AssetId) => {
+  const showCustomAsset = async (assetId: UniqueCoinId) => {
     const storedCustomHiddenAssetIds = await getExtensionLocalStorage('customHiddenAssetIds');
 
-    const updatedCustomHiddenAssetIds = storedCustomHiddenAssetIds.filter((item) => !isSameCoin(item, assetId));
+    const updatedCustomHiddenAssetIds = storedCustomHiddenAssetIds.filter((item) => !isMatchingCoinId(item, assetId));
 
     await updateExtensionStorageStore('customHiddenAssetIds', updatedCustomHiddenAssetIds);
 
@@ -78,7 +85,9 @@ export function useCustomAssets() {
 
   return {
     customAssets,
+    currentCustomAssetIdsSet,
     customHiddenAssetIds,
+    currentCustomHiddenAssetIdsSet,
     addCustomAsset,
     removeCustomAsset,
     editCustomAsset,

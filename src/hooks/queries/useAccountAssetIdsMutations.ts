@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import type { AssetId } from '@/types/asset';
+import type { UniqueCoinId } from '@/types/asset';
+import { isMatchingCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 export function useAccountAssetIdsMutations(accountId: string) {
@@ -12,18 +13,18 @@ export function useAccountAssetIdsMutations(accountId: string) {
   };
 
   const hideAssetMutation = useMutation({
-    mutationFn: async ({ assetId }: { assetId: AssetId }) => {
+    mutationFn: async ({ assetId }: { assetId: UniqueCoinId }) => {
       const storedHiddenAssetIds = (await getExtensionLocalStorage(`${accountId}-hidden-assetIds`)) || [];
 
-      const isAlreadyHidden = storedHiddenAssetIds.some(
-        (item) => item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType,
-      );
+      const isAlreadyHidden = storedHiddenAssetIds.some((item) => isMatchingCoinId(item, assetId));
 
       if (isAlreadyHidden) {
         return;
       }
 
-      const updatedHiddenAssetIds = [...storedHiddenAssetIds, assetId];
+      const newHiddenAssetId = parseCoinId(assetId);
+
+      const updatedHiddenAssetIds = [...storedHiddenAssetIds, newHiddenAssetId];
 
       await setExtensionLocalStorage(`${accountId}-hidden-assetIds`, updatedHiddenAssetIds);
     },
@@ -31,12 +32,10 @@ export function useAccountAssetIdsMutations(accountId: string) {
   });
 
   const showAssetMutation = useMutation({
-    mutationFn: async ({ assetId }: { assetId: AssetId }) => {
+    mutationFn: async ({ assetId }: { assetId: UniqueCoinId }) => {
       const storedHiddenAssetIds = (await getExtensionLocalStorage(`${accountId}-hidden-assetIds`)) || [];
 
-      const updatedHiddenAssetIds = storedHiddenAssetIds.filter(
-        (item) => !(item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType),
-      );
+      const updatedHiddenAssetIds = storedHiddenAssetIds.filter((item) => !isMatchingCoinId(item, assetId));
 
       await setExtensionLocalStorage(`${accountId}-hidden-assetIds`, updatedHiddenAssetIds);
     },
@@ -44,18 +43,18 @@ export function useAccountAssetIdsMutations(accountId: string) {
   });
 
   const addVisibleAssetMutation = useMutation({
-    mutationFn: async ({ assetId }: { assetId: AssetId }) => {
+    mutationFn: async ({ assetId }: { assetId: UniqueCoinId }) => {
       const storedVisibleAssetIds = (await getExtensionLocalStorage(`${accountId}-visible-assetIds`)) || [];
 
-      const isAlreadyVisible = storedVisibleAssetIds.some(
-        (item) => item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType,
-      );
+      const isAlreadyVisible = storedVisibleAssetIds.some((item) => isMatchingCoinId(item, assetId));
 
       if (isAlreadyVisible) {
         return;
       }
 
-      const updatedVisibleAssetIds = [...storedVisibleAssetIds, assetId];
+      const newVisibleAssetId = parseCoinId(assetId);
+
+      const updatedVisibleAssetIds = [...storedVisibleAssetIds, newVisibleAssetId];
 
       await setExtensionLocalStorage(`${accountId}-visible-assetIds`, updatedVisibleAssetIds);
     },
@@ -63,12 +62,10 @@ export function useAccountAssetIdsMutations(accountId: string) {
   });
 
   const removeVisibleAssetMutation = useMutation({
-    mutationFn: async ({ assetId }: { assetId: AssetId }) => {
+    mutationFn: async ({ assetId }: { assetId: UniqueCoinId }) => {
       const storedVisibleAssetIds = (await getExtensionLocalStorage(`${accountId}-visible-assetIds`)) || [];
 
-      const updatedVisibleAssetIds = storedVisibleAssetIds.filter(
-        (item) => !(item.chainId === assetId.chainId && item.id === assetId.id && item.chainType === assetId.chainType),
-      );
+      const updatedVisibleAssetIds = storedVisibleAssetIds.filter((item) => !isMatchingCoinId(item, assetId));
 
       await setExtensionLocalStorage(`${accountId}-visible-assetIds`, updatedVisibleAssetIds);
     },

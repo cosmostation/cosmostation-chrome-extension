@@ -18,6 +18,7 @@ import type {
   SolanaAsset,
   SolanaSpltokenAsset,
   SuiAsset,
+  UniqueCoinId,
 } from './asset';
 import type { BitcoinBalance } from './bitcoin/balance';
 import type {
@@ -34,6 +35,7 @@ import type {
   IotaChain,
   SolanaChain,
   SuiChain,
+  UniqueChainId,
 } from './chain';
 import type { AuthAccountsPayload } from './cosmos/account';
 import type { CosmosBalance } from './cosmos/api';
@@ -284,7 +286,11 @@ export interface AccountAddressBalanceGrc20 {
   balances: Grc20Balance[];
 }
 
-export interface AccountCosmosAsset {
+export interface AssetIdentifiers {
+  uniqueCoinId: UniqueCoinId;
+  uniqueChainId: UniqueChainId;
+}
+export interface AccountCosmosAsset extends AssetIdentifiers {
   chain: CosmosChain;
   asset: CosmosAsset;
   address: AccountAddress;
@@ -299,7 +305,7 @@ export interface AccountCosmosAsset {
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AccountCosmosAssetFetchStatus;
 }
-export interface AccountCustomCosmosAsset {
+export interface AccountCustomCosmosAsset extends AssetIdentifiers {
   chain: CustomCosmosChain;
   asset: CustomCosmosAsset;
   address: AccountAddress;
@@ -308,7 +314,7 @@ export interface AccountCustomCosmosAsset {
   fetchStatus?: AccountCosmosAssetFetchStatus;
 }
 
-export interface AccountCw20Asset {
+export interface AccountCw20Asset extends AssetIdentifiers {
   chain: CosmosChain;
   asset: CosmosCw20Asset;
   address: AccountAddress;
@@ -324,7 +330,7 @@ export interface AccountEVMAssetFetchStatus extends AssetFetchStatus {
   commission?: RequestStatus;
 }
 
-export interface AccountEvmAsset {
+export interface AccountEvmAsset extends AssetIdentifiers {
   chain: EvmChain;
   asset: EvmAsset;
   address: AccountAddress;
@@ -338,7 +344,7 @@ export interface AccountEvmAsset {
   fetchStatus?: AccountEVMAssetFetchStatus;
 }
 
-export interface AccountCustomEvmAsset {
+export interface AccountCustomEvmAsset extends AssetIdentifiers {
   chain: CustomEvmChain;
   asset: EvmAsset;
   address: AccountAddress;
@@ -347,7 +353,7 @@ export interface AccountCustomEvmAsset {
   fetchStatus?: AssetFetchStatus;
 }
 
-export interface AccountErc20Asset {
+export interface AccountErc20Asset extends AssetIdentifiers {
   chain: EvmChain;
   asset: EvmErc20Asset;
   address: AccountAddress;
@@ -355,7 +361,7 @@ export interface AccountErc20Asset {
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AssetFetchStatus;
 }
-export interface AccountAptosAsset {
+export interface AccountAptosAsset extends AssetIdentifiers {
   chain: AptosChain;
   asset: AptosAsset;
   address: AccountAddress;
@@ -369,7 +375,7 @@ export interface AccountSuiAssetFetchStatus extends AssetFetchStatus {
   reward?: RequestStatus;
 }
 
-export interface AccountSuiAsset {
+export interface AccountSuiAsset extends AssetIdentifiers {
   chain: SuiChain;
   asset: SuiAsset;
   address: AccountAddress;
@@ -380,7 +386,7 @@ export interface AccountSuiAsset {
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AccountSuiAssetFetchStatus;
 }
-export interface AccountBitcoinAsset {
+export interface AccountBitcoinAsset extends AssetIdentifiers {
   chain: BitcoinChain;
   asset: BitcoinAsset;
   address: AccountAddress;
@@ -390,7 +396,7 @@ export interface AccountBitcoinAsset {
 }
 
 export interface AccountIotaAssetFetchStatus extends AccountSuiAssetFetchStatus {}
-export interface AccountGnoAsset {
+export interface AccountGnoAsset extends AssetIdentifiers {
   chain: GnoChain;
   asset: GnoAsset;
   address: AccountAddress;
@@ -399,7 +405,7 @@ export interface AccountGnoAsset {
   fetchStatus?: AssetFetchStatus;
 }
 
-export interface AccountGrc20Asset {
+export interface AccountGrc20Asset extends AssetIdentifiers {
   chain: GnoChain;
   asset: GnoGrc20Asset;
   address: AccountAddress;
@@ -407,7 +413,7 @@ export interface AccountGrc20Asset {
   lastUpdatedAtMs?: number | null;
   fetchStatus?: AssetFetchStatus;
 }
-export interface AccountIotaAsset {
+export interface AccountIotaAsset extends AssetIdentifiers {
   chain: IotaChain;
   asset: IotaAsset;
   address: AccountAddress;
@@ -419,7 +425,7 @@ export interface AccountIotaAsset {
   fetchStatus?: AccountIotaAssetFetchStatus;
 }
 
-export interface AccountSolanaAsset {
+export interface AccountSolanaAsset extends AssetIdentifiers {
   chain: SolanaChain;
   asset: SolanaAsset;
   address: AccountAddress;
@@ -428,7 +434,7 @@ export interface AccountSolanaAsset {
   fetchStatus?: AssetFetchStatus;
 }
 
-export interface AccountSpltokenAsset {
+export interface AccountSpltokenAsset extends AssetIdentifiers {
   chain: SolanaChain;
   asset: SolanaSpltokenAsset;
   address: AccountAddress;

@@ -4,7 +4,6 @@ import { throttle } from 'es-toolkit';
 import { MINTSCAN_FRONT_API_V10_URL } from '@/constants/common';
 import type { AccountTx as AccountTxsPayload } from '@/types/cosmos/txs';
 import { get } from '@/utils/axios';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseInfiniteFetchConfig } from '../common/useInfiniteFetch';
 import { useInfiniteFetch } from '../common/useInfiniteFetch';
@@ -21,7 +20,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
   });
 
   const cosmosAccountAsset = useMemo(() => {
-    const evmAsset = accountAssets?.evmAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+    const evmAsset = accountAssets?.evmAccountAssets?.find((asset) => asset.uniqueCoinId === coinId);
     const isEthermint = !!evmAsset && evmAsset.chain.isCosmos;
 
     if (isEthermint) {
@@ -33,7 +32,7 @@ export function useAccountTxs({ coinId, config }: UseAccountTxsProps) {
       );
     }
 
-    return accountAssets?.cosmosAccountAssets?.find((asset) => isMatchingCoinId(asset.asset, coinId));
+    return accountAssets?.cosmosAccountAssets?.find((asset) => asset.uniqueCoinId === coinId);
   }, [accountAssets?.cosmosAccountAssets, accountAssets?.evmAccountAssets, coinId]);
 
   const isSupportHistory = cosmosAccountAsset?.chain.isSupportHistory;

@@ -36,6 +36,7 @@ import type {
   SolanaAsset,
   SolanaSpltokenAsset,
   SuiAsset,
+  UniqueCoinId,
 } from '@/types/asset';
 import type { AptosChain, BitcoinChain, CosmosChain, EvmChain, GnoChain, IotaChain, SolanaChain, SuiChain } from '@/types/chain';
 import type { ExtensionStorage } from '@/types/extension';
@@ -43,7 +44,7 @@ import { formattingAccount } from '@/utils/cosmos/account';
 import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '@/utils/cosmos/vesting';
 import { devLogger } from '@/utils/devLogger';
 import { gt, minus, plus, sum, toBaseDenomAmount } from '@/utils/numbers';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getUniqueChainId, getUniqueCoinId } from '@/utils/queryParamGenerator';
 
 import { getAssetsWithChainAndAddress } from './getAssets';
 
@@ -118,9 +119,13 @@ export async function getAccountAssets(id: string, option?: GetAccountAssetsOpti
 
   const hiddenAssetIdSet = isFilterHidden ? await getHiddenAssetsSet(id) : null;
 
-  const filterAssets = <T extends { asset: Asset; balance?: string; totalBalance?: string }>(assets: T[]): T[] => {
+  const filterAssets = <T extends { uniqueCoinId: UniqueCoinId; asset: Asset; balance?: string; totalBalance?: string }>(assets: T[]): T[] => {
+    if (!isFilterHidden && !isFilterByBalance) {
+      return assets;
+    }
+
     return assets.filter((asset) => {
-      if (hiddenAssetIdSet && hiddenAssetIdSet.has(getCoinId(asset.asset))) {
+      if (hiddenAssetIdSet && hiddenAssetIdSet.has(asset.uniqueCoinId)) {
         return false;
       }
 
@@ -190,14 +195,14 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
   );
 
   return assets.flatMap(({ asset, chain, addresses }) => {
+    const isVestingChain = vestingChainIds.has(chain.id);
+
     return addresses.map((address) => {
       const type = asset.id;
       const assetKey = getAssetKey(address.chainId, address.chainType, address.address);
       const assetKeyWithId = getAssetKeyWithId(type, address.chainId, address.chainType, address.address);
 
-      const isVestingChainMainAsset = vestingChainIds.has(chain.id) && chain.mainAssetDenom === asset.id;
-
-      const accountInfo = isVestingChainMainAsset ? formattingAccount(cosmosAccountInfoMap.get(assetKey)?.accountInfo) : undefined;
+      const isVestingChainMainAsset = isVestingChain && chain.mainAssetDenom === asset.id;
 
       const balanceInfo = cosmosBalancesMap.get(assetKey);
 
@@ -244,24 +249,28 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
       const locked = lockedInfo?.lockedBalances?.find((balance) => balance.denom === type)?.amount || '0';
 
       const resolvedBalance = (() => {
-        if (isVestingChainMainAsset && accountInfo) {
-          const vestingRemained = getVestingRemained(accountInfo, type);
-          const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountInfo, type) : delegation;
+        if (isVestingChainMainAsset) {
+          const accountInfo = formattingAccount(cosmosAccountInfoMap.get(assetKey)?.accountInfo);
 
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [vestingRelatedAvailable, _] = (() => {
-            if (gt(vestingRemained, '0')) {
-              if (chain.id === PERSISTENCE_CHAINLIST_ID) {
-                return getPersistenceVestingRelatedBalances(balance, vestingRemained);
+          if (accountInfo) {
+            const vestingRemained = getVestingRemained(accountInfo, type);
+            const delegatedVestingTotal = chain.id === KAVA_CHAINLIST_ID ? getDelegatedVestingTotal(accountInfo, type) : delegation;
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const [vestingRelatedAvailable, _] = (() => {
+              if (gt(vestingRemained, '0')) {
+                if (chain.id === PERSISTENCE_CHAINLIST_ID) {
+                  return getPersistenceVestingRelatedBalances(balance, vestingRemained);
+                }
+
+                return getVestingRelatedBalances(balance, vestingRemained, delegatedVestingTotal, undelegation);
               }
 
-              return getVestingRelatedBalances(balance, vestingRemained, delegatedVestingTotal, undelegation);
-            }
+              return [balance, '0'];
+            })();
 
-            return [balance, '0'];
-          })();
-
-          return vestingRelatedAvailable;
+            return vestingRelatedAvailable;
+          }
         }
         return balance;
       })();
@@ -273,6 +282,8 @@ async function getCosmosAccountAssets(id: string, assets: { asset: CosmosAsset; 
       };
 
       const result: AccountCosmosAsset = {
+        uniqueCoinId: getUniqueCoinId(asset),
+        uniqueChainId: getUniqueChainId(chain),
         chain,
         asset,
         address,
@@ -314,6 +325,8 @@ async function getCW20AccountAssets(id: string, assets: { asset: CosmosCw20Asset
         };
 
         const result: AccountCw20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -341,19 +354,26 @@ async function getEVMAccountAssets(
     `${id}-commission-cosmos`,
   ]);
 
-  const evmBalances = storage[`${id}-balance-evm`] || [];
+  const evmBalancesMap = new Map((storage[`${id}-balance-evm`] || []).map((item) => [getAssetKey(String(item.chainId), item.chainType, item.address), item]));
 
-  const cosmosDelegations = storage[`${id}-delegation-cosmos`] || [];
-  const cosmosUndelegations = storage[`${id}-undelegation-cosmos`] || [];
-  const cosmosRewards = storage[`${id}-reward-cosmos`] || [];
-  const cosmosCommissions = storage[`${id}-commission-cosmos`] || [];
+  const cosmosDelegationsMap = new Map(
+    (storage[`${id}-delegation-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
+  const cosmosUndelegationsMap = new Map(
+    (storage[`${id}-undelegation-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
+  const cosmosRewardsMap = new Map(
+    (storage[`${id}-reward-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
+  const cosmosCommissionsMap = new Map(
+    (storage[`${id}-commission-cosmos`] || []).map((item) => [getAssetKeyWithId(item.assetId, String(item.chainId), item.chainType, item.address), item]),
+  );
 
   return assets
     .map(({ asset, chain, addresses }) => {
       return addresses.map((address) => {
-        const balanceInfo = evmBalances?.find(
-          (balance) => balance.chainId === address.chainId && balance.chainType === address.chainType && balance.address === address.address,
-        );
+        const assetKey = getAssetKey(address.chainId, address.chainType, address.address);
+        const balanceInfo = evmBalancesMap.get(assetKey);
 
         const balance = balanceInfo?.balance ? BigInt(balanceInfo?.balance).toString() : '0';
         const lastUpdatedAtMs = balanceInfo?.lastUpdatedAtMs;
@@ -368,13 +388,13 @@ async function getEVMAccountAssets(
             (cosmosCoin) => cosmosCoin.asset.id === mainAssetDenom && cosmosCoin.asset.chainId === chain.id && cosmosCoin.asset.chainType === 'cosmos',
           );
 
-          const { asset: cosmosStyleCoin, addresses } = cosmosStyleCoinAsset || {};
+          const { asset: cosmosStyleCoin, addresses, chain: cosmosStyleChain } = cosmosStyleCoinAsset || {};
 
           const cosmosStyleAddress = addresses?.find((accountAddressItem) => accountAddressItem.accountType.hdPath === address.accountType.hdPath);
 
-          const delegationInfo = cosmosDelegations?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const cosmosAssetKey = getAssetKeyWithId(mainAssetDenom || '', address.chainId, cosmosStyleChain?.chainType || '', cosmosStyleAddress?.address || '');
+
+          const delegationInfo = cosmosDelegationsMap.get(cosmosAssetKey);
 
           const delegation =
             delegationInfo?.delegations
@@ -385,9 +405,7 @@ async function getEVMAccountAssets(
           const decimalsAdjustment = cosmosStyleCoin?.decimals ? asset.decimals - cosmosStyleCoin.decimals : 0;
           const resolvedDelegation = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(delegation, decimalsAdjustment) : delegation;
 
-          const undelegationInfo = cosmosUndelegations?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const undelegationInfo = cosmosUndelegationsMap.get(cosmosAssetKey);
 
           const undelegation =
             undelegationInfo?.unbondings
@@ -399,9 +417,7 @@ async function getEVMAccountAssets(
 
           const resolvedUndelegation = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(undelegation, decimalsAdjustment) : undelegation;
 
-          const rewardInfo = cosmosRewards?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const rewardInfo = cosmosRewardsMap.get(cosmosAssetKey);
 
           const reward =
             rewardInfo?.rewards.total
@@ -411,9 +427,7 @@ async function getEVMAccountAssets(
 
           const resolvedReward = gt(decimalsAdjustment, '0') ? toBaseDenomAmount(reward, decimalsAdjustment) : reward;
 
-          const commissioInfo = cosmosCommissions?.find(
-            (balance) => balance.assetId === mainAssetDenom && balance.chainId === address.chainId && balance.address === cosmosStyleAddress?.address,
-          );
+          const commissioInfo = cosmosCommissionsMap.get(cosmosAssetKey);
 
           const commission =
             commissioInfo?.commissions?.commission.commission
@@ -425,11 +439,9 @@ async function getEVMAccountAssets(
 
           const totalBalance = sum([balance, resolvedDelegation, resolvedUndelegation, resolvedReward, resolvedCommission]);
 
-          const fetchStatus: AccountEVMAssetFetchStatus = {
-            balance: balanceInfo?.status,
-          };
-
           const result: AccountEvmAsset = {
+            uniqueCoinId: getUniqueCoinId(asset),
+            uniqueChainId: getUniqueChainId(chain),
             chain,
             asset,
             address,
@@ -447,6 +459,8 @@ async function getEVMAccountAssets(
         }
 
         const result: AccountEvmAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -486,6 +500,8 @@ async function getERC20AccountAssets(id: string, assets: { asset: EvmErc20Asset;
         };
 
         const result: AccountErc20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -525,6 +541,8 @@ async function getCustomERC20AccountAssets(id: string, assets: { asset: EvmErc20
         };
 
         const result: AccountErc20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -563,6 +581,8 @@ async function getCustomCW20AccountAssets(id: string, assets: { asset: CosmosCw2
           balance: targetCW20BalanceInfo?.status,
         };
         const result: AccountCw20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -597,6 +617,8 @@ async function getAptosAccountAssets(id: string, assets: { asset: AptosAsset; ch
         };
 
         const result: AccountAptosAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -659,6 +681,8 @@ async function getSuiAccountAssets(id: string, assets: { asset: SuiAsset; chain:
           const totalBalance = sum([balance, delegation, reward]);
 
           const result: AccountSuiAsset = {
+            uniqueCoinId: getUniqueCoinId(asset),
+            uniqueChainId: getUniqueChainId(chain),
             chain,
             asset,
             address,
@@ -674,6 +698,8 @@ async function getSuiAccountAssets(id: string, assets: { asset: SuiAsset; chain:
         }
 
         const result: AccountSuiAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -718,6 +744,8 @@ async function getBitcoinAccountAssets(id: string, assets: { asset: BitcoinAsset
             : '0';
 
         const result: AccountBitcoinAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain: specificAccountTypeChain,
           asset,
           address,
@@ -780,6 +808,8 @@ async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chai
           const totalBalance = sum([balance, delegation, reward]);
 
           const result: AccountIotaAsset = {
+            uniqueCoinId: getUniqueCoinId(asset),
+            uniqueChainId: getUniqueChainId(chain),
             chain,
             asset,
             address,
@@ -795,6 +825,8 @@ async function getIotaAccountAssets(id: string, assets: { asset: IotaAsset; chai
         }
 
         const result: AccountIotaAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -830,6 +862,8 @@ async function getGnoAccountAssets(id: string, assets: { asset: GnoAsset; chain:
         };
 
         const result: AccountGnoAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -869,6 +903,8 @@ async function getGrc20AccountAssets(id: string, assets: { asset: GnoGrc20Asset;
         };
 
         const result: AccountGrc20Asset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -904,6 +940,8 @@ async function getSolanaAccountAssets(id: string, assets: { asset: SolanaAsset; 
         };
 
         const result: AccountSolanaAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,
@@ -943,6 +981,8 @@ async function getSplTokenAccountAssets(id: string, assets: { asset: SolanaSplto
         };
 
         const result: AccountSpltokenAsset = {
+          uniqueCoinId: getUniqueCoinId(asset),
+          uniqueChainId: getUniqueChainId(chain),
           chain,
           asset,
           address,

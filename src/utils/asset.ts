@@ -1,9 +1,13 @@
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { DASHBOARD_COIN_SORT_KEY } from '@/constants/sortKey';
 import type { AccountCosmosAsset, AccountEvmAsset, AccountIotaAsset, AccountSuiAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, CustomChain, UniqueChainId } from '@/types/chain';
+import type { CommonSortKeyType } from '@/types/sortKey';
 
-import { getUniqueChainId, getUniqueChainIdWithManual, isMatchingUniqueChainId, isSameChain, parseUniqueChainId } from './queryParamGenerator';
+import { sortByReference } from './array';
+import { minus } from './numbers';
+import { getUniqueChainIdWithManual, isSameChain, parseUniqueChainId } from './queryParamGenerator';
 import { isEqualsIgnoringCase } from './string';
 
 export function filterChainsByChainId<T extends Chain>(chains: T[]): T[] {
@@ -27,8 +31,8 @@ export function getFilteredChainsByChainId<T extends FlatAccountAssets>(accountA
   const shouldCheckEthermint = !option?.disableDupeEthermint;
 
   for (const asset of accountAssets) {
-    const { chain, address } = asset;
-    const chainKey = getUniqueChainId(chain);
+    const { chain, address, uniqueChainId } = asset;
+    const chainKey = uniqueChainId;
 
     if (chainMap.has(chainKey)) continue;
 
@@ -73,7 +77,7 @@ export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
   const result: T[] = [];
 
   for (const asset of accountAssets) {
-    const { chain, address } = asset;
+    const { chain, address, uniqueChainId: assetUniqueChainId } = asset;
 
     if (shouldCheckEthermint && address.accountType.pubkeyStyle === 'keccak256' && chain.chainType === 'cosmos' && chain.isEvm) {
       if (chain.id === targetChainId) {
@@ -82,7 +86,7 @@ export function getFilteredAssetsByChainId<T extends FlatAccountAssets>(
       continue;
     }
 
-    if (isMatchingUniqueChainId(chain, uniqueChainId)) {
+    if (assetUniqueChainId === uniqueChainId) {
       result.push(asset);
     }
   }
@@ -110,7 +114,7 @@ export function getMainAssetByChainId<T extends FlatAccountAssets>(
 
     return (
       item.chain.mainAssetDenom &&
-      getUniqueChainId(item.chain) === uniqueChainId &&
+      item.uniqueChainId === uniqueChainId &&
       isEqualsIgnoringCase(item.asset.id, XRPL_CHAINS_ID.includes(item.chain.id) ? NATIVE_EVM_COIN_ADDRESS : item.chain.mainAssetDenom)
     );
   });
@@ -143,6 +147,16 @@ export function getDefaultAssets<T extends FlatAccountAssets>(
   });
 }
 
+export function getDefaultAssetsByChainId<T extends FlatAccountAssets>(accountAssets?: T[], uniqueChainId?: UniqueChainId | null): T[] | undefined {
+  if (!uniqueChainId || !accountAssets || accountAssets.length === 0) return undefined;
+
+  const defaultCoins = getDefaultAssets(getFilteredAssetsByChainId(accountAssets, uniqueChainId));
+
+  if (!defaultCoins?.length) return undefined;
+
+  return sortByReference(defaultCoins, defaultCoins[0]?.chain.chainDefaultCoinDenoms ?? [], (coin, denom) => isEqualsIgnoringCase(coin.asset.id, denom));
+}
+
 export function isAccountCosmosStakableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset {
   return asset.chain.chainType === 'cosmos' && asset.asset.type === 'native' && 'delegation' in asset;
 }
@@ -161,4 +175,27 @@ export function isAccountIotaStakableAsset(asset: FlatAccountAssets): asset is A
 
 export function isStakeableAsset(asset: FlatAccountAssets): asset is AccountCosmosAsset | AccountEvmAsset | AccountSuiAsset | AccountIotaAsset {
   return isAccountCosmosStakableAsset(asset) || isAccountEVMStakableAsset(asset) || isAccountSuiStakableAsset(asset) || isAccountIotaStakableAsset(asset);
+}
+
+export function getStakeableBalance(item: FlatAccountAssets) {
+  return isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
+}
+
+export function sortAssetsByKey<T extends { value: string; asset: { symbol: string } }>(assets: T[], sortKey: CommonSortKeyType): T[] {
+  return [...assets].sort((a, b) => {
+    if (sortKey === DASHBOARD_COIN_SORT_KEY.VALUE_HIGH_ORDER) {
+      return Number(minus(b.value, a.value));
+    }
+    if (sortKey === DASHBOARD_COIN_SORT_KEY.ALPHABETICAL_ASC) {
+      return a.asset.symbol.localeCompare(b.asset.symbol);
+    }
+    return 0;
+  });
+}
+
+export function filterAssetsBySearch<T extends { asset: { symbol: string; id: string } }>(assets: T[], search: string, isSearchEmpty: boolean): T[] {
+  if (isSearchEmpty || search.length <= 1) return assets;
+
+  const lowerSearch = search.toLowerCase();
+  return assets.filter((asset) => [asset.asset.symbol, asset.asset.id].some((target) => target.toLowerCase().includes(lowerSearch)));
 }

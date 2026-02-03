@@ -1,8 +1,8 @@
-import type { AccountAddress } from '../account';
+import type { AccountAddress, AssetIdentifiers } from '../account';
 import type { CosmosAsset, CustomCosmosAsset } from '../asset';
 import type { CosmosChain, CustomCosmosChain } from '../chain';
 
-export interface CosmosFeeAsset {
+export interface CosmosFeeAsset extends AssetIdentifiers {
   gasRate: string[];
   chain: CosmosChain;
   asset: CosmosAsset | CustomCosmosAsset;

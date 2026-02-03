@@ -1,5 +1,6 @@
 import type { Account, MnemonicAccount } from '@/types/account';
-import type { AssetId } from '@/types/asset';
+import type { FlatAccountAssets } from '@/types/accountAssets';
+import type { AssetId, UniqueCoinId } from '@/types/asset';
 import type { ChainId, ChainType, UniqueChainId } from '@/types/chain';
 
 export function getMnemonicId(account: Account): account is MnemonicAccount {
@@ -7,6 +8,10 @@ export function getMnemonicId(account: Account): account is MnemonicAccount {
 }
 
 export function getCoinId(coinAsset: AssetId) {
+  return `${coinAsset.id}__${coinAsset.chainId}__${coinAsset.chainType}`;
+}
+
+export function getUniqueCoinId(coinAsset: AssetId): UniqueCoinId {
   return `${coinAsset.id}__${coinAsset.chainId}__${coinAsset.chainType}`;
 }
 
@@ -25,6 +30,10 @@ export function parseCoinId(coinId: string) {
 
 export function isMatchingCoinId(baseCoin: AssetId, targetCoinId: string) {
   return getCoinId(baseCoin) === targetCoinId;
+}
+
+export function getMatchingCoinFromCoinId<T extends FlatAccountAssets>(assets?: T[], targetCoinId?: UniqueCoinId | string): T | undefined {
+  return assets?.find(({ uniqueCoinId }) => uniqueCoinId === targetCoinId);
 }
 
 export function isSameCoin(baseCoin: AssetId, targetCoin: AssetId) {

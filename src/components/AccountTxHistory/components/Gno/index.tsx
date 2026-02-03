@@ -2,8 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import Base1300Text from '@/components/common/Base1300Text';
 import EmptyAsset from '@/components/EmptyAsset';
-import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { isMatchingCoinId } from '@/utils/queryParamGenerator';
+import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
 
 import { Container, EmptyAssetContainer, IconContainer } from './styled';
 
@@ -16,14 +15,12 @@ type GnoAccountTxHistory = {
 
 export default function GnoAccountTxHistory({ coinId }: GnoAccountTxHistory) {
   const { t } = useTranslation();
-  const { data: accountAllAssets } = useAccountAllAssets({
-    filterByPreferAccountType: true,
-  });
 
-  const selectedAsset = accountAllAssets?.allGnoAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+  const { getGnoAccountAsset } = useGetAccountAsset({ coinId });
+  const selectedAsset = getGnoAccountAsset();
 
-  const accountExplorerUrl = selectedAsset?.chain.explorer.account
-    ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address.address)
+  const accountExplorerUrl = selectedAsset?.chain?.explorer?.account
+    ? selectedAsset.chain.explorer.account.replace('${address}', selectedAsset.address?.address ?? '')
     : '';
 
   return (

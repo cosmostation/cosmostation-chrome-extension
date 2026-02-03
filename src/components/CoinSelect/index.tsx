@@ -11,15 +11,15 @@ import { COIN_SELECT_SORT_KEY, DASHBOARD_COIN_SORT_KEY } from '@/constants/sortK
 import { useGetAverageAPY as useIotaGetAverageAPY } from '@/hooks/iota/useGetAverageAPY';
 import { useGetAverageAPY } from '@/hooks/sui/useGetAverageAPY';
 import { useAccountAllAssets } from '@/hooks/useAccountAllAssets';
-import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice';
+import { useAssetPricing } from '@/hooks/useAssetPricing';
 import type { AccountCosmosAsset } from '@/types/account';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { Chain, UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { getFilteredAssetsByChainId, getFilteredChainsByChainId, isStakeableAsset } from '@/utils/asset';
+import { filterAssetsBySearch, getFilteredAssetsByChainId, getFilteredChainsByChainId, getStakeableBalance, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
-import { minus, times, toDisplayDenomAmount } from '@/utils/numbers';
-import { getCoinId, getUniqueChainId, isMatchingCoinId, isMatchingUniqueChainId, parseCoinId, parseUniqueChainId } from '@/utils/queryParamGenerator';
+import { minus, toDisplayDenomAmount } from '@/utils/numbers';
+import { getUniqueChainId, isMatchingUniqueChainId, parseCoinId, parseUniqueChainId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, shorterAddress, toPercentages } from '@/utils/string';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -52,8 +52,6 @@ export default function CoinSelect({
 }: CoinSelectProps) {
   const { t } = useTranslation();
 
-  const { data: coinGeckoPrice } = useCoinGeckoPrice();
-  const userCurrencyPreference = useExtensionStorageStore((state) => state.userCurrencyPreference);
   const selectedChainFilterId = useExtensionStorageStore((state) => state.selectedChainFilterId);
 
   const isDisableDupeEthermint = variant === 'stake';
@@ -73,6 +71,7 @@ export default function CoinSelect({
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
+  const isSearchEmpty = useMemo(() => search.length === 0, [search.length]);
   const isDebouncing = !!search && isPending();
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
@@ -123,50 +122,33 @@ export default function CoinSelect({
   const finalSelectedChainFilterId =
     selectedChainFilterId && variant === 'stake' && currentSelectedChain ? getUniqueChainId(currentSelectedChain) : currentSelectedChainId;
 
-  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || (!!debouncedSearch && !isSearchEmpty), [currentSelectedChain, debouncedSearch, isSearchEmpty]);
 
-  const computedAssetValues = useMemo(() => {
-    return (
-      baseCoinList?.map((item) => {
-        const balance = isStakeableAsset(item) ? item.totalBalance || item.balance || '0' : item.balance;
+  const pricedAssets = useAssetPricing(baseCoinList, {
+    getBalance: getStakeableBalance,
+  });
 
-        const displayAmount = toDisplayDenomAmount(balance, item.asset.decimals);
-
-        const chainPrice = (item.asset.coinGeckoId && coinGeckoPrice?.[item.asset.coinGeckoId]?.[userCurrencyPreference]) || 0;
-
-        const value = times(displayAmount, chainPrice);
-
+  const assetsWithApr = useMemo(
+    () =>
+      pricedAssets.map((item) => {
         const apr = (() => {
-          if (variant === 'stake') {
-            if (item.chain.chainType === 'cosmos' && item.chain.apr) {
-              return toPercentages(item.chain.apr, {
-                disableMark: true,
-              });
-            }
+          if (variant !== 'stake') return undefined;
 
-            if (item.chain.chainType === 'sui') {
-              return averageAPY;
-            }
-
-            if (item.chain.chainType === 'iota') {
-              return iotaAverageAPY;
-            }
+          if (item.chain.chainType === 'cosmos' && item.chain.apr) {
+            return toPercentages(item.chain.apr, { disableMark: true });
           }
-
+          if (item.chain.chainType === 'sui') return averageAPY;
+          if (item.chain.chainType === 'iota') return iotaAverageAPY;
           return undefined;
         })();
 
-        return {
-          ...item,
-          value,
-          apr,
-        };
-      }) || []
-    );
-  }, [averageAPY, baseCoinList, coinGeckoPrice, iotaAverageAPY, userCurrencyPreference, variant]);
+        return { ...item, apr };
+      }),
+    [averageAPY, iotaAverageAPY, pricedAssets, variant],
+  );
 
   const sortedAssets = useMemo(() => {
-    const sortedValues = [...computedAssetValues].sort((a, b) => {
+    return [...assetsWithApr].sort((a, b) => {
       const aIsTestnet = isTestnetChain(a.chain.id);
       const bIsTestnet = isTestnetChain(b.chain.id);
 
@@ -190,31 +172,21 @@ export default function CoinSelect({
 
       return 0;
     });
+  }, [assetsWithApr, sortOption, variant]);
 
-    return sortedValues;
-  }, [computedAssetValues, sortOption, variant]);
+  const filteredAssetsByChain = useMemo(() => getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId), [currentSelectedChainId, sortedAssets]);
 
-  const filteredCoinList = useMemo(() => {
-    const filteredAssetsByChain = getFilteredAssetsByChainId(sortedAssets, currentSelectedChainId);
-
-    if (!!search && debouncedSearch.length > 1) {
-      return (
-        filteredAssetsByChain.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
-
-          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-        }) || []
-      );
-    }
-    return filteredAssetsByChain;
-  }, [currentSelectedChainId, debouncedSearch, search, sortedAssets]);
+  const filteredCoinList = useMemo(
+    () => filterAssetsBySearch(filteredAssetsByChain, debouncedSearch, isSearchEmpty),
+    [debouncedSearch, filteredAssetsByChain, isSearchEmpty],
+  );
 
   const handleOnClickCoin = useCallback(
     (coinId: string) => {
       if (parseCoinId(coinId).chainType !== 'evm') {
         onSelectCoin(coinId);
       } else {
-        const currentCoin = data?.allEVMAccountAssets.find(({ asset }) => isMatchingCoinId(asset, coinId));
+        const currentCoin = data?.allEVMAccountAssets.find(({ uniqueCoinId }) => uniqueCoinId === coinId);
 
         const cosmosStyleEthermintCoin = (() => {
           const isEthermint = currentCoin?.chain.chainType === 'evm' && currentCoin.chain.isCosmos;
@@ -295,9 +267,9 @@ export default function CoinSelect({
             return (
               <CoinWithChainNameButton
                 key={coin.asset.id.concat(coin.asset.chainId).concat(coin.asset.chainType)}
-                isActive={currentCoinId === getCoinId(coin.asset)}
+                isActive={currentCoinId === coin.uniqueCoinId}
                 displayAmount={displayAmount}
-                apr={coin.apr ? coin.apr : undefined}
+                apr={coin.apr}
                 symbol={resolvedSymbol}
                 chainName={coin.chain.name}
                 assetId={resolvedAssetId}
@@ -308,7 +280,7 @@ export default function CoinSelect({
                   badgeImageURL: coin.chain.image || '',
                 }}
                 onClick={() => {
-                  handleOnClickCoin(getCoinId(coin.asset));
+                  handleOnClickCoin(coin.uniqueCoinId);
                 }}
               />
             );

@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
+
 import type { CosmosCw20Asset } from '@/types/asset';
-import { getCoinId } from '@/utils/queryParamGenerator';
+import { getCoinId, getUniqueCoinId } from '@/utils/queryParamGenerator';
 import { getExtensionLocalStorage } from '@/utils/storage';
 import { useExtensionStorageStore } from '@/zustand/hooks/useExtensionStorageStore';
 
@@ -12,6 +14,7 @@ export function useCurrentCustomCW20Tokens() {
   const updateExtensionStorageStore = useExtensionStorageStore((state) => state.updateExtensionStorageStore);
 
   const currentCustomCW20Tokens = customCw20Assets;
+  const currentCustomCW20TokenIdsSet = useMemo(() => new Set(customCw20Assets.map(getUniqueCoinId)), [customCw20Assets]);
 
   const addCustomCW20Token = async (asset: CosmosCw20Asset) => {
     const storedCW20Assets = await getExtensionLocalStorage('cw20Assets');
@@ -64,5 +67,5 @@ export function useCurrentCustomCW20Tokens() {
     await refreshAssets();
   };
 
-  return { currentCustomCW20Tokens, addCustomCW20Token, addCustomCW20Tokens, removeCustomCW20Token };
+  return { currentCustomCW20Tokens, currentCustomCW20TokenIdsSet, addCustomCW20Token, addCustomCW20Tokens, removeCustomCW20Token };
 }

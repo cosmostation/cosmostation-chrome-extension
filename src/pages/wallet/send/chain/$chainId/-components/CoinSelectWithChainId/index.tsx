@@ -15,7 +15,7 @@ import { useChainList } from '@/hooks/useChainList';
 import type { FlatAccountAssets } from '@/types/accountAssets';
 import type { UniqueChainId } from '@/types/chain';
 import type { CommonSortKeyType } from '@/types/sortKey';
-import { isStakeableAsset } from '@/utils/asset';
+import { filterAssetsBySearch, isStakeableAsset } from '@/utils/asset';
 import { isTestnetChain } from '@/utils/chain';
 import { toDisplayDenomAmount } from '@/utils/numbers';
 import { getCoinId, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
@@ -49,6 +49,7 @@ export default function CoinSelectWithChainId({
   const [search, setSearch] = useState('');
   const [debouncedSearch, { cancel, isPending }] = useDebounce(search, 300);
 
+  const isSearchEmpty = useMemo(() => search.length === 0, [search.length]);
   const isDebouncing = !!search && isPending();
 
   const [isOpenSortBottomSheet, setIsOpenSortBottomSheet] = useState(false);
@@ -56,20 +57,9 @@ export default function CoinSelectWithChainId({
   const currentSelectedChain = useMemo(() => flatChainList?.find((chain) => isMatchingUniqueChainId(chain, chainId)), [chainId, flatChainList]);
   const baseChainList = currentSelectedChain && [currentSelectedChain];
 
-  const isShowAssetId = useMemo(() => !!currentSelectedChain || !!debouncedSearch, [currentSelectedChain, debouncedSearch]);
+  const isShowAssetId = useMemo(() => !!currentSelectedChain || (!!debouncedSearch && !isSearchEmpty), [currentSelectedChain, debouncedSearch, isSearchEmpty]);
 
-  const filteredCoinList = useMemo(() => {
-    if (!!search && debouncedSearch.length > 1) {
-      return (
-        coinList.filter((asset) => {
-          const condition = [asset.asset.symbol, asset.asset.id];
-
-          return condition.some((item) => item.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
-        }) || []
-      );
-    }
-    return coinList;
-  }, [coinList, debouncedSearch, search]);
+  const filteredCoinList = useMemo(() => filterAssetsBySearch(coinList, debouncedSearch, isSearchEmpty), [coinList, debouncedSearch, isSearchEmpty]);
 
   useEffect(() => {
     if (search.length > 1 || search.length === 0) {
