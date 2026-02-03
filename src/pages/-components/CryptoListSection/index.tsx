@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -26,6 +26,16 @@ function CryptoListSection({ assets, isLoading }: CryptoListSectionProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const processedAssets = useMemo(
+    () =>
+      assets.map((coin) => ({
+        ...coin,
+        isGroupToken: gt(coin.counts || '0', '1'),
+        resolvedSymbol: coin.asset.symbol + (isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''),
+      })),
+    [assets],
+  );
+
   const handleCoinClick = useCallback(
     (coin: PortfolioCoinItem) => {
       const isGroupToken = gt(coin.counts || '0', '1');
@@ -39,32 +49,6 @@ function CryptoListSection({ assets, isLoading }: CryptoListSectionProps) {
       });
     },
     [navigate],
-  );
-
-  const renderCoinItem = useCallback(
-    (coin: PortfolioCoinItem | undefined, virtualItem: { index: number }) => {
-      if (!coin) return null;
-
-      const isGroupToken = gt(coin.counts || '0', '1');
-      const resolvedSymbol = coin.asset.symbol + `${isTestnetChain(coin.chain.id) ? ' (Testnet)' : ''}`;
-
-      return (
-        <CoinWithMarketTrendButton
-          key={getCoinId(coin.asset) + virtualItem.index}
-          onClick={() => handleCoinClick(coin)}
-          fetchStatus={coin.fetchStatus?.balance}
-          displayAmount={coin.totalDisplayAmount || '0'}
-          symbol={resolvedSymbol}
-          coinGeckoId={coin.asset.coinGeckoId}
-          coinImageProps={{
-            imageURL: coin.asset.image,
-            isAggregatedCoin: gt(coin.counts || '0', '1'),
-            badgeImageURL: isGroupToken ? undefined : coin.chain.image || undefined,
-          }}
-        />
-      );
-    },
-    [handleCoinClick],
   );
 
   if (isLoading) {
@@ -87,7 +71,26 @@ function CryptoListSection({ assets, isLoading }: CryptoListSectionProps) {
 
   return (
     <CoinButtonWrapper>
-      <VirtualizedList items={assets} estimateSize={() => 60} renderItem={renderCoinItem} overscan={5} />
+      <VirtualizedList
+        items={processedAssets}
+        estimateSize={() => 60}
+        renderItem={(coin, virtualItem) => (
+          <CoinWithMarketTrendButton
+            key={coin.uniqueCoinId + virtualItem.index}
+            onClick={() => handleCoinClick(coin)}
+            fetchStatus={coin.fetchStatus?.balance}
+            displayAmount={coin.totalDisplayAmount || '0'}
+            symbol={coin.resolvedSymbol}
+            coinGeckoId={coin.asset.coinGeckoId}
+            coinImageProps={{
+              imageURL: coin.asset.image,
+              isAggregatedCoin: coin.isGroupToken,
+              badgeImageURL: coin.isGroupToken ? undefined : coin.chain.image || undefined,
+            }}
+          />
+        )}
+        overscan={5}
+      />
     </CoinButtonWrapper>
   );
 }
