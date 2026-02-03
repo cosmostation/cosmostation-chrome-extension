@@ -104,7 +104,7 @@ export function useAccountAllAssets({
 
   const fetcher = async () => {
     try {
-      const opts = { disableFilterHidden: true, disableBalanceFilter: true } as const;
+      const opts = { disableFilterHidden: true, disableBalanceFilter: true };
       const [accountAssets, accountCustomAssets] = await Promise.all([getAccountAssets(param, opts), getAccountCustomAssets(param, opts)]);
       return { ...accountAssets, ...accountCustomAssets };
     } catch {
@@ -186,10 +186,20 @@ export function useAccountAllAssets({
 
     const { cosmosAccountCustomAssets, customCw20AccountAssets, evmAccountCustomAssets, customErc20AccountAssets } = filteredByVisibleList;
 
-    const allCosmosAccountAssets: AllCosmosAccountAssets[] = [...cosmosAccountAssets, ...cosmosAccountCustomAssets, ...cw20AccountAssets, ...customCw20AccountAssets];
+    const allCosmosAccountAssets: AllCosmosAccountAssets[] = [
+      ...cosmosAccountAssets,
+      ...cosmosAccountCustomAssets,
+      ...cw20AccountAssets,
+      ...customCw20AccountAssets,
+    ];
 
     const allCosmosAccountAssetsFiltered: AllCosmosAccountAssets[] = isAccountTypeFilterActive
-      ? [...narrowChainAccountTypes(cosmosAccountAssets, accountType), ...cosmosAccountCustomAssets, ...narrowChainAccountTypes(cw20AccountAssets, accountType), ...customCw20AccountAssets]
+      ? [
+          ...narrowChainAccountTypes(cosmosAccountAssets, accountType),
+          ...cosmosAccountCustomAssets,
+          ...narrowChainAccountTypes(cw20AccountAssets, accountType),
+          ...customCw20AccountAssets,
+        ]
       : allCosmosAccountAssets;
 
     const assets = {
