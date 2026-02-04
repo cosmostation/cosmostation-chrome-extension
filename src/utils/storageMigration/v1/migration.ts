@@ -324,17 +324,18 @@ export type LegacyExtensionStorage = {
 };
 
 export async function isMigrationRequired_V1_0_0() {
-  const legacyStorage = await chrome.storage.local.get<LegacyExtensionStorage>();
-  const { accounts } = legacyStorage;
-
-  const isLegacyDataExist = !!accounts && accounts.length > 0;
-
   const migrationStatus = await getExtensionLocalStorage('migrationStatus');
   const isMigrationComplete = migrationStatus?.['1.0.0'];
 
-  const isMigrationNeeded = isLegacyDataExist && !isMigrationComplete;
+  if (isMigrationComplete) {
+    return false;
+  }
 
-  return isMigrationNeeded;
+  const { accounts } = await chrome.storage.local.get<Pick<LegacyExtensionStorage, 'accounts'>>('accounts');
+
+  const isLegacyDataExist = !!accounts && accounts.length > 0;
+
+  return isLegacyDataExist;
 }
 
 export async function skipMigration() {
