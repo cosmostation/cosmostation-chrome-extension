@@ -21,6 +21,7 @@ import ValueButtonWrapper from './components/ValueButtonWrapper';
 import { BottomButtonContainer, IconContainer, SpacedTypography, StyledIconTextButton, TopContainer } from './styled';
 import MainBox from '..';
 
+import CommissionIcon from '@/assets/images/icons/Commission28.svg';
 import DaoIcon from '@/assets/images/icons/Dao28.svg';
 import MoreIcon from '@/assets/images/icons/More22.svg';
 import ReceiveIcon from '@/assets/images/icons/Receive22.svg';
@@ -237,7 +238,7 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
                 }}
                 leadingIcon={
                   <IconContainer>
-                    <VoteIcon />
+                    <CommissionIcon />
                   </IconContainer>
                 }
                 direction="vertical"
