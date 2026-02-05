@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 
 import { DEFAULT_FETCH_TIME_OUT_MS } from '@/constants/common';
+import { BABYLON_CHAIN_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { VALIDATOR_STATUS } from '@/constants/cosmos/validator';
 import type { CosmosValidator, FormattedCosmosValidator, GetValidatorsResponse, ValidatorStatus } from '@/types/cosmos/validator';
 import { get } from '@/utils/axios';
@@ -35,9 +36,11 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
     return validatorInfosEndpoints;
   }, [asset?.chain.lcdUrls, coinId]);
 
+  const isBabylonChain = BABYLON_CHAIN_CHAINLIST_ID.includes(asset?.chain.id || '');
+
   const fetcher = async (index = 0) => {
     try {
-      if (!asset?.chain.isSupportStaking) return null;
+      if (!asset?.chain.isSupportStaking && !isBabylonChain) return null;
 
       if (index >= requestURLs.length) {
         setIsAllRequestsFailed(true);
@@ -71,7 +74,7 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
       setIsAllRequestsFailed(false);
 
       const sortedByVotingPower = flattenedReturnData.toSorted((a, b) => (gt(a.tokens, b.tokens) ? -1 : 1));
-      const activeValidators = asset.chain.maxApproveValidator
+      const activeValidators = asset?.chain.maxApproveValidator
         ? sortedByVotingPower.filter((item) => item.status === 'BOND_STATUS_BONDED').toSpliced(Number(asset.chain.maxApproveValidator))
         : undefined;
       const topActiveValidators = activeValidators && new Set(activeValidators.map((item) => item.operator_address));
@@ -83,7 +86,7 @@ export function useValidators({ coinId, config }: UseValidatorsProps) {
 
             if (validator.status !== 'BOND_STATUS_BONDED') return VALIDATOR_STATUS.INACTIVE;
 
-            if (asset.chain.reportedValidators?.includes(validator.operator_address)) return VALIDATOR_STATUS.FAKE;
+            if (asset?.chain.reportedValidators?.includes(validator.operator_address)) return VALIDATOR_STATUS.FAKE;
 
             if (topActiveValidators) {
               return topActiveValidators.has(validator.operator_address) ? undefined : VALIDATOR_STATUS.INACTIVE;

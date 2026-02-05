@@ -5,11 +5,14 @@ import { useNavigate } from '@tanstack/react-router';
 import AddressActionButtons from '@/components/AddressActionButtons';
 import EthermintSendBottomSheet from '@/components/EthermintSendBottomSheet';
 import StaleBalanceErrorBanner from '@/components/StaleBalanceErrorBanner';
-import { NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
+import { BABYLON_CHAIN_CHAINLIST_ID, NEUTRON_CHAINLIST_ID, NEUTRON_TESTNET_CHAINLIST_ID } from '@/constants/cosmos/chain';
 import { NATIVE_EVM_COIN_ADDRESS } from '@/constants/evm';
+import { useCommission } from '@/hooks/cosmos/useCommission';
 import { useGetAccountAsset } from '@/hooks/useGetAccountAsset';
+import { Route as ClaimCommission } from '@/pages/wallet/claim-commission/$coinId';
 import { Route as Receive } from '@/pages/wallet/receive/$coinId';
 import { Route as Send } from '@/pages/wallet/send/$coinId';
+import { convertToValidatorAddress } from '@/utils/cosmos/address';
 import { getCoinId, getUniqueChainIdFromCoinId, parseCoinId } from '@/utils/queryParamGenerator';
 import { isEqualsIgnoringCase, removeTemplateLiteral, removeTrailingSlash } from '@/utils/string';
 
@@ -94,6 +97,20 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
 
     return undefined;
   })();
+
+  const isBabylonChain = BABYLON_CHAIN_CHAINLIST_ID.includes(parseCoinId(coinId).chainId);
+
+  const validatorAddress = isBabylonChain ? convertToValidatorAddress(currentCoin?.address.address, 'bbnvaloper') : undefined;
+
+  const commission = useCommission({
+    coinId,
+    validatorAddress,
+    config: {
+      enabled: isBabylonChain,
+    },
+  });
+
+  const isValidatorAccount = (commission.data?.commission?.commission?.length || 0) > 0;
 
   const swapDappURL = useMemo(() => {
     if (currentCoin?.chain.chainType === 'cosmos' && currentCoin.chain.isSupportHistory) {
@@ -206,6 +223,26 @@ export default function CoinDetailBox({ coinId }: CoinDetailBoxProps) {
                 direction="vertical"
               >
                 <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.vote')}</SpacedTypography>
+              </StyledIconTextButton>
+            )}
+            {isValidatorAccount && (
+              <StyledIconTextButton
+                onClick={() => {
+                  navigate({
+                    to: ClaimCommission.to,
+                    params: {
+                      coinId: coinId,
+                    },
+                  });
+                }}
+                leadingIcon={
+                  <IconContainer>
+                    <VoteIcon />
+                  </IconContainer>
+                }
+                direction="vertical"
+              >
+                <SpacedTypography variant="b3_M">{t('components.MainBox.CoinDetailBox.index.commission')}</SpacedTypography>
               </StyledIconTextButton>
             )}
             {moreOptionProps && (
