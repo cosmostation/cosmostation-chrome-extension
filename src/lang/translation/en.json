@@ -87,7 +87,8 @@
           "dao": "Dao",
           "vaultDescription": "Vault to put $NTRN to get voting power",
           "daoDescription": "Participate in decisions through DAO voting",
-          "copyFailed": "Failed to Copy"
+          "copyFailed": "Failed to Copy",
+          "commission": "Commission"
         }
       }
     },
