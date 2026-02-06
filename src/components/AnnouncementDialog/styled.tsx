@@ -4,7 +4,11 @@ import Button from '@/components/common/Button';
 import Dialog from '@/components/common/Dialog';
 import IconButton from '@/components/common/IconButton';
 
-export const StyledDialog = styled(Dialog)({});
+export const StyledDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    border: `0.1rem solid ${theme.palette.color.base500}`,
+  },
+}));
 
 export const WrapperContainer = styled('div')({
   display: 'flex',
