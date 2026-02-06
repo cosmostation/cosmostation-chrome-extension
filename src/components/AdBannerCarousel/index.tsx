@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Collapse from '@mui/material/Collapse';
 
 import { useAdInfos } from '@/hooks/useAdInfos';
@@ -11,11 +11,13 @@ import Carousel from '../common/Carousel';
 import Close24Icon from '@/assets/images/icons/Close24.svg';
 
 export default function AdBannerCarousel() {
-  const { data: adInfos = [], dismissAd } = useAdInfos();
+  const { data: adInfoData, dismissAd } = useAdInfos();
 
-  const cachedAdsRef = useRef<AdV1[]>(adInfos);
+  const filteredAdInfos = useMemo(() => adInfoData?.filteredAds ?? [], [adInfoData?.filteredAds]);
 
-  const displayAds = adInfos.length > 0 ? adInfos : cachedAdsRef.current;
+  const cachedAdsRef = useRef<AdV1[]>(filteredAdInfos);
+
+  const displayAds = filteredAdInfos.length > 0 ? filteredAdInfos : cachedAdsRef.current;
 
   const carousel = useCarousel({
     totalItems: displayAds.length,
@@ -30,17 +32,17 @@ export default function AdBannerCarousel() {
     [dismissAd],
   );
 
-  const isVisible = adInfos.length > 0;
+  const isVisible = filteredAdInfos.length > 0;
 
   const handleExited = () => {
     cachedAdsRef.current = [];
   };
 
   useEffect(() => {
-    if (adInfos.length > 0) {
-      cachedAdsRef.current = adInfos;
+    if (filteredAdInfos.length > 0) {
+      cachedAdsRef.current = filteredAdInfos;
     }
-  }, [adInfos]);
+  }, [filteredAdInfos]);
 
   return (
     <Collapse in={isVisible} timeout={300} unmountOnExit onExited={handleExited}>

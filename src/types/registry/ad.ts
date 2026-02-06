@@ -11,6 +11,8 @@ export interface AdV1 {
   endAt?: string;
   images?: Images;
   linkUrl?: string;
+  view_detail?: string;
+  color?: string;
 }
 
 export interface Images {
