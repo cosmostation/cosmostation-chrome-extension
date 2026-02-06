@@ -2149,7 +2149,9 @@
         "about": "About",
         "aboutDescription": "Check wallet version & info",
         "min": "{{minutes}} min",
-        "never": "Never"
+        "never": "Never",
+        "announcement": "Announcement",
+        "announcementDescription": "All announcements and updates"
       },
       "layout": {
         "header": "Setting"
@@ -2416,6 +2418,11 @@
         },
         "layout": {
           "header": "Back Up Wallet"
+        }
+      },
+      "announcements": {
+        "layout": {
+          "header": "Announcements"
         }
       }
     },

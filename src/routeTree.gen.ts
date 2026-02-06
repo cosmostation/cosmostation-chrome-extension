@@ -33,6 +33,7 @@ import { Route as GeneralSettingWalletPrioritizeIndexImport } from './pages/gene
 import { Route as GeneralSettingManageCustomNetworkIndexImport } from './pages/general-setting/manage-custom-network/index'
 import { Route as GeneralSettingChangePasswordIndexImport } from './pages/general-setting/change-password/index'
 import { Route as GeneralSettingBackupWalletIndexImport } from './pages/general-setting/backup-wallet/index'
+import { Route as GeneralSettingAnnouncementsIndexImport } from './pages/general-setting/announcements/index'
 import { Route as GeneralSettingAddressBookIndexImport } from './pages/general-setting/address-book/index'
 import { Route as GeneralSettingAboutIndexImport } from './pages/general-setting/about/index'
 import { Route as CoinOverviewCoinIdIndexImport } from './pages/coin-overview/$coinId/index'
@@ -248,6 +249,13 @@ const GeneralSettingBackupWalletIndexRoute =
   GeneralSettingBackupWalletIndexImport.update({
     id: '/general-setting/backup-wallet/',
     path: '/general-setting/backup-wallet/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const GeneralSettingAnnouncementsIndexRoute =
+  GeneralSettingAnnouncementsIndexImport.update({
+    id: '/general-setting/announcements/',
+    path: '/general-setting/announcements/',
     getParentRoute: () => rootRoute,
   } as any)
 
@@ -842,6 +850,13 @@ declare module '@tanstack/react-router' {
       path: '/general-setting/address-book'
       fullPath: '/general-setting/address-book'
       preLoaderRoute: typeof GeneralSettingAddressBookIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/general-setting/announcements/': {
+      id: '/general-setting/announcements/'
+      path: '/general-setting/announcements'
+      fullPath: '/general-setting/announcements'
+      preLoaderRoute: typeof GeneralSettingAnnouncementsIndexImport
       parentRoute: typeof rootRoute
     }
     '/general-setting/backup-wallet/': {
@@ -1444,6 +1459,7 @@ export interface FileRoutesByFullPath {
   '/coin-overview/$coinId': typeof CoinOverviewCoinIdIndexRoute
   '/general-setting/about': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
+  '/general-setting/announcements': typeof GeneralSettingAnnouncementsIndexRoute
   '/general-setting/backup-wallet': typeof GeneralSettingBackupWalletIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/general-setting/manage-custom-network': typeof GeneralSettingManageCustomNetworkIndexRoute
@@ -1543,6 +1559,7 @@ export interface FileRoutesByTo {
   '/coin-overview/$coinId': typeof CoinOverviewCoinIdIndexRoute
   '/general-setting/about': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book': typeof GeneralSettingAddressBookIndexRoute
+  '/general-setting/announcements': typeof GeneralSettingAnnouncementsIndexRoute
   '/general-setting/backup-wallet': typeof GeneralSettingBackupWalletIndexRoute
   '/general-setting/change-password': typeof GeneralSettingChangePasswordIndexRoute
   '/general-setting/manage-custom-network': typeof GeneralSettingManageCustomNetworkIndexRoute
@@ -1643,6 +1660,7 @@ export interface FileRoutesById {
   '/coin-overview/$coinId/': typeof CoinOverviewCoinIdIndexRoute
   '/general-setting/about/': typeof GeneralSettingAboutIndexRoute
   '/general-setting/address-book/': typeof GeneralSettingAddressBookIndexRoute
+  '/general-setting/announcements/': typeof GeneralSettingAnnouncementsIndexRoute
   '/general-setting/backup-wallet/': typeof GeneralSettingBackupWalletIndexRoute
   '/general-setting/change-password/': typeof GeneralSettingChangePasswordIndexRoute
   '/general-setting/manage-custom-network/': typeof GeneralSettingManageCustomNetworkIndexRoute
@@ -1744,6 +1762,7 @@ export interface FileRouteTypes {
     | '/coin-overview/$coinId'
     | '/general-setting/about'
     | '/general-setting/address-book'
+    | '/general-setting/announcements'
     | '/general-setting/backup-wallet'
     | '/general-setting/change-password'
     | '/general-setting/manage-custom-network'
@@ -1842,6 +1861,7 @@ export interface FileRouteTypes {
     | '/coin-overview/$coinId'
     | '/general-setting/about'
     | '/general-setting/address-book'
+    | '/general-setting/announcements'
     | '/general-setting/backup-wallet'
     | '/general-setting/change-password'
     | '/general-setting/manage-custom-network'
@@ -1940,6 +1960,7 @@ export interface FileRouteTypes {
     | '/coin-overview/$coinId/'
     | '/general-setting/about/'
     | '/general-setting/address-book/'
+    | '/general-setting/announcements/'
     | '/general-setting/backup-wallet/'
     | '/general-setting/change-password/'
     | '/general-setting/manage-custom-network/'
@@ -2040,6 +2061,7 @@ export interface RootRouteChildren {
   CoinOverviewCoinIdIndexRoute: typeof CoinOverviewCoinIdIndexRoute
   GeneralSettingAboutIndexRoute: typeof GeneralSettingAboutIndexRoute
   GeneralSettingAddressBookIndexRoute: typeof GeneralSettingAddressBookIndexRoute
+  GeneralSettingAnnouncementsIndexRoute: typeof GeneralSettingAnnouncementsIndexRoute
   GeneralSettingBackupWalletIndexRoute: typeof GeneralSettingBackupWalletIndexRoute
   GeneralSettingChangePasswordIndexRoute: typeof GeneralSettingChangePasswordIndexRoute
   GeneralSettingManageCustomNetworkIndexRoute: typeof GeneralSettingManageCustomNetworkIndexRoute
@@ -2139,6 +2161,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoinOverviewCoinIdIndexRoute: CoinOverviewCoinIdIndexRoute,
   GeneralSettingAboutIndexRoute: GeneralSettingAboutIndexRoute,
   GeneralSettingAddressBookIndexRoute: GeneralSettingAddressBookIndexRoute,
+  GeneralSettingAnnouncementsIndexRoute: GeneralSettingAnnouncementsIndexRoute,
   GeneralSettingBackupWalletIndexRoute: GeneralSettingBackupWalletIndexRoute,
   GeneralSettingChangePasswordIndexRoute:
     GeneralSettingChangePasswordIndexRoute,
@@ -2271,6 +2294,7 @@ export const routeTree = rootRoute
         "/coin-overview/$coinId/",
         "/general-setting/about/",
         "/general-setting/address-book/",
+        "/general-setting/announcements/",
         "/general-setting/backup-wallet/",
         "/general-setting/change-password/",
         "/general-setting/manage-custom-network/",
@@ -2394,6 +2418,9 @@ export const routeTree = rootRoute
     },
     "/general-setting/address-book/": {
       "filePath": "general-setting/address-book/index.tsx"
+    },
+    "/general-setting/announcements/": {
+      "filePath": "general-setting/announcements/index.tsx"
     },
     "/general-setting/backup-wallet/": {
       "filePath": "general-setting/backup-wallet/index.tsx"

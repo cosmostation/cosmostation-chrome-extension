@@ -11,6 +11,7 @@ import { NEVER_LOCK_KEY } from '@/constants/autoLock';
 import { PRICE_TREND_TYPE } from '@/constants/price';
 import { Route as About } from '@/pages/general-setting/about';
 import { Route as AddressBook } from '@/pages/general-setting/address-book';
+import { Route as Announcements } from '@/pages/general-setting/announcements';
 import { Route as BackupWallet } from '@/pages/general-setting/backup-wallet';
 import { Route as ChangePassword } from '@/pages/general-setting/change-password';
 import { Route as ManageCustomNetwork } from '@/pages/general-setting/manage-custom-network';
@@ -26,6 +27,7 @@ import { Container, OptionButtonContainer, OptionButtonIconContainer, SectionCon
 
 import AbountIcon from '@/assets/images/icons/About28.svg';
 import AddressBookIcon from '@/assets/images/icons/AddressBook28.svg';
+import AnnouncementIcon from '@/assets/images/icons/Announcement28.svg';
 import AutoLockIcon from '@/assets/images/icons/AutoLock28.svg';
 import BackupWalletIcon from '@/assets/images/icons/BackupWallet28.svg';
 import ChangePasswordIcon from '@/assets/images/icons/ChangePassword28.svg';
@@ -225,6 +227,20 @@ export default function Entry() {
                 <Base1000Text variant="h4_B">{'2'}</Base1000Text>
               </SectionTitleContainer>
               <OptionButtonContainer>
+                <BaseOptionButton
+                  onClick={() => {
+                    navigate({
+                      to: Announcements.to,
+                    });
+                  }}
+                  leftContent={
+                    <OptionButtonIconContainer>
+                      <AnnouncementIcon />
+                    </OptionButtonIconContainer>
+                  }
+                  leftSecondHeader={<Base1300Text variant="b2_M">{t('pages.general-setting.entry.announcement')}</Base1300Text>}
+                  leftSecondBody={<Base1000Text variant="b4_R">{t('pages.general-setting.entry.announcementDescription')}</Base1000Text>}
+                />
                 <BaseOptionButton
                   onClick={() => {
                     window.open('https://docs.cosmostation.io/extension/guide/getting-started', '_blank');
