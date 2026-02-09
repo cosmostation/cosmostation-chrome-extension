@@ -7,8 +7,8 @@ export interface AdV1 {
   id: string;
   priority: number;
   title: string;
-  startAt?: string;
-  endAt?: string;
+  startAt?: string | null;
+  endAt?: string | null;
   images?: Images;
   linkUrl?: string;
   view_detail?: string;
