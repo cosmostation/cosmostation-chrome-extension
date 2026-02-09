@@ -1,10 +1,21 @@
+import { useMemo } from 'react';
+
 import { CHAINLIST_WALLET_RESOURCE_URL } from '@/constants/common';
-import type { AdDataV1 } from '@/types/registry/ad';
+import type { AdDataV1, AdV1 } from '@/types/registry/ad';
 import { get } from '@/utils/axios';
 import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/storage';
 
 import type { UseFetchConfig } from './common/useFetch';
 import { useFetch } from './common/useFetch';
+
+export function preloadMobileImages(ads: AdV1[]) {
+  ads.forEach((ad) => {
+    if (ad.images?.mobile) {
+      const img = new Image();
+      img.src = ad.images.mobile;
+    }
+  });
+}
 
 async function fetchAds() {
   const requestURL = `${CHAINLIST_WALLET_RESOURCE_URL}/ad_list.json`;
@@ -22,7 +33,10 @@ async function fetchAds() {
       })
       .sort((a, b) => a.priority - b.priority);
 
-    return filteredAds;
+    return {
+      ads: response.ads,
+      filteredAds,
+    };
   }
 
   return undefined;
@@ -46,8 +60,11 @@ export function useAdInfos(config?: UseFetchConfig) {
 
     if (ads) {
       const dismissedAdIds = await getDismissedAdIds();
-      const filteredAds = ads.filter((ad) => !dismissedAdIds.includes(ad.id));
-      return filteredAds;
+      const filteredAds = ads.filteredAds.filter((ad) => !dismissedAdIds.includes(ad.id));
+      return {
+        ads: ads.ads,
+        filteredAds,
+      };
     }
 
     return undefined;
@@ -70,4 +87,27 @@ export function useAdInfos(config?: UseFetchConfig) {
   };
 
   return { data, error, refetch, isLoading, dismissAd };
+}
+
+export interface FormattedAdInfo extends AdV1 {
+  formattedDate: string;
+}
+
+export function useAllAdInfos(config?: UseFetchConfig) {
+  const { data: adInfoData } = useAdInfos(config);
+
+  const allAdInfos = useMemo(
+    () =>
+      adInfoData?.ads
+        ? [...adInfoData.ads]
+            .sort((a, b) => b.id.localeCompare(a.id))
+            .map((ad) => ({
+              ...ad,
+              formattedDate: /^\d{4}-\d{2}-\d{2}/.test(ad.id) ? ad.id.slice(0, 10).replace(/-/g, '.') : '',
+            }))
+        : [],
+    [adInfoData?.ads],
+  );
+
+  return allAdInfos;
 }

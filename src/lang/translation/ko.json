@@ -1504,7 +1504,9 @@
         "setAutoLock": "자동 잠금 설정",
         "setAutoLockDescription": "지갑 자동 잠금 시간 활성화",
         "support": "Support",
-        "wallet": "Wallet"
+        "wallet": "Wallet",
+        "announcement": "공지사항",
+        "announcementDescription": "공지사항 및 업데이트"
       },
       "layout": {
         "header": "설정"
@@ -1591,6 +1593,11 @@
           "title": "기능 활성화"
         },
         "header": "내 지갑 우선 사용하기"
+      },
+      "announcements": {
+        "layout": {
+          "header": "공지사항"
+        }
       }
     },
     "index": {
