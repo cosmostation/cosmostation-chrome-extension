@@ -8,6 +8,15 @@ import { getExtensionLocalStorage, setExtensionLocalStorage } from '@/utils/stor
 import type { UseFetchConfig } from './common/useFetch';
 import { useFetch } from './common/useFetch';
 
+export function preloadMobileImages(ads: AdV1[]) {
+  ads.forEach((ad) => {
+    if (ad.images?.mobile) {
+      const img = new Image();
+      img.src = ad.images.mobile;
+    }
+  });
+}
+
 async function fetchAds() {
   const requestURL = `${CHAINLIST_WALLET_RESOURCE_URL}/ad_list.json`;
   const response = await get<AdDataV1>(requestURL);

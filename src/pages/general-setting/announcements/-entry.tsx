@@ -1,12 +1,20 @@
+import { useEffect } from 'react';
+
 import BaseBody from '@/components/BaseLayout/components/BaseBody';
 import EdgeAligner from '@/components/BaseLayout/components/EdgeAligner';
 import { VirtualizedList } from '@/components/common/VirtualizedList';
-import { useAllAdInfos } from '@/hooks/useAdInfos';
+import { preloadMobileImages, useAllAdInfos } from '@/hooks/useAdInfos';
 
 import AnnouncementItem from './-component/AnnouncementItem';
 
 export default function Entry() {
   const formattedAllAdInfos = useAllAdInfos();
+
+  useEffect(() => {
+    if (formattedAllAdInfos.length > 0) {
+      preloadMobileImages(formattedAllAdInfos);
+    }
+  }, [formattedAllAdInfos]);
 
   return (
     <>
