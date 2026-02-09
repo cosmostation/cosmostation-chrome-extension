@@ -60,7 +60,7 @@ export function useAdInfos(config?: UseFetchConfig) {
 
     if (ads) {
       const dismissedAdIds = await getDismissedAdIds();
-      const filteredAds = ads.ads.filter((ad) => !dismissedAdIds.includes(ad.id));
+      const filteredAds = ads.filteredAds.filter((ad) => !dismissedAdIds.includes(ad.id));
       return {
         ads: ads.ads,
         filteredAds,
@@ -103,7 +103,7 @@ export function useAllAdInfos(config?: UseFetchConfig) {
             .sort((a, b) => b.id.localeCompare(a.id))
             .map((ad) => ({
               ...ad,
-              formattedDate: ad.id.slice(0, 10).replace(/-/g, '.'),
+              formattedDate: /^\d{4}-\d{2}-\d{2}/.test(ad.id) ? ad.id.slice(0, 10).replace(/-/g, '.') : '',
             }))
         : [],
     [adInfoData?.ads],

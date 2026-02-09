@@ -27,7 +27,7 @@ export default function Entry() {
           <VirtualizedList
             items={formattedAllAdInfos}
             estimateSize={() => 60}
-            renderItem={(item, virtualItem) => <AnnouncementItem key={item.id + virtualItem.index} adInfo={item} />}
+            renderItem={(item) => <AnnouncementItem key={item.id} adInfo={item} />}
             overscan={5}
           />
         </EdgeAligner>

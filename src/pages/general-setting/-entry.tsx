@@ -224,7 +224,7 @@ export default function Entry() {
             <SectionContainer>
               <SectionTitleContainer>
                 <Base1300Text variant="h4_B">{t('pages.general-setting.entry.support')} </Base1300Text>
-                <Base1000Text variant="h4_B">{'2'}</Base1000Text>
+                <Base1000Text variant="h4_B">{'3'}</Base1000Text>
               </SectionTitleContainer>
               <OptionButtonContainer>
                 <BaseOptionButton

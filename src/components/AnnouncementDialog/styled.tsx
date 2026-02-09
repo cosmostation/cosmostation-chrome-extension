@@ -22,7 +22,7 @@ type ContainerProps = {
   backgroundImage?: string;
 };
 
-export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
+export const Container = styled('div')<ContainerProps>(({ backgroundImage }) => ({
   width: '100%',
   height: '30rem',
 
@@ -31,7 +31,9 @@ export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
 
-  backgroundImage: `url(${props['backgroundImage']})`,
+  ...(backgroundImage && {
+    backgroundImage: `url(${backgroundImage})`,
+  }),
   backgroundSize: '30rem 30rem',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
