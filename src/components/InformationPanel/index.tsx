@@ -1,6 +1,6 @@
 import { BodyText, Container, TopContainer } from './styled';
 
-import InformationIcon from '@/assets/images/icons/InforMation14.svg';
+import InformationIcon from '@/assets/images/icons/Information14.svg';
 
 type InformationPanelProps = {
   title: JSX.Element;
