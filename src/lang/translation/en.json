@@ -1501,7 +1501,8 @@
                 "tooLowAmount": "Please enter an amount greater than 0",
                 "noRecipientAddress": "Please enter the recipient address",
                 "recipientNetwork": "Recipient Network",
-                "sendReviewWithSymbol": "Confirm to Send {{symbol}}"
+                "sendReviewWithSymbol": "Confirm to Send {{symbol}}",
+                "belowDustLimit": "Amount must be at least {{amount}}"
               }
             },
             "Aptos": {

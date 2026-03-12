@@ -17,8 +17,9 @@ import BalanceButton from '@/components/common/StandardInput/components/BalanceB
 import StandardInput from '@/components/common/StandardInput/index.tsx';
 import BitcoinFee from '@/components/Fee/BitcoinFee/index.tsx';
 import ReviewBottomSheet from '@/components/ReviewBottomSheet/index.tsx';
-import { P2PKH__V_BYTES, P2SH__V_BYTES, P2TR__V_BYTES, P2WPKH__V_BYTES } from '@/constants/bitcoin/tx.ts';
+import { DUST_LIMIT, P2PKH__V_BYTES, P2SH__V_BYTES, P2TR__V_BYTES, P2WPKH__V_BYTES } from '@/constants/bitcoin/tx.ts';
 import { useEstimateSmartFee } from '@/hooks/bitcoin/useEstimateSmartFee.ts';
+import { useRawTxList } from '@/hooks/bitcoin/useRawTxList.ts';
 import { useUtxo } from '@/hooks/bitcoin/useUtxo.ts';
 import { useCoinGeckoPrice } from '@/hooks/useCoinGeckoPrice.ts';
 import { useCurrentAccount } from '@/hooks/useCurrentAccount.ts';
@@ -113,6 +114,23 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
 
   const addressType = useMemo(() => selectedCoinToSend?.address.accountType.pubkeyStyle, [selectedCoinToSend?.address.accountType.pubkeyStyle]);
 
+  const p2pkhTxInfos = useMemo(
+    () =>
+      addressType === 'p2pkh'
+        ? (utxo.data?.map((u) => ({
+            txId: u.txid,
+            blockHash: u.status.block_hash || '',
+          })) ?? [])
+        : [],
+    [addressType, utxo.data],
+  );
+
+  const { rawTxMap, isLoading: isRawTxLoading } = useRawTxList({
+    rpcURL: selectedCoinToSend?.chain.rpcUrls[0].url ?? '',
+    txInfos: p2pkhTxInfos,
+    enabled: addressType === 'p2pkh',
+  });
+
   const payment = useMemo(() => {
     try {
       if (!keyPair) {
@@ -206,6 +224,32 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
       }));
     }
 
+    if (addressType === 'p2pkh') {
+      return utxo.data
+        ?.map((u) => {
+          const rawTxHex = rawTxMap[u.txid];
+          if (!rawTxHex) return undefined;
+          return {
+            hash: u.txid,
+            index: u.vout,
+            nonWitnessUtxo: Buffer.from(rawTxHex, 'hex'),
+          };
+        })
+        .filter((input): input is NonNullable<typeof input> => input !== undefined);
+    }
+
+    if (addressType === 'p2wpkhSh') {
+      return utxo.data?.map((u) => ({
+        hash: u.txid,
+        index: u.vout,
+        witnessUtxo: {
+          script: payment.output!,
+          value: u.value,
+        },
+        redeemScript: payment.redeem?.output,
+      }));
+    }
+
     return utxo.data?.map((u) => ({
       hash: u.txid,
       index: u.vout,
@@ -214,24 +258,31 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
         value: u.value,
       },
     }));
-  }, [addressType, payment, utxo.data]);
+  }, [addressType, payment, rawTxMap, utxo.data]);
+
+  const dustLimit = useMemo(() => (addressType && addressType in DUST_LIMIT ? DUST_LIMIT[addressType as keyof typeof DUST_LIMIT] : undefined), [addressType]);
 
   const currentOutputs = useMemo(() => {
     if (!recipientAddress || gt('0', sendDisplayAmount || '0') || !payment) {
       return [];
     }
 
-    return [
+    const outputs = [
       {
         address: recipientAddress,
         value: currentSendBaseAmount,
       },
-      {
+    ];
+
+    if (dustLimit !== undefined && change >= dustLimit) {
+      outputs.push({
         address: payment?.address || '',
         value: change,
-      },
-    ];
-  }, [change, currentSendBaseAmount, payment, recipientAddress, sendDisplayAmount]);
+      });
+    }
+
+    return outputs;
+  }, [change, currentSendBaseAmount, dustLimit, payment, recipientAddress, sendDisplayAmount]);
 
   const txHex = useMemo(() => {
     try {
@@ -352,9 +403,15 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
       if (!gt(sendDisplayAmount, '0')) {
         return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.tooLowAmount');
       }
+
+      if (dustLimit !== undefined && currentSendBaseAmount < dustLimit) {
+        return t('pages.wallet.send.$coinId.Entry.Bitcoin.index.belowDustLimit', {
+          amount: toDisplayDenomAmount(dustLimit, selectedCoinToSend?.asset.decimals || 0),
+        });
+      }
     }
     return '';
-  }, [displayAvailableAmount, displayFee, sendDisplayAmount, t]);
+  }, [currentSendBaseAmount, displayAvailableAmount, displayFee, dustLimit, selectedCoinToSend?.asset.decimals, sendDisplayAmount, t]);
 
   const inputMemoErrorMessage = useMemo(() => {
     if (currentMemoBytes > 80) {
@@ -509,7 +566,7 @@ export default function Bitcoin({ coinId }: BitcoinProps) {
           <BitcoinFee
             feeCoinId={coinId}
             disableConfirm={!!errorMessage || isDisabled || !txHex}
-            isLoading={isDisabled || estimatesmartfee.isLoading || utxo.isLoading}
+            isLoading={isDisabled || estimatesmartfee.isLoading || utxo.isLoading || isRawTxLoading}
             displayFeeAmount={displayFee}
             errorMessage={errorMessage}
             onClickConfirm={() => {
