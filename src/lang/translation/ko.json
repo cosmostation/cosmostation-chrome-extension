@@ -2955,7 +2955,8 @@
                 "txProcessing": "트랜잭션 처리 중",
                 "txProcessingSub": "트랜잭션이 처리되는 동안 잠시 기다려주세요",
                 "recipientNetwork": "수신 체인",
-                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})"
+                "sendReviewWithSymbol": "코인 전송 최종 확인 ({{symbol}})",
+                "belowDustLimit": "최소 전송 가능 금액은 {{amount}}입니다"
               }
             },
             "Cosmos": {

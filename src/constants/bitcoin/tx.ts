@@ -21,3 +21,10 @@ export const P2TR__V_BYTES = {
   INPUT: 58,
   OUTPUT: 43,
 };
+
+export const DUST_LIMIT = {
+  p2wpkh: 294,
+  p2pkh: 546,
+  p2wpkhSh: 540,
+  p2tr: 330,
+} as const;
