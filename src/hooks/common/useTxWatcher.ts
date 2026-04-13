@@ -177,7 +177,7 @@ export function useTxWatcher(config?: UseFetchConfig) {
           const requestUrls = targetChain.rpcUrls
             .map((item) => item.url)
             .filter(Boolean)
-            .map((url) => `${url}/v1`);
+            .map((url) => buildRequestUrl(url, '/v1'));
 
           const response = await Promise.any(
             requestUrls.map(async (rpcUrl) => {

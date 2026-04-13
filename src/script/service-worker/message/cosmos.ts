@@ -42,7 +42,7 @@ import type {
 import { getMsgSignData } from '@/utils/cosmos/msgParse';
 import { cosmosURL } from '@/utils/crypto/cosmos';
 import { CosmosRPCError } from '@/utils/error';
-import { FetchError, get, post } from '@/utils/fetch';
+import { buildRequestUrl, FetchError, get, post } from '@/utils/fetch';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionSessionStorage, setExtensionLocalStorage } from '@/utils/storage';
@@ -645,7 +645,8 @@ export async function cosmosProcess(message: CosmosRequest) {
         }
 
         try {
-          const response: CosSendTransactionResponse = await post<SendTransactionPayload>(`${chain.lcdUrls[0].url}/cosmos/tx/v1beta1/txs`, {
+          const requestURL = buildRequestUrl(chain.lcdUrls[0].url, '/cosmos/tx/v1beta1/txs');
+          const response: CosSendTransactionResponse = await post<SendTransactionPayload>(requestURL, {
             tx_bytes: params.txBytes,
             mode: params.mode,
           });

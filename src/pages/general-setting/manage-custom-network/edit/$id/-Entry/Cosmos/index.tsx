@@ -16,6 +16,7 @@ import type { CustomAsset } from '@/types/asset';
 import type { ChainType, CustomCosmosChain } from '@/types/chain';
 import type { NodeInfoPayload } from '@/types/nodeInfo';
 import { get, isAxiosError } from '@/utils/axios';
+import { buildRequestUrl } from '@/utils/fetch';
 import { getCoinId, getUniqueChainId, getUniqueChainIdWithManual, isMatchingUniqueChainId } from '@/utils/queryParamGenerator';
 import { isNumber } from '@/utils/string';
 import { toastError, toastSuccess } from '@/utils/toast';
@@ -141,8 +142,7 @@ export default function Cosmos({ id }: CosmosProps) {
       }
       setIsProcessing(true);
 
-      const removedTrailingSlashUrl = data.lcdUrl.endsWith('/') ? data.lcdUrl.slice(0, -1) : data.lcdUrl;
-      const nodeInfo = await get<NodeInfoPayload>(`${removedTrailingSlashUrl}/cosmos/base/tendermint/v1beta1/node_info`);
+      const nodeInfo = await get<NodeInfoPayload>(buildRequestUrl(data.lcdUrl, '/cosmos/base/tendermint/v1beta1/node_info'));
 
       if (!nodeInfo?.default_node_info?.network) {
         throw new Error(t('pages.general-setting.manage-custom-network.edit.$id.Entry.Cosmos.restURLError'));

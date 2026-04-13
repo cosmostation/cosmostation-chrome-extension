@@ -10,6 +10,7 @@ import type { BalanceFetchOption } from '@/types/message/service-worker/updateRe
 import { chunkArray } from '@/utils/array';
 import { upsertBitcoinBalance } from '@/utils/balanceUpsert';
 import { devLogger } from '@/utils/devLogger';
+import { buildRequestUrl } from '@/utils/fetch';
 import { getExtensionLocalStorage } from '@/utils/storage';
 
 import { getFilteredAccountAddresses } from '../address';
@@ -46,7 +47,7 @@ async function getBitcoinBalancesForAddresses(accountId: string, startUpdateTime
 
       const { mempoolURL } = chain;
 
-      const url = `${mempoolURL}/address/${address}`;
+      const url = buildRequestUrl(mempoolURL, `/address/${address}`);
 
       try {
         const response = await axios.get<AccountDetail>(url, {

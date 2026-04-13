@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import type { AccountDetail } from '@/types/bitcoin/balance';
 import { get } from '@/utils/axios';
+import { buildRequestUrl } from '@/utils/fetch';
 
 import type { UseFetchConfig } from '../common/useFetch';
 import { useFetch } from '../common/useFetch';
@@ -20,7 +21,7 @@ export function useBalance({ coinId, config }: UseBalanceProps) {
   const requestURL = useMemo(() => {
     if (!bitcoinAccountAsset?.chain.mempoolURL || !bitcoinAccountAsset.address.address) return '';
 
-    return `${bitcoinAccountAsset.chain.mempoolURL}/address/${bitcoinAccountAsset.address.address}`;
+    return buildRequestUrl(bitcoinAccountAsset.chain.mempoolURL, `/address/${bitcoinAccountAsset.address.address}`);
   }, [bitcoinAccountAsset?.address.address, bitcoinAccountAsset?.chain.mempoolURL]);
 
   const fetcher = () => get<AccountDetail>(requestURL);

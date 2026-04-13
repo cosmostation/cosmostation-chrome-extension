@@ -21,7 +21,7 @@ import type {
   BitSwitchNetwork,
 } from '@/types/message/inject/bitcoin';
 import { BitcoinRPCError } from '@/utils/error';
-import { get, post } from '@/utils/fetch';
+import { buildRequestUrl, get, post } from '@/utils/fetch';
 import { refreshOriginConnectionTime } from '@/utils/origins';
 import { processRequest } from '@/utils/requestApp';
 import { extensionSessionStorage } from '@/utils/storage';
@@ -252,7 +252,7 @@ export async function bitcoinProcess(message: BitcoinRequest) {
           const keyPair = getKeypair(chain, currentAccount, currentPassword);
           const address = getAddress(chain, keyPair?.publicKey);
 
-          const response = await get<AccountDetail>(`${chain.mempoolURL}/address/${address}`);
+          const response = await get<AccountDetail>(buildRequestUrl(chain.mempoolURL, `/address/${address}`));
 
           const availableBalance = response.chain_stats.funded_txo_sum - response.chain_stats.spent_txo_sum - response.mempool_stats.spent_txo_sum;
 
