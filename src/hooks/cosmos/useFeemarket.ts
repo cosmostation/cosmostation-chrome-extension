@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import type { FeemarketResponse } from '@/types/cosmos/feemarket';
 import { get } from '@/utils/axios';
 import { cosmosURL } from '@/utils/crypto/cosmos';
+import { times } from '@/utils/numbers';
 import { parseCoinId } from '@/utils/queryParamGenerator';
 
 import type { UseFetchConfig } from '../common/useFetch';
@@ -14,6 +15,10 @@ type UseFeemarketProps = {
   config?: UseFetchConfig;
 };
 
+const CHEQD_CHAIN_ID = 'cheqd';
+const CHEQD_CHAIN_TESTNET_ID = 'cheqd-testnet';
+const CHEQD_FEE_DENOM = 'ncheq';
+
 export function useFeemarket({ coinId, config }: UseFeemarketProps) {
   const { getCosmosAccountAsset } = useGetAccountAsset({ coinId });
 
@@ -21,18 +26,18 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
 
   const asset = getCosmosAccountAsset();
 
+  const { chainId } = parseCoinId(coinId);
+
   const isEnabledFeemarket = asset?.chain.feeInfo.isFeemarketEnabled;
 
   const requestURLs = useMemo(() => {
     if (!asset?.chain.lcdUrls) return [];
 
-    const { chainId } = parseCoinId(coinId);
-
     const cosmosEndpoints = asset?.chain.lcdUrls.map((chainEndpoint) => cosmosURL(chainEndpoint.url, chainId));
     const feemarketEndpoints = cosmosEndpoints?.map((cosmosEndpoint) => cosmosEndpoint.getFeemarket());
 
     return feemarketEndpoints;
-  }, [asset?.chain.lcdUrls, coinId]);
+  }, [asset?.chain.lcdUrls, chainId]);
 
   const fetcher = async (index = 0) => {
     try {
@@ -47,6 +52,22 @@ export function useFeemarket({ coinId, config }: UseFeemarketProps) {
       const response = await get<FeemarketResponse>(requestURLs[index]);
 
       setIsAllRequestsFailed(false);
+
+      if (chainId === CHEQD_CHAIN_ID || chainId === CHEQD_CHAIN_TESTNET_ID) {
+        const adjustedPrices = response.prices.map((item) => {
+          if (item.denom === CHEQD_FEE_DENOM) {
+            return {
+              ...item,
+              amount: times(item.amount, '10000'),
+            };
+          }
+          return item;
+        });
+
+        return {
+          prices: adjustedPrices,
+        } as FeemarketResponse;
+      }
 
       return response;
     } catch {
