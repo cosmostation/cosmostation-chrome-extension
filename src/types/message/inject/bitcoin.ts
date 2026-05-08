@@ -119,7 +119,22 @@ export interface BitSignMessage extends RequestBase {
   params: BitSignMessageParams;
 }
 
-export type BitSignPsbtParams = string;
+export interface SignPsbtOptions {
+  autoFinalized?: boolean;
+  toSignInputs?: {
+    index: number;
+    address?: string;
+    publicKey?: string;
+    sighashTypes?: number[];
+    disableTweakSigner?: boolean;
+    useTweakedSigner?: boolean;
+  }[];
+}
+
+export type BitSignPsbtParams = {
+  psbtHex: string;
+  options?: SignPsbtOptions;
+};
 export type BitSignPsbtResposne = string;
 
 export interface BitSignPsbt extends RequestBase {
@@ -128,7 +143,10 @@ export interface BitSignPsbt extends RequestBase {
   params: BitSignPsbtParams;
 }
 
-export type BitSignPsbtsParams = string[];
+export type BitSignPsbtsParams = {
+  psbtHexes: string[];
+  options?: SignPsbtOptions;
+};
 export type BitSignPsbtsResposne = string[];
 
 export interface BitSignPsbts extends RequestBase {

@@ -10,6 +10,7 @@ import type {
   BitSendBitcoinResponse,
   BitSignPsbtResposne,
   BitSignPsbtsResposne,
+  SignPsbtOptions,
 } from '@/types/message/inject/bitcoin';
 
 import { bitcoinRequestApp } from '../request';
@@ -45,17 +46,29 @@ const getPublicKey = async () => {
   return publicKeyHex;
 };
 
-const signPsbt = async (psbtHex: string) => {
+const signPsbt = async (psbtHex: string, options?: SignPsbtOptions) => {
   const formattedPsbt = formatPsbtHex(psbtHex);
 
-  const signedPsbt = (await bitcoinRequestApp({ method: 'bit_signPsbt', params: formattedPsbt })) as BitSignPsbtResposne;
+  const signedPsbt = (await bitcoinRequestApp({
+    method: 'bit_signPsbt',
+    params: {
+      psbtHex: formattedPsbt,
+      options,
+    },
+  })) as BitSignPsbtResposne;
   return signedPsbt;
 };
 
-const signPsbts = async (psbtsHexes: string[]) => {
+const signPsbts = async (psbtsHexes: string[], options?: SignPsbtOptions) => {
   const formattedPsbts = psbtsHexes.map((psbtHex) => formatPsbtHex(psbtHex));
 
-  const signedPsbts = (await bitcoinRequestApp({ method: 'bit_signPsbts', params: formattedPsbts })) as BitSignPsbtsResposne;
+  const signedPsbts = (await bitcoinRequestApp({
+    method: 'bit_signPsbts',
+    params: {
+      psbtHexes: formattedPsbts,
+      options,
+    },
+  })) as BitSignPsbtsResposne;
   return signedPsbts;
 };
 

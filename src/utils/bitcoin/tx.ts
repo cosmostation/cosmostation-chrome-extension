@@ -2,14 +2,16 @@ import BIP32Factory from 'bip32';
 import * as bip39 from 'bip39';
 import type { networks as BitcoinNetwork, Signer as BitcoinLibSigner } from 'bitcoinjs-lib';
 import { address as addressConverter, crypto, initEccLib, Psbt, Transaction } from 'bitcoinjs-lib';
-import { toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
+import { isTaprootInput, toXOnly } from 'bitcoinjs-lib/src/psbt/bip371';
 import { ECPairFactory, networks } from 'ecpair';
 import * as ecc from '@bitcoinerlab/secp256k1';
 
 import type { Account } from '@/types/account';
 import type { Chain } from '@/types/chain';
+import type { SignPsbtOptions } from '@/types/message/inject/bitcoin';
 
 import { aesDecrypt } from '../crypto';
+import { devLogger } from '../devLogger';
 import { minus, plus } from '../numbers';
 
 let isEccInit = false;
@@ -248,5 +250,167 @@ export function isValidBitcoinTx(txHex: string) {
     return true;
   } catch {
     return false;
+  }
+}
+
+const isTaprootAddress = (address: string): boolean => address.startsWith('bc1p') || address.startsWith('tb1p');
+
+export function getInputsToSign({
+  psbt,
+  options,
+  keyPairPublicKey,
+  accountAddress,
+  bitcoinNetwork,
+}: {
+  psbt: Psbt;
+  options?: SignPsbtOptions;
+  keyPairPublicKey?: string;
+  accountAddress?: string;
+  bitcoinNetwork: BitcoinNetwork.Network;
+}): {
+  index: number;
+  publicKey: string;
+  address: string;
+  sighashTypes?: number[];
+  disableTweakSigner?: boolean;
+  useTweakedSigner?: boolean;
+}[] {
+  if (Array.isArray(options?.toSignInputs) && options.toSignInputs.length > 0) {
+    return options.toSignInputs.map((input) => ({
+      index: input.index,
+      publicKey: input.publicKey || keyPairPublicKey || '',
+      address: input.address || accountAddress || '',
+      sighashTypes: input.sighashTypes,
+      disableTweakSigner: input.disableTweakSigner,
+      useTweakedSigner: input.useTweakedSigner,
+    }));
+  }
+
+  const result: {
+    index: number;
+    publicKey: string;
+    address: string;
+    sighashTypes?: number[];
+    disableTweakSigner?: boolean;
+    useTweakedSigner?: boolean;
+  }[] = [];
+
+  psbt.data.inputs.forEach((input, index) => {
+    let inputAddress = '';
+
+    if (input.witnessUtxo) {
+      const scriptPubKey = input.witnessUtxo.script;
+      try {
+        inputAddress = addressConverter.fromOutputScript(scriptPubKey, bitcoinNetwork);
+      } catch {
+        // empty
+      }
+    } else if (input.nonWitnessUtxo) {
+      const tx = Transaction.fromBuffer(input.nonWitnessUtxo);
+      const output = tx.outs[psbt.txInputs[index].index];
+      try {
+        inputAddress = addressConverter.fromOutputScript(output.script, bitcoinNetwork);
+      } catch {
+        // empty
+      }
+    }
+
+    const isSigned = input.finalScriptSig || input.finalScriptWitness;
+
+    if (inputAddress === accountAddress && !isSigned && keyPairPublicKey && accountAddress) {
+      result.push({
+        index,
+        publicKey: keyPairPublicKey,
+        address: accountAddress,
+        sighashTypes: input.sighashType ? [input.sighashType] : undefined,
+      });
+
+      if (isTaprootAddress(accountAddress) && !input.tapInternalKey) {
+        input.tapInternalKey = toXOnly(Buffer.from(keyPairPublicKey, 'hex'));
+      }
+    }
+  });
+
+  return result;
+}
+
+export function signPsbtInputs({
+  psbt,
+  inputsToSign,
+  signer,
+  tweakSigner,
+}: {
+  psbt: Psbt;
+  inputsToSign: {
+    index: number;
+    sighashTypes?: number[];
+    disableTweakSigner?: boolean;
+    useTweakedSigner?: boolean;
+  }[];
+  signer: BitcoinLibSigner;
+  tweakSigner: BitcoinLibSigner | null;
+}): void {
+  inputsToSign.forEach((inputToSign) => {
+    const { index, disableTweakSigner, useTweakedSigner, sighashTypes } = inputToSign;
+    const input = psbt.data.inputs[index];
+
+    if (!input) {
+      devLogger.warn(`Input at index ${index} not found`);
+      return;
+    }
+
+    if (isTaprootInput(input)) {
+      let needTweak = true;
+
+      if (typeof useTweakedSigner === 'boolean') {
+        needTweak = useTweakedSigner;
+      } else if (disableTweakSigner) {
+        needTweak = false;
+      } else if (input.tapLeafScript && input.tapLeafScript?.length > 0 && !input.tapMerkleRoot) {
+        input.tapLeafScript.forEach((e) => {
+          if (e.controlBlock && e.script) {
+            needTweak = false;
+          }
+        });
+      }
+
+      if (needTweak) {
+        if (!tweakSigner) {
+          throw new Error('Tweak signer is required for taproot input');
+        }
+        psbt.signInput(index, tweakSigner, sighashTypes);
+      } else {
+        psbt.signInput(index, signer, sighashTypes);
+      }
+    } else {
+      psbt.signInput(index, signer, sighashTypes);
+    }
+  });
+}
+
+export function signAndFinalizePsbt({
+  psbt,
+  inputsToSign,
+  signer,
+  tweakSigner,
+  autoFinalized = true,
+}: {
+  psbt: Psbt;
+  inputsToSign: {
+    index: number;
+    sighashTypes?: number[];
+    disableTweakSigner?: boolean;
+    useTweakedSigner?: boolean;
+  }[];
+  signer: BitcoinLibSigner;
+  tweakSigner: BitcoinLibSigner | null;
+  autoFinalized?: boolean;
+}): string {
+  signPsbtInputs({ psbt, inputsToSign, signer, tweakSigner });
+
+  if (autoFinalized) {
+    return psbt.finalizeAllInputs().toHex();
+  } else {
+    return psbt.toHex();
   }
 }
