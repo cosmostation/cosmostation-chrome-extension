@@ -203,9 +203,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
             amount: [
               {
                 denom: alternativeFeeAsset.asset.id,
-                amount: selectedCoin.chain.isEvm
-                  ? times(alternativeGasRate?.[0] || '0', selectedCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
-                  : '1',
+                amount:
+                  selectedCoin.chain.isEvm || selectedCoin.chain.chainId === 'pio-mainnet-1'
+                    ? times(alternativeGasRate?.[0] || '0', selectedCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                    : '1',
               },
             ],
             gas: String(selectedCoin.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,

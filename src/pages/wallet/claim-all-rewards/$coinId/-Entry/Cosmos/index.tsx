@@ -253,9 +253,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
               amount: [
                 {
                   denom: alternativeFeeAsset.asset.id,
-                  amount: selectedRewardCoin.chain.isEvm
-                    ? times(alternativeGasRate?.[0] || '0', selectedRewardCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
-                    : '1',
+                  amount:
+                    selectedRewardCoin.chain.isEvm || selectedRewardCoin.chain.chainId === 'pio-mainnet-1'
+                      ? times(alternativeGasRate?.[0] || '0', selectedRewardCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                      : '1',
                 },
               ],
               gas: String(selectedRewardCoin.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
@@ -285,9 +286,10 @@ export default function Cosmos({ coinId }: CosmosProps) {
             amount: [
               {
                 denom: alternativeFeeAsset.asset.id,
-                amount: selectedRewardCoin.chain.isEvm
-                  ? times(alternativeGasRate?.[0] || '0', selectedRewardCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
-                  : '1',
+                amount:
+                  selectedRewardCoin.chain.isEvm || selectedRewardCoin.chain.chainId === 'pio-mainnet-1'
+                    ? times(alternativeGasRate?.[0] || '0', selectedRewardCoin.chain.feeInfo.defaultGasLimit || COSMOS_DEFAULT_GAS, 0)
+                    : '1',
               },
             ],
             gas: String(selectedRewardCoin.chain.feeInfo.defaultGasLimit) || COSMOS_DEFAULT_GAS,
