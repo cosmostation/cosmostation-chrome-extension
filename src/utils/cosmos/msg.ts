@@ -73,7 +73,10 @@ export const getPublicKeyType = (pubkeyType: string) => {
     return PUBLIC_KEY_TYPE.INJ_SECP256K1;
   }
 
-  if (pubkeyType === '/ethermint.crypto.v1.ethsecp256k1.PubKey') {
+  if (
+    pubkeyType === '/ethermint.crypto.v1.ethsecp256k1.PubKey' ||
+    pubkeyType === '/cosmos.evm.crypto.v1.ethsecp256k1.PubKey'
+  ) {
     return PUBLIC_KEY_TYPE.ETH_SECP256K1;
   }
 
