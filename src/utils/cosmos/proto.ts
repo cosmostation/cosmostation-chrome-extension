@@ -211,14 +211,19 @@ export function convertAminoSwapExactAmmountInMessageToProto(msg: Msg<MsgSwapExa
 export function getTxBodyBytes(signed: SignAminoDoc) {
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
 
-  const txBody = new cosmos.tx.v1beta1.TxBody({
-    messages,
-    memo: signed.memo,
-  });
-
   if (signed.msgs.length !== messages.length) {
     return null;
   }
+
+  const txBodyParams: Partial<cosmos.tx.v1beta1.ITxBody> = {
+    messages,
+  };
+
+  if (signed.memo && signed.memo.length > 0) {
+    txBodyParams.memo = signed.memo;
+  }
+
+  const txBody = new cosmos.tx.v1beta1.TxBody(txBodyParams);
 
   return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
 }
